@@ -49,6 +49,28 @@
       note: `Destroyed at ${xd.agency.site} on expiry day, from ${dist.godown || dist.city}. ${dist.name} reverses the input GST on these packs in GSTR-3B Table 4(B)(1) under section 17(5)(h).`,
     };
   }
+  // on expiry day the packs left at the godown settle by the client's policy, on a credit note of their own (SC-94); and
+  // destroyed at his godown, the agency's certificate replaces the paper that waited for it, once Priya approved the
+  // evidence (SC-139). A history batch's, or the slow chips' once its destruction is approved (SC-168)
+  function expiryPapers(docs, x, xd, batch, sku, dist, no) {
+    if (x && x.units) {
+      const at = dist.godown || `${dist.city} godown`;
+      if (x.policy === "godown") {
+        // destroyed at his godown (SC-139): a financial credit note against the agency's certificate, on Priya's yes
+        docs.push({ id: "expiry", type: "Expiry credit note", owner: D.CLIENT.short, no, status: "generated", amount: x.amount, units: x.units, policy: x.policy, destroyedBy: x.destroyedBy,
+          credit: x.credit, gst: x.gst, charges: x.charges, reversal: x.reversal, dp: sku.dp, gstPct: Math.round(sku.gst * 100), certificate: xd.certificate, agency: xd.agency.name,
+          disposal: 0, epr: 0, itc: 0, date: xd.approvedAt.slice(0, 10),
+          note: `A financial credit note: no GST is charged or adjusted on it, and ${possessive(C)} output tax on the original sale stands. Issued against destruction certificate ${xd.certificate}; adjusted against ${possessive(dist.name)} account.` });
+      } else docs.push({ id: "expiry", type: "Expiry credit note", owner: D.CLIENT.short, no, status: "generated", amount: x.credit, units: x.units, policy: x.policy, destroyedBy: x.destroyedBy,
+        disposal: x.disposal, epr: x.epr, itc: x.itc, date: batch.bestBefore,
+        note: `The ${M.fmt.num(x.units)} packs that expired at ${at} come back to ${C} for full credit (${M.fmt.inr(x.credit)}), and ${C} destroys them.` });
+    }
+    if (xd) {
+      const i = docs.findIndex(d => d.id === "destruction");
+      docs[i] = destructionDoc(xd, x, batch, sku, dist);
+    }
+    return docs;
+  }
   function historyCase(h) {
     const sku = D.SKUS[h.sku], dist = D.DISTRIBUTORS[h.distributor], n = h.numbers || {};
     const when = k => (h.steps.find(s => s.step === k) || {}).at || null;
@@ -72,27 +94,10 @@
       if (d.id === "support") o.no = n.support;
       return o;
     });
-    const xd = h.destruction;
-    if (h.expiry && h.expiry.units) {
-      const x = h.expiry, at = dist.godown || `${dist.city} godown`;
-      if (x.policy === "godown") {
-        // destroyed at his godown (SC-139): a financial credit note against the agency's certificate, on Priya's yes
-        docs.push({ id: "expiry", type: "Expiry credit note", owner: D.CLIENT.short, no: n.expiry, status: "generated", amount: x.amount, units: x.units, policy: x.policy, destroyedBy: x.destroyedBy,
-          credit: x.credit, gst: x.gst, charges: x.charges, reversal: x.reversal, dp: sku.dp, gstPct: Math.round(sku.gst * 100), certificate: xd.certificate, agency: xd.agency.name,
-          disposal: 0, epr: 0, itc: 0, date: xd.approvedAt.slice(0, 10),
-          note: `A financial credit note: no GST is charged or adjusted on it, and ${possessive(C)} output tax on the original sale stands. Issued against destruction certificate ${xd.certificate}; adjusted against ${possessive(dist.name)} account.` });
-      } else docs.push({ id: "expiry", type: "Expiry credit note", owner: D.CLIENT.short, no: n.expiry, status: "generated", amount: x.credit, units: x.units, policy: x.policy, destroyedBy: x.destroyedBy,
-        disposal: x.disposal, epr: x.epr, itc: x.itc, date: h.bestBefore,
-        note: `The ${M.fmt.num(x.units)} packs that expired at ${at} come back to ${C} for full credit (${M.fmt.inr(x.credit)}), and ${C} destroys them.` });
-    }
-    // the agency's destruction certificate, for him, once Priya approved the evidence (SC-139)
-    if (xd) {
-      const i = docs.findIndex(d => d.id === "destruction");
-      docs[i] = destructionDoc(xd, h.expiry, batch, sku, dist);
-    }
+    expiryPapers(docs, h.expiry, h.destruction, batch, sku, dist, n.expiry);
     const orders = kl ? ordersOf(h.distributor, h.kirana.ordered) : [];
     return {
-      ref: h.ref, history: true, outcome: h.outcome, flagged: h.flagged, cleared: day("report") || h.bestBefore, numbers: n, steps: h.steps, destruction: xd || null,
+      ref: h.ref, history: true, outcome: h.outcome, flagged: h.flagged, cleared: day("report") || h.bestBefore, numbers: n, steps: h.steps, destruction: h.destruction || null,
       batch, sku, dist, buyer: D.BUYER, plan: h.plan, realised: h.realised, actual: h.actual,
       lines: { kirana: kl || NONE("kirana"), expiresoon: es || NONE("expiresoon") },
       award: h.award ? Object.assign({}, h.award, { price: h.price, bid: h.bid }) : null,
@@ -132,10 +137,12 @@
       list.forEach(({ c, k, at }, i) => { k.at = at; k.invoice = invoiceOf(invoiceNo(distId, start + i), at, k.kirana, k.units, c.lines.kirana, c.sku); });
     });
   })();
-  // the story's: the chips' shops in the order they ordered, from Rakesh Traders' next number on
+  // the story's: its shops in the order they ordered, from its distributor's next number on (the chips' from Rakesh
+  // Traders', the Mango Drink's from Lakshmi Agencies', SC-168)
   function storyInvoices(state) {
-    const kl = D.PLAN.lines.find(l => l.id === "kirana"), sku = D.SKUS[HERO.sku], next = SERIES[HERO.distributor].next;
-    return ((state && state.hero.orders) || []).map((o, i) => invoiceOf(invoiceNo(HERO.distributor, next + i), `${D.DAY0}T${o.at}`, o.id, o.units, kl, sku));
+    const S = D.story(state), kl = S.KL, sku = S.sku, dist = S.dist.id, next = SERIES[dist].next;
+    if (!kl) return [];
+    return ((state && state.hero.orders) || []).map((o, i) => invoiceOf(invoiceNo(dist, next + i), `${D.DAY0}T${o.at}`, o.id, o.units, kl, sku));
   }
   // a batch's invoices to its shops, in the order they were issued: the history's from its case, the story's from the
   // journey's state
@@ -271,37 +278,51 @@
   }
 
   /* ---------- the stub's ledger: the history and the story's own batches ---------- */
-  const HERO = D.BATCHES.find(b => b.hero), SECOND = D.BATCHES.find(b => b.second);
   // the story's chips batch, once Impact has posted it: trued up the day after the return window closes
   const STORY_CLEARED = D.addDays(D.RETURN_BY, 1);
-  function storyCase() {
-    const sku = D.SKUS[HERO.sku], dist = D.DISTRIBUTORS[HERO.distributor];
-    const realised = Object.assign({}, D.PLAN, { godown: 0, destroyed: D.PLAN.leftover });
-    return {
-      ref: HERO.id, history: false, outcome: "sold", flagged: D.DAY0, cleared: STORY_CLEARED, numbers: { invoice: D.INVOICE.no, support: "CN/0117", listing: D.JOURNEY.listing.id },
-      batch: HERO, sku, dist, buyer: D.BUYER, plan: D.PLAN, realised, actual: D.ACTUAL,
-      lines: { kirana: D.PLAN.lines.find(l => l.id === "kirana"), expiresoon: D.PLAN.lines.find(l => l.id === "expiresoon") },
-      award: D.AWARD, support: D.SUPPORT, supportPlan: D.SUPPORT_PLAN, claim: D.CLAIM, docs: D.DOCS, invoice: D.INVOICE, receipt: null, returnBy: D.RETURN_BY, expiry: null,
-      listing: D.JOURNEY.listing, kiranas: D.KIRANAS, offered: D.OFFERED, scheme: M.RULES.scheme, kirana: null, staff: null, partner: null,
-      // the batch the same agents donate, which the FSSAI checklist points to (data.js MANGO_*)
-      donation: { batch: SECOND, sku: D.SKUS[SECOND.sku], dist: D.DISTRIBUTORS[SECOND.distributor], units: D.MANGO_FB, partner: D.SETUP.partners.find(p => p.name === D.JOURNEY.donation.partner) },
+  // the batch of the journey the store holds (SC-168): the chips as the story has them, the Mango Drink's own, or the
+  // slow chips', whose packs left at the godown settle on expiry day: its expiry credit note and the agency's certificate
+  // join its papers once Priya has approved the destruction
+  const store = () => window.SC3_STORE.get();
+  function storyCase(state) {
+    const s = state || store(), S = D.story(s), h = s.hero, sku = S.sku, dist = S.dist;
+    const realised = S.realised || Object.assign({}, S.plan, { godown: 0, destroyed: S.plan.leftover });
+    const own = S.donation && S.donation.batch.id === S.batch.id ? S.donation : null;
+    // the destruction as its papers read it, its times on expiry day and the morning after
+    const hd = S.expiry && h.expiry && h.destruction ? h.destruction : null, approved = hd && hd.status === "approved";
+    const xd = approved ? Object.assign({}, hd, { method: D.SETUP.destruction.method, approvedAt: `${S.cleared}T${hd.approvedAt || "11:00"}`,
+      photos: Object.fromEntries(Object.entries(hd.photos || {}).map(([w, p]) => [w, Object.assign({}, p, { at: `${S.expiryDay}T${p.at}` })])) }) : hd;
+    const docs = approved ? expiryPapers(S.docs.slice(), h.expiry, xd, S.batch, sku, dist, S.expiryNo) : S.docs;
+    const kl = S.KL, took = id => (realised.lines.find(l => l.id === id && l.units > 0) || { units: 0 }).units;
+    return Object.assign({
+      ref: S.batch.id, history: false, outcome: S.outcome, flagged: D.DAY0, cleared: S.cleared,
+      numbers: Object.assign({}, S.invoice ? { invoice: S.invoice.no } : {}, { support: "CN/0117" }, S.listing ? { listing: S.listing.id } : {}, own ? { receipt: own.receipt.no } : {}, approved ? { expiry: S.expiryNo } : {}),
+      batch: S.batch, sku, dist, buyer: D.BUYER, plan: S.plan, realised, actual: S.actual,
+      lines: { kirana: kl || NONE("kirana"), expiresoon: S.ES || NONE("expiresoon") },
+      award: S.award, support: S.support, supportPlan: S.supportPlan, claim: S.claim, docs, invoice: S.invoice, receipt: own ? own.receipt : null, returnBy: S.returnBy, expiry: approved ? h.expiry : null,
+      listing: S.listing, kiranas: S.kiranas, offered: S.offered, scheme: M.RULES.scheme,
+      kirana: S.key === "chips" ? null : kl ? { planned: kl.units, ordered: took("kirana") } : null, staff: S.key === "chips" ? null : took("staff") || null, partner: own ? own.partner : null,
+      // the batch the same agents donate, which the FSSAI checklist points to: the Mango Drink beside the chips, or the
+      // batch itself in the Mango Drink's own journey
+      donation: own ? { batch: S.batch, sku, dist, partner: own.partner, units: own.units, from: dist.godown, spot: spotOf(own.partner.name, dist.city), receipt: own.receipt }
+        : S.donation ? { batch: S.donation.batch, sku: S.donation.sku, dist: S.donation.dist, units: S.donation.units, partner: S.donation.partner } : null,
       issued: null, reviewed: { by: "priya", at: null },
-    };
+    }, xd ? { destruction: xd } : {});
   }
-  // a batch's case by its ref: the history's, or the story's chips batch
-  const caseOf = ref => HISTORY.find(c => c.ref === ref) || (ref === HERO.id ? storyCase() : null);
+  // a batch's case by its ref: the history's, or the batch of the journey the store holds
+  const caseOf = (ref, state) => HISTORY.find(c => c.ref === ref) || (ref === D.story(state || store()).batch.id ? storyCase(state) : null);
 
-  // the ledger as the stub reads it, from the journey's state: the history, the chips batch once posted, and the story's
-  // batches still out
+  // the ledger as the stub reads it, from the journey's state: the history, the journey's batch once posted, and the
+  // story's batches still out
   // cleared cases as the ledger's rows, in the order they cleared
   const rowsOf = cases => cases.map(rowOf).sort((a, b) => (a.cleared < b.cleared ? -1 : a.cleared > b.cleared ? 1 : a.ref < b.ref ? -1 : 1));
   function ledger(state) {
-    const h = state.hero, rows = rowsOf(h.posted ? HISTORY.concat([storyCase()]) : HISTORY);
-    const today = h.posted ? STORY_CLEARED : D.DAY0;
+    const S = D.story(state), h = state.hero, rows = rowsOf(h.posted ? HISTORY.concat([storyCase(state)]) : HISTORY);
+    const today = h.posted ? S.cleared : D.DAY0;
     const open = b => ({ ref: b.id, sku: b.sku, name: D.SKUS[b.sku].name, img: D.SKUS[b.sku].img, distributor: b.distributor, distributorName: D.DISTRIBUTORS[b.distributor].name, city: D.DISTRIBUTORS[b.distributor].city, flagged: D.DAY0 });
     const inFlight = [];
-    if (!h.posted && h.phase !== "watching") inFlight.push(Object.assign(open(HERO), { phase: h.phase, stage: window.SC3_FLOW.STAGE_IDS[window.SC3_FLOW.stageOf(state)] }));
-    inFlight.push(Object.assign(open(SECOND), { phase: state.mango.phase, stage: "execute" }));
+    if (!h.posted && h.phase !== "watching") inFlight.push(Object.assign(open(S.batch), { phase: h.phase, stage: window.SC3_FLOW.STAGE_IDS[window.SC3_FLOW.stageOf(state)] }));
+    if (S.second) inFlight.push(Object.assign(open(S.second), { phase: state.mango.phase, stage: "execute" }));
     return { since: D.WORKSPACE.since, today, co2PerKg: M.RULES.co2PerKg, periods: periods(rows, today), batches: rows, inFlight };
   }
 
@@ -322,13 +343,13 @@
   // and every batch he has cleared, newest first
   function distBatches(distId, state) {
     const past = HISTORY.filter(c => c.dist.id === distId).sort((a, z) => (a.flagged < z.flagged ? 1 : -1));
-    const story = D.BATCHES.filter(b => b.distributor === distId);
+    const S = D.story(state), story = S.batches.filter(b => b.distributor === distId);
     const inJourney = b => (b.hero && state.hero.phase !== "watching") || (b.second && state.mango.phase && state.mango.phase !== "watching");
     // a story batch whose journey has cleared (Impact posted it) is one of his cleared batches, no longer in a journey
     // (SC-162): on Batches in its cleared month, in his sums from the story's own figures (storySum)
     const done = b => b.hero && !!state.hero.posted;
     return { journey: story.filter(b => inJourney(b) && !done(b)), watching: story.filter(b => !inJourney(b)), past,
-      done: story.filter(done).map(b => ({ ref: b.id, sku: D.SKUS[b.sku], flagged: D.DAY0, cleared: STORY_CLEARED, outcome: "sold", story: true })) };
+      done: story.filter(done).map(b => ({ ref: b.id, sku: D.SKUS[b.sku], flagged: D.DAY0, cleared: S.cleared, outcome: S.outcome, story: true })) };
   }
   // the papers a distributor sees: those he issues (his tax invoice and its e-way bill check) and those issued to him
   // (Munchly's price-support and expiry credit notes); and copies of what concerns his packs (the food bank's receipt,
@@ -403,35 +424,67 @@
   function sumsOf(past, story) {
     story = story || [];
     const xs = past.map(sumOf).concat(story), t = k => Math.round(xs.reduce((a, x) => a + x[k], 0) * 100) / 100;
-    const notes = past.reduce((n, c) => n + c.docs.filter(d => (d.id === "support" || d.id === "expiry") && d.status !== "not required").length, 0) + story.length;
+    const notes = past.reduce((n, c) => n + c.docs.filter(d => (d.id === "support" || d.id === "expiry") && d.status !== "not required").length, 0) + story.reduce((t, x) => t + (x.notes || 1), 0);
     return { n: past.length + story.length, sold: t("sold"), credit: t("credit"), cost: t("cost"), notes, batches: xs };
   }
   // the story's chips batch once its journey has cleared (SC-162): its sum from its own money, as its page's Money tab
   // reads it (storyWhole): what he sold, what the client credited him, and what it cost him
   function storySum(state) {
     const w = storyWhole(state), r2 = n => Math.round(n * 100) / 100;
-    const credit = w.rows.filter(r => r.k === "Price-support credit note").reduce((t, r) => t + r.v, 0);
-    return { ref: HERO.id, sold: r2(w.recv - credit), credit: r2(credit), cost: w.paid };
+    const credits = w.rows.filter(creditRow), credit = credits.reduce((t, r) => t + r.v, 0);
+    return Object.assign({ ref: D.story(state).batch.id, sold: r2(w.recv - credit), credit: r2(credit), cost: w.paid }, credits.length > 1 ? { notes: credits.length } : {});
   }
+  // the story's credit notes among what he received: the price support, and the expiry credit note on expiry day
+  const creditRow = r => r.k === "Price-support credit note" || /^Expiry credit note/.test(r.k);
   // his cleared batches summed, the story's with them once its journey has cleared (SC-162), as Batches and Orders show it
   function sumsAt(distId, state) {
     const b = distBatches(distId, state);
     return sumsOf(b.past, b.done.map(() => storySum(state)));
   }
   // the story's chips batch while in a journey: what has happened so far (the feed), the next three, and the plan's money
-  const STORY_MOMENTS = [["permit", "handshake", "You gave the one-time permission"], ["watch", "radar", "The Watcher flagged 1,360 packs at risk"], ["ask", "scan-line", "Vision asked you for a label photo"], ["photo", "camera", "You sent the label photo"], ["read", "scan-line", "Vision read the label"],
-    ["approved", "check", `${C} approved the plan`], ["list", "shopping-bag", "772 listed on ExpireSoon in your name"], ["outreach", "send", "The scheme went to 38 of your kiranas"], ["accepted", "handshake", `${D.BUYER.name} took the counter at ₹14.20`], ["orders", "store", "31 kiranas ordered 588 packets"],
-    ["dispatch", "truck", `You loaded ${D.BUYER.name}'s truck`], ["papers", "file-check", "The Paperwork agent drafted your papers"], ["van", "route", "Your Tuesday van round delivered the scheme"], ["ledger", "badge-check", "Settled: you ended whole"]];
+  // each from the story's own figures: the chips' as they always read, the Mango Drink's own journey, the slow chips'
+  function storyMomentsOf(S) {
+    const kl = S.KL, es = S.ES, st = S.plan.lines.find(l => l.id === "staff" && l.units > 0), own = S.donation && S.donation.batch.id === S.batch.id ? S.donation : null;
+    const ordered = S.kiranas.reduce((t, k) => t + k.units, 0), x = S.expiry;
+    const out = S.setupDone ? [] : [["permit", "handshake", "You gave the one-time permission"]];
+    out.push(["watch", "radar", `The Watcher flagged ${num(S.plan.units)} packs at risk`], ["ask", "scan-line", "Vision asked you for a label photo"], ["photo", "camera", "You sent the label photo"], ["read", "scan-line", "Vision read the label"], ["approved", "check", `${C} approved the plan`]);
+    if (es) out.push(["list", "shopping-bag", `${num(es.units)} listed on ExpireSoon in your name`]);
+    if (kl) out.push(["outreach", "send", `The scheme went to ${S.offered} of your kiranas`]);
+    if (own) out.push(["donate", "heart-handshake", `${own.partner.name} booked for ${num(own.units)} packs`]);
+    if (es) out.push(["accepted", "handshake", `${D.BUYER.name} took the counter at ${rate(S.counter.price)}`]);
+    if (kl) out.push(["orders", "store", `${S.kiranas.length} kiranas ordered ${num(ordered)} packets`]);
+    if (kl && !S.fills) out.push(["closeOffer", "clock", "The scheme closed after 48 hours", `${num(kl.units - ordered)} packets were not ordered`]);
+    if (st) out.push(["staff", "users", `Your staff sale sold ${num(st.units)} packs`]);
+    if (own) out.push(["collect", "package-check", `${own.partner.name} collected ${num(own.units)} packs`]);
+    if (es) out.push(["dispatch", "truck", `You loaded ${D.BUYER.name}'s truck`]);
+    out.push(["papers", "file-check", "The Paperwork agent drafted your papers"]);
+    if (kl) out.push(["van", "route", `Your ${S.journey.van.day} van round delivered the scheme`]);
+    if (x) out.push(["destroyAsk", "warehouse", `Asked to destroy ${num(x.units)} expired packs at your godown`], ["destroySent", "camera", "You sent the destruction's evidence"], ["destroyApproved", "badge-check", `${D.PEOPLE.priya.short} approved the destruction`]);
+    out.push(["ledger", "badge-check", "Settled: you ended whole"]);
+    return out;
+  }
   function storyMoments(state) {
     const items = []; let next = 0;
-    STORY_MOMENTS.forEach(([k, icon, title]) => { const e = (state.feed || []).find(x => x.key === k); if (e) items.push({ k, icon, title, at: e.at }); else if (next < 3 && state.feed && state.feed.length) { items.push({ k, icon, title, ahead: true }); next++; } });
+    storyMomentsOf(D.story(state)).forEach(([k, icon, title, sub]) => { const e = (state.feed || []).find(x => x.key === k); if (e) items.push(Object.assign({ k, icon, title, at: e.at }, sub ? { sub } : {})); else if (next < 3 && state.feed && state.feed.length) { items.push({ k, icon, title, ahead: true }); next++; } });
     return items;
   }
+  // what he received against what he paid: the lines as they came to, the price support and, on expiry day, the expiry
+  // credit note, which make them equal; destroyed at his godown, he also reversed the GST on those packs and paid the
+  // agency, which the note makes good (SC-139)
   function storyWhole(state) {
-    const KL = D.PLAN.lines.find(l => l.id === "kirana"), ES = D.PLAN.lines.find(l => l.id === "expiresoon"), sku = D.SKUS[HERO.sku];
-    const rows = [{ k: "From your kiranas", sub: `${num(KL.units)} packets on the scheme`, v: KL.gross }, { k: `From ${D.BUYER.name}`, sub: `${num(ES.units)} packets`, v: state.hero.award ? D.AWARD.gross : ES.gross }, { k: "Price-support credit note", sub: `from ${C}`, v: D.SUPPORT.total }];
-    const recv = rows.reduce((t, r) => t + r.v, 0), paid = D.PLAN.units * sku.dp + D.SUPPORT.van + D.SUPPORT.fee;
-    return { rows, recv, paid, gain: Math.round(recv - paid), dp: sku.dp, units: D.PLAN.units };
+    const S = D.story(state), sku = S.sku, h = state.hero, r = S.realised || S.plan;
+    const took = id => r.lines.find(l => l.id === id && l.units > 0) || null;
+    const kl = took("kirana"), es = took("expiresoon"), st = took("staff"), fb = took("foodbank");
+    const rows = [];
+    if (kl) rows.push({ k: "From your kiranas", sub: `${num(kl.units)} packets on the scheme`, v: kl.gross });
+    if (es) rows.push({ k: `From ${D.BUYER.name}`, sub: `${num(es.units)} packets`, v: h.award ? S.award.gross : es.gross });
+    if (st) rows.push({ k: "Your staff sale", sub: `${num(st.units)} packs`, v: st.gross });
+    if (fb) rows.push({ k: `Given to ${S.donation.partner.name}`, sub: `${num(fb.units)} packs`, v: 0 });
+    rows.push({ k: "Price-support credit note", sub: `from ${C}`, v: S.support.total });
+    const x = h.expiry && h.destruction && h.destruction.status === "approved" ? h.expiry : null;
+    if (x) rows.push({ k: `Expiry credit note for ${num(x.units)} packs`, sub: `from ${C}`, v: x.amount });
+    const recv = rows.reduce((t, r) => t + r.v, 0), paid = S.plan.units * sku.dp + S.support.van + S.support.fee + (x ? (x.reversal || 0) + (x.charges || 0) : 0);
+    return { rows, recv, paid, gain: Math.round(recv - paid), dp: sku.dp, units: S.plan.units };
   }
 
   // a shop's order as its tax invoice has it (SC-153): every packet at the pack price less the scheme's discount, the
@@ -448,16 +501,17 @@
       return { ref: c.ref, sku: c.sku, dist: c.dist, sent, closed, share: shop.sales14 * cap, pack: kl.packPrice, mrp: c.sku.mrp, bestBefore: c.batch.bestBefore,
         status: o ? "ordered" : "expired", why: o ? null : filled ? "filled" : "time", units: o ? o.units : 0, orderedAt: o ? o.at || stepAt(c, "orders") : null, van: o ? stepAt(c, "van") : null, m: o ? scheme(o.units, kl, c.sku) : null, invoice: o ? o.invoice || null : null };
     }).sort((a, z) => (a.sent < z.sent ? 1 : -1));
-    const h = state.hero;
-    if (shop.distributor !== HERO.distributor || !h.offer) return past;
-    const KL = D.PLAN.lines.find(l => l.id === "kirana"), sku = D.SKUS[HERO.sku], o = h.orders.find(x => x.id === shop.id), dec = (h.declined || {})[shop.id];
-    const filled = h.orders.reduce((t, x) => t + x.units, 0) >= KL.units;
+    const h = state.hero, S = D.story(state);
+    if (shop.distributor !== S.dist.id || !h.offer || !S.KL) return past;
+    const KL = S.KL, sku = S.sku, o = h.orders.find(x => x.id === shop.id), dec = (h.declined || {})[shop.id];
+    // the scheme filled before the shop ordered, or its 48 hours ended (the slow chips' window, SC-168)
+    const filled = h.orders.reduce((t, x) => t + x.units, 0) >= KL.units, over = filled || h.offer.status === "closed";
     const sent = `${D.DAY0}T${h.offer.at}`;
-    const status = o ? "ordered" : dec ? "declined" : filled ? "expired" : "open";
+    const status = o ? "ordered" : dec ? "declined" : over ? "expired" : "open";
     const last = h.orders.reduce((t, x) => (x.at > t ? x.at : t), "00:00");
-    return [{ ref: HERO.id, story: true, open: !filled, sku, dist: D.DISTRIBUTORS[HERO.distributor], sent, closed: filled ? `${D.DAY0}T${last}` : plusHours(sent, 48), share: shop.sales14 * cap, pack: KL.packPrice, mrp: sku.mrp, bestBefore: HERO.bestBefore,
-      status, why: status === "expired" ? "filled" : null, declinedAt: dec ? `${D.DAY0}T${dec.at}` : null, units: o ? o.units : 0, orderedAt: o ? `${D.DAY0}T${o.at}` : null,
-      van: o && h.van.status === "done" ? D.addDays(D.DAY0, 4) + "T09:00" : null, m: o ? scheme(o.units, KL, sku) : null, invoice: o ? storyInvoices(state).find(x => x.kirana === shop.id) || null : null }].concat(past);
+    return [{ ref: S.batch.id, story: true, open: !over, sku, dist: S.dist, sent, closed: filled ? `${D.DAY0}T${last}` : plusHours(sent, 48), share: shop.sales14 * cap, pack: KL.packPrice, mrp: sku.mrp, bestBefore: S.batch.bestBefore,
+      status, why: status === "expired" ? (filled ? "filled" : "time") : null, declinedAt: dec ? `${D.DAY0}T${dec.at}` : null, units: o ? o.units : 0, orderedAt: o ? `${D.DAY0}T${o.at}` : null,
+      van: o && h.van.status === "done" ? D.addDays(D.DAY0, S.vanDay) + "T09:00" : null, m: o ? scheme(o.units, KL, sku) : null, invoice: o ? storyInvoices(state).find(x => x.kirana === shop.id) || null : null }].concat(past);
   }
 
   // a food bank's pickups: the story's Mango Drink while it is coming or once collected, then the donations it collected
@@ -466,11 +520,11 @@
     const past = HISTORY.filter(c => c.partner && c.partner.name === org).map(c => ({ ref: c.ref, c, sku: c.sku, dist: c.dist, units: c.donation.units, kg: c.receipt.kg, meals: c.receipt.meals, receipt: c.receipt, spot: c.donation.spot,
       from: `${c.dist.godown}, ${c.dist.city}`, asked: stepAt(c, "donation"), confirmed: stepAt(c, "pickup"), collected: stepAt(c, "collect"), bestBefore: c.batch.bestBefore, daysLeft: c.batch.daysLeft, state: "collected" }))
       .sort((a, z) => (a.collected < z.collected ? 1 : -1));
-    const DN = D.JOURNEY.donation, d = state.mango.donation;
-    if (org !== DN.partner || !d) return past;
-    const dist = D.DISTRIBUTORS[SECOND.distributor], R = D.MANGO_RECEIPT;
-    return [{ ref: SECOND.id, story: true, sku: D.SKUS[SECOND.sku], dist, units: D.MANGO_FB, kg: R.kg, meals: R.meals, receipt: d === "collected" ? R : null, spot: DN.spot, from: `${DN.from}, ${dist.city}`,
-      bestBefore: SECOND.bestBefore, daysLeft: SECOND.daysLeft, state: d, slot: `${DN.date} · ${DN.time}` }].concat(past);
+    const S = D.story(state), x = S.donation, DN = S.journey.donation, d = state.mango.donation;
+    if (!x || org !== DN.partner || !d) return past;
+    const dist = x.dist, R = x.receipt;
+    return [{ ref: x.batch.id, story: true, sku: x.sku, dist, units: x.units, kg: R.kg, meals: R.meals, receipt: d === "collected" ? R : null, spot: DN.spot, from: `${DN.from}, ${dist.city}`,
+      bestBefore: x.batch.bestBefore, daysLeft: x.batch.daysLeft, state: d, slot: `${DN.date} · ${DN.time}` }].concat(past);
   }
   const fssaiItems = p => ["Sealed, undamaged packs", `Best before ${M.fmt.date(p.bestBefore)}, ${p.daysLeft} days left when booked`, "Ambient storage, away from sunlight", `Batch ${p.ref} on every carton`, `Donor: ${D.CLIENT.name} via ${p.dist.name}`];
 
@@ -485,22 +539,25 @@
   const cartons = (u, per) => { const c = Math.floor(u / per), r = u % per; return r * 2 === per ? `${c}½ cartons` : r ? `${c} cartons + ${r}` : `${c} carton${c === 1 ? "" : "s"}`; };
   const linesOf = plan => plan.lines.filter(l => l.units > 0 && l.id !== "writeoff").map(l => ({ id: l.id, units: l.units, price: l.price, packPrice: l.packPrice || null }));
   function nowOfHero(state) {
-    const h = state.hero, units = h.orders.reduce((t, o) => t + o.units, 0);
-    return { ref: HERO.id, sku: HERO.sku, dist: HERO.distributor, flagged: D.DAY0, phase: h.phase, units: D.PLAN.units, shelf: HERO.shelf || null,
-      photo: h.photo.status, approved: ROUTED.includes(h.phase), lines: h.plan ? linesOf(D.PLAN) : [],
-      offer: h.offer ? { open: h.offer.status === "sent" && units < D.PLAN.lines.find(l => l.id === "kirana").units, offered: D.OFFERED, shops: h.orders.length, units } : null,
+    const h = state.hero, S = D.story(state), units = h.orders.reduce((t, o) => t + o.units, 0), DN = S.journey.donation;
+    // the batch's own donation, in the Mango Drink's own journey (SC-168): its pickup as the food bank stands
+    const own = S.donation && S.donation.batch.id === S.batch.id ? S.donation : null, m = state.mango;
+    return { ref: S.batch.id, sku: S.batch.sku, dist: S.batch.distributor, flagged: D.DAY0, phase: h.phase, units: S.plan.units, shelf: S.batch.shelf || null,
+      photo: h.photo.status, approved: ROUTED.includes(h.phase), lines: h.plan ? linesOf(S.plan) : [],
+      offer: h.offer ? { open: h.offer.status === "sent" && units < S.KL.units, offered: S.offered, shops: h.orders.length, units } : null,
       shops: storyInvoices(state).map(x => ({ kirana: x.kirana, units: x.units, at: x.at, invoice: { no: x.no, total: x.total, tax: x.tax } })),
-      listing: h.listing ? { id: D.JOURNEY.listing.id } : null, award: h.award ? { price: D.COUNTER.price, token: D.AWARD.token } : null, awardAt: h.award && h.award.at ? `${D.DAY0}T${h.award.at}` : null,
+      listing: h.listing ? { id: S.listing.id } : null, award: h.award ? { price: S.counter.price, token: S.award.token } : null, awardAt: h.award && h.award.at ? `${D.DAY0}T${h.award.at}` : null,
       truck: h.truck.status === "dispatched", van: h.van.status === "done", papers: !!h.docs,
-      invoice: h.docs ? { no: D.INVOICE.no, total: D.INVOICE.total, issued: !!h.invoiceIssued } : null,
+      invoice: h.docs && S.invoice ? { no: S.invoice.no, total: S.invoice.total, issued: !!h.invoiceIssued } : null,
       staff: h.staff ? { status: h.staff.status, units: h.staff.units, price: h.staff.price, sold: h.staff.sold == null ? null : h.staff.sold } : null,
       // the packs left at his godown on expiry day, destroyed there against evidence the client approves (SC-139)
       destruction: h.destruction ? { status: h.destruction.status, units: h.destruction.units, reason: h.destruction.reason || null } : null,
-      donation: null, round: { day: D.JOURNEY.van.day, date: D.JOURNEY.van.date, leaves: D.JOURNEY.van.leaves } };
+      donation: own && m.id === h.id && m.donation ? { status: m.donation, partner: DN.partner, units: own.units, date: DN.date, time: DN.time } : null, round: { day: S.journey.van.day, date: S.journey.van.date, leaves: S.journey.van.leaves } };
   }
-  // the Mango Drink, executing from the story's start: the scheme open to Lakshmi's shops, the staff sale, the pickup
+  // the Mango Drink beside the story's chips, executing from the story's start: the scheme open to Lakshmi's shops, the
+  // staff sale, the pickup
   function nowOfSecond(state) {
-    const m = state.mango, DN = D.JOURNEY.donation, st = D.MANGO_PLAN.lines.find(l => l.id === "staff");
+    const m = state.mango, SECOND = D.story(state).second, DN = D.JOURNEY.donation, st = D.MANGO_PLAN.lines.find(l => l.id === "staff");
     return { ref: SECOND.id, sku: SECOND.sku, dist: SECOND.distributor, flagged: D.DAY0, phase: m.phase, units: D.MANGO_PLAN.units, shelf: SECOND.shelf || null,
       photo: "verified", approved: ROUTED.includes(m.phase), lines: linesOf(D.MANGO_PLAN),
       offer: { open: true, offered: W.KIRANAS.filter(k => k.distributor === SECOND.distributor).length, shops: 0, units: 0 }, shops: [],
@@ -508,11 +565,11 @@
       staff: st ? (m.staff ? { status: m.staff.status, units: m.staff.units, price: st.price, sold: m.staff.sold } : { status: "open", units: st.units, price: st.price, sold: null }) : null,
       donation: m.donation ? { status: m.donation, partner: DN.partner, units: D.MANGO_FB, date: DN.date, time: DN.time } : null, round: null, destruction: null };
   }
-  // his batches in a journey now, as the stub has them
+  // his batches in a journey now, as the stub has them: the journey's batch, and the story's second beside the chips
   function distNow(distId, state) {
-    const out = [];
-    if (HERO.distributor === distId && state.hero.phase && state.hero.phase !== "watching") out.push(nowOfHero(state));
-    if (SECOND.distributor === distId && state.mango.phase && state.mango.phase !== "watching") out.push(nowOfSecond(state));
+    const out = [], S = D.story(state);
+    if (S.batch.distributor === distId && state.hero.phase && state.hero.phase !== "watching") out.push(nowOfHero(state));
+    if (S.second && S.second.distributor === distId && state.mango.phase && state.mango.phase !== "watching") out.push(nowOfSecond(state));
     return out;
   }
   // a batch in a journey from where he stands: each line of its plan and where it stands, his steps, what it waits for
@@ -686,14 +743,16 @@
   // setup or another batch's rows, and the decisions only its audit keeps (the papers' review after the pack, the BRSR
   // sign-off after the ledger). The stub's times are its own (09:19, Mon 5 Oct): kept as they are
   function storyRecord(s) {
-    const hero = D.BATCHES.find(b => b.hero), others = D.BATCHES.filter(b => !b.hero).map(b => b.id);
+    const S = D.story(s), hero = S.batch, others = S.batches.filter(b => b.id !== hero.id).map(b => b.id);
+    const who = id => S.people[id] || { id, name: id };
     const KEY = { approved: "plan.approve", destroyApproved: "destruction.approve" };
-    const rows = s.feed.filter(e => e.stage !== "connect" && !/^Mango Drink batch/.test(e.text || "") && !others.some(id => (e.text || "").includes(id)))
-      .map(e => { const key = KEY[e.key] || e.key || "step"; return { key, at: e.at, who: e.agent ? agentOf(e.agent) : personOf(D.PEOPLE[e.person] || { id: e.person, name: e.person }), text: e.text, yes: YES.includes(key) }; });
+    // beside the chips, the Mango Drink's donation is the other batch's (SC-168: in its own journey, its own)
+    const rows = s.feed.filter(e => e.stage !== "connect" && !(S.second && /^Mango Drink batch/.test(e.text || "")) && !others.some(id => (e.text || "").includes(id)))
+      .map(e => { const key = KEY[e.key] || e.key || "step"; return { key, at: e.at, who: e.agent ? agentOf(e.agent) : personOf(who(e.person)), text: e.text, yes: YES.includes(key) }; });
     const after = (key, row) => { const i = rows.map(r => r.key).lastIndexOf(key); if (i >= 0) rows.splice(i + 1, 0, row); else rows.push(row); };
     s.audit.filter(a => a.target === hero.id && /reviewed|signed off/.test(a.what)).slice().reverse().forEach(a => {
       const key = /reviewed/.test(a.what) ? "docs.review" : "report.signoff";
-      after(key === "docs.review" ? "papers" : "ledger", { key, at: a.at, who: personOf(D.PEOPLE[a.who] || { id: a.who, name: a.who }), text: a.what, yes: YES.includes(key) });
+      after(key === "docs.review" ? "papers" : "ledger", { key, at: a.at, who: personOf(who(a.who)), text: a.what, yes: YES.includes(key) });
     });
     return { ref: hero.id, steps: rows };
   }
@@ -710,18 +769,21 @@
   }
   // the story's batch: its label photo once Rakesh has sent it, and the destruction's two once he has sent them
   function storyPhotos(s) {
-    const hero = D.BATCHES.find(b => b.hero), sku = D.SKUS[hero.sku], h = s.hero, out = [], at = t => (/^\d\d:\d\d$/.test(t || "") ? `${D.DAY0}T${t}` : D.DAY0);
-    const rakesh = D.PEOPLE.rakesh.name;
-    if (h.photo && h.photo.status && h.photo.status !== "requested" && h.photo.status !== "none") out.push({ id: "label", img: `labels/${hero.id}.webp`, at: at(h.photo.at), by: rakesh,
+    const S = D.story(s), hero = S.batch, sku = S.sku, h = s.hero, out = [], at = t => (/^\d\d:\d\d$/.test(t || "") ? `${D.DAY0}T${t}` : D.DAY0);
+    const by = (S.people[S.accounts.distributor] || { name: S.dist.name }).name;
+    if (h.photo && h.photo.status && h.photo.status !== "requested" && h.photo.status !== "none") out.push({ id: "label", img: `labels/${hero.id}.webp`, at: at(h.photo.at), by,
       read: h.photo.status === "verified" ? { at: at(h.photo.at), batch: hero.id, mfg: hero.mfg || D.addDays(hero.bestBefore, -sku.lifeDays), bestBefore: hero.bestBefore, mrp: sku.mrp, matches: true } : null });
     const xd = h.destruction;
-    if (xd && xd.photos) ["before", "after"].forEach(w => xd.photos[w] && out.push({ id: w, img: `evidence/${hero.id}-${w}.webp`, at: at(xd.photos[w].at), by: rakesh,
+    if (xd && xd.photos) ["before", "after"].forEach(w => xd.photos[w] && out.push({ id: w, img: `evidence/${evidenceFile(hero.id, w, xd.photos[w])}`, at: at(xd.photos[w].at), by,
       checks: (xd.checks || []).filter(x => (w === "before" ? ["batch", "count"] : ["slate", "when"]).includes(x.id)) }));
     return out;
   }
-  const record = { recordOf, storyRecord, photosOf, storyPhotos, YES };
+  // a destruction photo's file under img/evidence: the one it was sent as (the slow chips' expiry-day landfill photo,
+  // SC-168), else the batch's own
+  function evidenceFile(ref, which, p) { return p && /\.(webp|jpe?g|png)$/i.test(p.name || "") ? p.name.replace(/^.*\//, "") : `${ref}-${which}.webp`; }
+  const record = { recordOf, storyRecord, photosOf, storyPhotos, evidenceFile, YES };
 
-  const partners = { distBatches, distPapers, moments, whole, sumOf, sumsOf, storySum, sumsAt, storyMoments, storyWhole, scheme, offersFor, pickupsFor, fssaiItems, stepAt, plusHours,
+  const partners = { distBatches, distPapers, moments, whole, sumOf, sumsOf, storySum, sumsAt, storyMoments, storyMomentsOf, storyWhole, scheme, offersFor, pickupsFor, fssaiItems, stepAt, plusHours,
     STOP, distNow, journeyOf, journeys, ordersNow, ordersPast, deliveriesPast, photoOf, shopName, historyFacts, WORLD, storyInvoices, invoicesOf };
 
   /* ---------- the Impact dashboard (SC-157): a period's figures drawn from its rows ---------- */

@@ -15,8 +15,25 @@ export const DZ_TONE: Record<DestructionStatus, ['amber' | 'violet' | 'green', s
 
 export type DzWhich = 'before' | 'after';
 
-export const dzPhoto = (d: Destruction | null | undefined, ref: string, which: DzWhich, live: boolean) =>
-	d?.photos?.[which]?.url ?? (live ? undefined : imgUrl(`evidence/${ref}-${which}.webp`));
+/** a destruction photo's file under design3's img/evidence: the one it was sent as (the stub's slow chips send the
+ *  landfill photo of expiry day, SC-168), else the batch's own (ledger.js record.evidenceFile) */
+export const evidenceFile = (ref: string, which: string, p?: { name?: string } | null) =>
+	p && /\.(webp|jpe?g|png)$/i.test(p.name ?? '') ? p.name!.replace(/^.*\//, '') : `${ref}-${which}.webp`;
+
+/** a photo of the evidence: the live workspace's link to it, else on the stub its file as sent, else the example the
+ *  journey shows for it (its own evidence), else the batch's */
+export const dzPhoto = (
+	d: Destruction | null | undefined,
+	ref: string,
+	which: DzWhich,
+	live: boolean,
+	example?: string | null
+) => {
+	const p = d?.photos?.[which];
+	if (p?.url) return p.url;
+	if (live) return undefined;
+	return imgUrl(`evidence/${p ? evidenceFile(ref, which, p) : (example ?? `${ref}-${which}.webp`)}`);
+};
 
 /** a photo's time, as the review tags it (11:40) */
 export const dzAt = (d: Destruction | null | undefined, which: DzWhich) => {

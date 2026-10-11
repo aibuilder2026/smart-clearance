@@ -822,6 +822,88 @@ const flowFixture = (() => {
 	return { stages: F.STAGE_IDS, steps };
 })();
 
+/** the guided demo's three journeys (SC-168, data.js STORIES): the chips' own moments and people beside workspace.json,
+ *  and the Mango Drink's own journey and the slow chips' whole, each as core's stub runs it: its story, the store's
+ *  first state, and what its case and ledger read once Impact has posted it (design3's journey run to its end) */
+const storiesSeed = (() => {
+	const own = (S) => ({
+		key: S.key,
+		title: S.title,
+		accounts: S.accounts,
+		shop: S.shop,
+		decliner: S.decliner,
+		fills: S.fills,
+		scheme: S.scheme,
+		evidence: S.evidence,
+		at: S.at,
+		cleared: S.cleared,
+		outcome: S.outcome,
+		vanDay: S.vanDay,
+		pron: S.pron,
+		setupDone: S.setupDone,
+		stages: S.stages,
+		times: S.times
+	});
+	const withAssess = (b) => ({ ...b, assess: D.batchView(b).assess });
+	const out = { chips: own(D.storyOf('chips')) };
+	for (const key of D.SCENARIOS.filter((k) => k !== 'chips')) {
+		const S = D.storyOf(key);
+		F.useScenario(key);
+		F.fastForward(10);
+		const end = Store.get(),
+			c = L.storyCase(end);
+		out[key] = {
+			...own(S),
+			batch: withAssess(S.batch),
+			batches: S.batches.map(withAssess),
+			sku: S.sku.id,
+			dist: S.dist.id,
+			people: S.people,
+			kiranas: S.kiranas,
+			offered: S.offered,
+			risk: S.risk,
+			plan: S.plan,
+			KL: S.KL,
+			ES: S.ES,
+			counter: S.counter,
+			award: S.award,
+			actual: S.actual,
+			support: S.support,
+			supportPlan: S.supportPlan,
+			claim: S.claim,
+			docs: S.docs,
+			invoice: S.invoice,
+			returnBy: S.returnBy,
+			realised: S.godownLeft,
+			expiry: S.expiry,
+			push: S.push,
+			chat: S.chat,
+			events: S.events,
+			journey: S.journey,
+			listing: S.listing,
+			donation: S.donation
+				? {
+						batch: S.donation.batch.id,
+						units: S.donation.units,
+						partner: S.donation.partner.name,
+						receipt: S.donation.receipt
+					}
+				: null,
+			agency: S.agency ?? null,
+			certificate: S.certificate ?? null,
+			expiryNo: S.expiryNo ?? null,
+			expiryDay: S.expiryDay ?? null,
+			explore: S.explore,
+			initial: Store.seed(key),
+			// once Impact has posted it: its papers (the slow chips' expiry credit note and the agency's certificate) and its
+			// ledger row
+			end: { docs: c.docs, row: L.rowOf(c) }
+		};
+	}
+	F.useScenario('chips');
+	return out;
+})();
+
 const json = (o) => JSON.stringify(o, null, '\t') + '\n';
 // each folder of generated files, with a manifest of where they came from
 const outputs = {
@@ -835,6 +917,7 @@ const outputs = {
 	'admin/src/lib/seed': { 'ds.json': json(ds) },
 	'core/src/lib/workspace/seed': {
 		'workspace.json': json(workspaceSeed),
+		'stories.json': json(storiesSeed),
 		// the SKU, distributor and buyer by id, as the stub looks them up; the invoice is the pack's own
 		'history.json': json({
 			cases: L.HISTORY.map(({ sku, dist, buyer: _b, invoice: _i, ...c }) => ({ ...c, sku: sku.id, dist: dist.id })),

@@ -36,8 +36,9 @@
 
   // the hero batch, read from the store: phase, tracker position, ETA, which agent is working
   const PHASE_STATUS = { watching: "watching", "at-risk": "at-risk", verified: "routing", valued: "routing", planned: "awaiting", approved: "executing", executing: "executing", dispatched: "dispatched", settled: "settled", cleared: "cleared" };
+  // the batch is the journey's own (SC-168, data.js STORIES): the chips, or the Mango Drink in its own journey
   function heroModel(s) {
-    const h = s.hero; const view = D.batchView(D.BATCHES[0]); const idx = Flow.stageOf(s);
+    const h = s.hero, C = D.story(s); const view = D.batchView(C.batch); const idx = Flow.stageOf(s);
     view.phase = PHASE_STATUS[h.phase];
     const ordered = h.orders.length, orderedUnits = h.orders.reduce((t, o) => t + o.units, 0);
     let eta = "", etaTone = "green", agentLive = "";
@@ -46,17 +47,24 @@
     else if (h.phase === "verified") { eta = "Pricing five channels"; agentLive = "Valuer is pricing five channels"; }
     else if (h.phase === "valued") { eta = "Splitting the batch"; agentLive = "Router is splitting the batch"; }
     else if (h.phase === "planned") { eta = "Waiting for your approval"; etaTone = "amber"; }
-    else if (h.phase === "approved" || h.phase === "executing") { eta = h.award ? `Awarded at ₹${D.COUNTER.price.toFixed(2)} · ${ordered} of ${D.KIRANAS.length} kiranas ordered` : `Listing live · ${ordered} of ${D.KIRANAS.length} kiranas ordered`; agentLive = h.award && ordered === D.KIRANAS.length ? "" : "Lister, Outreach and Negotiator at work"; }
+    else if (h.phase === "approved" || h.phase === "executing") {
+      // what is under way follows the plan's lines (SC-85): the lot and the scheme, or the scheme and the donation
+      const has = id => C.plan.lines.some(l => l.id === id && l.units > 0), shops = `${ordered} of ${C.kiranas.length} kiranas ordered`;
+      if (has("expiresoon")) { eta = h.award ? `Awarded at ₹${C.counter.price.toFixed(2)} · ${shops}` : `Listing live · ${shops}`; agentLive = h.award && ordered === C.kiranas.length ? "" : "Lister, Outreach and Negotiator at work"; }
+      else { eta = has("kirana") ? `Scheme open · ${shops}` : "Carrying out the plan"; const at = [has("kirana") && "Outreach", has("foodbank") && "Donation"].filter(Boolean); agentLive = at.length ? `${at.join(" and ")} at work` : ""; }
+    }
     else if (h.phase === "dispatched") { eta = "Paperwork in progress"; agentLive = "Paperwork is drafting the pack"; }
     else if (h.phase === "settled") { eta = "Papers ready · ledger next"; agentLive = "Impact is posting the ledger"; }
     else if (h.phase === "cleared") { eta = h.destruction ? `Cleared · ${h.destruction.units} packs destroyed at the godown` : "Cleared · 0 cartons destroyed"; }
     // packs destroyed at the distributor's godown (SC-139): the batch waits on the evidence, then on the second yes
     const dz = h.destruction && h.phase !== "cleared" ? h.destruction.status : null;
-    if (dz === "requested" || dz === "asked") { const who = D.DISTRIBUTORS[D.BATCHES[0].distributor].short; eta = `Waiting for ${who + (/s$/.test(who) ? "'" : "'s")} destruction evidence`; etaTone = "amber"; agentLive = ""; }
+    if (dz === "requested" || dz === "asked") { const who = C.dist.short; eta = `Waiting for ${who + (/s$/.test(who) ? "'" : "'s")} destruction evidence`; etaTone = "amber"; agentLive = ""; }
     else if (dz === "reading") { eta = "Checking the destruction's evidence"; agentLive = "Vision is checking the evidence"; }
     else if (dz === "checked") { eta = "The destruction waits for your yes"; etaTone = "amber"; agentLive = ""; }
-    return { h, view, idx, done: Math.min(idx, 9), current: idx < 9 ? idx : -1, eta, etaTone, agentLive, ordered, orderedUnits, plan: D.PLAN };
+    return { h, view, idx, done: Math.min(idx, 9), current: idx < 9 ? idx : -1, eta, etaTone, agentLive, ordered, orderedUnits, plan: C.plan };
   }
+  // the journey's story (data.js STORIES) as a screen reads it, kept up to date with the store
+  const useStory = () => D.story(useStore());
   const unreadFor = (s, me) => s.notifications.filter(n => n.to === (me && me.id) && !n.read).length;
 
   // page chrome: inbox bell, appearance, the person
@@ -101,7 +109,7 @@
   const AccountCtx = createContext({});
   // in the app, a quiet way to step into the partner the journey is waiting on
   function PlayAs({ who, route, children }) {
-    const acc = useContext(AccountCtx); const p = D.PEOPLE[who];
+    const acc = useContext(AccountCtx); const p = D.story(Store.get()).people[who] || Store.get().users.find(u => u.id === who);
     if (!acc.switchTo || !p) return null;
     return <button type="button" className="playas" onClick={() => acc.switchTo(who, route)}><Avatar person={p} size="xs" /><span>{children || `Continue as ${p.short}`}</span><Icon name="arrow-right" size={14} /></button>;
   }
@@ -131,5 +139,5 @@
 
   const PEOPLE_BY_ID = id => D.PEOPLE[id] || (Store.get().users.find(u => u.id === id) || { name: id });
 
-  window.SC3_SCREENS = Object.assign(window.SC3_SCREENS || {}, { LockScreen, AccountCtx, WorkspaceCtx, LiveCtx, BatchCtx, useLive, PlayAs, Photo, PushBanners, useStore, Router, useRoute, heroModel, unreadFor, TopActions, Screen, Columns, SectionTitle, Locked, PEOPLE_BY_ID, PHASE_STATUS });
+  window.SC3_SCREENS = Object.assign(window.SC3_SCREENS || {}, { LockScreen, AccountCtx, WorkspaceCtx, LiveCtx, BatchCtx, useLive, PlayAs, Photo, PushBanners, useStore, useStory, Router, useRoute, heroModel, unreadFor, TopActions, Screen, Columns, SectionTitle, Locked, PEOPLE_BY_ID, PHASE_STATUS });
 })();

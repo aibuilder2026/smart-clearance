@@ -28,41 +28,16 @@
     .concat(OFFERED_ONLY.map(([name, area], i) => ({ id: "k" + (D.KIRANAS.length + i), name, area, pincode: AREAS[area], sales14: 3, orders: 0, at: null, distributor: "rakesh" })));
   if (NAGPUR.length !== D.OFFERED) throw new Error("world: the cluster should have " + D.OFFERED + " kiranas");
 
-  // Lakshmi Agencies' cluster in Hyderabad's old city (SC-86), so the Mango Drink's scheme has shops to go to: as many as
-  // data.js counts for her, round the Begum Bazaar godown. Their 14-day sales add up to the batch's 28 packets a day
-  // (392), so their caps (4×) hold the plan's kirana line; `orders` is what each orders in the scripted walk (walk.sh),
-  // its cap until the line is full. In a demo the shops order by hand.
+  // Lakshmi Agencies' cluster in Hyderabad's old city (SC-86), so the Mango Drink's scheme has shops to go to: data.js
+  // lists the shops, their sales and what each orders (HYDERABAD); here they get their pincodes. In a demo the shops
+  // order by hand.
   const HYD_AREAS = { "Begum Bazaar": "500012", "Afzal Gunj": "500012", Abids: "500001", Koti: "500095", "Sultan Bazar": "500095", Malakpet: "500036", Charminar: "500002", Nampally: "500001", Chaderghat: "500024", Dabeerpura: "500023" };
-  const HYD = [
-    ["Sri Lakshmi Ganapathi Kirana", "Begum Bazaar"], ["Al-Noor Provision Store", "Charminar"], ["Deccan General Stores", "Abids"], ["Sai Krishna Kirana", "Koti"],
-    ["Hussaini Provision", "Dabeerpura"], ["Bhavani Kirana", "Malakpet"], ["Golconda Stores", "Afzal Gunj"], ["Moazzam Kirana", "Charminar"],
-    ["Anjaneya Provision Store", "Sultan Bazar"], ["Shalimar General Store", "Nampally"], ["Ravi Teja Kirana", "Chaderghat"], ["Madina Provision", "Charminar"],
-    ["Sri Durga Bhavani Stores", "Begum Bazaar"], ["Hyderabadi Kirana", "Abids"], ["Gulzar House Stores", "Charminar"], ["Padmavathi Kirana", "Koti"],
-    ["Asif Nagar Provisions", "Nampally"], ["Ramakrishna General Store", "Malakpet"], ["Taj Kirana", "Dabeerpura"], ["Sitara Provision Store", "Afzal Gunj"],
-    ["Vinayaka Stores", "Sultan Bazar"], ["Nizam Kirana", "Charminar"], ["Annapurna Provisions", "Chaderghat"], ["Musi River Stores", "Afzal Gunj"],
-    ["Kothi Kirana", "Koti"], ["Siddiq General Store", "Dabeerpura"], ["Lalitha Provision", "Malakpet"], ["Mehboob Kirana", "Begum Bazaar"],
-    ["Srinivasa Stores", "Abids"], ["Zam Zam Provisions", "Charminar"], ["Pochamma Kirana", "Chaderghat"], ["Rahmat General Store", "Nampally"],
-    ["Krishnaveni Provisions", "Sultan Bazar"], ["Shah Ali Kirana", "Dabeerpura"], ["Mahalakshmi Stores", "Malakpet"], ["Banjara Provision Store", "Abids"],
-    ["Ghouse Kirana", "Charminar"], ["Sri Rama Stores", "Koti"], ["Patel Market Kirana", "Afzal Gunj"], ["Yadamma Provisions", "Chaderghat"],
-    ["Darussalam Stores", "Nampally"], ["Gowri Kirana", "Begum Bazaar"], ["Irani Gali Provisions", "Charminar"], ["Satyanarayana Stores", "Sultan Bazar"],
-    ["Farhan General Store", "Dabeerpura"], ["Sunanda Kirana", "Malakpet"], ["Mir Alam Provisions", "Afzal Gunj"], ["Jyothi Stores", "Koti"],
-    ["Purani Haveli Kirana", "Charminar"], ["Narayana Provision Store", "Abids"], ["Bilal Stores", "Nampally"], ["Saraswathi Kirana", "Chaderghat"],
-    ["Osman Gunj Provisions", "Begum Bazaar"], ["Vijaya Stores", "Sultan Bazar"], ["Akbar Kirana", "Dabeerpura"], ["Manjula Provisions", "Malakpet"],
-    ["Laad Bazaar Stores", "Charminar"], ["Sri Venu Kirana", "Afzal Gunj"],
-  ];
-  const HYD_SALES = [6, 7, 8, 5, 9, 6, 7, 4, 8, 7];
   const mango = D.BATCHES.find(b => b.distributor === "lakshmi");
   const mangoKirana = window.SC3_MONEY.plan(mango, D.SKUS[mango.sku]).lines.find(l => l.id === "kirana").units;
-  let toOrder = mangoKirana;
-  const HYDERABAD = HYD.map(([name, area], i) => {
-    const sales14 = i < 50 ? HYD_SALES[i % 10] : i < 57 ? 7 : 8;
-    const orders = Math.min(toOrder, sales14 * window.SC3_MONEY.RULES.shopCapTimes);
-    toOrder -= orders;
-    return { id: "h" + i, name, area, pincode: HYD_AREAS[area], sales14, orders, at: null, distributor: "lakshmi" };
-  });
+  const HYDERABAD = D.HYDERABAD.map(k => ({ id: k.id, name: k.name, area: k.area, pincode: HYD_AREAS[k.area], sales14: k.sales14, orders: k.orders, at: null, distributor: "lakshmi" }));
   if (HYDERABAD.length !== D.DISTRIBUTORS.lakshmi.kiranas) throw new Error("world: Lakshmi Agencies' cluster should have " + D.DISTRIBUTORS.lakshmi.kiranas + " kiranas");
   if (HYDERABAD.reduce((t, k) => t + k.sales14, 0) !== mango.sellPerDay * 14) throw new Error("world: Lakshmi Agencies' kiranas should sell the Mango Drink's 28 a day");
-  if (toOrder) throw new Error("world: Lakshmi Agencies' kiranas should hold the Mango Drink's kirana line");
+  if (HYDERABAD.reduce((t, k) => t + k.orders, 0) !== mangoKirana) throw new Error("world: Lakshmi Agencies' kiranas should hold the Mango Drink's kirana line");
   const KIRANAS = NAGPUR.concat(HYDERABAD);
 
   // every member of Munchly's workspace: the story's people, the partner organisations' accounts, and an account for

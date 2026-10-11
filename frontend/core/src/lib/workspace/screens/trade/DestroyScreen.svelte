@@ -141,9 +141,15 @@
 			sending = false;
 		}
 	};
+	// the example in each slot: the journey's own evidence for its batch (the stub's slow chips', SC-168), else the batch's
+	const example = (id: DzWhich) => (ws.case?.batch.id === n?.ref ? ws.case?.story?.evidence[id] : null);
 	const shotSrc = (id: DzWhich) => {
 		const s = shots[id];
-		return s ? (s.url ?? dzPhoto(null, n!.ref, id, false)) : live ? undefined : dzPhoto(null, n!.ref, id, false);
+		return s
+			? (s.url ?? dzPhoto(null, n!.ref, id, false, example(id)))
+			: live
+				? undefined
+				: dzPhoto(null, n!.ref, id, false, example(id));
 	};
 	const say = $derived(d ? SAY[d.status] : undefined);
 </script>

@@ -1,9 +1,12 @@
 /* Smart-Clearance v3 · the mock backend's store (stands in for Firestore). One observable state object for one
-   workspace, Munchly's; in memory for the guided demo, persisted per browser for the app. Every change notifies subscribers. */
+   workspace, Munchly's; in memory for the guided demo, persisted per browser for the app. Every change notifies subscribers.
+   It runs one journey at a time (SC-168, data.js STORIES): the story's chips by default, whose state carries no
+   scenario; the Mango Drink's or the slow chips' carries its key. */
 (function () {
   const D = window.SC3_DATA;
   const KEY = "sc3-store", VERSION = 5;
-  function seed() {
+  function seed(scenario) {
+    const S = scenario && scenario !== "chips" && D.STORIES[scenario] ? D.storyOf(scenario) : null;
     const P = D.PEOPLE;
     const users = [
       { id: "priya", role: "operator", provider: "google", status: "active" }, { id: "rakesh", role: "distributor", provider: "phone", status: "active" },
@@ -15,13 +18,18 @@
      ["jaidurga", "Jai Durga Stores", "retailer", "+91 98230 60011", "active"], ["krishna", "Krishna Kirana Bhandar", "retailer", "+91 98230 60012", "deactivated"],
      ["shreesai", "Shree Sai Kirana", "retailer", "+91 98230 60013", "invited", "Rakesh Traders"], ["ifbn", "India FoodBanking Network", "foodbank", "", "invited", "Munchly Foods"]]
       .forEach(([id, org, role, phone, status, invitedBy]) => users.push({ id, name: org, short: org, org, role: role, provider: phone ? "phone" : "google", phone, email: phone ? "" : "partners@ifbn.example", status, invitedBy, kind: "partner", lastSeen: null, extra: true }));
-    return {
+    // another journey's own accounts: the shop a person plays, or the one that says Not this time
+    if (S) S.users.forEach(u => users.push(Object.assign({}, u)));
+    return Object.assign({
       v: VERSION,
       workspace: D.WORKSPACE.id,
-      // permission: Rakesh Traders' one-time permission for the agent to act in his name; paused stops every agent step
-      setup: { confirmed: false, mapped: 0, permission: null },
-      hero: { id: "MF-2409-117", phase: "watching", photo: { status: "none" }, plan: null, listing: null, offer: null, orders: [], declined: {}, bids: [], chat: [], award: null, van: { status: "idle", done: 0 }, truck: { status: "idle" }, docs: null, invoiceIssued: false, posted: false },
-      mango: { id: "MF-2410-118", phase: "executing", donation: null },
+      // permission: the distributor's one-time permission for the agent to act in his name; paused stops every agent step.
+      // The Mango Drink's journey starts with Setup confirmed and Lakshmi Agencies' permission given (SETUP.permissions)
+      setup: S && S.setupDone ? { confirmed: true, mapped: D.SETUP.dms.columns.length, permission: { by: S.accounts.distributor, at: D.SETUP.permissions[S.dist.id], paused: false } } : { confirmed: false, mapped: 0, permission: null },
+      hero: { id: S ? S.batch.id : "MF-2409-117", phase: "watching", photo: { status: "none" }, plan: null, listing: null, offer: null, orders: [], declined: {}, bids: [], chat: [], award: null, van: { status: "idle", done: 0 }, truck: { status: "idle" }, docs: null, invoiceIssued: false, posted: false },
+      // the batch the same agents donate: the story's Mango Drink, in motion beside the chips; in the Mango Drink's own
+      // journey its donation is the hero's (the live workspace's shape: the same ref); the slow chips donate nothing
+      mango: !S ? { id: "MF-2410-118", phase: "executing", donation: null } : S.donation ? { id: S.batch.id, phase: "watching", donation: null } : { id: "", phase: "watching", donation: null },
       feed: [], notifications: [], audit: [], users,
       rules: { watchTime: "09:00", dataTime: "08:30", floors: { snacks: 35, biscuits: 35, staples: 40, beverages: 30, "personal-care": 40 }, approvalTaps: 10, hindiOffers: true, requirePhoto: true, offerWindowHours: 48, tokenPct: 15, disposalPerUnit: 1.5, eprPerKg: 6, territoryGuard: true, returnWindowDays: 20, kiranaUplift: 3.5, vanPerUnit: 0.5 },
       integrations: [
@@ -37,7 +45,7 @@
         { id: "foodbank", name: "Food-bank partners", kind: "Donation", status: "mock", note: "Feeding India and IFBN intake rules" },
       ],
       seq: 1,
-    };
+    }, S ? { scenario } : {});
   }
   const listeners = new Set();
   let state = seed(); let persist = false;
@@ -48,7 +56,8 @@
     get: () => state,
     update(fn) { const draft = clone(state); fn(draft); draft.seq = (draft.seq || 0) + 1; state = draft; save(); emit(); return state; },
     subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },
-    reset() { state = seed(); save(); emit(); },
+    // the journey back to its start: the same one, or the one named (flow.js useScenario)
+    reset(scenario) { state = seed(scenario !== undefined ? scenario : state.scenario); save(); emit(); },
     usePersistence() { persist = true; try { const raw = localStorage.getItem(KEY); if (raw) { const d = JSON.parse(raw); if (d && d.v === VERSION) state = d; } } catch (e) {} },
     seed,
   };

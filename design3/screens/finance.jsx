@@ -197,7 +197,7 @@
   // reads what its batch did: the lines it ran, the credit kept and reversed, the packs given away or destroyed
   const stamp = t => (!t ? "" : t.length > 5 ? `${fmt.day(t.slice(0, 10))}, ${t.slice(11, 16)}` : t);
   function Paper({ id, c: given }) {
-    const st = useStore(); const c = given || LG().storyCase();
+    const st = useStore(); const c = given || LG().storyCase(st);
     const DOC = x => c.docs.find(d => d.id === x); const d = DOC(id); const inv = c.invoice || DOC("invoice"); const R = c.dist, B = c.buyer, dp = c.sku.dp, sp = c.support;
     const head = (title, no, stamp, ok) => <div className="pp-head"><div><div className="pp-title">{title}</div><div className="pp-no">{no}</div></div><span className={cx("pp-stamp", ok && "ok")}>{stamp}</span></div>;
     // issued from Tally: by the story's Rakesh bhai, on a history batch's invoice step, or on the live workspace (SC-148)
@@ -258,7 +258,7 @@
   // distributor receives is what each channel took, at its price (the credit note's rows), so a line that took less
   // counts less; on expiry day the packs left at the godown add their settlement on both sides (SC-94)
   function KeepsWhat({ c: given }) {
-    const s = useStore(); const c = given || LG().storyCase();
+    const s = useStore(); const c = given || LG().storyCase(s);
     const x0 = c.history ? c.expiry : s.hero.expiry; const x = x0 && x0.units > 0 ? x0 : null; const dp = c.sku.dp;
     // destroyed at his godown (SC-139): the note carries the GST he reverses and the agency's charges, which he pays out
     const godown = x && x.policy === "godown", spent = godown ? (x.reversal || 0) + (x.charges || 0) : 0;
@@ -330,7 +330,7 @@
 
   // S5 Paperwork: the story's chips batch's pack, the operator's batch page shows it as one of its screens (SC-112)
   function Paperwork({ me }) {
-    const s = useStore(); const c = LG().storyCase(); const awarded = c.lines.expiresoon.units > 0;
+    const s = useStore(); const c = LG().storyCase(s); const awarded = c.lines.expiresoon.units > 0;
     return <Screen me={me} title="Paperwork" sub={`${c.batch.id} · prepared by the Paperwork agent ${awarded ? "at the award" : "once every line was done"}`}><PaperPack me={me} c={c} h={s.hero} /></Screen>;
   }
 
@@ -577,7 +577,7 @@
   // batches still out, and the batches by month. Each row opens the batch's own page
   function Ledger({ me }) {
     const s = useStore(); const app = useApp(); const phone = app.bp === "phone"; const { go } = useRoute();
-    const book = useMemo(() => LG().ledger(s), [s.hero.posted, s.hero.phase, s.mango.phase]);
+    const book = useMemo(() => LG().ledger(s), [s.hero.posted, s.hero.phase, s.mango.phase, s.scenario]);
     const year = book.periods.find(x => x.kind === "year" && x.current) || book.periods[book.periods.length - 1];
     const [pid, setPid] = useState(year.id); const p = book.periods.find(x => x.id === pid) || year;
     // the reading the address asks for (the Command Center's Impact card opens the ledger on Impact, SC-157)
@@ -610,7 +610,7 @@
   /* ---------- a batch's own page ---------- */
   const TABS = [{ id: "money", label: "Money", icon: "coins" }, { id: "papers", label: "Papers", icon: "file-text" }, { id: "impact", label: "Impact", icon: "leaf" }, { id: "record", label: "Record", icon: "history" }];
   const Row = ({ k, sub, v, tone, strong }) => <div className={cx("lg-line", strong && "strong")}><span>{k}{sub && <em> {sub}</em>}</span><span className={cx("tnum", tone)}>{v}</span></div>;
-  const NotPosted = ({ h }) => <Locked icon="book-open-check" agent="Impact agent" live={h.phase === "settled" && h.van && h.van.status === "done"} text={`Posts the batch to the ledger once the return window closes on ${fmt.day(D.RETURN_BY)}, and writes the BRSR row with evidence links.`} />;
+  const NotPosted = ({ h }) => <Locked icon="book-open-check" agent="Impact agent" live={h.phase === "settled" && h.van && h.van.status === "done"} text={`Posts the batch to the ledger once the return window closes on ${fmt.day(D.story().returnBy)}, and writes the BRSR row with evidence links.`} />;
 
   function MoneyTab({ c, row, h }) {
     const app = useApp();
@@ -755,7 +755,7 @@
 
   function BatchPage({ me, at, tab: tab0 }) {
     const s = useStore(); const app = useApp(); const phone = app.bp === "phone";
-    const c = LG().caseOf(at);
+    const c = LG().caseOf(at, s);
     const story = !c.history, h = story ? s.hero : CLEARED, row = !story || s.hero.posted ? LG().rowOf(c) : null;
     const [tab, setTab] = useState(tab0 || "money");
     const head = <div className="bhead">
