@@ -50,6 +50,34 @@ async def case(api, who, ref: str = HERO) -> dict:
     return r.json()
 
 
+async def staff_receipt(api, cloud, ref: str, who: dict, *, paid: float, price: float = 8.0) -> str:
+    """the staff sale's consolidated receipt (SC-174): to its link, arrived, and Vision's read of payments that come to
+    `paid` at the staff price, in packs of up to 10; its id"""
+    r = await api.post(
+        f"{WS}/cases/{ref}/staff-sale/receipt", json={"contentType": "image/webp", "bytes": 4}, headers=who
+    )
+    assert r.status_code == 200, r.text
+    rid = r.json()["id"]
+    cloud.storage.objects[("photos-test", f"munchly/{ref}/staff-receipt-{rid}")] = b"webp"
+    r = await api.post(f"{WS}/cases/{ref}/staff-sale/receipt/{rid}", headers=who)
+    assert r.status_code == 200, r.text
+    packs, payments, n = round(paid / price), [], 0
+    while packs > 0:
+        n += 1
+        k = min(10, packs)
+        payments.append({"rrn": f"6275170000{n:02d}", "payer": f"Staff {n}", "at": "02/10 17:04", "amount": k * price})
+        packs -= k
+    read = {"no": "LA/SR/26-27/0002", "date": "03/10/2026", "payments": payments, "total": paid, "confidence": 0.95}
+    await agent(api, f"/cases/{ref}/staff/receipt/read", f"vision-sr-{rid}", "vision", id=rid, read=read)
+    return rid
+
+
+async def staff_sold(api, cloud, ref: str, who: dict, sold: int, *, price: float = 8.0):
+    """the staff sale recorded with a receipt whose payments come to what sold (SC-174)"""
+    rid = await staff_receipt(api, cloud, ref, who, paid=sold * price, price=price)
+    return await api.post(f"{WS}/cases/{ref}/staff-sale", json={"sold": sold, "receipt": rid}, headers=who)
+
+
 async def put_photo(api, cloud, ref: str, who: dict | None = None) -> None:
     who = who or RAKESH
     r = await api.post(f"{WS}/cases/{ref}/photos", json={"contentType": "image/jpeg", "bytes": 120000}, headers=who)
@@ -461,12 +489,14 @@ async def test_the_mango_drinks_journey_end_to_end(api, munchly, cloud, ctx):
     await agent(api, f"/cases/{MANGO}/offer/close", "close-m", "outreach")
     assert (await case(api, PRIYA, MANGO))["journey"]["phase"] == "executing"  # the staff sale is still open
 
-    # the staff sale: Lakshmi Agencies' to record, within the line, once
+    # the staff sale: Lakshmi Agencies' to record, within the line, once, with the consolidated receipt (SC-174)
     bad = await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 120}, headers=RAKESH)
     assert bad.status_code == 403
     bad = await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 151}, headers=LAKSHMI)
     assert bad.status_code == 422 and bad.json()["message"] == "Between 0 and 150 packs."
-    r = await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 120}, headers=LAKSHMI)
+    bad = await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 120}, headers=LAKSHMI)
+    assert bad.status_code == 422 and bad.json()["message"].startswith("Attach the consolidated receipt first")
+    r = await staff_sold(api, cloud, MANGO, LAKSHMI, 120)
     assert r.status_code == 200, r.text
     assert r.json()["case"]["journey"]["phase"] == "dispatched"  # the last of the three: the papers follow
     assert (await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 1}, headers=LAKSHMI)).status_code == 409
@@ -623,7 +653,7 @@ async def test_the_food_bank_issues_its_receipt_as_it_collects(api, munchly, clo
 
     # the pack: the receipt is the paper after the FSSAI checklist, with its own day and its PDF
     await agent(api, f"/cases/{MANGO}/offer/close", "close-m", "outreach")
-    r = await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 150}, headers=LAKSHMI)
+    r = await staff_sold(api, cloud, MANGO, LAKSHMI, 150)
     assert r.json()["case"]["journey"]["phase"] == "dispatched"
     await agent(api, f"/cases/{MANGO}/documents", "paperwork-m", "paperwork")
     ids = [d["id"] for d in (await case(api, PRIYA, MANGO))["docs"]]
@@ -643,7 +673,7 @@ async def test_a_food_banks_own_rule_counts_the_meals(api, munchly, cloud, ctx):
     await _collected(api, ctx, cloud, {"kg": 0.4, "rule": "a meal for every 400 g of food, indicative"})
     assert (await case(api, MEERA, MANGO))["donation"]["receipt"]["meals"] == 31
     await agent(api, f"/cases/{MANGO}/offer/close", "close-m", "outreach")
-    await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 150}, headers=LAKSHMI)
+    await staff_sold(api, cloud, MANGO, LAKSHMI, 150)
     await agent(api, f"/cases/{MANGO}/documents", "paperwork-m", "paperwork")  # no shop ordered: no van round
     # the packs no channel took are destroyed at the godown first (SC-139), then Impact reports
     out = await agent(api, f"/cases/{MANGO}/report", "impact-m", "impact")
@@ -667,7 +697,7 @@ async def test_a_food_bank_can_turn_the_pickup_down(api, munchly, cloud):
     push = (await case(api, PRIYA, MANGO))["push"]["donation.declined"]
     assert push["body"] == "58 packs stay at the godown: Feeding India turned the pickup down."
     await agent(api, f"/cases/{MANGO}/offer/close", "close-m", "outreach")
-    r = await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 150}, headers=LAKSHMI)
+    r = await staff_sold(api, cloud, MANGO, LAKSHMI, 150)
     assert r.json()["case"]["journey"]["phase"] == "dispatched"
     await agent(api, f"/cases/{MANGO}/documents", "paperwork-m", "paperwork")
     c = await case(api, PRIYA, MANGO)

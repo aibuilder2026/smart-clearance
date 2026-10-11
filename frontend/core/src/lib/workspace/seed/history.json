@@ -638,6 +638,17 @@
 							"prefix": "RT/26-27/",
 							"next": 1279,
 							"width": 4
+						},
+						"signatory": {
+							"name": "Rakesh Jaiswal",
+							"title": "Proprietor",
+							"sign": "rakesh",
+							"seal": "rakesh"
+						},
+						"receipts": {
+							"prefix": "RT/SR/26-27/",
+							"next": 2,
+							"width": 4
 						}
 					},
 					"to": {
@@ -735,6 +746,7 @@
 				}
 			],
 			"receipt": null,
+			"staffReceipt": null,
 			"returnBy": "2026-07-25",
 			"expiry": null,
 			"listing": {
@@ -2201,6 +2213,17 @@
 							"prefix": "LA/26-27/",
 							"next": 972,
 							"width": 4
+						},
+						"signatory": {
+							"name": "K. Lakshmi Narayana",
+							"title": "Partner",
+							"sign": "lakshmi",
+							"seal": "lakshmi"
+						},
+						"receipts": {
+							"prefix": "LA/SR/26-27/",
+							"next": 2,
+							"width": 4
 						}
 					},
 					"to": {
@@ -2298,6 +2321,7 @@
 				}
 			],
 			"receipt": null,
+			"staffReceipt": null,
 			"returnBy": "2026-07-26",
 			"expiry": null,
 			"listing": {
@@ -3311,6 +3335,24 @@
 				],
 				"approvedAt": "2026-08-24T11:00",
 				"approvedBy": "priya",
+				"window": {
+					"from": "12:55",
+					"to": "13:20"
+				},
+				"witnesses": [
+					{
+						"name": "Syed Mujeeb",
+						"address": "House 14, Gandhi Nagar, Hyderabad 500080",
+						"proof": "Voter ID, last four 5831",
+						"sign": "dgw-w1"
+					},
+					{
+						"name": "P. Anitha",
+						"address": "Flat 3, Kavadiguda, Hyderabad 500080",
+						"proof": "Voter ID, last four 3390",
+						"sign": "dgw-w2"
+					}
+				],
 				"certificate": "DGW/DC/26-27/0085"
 			},
 			"batch": {
@@ -3862,6 +3904,17 @@
 							"prefix": "LA/26-27/",
 							"next": 972,
 							"width": 4
+						},
+						"signatory": {
+							"name": "K. Lakshmi Narayana",
+							"title": "Partner",
+							"sign": "lakshmi",
+							"seal": "lakshmi"
+						},
+						"receipts": {
+							"prefix": "LA/SR/26-27/",
+							"next": 2,
+							"width": 4
 						}
 					},
 					"to": {
@@ -3980,7 +4033,100 @@
 					"approvedAt": "2026-08-24T11:00",
 					"reversed": 154.38,
 					"date": "2026-08-24",
-					"note": "Destroyed at the municipal landfill, Hyderabad on expiry day, from Begum Bazaar godown. Lakshmi Agencies reverses the input GST on these packs in GSTR-3B Table 4(B)(1) under section 17(5)(h)."
+					"note": "Destroyed at the municipal landfill, Hyderabad on expiry day, from Begum Bazaar godown. Lakshmi Agencies reverses the input GST on these packs in GSTR-3B Table 4(B)(1) under section 17(5)(h).",
+					"reason": "expiry",
+					"methodId": "landfill",
+					"methodName": "Sanitary landfill, CPCB-compliant",
+					"methodHow": "the packs slit open and emptied into the active cell, covered with 30 cm of soil the same day; the plastic packaging segregated for an EPR-registered recycler",
+					"facility": {
+						"name": "Municipal sanitary landfill, cell 7",
+						"address": "Jawaharnagar, Hyderabad 500087, Telangana",
+						"gps": "17.5193° N, 78.5862° E"
+					},
+					"vehicle": "TG-09-ZX-0000",
+					"officer": {
+						"name": "M. Srinivas Reddy",
+						"title": "Site supervisor",
+						"sign": "dgw"
+					},
+					"seal": "dgw",
+					"witnesses": [
+						{
+							"name": "Syed Mujeeb",
+							"address": "House 14, Gandhi Nagar, Hyderabad 500080",
+							"proof": "Voter ID, last four 5831",
+							"sign": "dgw-w1"
+						},
+						{
+							"name": "P. Anitha",
+							"address": "Flat 3, Kavadiguda, Hyderabad 500080",
+							"proof": "Voter ID, last four 3390",
+							"sign": "dgw-w2"
+						}
+					],
+					"window": {
+						"from": "12:55",
+						"to": "13:20"
+					},
+					"destroyedOn": "2026-08-23",
+					"photos": {
+						"before": {
+							"name": "MF-2406-107-before.webp",
+							"at": "2026-08-23T11:40"
+						},
+						"after": {
+							"name": "MF-2406-107-after.webp",
+							"at": "2026-08-23T13:20"
+						}
+					},
+					"handedBy": {
+						"name": "K. Lakshmi Narayana",
+						"title": "Partner",
+						"sign": "lakshmi"
+					},
+					"goods": "Munchly Masala Oats 200 g",
+					"mfg": "2025-11-26",
+					"mrp": 65,
+					"perCarton": 20,
+					"log": [
+						{
+							"at": "2026-08-23T11:40",
+							"step": "Photographed at the godown",
+							"detail": "65 packs at Begum Bazaar godown, the carton's batch label in view",
+							"photo": "before"
+						},
+						{
+							"at": "2026-08-23T12:00",
+							"step": "Loaded",
+							"detail": "On Deccan Green Waste Management's covered vehicle TG-09-ZX-0000, sealed with seal SL-0085"
+						},
+						{
+							"at": "2026-08-23T12:40",
+							"step": "Received and weighed",
+							"detail": "14.30 kg on weighbridge slip WB/26-27/0085, at the facility's gate"
+						},
+						{
+							"at": "2026-08-23T12:55",
+							"step": "Slit open and emptied",
+							"detail": "Into the active cell, the plastic packaging set aside"
+						},
+						{
+							"at": "2026-08-23T13:10",
+							"step": "Buried and covered",
+							"detail": "Covered with 30 cm of soil"
+						},
+						{
+							"at": "2026-08-23T13:20",
+							"step": "Photographed with the slate",
+							"detail": "Slate: MF-2406-107 · 65 packs · 23/08/2026",
+							"photo": "after"
+						},
+						{
+							"at": "2026-08-23T13:30",
+							"step": "Packaging sent on",
+							"detail": "0.33 kg of plastic film to an EPR-registered recycler"
+						}
+					]
 				},
 				{
 					"id": "expiry",
@@ -4008,6 +4154,7 @@
 				}
 			],
 			"receipt": null,
+			"staffReceipt": null,
 			"returnBy": "2026-08-03",
 			"expiry": {
 				"policy": "godown",
@@ -4913,6 +5060,17 @@
 							"prefix": "RT/26-27/",
 							"next": 1279,
 							"width": 4
+						},
+						"signatory": {
+							"name": "Rakesh Jaiswal",
+							"title": "Proprietor",
+							"sign": "rakesh",
+							"seal": "rakesh"
+						},
+						"receipts": {
+							"prefix": "RT/SR/26-27/",
+							"next": 2,
+							"width": 4
 						}
 					},
 					"to": {
@@ -5010,6 +5168,7 @@
 				}
 			],
 			"receipt": null,
+			"staffReceipt": null,
 			"returnBy": "2026-08-15",
 			"expiry": null,
 			"listing": {
@@ -6104,6 +6263,17 @@
 					"date": "2026-07-31"
 				},
 				{
+					"id": "staff",
+					"type": "Staff sale receipt",
+					"owner": "Lakshmi Agencies",
+					"no": "LA/SR/26-27/0001",
+					"status": "generated",
+					"amount": 3300,
+					"units": 150,
+					"payments": 24,
+					"date": "2026-07-30"
+				},
+				{
 					"id": "itc",
 					"type": "GST ITC memo",
 					"owner": "Munchly Foods",
@@ -6187,6 +6357,234 @@
 				"from": "Begum Bazaar godown, Hyderabad",
 				"spot": "the Charminar hunger spot",
 				"note": "Issued in the app by Feeding India as the packs were collected: the donor's evidence for BRSR Principle 6, not a tax certificate."
+			},
+			"staffReceipt": {
+				"no": "LA/SR/26-27/0001",
+				"date": "2026-07-30",
+				"payments": [
+					{
+						"n": 1,
+						"who": "M. Anil",
+						"vpa": "manil••••@exampleupi",
+						"at": "2026-07-28T12:30",
+						"rrn": "620912270932",
+						"units": 8,
+						"amount": 176
+					},
+					{
+						"n": 2,
+						"who": "B. Lavanya",
+						"vpa": "blava••••@exampleupi",
+						"at": "2026-07-28T13:17",
+						"rrn": "620913656741",
+						"units": 5,
+						"amount": 110
+					},
+					{
+						"n": 3,
+						"who": "Mohd Irfan",
+						"vpa": "mohdi••••@exampleupi",
+						"at": "2026-07-28T14:26",
+						"rrn": "620914987921",
+						"units": 10,
+						"amount": 220
+					},
+					{
+						"n": 4,
+						"who": "J. Suresh",
+						"vpa": "jsure••••@exampleupi",
+						"at": "2026-07-28T15:47",
+						"rrn": "620915746192",
+						"units": 3,
+						"amount": 66
+					},
+					{
+						"n": 5,
+						"who": "Shaik Imran",
+						"vpa": "shaik••••@exampleupi",
+						"at": "2026-07-28T16:52",
+						"rrn": "620916441344",
+						"units": 8,
+						"amount": 176
+					},
+					{
+						"n": 6,
+						"who": "Syed Ameer",
+						"vpa": "syeda••••@exampleupi",
+						"at": "2026-07-28T17:51",
+						"rrn": "620917726603",
+						"units": 3,
+						"amount": 66
+					},
+					{
+						"n": 7,
+						"who": "Md Saleem",
+						"vpa": "mdsal••••@exampleupi",
+						"at": "2026-07-28T19:13",
+						"rrn": "620919601332",
+						"units": 8,
+						"amount": 176
+					},
+					{
+						"n": 8,
+						"who": "B. Yadagiri",
+						"vpa": "byada••••@exampleupi",
+						"at": "2026-07-29T09:28",
+						"rrn": "621009525149",
+						"units": 4,
+						"amount": 88
+					},
+					{
+						"n": 9,
+						"who": "S. Haritha",
+						"vpa": "shari••••@exampleupi",
+						"at": "2026-07-29T10:35",
+						"rrn": "621010161114",
+						"units": 3,
+						"amount": 66
+					},
+					{
+						"n": 10,
+						"who": "P. Swathi",
+						"vpa": "pswat••••@exampleupi",
+						"at": "2026-07-29T12:09",
+						"rrn": "621012788896",
+						"units": 7,
+						"amount": 154
+					},
+					{
+						"n": 11,
+						"who": "G. Srinivas",
+						"vpa": "gsrin••••@exampleupi",
+						"at": "2026-07-29T12:52",
+						"rrn": "621012869223",
+						"units": 5,
+						"amount": 110
+					},
+					{
+						"n": 12,
+						"who": "K. Naresh",
+						"vpa": "knare••••@exampleupi",
+						"at": "2026-07-29T13:36",
+						"rrn": "621013986061",
+						"units": 10,
+						"amount": 220
+					},
+					{
+						"n": 13,
+						"who": "V. Sravani",
+						"vpa": "vsrav••••@exampleupi",
+						"at": "2026-07-29T14:43",
+						"rrn": "621014130275",
+						"units": 7,
+						"amount": 154
+					},
+					{
+						"n": 14,
+						"who": "P. Nagaraju",
+						"vpa": "pnaga••••@exampleupi",
+						"at": "2026-07-29T16:16",
+						"rrn": "621016205504",
+						"units": 2,
+						"amount": 44
+					},
+					{
+						"n": 15,
+						"who": "S. Ravi Kumar",
+						"vpa": "sravi••••@exampleupi",
+						"at": "2026-07-29T16:59",
+						"rrn": "621016421161",
+						"units": 2,
+						"amount": 44
+					},
+					{
+						"n": 16,
+						"who": "N. Mahesh",
+						"vpa": "nmahe••••@exampleupi",
+						"at": "2026-07-29T18:30",
+						"rrn": "621018076353",
+						"units": 7,
+						"amount": 154
+					},
+					{
+						"n": 17,
+						"who": "R. Kavya",
+						"vpa": "rkavy••••@exampleupi",
+						"at": "2026-07-29T19:17",
+						"rrn": "621019819553",
+						"units": 3,
+						"amount": 66
+					},
+					{
+						"n": 18,
+						"who": "Fatima Begum",
+						"vpa": "fatim••••@exampleupi",
+						"at": "2026-07-30T09:57",
+						"rrn": "621109979606",
+						"units": 5,
+						"amount": 110
+					},
+					{
+						"n": 19,
+						"who": "T. Rajesh",
+						"vpa": "traje••••@exampleupi",
+						"at": "2026-07-30T11:23",
+						"rrn": "621111691585",
+						"units": 6,
+						"amount": 132
+					},
+					{
+						"n": 20,
+						"who": "A. Prakash",
+						"vpa": "aprak••••@exampleupi",
+						"at": "2026-07-30T11:45",
+						"rrn": "621111473613",
+						"units": 9,
+						"amount": 198
+					},
+					{
+						"n": 21,
+						"who": "Ayesha Sultana",
+						"vpa": "ayesh••••@exampleupi",
+						"at": "2026-07-30T13:09",
+						"rrn": "621113335596",
+						"units": 7,
+						"amount": 154
+					},
+					{
+						"n": 22,
+						"who": "Ch. Venkatesh",
+						"vpa": "chven••••@exampleupi",
+						"at": "2026-07-30T14:32",
+						"rrn": "621114605288",
+						"units": 9,
+						"amount": 198
+					},
+					{
+						"n": 23,
+						"who": "K. Divya",
+						"vpa": "kdivy••••@exampleupi",
+						"at": "2026-07-30T15:34",
+						"rrn": "621115128789",
+						"units": 6,
+						"amount": 132
+					},
+					{
+						"n": 24,
+						"who": "D. Ramya",
+						"vpa": "dramy••••@exampleupi",
+						"at": "2026-07-30T16:22",
+						"rrn": "621116528950",
+						"units": 13,
+						"amount": 286
+					}
+				],
+				"units": 150,
+				"paid": 3300,
+				"from": "2026-07-28T12:30",
+				"to": "2026-07-30T16:22",
+				"file": "receipts/MF-2406-109.webp",
+				"read": true
 			},
 			"returnBy": "2026-08-03",
 			"expiry": null,
@@ -6801,6 +7199,17 @@
 					"series": {
 						"prefix": "LA/26-27/",
 						"next": 972,
+						"width": 4
+					},
+					"signatory": {
+						"name": "K. Lakshmi Narayana",
+						"title": "Partner",
+						"sign": "lakshmi",
+						"seal": "lakshmi"
+					},
+					"receipts": {
+						"prefix": "LA/SR/26-27/",
+						"next": 2,
 						"width": 4
 					}
 				},
@@ -7502,6 +7911,17 @@
 							"prefix": "RT/26-27/",
 							"next": 1279,
 							"width": 4
+						},
+						"signatory": {
+							"name": "Rakesh Jaiswal",
+							"title": "Proprietor",
+							"sign": "rakesh",
+							"seal": "rakesh"
+						},
+						"receipts": {
+							"prefix": "RT/SR/26-27/",
+							"next": 2,
+							"width": 4
 						}
 					},
 					"to": {
@@ -7599,6 +8019,7 @@
 				}
 			],
 			"receipt": null,
+			"staffReceipt": null,
 			"returnBy": "2026-09-01",
 			"expiry": null,
 			"listing": {
@@ -8036,6 +8457,24 @@
 				],
 				"approvedAt": "2026-09-16T11:00",
 				"approvedBy": "priya",
+				"window": {
+					"from": "12:55",
+					"to": "13:20"
+				},
+				"witnesses": [
+					{
+						"name": "Pradeep Meshram",
+						"address": "Plot 22, Wathoda Layout, Nagpur 440035",
+						"proof": "Voter ID, last four 4417",
+						"sign": "oce-w1"
+					},
+					{
+						"name": "Asha Kale",
+						"address": "House 9, Pardi Naka, Nagpur 440035",
+						"proof": "Voter ID, last four 0932",
+						"sign": "oce-w2"
+					}
+				],
 				"certificate": "OCE/DC/26-27/0217"
 			},
 			"batch": {
@@ -8587,6 +9026,17 @@
 							"prefix": "RT/26-27/",
 							"next": 1279,
 							"width": 4
+						},
+						"signatory": {
+							"name": "Rakesh Jaiswal",
+							"title": "Proprietor",
+							"sign": "rakesh",
+							"seal": "rakesh"
+						},
+						"receipts": {
+							"prefix": "RT/SR/26-27/",
+							"next": 2,
+							"width": 4
 						}
 					},
 					"to": {
@@ -8705,7 +9155,100 @@
 					"approvedAt": "2026-09-16T11:00",
 					"reversed": 133.4,
 					"date": "2026-09-16",
-					"note": "Destroyed at the municipal landfill, Nagpur on expiry day, from Kalamna Market godown. Rakesh Traders reverses the input GST on these packs in GSTR-3B Table 4(B)(1) under section 17(5)(h)."
+					"note": "Destroyed at the municipal landfill, Nagpur on expiry day, from Kalamna Market godown. Rakesh Traders reverses the input GST on these packs in GSTR-3B Table 4(B)(1) under section 17(5)(h).",
+					"reason": "expiry",
+					"methodId": "landfill",
+					"methodName": "Sanitary landfill, CPCB-compliant",
+					"methodHow": "the packs slit open and emptied into the active cell, covered with 30 cm of soil the same day; the plastic packaging segregated for an EPR-registered recycler",
+					"facility": {
+						"name": "Municipal sanitary landfill, cell 4",
+						"address": "Pardi Road, Bhandewadi, Nagpur 440035, Maharashtra",
+						"gps": "21.1467° N, 79.1563° E"
+					},
+					"vehicle": "MH-31-ZX-0000",
+					"officer": {
+						"name": "Sachin Bhoyar",
+						"title": "Site supervisor",
+						"sign": "oce"
+					},
+					"seal": "oce",
+					"witnesses": [
+						{
+							"name": "Pradeep Meshram",
+							"address": "Plot 22, Wathoda Layout, Nagpur 440035",
+							"proof": "Voter ID, last four 4417",
+							"sign": "oce-w1"
+						},
+						{
+							"name": "Asha Kale",
+							"address": "House 9, Pardi Naka, Nagpur 440035",
+							"proof": "Voter ID, last four 0932",
+							"sign": "oce-w2"
+						}
+					],
+					"window": {
+						"from": "12:55",
+						"to": "13:20"
+					},
+					"destroyedOn": "2026-09-15",
+					"photos": {
+						"before": {
+							"name": "MF-2407-111-before.webp",
+							"at": "2026-09-15T11:40"
+						},
+						"after": {
+							"name": "MF-2407-111-after.webp",
+							"at": "2026-09-15T13:20"
+						}
+					},
+					"handedBy": {
+						"name": "Rakesh Jaiswal",
+						"title": "Proprietor",
+						"sign": "rakesh"
+					},
+					"goods": "Munchly Mango Drink 200 ml",
+					"mfg": "2026-03-19",
+					"mrp": 20,
+					"perCarton": 27,
+					"log": [
+						{
+							"at": "2026-09-15T11:40",
+							"step": "Photographed at the godown",
+							"detail": "184 packs at Kalamna Market godown, the carton's batch label in view",
+							"photo": "before"
+						},
+						{
+							"at": "2026-09-15T12:00",
+							"step": "Loaded",
+							"detail": "On Orange City Enviro Services' covered vehicle MH-31-ZX-0000, sealed with seal SL-0217"
+						},
+						{
+							"at": "2026-09-15T12:40",
+							"step": "Received and weighed",
+							"detail": "39.56 kg on weighbridge slip WB/26-27/0217, at the facility's gate"
+						},
+						{
+							"at": "2026-09-15T12:55",
+							"step": "Slit open and emptied",
+							"detail": "Into the active cell, the plastic packaging set aside"
+						},
+						{
+							"at": "2026-09-15T13:10",
+							"step": "Buried and covered",
+							"detail": "Covered with 30 cm of soil"
+						},
+						{
+							"at": "2026-09-15T13:20",
+							"step": "Photographed with the slate",
+							"detail": "Slate: MF-2407-111 · 184 packs · 15/09/2026",
+							"photo": "after"
+						},
+						{
+							"at": "2026-09-15T13:30",
+							"step": "Packaging sent on",
+							"detail": "0.37 kg of plastic film to an EPR-registered recycler"
+						}
+					]
 				},
 				{
 					"id": "expiry",
@@ -8733,6 +9276,7 @@
 				}
 			],
 			"receipt": null,
+			"staffReceipt": null,
 			"returnBy": "2026-08-26",
 			"expiry": {
 				"policy": "godown",
@@ -10438,6 +10982,17 @@
 							"prefix": "LA/26-27/",
 							"next": 972,
 							"width": 4
+						},
+						"signatory": {
+							"name": "K. Lakshmi Narayana",
+							"title": "Partner",
+							"sign": "lakshmi",
+							"seal": "lakshmi"
+						},
+						"receipts": {
+							"prefix": "LA/SR/26-27/",
+							"next": 2,
+							"width": 4
 						}
 					},
 					"to": {
@@ -10535,6 +11090,7 @@
 				}
 			],
 			"receipt": null,
+			"staffReceipt": null,
 			"returnBy": "2026-09-10",
 			"expiry": null,
 			"listing": {
@@ -11393,6 +11949,17 @@
 							"prefix": "LA/26-27/",
 							"next": 972,
 							"width": 4
+						},
+						"signatory": {
+							"name": "K. Lakshmi Narayana",
+							"title": "Partner",
+							"sign": "lakshmi",
+							"seal": "lakshmi"
+						},
+						"receipts": {
+							"prefix": "LA/SR/26-27/",
+							"next": 2,
+							"width": 4
 						}
 					},
 					"to": {
@@ -11490,6 +12057,7 @@
 				}
 			],
 			"receipt": null,
+			"staffReceipt": null,
 			"returnBy": "2026-09-07",
 			"expiry": null,
 			"listing": {
@@ -12936,6 +13504,17 @@
 					"date": "2026-08-27"
 				},
 				{
+					"id": "staff",
+					"type": "Staff sale receipt",
+					"owner": "Rakesh Traders",
+					"no": "RT/SR/26-27/0001",
+					"status": "generated",
+					"amount": 1300,
+					"units": 50,
+					"payments": 8,
+					"date": "2026-08-26"
+				},
+				{
 					"id": "itc",
 					"type": "GST ITC memo",
 					"owner": "Munchly Foods",
@@ -13019,6 +13598,90 @@
 				"from": "Kalamna Market godown, Nagpur",
 				"spot": "Feeding India's serving point in Nagpur",
 				"note": "Issued in the app by Feeding India as the packs were collected: the donor's evidence for BRSR Principle 6, not a tax certificate."
+			},
+			"staffReceipt": {
+				"no": "RT/SR/26-27/0001",
+				"date": "2026-08-26",
+				"payments": [
+					{
+						"n": 1,
+						"who": "Komal Gedam",
+						"vpa": "komal••••@exampleupi",
+						"at": "2026-08-24T13:11",
+						"rrn": "623613515697",
+						"units": 6,
+						"amount": 156
+					},
+					{
+						"n": 2,
+						"who": "Vaishali Pande",
+						"vpa": "vaish••••@exampleupi",
+						"at": "2026-08-24T17:43",
+						"rrn": "623617695196",
+						"units": 3,
+						"amount": 78
+					},
+					{
+						"n": 3,
+						"who": "Ganesh Barde",
+						"vpa": "ganes••••@exampleupi",
+						"at": "2026-08-25T09:32",
+						"rrn": "623709686558",
+						"units": 11,
+						"amount": 286
+					},
+					{
+						"n": 4,
+						"who": "Ravi Meshram",
+						"vpa": "ravim••••@exampleupi",
+						"at": "2026-08-25T13:03",
+						"rrn": "623713093684",
+						"units": 8,
+						"amount": 208
+					},
+					{
+						"n": 5,
+						"who": "Sneha Bawane",
+						"vpa": "sneha••••@exampleupi",
+						"at": "2026-08-25T15:52",
+						"rrn": "623715291292",
+						"units": 4,
+						"amount": 104
+					},
+					{
+						"n": 6,
+						"who": "Dinesh Kale",
+						"vpa": "dines••••@exampleupi",
+						"at": "2026-08-25T18:25",
+						"rrn": "623718044323",
+						"units": 9,
+						"amount": 234
+					},
+					{
+						"n": 7,
+						"who": "Priti Ingle",
+						"vpa": "priti••••@exampleupi",
+						"at": "2026-08-26T12:52",
+						"rrn": "623812446103",
+						"units": 5,
+						"amount": 130
+					},
+					{
+						"n": 8,
+						"who": "Prakash Lanjewar",
+						"vpa": "praka••••@exampleupi",
+						"at": "2026-08-26T15:45",
+						"rrn": "623815569701",
+						"units": 4,
+						"amount": 104
+					}
+				],
+				"units": 50,
+				"paid": 1300,
+				"from": "2026-08-24T13:11",
+				"to": "2026-08-26T15:45",
+				"file": "receipts/MF-2407-114.webp",
+				"read": true
 			},
 			"returnBy": "2026-08-26",
 			"expiry": null,
@@ -13569,6 +14232,17 @@
 					"series": {
 						"prefix": "RT/26-27/",
 						"next": 1279,
+						"width": 4
+					},
+					"signatory": {
+						"name": "Rakesh Jaiswal",
+						"title": "Proprietor",
+						"sign": "rakesh",
+						"seal": "rakesh"
+					},
+					"receipts": {
+						"prefix": "RT/SR/26-27/",
+						"next": 2,
 						"width": 4
 					}
 				},
@@ -14270,6 +14944,17 @@
 							"prefix": "LA/26-27/",
 							"next": 972,
 							"width": 4
+						},
+						"signatory": {
+							"name": "K. Lakshmi Narayana",
+							"title": "Partner",
+							"sign": "lakshmi",
+							"seal": "lakshmi"
+						},
+						"receipts": {
+							"prefix": "LA/SR/26-27/",
+							"next": 2,
+							"width": 4
 						}
 					},
 					"to": {
@@ -14367,6 +15052,7 @@
 				}
 			],
 			"receipt": null,
+			"staffReceipt": null,
 			"returnBy": "2026-09-08",
 			"expiry": null,
 			"listing": {
@@ -15220,6 +15906,24 @@
 				],
 				"approvedAt": "2026-09-28T11:00",
 				"approvedBy": "priya",
+				"window": {
+					"from": "12:55",
+					"to": "13:20"
+				},
+				"witnesses": [
+					{
+						"name": "Pradeep Meshram",
+						"address": "Plot 22, Wathoda Layout, Nagpur 440035",
+						"proof": "Voter ID, last four 4417",
+						"sign": "oce-w1"
+					},
+					{
+						"name": "Asha Kale",
+						"address": "House 9, Pardi Naka, Nagpur 440035",
+						"proof": "Voter ID, last four 0932",
+						"sign": "oce-w2"
+					}
+				],
 				"certificate": "OCE/DC/26-27/0218"
 			},
 			"batch": {
@@ -15771,6 +16475,17 @@
 							"prefix": "RT/26-27/",
 							"next": 1279,
 							"width": 4
+						},
+						"signatory": {
+							"name": "Rakesh Jaiswal",
+							"title": "Proprietor",
+							"sign": "rakesh",
+							"seal": "rakesh"
+						},
+						"receipts": {
+							"prefix": "RT/SR/26-27/",
+							"next": 2,
+							"width": 4
 						}
 					},
 					"to": {
@@ -15889,7 +16604,100 @@
 					"approvedAt": "2026-09-28T11:00",
 					"reversed": 118.8,
 					"date": "2026-09-28",
-					"note": "Destroyed at the municipal landfill, Nagpur on expiry day, from Kalamna Market godown. Rakesh Traders reverses the input GST on these packs in GSTR-3B Table 4(B)(1) under section 17(5)(h)."
+					"note": "Destroyed at the municipal landfill, Nagpur on expiry day, from Kalamna Market godown. Rakesh Traders reverses the input GST on these packs in GSTR-3B Table 4(B)(1) under section 17(5)(h).",
+					"reason": "expiry",
+					"methodId": "landfill",
+					"methodName": "Sanitary landfill, CPCB-compliant",
+					"methodHow": "the packs slit open and emptied into the active cell, covered with 30 cm of soil the same day; the plastic packaging segregated for an EPR-registered recycler",
+					"facility": {
+						"name": "Municipal sanitary landfill, cell 4",
+						"address": "Pardi Road, Bhandewadi, Nagpur 440035, Maharashtra",
+						"gps": "21.1467° N, 79.1563° E"
+					},
+					"vehicle": "MH-31-ZX-0000",
+					"officer": {
+						"name": "Sachin Bhoyar",
+						"title": "Site supervisor",
+						"sign": "oce"
+					},
+					"seal": "oce",
+					"witnesses": [
+						{
+							"name": "Pradeep Meshram",
+							"address": "Plot 22, Wathoda Layout, Nagpur 440035",
+							"proof": "Voter ID, last four 4417",
+							"sign": "oce-w1"
+						},
+						{
+							"name": "Asha Kale",
+							"address": "House 9, Pardi Naka, Nagpur 440035",
+							"proof": "Voter ID, last four 0932",
+							"sign": "oce-w2"
+						}
+					],
+					"window": {
+						"from": "12:55",
+						"to": "13:20"
+					},
+					"destroyedOn": "2026-09-27",
+					"photos": {
+						"before": {
+							"name": "MF-2407-116-before.webp",
+							"at": "2026-09-27T11:40"
+						},
+						"after": {
+							"name": "MF-2407-116-after.webp",
+							"at": "2026-09-27T13:20"
+						}
+					},
+					"handedBy": {
+						"name": "Rakesh Jaiswal",
+						"title": "Proprietor",
+						"sign": "rakesh"
+					},
+					"goods": "Munchly Peanut Chikki 100 g",
+					"mfg": "2026-03-31",
+					"mrp": 25,
+					"perCarton": 30,
+					"log": [
+						{
+							"at": "2026-09-27T11:40",
+							"step": "Photographed at the godown",
+							"detail": "132 packs at Kalamna Market godown, the carton's batch label in view",
+							"photo": "before"
+						},
+						{
+							"at": "2026-09-27T12:00",
+							"step": "Loaded",
+							"detail": "On Orange City Enviro Services' covered vehicle MH-31-ZX-0000, sealed with seal SL-0218"
+						},
+						{
+							"at": "2026-09-27T12:40",
+							"step": "Received and weighed",
+							"detail": "14.52 kg on weighbridge slip WB/26-27/0218, at the facility's gate"
+						},
+						{
+							"at": "2026-09-27T12:55",
+							"step": "Slit open and emptied",
+							"detail": "Into the active cell, the plastic packaging set aside"
+						},
+						{
+							"at": "2026-09-27T13:10",
+							"step": "Buried and covered",
+							"detail": "Covered with 30 cm of soil"
+						},
+						{
+							"at": "2026-09-27T13:20",
+							"step": "Photographed with the slate",
+							"detail": "Slate: MF-2407-116 · 132 packs · 27/09/2026",
+							"photo": "after"
+						},
+						{
+							"at": "2026-09-27T13:30",
+							"step": "Packaging sent on",
+							"detail": "0.53 kg of plastic film to an EPR-registered recycler"
+						}
+					]
 				},
 				{
 					"id": "expiry",
@@ -15917,6 +16725,7 @@
 				}
 			],
 			"receipt": null,
+			"staffReceipt": null,
 			"returnBy": "2026-09-07",
 			"expiry": {
 				"policy": "godown",

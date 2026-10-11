@@ -161,6 +161,9 @@ def test_each_paper_lays_out_backend_apis_figures():
     ):
         assert text in page, text
     assert "Ack No." not in page  # a draft: the IRN and its acknowledgement come with the issue
+    # nor is it signed (SC-174): he signs it as he issues it
+    assert "marks/signatures/" not in page and "A draft: Rakesh Traders signs it as it is issued" in page
+    assert "Computer Generated" not in page
     doc, c = paper("support")
     page = pdf.html(doc, c)
     for text in (
@@ -173,8 +176,15 @@ def test_each_paper_lays_out_backend_apis_figures():
         "section 34",
     ):
         assert text in page, text
+    # signed for Munchly beside its round seal (SC-174)
+    for text in ("marks/signatures/munchly.webp", "marks/seals/munchly.webp", "Vinod Patwardhan, Head of Accounts"):
+        assert text in page, text
+    assert "Computer Generated" not in page
     doc, c = paper("itc")
-    assert "₹1,224.00" in pdf.html(doc, c) and "17(5)(h)" in pdf.html(doc, c)
+    page = pdf.html(doc, c)
+    assert "₹1,224.00" in page and "17(5)(h)" in page
+    assert "marks/signatures/munchly.webp" in page and "for <b>Munchly Foods Ltd</b>" in page
+    assert "and signed by its signatory" in page
     assert [d["id"] for d in STORY["docs"] if pdf.needs_pdf(d)] == ["invoice", "support", "itc"]
     assert HERO in page
 
@@ -193,8 +203,45 @@ def test_an_issued_invoice_carries_its_e_invoice():
         "05/10/2026 11:00",
         "<svg",
         'class="qr"',
+        # signed by his signatory over his rubber stamp (SC-174)
+        'class="ink rect"',
+        "marks/signatures/rakesh.webp",
+        "marks/seals/rakesh.webp",
+        "Rakesh Jaiswal, Proprietor",
     ):
         assert text in page, text
+    assert "A draft" not in page and "Computer Generated" not in page
+
+
+def test_the_signatures_are_on_file():
+    """SC-174: each signatory's specimen and each firm's stamp or seal, as the seed writes them into templates/marks"""
+    assert pdf.mark("signatures", "rakesh") == "marks/signatures/rakesh.webp"
+    assert pdf.mark("seals", "oce") == "marks/seals/oce.webp"
+    for kind, ident in (("signatures", "nobody"), ("signatures", "../seals/oce"), ("seals", None), ("other", "oce")):
+        assert pdf.mark(kind, ident) is None, (kind, ident)
+    for who in [*STORY["distributors"].values(), STORY["client"]]:
+        sig = who["signatory"]
+        assert pdf.mark("signatures", sig["sign"]) and pdf.mark("seals", sig["seal"]), who.get("name")
+
+
+def test_a_signatory_with_no_specimen_signs_on_the_original():
+    from sc_agents.agents.common import cut_case
+
+    doc = {**next(d for d in STORY["docs"] if d["id"] == "invoice"), "date": "2026-10-05"}
+    c = cut_case(case(phase="settled", photo="verified", docs=STORY["docs"], issued="2026-10-05T11:00:00+05:30"))
+    c["distributor"]["signatory"] = {**c["distributor"]["signatory"], "sign": "nobody"}
+    page = pdf.html(doc, c)
+    assert "signed on the original" in page and "marks/signatures/" not in page
+    assert "Rakesh Jaiswal, Proprietor" in page
+
+
+def test_the_fssai_checklist_is_signed_for_the_client():
+    from sc_agents.agents.common import cut_case
+
+    c = cut_case(case(phase="settled", photo="verified", which="mango"))
+    doc = {"id": "fssai", "type": "FSSAI surplus-food checklist", "owner": "Munchly Foods", "no": "58 packs"}
+    page = pdf.html({**doc, "status": "generated", "amount": 0}, c, today="2026-10-06")
+    assert "marks/signatures/munchly.webp" in page and "Vinod Patwardhan, Head of Accounts" in page
 
 
 def test_each_food_bank_issues_its_own_paper():
@@ -252,6 +299,22 @@ def test_weasyprint_renders_a_paper():
     doc, c = paper("invoice")
     data = pdf.render(pdf.html(doc, c, today="2026-10-04"))
     assert data.startswith(b"%PDF") and len(data) > 2000
+
+
+@pytest.mark.skipif(not pdf.available(), reason="WeasyPrint's system libraries (Pango) are not installed")
+def test_weasyprint_draws_the_signature_and_stamp_on_one_page():
+    """SC-174: the WebP signature and stamp are drawn into the PDF, and the issued invoice still fits on one page"""
+    from weasyprint import HTML
+
+    from sc_agents.agents.common import cut_case
+
+    doc = {**next(d for d in STORY["docs"] if d["id"] == "invoice"), "date": "2026-10-05"}
+    c = cut_case(case(phase="settled", photo="verified", docs=STORY["docs"], issued="2026-10-05T11:00:00+05:30"))
+    rendered = HTML(string=pdf.html(doc, c), base_url=str(pdf.TEMPLATES)).render()
+    assert len(rendered.pages) == 1
+    data = rendered.write_pdf(uncompressed_pdf=True)
+    # the QR code is drawn as a path; the signature and the stamp are images, each with its transparency
+    assert data.count(b"/Subtype /Image") >= 2
 
 
 def test_journey_days_are_indias():

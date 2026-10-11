@@ -1749,7 +1749,7 @@
 				"person": "lakshmi-owner",
 				"at": "Day 1",
 				"min": 1200,
-				"text": "Recorded the staff sale at Begum Bazaar godown: 150 of 150 packs sold at ₹8."
+				"text": "Recorded the staff sale at Begum Bazaar godown: 150 of 150 packs sold at ₹8, with the consolidated receipt LA/SR/26-27/0002 for 18 UPI payments."
 			},
 			{
 				"key": "collect",
@@ -2324,6 +2324,17 @@
 					"van": 686,
 					"fee": 0,
 					"note": "Munchly Foods to Lakshmi Agencies: a financial credit note, no GST adjustment."
+				},
+				{
+					"id": "staff",
+					"type": "Staff sale receipt",
+					"owner": "Lakshmi Agencies",
+					"no": "LA/SR/26-27/0002",
+					"status": "generated",
+					"amount": 1200,
+					"units": 150,
+					"payments": 18,
+					"date": "2026-10-03"
 				},
 				{
 					"id": "itc",
@@ -3670,6 +3681,17 @@
 						"prefix": "RT/26-27/",
 						"next": 1279,
 						"width": 4
+					},
+					"signatory": {
+						"name": "Rakesh Jaiswal",
+						"title": "Proprietor",
+						"sign": "rakesh",
+						"seal": "rakesh"
+					},
+					"receipts": {
+						"prefix": "RT/SR/26-27/",
+						"next": 2,
+						"width": 4
 					}
 				},
 				"to": {
@@ -3803,6 +3825,17 @@
 				"series": {
 					"prefix": "RT/26-27/",
 					"next": 1279,
+					"width": 4
+				},
+				"signatory": {
+					"name": "Rakesh Jaiswal",
+					"title": "Proprietor",
+					"sign": "rakesh",
+					"seal": "rakesh"
+				},
+				"receipts": {
+					"prefix": "RT/SR/26-27/",
+					"next": 2,
 					"width": 4
 				}
 			},
@@ -4362,7 +4395,34 @@
 				"next": 219,
 				"width": 4
 			},
-			"site": "the municipal landfill, Nagpur"
+			"site": "the municipal landfill, Nagpur",
+			"method": "landfill",
+			"facility": {
+				"name": "Municipal sanitary landfill, cell 4",
+				"address": "Pardi Road, Bhandewadi, Nagpur 440035, Maharashtra",
+				"gps": "21.1467° N, 79.1563° E"
+			},
+			"vehicle": "MH-31-ZX-0000",
+			"officer": {
+				"name": "Sachin Bhoyar",
+				"title": "Site supervisor",
+				"sign": "oce"
+			},
+			"seal": "oce",
+			"witnesses": [
+				{
+					"name": "Pradeep Meshram",
+					"address": "Plot 22, Wathoda Layout, Nagpur 440035",
+					"proof": "Voter ID, last four 4417",
+					"sign": "oce-w1"
+				},
+				{
+					"name": "Asha Kale",
+					"address": "House 9, Pardi Naka, Nagpur 440035",
+					"proof": "Voter ID, last four 0932",
+					"sign": "oce-w2"
+				}
+			]
 		},
 		"certificate": "OCE/DC/26-27/0219",
 		"expiryNo": "CN/0118",
@@ -4822,6 +4882,17 @@
 							"prefix": "RT/26-27/",
 							"next": 1279,
 							"width": 4
+						},
+						"signatory": {
+							"name": "Rakesh Jaiswal",
+							"title": "Proprietor",
+							"sign": "rakesh",
+							"seal": "rakesh"
+						},
+						"receipts": {
+							"prefix": "RT/SR/26-27/",
+							"next": 2,
+							"width": 4
 						}
 					},
 					"to": {
@@ -4936,7 +5007,100 @@
 					"approvedAt": "2026-11-19T11:00",
 					"reversed": 158.4,
 					"date": "2026-11-19",
-					"note": "Destroyed at the municipal landfill, Nagpur on expiry day, from Kalamna Market godown. Rakesh Traders reverses the input GST on these packs in GSTR-3B Table 4(B)(1) under section 17(5)(h)."
+					"note": "Destroyed at the municipal landfill, Nagpur on expiry day, from Kalamna Market godown. Rakesh Traders reverses the input GST on these packs in GSTR-3B Table 4(B)(1) under section 17(5)(h).",
+					"reason": "expiry",
+					"methodId": "landfill",
+					"methodName": "Sanitary landfill, CPCB-compliant",
+					"methodHow": "the packs slit open and emptied into the active cell, covered with 30 cm of soil the same day; the plastic packaging segregated for an EPR-registered recycler",
+					"facility": {
+						"name": "Municipal sanitary landfill, cell 4",
+						"address": "Pardi Road, Bhandewadi, Nagpur 440035, Maharashtra",
+						"gps": "21.1467° N, 79.1563° E"
+					},
+					"vehicle": "MH-31-ZX-0000",
+					"officer": {
+						"name": "Sachin Bhoyar",
+						"title": "Site supervisor",
+						"sign": "oce"
+					},
+					"seal": "oce",
+					"witnesses": [
+						{
+							"name": "Pradeep Meshram",
+							"address": "Plot 22, Wathoda Layout, Nagpur 440035",
+							"proof": "Voter ID, last four 4417",
+							"sign": "oce-w1"
+						},
+						{
+							"name": "Asha Kale",
+							"address": "House 9, Pardi Naka, Nagpur 440035",
+							"proof": "Voter ID, last four 0932",
+							"sign": "oce-w2"
+						}
+					],
+					"window": {
+						"from": "12:55",
+						"to": "13:20"
+					},
+					"destroyedOn": "2026-11-18",
+					"photos": {
+						"before": {
+							"name": "MF-2409-117-before.webp",
+							"at": "2026-11-18T11:40"
+						},
+						"after": {
+							"name": "MF-2409-117-after-expiry.webp",
+							"at": "2026-11-18T13:20"
+						}
+					},
+					"handedBy": {
+						"name": "Rakesh Jaiswal",
+						"title": "Proprietor",
+						"sign": "rakesh"
+					},
+					"goods": "Munchly Masala Chips 150 g",
+					"mfg": "2026-05-18",
+					"mrp": 30,
+					"perCarton": 24,
+					"log": [
+						{
+							"at": "2026-11-18T11:40",
+							"step": "Photographed at the godown",
+							"detail": "144 packs at Kalamna Market godown, the carton's batch label in view",
+							"photo": "before"
+						},
+						{
+							"at": "2026-11-18T12:00",
+							"step": "Loaded",
+							"detail": "On Orange City Enviro Services' covered vehicle MH-31-ZX-0000, sealed with seal SL-0219"
+						},
+						{
+							"at": "2026-11-18T12:40",
+							"step": "Received and weighed",
+							"detail": "23.04 kg on weighbridge slip WB/26-27/0219, at the facility's gate"
+						},
+						{
+							"at": "2026-11-18T12:55",
+							"step": "Slit open and emptied",
+							"detail": "Into the active cell, the plastic packaging set aside"
+						},
+						{
+							"at": "2026-11-18T13:10",
+							"step": "Buried and covered",
+							"detail": "Covered with 30 cm of soil"
+						},
+						{
+							"at": "2026-11-18T13:20",
+							"step": "Photographed with the slate",
+							"detail": "Slate: MF-2409-117 · 144 packs · 18/11/2026",
+							"photo": "after"
+						},
+						{
+							"at": "2026-11-18T13:30",
+							"step": "Packaging sent on",
+							"detail": "0.86 kg of plastic film to an EPR-registered recycler"
+						}
+					]
 				},
 				{
 					"id": "expiry",

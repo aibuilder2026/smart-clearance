@@ -152,6 +152,7 @@ def test_every_recording_is_valid_for_its_writer():
     schemas = {
         "vision_read": vision.LabelRead,
         "vision_destruction": vision.DestructionRead,
+        "vision_staff_receipt": vision.ReceiptRead,
         "valuer_write": valuer.Notes,
         "router_write": router.Explanation,
         "lister_write": lister.Listing,

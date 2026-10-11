@@ -1,0 +1,9 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "prompt": "A single handwritten signature of the name \"P. Anitha\" written quickly in black ballpoint pen ink on plain white paper, fluent joined cursive strokes leaning slightly right, the first letters large and looping, the rest trailing off, one short underline flourish, a flat even scan of the paper, nothing else on the page, no printed text, no lines, centered, high contrast",
+  "aspect": "16:9",
+  "size": 1024,
+  "seed": 2401,
+  "post": "keyed to its ink (system/signatures/ink.py: the paper made transparent, the ink's own colour with an alpha from its darkness), trimmed to the ink with a 12 px margin, 160 px tall, WebP q90",
+  "use": "SC-174: the specimen signature of P. Anitha, an independent witness on Deccan Green Waste Management's panel (fictional), on every paper they sign"
+}

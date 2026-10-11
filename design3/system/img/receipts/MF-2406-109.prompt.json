@@ -1,0 +1,9 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "prompt": "A realistic smartphone photo taken from above of one blank white A5 sheet of paper lying flat on a worn brown wooden desk in an Indian distributor's godown office, the sheet in portrait fills most of the frame with a margin of the desk visible on every side, nothing printed or written on the paper, the paper slightly curled at one corner, a ballpoint pen lying beside it at the edge, warm tube-light, even exposure, sharp focus, natural colours",
+  "aspect": "3:4",
+  "size": 2048,
+  "seed": 3101,
+  "post": "the batch's consolidated receipt (system/receipts/make.mjs: LA/SR/26-27/0001, 24 UPI payments, ₹3,300.00) printed onto the sheet by labels/compose.mjs, warped onto its quad and multiplied, blur 0.35 px; WebP q88",
+  "use": "SC-174: the photo of Lakshmi Agencies's consolidated receipt for the staff sale of batch MF-2406-109 (fictional firm, staff and payments)"
+}

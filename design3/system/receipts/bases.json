@@ -1,0 +1,86 @@
+{
+ "MF-2406-109": {
+  "file": "bases/receipt-base-1.webp",
+  "seed": 3101,
+  "size": [
+   1792,
+   2400
+  ],
+  "quad": [
+   [
+    232.0,
+    194.0
+   ],
+   [
+    1554.0,
+    172.0
+   ],
+   [
+    1600.0,
+    2177.0
+   ],
+   [
+    174.0,
+    2168.0
+   ]
+  ],
+  "aspect": 0.69,
+  "prompt": "A realistic smartphone photo taken from above of one blank white A5 sheet of paper lying flat on a worn brown wooden desk in an Indian distributor's godown office, the sheet in portrait fills most of the frame with a margin of the desk visible on every side, nothing printed or written on the paper, the paper slightly curled at one corner, a ballpoint pen lying beside it at the edge, warm tube-light, even exposure, sharp focus, natural colours"
+ },
+ "MF-2407-114": {
+  "file": "bases/receipt-base-2.webp",
+  "seed": 3201,
+  "size": [
+   1792,
+   2400
+  ],
+  "quad": [
+   [
+    330,
+    252
+   ],
+   [
+    1518,
+    230
+   ],
+   [
+    1650,
+    2138
+   ],
+   [
+    206,
+    2128
+   ]
+  ],
+  "aspect": 0.685,
+  "prompt": "A realistic smartphone photo taken from above of one blank white A5 sheet of paper lying flat on a grey steel office table with a glass top in an Indian distributor's godown office, the sheet in portrait fills most of the frame with a margin of the desk visible on every side, nothing printed or written on the paper, the paper slightly curled at one corner, a ballpoint pen lying beside it at the edge, warm tube-light, even exposure, sharp focus, natural colours"
+ },
+ "MF-2410-118": {
+  "file": "bases/receipt-base-3.webp",
+  "seed": 3301,
+  "size": [
+   1792,
+   2400
+  ],
+  "quad": [
+   [
+    254.0,
+    147.0
+   ],
+   [
+    1516.0,
+    150.0
+   ],
+   [
+    1602.0,
+    2180.0
+   ],
+   [
+    179.0,
+    2173.0
+   ]
+  ],
+  "aspect": 0.661,
+  "prompt": "A realistic smartphone photo taken from above of one blank white A5 sheet of paper lying flat on a green laminate counter in an Indian distributor's godown office, the sheet in portrait fills most of the frame with a margin of the desk visible on every side, nothing printed or written on the paper, the paper slightly curled at one corner, a ballpoint pen lying beside it at the edge, warm tube-light, even exposure, sharp focus, natural colours"
+ }
+}

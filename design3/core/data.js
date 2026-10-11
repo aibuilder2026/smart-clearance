@@ -2,7 +2,7 @@
    and the story (docs/smart-clearance-story.html, v6); Munchly Foods, Glowra, ExpireSoon and every person here are
    fictional. Money is never typed here: it is computed by money.js from these inputs. */
 (function () {
-  const M = window.SC3_MONEY; const fmt = M.fmt;
+  const M = window.SC3_MONEY; const fmt = M.fmt; const P = window.SC3_PAPERS;
   const IMG = (window.SC3_IMG || "system/img/");
   const PEOPLE_IMG = IMG + "people/";
 
@@ -15,6 +15,9 @@
     // are 0000, which are never issued, so none is a real taxpayer's
     pan: "AAKCM0000M", cin: "L15400MH2011PLC000117", address: "Plot B-14, MIDC Chakan Phase II, Pune 410501, Maharashtra", state: "Maharashtra", stateCode: "27", email: "accounts@munchly.example",
     revenue: "₹640 crore", skus: 8, distributors: 4, kiranas: 195, shortDatedPerQuarter: 1800000, destroyedToday: 0.7,
+    // who signs its papers (SC-174), with a specimen signature on file (system/img/signatures/) and its round seal
+    // (system/img/seals/): fictional
+    signatory: { name: "Vinod Patwardhan", title: "Head of Accounts", sign: "munchly", seal: "munchly" },
   };
 
   // the SKUs' cost sheets: the chips' and the Mango Drink's dealer price are the story's; the other six take the chips'
@@ -35,12 +38,22 @@
   };
 
   // each territory is matched by pincode for the territory guard; a godown may set its own staff-sale cap. `upi` is the
-  // address staff pay at a staff sale (SC-87): fictional, on no real bank's handle
+  // address staff pay at a staff sale (SC-87): fictional, on no real bank's handle. `signatory` signs his papers and
+  // `receipts` numbers his staff sales' consolidated receipts (SC-174): fictional
   const DISTRIBUTORS = {
-    rakesh:  { id: "rakesh", name: "Rakesh Traders", short: "Rakesh Traders", city: "Nagpur", state: "Maharashtra", stateCode: "27", godown: "Kalamna Market godown", address: "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra", gstin: "27ABHPR0000K1ZW", pan: "ABHPR0000K", fssai: "21526000000117", email: "accounts@rakeshtraders.example", bank: { name: "Example Co-operative Bank, Itwari, Nagpur", account: "0000 0117 2409", ifsc: "EXMP0000117" }, kiranas: 38, cluster: "Nagpur, Wardha and Kamptee", territory: "Nagpur with Wardha and Kamptee", pins: "440, 441, 442", staffCap: 50, upi: "rakesh-traders@exampleupi", series: { prefix: "RT/26-27/", next: 1279, width: 4 } },
-    patil:   { id: "patil", name: "Patil Distributors", short: "Patil Distributors", city: "Pune", state: "Maharashtra", stateCode: "27", godown: "Market Yard godown", address: "Shop 7, Market Yard, Gultekdi, Pune 411037, Maharashtra", gstin: "27AAKFP0000P1Z8", pan: "AAKFP0000P", fssai: "21526000000204", email: "accounts@patildistributors.example", bank: { name: "Example Co-operative Bank, Market Yard, Pune", account: "0000 0204 2409", ifsc: "EXMP0000204" }, kiranas: 52, cluster: "Pune city", territory: "Pune", pins: "411, 412", upi: "patil-distributors@exampleupi", series: { prefix: "PD/26-27/", next: 512, width: 4 } },
-    gupta:   { id: "gupta", name: "Gupta & Sons", short: "Gupta & Sons", city: "Indore", state: "Madhya Pradesh", stateCode: "23", godown: "Siyaganj godown", address: "22 Siyaganj Main Road, Indore 452007, Madhya Pradesh", gstin: "23AAHFG0000G1ZB", pan: "AAHFG0000G", fssai: "21426000000209", email: "accounts@guptasons.example", bank: { name: "Example Co-operative Bank, Siyaganj, Indore", account: "0000 0209 2408", ifsc: "EXMP0000209" }, kiranas: 47, cluster: "Indore", territory: "Indore", pins: "452, 453", upi: "gupta-sons@exampleupi", series: { prefix: "GS/26-27/", next: 2041, width: 4 } },
-    lakshmi: { id: "lakshmi", name: "Lakshmi Agencies", short: "Lakshmi Agencies", city: "Hyderabad", state: "Telangana", stateCode: "36", godown: "Begum Bazaar godown", address: "4-2-118 Begum Bazaar, Hyderabad 500012, Telangana", gstin: "36AAJFL0000L1ZM", pan: "AAJFL0000L", fssai: "23626000000118", email: "accounts@lakshmiagencies.example", bank: { name: "Example Co-operative Bank, Begum Bazaar, Hyderabad", account: "0000 0118 2410", ifsc: "EXMP0000118" }, kiranas: 58, cluster: "Hyderabad old city", territory: "Hyderabad", pins: "500, 501", staffCap: 150, upi: "lakshmi-agencies@exampleupi", series: { prefix: "LA/26-27/", next: 972, width: 4 } },
+    rakesh:  { id: "rakesh", name: "Rakesh Traders", short: "Rakesh Traders", city: "Nagpur", state: "Maharashtra", stateCode: "27", godown: "Kalamna Market godown", address: "Shop 12, Kalamna Market, Nagpur 440035, Maharashtra", gstin: "27ABHPR0000K1ZW", pan: "ABHPR0000K", fssai: "21526000000117", email: "accounts@rakeshtraders.example", bank: { name: "Example Co-operative Bank, Itwari, Nagpur", account: "0000 0117 2409", ifsc: "EXMP0000117" }, kiranas: 38, cluster: "Nagpur, Wardha and Kamptee", territory: "Nagpur with Wardha and Kamptee", pins: "440, 441, 442", staffCap: 50, upi: "rakesh-traders@exampleupi", series: { prefix: "RT/26-27/", next: 1279, width: 4 }, signatory: { name: "Rakesh Jaiswal", title: "Proprietor", sign: "rakesh", seal: "rakesh" }, receipts: { prefix: "RT/SR/26-27/", next: 2, width: 4 } },
+    patil:   { id: "patil", name: "Patil Distributors", short: "Patil Distributors", city: "Pune", state: "Maharashtra", stateCode: "27", godown: "Market Yard godown", address: "Shop 7, Market Yard, Gultekdi, Pune 411037, Maharashtra", gstin: "27AAKFP0000P1Z8", pan: "AAKFP0000P", fssai: "21526000000204", email: "accounts@patildistributors.example", bank: { name: "Example Co-operative Bank, Market Yard, Pune", account: "0000 0204 2409", ifsc: "EXMP0000204" }, kiranas: 52, cluster: "Pune city", territory: "Pune", pins: "411, 412", upi: "patil-distributors@exampleupi", series: { prefix: "PD/26-27/", next: 512, width: 4 }, signatory: { name: "Sanjay Patil", title: "Proprietor", sign: "patil", seal: "patil" }, receipts: { prefix: "PD/SR/26-27/", next: 1, width: 4 } },
+    gupta:   { id: "gupta", name: "Gupta & Sons", short: "Gupta & Sons", city: "Indore", state: "Madhya Pradesh", stateCode: "23", godown: "Siyaganj godown", address: "22 Siyaganj Main Road, Indore 452007, Madhya Pradesh", gstin: "23AAHFG0000G1ZB", pan: "AAHFG0000G", fssai: "21426000000209", email: "accounts@guptasons.example", bank: { name: "Example Co-operative Bank, Siyaganj, Indore", account: "0000 0209 2408", ifsc: "EXMP0000209" }, kiranas: 47, cluster: "Indore", territory: "Indore", pins: "452, 453", upi: "gupta-sons@exampleupi", series: { prefix: "GS/26-27/", next: 2041, width: 4 }, signatory: { name: "Ramesh Gupta", title: "Partner", sign: "gupta", seal: "gupta" }, receipts: { prefix: "GS/SR/26-27/", next: 1, width: 4 } },
+    lakshmi: { id: "lakshmi", name: "Lakshmi Agencies", short: "Lakshmi Agencies", city: "Hyderabad", state: "Telangana", stateCode: "36", godown: "Begum Bazaar godown", address: "4-2-118 Begum Bazaar, Hyderabad 500012, Telangana", gstin: "36AAJFL0000L1ZM", pan: "AAJFL0000L", fssai: "23626000000118", email: "accounts@lakshmiagencies.example", bank: { name: "Example Co-operative Bank, Begum Bazaar, Hyderabad", account: "0000 0118 2410", ifsc: "EXMP0000118" }, kiranas: 58, cluster: "Hyderabad old city", territory: "Hyderabad", pins: "500, 501", staffCap: 150, upi: "lakshmi-agencies@exampleupi", series: { prefix: "LA/26-27/", next: 972, width: 4 }, signatory: { name: "K. Lakshmi Narayana", title: "Partner", sign: "lakshmi", seal: "lakshmi" }, receipts: { prefix: "LA/SR/26-27/", next: 2, width: 4 } },
+  };
+
+  // each godown's staff, who buy at a staff sale and pay by UPI (SC-174): fictional names, a staff sale's consolidated
+  // receipt lists their payments (papers.js staffPayments)
+  const STAFF = {
+    rakesh: ["Sunil Bhagat", "Manoj Raut", "Pooja Shende", "Nitin Gawande", "Kavita Dongre", "Amol Thakur", "Ravi Meshram", "Sneha Bawane", "Prakash Lanjewar", "Dinesh Kale", "Swati Nimje", "Ganesh Barde", "Anil Wasnik", "Seema Dhoble", "Rahul Kumbhare", "Vaishali Pande", "Sachin Ukey", "Komal Gedam", "Mahesh Chaudhari", "Priti Ingle", "Sagar Bisen", "Neha Hedau", "Vikas Tembhurne", "Rupali Sontakke"],
+    lakshmi: ["S. Ravi Kumar", "Mohd Irfan", "P. Swathi", "K. Naresh", "Syed Ameer", "B. Lavanya", "G. Srinivas", "Fatima Begum", "T. Rajesh", "M. Anil", "Shaik Imran", "V. Sravani", "N. Mahesh", "R. Kavya", "A. Prakash", "Md Saleem", "D. Ramya", "Ch. Venkatesh", "J. Suresh", "K. Divya", "P. Nagaraju", "S. Haritha", "B. Yadagiri", "Ayesha Sultana"],
+    patil: ["Rohit Jadhav", "Snehal More", "Akash Pawar", "Manisha Shinde", "Tushar Kulkarni", "Pallavi Gaikwad", "Ajay Mane", "Rutuja Deshpande", "Kiran Bhosale", "Sonali Patole", "Vishal Kadam", "Ashwini Salunkhe"],
+    gupta: ["Rajesh Yadav", "Pooja Sharma", "Deepak Verma", "Anita Patel", "Sanjay Rathore", "Kiran Joshi", "Manish Soni", "Rekha Tiwari", "Arvind Chouhan", "Sunita Malviya", "Vivek Jain", "Shalini Dubey"],
   };
 
   // outside every Munchly territory, so the territory guard lets him see the listing
@@ -316,10 +329,28 @@
       evidence: [["before", "The packs at the godown, the carton's batch label in view"], ["after", "Slit open at the landfill, the slate with the batch, the count and the date in view"]],
       visionCheck: true, reviewer: "ws-operator", remindDays: 2, grossUp: true, chargesPerUnit: 1.5,
       method: "Slit open, buried and covered at the authorised municipal landfill",
+      // the certificate of destruction in full (SC-174): why the packs were destroyed, and how, by the agency's own method
+      reasons: [["expiry", "Product expiry"], ["contamination", "Contamination or damage"], ["seizure", "Court-ordered seizure"]],
+      methods: {
+        landfill: { name: "Sanitary landfill, CPCB-compliant", how: "the packs slit open and emptied into the active cell, covered with 30 cm of soil the same day; the plastic packaging segregated for an EPR-registered recycler" },
+        incineration: { name: "Incineration at a CPCB-compliant common facility", how: "the packs fed whole to the incinerator at 850 °C or more, the ash to the facility's secured landfill; the plastic packaging set aside first for an EPR-registered recycler" },
+      },
+      // each agency's facility (its coordinates), its supervising officer, the covered vehicle it carries the packs in, its
+      // own method, and the independent witnesses it brings to a destruction (SC-174); every name, address, vehicle and
+      // number is fictional, and each signatory has a specimen signature on file (system/img/signatures/)
       agencies: [
-        { id: "oce", name: "Orange City Enviro Services", city: "Nagpur", auth: "MPCB/SWM/NGP/0412", series: { prefix: "OCE/DC/26-27/", next: 219, width: 4 }, site: "the municipal landfill, Nagpur" },
-        { id: "vwc", name: "Vidarbha Waste Care", city: "Nagpur", auth: "MPCB/SWM/NGP/0538", series: { prefix: "VWC/DC/26-27/", next: 41, width: 4 }, site: "the municipal landfill, Nagpur" },
-        { id: "dgw", name: "Deccan Green Waste Management", city: "Hyderabad", auth: "TSPCB/SWM/HYD/0287", series: { prefix: "DGW/DC/26-27/", next: 86, width: 4 }, site: "the municipal landfill, Hyderabad" },
+        { id: "oce", name: "Orange City Enviro Services", city: "Nagpur", auth: "MPCB/SWM/NGP/0412", series: { prefix: "OCE/DC/26-27/", next: 219, width: 4 }, site: "the municipal landfill, Nagpur",
+          method: "landfill", facility: { name: "Municipal sanitary landfill, cell 4", address: "Pardi Road, Bhandewadi, Nagpur 440035, Maharashtra", gps: "21.1467° N, 79.1563° E" }, vehicle: "MH-31-ZX-0000",
+          officer: { name: "Sachin Bhoyar", title: "Site supervisor", sign: "oce" }, seal: "oce",
+          witnesses: [{ name: "Pradeep Meshram", address: "Plot 22, Wathoda Layout, Nagpur 440035", proof: "Voter ID, last four 4417", sign: "oce-w1" }, { name: "Asha Kale", address: "House 9, Pardi Naka, Nagpur 440035", proof: "Voter ID, last four 0932", sign: "oce-w2" }] },
+        { id: "vwc", name: "Vidarbha Waste Care", city: "Nagpur", auth: "MPCB/SWM/NGP/0538", series: { prefix: "VWC/DC/26-27/", next: 41, width: 4 }, site: "the municipal landfill, Nagpur",
+          method: "landfill", facility: { name: "Municipal sanitary landfill, cell 2", address: "Pardi Road, Bhandewadi, Nagpur 440035, Maharashtra", gps: "21.1452° N, 79.1541° E" }, vehicle: "MH-31-ZY-0000",
+          officer: { name: "Rahul Dhote", title: "Site supervisor", sign: "vwc" }, seal: "vwc",
+          witnesses: [{ name: "Vijay Thakre", address: "Plot 5, Bharatwada Road, Nagpur 440035", proof: "Voter ID, last four 2268", sign: "vwc-w1" }, { name: "Sunita Wankhede", address: "House 31, Kalamna Basti, Nagpur 440035", proof: "Voter ID, last four 7105", sign: "vwc-w2" }] },
+        { id: "dgw", name: "Deccan Green Waste Management", city: "Hyderabad", auth: "TSPCB/SWM/HYD/0287", series: { prefix: "DGW/DC/26-27/", next: 86, width: 4 }, site: "the municipal landfill, Hyderabad",
+          method: "landfill", facility: { name: "Municipal sanitary landfill, cell 7", address: "Jawaharnagar, Hyderabad 500087, Telangana", gps: "17.5193° N, 78.5862° E" }, vehicle: "TG-09-ZX-0000",
+          officer: { name: "M. Srinivas Reddy", title: "Site supervisor", sign: "dgw" }, seal: "dgw",
+          witnesses: [{ name: "Syed Mujeeb", address: "House 14, Gandhi Nagar, Hyderabad 500080", proof: "Voter ID, last four 5831", sign: "dgw-w1" }, { name: "P. Anitha", address: "Flat 3, Kavadiguda, Hyderabad 500080", proof: "Voter ID, last four 3390", sign: "dgw-w2" }] },
       ],
     },
     // the distributors' one-time permissions; Rakesh Traders gives his in stage 1 of the demo
@@ -419,7 +450,12 @@
         sentAt: bestBefore + "T14:00", checkedAt: bestBefore + "T14:05",
         checks: [["batch", `Batch ${ref} read on the carton label`], ["count", `About ${Math.round(realised.godown / 10) * 10} packs in view (${realised.godown} left)`], ["slate", `The slate reads ${ref} · ${realised.godown} packets · ${bestBefore.slice(8, 10)}-${bestBefore.slice(5, 7)}-${bestBefore.slice(2, 4)}`], ["when", "Both photos taken that day, at the godown and the landfill"]].map(([id, label]) => ({ id, label, ok: true })),
         approvedAt: addDays(bestBefore, 1) + "T11:00", approvedBy: "priya",
+        // destroyed in the 25 minutes up to the after photo, before the agency's own two witnesses (SC-174)
+        window: { from: "12:55", to: "13:20" }, witnesses: agency.witnesses.map(w => ({ name: w.name, address: w.address, proof: w.proof, sign: w.sign })),
       } : null;
+      // the staff sale (SC-174): every pack sold, paid by UPI over the sale's days, from the approval to an hour before
+      // the sale was recorded; numbered below (each distributor's own series)
+      const staffPaid = st ? P.staffPayments({ ref, units: st.units, price: st.price, staff: STAFF[distId], opens: at(flagged, "approve"), closes: at(flagged, "staff").slice(0, 11) + "17:00" }) : null;
       const steps = ["open", "detect", "photo", "read", "value", "route", "approve"]
         .concat(es ? ["listing"] : [], kl ? ["offer"] : [], fb ? ["donation", "pickup"] : [], kl ? ["orders"] : [], es ? ["bid", "counter", "accept"] : [])
         .concat(fb ? ["collect"] : [], kl && realised.godown ? ["closeOffer"] : [], st ? ["staff"] : [], es ? ["truck"] : [], ["papers"])
@@ -429,7 +465,15 @@
         .concat(destruction ? [{ step: "destroyAsk", at: destruction.askedAt }, { step: "destroySent", at: destruction.sentAt }, { step: "destroyApproved", at: destruction.approvedAt }, { step: "report", at: addDays(bestBefore, 1) + "T11:30" }]
           : [{ step: "report", at: bestBefore + "T10:00" }]);
       return { ref, sku: skuId, distributor: distId, units, daysLeft, sellPerDay, flagged, bestBefore, mfg: batch.mfg, outcome, plan, bid, price, award, partner: partner && partner.name,
-        kirana: kl ? { planned: kl.units, ordered: x.kirana != null ? x.kirana : kl.units } : null, staff: st ? st.units : null, realised, actual, support, expiry, destruction, steps, parties: parties(d) };
+        kirana: kl ? { planned: kl.units, ordered: x.kirana != null ? x.kirana : kl.units } : null, staff: st ? st.units : null, staffPaid, realised, actual, support, expiry, destruction, steps, parties: parties(d) };
+    });
+    // each staff sale's consolidated receipt, in its distributor's own series, numbered back from his next (SC-174)
+    const receiptCount = {}, receiptUsed = {};
+    list.filter(b => b.staffPaid).forEach(b => (receiptCount[b.distributor] = (receiptCount[b.distributor] || 0) + 1));
+    list.filter(b => b.staffPaid).forEach(b => {
+      const sr = DISTRIBUTORS[b.distributor].receipts, n = sr.next - receiptCount[b.distributor] + (receiptUsed[b.distributor] = (receiptUsed[b.distributor] || 0) + 1) - 1;
+      b.staffReceipt = P.staffReceipt({ no: sr.prefix + String(n).padStart(sr.width, "0"), payments: b.staffPaid });
+      delete b.staffPaid;
     });
     // the papers, numbered back from the story's (INV/26-27/0931, CN/0117, ES-24117, FI/HYD/26-27/0417,
     // IFBN/ACK/26-27/0112) in the order they were issued: the listing, the receipt as the food bank collects, the
@@ -525,6 +569,10 @@
   const MANGO_REALISED = M.realised(MANGO_PLAN, MSKU, null, FOODBANK.meals, SETUP.expiry, SETUP.destruction);
   const MANGO_SUPPORT = M.priceSupport(MANGO_REALISED, MSKU);
   const MANGO_ACTUAL = M.actualNet(MANGO_REALISED, 0);
+  // the staff sale's consolidated receipt (SC-174): Lakshmi Agencies' staff paid by UPI from the evening the plan was
+  // approved to the next afternoon, and she sends one receipt listing every payment; the next in her own series
+  const MANGO_STAFF_RECEIPT = P.staffReceipt({ no: LAKSHMI.receipts.prefix + String(LAKSHMI.receipts.next).padStart(LAKSHMI.receipts.width, "0"),
+    payments: P.staffPayments({ ref: MANGO.id, units: MST.units, price: MST.price, staff: STAFF.lakshmi, opens: `${DAY0}T16:30`, closes: `${addDays(DAY0, 1)}T15:00` }) });
   const MANGO_DOCS = M.documents(MANGO_REALISED, MSKU, null, MANGO_SUPPORT, { seller: LAKSHMI, buyer: BUYER, client: CLIENT }, MANGO_RECEIPT);
   const MANGO_RETURN_BY = addDays(MANGO.bestBefore, -M.RULES.returnWindowDays);
   const MANGO_TOOK = 9 * 60 + 48 + (MANGO_KIRANAS.length - 1) * 3 - (9 * 60 + 36), MANGO_HOURS = Math.round(MANGO_TOOK / 60);
@@ -555,7 +603,7 @@
     { key: "outreach", stage: "execute", agent: "Outreach", icon: "send", at: "09:36", min: 1, text: `Pushed the Hindi scheme to ${LAKSHMI.kiranas} kiranas in the ${LAKSHMI.city} cluster: buy 10 get 2 for 48 hours, no shop over ${M.RULES.shopCapTimes}× its own 14-day sales.`, calls: [["fcm.send", `${LAKSHMI.kiranas} kiranas · Hindi`, "ok"]] },
     EV("donate") && Object.assign({}, EV("donate"), { at: "09:36", min: 0 }),
     { key: "orders", stage: "execute", agent: "Outreach", icon: "store", at: MANGO_KIRANAS[MANGO_KIRANAS.length - 1].at, min: MANGO_TOOK, text: `${MANGO_KIRANAS.length} of ${LAKSHMI.kiranas} kiranas ordered all ${n0(MKL.units)} units in about ${MANGO_HOURS} hours, each under its cap.`, calls: [["orders.sum", `${n0(MKL.units)} units · ${MANGO_KIRANAS.length} shops`, "ok"]] },
-    { key: "staff", stage: "execute", person: "lakshmi-owner", at: "Day 1", min: 1200, text: `Recorded the staff sale at ${LAKSHMI.godown}: ${n0(MST.units)} of ${n0(MST.units)} packs sold at ₹${MST.price}.` },
+    { key: "staff", stage: "execute", person: "lakshmi-owner", at: "Day 1", min: 1200, text: `Recorded the staff sale at ${LAKSHMI.godown}: ${n0(MST.units)} of ${n0(MST.units)} packs sold at ₹${MST.price}, with the consolidated receipt ${MANGO_STAFF_RECEIPT.no} for ${MANGO_STAFF_RECEIPT.payments.length} UPI payments.` },
     { key: "collect", stage: "execute", person: "meera", at: "Day 4", min: 4320, text: `Collected ${MANGO_FB} packs at ${LAKSHMI.godown} and issued ${MANGO_RECEIPT.type.toLowerCase()} ${MANGO_RECEIPT.no}.` },
     { key: "papers", stage: "settle", agent: "Paperwork", icon: "file-check", at: "Tue 6 Oct", min: 30, text: `Issued the price-support credit note CN/0117, wrote the ITC memo and the FSSAI checklist, and filed ${FOODBANK.name}'s receipt ${MANGO_RECEIPT.no} with the pack.`, calls: [["docs.credit_note", inr(MANGO_SUPPORT.total), "ok"], ["itc.memo", `${inr(MANGO_REALISED.itcRetained)} retained`, "ok"], ["fssai.checklist", `${MANGO_FB} units`, "ok"]] },
     { key: "van", stage: "settle", person: "lakshmi-owner", at: "Wed 7 Oct", min: 1260, text: `Ran the Wednesday round: ${MANGO_KIRANAS.length} drops, ${n0(MKL.units)} packets.` },
@@ -569,7 +617,7 @@
     users: [{ id: mangoShopPerson.id, name: MANGO_SHOP.name, short: MANGO_SHOP.name, org: MANGO_SHOP.name, role: "retailer", provider: "phone", phone: mangoShopPerson.phone, email: "", status: "active", invitedBy: LAKSHMI.name, kind: "partner", lastSeen: null, extra: true }],
     kiranas: MANGO_KIRANAS, offered: LAKSHMI.kiranas, shop: MANGO_SHOP.id, decliner: null, fills: true, scheme: `${baseName(MSKU)} scheme`,
     risk: MANGO_RISK, plan: MANGO_PLAN, KL: MKL, ES: null, ask: null, counter: null, award: null, actual: MANGO_ACTUAL, support: MANGO_SUPPORT, supportPlan: MANGO_SUPPORT, claim: M.expiryClaim(MANGO_PLAN.units, MSKU),
-    docs: MANGO_DOCS, invoice: null, returnBy: MANGO_RETURN_BY, realised: MANGO_REALISED, godownLeft: null, expiry: null,
+    docs: MANGO_DOCS, invoice: null, returnBy: MANGO_RETURN_BY, staffReceipt: MANGO_STAFF_RECEIPT, realised: MANGO_REALISED, godownLeft: null, expiry: null,
     push: mangoPush, chat: [], events: MANGO_EVENTS,
     journey: { today: JOURNEY.today, planMinutes: 15, permissionAsked: SETUP.permissions.lakshmi, listing: null,
       van: { day: "Wednesday", date: "Wed 7 Oct", leaves: "07:00", depot: LAKSHMI.godown, reply: "Theek hai. Budhwar subah nikal jayenge.", replyAt: "Tue 18:04" },
@@ -651,7 +699,7 @@
   const storyOf = key => STORIES[key] || CHIPS_STORY;
 
   window.SC3_DATA = { DAY0, addDays, PLATFORM, WORKSPACE, CLIENT, SKUS, DISTRIBUTORS, BUYER, PEOPLE, KIRANAS, OFFERED, BATCHES, STAGES, PUSH, CHAT, EVENTS, EV, QUARTER, SETUP,
-    RISK, PLAN, ASK, COUNTER, AWARD, ACTUAL, SUPPORT, SUPPORT_PLAN, CLAIM, DOCS, INVOICE, MANGO_PLAN, MANGO_FB, MANGO_RECEIPT, RETURN_BY, IMG, JOURNEY, MARKET, EXPLORE, HISTORY, HISTORY_AT,
+    STAFF, RISK, PLAN, ASK, COUNTER, AWARD, ACTUAL, SUPPORT, SUPPORT_PLAN, CLAIM, DOCS, INVOICE, MANGO_PLAN, MANGO_FB, MANGO_RECEIPT, RETURN_BY, IMG, JOURNEY, MARKET, EXPLORE, HISTORY, HISTORY_AT,
     HYDERABAD, SCENARIOS, STORIES, storyOf,
     // the story of the journey the store holds now (the store's scenario; the chips before the store has loaded)
     story: state => storyOf(((state || (window.SC3_STORE && window.SC3_STORE.get()) || {}).scenario) || "chips"),

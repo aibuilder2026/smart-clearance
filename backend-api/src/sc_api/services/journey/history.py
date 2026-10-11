@@ -35,6 +35,8 @@ PHOTO = b"\xff\xd8\xff\xe0 history label photo"
 EVIDENCE = resources.files("sc_api.reference").joinpath("evidence")
 # each history batch's label photo, as its distributor sent it (SC-142, design3/system/img/labels)
 LABELS = resources.files("sc_api.reference").joinpath("labels")
+# each history staff sale's consolidated receipt, as its distributor sent it (SC-174, design3/system/img/receipts)
+RECEIPTS = resources.files("sc_api.reference").joinpath("receipts")
 As = Callable[[str, datetime], Awaitable[Ctx]]
 # the PDFs Paperwork lays out once the history is built: the pack (settle) and the food bank's receipt
 PAPERS = {"settle", "receipt"}
@@ -208,7 +210,9 @@ async def _step(
     elif step == "closeOffer":
         await steps.close_offer(await as_("system", at), client_id, ref, None)
     elif step == "staff":
-        await steps.staff_sale(await as_(dist, at), client_id, ref, b["staff"])
+        # with its consolidated receipt (SC-174): sent half an hour before, read by Vision, then the sale recorded on it
+        rid = await _staff_receipt(as_, hx, storage, client_id, b, dist, at, real)
+        await steps.staff_sale(await as_(dist, at), client_id, ref, b["staff"], rid)
     elif step == "truck":
         await steps.dispatch(await as_(dist, at), client_id, ref, "truck")
     elif step == "papers":
@@ -236,6 +240,35 @@ async def _step(
         raise RuntimeError(f"history: no step {step!r}")
 
 
+async def _staff_receipt(
+    as_: As,
+    hx: Ctx,
+    storage: FakeStorage,
+    client_id: str,
+    b: dict[str, Any],
+    dist: str,
+    at: datetime,
+    real: Cloud | None,
+) -> str:
+    """the staff sale's consolidated receipt, as its distributor printed and photographed it (the receipt maker,
+    design3/system/img/receipts), and Vision's read of its payments as design3 has them"""
+    ref, r = b["ref"], b["staffReceipt"]
+    data = RECEIPTS.joinpath(f"{ref}.webp").read_bytes()
+    x = await as_(dist, at - timedelta(minutes=30))
+    link = await steps.staff_receipt_link(_fresh(x), client_id, ref, "image/webp", len(data))
+    name = f"{client_id}/{ref}/staff-receipt-{link['id']}"
+    storage.objects[(hx.settings.photos_bucket, name)] = data
+    if real is not None and hx.settings.photos_bucket:  # where the Record tab and his Photos tab read it
+        await real.storage.write(hx.settings.photos_bucket, name, data, "image/webp")
+    await steps.staff_receipt_sent(x, client_id, ref, link["id"])
+    payments = [{"rrn": p["rrn"], "payer": p["who"], "at": p["at"], "amount": p["amount"]} for p in r["payments"]]
+    read = {"no": r["no"], "date": r["date"], "payments": payments, "total": r["paid"], "confidence": 0.96}
+    await steps.staff_receipt_read(
+        await as_("system", at - timedelta(minutes=25)), client_id, ref, link["id"], read, None
+    )
+    return link["id"]
+
+
 async def _destroy_sent(
     as_: As,
     hx: Ctx,
@@ -259,7 +292,9 @@ async def _destroy_sent(
         if real is not None and hx.settings.photos_bucket:
             await real.storage.write(hx.settings.photos_bucket, name, data, "image/webp")
         ids[which] = link["id"]
-    await steps.send_destruction(await as_(dist, at), client_id, ref, dz["agency"], dz["certificate"], ids)
+    await steps.send_destruction(
+        await as_(dist, at), client_id, ref, dz["agency"], dz["certificate"], ids, dz.get("window"), dz.get("witnesses")
+    )
     units = int(b["expect"]["atGodown"])
     read = {
         "before": {"batch": ref, "count": units, "confidence": 0.95},

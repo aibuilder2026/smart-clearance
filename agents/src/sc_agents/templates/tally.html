@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <title>{{ doc.type }} · {{ doc.no }}</title>
 {# the GST papers in Tally's layout (SC-148, option B): bordered blocks on A4, the parties with their GSTINs and state
-   codes, the goods or the particulars, the amount in words and the signatory. The same paper the workspace draws #}
+   codes, the goods or the particulars, the amount in words and the signatory, who signs it over the firm's stamp
+   (SC-174, _sign.html). The same paper the workspace draws #}
 <style>
   @page { size: A4; margin: 12mm 12mm 14mm; @bottom-left { content: "{{ case.ref }} · {{ doc.type }}"; font: 7.5pt sans-serif; color: #6b6b6b; } @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 7.5pt sans-serif; color: #6b6b6b; } }
   body { font-family: Arial, Helvetica, "DejaVu Sans", "Noto Sans Devanagari", sans-serif; font-size: 9pt; color: #141816; line-height: 1.38; margin: 0; }
@@ -19,8 +20,10 @@
   .small { font-size: 7.5pt; color: #4b5550; }
   .mono { font-family: "DejaVu Sans Mono", Menlo, monospace; font-size: 7.5pt; word-break: break-all; }
   .sign { height: 30pt; text-align: right; padding-top: 8pt; }
+  .sign.by { height: auto; padding-top: 3pt; }
+{% include "_sign.css" %}
   .foot { text-align: center; font-size: 7.5pt; color: #4b5550; margin-top: 6pt; }
-  svg.qr { width: 30mm; height: 30mm; display: block; }
+  svg.qr { width: 27mm; height: 27mm; display: block; }
 </style>
 </head>
 <body>

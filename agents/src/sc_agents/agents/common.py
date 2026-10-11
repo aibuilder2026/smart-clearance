@@ -66,6 +66,7 @@ def cut_case(c: dict[str, Any]) -> dict[str, Any]:
     plan = c.get("plan") or {}
     sku = c.get("sku") or {}
     dist = c.get("distributor") or {}
+    receipt = (journey.get("staff") or {}).get("receipt") if isinstance(journey.get("staff"), dict) else None
     return {
         "ref": c.get("ref"),
         "phase": journey.get("phase"),
@@ -81,8 +82,8 @@ def cut_case(c: dict[str, Any]) -> dict[str, Any]:
             "state": dist.get("state"),
             "godown": dist.get("godown"),
             "address": dist.get("address"),
-            # his identity on the tax invoice he issues (SC-148)
-            **{k: dist.get(k) for k in ("gstin", "stateCode", "pan", "fssai", "email", "bank")},
+            # his identity on the tax invoice he issues (SC-148), and who signs it (SC-174)
+            **{k: dist.get(k) for k in ("gstin", "stateCode", "pan", "fssai", "email", "bank", "signatory")},
             "paused": bool((dist.get("permission") or {}).get("paused")),
             "permitted": dist.get("permission") is not None,
         },
@@ -113,6 +114,8 @@ def cut_case(c: dict[str, Any]) -> dict[str, Any]:
         "docsBucket": c.get("docsBucket"),
         # packs destroyed at his godown (SC-139): where the evidence stands, for Vision's check; nothing of its figures
         "destruction": {"status": (c.get("destruction") or {}).get("status")} if c.get("destruction") else None,
+        # the staff sale's consolidated receipt (SC-174): which one and where its read stands, for Vision; not the count
+        "staffReceipt": {k: receipt.get(k) for k in ("id", "status")} if receipt else None,
     }
 
 

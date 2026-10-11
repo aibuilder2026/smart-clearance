@@ -15,6 +15,11 @@ at once, as `{client}/{ref}/receipt.pdf`, and the pack then carries it with its 
 
 Each kirana's tax invoice (SC-153) is issued as the shop orders: `journey.step kirana` lays it out as
 `{client}/{ref}/kirana-{shop}.pdf`, then `PATCH …/documents/kirana.{shop} {object}`.
+
+Every paper is signed by its signatory (SC-174): the distributor's over his stamp, the client's and the agency's beside
+their round seals. The agency's certificate of destruction is laid out in full, the certificate and its log, the log
+carrying the before and after photos read from the photos bucket; a photo that cannot be read leaves its step without
+it, and the paper is made all the same.
 """
 
 import asyncio
@@ -67,6 +72,23 @@ def _parts(state: dict[str, Any]) -> list[types.Part]:
     return [types.Part(text="THE PAPERS:\n" + json.dumps(facts, ensure_ascii=False))]
 
 
+async def _photos(rc: RunCtx, case: dict[str, Any], doc: dict[str, Any]) -> dict[str, str]:
+    """the certificate of destruction's before and after photos as data: URIs, those that can be read (SC-174)"""
+    if doc.get("id") != "destruction":
+        return {}
+    bucket = case.get("photosBucket") or rc.settings.photos_bucket
+    out: dict[str, str] = {}
+    for which, photo in (doc.get("photos") or {}).items():
+        name = (photo or {}).get("object") if isinstance(photo, dict) else None
+        if not name or not bucket:
+            continue
+        try:
+            out[which] = pdf.photo_uri(await rc.deps.store.read(bucket, name))
+        except Exception as e:  # the certificate stands without its photo
+            log.warning("paperwork: the destruction's %s photo gs://%s/%s: %s", which, bucket, name, e)
+    return out
+
+
 async def _file(
     rc: RunCtx, case: dict[str, Any], doc: dict[str, Any], *, note: str | None, today: str, name: str | None = None
 ) -> bool:
@@ -75,7 +97,7 @@ async def _file(
     bucket = case.get("docsBucket") or rc.settings.docs_bucket
     if not bucket:
         raise RuntimeError("no docs bucket (DOCS_BUCKET)")
-    page = pdf.html(doc, case, note=note, today=today)
+    page = pdf.html(doc, case, note=note, today=today, photos=await _photos(rc, case, doc))
     try:
         data = await asyncio.to_thread(rc.deps.render_pdf, page)
     except OSError as e:  # WeasyPrint's system libraries are missing: a deployment to fix, not a retry

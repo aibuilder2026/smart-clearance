@@ -13,7 +13,7 @@ from typing import Any
 from sqlalchemy import func, or_, select
 
 from sc_api import models as m
-from sc_api.domain import copy, money
+from sc_api.domain import copy, money, papers
 from sc_api.domain import journey as J
 from sc_api.domain.clock import IST
 from sc_api.errors import ApiError, not_found
@@ -1555,17 +1555,46 @@ async def decline_donation(ctx: Ctx, client_id: str, ref: str) -> None:
     await _save(ctx, s)
 
 
-async def staff_sale(ctx: Ctx, client_id: str, ref: str, sold: int) -> None:
-    """the distributor records the staff sale at his godown (SC-86): what sold, out of the plan's staff line"""
+async def _staff_holder(ctx: Ctx, s: Scene, client_id: str) -> m.ClientMember:
+    """the distributor holding the batch, who alone runs its staff sale"""
     ctx.require("staff.record", "Only the distributor records the staff sale.")
-    s = await scene(ctx, client_id, ref)
     me = await world.member(ctx, client_id, _member(ctx))
     if me.org_ref != s.dist.id:
         raise ApiError(403, "Only the distributor holding this batch runs its staff sale.")
+    return me
+
+
+async def staff_sale(ctx: Ctx, client_id: str, ref: str, sold: int, receipt_id: str | None = None) -> None:
+    """the distributor records the staff sale at his godown (SC-86): what sold, out of the plan's staff line, with the
+    consolidated receipt he attached (SC-174), once Vision has read it and its payments come to what sold"""
+    s = await scene(ctx, client_id, ref)
+    me = await _staff_holder(ctx, s, client_id)
     _guard(s, "staff")
-    units = int(s.case.staff["units"])
+    units, price = int(s.case.staff["units"]), float(s.case.staff["price"])
     if sold < 0 or sold > units:
         raise ApiError(422, f"Between 0 and {units} packs.", {"sold": f"Up to {units} packs."})
+    r = s.case.staff.get("receipt") or {}
+    if not receipt_id or r.get("id") != receipt_id:
+        raise ApiError(
+            422,
+            "Attach the consolidated receipt first: one receipt listing every staff payment by its UPI reference.",
+            {"receipt": "The consolidated receipt."},
+        )
+    if r.get("status") == "reading":
+        raise ApiError(409, "Vision is still reading the receipt. Record the sale once it has.")
+    if r.get("status") != "read":
+        raise ApiError(
+            422, "Vision could not read the receipt. Send a clearer photo, or the PDF.", {"receipt": "Unread."}
+        )
+    paid = float(r.get("paid") or 0)
+    if abs(paid - sold * price) >= 0.5:
+        raise ApiError(
+            422,
+            f"The receipt's {len(r.get('payments') or [])} payments come to {money.fmt.inr2(paid)}, not "
+            f"{money.fmt.num(sold)} packs at {money.fmt.inr2(price)}: count again, or send the receipt with every "
+            "payment.",
+            {"sold": "As the receipt's payments make it."},
+        )
     s.case.staff = {
         **s.case.staff,
         "status": "recorded",
@@ -1581,7 +1610,9 @@ async def staff_sale(ctx: Ctx, client_id: str, ref: str, sold: int) -> None:
         s.case,
         "staff",
         "execute",
-        copy.staff_event(sold=sold, units=units, godown=godown),
+        copy.staff_event(
+            sold=sold, units=units, godown=godown, receipt=r.get("no"), payments=len(r.get("payments") or [])
+        ),
         person=me.ref,
         human=True,
     )
@@ -1590,12 +1621,142 @@ async def staff_sale(ctx: Ctx, client_id: str, ref: str, sold: int) -> None:
         s.c.id,
         "staff.record",
         f"recorded the staff sale: {sold} of {units} packs",
-        {"member": me.ref, "target": f"{ref} · {godown}", "batch": ref},
+        {"member": me.ref, "target": f"{ref} · {godown}", "batch": ref, "receipt": r.get("no")},
     )
     for ref_ in await _approver(ctx, s.c):
         push = copy.push_staff_recorded(distributor=s.dist.name, sku_name=s.sku.name, sold=sold, units=units)
         await ev.notify(ctx, s.c, ref_, "staff.recorded", link="execution", case=s.case, **push)
     await _advance(ctx, s)
+    await _save(ctx, s)
+
+
+# --- the staff sale's consolidated receipt (SC-174) -------------------------------------------------------------------
+# one receipt listing every staff payment by its UPI reference, a photo or a PDF, from his books or his UPI app's
+# statement: Vision reads its payments, and the sale records only once they come to what sold
+
+RECEIPT_TYPES = ("image/jpeg", "image/png", "image/webp", "application/pdf")
+
+
+async def staff_receipt_link(ctx: Ctx, client_id: str, ref: str, content_type: str, size: int) -> dict[str, Any]:
+    """a signed link for the staff sale's consolidated receipt, straight into the photos bucket"""
+    s = await scene(ctx, client_id, ref)
+    me = await _staff_holder(ctx, s, client_id)
+    _guard(s, "staff")
+    if content_type not in RECEIPT_TYPES:
+        raise ApiError(
+            422, "Send the receipt as a photo (JPEG, PNG or WebP) or a PDF.", {"contentType": "A photo or a PDF."}
+        )
+    if not 0 < size <= PHOTO_MAX_BYTES:
+        raise ApiError(422, "The receipt must be under 8 MB.", {"bytes": "Under 8 MB."})
+    assert ctx.cloud is not None and ctx.settings.photos_bucket
+    pid = ctx.ids.new("sr", 10)
+    name = f"{client_id}/{ref}/staff-receipt-{pid}"
+    ctx.session.add(
+        m.CasePhoto(
+            id=pid,
+            case_id=s.case.id,
+            object=name,
+            content_type=content_type,
+            bytes=size,
+            status="uploading",
+            by_ref=me.ref,
+            created_wall=ctx.clock.now(),
+        )
+    )
+    await ctx.session.flush()
+    link = ctx.cloud.storage.signed_put(ctx.settings.photos_bucket, name, content_type)
+    return {
+        "id": pid,
+        "url": link.url,
+        "headers": link.headers,
+        "expiresAt": (ctx.clock.now() + timedelta(minutes=10)).isoformat(),
+    }
+
+
+async def staff_receipt_sent(ctx: Ctx, client_id: str, ref: str, receipt_id: str) -> None:
+    """the receipt has arrived: Vision reads its payments next"""
+    s = await scene(ctx, client_id, ref)
+    me = await _staff_holder(ctx, s, client_id)
+    _guard(s, "staff")
+    photo = await ctx.session.get(m.CasePhoto, receipt_id, with_for_update=True) if receipt_id else None
+    ok = photo is not None and photo.case_id == s.case.id and "/staff-receipt-" in photo.object
+    if not ok or photo is None or photo.status != "uploading":
+        raise not_found("receipt")
+    assert ctx.cloud is not None and ctx.settings.photos_bucket
+    size = await ctx.cloud.storage.size(ctx.settings.photos_bucket, photo.object)
+    if not size:
+        raise ApiError(422, "The receipt has not arrived yet. Send it again.")
+    at = ev.now(ctx, s.c)
+    photo.status, photo.sent_at, photo.bytes = "sent", at, size
+    taken = ev.clock_of(s.c).at(photo.created_wall)  # when he sent it: its upload, in journey time
+    s.case.staff = {
+        **s.case.staff,
+        "receipt": {
+            "id": photo.id,
+            "object": photo.object,
+            "contentType": photo.content_type,
+            "at": _minute(taken),
+            "by": me.ref,
+            "status": "reading",
+        },
+    }
+    receipt = {"id": photo.id, "object": photo.object, "contentType": photo.content_type}
+    await ev.publish(
+        ctx,
+        J.Event(J.STEP, {"type": J.STAFF_RECEIPT, "client": s.c.id, "ref": ref, "receipt": receipt}, f"{s.c.id}:{ref}"),
+    )
+    await _save(ctx, s, note="reading the staff sale's receipt")
+
+
+def receipt_of(read: dict[str, Any], price: float) -> dict[str, Any]:
+    """Vision's read of a receipt as the sale is held to it: each payment by its UPI reference, the packs it paid for at
+    the staff price, the rows' total, and the first and last payment"""
+    rows = [p for p in read.get("payments") or [] if p.get("rrn") or p.get("amount")]
+    payments = []
+    for i, p in enumerate(rows, 1):
+        amount = money.r2(float(p.get("amount") or 0))
+        units = round(amount / price) if price else 0
+        payments.append(
+            {
+                "n": i,
+                "rrn": p.get("rrn"),
+                "who": p.get("payer") or p.get("who") or "",
+                "at": p.get("at") or "",
+                "units": units,
+                "amount": amount,
+            }
+        )
+    return {
+        "no": read.get("no"),
+        "date": read.get("date"),
+        "payments": payments,
+        "paid": money.r2(sum(p["amount"] for p in payments)),
+        "units": sum(p["units"] for p in payments),
+        "from": payments[0]["at"] if payments else None,
+        "to": payments[-1]["at"] if payments else None,
+    }
+
+
+async def staff_receipt_read(
+    ctx: Ctx, client_id: str, ref: str, receipt_id: str, read: dict[str, Any], run: Run | None
+) -> None:
+    """Vision's read of the staff sale's receipt: its payments, which the sale is then held to"""
+    s = await scene(ctx, client_id, ref)
+    await once(ctx, run)
+    staff = s.case.staff or {}
+    r = staff.get("receipt") or {}
+    if r.get("id") != receipt_id or r.get("status") != "reading":
+        raise Noop()
+    got = receipt_of(read or {}, float(staff.get("price") or 0))
+    status = "read" if got["payments"] else "unreadable"
+    s.case.staff = {**staff, "receipt": {**r, **got, "status": status, "readAt": _minute(ev.now(ctx, s.c))}}
+    photo = await ctx.session.get(m.CasePhoto, receipt_id)
+    if photo is not None:
+        photo.status = "read" if got["payments"] else "rejected"
+    n = len(got["payments"])
+    text = copy.receipt_read_event(no=got["no"], payments=n, paid=got["paid"]) if n else copy.receipt_unread_event()
+    await ev.feed(ctx, s.c, s.case, "staffReceipt", "execute", text, agent="Vision", icon="scan-line")
+    await _run(ctx, s, client_id, run, f"read {ref}'s staff sale receipt: {n} UPI payments")
     await _save(ctx, s)
 
 
@@ -2082,10 +2243,19 @@ async def destruction_photo(
 
 
 async def send_destruction(
-    ctx: Ctx, client_id: str, ref: str, agency_id: str, certificate: str, photos: dict[str, str]
+    ctx: Ctx,
+    client_id: str,
+    ref: str,
+    agency_id: str,
+    certificate: str,
+    photos: dict[str, str],
+    window: dict[str, str] | None = None,
+    witnesses: list[dict[str, str]] | None = None,
 ) -> None:
-    """his evidence: the agency on the client's list and its certificate number, and both photos arrived; Vision checks
-    it next (or, with Vision's check off, it goes straight to the operator)"""
+    """his evidence: the agency on the client's list and its certificate number, and both photos arrived; with the
+    window the agency destroyed them in and its two independent witnesses, for the certificate in full (SC-174: the
+    agency's own panel, and the 25 minutes up to the after photo, when he gives none). Vision checks it next (or, with
+    Vision's check off, it goes straight to the operator)"""
     s = await scene(ctx, client_id, ref)
     me = await _holder(ctx, s, client_id, "the destruction's evidence")
     _guard(s, "destroy")
@@ -2114,6 +2284,9 @@ async def send_destruction(
         photo.status, photo.sent_at, photo.bytes = "sent", at, size
         taken = ev.clock_of(s.c).at(photo.created_wall)  # when he took it: its upload, in journey time
         sent[which] = {"id": photo.id, "object": photo.object, "name": which, "at": _minute(taken)}
+    if window and not window.get("from", "") < window.get("to", ""):
+        raise ApiError(422, "The window ends after it starts.", {"window": "From before to."})
+    panel = [{"name": w["name"], "address": w.get("address", "")} for w in agency.get("witnesses") or []]
     dz = s.case.destruction or {}
     s.case.destruction = {
         **dz,
@@ -2124,6 +2297,9 @@ async def send_destruction(
         "sentAt": _minute(at),
         "reason": None,
         "checks": [],
+        # sent again after the operator asked, what he gave before stands unless he gives it anew
+        **({"window": window or dz["window"]} if window or dz.get("window") else {}),
+        "witnesses": witnesses or dz.get("witnesses") or panel,
     }
     text = copy.destroy_sent_event(agency=agency["name"], certificate=cert)
     await ev.feed(ctx, s.c, s.case, "destroySent", "report", text, person=me.ref, human=True, icon="camera")
@@ -2364,7 +2540,22 @@ def _certificate(s: Scene, dz: dict[str, Any], settle: dict[str, Any]) -> dict[s
         "note": f"Destroyed at {site} on expiry day, from {_godown(s)}. {s.dist.name} reverses the input GST on these "
         "packs in GSTR-3B Table 4(B)(1) under section 17(5)(h).",
         "pdf": None,
+        # in full (SC-174): the reason, the method, the facility, the window, the officer and witnesses, the log
+        **papers.destruction_detail(
+            dz,
+            _agency_record(s, agency.get("id")),
+            (world.destruction_settings(s.c) or {}).get("methods") or {},
+            sku,
+            {"id": s.ref, "mfg": s.batch.mfg.isoformat() if s.batch.mfg else None},
+            world.dist_obj(s.dist),
+        ),
     }
+
+
+def _agency_record(s: Scene, agency_id: str | None) -> dict[str, Any]:
+    """the agency's record on the client's list (its facility, officer, vehicle, method and witnesses)"""
+    agencies = (world.destruction_settings(s.c) or {}).get("agencies") or []
+    return next((a for a in agencies if a.get("id") == agency_id), {})
 
 
 EXPIRY_PAPER = {

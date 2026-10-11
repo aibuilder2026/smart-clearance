@@ -344,9 +344,13 @@ async def test_paperwork_lays_out_a_kiranas_tax_invoice_as_it_orders(run, backen
         "₹ 454.00",
         "INR Four Hundred Fifty Four Only",
         "Scheme order, 09:52",
+        # signed by his signatory over his rubber stamp (SC-174)
+        "marks/signatures/rakesh.webp",
+        "marks/seals/rakesh.webp",
+        "Rakesh Jaiswal, Proprietor",
     ):
         assert text in page, text
-    assert "IRN" not in page and rc.requests == []
+    assert "IRN" not in page and "Computer Generated" not in page and rc.requests == []
 
     # redelivered once the PDF is there: nothing to do
     backend.routes["GET", f"{C}/cases/{HERO}"]["journey"]["orders"] = [{**order, "invoice": {**inv, "pdf": True}}]

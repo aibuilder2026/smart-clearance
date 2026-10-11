@@ -59,6 +59,24 @@ async def test_the_history_clears_each_batch_as_money_js_has_it(with_history, ct
                 )
                 assert c.destruction["status"] == "approved" and c.destruction["approvedBy"] == "Priya Deshmukh"
                 assert all(x["ok"] for x in c.destruction["checks"]), c.destruction["checks"]
+                # in full (SC-174): its window and witnesses as sent, and its log as design3's ledger.js lays it out
+                cert = docs["destruction"]
+                assert cert["window"] == dz["window"] and [w["name"] for w in cert["witnesses"]] == [
+                    w["name"] for w in dz["witnesses"]
+                ]
+                assert all(w["sign"] for w in cert["witnesses"]) and cert["officer"]["sign"] and cert["handedBy"]
+                assert cert["log"] == dz["log"], b["ref"]
+        # the staff sale with its consolidated receipt (SC-174), read as design3 has it
+        if b.get("staffReceipt"):
+            r = c.staff["receipt"]
+            assert (r["status"], r["no"], r["paid"], r["units"]) == (
+                "read",
+                b["staffReceipt"]["no"],
+                b["staffReceipt"]["paid"],
+                b["staffReceipt"]["units"],
+            )
+            assert [x["rrn"] for x in r["payments"]] == [x["rrn"] for x in b["staffReceipt"]["payments"]]
+            assert c.staff["sold"] == b["staff"]
         if "receipt" in n:
             assert c.donation["receipt"]["no"] == n["receipt"]
         batch = await ctx.session.get(m.Batch, ("munchly", b["ref"]))

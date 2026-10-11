@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{# the client's FSSAI surplus-food checklist for a donation, signed at its foot by the client's signatory (SC-174) #}
+{% from "_sign.html" import foot %}
 {% block body %}
 <table>
   <tbody>
@@ -17,4 +19,5 @@
   <li>The receiving organisation is a registered food-recovery organisation.</li>
   <li>The receiving organisation has signed for the packs, with the date and quantity.</li>
 </ul>
+{% set C = case.client or {} %}{{ foot(C.name or doc.owner, C.signatory, (C.signatory or {}).seal) }}
 {% endblock %}

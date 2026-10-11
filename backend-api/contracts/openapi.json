@@ -1392,6 +1392,32 @@
           },
           "photos": {
             "$ref": "#/components/schemas/DestructionPhotos"
+          },
+          "window": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DestructionWindow"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "witnesses": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Witness"
+                },
+                "maxItems": 2,
+                "minItems": 2,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Witnesses"
           }
         },
         "required": [
@@ -1463,6 +1489,27 @@
           "after"
         ],
         "title": "DestructionPhotos",
+        "type": "object"
+      },
+      "DestructionWindow": {
+        "additionalProperties": false,
+        "properties": {
+          "from": {
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "From",
+            "type": "string"
+          },
+          "to": {
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "To",
+            "type": "string"
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ],
+        "title": "DestructionWindow",
         "type": "object"
       },
       "DeviceInput": {
@@ -2870,6 +2917,18 @@
       "StaffSaleInput": {
         "additionalProperties": false,
         "properties": {
+          "receipt": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Receipt"
+          },
           "sold": {
             "maximum": 100000.0,
             "minimum": 0.0,
@@ -3062,6 +3121,29 @@
           "client"
         ],
         "title": "Waiting",
+        "type": "object"
+      },
+      "Witness": {
+        "additionalProperties": false,
+        "properties": {
+          "address": {
+            "maxLength": 160,
+            "minLength": 6,
+            "title": "Address",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 80,
+            "minLength": 3,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "address"
+        ],
+        "title": "Witness",
         "type": "object"
       },
       "WorkspaceMatch": {
@@ -6691,6 +6773,141 @@
           }
         ],
         "summary": "The distributor records the staff sale at the godown",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/staff-sale/receipt": {
+      "post": {
+        "operationId": "staff_receipt_link_v1_workspaces__ws__cases__ref__staff_sale_receipt_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Staff Receipt Link V1 Workspaces  Ws  Cases  Ref  Staff Sale Receipt Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "A signed link for the staff sale's consolidated receipt",
+        "tags": [
+          "workspace"
+        ]
+      }
+    },
+    "/v1/workspaces/{ws}/cases/{ref}/staff-sale/receipt/{receipt}": {
+      "post": {
+        "operationId": "staff_receipt_sent_v1_workspaces__ws__cases__ref__staff_sale_receipt__receipt__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ws",
+            "required": true,
+            "schema": {
+              "title": "Ws",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ref",
+            "required": true,
+            "schema": {
+              "title": "Ref",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "receipt",
+            "required": true,
+            "schema": {
+              "title": "Receipt",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Staff Receipt Sent V1 Workspaces  Ws  Cases  Ref  Staff Sale Receipt  Receipt  Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "The receipt has arrived: Vision reads its payments",
         "tags": [
           "workspace"
         ]

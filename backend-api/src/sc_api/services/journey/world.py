@@ -130,7 +130,8 @@ def sku_obj(x: m.Sku) -> dict[str, Any]:
     return out
 
 
-DIST_IDENTITY = ("stateCode", "pan", "fssai", "email", "bank")
+# his signatory and his staff sales' receipt series (SC-174) keep with them, as the story sets them
+DIST_IDENTITY = ("stateCode", "pan", "fssai", "email", "bank", "signatory", "receipts")
 
 
 def dist_obj(d: m.Distributor) -> dict[str, Any]:

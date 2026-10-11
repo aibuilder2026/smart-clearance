@@ -10,6 +10,9 @@ and on expiry day checks the evidence of packs destroyed at his godown (SC-139).
 - `journey.step {type: destruction}` → the two photos (before, at the godown; after, at the landfill), read together by
   Gemini Flash into {before: {batch, count}, after: {slate: {batch, count, date}, landfill, destroyed}}, then
   `POST …/destruction/check {read}`. backend-api holds the read to the batch; the operator decides on the yes.
+- `journey.step {type: staffReceipt}` → the staff sale's consolidated receipt (SC-174), a photo or a PDF from the photos
+  bucket, read by Gemini Flash into {no, date, payments: [{rrn, payer, at, amount}], total}, then
+  `POST …/staff/receipt/read {id, read}`. backend-api holds the payments' total to the packs he counted.
 
 The model is not shown the DMS record, so it reads what is printed rather than what is expected. A read the model
 could not make (an error, a timeout) is tried again on Pub/Sub's next delivery; on the last one an empty read goes,
@@ -51,6 +54,8 @@ def mime_of(data: bytes) -> str:
         return "image/webp"
     if data[4:12] in (b"ftypheic", b"ftypheix", b"ftypmif1"):
         return "image/heic"
+    if data[:5] == b"%PDF-":  # a staff sale's receipt may be a PDF (SC-174)
+        return "application/pdf"
     return "image/jpeg"
 
 
@@ -298,4 +303,148 @@ def destruction(rc: RunCtx) -> list:
             when=lambda s: destruction_due(s) and "dz_photos" in s,
         ),
         step(rc, "vision_dz_report", _dz_report, agent=AGENT, when=lambda s: destruction_due(s) and "dz_photos" in s),
+    ]
+
+
+# --- reading the staff sale's consolidated receipt (SC-174) -----------------------------------------------------------
+
+
+class ReceiptPayment(BaseModel):
+    # every field required, null where the row does not show it (SC-77)
+    rrn: str | None = Field(
+        description="the payment's UPI reference (UPI Ref. No., the 12-digit RRN), digits only; null if unreadable"
+    )
+    payer: str | None = Field(description="who paid, as printed; null if none is shown")
+    at: str | None = Field(description="the payment's date and time, as printed; null if none is shown")
+    amount: float | None = Field(description="the amount paid in rupees; null if unreadable")
+
+
+class ReceiptRead(BaseModel):
+    no: str | None = Field(description="the receipt's own number, as printed (e.g. LA/SR/26-27/0002); null if none")
+    date: str | None = Field(description="the receipt's date, as printed; null if none")
+    payments: list[ReceiptPayment] = Field(description="every payment row on the receipt, in the printed order")
+    total: float | None = Field(description="the total as printed on the receipt, in rupees; null if none is printed")
+    confidence: float = Field(description="0 to 1: how sure every reference and amount returned is exact")
+
+
+RRN = 12
+
+
+def tidy_receipt(read: dict[str, Any]) -> dict[str, Any]:
+    """the model's read as backend-api holds it to the count: each UPI reference as its 12 digits (else null), each
+    amount to the paisa, no row with neither a reference nor an amount"""
+
+    def text(v: Any, cap: int) -> str | None:
+        return (" ".join(str(v).split())[:cap] or None) if v is not None else None
+
+    def rupees(v: Any) -> float | None:
+        n = checks.money(v)
+        return round(n, 2) if n is not None else None
+
+    payments = []
+    for p in read.get("payments") or []:
+        if not isinstance(p, dict):
+            continue
+        digits = "".join(c for c in str(p.get("rrn") or "") if c.isdigit())
+        row = {
+            "rrn": digits if len(digits) == RRN else None,
+            "payer": text(p.get("payer"), 80),
+            "at": text(p.get("at"), 40),
+            "amount": rupees(p.get("amount")),
+        }
+        if row["rrn"] or row["amount"] is not None:
+            payments.append(row)
+    confidence = read.get("confidence")
+    try:
+        confidence = min(1.0, max(0.0, float(confidence))) if confidence is not None else 0.0
+    except (TypeError, ValueError):
+        confidence = 0.0
+    return {
+        "no": text(read.get("no"), 40),
+        "date": text(read.get("date"), 20),
+        "payments": payments,
+        "total": rupees(read.get("total")),
+        "confidence": round(confidence, 3),
+    }
+
+
+def receipt_due(rc: RunCtx):
+    """the case's staff sale has a receipt being read, and it is the one this event names (a receipt sent again since
+    has its own event)"""
+
+    def due(state: dict[str, Any]) -> bool:
+        r = (state.get("case") or {}).get("staffReceipt") or {}
+        want = (rc.msg.payload.get("receipt") or {}).get("id")
+        return _on(state) and r.get("status") == "reading" and (not want or not r.get("id") or r["id"] == want)
+
+    return due
+
+
+async def _sr_file(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:
+    case = state["case"]
+    receipt = rc.msg.payload.get("receipt") or {}
+    bucket = case.get("photosBucket") or rc.settings.photos_bucket
+    name = receipt.get("object")
+    if not name or not bucket:
+        return {"halt": True}
+    try:
+        data = await rc.deps.store.read(bucket, name)
+    except Exception as e:
+        raise Transient(f"the staff sale's receipt gs://{bucket}/{name}: {e}") from e
+    kind = str(receipt.get("contentType") or "")
+    mime = kind if kind == "application/pdf" or kind.startswith("image/") else mime_of(data)
+    rc.blobs["receipt"] = (data, mime)
+    rc.run(AGENT)
+    return {"sr_file": name}
+
+
+def _sr_parts(rc: RunCtx):
+    def parts(state: dict[str, Any]) -> list[types.Part]:
+        data, mime = rc.blobs["receipt"]
+        return [
+            types.Part(text="The distributor's consolidated receipt for a staff sale at his godown."),
+            types.Part.from_bytes(data=data, mime_type=mime),
+            types.Part(text="Read every payment on it. Return only what is printed."),
+        ]
+
+    return parts
+
+
+async def _sr_report(rc: RunCtx, state: dict[str, Any]) -> dict[str, Any]:
+    run = rc.run(AGENT)
+    read = state.get("vision_staff_receipt") or {}
+    if not read:
+        run.fell_back("no read")
+        if rc.msg.attempt < rc.settings.max_attempts:
+            raise Transient("Vision could not read the staff sale's receipt: Pub/Sub tries again")
+    receipt = rc.msg.payload.get("receipt") or {}
+    rid = receipt.get("id") or (state["case"].get("staffReceipt") or {}).get("id")
+    out = await rc.report(
+        AGENT,
+        case_path(rc.msg.client, rc.msg.ref or "", "staff/receipt/read"),
+        {"id": rid, "read": tidy_receipt(read)},
+    )
+    if out.get("noop"):
+        return halt()
+    return {}
+
+
+def staff_receipt(rc: RunCtx) -> list:
+    due = receipt_due(rc)
+    return [
+        step(rc, "vision_sr_file", _sr_file, agent=AGENT, when=due),
+        writer(
+            rc,
+            name="vision_staff_receipt",
+            agent=AGENT,
+            tier="flash",
+            prompt_name="vision_staff_receipt",
+            schema=ReceiptRead,
+            output_key="vision_staff_receipt",
+            parts=_sr_parts(rc),
+            temperature=STRUCTURED,
+            selector=lambda s: s.get("sr_file") or "",
+            when=lambda s: due(s) and "sr_file" in s,
+        ),
+        step(rc, "vision_sr_report", _sr_report, agent=AGENT, when=lambda s: due(s) and "sr_file" in s),
     ]

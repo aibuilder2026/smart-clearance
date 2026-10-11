@@ -359,8 +359,11 @@ async def snapshot(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, An
             "city": c.city,
             "gstin": doc.get("gstin", ""),
             "fssai": doc.get("fssai", ""),
-            # the identity its own papers carry (SC-148): its PAN, CIN, address and state
-            **{k: (doc.get("identity") or {}).get(k) for k in ("pan", "cin", "address", "state", "stateCode", "email")},
+            # the identity its own papers carry (SC-148): its PAN, CIN, address and state, and who signs them (SC-174)
+            **{
+                k: (doc.get("identity") or {}).get(k)
+                for k in ("pan", "cin", "address", "state", "stateCode", "email", "signatory")
+            },
             # the client as its profile states it; its SKUs and distributors as the workspace holds them
             "listed": (doc.get("client") or {}).get("listed", ""),
             "revenue": (doc.get("client") or {}).get("revenue", ""),
@@ -666,6 +669,8 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
                 "sold": case.staff.get("sold"),
                 "left": case.staff.get("left"),
                 "recordedAt": case.staff.get("recordedAt"),
+                # the consolidated receipt he attached, and what Vision read of it (SC-174)
+                "receipt": staff_receipt_out(ctx, case.staff.get("receipt")),
             }
             if case.staff and (mine or role == "distributor")
             else None
@@ -741,7 +746,9 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
                 continue
             if role == "foodbank" and d_["id"] != "receipt":  # a food bank sees its own receipt (SC-110)
                 continue
-            docs.append(doc_out(with_reversed(case, d_)))
+            docs.append(doc_links(ctx, doc_out(with_reversed(case, d_))))
+            if d_["id"] == "support" and role != "foodbank" and (sd := staff_doc(case, d.short or d.name)):
+                docs.append(sd)
 
     kiranas = []
     if case.offer and (mine or role == "distributor" or role == "retailer"):
@@ -1002,7 +1009,7 @@ async def document_object(ctx: Ctx, client_id: str, ref: str, doc: str) -> str |
 
 # the food bank's receipt beyond a paper's own fields (SC-110, money.receipt)
 # the papers a distributor sees: his own, and copies of what concerns his packs (SC-130)
-DIST_DOCS = ("invoice", "eway", "support", "expiry", "receipt", "destruction")
+DIST_DOCS = ("invoice", "eway", "support", "staff", "expiry", "receipt", "destruction")
 DOC_FIELDS = (
     *("id", "type", "owner", "no", "status", "amount", "note", "taxable", "igst", "roundOff", "total"),
     *("units", "price", "gstPct", "exact", "date"),
@@ -1068,7 +1075,57 @@ RECEIPT_FIELDS = (
 DESTRUCTION_FIELDS = (
     *("credit", "gst", "charges", "reversal", "dp", "certificate", "agency", "auth", "method", "site", "for"),
     *("batch", "bestBefore", "hsn", "destroyedAt", "packKg", "evidence", "approvedBy", "approvedAt", "atGodown"),
+    # the certificate in full (SC-174)
+    *("reason", "methodId", "methodName", "methodHow", "facility", "vehicle", "officer", "seal", "witnesses", "window"),
+    *("destroyedOn", "photos", "handedBy", "goods", "mfg", "mrp", "perCarton", "log", "kg"),
 )
+
+
+def doc_links(ctx: Ctx, d_: dict[str, Any]) -> dict[str, Any]:
+    """a paper's photos with short-lived links to them (the certificate's log, SC-174); the objects stay ours"""
+    photos = d_.get("photos")
+    if not isinstance(photos, dict):
+        return d_
+    out = {}
+    for w, p in photos.items():
+        url = None
+        if p.get("object") and ctx.cloud and ctx.settings.photos_bucket:
+            url = ctx.cloud.storage.signed_get(ctx.settings.photos_bucket, p["object"])
+        out[w] = {"name": p.get("name"), "at": p.get("at"), "url": url}
+    return {**d_, "photos": out}
+
+
+def staff_receipt_out(ctx: Ctx, r: dict[str, Any] | None) -> dict[str, Any] | None:
+    """the staff sale's consolidated receipt as the screens read it (SC-174): where it stands, what Vision read of its
+    payments, and a short-lived link to it"""
+    if not r:
+        return None
+    url = None
+    if r.get("object") and ctx.cloud and ctx.settings.photos_bucket:
+        url = ctx.cloud.storage.signed_get(ctx.settings.photos_bucket, r["object"])
+    keys = ("id", "status", "no", "date", "payments", "paid", "units", "from", "to", "at", "readAt", "contentType")
+    return {**{k: r.get(k) for k in keys}, "payments": r.get("payments") or [], "url": url}
+
+
+def staff_doc(case: m.Case, owner: str) -> dict[str, Any] | None:
+    """the staff sale's consolidated receipt as a paper of the pack (SC-174): his own, once the sale is recorded with
+    it"""
+    st = case.staff or {}
+    r = st.get("receipt") or {}
+    if st.get("status") != "recorded" or r.get("status") != "read":
+        return None
+    return {
+        "id": "staff",
+        "type": "Staff sale receipt",
+        "owner": owner or "the distributor",
+        "no": r.get("no") or "",
+        "status": "generated",
+        "amount": r.get("paid"),
+        "note": f"{len(r.get('payments') or [])} UPI payments",
+        "units": r.get("units"),
+        "date": (r.get("date") or r.get("readAt") or "")[:10] or None,
+        "pdf": True,
+    }
 
 
 def label_out(ctx: Ctx, case: m.Case) -> dict[str, Any] | None:
@@ -1108,6 +1165,9 @@ def destruction_out(ctx: Ctx, dz: dict[str, Any] | None) -> dict[str, Any] | Non
         "approvedBy": dz.get("approvedBy"),
         "remindAt": dz.get("remindAt"),
         "method": dz.get("method") or "",
+        # the window the agency destroyed them in and its two witnesses, as he gave them (SC-174)
+        "window": dz.get("window"),
+        "witnesses": dz.get("witnesses"),
     }
 
 

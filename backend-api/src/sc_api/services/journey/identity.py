@@ -8,7 +8,8 @@ from sc_api.services.context import Ctx
 from sc_api.services.journey import world
 
 BUYER_DETAILS = ("state", "stateCode", "address", "gstin", "pan", "kind")
-CLIENT_IDENTITY = ("pan", "cin", "address", "state", "stateCode", "email")
+# with who signs its papers (SC-174)
+CLIENT_IDENTITY = ("pan", "cin", "address", "state", "stateCode", "email", "signatory")
 
 
 async def parties(ctx: Ctx, c: m.Client, j: dict[str, Any]) -> None:

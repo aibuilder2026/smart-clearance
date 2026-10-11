@@ -12529,6 +12529,17 @@
 						"prefix": "RT/26-27/",
 						"next": 1279,
 						"width": 4
+					},
+					"signatory": {
+						"name": "Rakesh Jaiswal",
+						"title": "Proprietor",
+						"sign": "rakesh",
+						"seal": "rakesh"
+					},
+					"receipts": {
+						"prefix": "RT/SR/26-27/",
+						"next": 2,
+						"width": 4
 					}
 				},
 				"buyer": {
@@ -12561,7 +12572,13 @@
 					"distributors": 4,
 					"kiranas": 195,
 					"shortDatedPerQuarter": 1800000,
-					"destroyedToday": 0.7
+					"destroyedToday": 0.7,
+					"signatory": {
+						"name": "Vinod Patwardhan",
+						"title": "Head of Accounts",
+						"sign": "munchly",
+						"seal": "munchly"
+					}
 				}
 			},
 			"numbers": {
@@ -12609,6 +12626,17 @@
 						"series": {
 							"prefix": "RT/26-27/",
 							"next": 1279,
+							"width": 4
+						},
+						"signatory": {
+							"name": "Rakesh Jaiswal",
+							"title": "Proprietor",
+							"sign": "rakesh",
+							"seal": "rakesh"
+						},
+						"receipts": {
+							"prefix": "RT/SR/26-27/",
+							"next": 2,
 							"width": 4
 						}
 					},
@@ -12960,6 +12988,17 @@
 						"prefix": "RT/26-27/",
 						"next": 1279,
 						"width": 4
+					},
+					"signatory": {
+						"name": "Rakesh Jaiswal",
+						"title": "Proprietor",
+						"sign": "rakesh",
+						"seal": "rakesh"
+					},
+					"receipts": {
+						"prefix": "RT/SR/26-27/",
+						"next": 2,
+						"width": 4
 					}
 				},
 				"buyer": {
@@ -12992,7 +13031,13 @@
 					"distributors": 4,
 					"kiranas": 195,
 					"shortDatedPerQuarter": 1800000,
-					"destroyedToday": 0.7
+					"destroyedToday": 0.7,
+					"signatory": {
+						"name": "Vinod Patwardhan",
+						"title": "Head of Accounts",
+						"sign": "munchly",
+						"seal": "munchly"
+					}
 				}
 			},
 			"numbers": {
@@ -13040,6 +13085,17 @@
 						"series": {
 							"prefix": "RT/26-27/",
 							"next": 1279,
+							"width": 4
+						},
+						"signatory": {
+							"name": "Rakesh Jaiswal",
+							"title": "Proprietor",
+							"sign": "rakesh",
+							"seal": "rakesh"
+						},
+						"receipts": {
+							"prefix": "RT/SR/26-27/",
+							"next": 2,
 							"width": 4
 						}
 					},
@@ -13391,6 +13447,17 @@
 						"prefix": "RT/26-27/",
 						"next": 1279,
 						"width": 4
+					},
+					"signatory": {
+						"name": "Rakesh Jaiswal",
+						"title": "Proprietor",
+						"sign": "rakesh",
+						"seal": "rakesh"
+					},
+					"receipts": {
+						"prefix": "RT/SR/26-27/",
+						"next": 2,
+						"width": 4
 					}
 				},
 				"buyer": {
@@ -13423,7 +13490,13 @@
 					"distributors": 4,
 					"kiranas": 195,
 					"shortDatedPerQuarter": 1800000,
-					"destroyedToday": 0.7
+					"destroyedToday": 0.7,
+					"signatory": {
+						"name": "Vinod Patwardhan",
+						"title": "Head of Accounts",
+						"sign": "munchly",
+						"seal": "munchly"
+					}
 				}
 			},
 			"numbers": {
@@ -13471,6 +13544,17 @@
 						"series": {
 							"prefix": "RT/26-27/",
 							"next": 1279,
+							"width": 4
+						},
+						"signatory": {
+							"name": "Rakesh Jaiswal",
+							"title": "Proprietor",
+							"sign": "rakesh",
+							"seal": "rakesh"
+						},
+						"receipts": {
+							"prefix": "RT/SR/26-27/",
+							"next": 2,
 							"width": 4
 						}
 					},
@@ -13830,6 +13914,17 @@
 						"prefix": "RT/26-27/",
 						"next": 1279,
 						"width": 4
+					},
+					"signatory": {
+						"name": "Rakesh Jaiswal",
+						"title": "Proprietor",
+						"sign": "rakesh",
+						"seal": "rakesh"
+					},
+					"receipts": {
+						"prefix": "RT/SR/26-27/",
+						"next": 2,
+						"width": 4
 					}
 				},
 				"buyer": {
@@ -13862,7 +13957,13 @@
 					"distributors": 4,
 					"kiranas": 195,
 					"shortDatedPerQuarter": 1800000,
-					"destroyedToday": 0.7
+					"destroyedToday": 0.7,
+					"signatory": {
+						"name": "Vinod Patwardhan",
+						"title": "Head of Accounts",
+						"sign": "munchly",
+						"seal": "munchly"
+					}
 				}
 			},
 			"numbers": {
@@ -14207,6 +14308,17 @@
 						"prefix": "RT/26-27/",
 						"next": 1279,
 						"width": 4
+					},
+					"signatory": {
+						"name": "Rakesh Jaiswal",
+						"title": "Proprietor",
+						"sign": "rakesh",
+						"seal": "rakesh"
+					},
+					"receipts": {
+						"prefix": "RT/SR/26-27/",
+						"next": 2,
+						"width": 4
 					}
 				},
 				"buyer": {
@@ -14239,7 +14351,13 @@
 					"distributors": 4,
 					"kiranas": 195,
 					"shortDatedPerQuarter": 1800000,
-					"destroyedToday": 0.7
+					"destroyedToday": 0.7,
+					"signatory": {
+						"name": "Vinod Patwardhan",
+						"title": "Head of Accounts",
+						"sign": "munchly",
+						"seal": "munchly"
+					}
 				}
 			},
 			"receipt": {

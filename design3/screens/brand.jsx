@@ -350,13 +350,15 @@
   }
   // the staff sale on Execution (SC-87, option A): the distributor runs it at the godown and records what sold, once; no
   // agent acts here. Before it opens, the plan's line
-  function StaffOps({ staff, line, dist }) {
+  function StaffOps({ staff, line, dist, batch }) {
     const units = staff ? staff.units : line.units, price = staff ? staff.price : line.price, sold = staff && staff.status === "recorded" ? staff.sold : null;
     return <Card className="stack snug">
       <div className="card-head"><span className="row tight"><span className="icontile" style={{ borderRadius: 9 }}><Icon name="users" size={17} stroke={2} /></span><span className="card-title">Staff sale · {dist.short}</span></span>{!staff ? <Badge>opens on approval</Badge> : sold == null ? <Badge tone="blue" dot>open</Badge> : <Badge tone="green" icon="check">recorded</Badge>}</div>
       <div className="row wrap" style={{ gap: 18 }}><div className="stack tight" style={{ gap: 0 }}><span className="num m">{sold == null ? "—" : fmt.num(sold)}<span className="subtle" style={{ fontSize: "0.45em" }}>{` / ${fmt.num(units)}`}</span></span><span className="t-footnote subtle">sold to staff</span></div><div className="stack tight" style={{ gap: 0 }}><span className="num m">₹{price}</span><span className="t-footnote subtle">a pack, by UPI</span></div></div>
       <K.Progress value={(sold || 0) / units} label="Staff packs sold" />
-      <span className="t-footnote muted">{dist.short} runs it at {(staff && staff.godown) || dist.godown} and records what sold; no agent acts here.</span>
+      {/* the consolidated receipt she sent with the count, as Vision read it (SC-174) */}
+      {staff && staff.receipt && staff.receipt.payments ? <S.ReceiptRead r={staff.receipt} count={sold} price={price} src={staff.receipt.url || `${window.SC3_IMG}${staff.receipt.file || `receipts/${batch}.webp`}`} />
+        : <span className="t-footnote muted">{dist.short} runs it at {(staff && staff.godown) || dist.godown} and records what sold, with the consolidated receipt of the staff's UPI payments; no agent acts here.</span>}
     </Card>;
   }
   // what no channel took, once every line is done (SC-87, option A): each line's planned packs it did not take, which
@@ -579,7 +581,7 @@
             {s.mango.donation === "booked" && <S.PlayAs who={C.accounts.foodbank} route="pickups">Confirm as Meera</S.PlayAs>}
             {s.mango.donation === "confirmed" && s.mango.id === h.id && <S.PlayAs who={C.accounts.foodbank} route="pickups">Collect as Meera</S.PlayAs>}
           </Card>}
-          {hasLine("staff") && <StaffOps staff={h.staff} line={P.lines.find(l => l.id === "staff")} dist={C.dist} />}
+          {hasLine("staff") && <StaffOps staff={h.staff} line={P.lines.find(l => l.id === "staff")} dist={C.dist} batch={C.batch.id} />}
           {h.staff && h.staff.status === "open" && <S.PlayAs who={C.accounts.distributor} route="van">{`Record the staff sale as ${holder.short}`}</S.PlayAs>}
           {h.realised && h.realised.godown > 0 && ["dispatched", "settled", "cleared"].includes(h.phase) && <GodownLeft realised={h.realised} plan={P} actual={C.actual.net} dist={C.dist} />}
           {h.expiry && h.expiry.units > 0 && <ExpirySettlement settle={h.expiry} dist={C.dist} />}

@@ -83,17 +83,20 @@
     confirmPickup: s => { const S = story(s), x = S.donation, DN = S.journey.donation; if (!x || s.mango.donation !== "booked") return; const name = x.sku.name.replace(/\s+\d+(\.\d+)?\s?(g|ml|kg|l)$/i, ""); s.mango.donation = "confirmed"; audit(s, S.accounts.foodbank, `confirmed the pickup, ${DN.day} ${DN.time}`, `${x.batch.id} · ${x.units} packs`, S.at.confirm); notify(s, "priya", { title: `${x.partner.name} confirmed`, body: `${x.units} packs of ${name}, pickup ${DN.day} ${DN.time} from ${DN.from}. Served at ${DN.spot}.`, at: S.at.confirm, link: "execution" }); },
     // the staff sale, recorded once by the distributor (SC-87): the chips' plan opens none, the Mango Drink's has one at
     // Lakshmi Agencies (SC-133), staged beside the chips or opened by its own journey's approval
-    recordStaffSale: (s, sold) => {
-      const S = story(s), st = s.hero.staff;
+    // With it, the consolidated receipt she sent (SC-174): `x` is the count, or { sold, receipt }; in the stub the receipt
+    // is the batch's own, its payments as Vision reads them
+    recordStaffSale: (s, x) => {
+      const S = story(s), st = s.hero.staff, sold = typeof x === "number" ? x : x.sold;
+      const receiptOf = r => (r ? Object.assign({ read: true }, r) : null);
       if (st && st.status === "open") {
-        Object.assign(st, { status: "recorded", sold, left: st.units - sold });
+        Object.assign(st, { status: "recorded", sold, left: st.units - sold, receipt: receiptOf((x && x.receipt) || S.staffReceipt) });
         if (S.key !== "chips") { audit(s, S.accounts.distributor, `recorded the staff sale: ${sold} of ${st.units} packs`, `${S.batch.id} · ${S.dist.godown}`, S.at.staff); feedIf(s, "staff"); advance(s); }
         return;
       }
       if (!S.second) return;
       const line = D.MANGO_PLAN.lines.find(l => l.id === "staff"), m = s.mango;
       if (!line || !m.phase || m.phase === "watching" || (m.staff && m.staff.status === "recorded")) return;
-      m.staff = { status: "recorded", units: line.units, sold, left: line.units - sold };
+      m.staff = { status: "recorded", units: line.units, sold, left: line.units - sold, receipt: receiptOf((x && x.receipt) || D.STORIES.mango.staffReceipt) };
       audit(s, "lakshmi-owner", `recorded the staff sale: ${sold} of ${line.units} packs`, `${m.id} · ${D.DISTRIBUTORS.lakshmi.godown}`, "Day 1");
     },
     collect: s => { const S = story(s), x = S.donation; if (!x) return; s.mango.donation = "collected"; audit(s, S.accounts.foodbank, `collected ${x.units} packs and issued ${x.receipt.type.toLowerCase()} ${x.receipt.no}`, x.batch.id, S.at.collect); if (s.mango.id === s.hero.id) { feedIf(s, "collect"); advance(s); } },
@@ -119,6 +122,8 @@
       const agency = (x && x.agency) || D.SETUP.destruction.agencies[0];
       Object.assign(d, { status: "checked", agency: { id: agency.id, name: agency.name, auth: agency.auth, site: agency.site }, certificate: (x && x.certificate) || agency.series.prefix + String(agency.series.next).padStart(agency.series.width, "0"), reason: null,
         photos: { before: { name: S.evidence.before, at: "11:40" }, after: { name: S.evidence.after, at: "13:20" } }, sentAt: "14:00",
+        // the window the agency destroyed them in and its two independent witnesses, as he gave them (SC-174)
+        window: (x && x.window) || { from: "12:55", to: "13:20" }, witnesses: ((x && x.witnesses) || agency.witnesses || []).map(w => ({ name: w.name, address: w.address })),
         checks: [["batch", `Batch ${h.id} read on the carton label`], ["count", `About ${Math.round(d.units / 10) * 10} packs in view (${d.units} left)`], ["slate", `The slate reads ${h.id} · ${d.units} packets${S.evidence.slate ? " · " + S.evidence.slate : ""}`], ["when", S.evidence.when]].map(([id, label]) => ({ id, label, ok: true })) });
       audit(s, S.accounts.distributor, `sent the destruction's evidence: ${d.units} packs, ${d.agency.name}`, `${h.id} · ${d.certificate}`, S.at.expiry);
       feedIf(s, "destroySent"); feedIf(s, "destroyChecked"); if (S.push.evidence) notify(s, "priya", Object.assign({ link: "command" }, S.push.evidence));

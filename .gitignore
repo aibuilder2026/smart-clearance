@@ -70,6 +70,8 @@ infra/**/crash.log
 frontend/.firebaserc
 .claude/settings.local.json
 design3/system/labels/src/
+design3/system/signatures/src/
+design3/system/receipts/src/
 
 # SC-158: the demo film's pipeline scripts ship; its PNG originals, clips, screens, build and logs stay local
 !design3/designs/SC-158/src/

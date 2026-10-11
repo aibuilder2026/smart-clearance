@@ -310,8 +310,28 @@ async def steps(walk: Walk, w: dict[str, Any], hero: str, mango: str, day_minute
     m_ = await walk.case(LAKSHMI, mango)
     staff = (m_ or {}).get("journey", {}).get("staff")
     if staff and staff["status"] == "open":
-        await walk.call(LAKSHMI, "POST", f"{WS}/cases/{mango}/staff-sale", {"sold": staff["units"]})
-        say(f"Lakshmi Agencies recorded the staff sale at {staff['godown']}: {staff['units']} packs")
+        # with the consolidated receipt of her staff's UPI payments (SC-174), straight to Cloud Storage; Vision reads it
+        data = (REPO / f"backend-api/src/sc_api/reference/receipts/{mango}.webp").read_bytes()
+        link = await walk.call(
+            LAKSHMI, "POST", f"{WS}/cases/{mango}/staff-sale/receipt", {"contentType": "image/webp", "bytes": len(data)}
+        )
+        r = await walk.http.put(link["url"], content=data, headers=link["headers"])
+        if r.status_code >= 300:
+            raise SystemExit(f"walk: Cloud Storage refused the receipt: {r.status_code}")
+        await walk.call(LAKSHMI, "POST", f"{WS}/cases/{mango}/staff-sale/receipt/{link['id']}")
+
+        async def receipt_read():
+            c = await walk.case(LAKSHMI, mango)
+            rc = (c or {}).get("journey", {}).get("staff", {}).get("receipt") or {}
+            return rc if rc.get("status") in ("read", "unreadable") else None
+
+        rc = await walk.until("Vision read the staff sale's receipt", receipt_read)
+        say(f"  Vision read {rc.get('no')}: {len(rc.get('payments') or [])} UPI payments, ₹{rc.get('paid')}")
+        sold = (
+            round(float(rc.get("paid") or 0) / float(staff["price"])) if rc.get("status") == "read" else staff["units"]
+        )
+        await walk.call(LAKSHMI, "POST", f"{WS}/cases/{mango}/staff-sale", {"sold": sold, "receipt": link["id"]})
+        say(f"Lakshmi Agencies recorded the staff sale at {staff['godown']}: {sold} of {staff['units']} packs")
     m_ = await walk.case("meera", mango)
     if m_ and m_["donation"] and m_["donation"]["status"] == "booked":
         await walk.call("meera", "POST", f"{WS}/cases/{mango}/donation/confirm")
