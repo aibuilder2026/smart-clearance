@@ -196,7 +196,11 @@
   // for, so the page's own text never names the client
   function FilmTranscript() {
     const [lines, setLines] = useState(null);
-    const load = e => { if (e.currentTarget.open && !lines) fetch(DATA164 + "transcript.json").then(r => r.json()).then(t => setLines(t.chapters)).catch(() => setLines([])); };
+    const load = e => {
+      const el = e.currentTarget; if (!el.open) return;
+      requestAnimationFrame(() => el.scrollIntoView({ block: "nearest", behavior: "smooth" }));
+      if (!lines) fetch(DATA164 + "transcript.json").then(r => r.json()).then(t => setLines(t.chapters)).catch(() => setLines([]));
+    };
     return <details className="fp-read" onToggle={load}>
       <summary><Icon name="scroll-text" size={16} />Read the film instead</summary>
       {lines ? <div className="fp-read-in">{lines.map(c => <section key={c.id}><h4><span>{clock(c.at)}</span>{c.title}</h4>{c.lines.map(l => <p key={l.at}>{l.text}</p>)}</section>)}</div> : <p className="fp-read-in muted">Loading…</p>}

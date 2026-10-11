@@ -241,7 +241,10 @@
   function FilmTranscript() {
     const [lines, setLines] = useState(null);
     const load = (e) => {
-      if (e.currentTarget.open && !lines) fetch(DATA164 + "transcript.json").then((r) => r.json()).then((t) => setLines(t.chapters)).catch(() => setLines([]));
+      const el = e.currentTarget;
+      if (!el.open) return;
+      requestAnimationFrame(() => el.scrollIntoView({ block: "nearest", behavior: "smooth" }));
+      if (!lines) fetch(DATA164 + "transcript.json").then((r) => r.json()).then((t) => setLines(t.chapters)).catch(() => setLines([]));
     };
     return /* @__PURE__ */ React.createElement("details", { className: "fp-read", onToggle: load }, /* @__PURE__ */ React.createElement("summary", null, /* @__PURE__ */ React.createElement(Icon, { name: "scroll-text", size: 16 }), "Read the film instead"), lines ? /* @__PURE__ */ React.createElement("div", { className: "fp-read-in" }, lines.map((c) => /* @__PURE__ */ React.createElement("section", { key: c.id }, /* @__PURE__ */ React.createElement("h4", null, /* @__PURE__ */ React.createElement("span", null, clock(c.at)), c.title), c.lines.map((l) => /* @__PURE__ */ React.createElement("p", { key: l.at }, l.text))))) : /* @__PURE__ */ React.createElement("p", { className: "fp-read-in muted" }, "Loading…"));
   }
