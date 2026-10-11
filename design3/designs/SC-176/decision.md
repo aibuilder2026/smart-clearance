@@ -28,6 +28,17 @@ Start the journey again, Move it forward, afterwards, Open the console.
 
 In each, the console's journey-day badge gets the same note.
 
-## The pick
+## The pick (11 Oct)
 
-Pending.
+**Option B · A note under the clock**, and the guide's console steps shown to **everyone** (a judge may sign in as
+anyone).
+
+## The build
+
+- design3 first: `screens/common.jsx` `ClockGuide`, `ClockNote`, `ClockInfo`; `screens/live.jsx` Line (the note under
+  the clock, every title and a batch's head) and BarSub (the icon); `console/console.jsx`, the note under a live
+  client's head, its guide saying "Here in the console"; `screens/screens.css` (`.lv-clock`, `.jc-*`).
+- The port: core `workspace/screens/common/ClockGuide.svelte`, `ClockNote.svelte`, `ClockInfo.svelte`;
+  `live/LiveLine.svelte`; the console's `ClientPage.svelte`; `styles/screens.css` verbatim.
+- The guide is generic: no batch, count or date of its own, so it reads the same for any synthetic workspace; the
+  journey time now comes from the live clock.
