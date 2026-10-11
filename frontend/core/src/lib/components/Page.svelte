@@ -40,21 +40,36 @@
 	}: Props = $props();
 
 	// a navigation bar whose large title collapses into the bar once the page scrolls (the kit's Page): a sentinel under
-	// the large title says when it has gone, within the scroll container the page sits in
+	// the large title says when it has gone, within the scroll container the page sits in. A page with no large title
+	// draws its own head under the bar (a batch's page, SC-112): the bar takes its glass as soon as anything scrolls under
+	// it (`under`, SC-182), so the back button never sits on the head's tabs; its title still waits for the head to go
 	let sentinel: HTMLDivElement | undefined = $state();
+	let edge: HTMLDivElement | undefined = $state();
 	let scrolled = $state(false);
+	let under = $state(false);
 	$effect(() => {
 		const s = sentinel;
 		if (!s) return;
+		const e = edge;
 		const root = s.closest<HTMLElement>('.scroll');
-		const io = new IntersectionObserver(([e]) => (scrolled = !e.isIntersecting), { root, threshold: 0 });
+		const io = new IntersectionObserver(
+			(es) =>
+				es.forEach((x) => {
+					if (x.target === s) scrolled = !x.isIntersecting;
+					else under = !x.isIntersecting;
+				}),
+			{ root, threshold: 0 }
+		);
 		io.observe(s);
+		if (e) io.observe(e);
+		else under = false;
 		return () => io.disconnect();
 	});
 </script>
 
 <div class="layer">
-	<header class={cx('navbar', scrolled && 'scrolled', barSub && 'nb-two')}>
+	{#if hideLarge}<div bind:this={edge} style="height: 1px; margin-bottom: -1px" aria-hidden="true"></div>{/if}
+	<header class={cx('navbar', scrolled && 'scrolled', under && 'under', barSub && 'nb-two')}>
 		{#if back}<button type="button" class="nb-back" onclick={onback} aria-label="Back to {back}"
 				><Icon name="chevron-left" size={22} stroke={2.2} /><span class="nb-back-t">{back}</span></button
 			>{:else}{@render lead?.()}{/if}
