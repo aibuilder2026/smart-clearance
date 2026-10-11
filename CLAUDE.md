@@ -2058,7 +2058,7 @@
   - **Checks:** the frontend gate passes (core 276 with 3 new, api 79, workspace 97 with 2 new, admin 17, demo 5, console 3); the a11y spec scans the reading, its table and the card; the browser suites were not run.
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 
-- **SC-161** (In Review, branch `SC-161-chips-e2e-new-features`): Munchly Chips E2E checks what SC-139 to SC-157 built, and a recorded run, asked for by the maintainer ("run munchly chips happy path end to end journey flow, verify each and every step, especially the new features that developed").
+- **SC-161** (PR #141, merged): Munchly Chips E2E checks what SC-139 to SC-157 built, and a recorded run, asked for by the maintainer ("run munchly chips happy path end to end journey flow, verify each and every step, especially the new features that developed").
   - **The suite** (`frontend/workspace/tests/journey/features.ts`, called from `chips.ts` as the journey reaches each feature):
     - the label photo's EAN-13 and QR code read back with Chromium's BarcodeDetector, and Vision's read (SC-147);
     - Execution's ExpireSoon and Outreach cards, each at three states with its stops, the API call and the push behind their buttons (SC-151, SC-156);
@@ -2078,7 +2078,7 @@
     - the kirana's order button tells a screen reader "Working" and "Done", its Hindi words being snippets.
   - **Checks:** the frontend gate passes (core 288, api 79, workspace 104, admin 17, console 8, demo 5). The day is back at 24 hours.
 
-- **SC-162** (In Review, branch `SC-162-cleared-batch-in-sums`; bug found by Munchly Chips E2E, SC-161): a batch whose journey has cleared is one of the distributor's cleared batches.
+- **SC-162** (PR #142, merged; bug found by Munchly Chips E2E, SC-161): a batch whose journey has cleared is one of the distributor's cleared batches.
   - **Found:** once the chips cleared, Rakesh's Batches still listed them under "In a journey now" (stop Report). His sums counted only the history's six batches. Orders said their ₹21,546 "sold from the batch still in a journey joins the sum once it clears".
   - **The cause:** core's `clearedOf` and design3's `distBatches` took any phase but watching as in a journey, and design3's sums took only the history.
   - **The fix,** design3 first (`ledger.js` `distBatches` `done`, `storySum`, `sumsAt`; `trade.jsx` DistBatches and DistOrders), then core (`partners.ts` `storySum`, `sumsOf` with the story's; `pt.ts` `inJourney`, `storyCleared`, `clearedSums`; DistBatches, DistOrders):
@@ -2094,5 +2094,9 @@
     - backend-api 568 passed, 1 skipped (only the seed manifest changed);
     - Munchly Chips E2E now checks it;
     - design3 and the local live app read the same.
+- **SC-163** (PR #143, merged; bug found by Munchly Chips E2E, SC-161): a button's status line says its own words when they are markup.
+  - **Found:** the kirana's order button gives its words as Hindi snippets (ऑर्डर हो रहा है…). A screen reader heard "Working" and "Done", because core's Button read its words into the status line only when they were a string.
+  - **The fix** (core's `Button.svelte`): the status line renders the button's busy and done words in whatever form, so the Hindi keeps its `lang`. "Working" and "Done" stay for a button given none. design3's kit already did this (`busy || "Working"` renders markup), so design3 needed no change. The order button is the only one with markup words.
+  - **Checks:** the frontend gate passes (core 290, with two new Button tests; the Hindi one fails without the fix; api 79, workspace 104, admin 17, console 8, demo 5).
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
