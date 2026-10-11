@@ -3,6 +3,7 @@ import { createRawSnippet, flushSync } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Button from '../src/lib/components/Button.svelte';
 import Money from '../src/lib/components/Money.svelte';
+import Page from '../src/lib/components/Page.svelte';
 import Icon from '../src/lib/icons/Icon.svelte';
 import Photo from '../src/lib/workspace/screens/common/Photo.svelte';
 import { Wait, WAIT } from '../src/lib/wait.svelte';
@@ -236,5 +237,67 @@ describe('a photo whose link changes (SC-180)', () => {
 		const r = render(Photo, { src: 'https://x/b.webp?sig=1' });
 		expect(r.container.querySelector('.skeleton')).not.toBeNull();
 		expect(made).toHaveLength(0);
+	});
+});
+
+// a batch's page has no large title and draws its own head under the bar (SC-112): its bar took no glass until the
+// whole head had gone, so the back button sat on the head's tabs as they scrolled under it (SC-182)
+describe('Page, its bar over a head of its own', () => {
+	type Seen = { target: Element; isIntersecting: boolean };
+	let watch: { cb: (es: Seen[]) => void; els: Element[] }[] = [];
+	beforeEach(() => {
+		watch = [];
+		vi.stubGlobal(
+			'IntersectionObserver',
+			class {
+				els: Element[] = [];
+				constructor(cb: (es: Seen[]) => void) {
+					watch.push({ cb, els: this.els });
+				}
+				observe(el: Element) {
+					this.els.push(el);
+				}
+				unobserve() {}
+				disconnect() {}
+				takeRecords() {
+					return [];
+				}
+			}
+		);
+	});
+	afterEach(() => vi.unstubAllGlobals());
+	const scroll = (top: number, below: number) => {
+		const w = watch.at(-1)!;
+		// the first element watched is the sentinel under the head, the second the page's top edge
+		w.cb([
+			{ target: w.els[0], isIntersecting: below > 0 },
+			...(w.els[1] ? [{ target: w.els[1], isIntersecting: top === 0 }] : [])
+		]);
+		flushSync();
+	};
+
+	it('takes its glass as soon as the head scrolls under it, its title only once the head has gone', () => {
+		const { container } = render(Page, { title: 'Masala Chips · Route Room', back: 'Command Center', hideLarge: true });
+		const bar = container.querySelector('.navbar')!;
+		scroll(0, 1);
+		expect(bar.className).not.toMatch(/under|scrolled/);
+		scroll(40, 1);
+		expect(bar.classList.contains('under')).toBe(true);
+		expect(bar.classList.contains('scrolled')).toBe(false);
+		scroll(400, 0);
+		expect(bar.classList.contains('scrolled')).toBe(true);
+		scroll(0, 1);
+		expect(bar.className).not.toMatch(/under|scrolled/);
+	});
+
+	it("keeps a large title's bar clear until the title has gone", () => {
+		const { container } = render(Page, { title: 'Command Center' });
+		const bar = container.querySelector('.navbar')!;
+		expect(watch.at(-1)!.els).toHaveLength(1);
+		scroll(40, 1);
+		expect(bar.className).not.toMatch(/under|scrolled/);
+		scroll(400, 0);
+		expect(bar.classList.contains('scrolled')).toBe(true);
+		expect(bar.classList.contains('under')).toBe(false);
 	});
 });

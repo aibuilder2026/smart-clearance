@@ -717,17 +717,21 @@
   }
   function Page({ title, sub, back, onBack, actions, lead, children, wide, pad = true, hideLarge, top, below, barSub }) {
     const sentinel = useRef(null);
+    const edge = useRef(null);
     const [scrolled, setScrolled] = useState(false);
+    const [under, setUnder] = useState(false);
     useEffect(() => {
       const s = sentinel.current;
       if (!s) return;
       let root = s.parentElement;
       while (root && !(root.classList && root.classList.contains("scroll"))) root = root.parentElement;
-      const io = new IntersectionObserver(([e]) => setScrolled(!e.isIntersecting), { root: root || null, threshold: 0 });
+      const io = new IntersectionObserver((es) => es.forEach((e) => (e.target === s ? setScrolled : setUnder)(!e.isIntersecting)), { root: root || null, threshold: 0 });
       io.observe(s);
+      if (edge.current) io.observe(edge.current);
+      else setUnder(false);
       return () => io.disconnect();
-    }, []);
-    return /* @__PURE__ */ React.createElement("div", { className: "layer" }, /* @__PURE__ */ React.createElement("header", { className: cx("navbar", scrolled && "scrolled", barSub && "nb-two") }, back ? /* @__PURE__ */ React.createElement("button", { type: "button", className: "nb-back", onClick: onBack, "aria-label": "Back to " + back }, /* @__PURE__ */ React.createElement(Icon, { name: "chevron-left", size: 22, stroke: 2.2 }), /* @__PURE__ */ React.createElement("span", { className: "nb-back-t" }, back)) : lead || null, /* @__PURE__ */ React.createElement("span", { className: "nb-title" }, title, barSub && /* @__PURE__ */ React.createElement("span", { className: "nb-sub" }, barSub)), /* @__PURE__ */ React.createElement("div", { className: "nb-actions" }, actions)), top, !hideLarge && /* @__PURE__ */ React.createElement("div", { className: "largetitle" }, /* @__PURE__ */ React.createElement("h1", null, title), sub && /* @__PURE__ */ React.createElement("div", { className: "lt-sub" }, sub)), below, /* @__PURE__ */ React.createElement("div", { ref: sentinel, style: { height: 1, marginTop: -1 }, "aria-hidden": "true" }), /* @__PURE__ */ React.createElement("div", { className: "pagebody", style: pad ? { padding: "0 var(--page-x, 16px) 40px", maxWidth: wide ? "none" : 1320 } : void 0 }, children));
+    }, [hideLarge]);
+    return /* @__PURE__ */ React.createElement("div", { className: "layer" }, hideLarge && /* @__PURE__ */ React.createElement("div", { ref: edge, style: { height: 1, marginBottom: -1 }, "aria-hidden": "true" }), /* @__PURE__ */ React.createElement("header", { className: cx("navbar", scrolled && "scrolled", under && "under", barSub && "nb-two") }, back ? /* @__PURE__ */ React.createElement("button", { type: "button", className: "nb-back", onClick: onBack, "aria-label": "Back to " + back }, /* @__PURE__ */ React.createElement(Icon, { name: "chevron-left", size: 22, stroke: 2.2 }), /* @__PURE__ */ React.createElement("span", { className: "nb-back-t" }, back)) : lead || null, /* @__PURE__ */ React.createElement("span", { className: "nb-title" }, title, barSub && /* @__PURE__ */ React.createElement("span", { className: "nb-sub" }, barSub)), /* @__PURE__ */ React.createElement("div", { className: "nb-actions" }, actions)), top, !hideLarge && /* @__PURE__ */ React.createElement("div", { className: "largetitle" }, /* @__PURE__ */ React.createElement("h1", null, title), sub && /* @__PURE__ */ React.createElement("div", { className: "lt-sub" }, sub)), below, /* @__PURE__ */ React.createElement("div", { ref: sentinel, style: { height: 1, marginTop: -1 }, "aria-hidden": "true" }), /* @__PURE__ */ React.createElement("div", { className: "pagebody", style: pad ? { padding: "0 var(--page-x, 16px) 40px", maxWidth: wide ? "none" : 1320 } : void 0 }, children));
   }
   function ModeMenuButton() {
     const { mode, resolved, setMode } = useTheme();

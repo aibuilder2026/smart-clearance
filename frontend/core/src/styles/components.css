@@ -130,7 +130,7 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
 
 /* ---------- navigation: large title, bars, tab bar, sidebar ---------- */
 .navbar { position: sticky; top: 0; z-index: var(--z-bar); display: flex; align-items: center; gap: 8px; height: calc(var(--navbar-h) + var(--safe-top)); padding: var(--safe-top) 12px 0 16px; transition: background-color var(--t-base), box-shadow var(--t-base); }
-.navbar.scrolled { background: var(--glass); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); box-shadow: 0 var(--hair) 0 var(--line); }
+.navbar.scrolled, .navbar.under { background: var(--glass); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); box-shadow: 0 var(--hair) 0 var(--line); }
 .navbar .nb-title { position: absolute; left: 50%; bottom: 0; height: var(--navbar-h); line-height: var(--navbar-h); transform: translateX(-50%); max-width: 55%; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0; transition: opacity var(--t-fast); pointer-events: none; }
 .navbar.scrolled .nb-title { opacity: 1; }
 .navbar .nb-back { display: inline-flex; align-items: center; gap: 2px; height: 36px; padding: 0 8px 0 2px; margin-left: -6px; border-radius: 10px; color: var(--primary-text); font-size: 16px; font-weight: 500; }

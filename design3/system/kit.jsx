@@ -571,10 +571,14 @@
   // top: a band under the bar that stays while it lasts; below: a row under the large title; barSub: a second line under
   // the bar's title once the large title has collapsed into it (SC-73, the live workspace)
   function Page({ title, sub, back, onBack, actions, lead, children, wide, pad = true, hideLarge, top, below, barSub }) {
-    const sentinel = useRef(null); const [scrolled, setScrolled] = useState(false);
-    useEffect(() => { const s = sentinel.current; if (!s) return; let root = s.parentElement; while (root && !(root.classList && root.classList.contains("scroll"))) root = root.parentElement; const io = new IntersectionObserver(([e]) => setScrolled(!e.isIntersecting), { root: root || null, threshold: 0 }); io.observe(s); return () => io.disconnect(); }, []);
+    // a page with no large title draws its own head under the bar (a batch's page, SC-112): the bar takes its glass as soon
+    // as anything scrolls under it (`under`, SC-182), so the back button never sits on the head's tabs; its title still
+    // waits for the head to go
+    const sentinel = useRef(null); const edge = useRef(null); const [scrolled, setScrolled] = useState(false); const [under, setUnder] = useState(false);
+    useEffect(() => { const s = sentinel.current; if (!s) return; let root = s.parentElement; while (root && !(root.classList && root.classList.contains("scroll"))) root = root.parentElement; const io = new IntersectionObserver(es => es.forEach(e => (e.target === s ? setScrolled : setUnder)(!e.isIntersecting)), { root: root || null, threshold: 0 }); io.observe(s); if (edge.current) io.observe(edge.current); else setUnder(false); return () => io.disconnect(); }, [hideLarge]);
     return <div className="layer">
-      <header className={cx("navbar", scrolled && "scrolled", barSub && "nb-two")}>
+      {hideLarge && <div ref={edge} style={{ height: 1, marginBottom: -1 }} aria-hidden="true" />}
+      <header className={cx("navbar", scrolled && "scrolled", under && "under", barSub && "nb-two")}>
         {back ? <button type="button" className="nb-back" onClick={onBack} aria-label={"Back to " + back}><Icon name="chevron-left" size={22} stroke={2.2} /><span className="nb-back-t">{back}</span></button> : lead || null}
         <span className="nb-title">{title}{barSub && <span className="nb-sub">{barSub}</span>}</span>
         <div className="nb-actions">{actions}</div>
