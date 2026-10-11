@@ -4,7 +4,7 @@
 		"design3/core/money.js": "9f73bdd0916a5b2d",
 		"design3/core/data.js": "eb3d069abdac5b23",
 		"design3/core/store.js": "dbd508afbccbd956",
-		"design3/core/platform.js": "cfc27ae8378691b2",
+		"design3/core/platform.js": "3f1a7b998f279b39",
 		"design3/screens/admin.jsx": "bb2a12a8695d75e0",
 		"design3/system/product.jsx": "7cbd24950e3acbf4"
 	},
@@ -12,6 +12,7 @@
 		"showcase.json": "3df8650776ab231c",
 		"catalog.json": "9364528d5346a8c3",
 		"directory.json": "b7309b040b25fa79",
-		"console.json": "bd53f6756a43213f"
+		"console.json": "bd53f6756a43213f",
+		"console-demo.json": "1a6502d8e987b327"
 	}
 }

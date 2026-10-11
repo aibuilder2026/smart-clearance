@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { DAY_MINUTES, DAY_PRESETS, dayBadge, dayWords, possessive, type Client } from '@smart-clearance/api/console';
-	import { Button, cx, Icon, Sheet, useApp } from '@smart-clearance/core';
+	import { Button, cx, Icon, Sheet, useApp } from '../../../index';
 	import { untrack } from 'svelte';
-	import { api } from '#lib/api/client.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
+	import { useConsole } from '../../console.svelte';
 
 	// starting a client's journey again (SC-79): what the reset does, and the length of a journey day it starts at (the
 	// client's own, unless another is picked). The server writes both audit lines
@@ -18,7 +17,7 @@
 	async function go() {
 		const to = v;
 		await k.act(
-			() => api.resetJourney(c.id, { dayMinutes: to }),
+			() => k.api.resetJourney(c.id, { dayMinutes: to }),
 			`${possessive(c.name)} journey starts again: day 0, at ${to >= DAY_MINUTES ? 'real time' : dayBadge(to).toLowerCase()}`
 		);
 		open = false;

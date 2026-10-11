@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Card, Icon } from '@smart-clearance/core';
+	import { Card, Icon } from '../../index';
 
 	let { scope }: { scope: string[] } = $props();
 </script>

@@ -1,14 +1,13 @@
 <script lang="ts">
 	import type { Client } from '@smart-clearance/api/console';
-	import { Badge, Button, Card, Empty, List, ListRow, type IconName } from '@smart-clearance/core';
-	import { api } from '#lib/api/client.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
-	import { STATUS } from '#lib/status.ts';
+	import { Badge, Button, Card, Empty, List, ListRow, type IconName } from '../../../index';
+	import { useConsole } from '../../console.svelte';
+	import { STATUS } from '../../status';
 
 	// what a client's workspace is connected to; a new client starts with its distributors' first stock export
 	let { c }: { c: Client } = $props();
 	const k = useConsole();
-	const connect = () => k.act(() => api.requestFirstExport(c.id), 'Upload link sent');
+	const connect = () => k.act(() => k.api.requestFirstExport(c.id), 'Upload link sent');
 </script>
 
 {#snippet ask()}<Button variant="primary" icon="file-spreadsheet" action={connect} busy="Requesting…" done="Requested"

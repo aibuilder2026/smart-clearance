@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { profileLines, type Profile } from '@smart-clearance/api/console';
-	import { Card, Icon, type IconName } from '@smart-clearance/core';
-	import { useConsole } from '#lib/console.svelte.ts';
+	import { Card, Icon, type IconName } from '../../index';
+	import { useConsole } from '../console.svelte';
 
 	let { profile }: { profile: Profile } = $props();
 	const k = useConsole();

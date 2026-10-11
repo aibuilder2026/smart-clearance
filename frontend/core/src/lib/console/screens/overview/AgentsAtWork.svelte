@@ -12,9 +12,9 @@
 		springCurve,
 		WorkspaceMark,
 		type IconName
-	} from '@smart-clearance/core';
+	} from '../../../index';
 	import { crossfade, fly } from 'svelte/transition';
-	import { useConsole } from '#lib/console.svelte.ts';
+	import { useConsole } from '../../console.svelte';
 
 	// Agents at work (SC-49, option A): the nine stops as a route, each with its agent and count, and the latest batches
 	// to arrive there as their clients' marks (three, then a count); Closed today at the end, and the latest run under

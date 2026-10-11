@@ -1,15 +1,12 @@
 <script lang="ts">
-	import { Card, cx, Icon, WorkspaceMark, type IconName } from '@smart-clearance/core';
+	import { Card, cx, Icon, WorkspaceMark, type IconName } from '../../index';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { goto } from '$app/navigation';
-	import { clientsQuery } from '#lib/api/queries.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
-	import { href } from '#lib/links.ts';
-	import Screen from '#lib/screens/Screen.svelte';
+	import { useConsole } from '../console.svelte';
+	import Screen from './Screen.svelte';
 
 	// the agents every workspace runs, in the order they work, and how far each client lets each one go
 	const k = useConsole();
-	const clients = createQuery(() => clientsQuery());
+	const clients = createQuery(() => k.q.clients());
 </script>
 
 <Screen title="Agents" sub="The agents every workspace runs, in the order they work. Each client sets how far they go.">
@@ -29,7 +26,7 @@
 				<div class="row tight wrap">
 					{#each clients.data ?? [] as c (c.id)}
 						{@const cfg = c.agents[a.id]}
-						<button type="button" class="chip" onclick={() => goto(href('clients', c.id, 'agents'))}
+						<button type="button" class="chip" onclick={() => k.go({ screen: 'clients', id: c.id, tab: 'agents' })}
 							><WorkspaceMark ws={c} size={18} />{c.name}: {a.gate
 								? 'on'
 								: !cfg.on

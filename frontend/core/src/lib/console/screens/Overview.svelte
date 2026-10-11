@@ -18,23 +18,18 @@
 		useApp,
 		WorkspaceMark,
 		type Column
-	} from '@smart-clearance/core';
+	} from '../../index';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
-	import { api } from '#lib/api/client.ts';
-	import { batchesQuery, clientsQuery, dashboardQuery, overviewQuery, requestsQuery } from '#lib/api/queries.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
-	import { href } from '#lib/links.ts';
-	import { NAV } from '#lib/nav.ts';
-	import { apiQuery, kg, readPaused, readView, savedShare, viewSearch, writePaused, type View } from '#lib/overview.ts';
-	import Kpi from '#lib/screens/overview/Kpi.svelte';
-	import MoneyFig from '#lib/screens/overview/MoneyFig.svelte';
-	import Pager from '#lib/screens/overview/Pager.svelte';
-	import AgentsAtWork from '#lib/screens/overview/AgentsAtWork.svelte';
-	import FoodChart from '#lib/screens/overview/FoodChart.svelte';
-	import StopSeg from '#lib/screens/overview/StopSeg.svelte';
-	import Screen from '#lib/screens/Screen.svelte';
+	import { useConsole } from '../console.svelte';
+	import { navOf } from '../nav';
+	import { apiQuery, kg, readPaused, readView, savedShare, viewQuery, writePaused, type View } from '../overview';
+	import Kpi from './overview/Kpi.svelte';
+	import MoneyFig from './overview/MoneyFig.svelte';
+	import Pager from './overview/Pager.svelte';
+	import AgentsAtWork from './overview/AgentsAtWork.svelte';
+	import FoodChart from './overview/FoodChart.svelte';
+	import StopSeg from './overview/StopSeg.svelte';
+	import Screen from './Screen.svelte';
 
 	// Overview, the platform as a live dashboard (SC-48, option A, the command centre): four figures with their lines,
 	// the agents at work along the nine stops (SC-49), the food by day (SC-149), every client's batches a page at a time, and
@@ -44,13 +39,13 @@
 	const k = useConsole();
 	const phone = $derived(app.bp === 'phone');
 	let paused = $state(readPaused());
-	const view = $derived(readView(page.url));
+	const view = $derived(readView(k.route.query));
 	const query = $derived(apiQuery(view));
-	const dash = createQuery(() => dashboardQuery(view.days, paused));
-	const batches = createQuery(() => batchesQuery(query, paused));
-	const overview = createQuery(() => overviewQuery(paused));
-	const clients = createQuery(() => clientsQuery());
-	const requests = createQuery(() => requestsQuery());
+	const dash = createQuery(() => k.q.dashboard(view.days, paused));
+	const batches = createQuery(() => k.q.batches(query, paused));
+	const overview = createQuery(() => k.q.overview(paused));
+	const clients = createQuery(() => k.q.clients());
+	const requests = createQuery(() => k.q.requests());
 
 	const all = $derived(clients.data ?? []);
 	const client = (id: string) => all.find((c) => c.id === id);
@@ -73,12 +68,12 @@
 
 	// a change to the view lands in the address, without a new history entry or a jump
 	function setView(next: View) {
-		void goto(viewSearch(next) || page.url.pathname, { replace: true, reset: false });
+		void k.go({ screen: 'overview', query: viewQuery(next) }, { replace: true, keep: true });
 	}
 	const set = (patch: Partial<BatchQuery>) =>
 		setView({ ...view, query: { ...view.query, ...patch, ...('page' in patch ? {} : { page: 1 }) } as View['query'] });
 	let typing: ReturnType<typeof setTimeout> | undefined;
-	let search = $state(readView(page.url).query.q);
+	let search = $state(readView(k.route.query).query.q);
 	function onSearch(v: string) {
 		search = v;
 		clearTimeout(typing);
@@ -94,10 +89,10 @@
 
 	// a reminder waits on the platform in its own button (SC-152); Open opens the client's tab
 	const remind = (x: Attention, dist: string) =>
-		k.act(() => api.remindDistributor(x.client, dist), `Reminder sent to ${x.title}`);
+		k.act(() => k.api.remindDistributor(x.client, dist), `Reminder sent to ${x.title}`);
 	// a demo request starts the setup flow, its company, contact and plan filled in
-	const setUp = (r: DemoRequest) => goto(`${href('new-client')}?request=${encodeURIComponent(r.id)}`);
-	const openBatch = (r: BatchRow) => goto(href('clients', r.client, 'supply'));
+	const setUp = (r: DemoRequest) => k.go({ screen: 'new-client', query: { request: r.id } });
+	const openBatch = (r: BatchRow) => k.go({ screen: 'clients', id: r.client, tab: 'supply' });
 	const stopText = (r: BatchRow) =>
 		r.closed
 			? r.outcome
@@ -407,7 +402,7 @@
 									>{:else}{@const tab = x.action.tab}<Button
 										size="sm"
 										variant="secondary"
-										onclick={() => goto(href('clients', x.client, tab))}>{x.action.label}</Button
+										onclick={() => k.go({ screen: 'clients', id: x.client, tab: tab })}>{x.action.label}</Button
 									>{/if}{/snippet}
 							<ListRow
 								leading={dot}
@@ -465,12 +460,12 @@
 			</div>
 		</div>
 		{#if phone}<List head="Platform"
-				>{#each NAV.filter((n) => n.phoneHidden) as n (n.id)}<ListRow
+				>{#each navOf(k.href).filter((n) => n.phoneHidden) as n (n.id)}<ListRow
 						icon={n.icon}
 						iconTone="soft"
 						title={n.label}
 						chevron
-						onclick={() => goto(n.href!)}
+						onclick={() => k.go({ screen: n.id })}
 					/>{/each}</List
 			>{/if}
 	</div>

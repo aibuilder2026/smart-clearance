@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { DayFigures } from '@smart-clearance/api/console';
-	import { ease, fmt, motionMs, prefersReducedMotion } from '@smart-clearance/core';
+	import { ease, fmt, motionMs, prefersReducedMotion } from '../../../index';
 	import { Tween } from 'svelte/motion';
 	import { fly } from 'svelte/transition';
-	import { kg, kgAxis, savedShare } from '#lib/overview.ts';
+	import { kg, kgAxis, savedShare } from '../../overview';
 
 	// the food a day (SC-149): the kilos closed batches kept out of landfill (sold or given) rise from one baseline, and
 	// the kilos they destroyed (no channel took them) hang under it, hatched in clay, on one scale; the space under the

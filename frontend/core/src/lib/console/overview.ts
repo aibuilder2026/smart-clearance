@@ -1,7 +1,8 @@
 import type { BatchQuery, BatchSort, BatchStatus } from '@smart-clearance/api/console';
 
 /** The Overview's view in the address (SC-48), so a refresh or a shared link keeps it: the range, and the batch table's
- *  status, client, stop, search, sort and page. Anything at its default is left out. */
+ *  status, client, stop, search, sort and page. Anything at its default is left out. It is the route's query
+ *  (ConsoleRoute.query), which the host keeps in its address (SC-169). */
 export type View = {
 	days: number;
 	query: Required<Omit<BatchQuery, 'client' | 'stop'>> & Pick<BatchQuery, 'client' | 'stop'>;
@@ -15,8 +16,8 @@ const STATUSES: BatchStatus[] = ['in-flight', 'waiting', 'closed'];
 const SORTS: BatchSort[] = ['priority', 'stop', 'days', 'units', 'value', 'updated'];
 const int = (v: string | null) => (v != null && /^\d+$/.test(v) ? Number(v) : null);
 
-export function readView(url: { searchParams: Pick<URLSearchParams, 'get'> }): View {
-	const p = url.searchParams,
+export function readView(query: Record<string, string> | undefined): View {
+	const p = { get: (k: string): string | null => query?.[k] ?? null },
 		d = DEFAULT.query;
 	const days = int(p.get('days'));
 	const status = p.get('status') as BatchStatus | null;
@@ -38,13 +39,13 @@ export function readView(url: { searchParams: Pick<URLSearchParams, 'get'> }): V
 	};
 }
 
-export function viewSearch(v: View): string {
-	const p = new URLSearchParams();
-	if (v.days !== DEFAULT.days) p.set('days', String(v.days));
+/** the view as the route's query: only what differs from the default */
+export function viewQuery(v: View): Record<string, string> {
+	const p: Record<string, string> = {};
+	if (v.days !== DEFAULT.days) p.days = String(v.days);
 	for (const [k, val] of Object.entries(v.query))
-		if (val != null && val !== '' && val !== (DEFAULT.query as Record<string, unknown>)[k]) p.set(k, String(val));
-	const s = p.toString();
-	return s ? `?${s}` : '';
+		if (val != null && val !== '' && val !== (DEFAULT.query as Record<string, unknown>)[k]) p[k] = String(val);
+	return p;
 }
 
 /** what the page reads: the defaults filled in for the API */

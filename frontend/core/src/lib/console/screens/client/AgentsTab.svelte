@@ -1,10 +1,8 @@
 <script lang="ts">
 	import type { Agent, Autonomy, Client, JourneyTrigger } from '@smart-clearance/api/console';
-	import { Alert, cx, Empty, Sheet, useApp } from '@smart-clearance/core';
+	import { Alert, cx, Empty, Sheet, useApp } from '../../../index';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { api } from '#lib/api/client.ts';
-	import { journeyQuery } from '#lib/api/queries.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
+	import { useConsole } from '../../console.svelte';
 	import AgentInspector from './AgentInspector.svelte';
 	import AgentPipeline from './AgentPipeline.svelte';
 	import { journeyTime, TRIG } from './journey.ts';
@@ -18,7 +16,7 @@
 	const lower = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
 	// the client's runs and timers (SC-79): fired now from under each agent; a timer asks first
-	const journey = createQuery(() => journeyQuery(c.id));
+	const journey = createQuery(() => k.q.journey(c.id));
 	let just = $state<Record<string, boolean>>({});
 	let asking = $state<JourneyTrigger | null>(null);
 	const question = $derived(asking?.due ? TRIG[asking.key].ask?.(asking, journeyTime(asking.due)) : undefined);
@@ -27,7 +25,7 @@
 		const a = k.agent(t.agent);
 		const what = TRIG[t.key].title.toLowerCase();
 		await k.act(
-			() => api.fireTrigger(c.id, t.id),
+			() => k.api.fireTrigger(c.id, t.id),
 			t.kind === 'run' ? `${a.name} · ${what} running for ${c.name}` : `${a.name} · ${what}: fired for ${t.ref}`
 		);
 		just = { ...just, [t.id]: true };
@@ -37,7 +35,7 @@
 	// the pipeline's and the inspector's autonomy each keep the level pressed and say Saving…, Saved, or why it went
 	// back (SC-152): they wait on this
 	const setAutonomy = (a: Agent, v: Autonomy) =>
-		k.act(() => api.updateAgent(c.id, a.id, { autonomy: v }), `${a.name}: ${k.level(v).label}, for ${c.name}`);
+		k.act(() => k.api.updateAgent(c.id, a.id, { autonomy: v }), `${a.name}: ${k.level(v).label}, for ${c.name}`);
 </script>
 
 {#snippet legend()}<p class="t-footnote subtle cs-legend">

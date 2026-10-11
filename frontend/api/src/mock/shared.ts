@@ -14,6 +14,23 @@ export type MockOptions = {
 
 export const browserStorage = () => globalThis.localStorage as Storage | undefined;
 
+/** a Storage that lives in memory only (SC-169): what people change lasts until the page closes, and the visitor's own
+ *  browser storage is never read or written (the guided demo's console). Give the mock `storage: memoryStorage()` */
+export function memoryStorage(): () => Storage {
+	const m = new Map<string, string>();
+	const s = {
+		get length() {
+			return m.size;
+		},
+		key: (i: number) => [...m.keys()][i] ?? null,
+		getItem: (k: string) => m.get(k) ?? null,
+		setItem: (k: string, v: string) => void m.set(k, String(v)),
+		removeItem: (k: string) => void m.delete(k),
+		clear: () => m.clear()
+	} as Storage;
+	return () => s;
+}
+
 export const waiter =
 	(latency = 0) =>
 	() =>

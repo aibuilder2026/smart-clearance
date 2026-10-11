@@ -1,15 +1,12 @@
 <script lang="ts">
-	import { Card, Icon, WorkspaceMark } from '@smart-clearance/core';
+	import { Card, Icon, WorkspaceMark } from '../../index';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { goto } from '$app/navigation';
-	import { clientsQuery } from '#lib/api/queries.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
-	import { href } from '#lib/links.ts';
-	import Screen from '#lib/screens/Screen.svelte';
+	import { useConsole } from '../console.svelte';
+	import Screen from './Screen.svelte';
 
 	// the plans, scoped by reach, and the clients on each
 	const k = useConsole();
-	const clients = createQuery(() => clientsQuery());
+	const clients = createQuery(() => k.q.clients());
 </script>
 
 <Screen title="Plans" sub="Plans are scoped by reach, not seats; prices on request in this prototype">
@@ -23,7 +20,10 @@
 				</ul>
 				<span class="t-footnote subtle">Prices on request</span>
 				<div class="row tight wrap">
-					{#each on as c (c.id)}<button type="button" class="chip" onclick={() => goto(href('clients', c.id, 'plan'))}
+					{#each on as c (c.id)}<button
+							type="button"
+							class="chip"
+							onclick={() => k.go({ screen: 'clients', id: c.id, tab: 'plan' })}
 							><WorkspaceMark ws={c} size={18} />{c.name}</button
 						>{:else}<span class="t-footnote subtle">No clients on this plan yet</span>{/each}
 				</div>

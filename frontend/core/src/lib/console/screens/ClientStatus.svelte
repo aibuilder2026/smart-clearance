@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Client } from '@smart-clearance/api/console';
-	import { Badge } from '@smart-clearance/core';
+	import { Badge } from '../../index';
 
 	let { client }: { client: Pick<Client, 'status'> } = $props();
 </script>

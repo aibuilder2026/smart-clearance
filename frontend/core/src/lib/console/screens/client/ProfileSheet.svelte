@@ -1,8 +1,7 @@
 <script lang="ts">
 	import type { Client, Profile, ProfileQuestion } from '@smart-clearance/api/console';
-	import { Button, Field, Input, Sheet, Stepper, useApp } from '@smart-clearance/core';
-	import { api } from '#lib/api/client.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
+	import { Button, Field, Input, Sheet, Stepper, useApp } from '../../../index';
+	import { useConsole } from '../../console.svelte';
 	import Choice from '../Choice.svelte';
 	import ProfileSummary from '../ProfileSummary.svelte';
 
@@ -30,7 +29,7 @@
 		if (!f) return;
 		await k.act(
 			() =>
-				api.saveProfile(c.id, {
+				k.api.saveProfile(c.id, {
 					profile: { route: f!.route, owner: f!.owner, expiry: f!.expiry },
 					gates: { blinkitDays: f!.blinkitDays, qcomPct: f!.qcomPct },
 					returnWindowDays: f!.returnWindowDays

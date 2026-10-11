@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-	import { ease, Icon, motionMs, prefersReducedMotion, SPRINGS, springCurve } from '@smart-clearance/core';
+	import { ease, Icon, motionMs, prefersReducedMotion, SPRINGS, springCurve } from '../../index';
 	import { fly } from 'svelte/transition';
 
 	// Sign in keeps its label (SC-49): "Signing in…" while it checks, with the mark's S drawing in the icon's place and

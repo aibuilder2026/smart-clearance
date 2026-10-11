@@ -7,8 +7,8 @@
 		type Journey,
 		type JourneyTrigger
 	} from '@smart-clearance/api/console';
-	import { Badge, cx, Icon, type IconName } from '@smart-clearance/core';
-	import { useConsole } from '#lib/console.svelte.ts';
+	import { Badge, cx, Icon, type IconName } from '../../../index';
+	import { useConsole } from '../../console.svelte';
 	import AutonomyControl from './AutonomyControl.svelte';
 	import TrigRow from './TrigRow.svelte';
 

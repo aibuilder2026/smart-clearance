@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { DAY_MINUTES, dayBadge, type Client } from '@smart-clearance/api/console';
-	import { cx, Icon } from '@smart-clearance/core';
+	import { cx, Icon } from '../../../index';
 
 	// the length of a journey day in the client's head, on every tab (SC-68, option A): grey in real time, the
 	// information blue when days are short. It opens the sheet that changes it

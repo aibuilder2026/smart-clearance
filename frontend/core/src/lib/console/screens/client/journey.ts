@@ -1,5 +1,5 @@
 import type { Client, JourneyTrigger } from '@smart-clearance/api/console';
-import type { IconName } from '@smart-clearance/core';
+import type { IconName } from '../../../index';
 
 // a client's runs and timers, fired now (SC-79, option A): what each is called, its button, its rhythm, and the question a
 // timer asks before it fires early (closing an offer early can't be undone for that offer). design3/console/console.jsx

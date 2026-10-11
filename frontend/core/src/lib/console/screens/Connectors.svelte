@@ -1,18 +1,15 @@
 <script lang="ts">
 	import type { Connector } from '@smart-clearance/api/console';
-	import { Badge, Icon, List, ListRow, Sheet, useApp, WorkspaceMark, type IconName } from '@smart-clearance/core';
+	import { Badge, Icon, List, ListRow, Sheet, useApp, WorkspaceMark, type IconName } from '../../index';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { goto } from '$app/navigation';
-	import { clientsQuery } from '#lib/api/queries.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
-	import { href } from '#lib/links.ts';
-	import Screen from '#lib/screens/Screen.svelte';
-	import { STATUS } from '#lib/status.ts';
+	import { useConsole } from '../console.svelte';
+	import Screen from './Screen.svelte';
+	import { STATUS } from '../status';
 
 	// what a workspace can connect to, by kind, and which clients use each
 	const app = useApp();
 	const k = useConsole();
-	const clients = createQuery(() => clientsQuery());
+	const clients = createQuery(() => k.q.clients());
 	const kinds = [...new Set(k.catalog.connectors.map((x) => x.kind))];
 	let open: Connector | null = $state(null);
 	const users = (id: string) => (clients.data ?? []).filter((c) => c.integrations.some((i) => i.id === id));
@@ -71,7 +68,7 @@
 							chevron
 							onclick={() => {
 								open = null;
-								void goto(href('clients', c.id, 'integrations'));
+								void k.go({ screen: 'clients', id: c.id, tab: 'integrations' });
 							}}
 						/>
 					{:else}<ListRow title="No client yet" />{/each}

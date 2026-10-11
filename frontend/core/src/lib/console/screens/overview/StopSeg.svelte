@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cx } from '@smart-clearance/core';
+	import { cx } from '../../../index';
 	// where a batch stands, as nine short segments: done, the current one half-filled (amber at Approve), and the rest
 	let { stage }: { stage: number } = $props();
 </script>

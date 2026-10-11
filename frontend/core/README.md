@@ -29,8 +29,9 @@ Import the styles once, in the app's stylesheet, in the order `frontend/README.m
 | `src/styles/fonts.css`                                | the four families from Fontsource, and the type tokens with their names                                                                                            |
 | `src/styles/tailwind.css`                             | Tailwind 4 over the tokens: colours, radii and type sizes as utilities, `dark:` on `[data-theme="dark"]`, `phone:`, `tablet-up:` and `desktop:` on the app's width |
 | `src/lib/`                                            | the components, the patterns from design3/screens, `fmt`, the theme and app state, notices, motion, icons, images                                                  |
-| `./identity`, `./format`                              | `isEmail`, `digits` and `fmt` on their own, for code that is not a component (`@smart-clearance/api`'s mocks)                                                      |
+| `./identity`, `./format`                              | `isEmail`, `digits` and `fmt` on their own, for code that is not a component. The identity rule is the contract's (`@smart-clearance/api/identity`), shared here   |
 | `src/lib/workspace/` (`./workspace`)                  | the client workspace app (SC-62): every role's screens from design3/screens, the sign-in, the role shell and `WorkspaceApp`, on the prototype's stub (below)       |
+| `src/lib/console/` (`./console`)                      | the staff console (SC-169), the port of design3/console: `ConsoleApp`, its screens, and `console.css` (`./console/console.css`); `./console/demo`, its demo world  |
 | `src/lib/coverage.ts`                                 | every piece of the prototype's kit, built here or planned with the port that brings it                                                                             |
 
 ## From the kit (React) to Svelte
@@ -99,6 +100,48 @@ A screen drawn outside a provider (the guided demo) reads the stub, which sets i
 stage; `tests/source.test.ts` checks the stub's steps and the app entry's imports; `tests/goldens.test.ts` holds every
 role's screens' text at each stage, on a desktop and a phone; `tests/literals.test.ts` fails on a business literal in UI
 code (its allowances, with their reasons, in `tests/literals.allow.ts`).
+
+## The console (`./console`, `./console/demo`, `./console/console.css`)
+
+`src/lib/console/` is the port of `design3/console` (SC-37), moved here from `frontend/console` (SC-169) so the guided
+demo can show the console on a laptop. `ConsoleApp` is the whole console as one component; the console app
+(`frontend/console`) hosts it on real paths, and a page can embed it.
+
+```svelte
+<script lang="ts">
+	import '@smart-clearance/core/console/console.css'; // after core's styles
+	import { AppRoot } from '@smart-clearance/core';
+	import { ConsoleApp, type ConsoleRoute } from '@smart-clearance/core/console';
+	import { demoConsoleApi } from '@smart-clearance/core/console/demo';
+
+	const api = demoConsoleApi(); // the demo world, in memory, Neha signed in
+	let route = $state<ConsoleRoute>({ screen: 'clients', id: 'munchly', tab: 'agents' });
+</script>
+
+<AppRoot embedded style="position: absolute; inset: 0">
+	<ConsoleApp {api} {route} ongo={(r) => (route = r)} embedded />
+</AppRoot>
+```
+
+| Prop        | What                                                                                                                                                                                 |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `api`       | a `ConsoleApi`: `consoleHttp` (backend-api), `consoleMock` (the console's own seed), or `demoConsoleApi()` (the demo world: Munchly and four fictional clients, 180 days of batches) |
+| `data`      | or a `ConsoleData` over the API, when the host reads routes itself (the console app's load functions call `data.boot()` and `data.load(route)`)                                      |
+| `route`     | a `ConsoleRoute`: `{ screen, id?, tab?, query? }`; null names no place (with `error`). Given none, the console keeps its own route                                                   |
+| `ongo`      | `(route, { replace?, keep? })`, called when the console moves (a link, a button, a tab, a filter); what it returns is awaited                                                        |
+| `preloaded` | the host reads each route before handing it over, and says which it is reading in `pending` (SvelteKit's `navigating`); otherwise the console reads each route itself                |
+| `error`     | `{ status, message? }`: the shell's Not found, or the reason a place did not load                                                                                                    |
+| `links`     | `{ site, app }`: the landing page and a client's workspace (the live ones unless given)                                                                                              |
+| `plate`     | the sign-in's picture (`design3/site/assets/plates/scene.webp`, imported by the host so its build hashes it)                                                                         |
+| `mock`      | the API is the in-browser mock: the sign-in says the people are fictional, the account sheet offers Reset                                                                            |
+| `embedded`  | drawn inside another page: links carry the prototype's hash addresses (`#/clients/munchly`) and come back through `ongo`; the page's title and `#main` are left alone; no splash     |
+
+It needs the host's `AppRoot` (and the theme); it brings its own cache (TanStack Query), toasts and `Console` context,
+so two consoles never share state. `route.ts` maps routes to the console app's paths and back (`routePath`, `routeOf`)
+and to the prototype's hashes (`routeHash`, `routeOfHash`). `data.svelte.ts` holds what each screen reads and each
+screen's code (split per screen, as the console app's routes split it). The splash (SC-51) is the host's, given to
+`ConsoleData`. `console.css` is design3's verbatim (`tests/drift.test.ts`); `tests/console.test.ts` covers the routes,
+the reads and the embedded console on the demo world, and `tests/console-act.test.ts` the console's `act()`.
 
 ## Behaviour the kit defines, and how it is kept
 

@@ -1,28 +1,15 @@
 <script lang="ts">
 	import { staffInviteError, type Staff, type StaffRole } from '@smart-clearance/api/console';
-	import {
-		Avatar,
-		Badge,
-		Button,
-		DataTable,
-		Field,
-		Input,
-		Select,
-		Sheet,
-		useApp,
-		type Column
-	} from '@smart-clearance/core';
+	import { Avatar, Badge, Button, DataTable, Field, Input, Select, Sheet, useApp, type Column } from '../../index';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { api } from '#lib/api/client.ts';
-	import { staffQuery } from '#lib/api/queries.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
-	import Screen from '#lib/screens/Screen.svelte';
+	import { useConsole } from '../console.svelte';
+	import Screen from './Screen.svelte';
 
 	// Smart-Clearance's own people who can sign in to the console, and an invitation for a colleague
 	const ROLES: StaffRole[] = ['Super admin', 'Platform engineer', 'Support'];
 	const app = useApp();
 	const k = useConsole();
-	const staff = createQuery(() => staffQuery());
+	const staff = createQuery(() => k.q.staff());
 	let invite = $state(false);
 	let f = $state({ name: '', email: '', role: 'Support' as StaffRole });
 	let err = $state('');
@@ -33,7 +20,7 @@
 		const problem = staffInviteError(f);
 		if (problem) return void (err = problem);
 		const name = f.name.trim();
-		await k.act(() => api.inviteStaff($state.snapshot(f)), `Invitation sent to ${name}`);
+		await k.act(() => k.api.inviteStaff($state.snapshot(f)), `Invitation sent to ${name}`);
 		invite = false;
 		f = { name: '', email: '', role: 'Support' };
 		err = '';

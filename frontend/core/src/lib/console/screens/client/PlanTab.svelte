@@ -1,9 +1,8 @@
 <script lang="ts">
 	import type { Client } from '@smart-clearance/api/console';
-	import { Button, Card, Columns, fmt, List, ListRow, SectionTitle, Segmented } from '@smart-clearance/core';
-	import { api } from '#lib/api/client.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
-	import { Saving } from '#lib/saving.svelte.ts';
+	import { Button, Card, Columns, fmt, List, ListRow, SectionTitle, Segmented } from '../../../index';
+	import { useConsole } from '../../console.svelte';
+	import { Saving } from '../../saving.svelte';
 	import PlanScope from '../PlanScope.svelte';
 	import SaveLine from '../SaveLine.svelte';
 
@@ -14,7 +13,7 @@
 	// the plan pressed stays pressed while it saves, and says so beside it (SC-152)
 	const plan = new Saving(
 		() => c.plan,
-		(id: string) => k.act(() => api.setPlan(c.id, id), `${c.name} on ${k.planName(id)}`)
+		(id: string) => k.act(() => k.api.setPlan(c.id, id), `${c.name} on ${k.planName(id)}`)
 	);
 	const scope = $derived((k.catalog.plans.find((p) => p.id === plan.value) ?? k.catalog.plans[0]).scope);
 </script>

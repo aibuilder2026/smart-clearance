@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Agent, Client, SettingField, SettingValue } from '@smart-clearance/api/console';
-	import { Field, Input, List, ListRow, Select, Stepper, Switch } from '@smart-clearance/core';
+	import { Field, Input, List, ListRow, Select, Stepper, Switch } from '../../../index';
 
 	type Props = { f: SettingField; c: Client; agent: Agent; value: SettingValue; onchange: (v: SettingValue) => void };
 	let { f, c, agent, value, onchange }: Props = $props();

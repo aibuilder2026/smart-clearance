@@ -1,4 +1,4 @@
-import { save, Wait } from '@smart-clearance/core';
+import { save, Wait } from '../index';
 
 /** A control that saves on change, a Switch or a Segmented (SC-152; the kit's useSaving): it keeps the value pressed
  *  while the change is out and once it is saved, until the console has read the change back, so it never jumps back in

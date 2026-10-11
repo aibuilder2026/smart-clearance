@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { Card, Empty, List, ListRow, WorkspaceMark } from '@smart-clearance/core';
+	import { Card, Empty, List, ListRow, WorkspaceMark } from '../../index';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { auditQuery, clientsQuery } from '#lib/api/queries.ts';
+	import { useConsole } from '../console.svelte';
 
 	// the audit log, newest first: every client's, or one client's
 	let { filter = null }: { filter?: string | null } = $props();
-	const audit = createQuery(() => auditQuery(filter));
-	const clients = createQuery(() => clientsQuery());
+	const k = useConsole();
+	const audit = createQuery(() => k.q.audit(filter));
+	const clients = createQuery(() => k.q.clients());
 	const client = (id: string | null) => clients.data?.find((c) => c.id === id);
 </script>
 

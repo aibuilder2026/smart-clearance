@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { possessive, type Client } from '@smart-clearance/api/console';
-	import { Aura, Badge, Button, Card, cx, fmt, Icon, Progress } from '@smart-clearance/core';
-	import { api } from '#lib/api/client.ts';
-	import { queryClient } from '#lib/api/queries.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
+	import { Aura, Badge, Button, Card, cx, fmt, Icon, Progress } from '../../../index';
+	import { useConsole } from '../../console.svelte';
 
 	// A client's first stock export, set up by staff (SC-84, option B; console.jsx FirstExport). At the top of the
 	// client's Supply chain tab, above the distributors, SKUs and batches it brings: drop or choose the CSV, it uploads,
@@ -43,7 +41,7 @@
 		if (!f || up) return;
 		up = { name: f.name, p: 0 };
 		// the card's own progress is its wait; a refusal is a toast, as nothing here is pressed and waiting (SC-152)
-		await k.tell(() => api.uploadExport(c.id, f, { onProgress: (p) => (up = up && { ...up, p }) }));
+		await k.tell(() => k.api.uploadExport(c.id, f, { onProgress: (p) => (up = up && { ...up, p }) }));
 		up = null;
 	};
 	const pick = (e: Event & { currentTarget: HTMLInputElement }) => {
@@ -56,7 +54,7 @@
 	$effect(() => {
 		if (!reading) return;
 		const id = c.id;
-		const t = setInterval(() => queryClient.invalidateQueries({ queryKey: ['console', 'client', id] }), 1500);
+		const t = setInterval(() => k.data.queryClient.invalidateQueries({ queryKey: ['console', 'client', id] }), 1500);
 		return () => clearInterval(t);
 	});
 </script>

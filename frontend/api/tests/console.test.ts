@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ApiError } from '../src/index';
 import {
+	CONSOLE_KEY,
 	consoleMock,
 	exitsFor,
+	memoryStorage,
 	SESSION_KEY,
 	SIGN_IN_FAILED,
 	type ConsoleApi,
@@ -454,5 +456,62 @@ describe("a client's first stock export, set up by staff (SC-84)", () => {
 		expect((await lastAudit()).text).toBe(
 			"Uploaded Kesari Foods' stock export kesari_stock.csv; the Data agent maps and loads it"
 		);
+	});
+});
+
+describe('the demo world (SC-169), as the guided demo shows the console', () => {
+	const demo = () => consoleMock({ storage: memoryStorage(), world: 'demo', signedIn: 'neha' });
+
+	it('starts signed in, with Munchly Foods and four more clients, all live, and two demo requests', async () => {
+		const d = demo();
+		expect(d.world).toBe('demo');
+		expect((await d.me())?.id).toBe('neha');
+		const clients = await d.clients();
+		expect(clients.map((c) => c.id)).toEqual([
+			'munchly',
+			'godavari-staples',
+			'annapurna-naturals',
+			'vindhya-snacks',
+			'konkan-snacks'
+		]);
+		expect(clients.every((c) => c.status === 'live')).toBe(true);
+		const requests = await d.demoRequests();
+		expect(requests.map((r) => r.company)).toEqual(['Kesari Foods', 'Amrit Dairy']);
+		expect(requests.every((r) => r.email.endsWith('.example') && r.status === 'new')).toBe(true);
+	});
+
+	it('has closed batches whose food the Overview draws: kept out of landfill and destroyed, by day', async () => {
+		const d = await demo().dashboard(30);
+		const days = d.byDay.filter((x) => x.closed > 0);
+		expect(days.length).toBeGreaterThan(20);
+		expect(d.food.keptKg).toBeGreaterThan(0);
+		expect(d.food.destroyedKg).toBeGreaterThan(0);
+		expect(d.food.destroyed).toBeGreaterThan(0);
+		expect(d.food.keptKgBefore).toBeGreaterThan(0);
+		expect(d.byDay.some((x) => x.keptKg > 0 && x.destroyedKg > 0)).toBe(true);
+		expect(d.inFlightClients).toBe(5);
+		expect(d.recovered).toBeGreaterThan(0);
+		const closed = await demo().batches({ status: 'closed' });
+		expect(closed.counts.closed).toBeGreaterThan(800);
+	});
+
+	it("keeps its changes in memory only, apart from the console's own state, and resets to the demo world", async () => {
+		const store = memoryStorage();
+		const d = consoleMock({ storage: store, world: 'demo', signedIn: 'sameer' });
+		expect((await d.me())?.id).toBe('sameer');
+		await d.setPlan('godavari-staples', 'enterprise');
+		expect(store()?.getItem(CONSOLE_KEY)).toBeNull();
+		expect(store()?.getItem(CONSOLE_KEY + '-demo')).toContain('"enterprise"');
+		await d.reset!();
+		expect((await d.client('godavari-staples'))?.plan).toBe('growth');
+		expect((await d.clients()).length).toBe(5);
+	});
+
+	it("leaves the console's own seed as it was: Munchly Foods alone, signed out", async () => {
+		const d = consoleMock({ storage: memoryStorage() });
+		expect(d.world).toBeUndefined();
+		expect(await d.me()).toBeNull();
+		await d.signIn({ email: 'neha.kulkarni@smartclearance.com', password: 'x' });
+		expect((await d.clients()).map((c) => c.id)).toEqual(['munchly']);
 	});
 });

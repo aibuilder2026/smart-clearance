@@ -23,9 +23,8 @@
 		Sheet,
 		Textarea,
 		useApp
-	} from '@smart-clearance/core';
-	import { api } from '#lib/api/client.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
+	} from '../../../index';
+	import { useConsole } from '../../console.svelte';
 	import GateChecks from './GateChecks.svelte';
 
 	// an SKU's quick-commerce gates (the client's default, or its own), and each of its open batches with pass or fail
@@ -75,7 +74,7 @@
 		const g: SkuGates | null = f.own === 'own' ? { blinkitDays: num(f.bl), qcomPct: num(f.qc) } : null;
 		const problem = skuGatesError(g);
 		if (problem) return void (err = problem);
-		await k.act(() => api.saveSkuGates(c.id, sku.id, g), `${sku.name}'s gates saved`);
+		await k.act(() => k.api.saveSkuGates(c.id, sku.id, g), `${sku.name}'s gates saved`);
 		open = false;
 	}
 	async function saveOverride(ref: string) {
@@ -88,11 +87,11 @@
 			...(input.blinkitDays != null ? { blinkitDays: input.blinkitDays } : {}),
 			...(input.qcomPct != null ? { qcomPct: input.qcomPct } : {})
 		};
-		await k.act(() => api.overrideBatch(c.id, ref, clean), `${ref}'s override saved`);
+		await k.act(() => k.api.overrideBatch(c.id, ref, clean), `${ref}'s override saved`);
 		ovr = null;
 	}
 	const removeOverride = (ref: string) =>
-		k.act(() => api.clearBatchOverride(c.id, ref), `${ref} is back on its SKU's gates`);
+		k.act(() => k.api.clearBatchOverride(c.id, ref), `${ref} is back on its SKU's gates`);
 	const dist = (id: string) => c.distributors.find((x) => x.id === id);
 	const change = (b: BatchGates) =>
 		(ovr = {

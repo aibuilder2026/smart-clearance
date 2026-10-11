@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { Alert, Avatar, Button, List, ListRow, Sheet, useApp } from '@smart-clearance/core';
-	import { api, usingMock } from '#lib/api/client.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
+	import { Alert, Avatar, Button, List, ListRow, Sheet, useApp } from '../../index';
+	import { useConsole } from '../console.svelte';
 
 	// the signed-in person: who they are, their passkey, sign out; and, in the prototype, a way back to the seed data
 	let { open = $bindable(false), onout }: { open?: boolean; onout: () => void } = $props();
@@ -23,7 +22,7 @@
 		</div>
 		<List><ListRow title="Email" value={email} /><ListRow title="Passkey" value={passkey} /></List>
 		<div class="row tight wrap">
-			<Button icon="log-out" onclick={onout}>Sign out</Button>{#if usingMock && api.reset}<Button
+			<Button icon="log-out" onclick={onout}>Sign out</Button>{#if k.mock && k.api.reset}<Button
 					variant="ghost"
 					icon="rotate-ccw"
 					onclick={() => (reset = true)}>Reset prototype data</Button
@@ -32,7 +31,9 @@
 		<Alert
 			bind:open={reset}
 			title="Reset the prototype's data?"
-			message="Clients you set up and every change go back to the seed: Munchly Foods as the only client."
+			message={k.api.world === 'demo'
+				? "Clients you set up and every change go back to the demo's five clients."
+				: 'Clients you set up and every change go back to the seed: Munchly Foods as the only client.'}
 			actions={[
 				{ label: 'Cancel' },
 				{
@@ -41,7 +42,7 @@
 					danger: true,
 					strong: true,
 					onclick: async () => {
-						await k.act(() => api.reset!(), 'Back to the seed data');
+						await k.act(() => k.api.reset!(), 'Back to the seed data');
 						open = false;
 					}
 				}

@@ -29,19 +29,14 @@
 		useApp,
 		WorkspaceMark,
 		type IconName
-	} from '@smart-clearance/core';
+	} from '../../index';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { tick, untrack } from 'svelte';
-	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
-	import { api } from '#lib/api/client.ts';
-	import { clientsQuery, requestsQuery } from '#lib/api/queries.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
-	import { href } from '#lib/links.ts';
-	import Choice from '#lib/screens/Choice.svelte';
-	import PlanScope from '#lib/screens/PlanScope.svelte';
-	import ProfileSummary from '#lib/screens/ProfileSummary.svelte';
-	import Screen from '#lib/screens/Screen.svelte';
+	import { useConsole } from '../console.svelte';
+	import Choice from './Choice.svelte';
+	import PlanScope from './PlanScope.svelte';
+	import ProfileSummary from './ProfileSummary.svelte';
+	import Screen from './Screen.svelte';
 
 	// a new client, step by step: its company, its workspace, its supply chain and the exits that follow, how far its
 	// agents go at first, its admin, and a review with the plan. A demo request can start it (?request=…): its company,
@@ -58,8 +53,8 @@
 
 	const app = useApp();
 	const k = useConsole();
-	const clients = createQuery(() => clientsQuery());
-	const requests = createQuery(() => requestsQuery());
+	const clients = createQuery(() => k.q.clients());
+	const requests = createQuery(() => k.q.requests());
 	const questions = Object.keys(k.config.profile) as ProfileQuestion[];
 	const plans = k.catalog.plans.map((p) => ({ id: p.id, label: p.name }));
 	const presets = k.config.presets.map((p) => ({ id: p.id, label: p.label }));
@@ -82,7 +77,7 @@
 		request: string | null;
 	};
 	const fromRequest = untrack(() => {
-		const r = requests.data?.find((x) => x.id === page.url.searchParams.get('request') && x.status === 'new');
+		const r = requests.data?.find((x) => x.id === k.route.query?.request && x.status === 'new');
 		if (!r) return {};
 		return {
 			name: r.company,
@@ -140,7 +135,7 @@
 	async function to(n: number) {
 		step = n;
 		await tick();
-		document.getElementById('main')?.scrollTo(0, 0);
+		k.top();
 	}
 	function next() {
 		if (errs[step]) return void (tried = true);
@@ -156,7 +151,7 @@
 	async function create() {
 		const client = await k.act(
 			() =>
-				api.createClient({
+				k.api.createClient({
 					name: f.name,
 					city: f.city,
 					industry: f.industry,
@@ -176,7 +171,7 @@
 			(c) => `${c.name}'s workspace is set up`
 		);
 		// its first stock export is next, at the top of its Supply chain tab (SC-84)
-		await goto(href('clients', client.id, 'supply'), { replace: true });
+		await k.go({ screen: 'clients', id: client.id, tab: 'supply' }, { replace: true });
 	}
 </script>
 
@@ -187,7 +182,7 @@
 	title="New client"
 	sub="Step {step + 1} of {STEPS.length} · {STEPS[step]}"
 	back="Clients"
-	onback={() => goto(href('clients'))}
+	onback={() => k.go({ screen: 'clients' })}
 >
 	<div class="cs-wizard">
 		{#if app.bp !== 'phone'}<ol class="cs-steps" aria-label="Steps">

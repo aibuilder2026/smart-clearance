@@ -1,18 +1,7 @@
 <script lang="ts">
 	import type { Client, DestructionConfig, Exits, Rules } from '@smart-clearance/api/console';
-	import {
-		Badge,
-		Button,
-		Columns,
-		List,
-		ListRow,
-		SectionTitle,
-		Stepper,
-		Switch,
-		type IconName
-	} from '@smart-clearance/core';
-	import { api } from '#lib/api/client.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
+	import { Badge, Button, Columns, List, ListRow, SectionTitle, Stepper, Switch, type IconName } from '../../../index';
+	import { useConsole } from '../../console.svelte';
 
 	// a client's channels and rules: the exits the agents may use, and the limits they work inside. Edited together and
 	// saved or discarded together
@@ -43,7 +32,7 @@
 	const save = () =>
 		k.act(
 			() =>
-				api.saveRules(c.id, {
+				k.api.saveRules(c.id, {
 					rules: $state.snapshot(r),
 					exits: $state.snapshot(ex),
 					...(dz ? { destruction: $state.snapshot(dz) } : {})

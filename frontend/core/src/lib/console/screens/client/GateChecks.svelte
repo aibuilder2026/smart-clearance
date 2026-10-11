@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { GateCheck } from '@smart-clearance/api/console';
-	import { Icon } from '@smart-clearance/core';
+	import { Icon } from '../../../index';
 
 	// a batch's gates as the agents read them: a tick or a cross with the app's name, and with `full`, what the batch
 	// has against what the app needs

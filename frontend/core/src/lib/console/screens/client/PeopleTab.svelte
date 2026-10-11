@@ -12,9 +12,8 @@
 		useApp,
 		Wait,
 		type Column
-	} from '@smart-clearance/core';
-	import { api } from '#lib/api/client.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
+	} from '../../../index';
+	import { useConsole } from '../../console.svelte';
 	import MoreMenu, { type MoreItem } from '../MoreMenu.svelte';
 	import InviteForm, { ACCESS } from './InviteForm.svelte';
 
@@ -39,7 +38,7 @@
 
 	const setStatus = (p: ClientPerson, status: 'active' | 'deactivated') =>
 		k.act(
-			() => api.updatePerson(c.id, p.id, { status }),
+			() => k.api.updatePerson(c.id, p.id, { status }),
 			`${p.name} ${status === 'deactivated' ? 'deactivated' : 'reactivated'}`
 		);
 	// the access pressed waits in its row (SC-152): a spinner in the tick's place, the sheet closing once it is saved,
@@ -50,7 +49,7 @@
 		if (accessWait.working) return;
 		pressed = a;
 		void accessWait.run(async () => {
-			await k.act(() => api.updatePerson(c.id, p.id, { access: a }), `${p.name}: ${a}`);
+			await k.act(() => k.api.updatePerson(c.id, p.id, { access: a }), `${p.name}: ${a}`);
 			accessFor = null;
 		});
 	}
@@ -64,7 +63,7 @@
 			? {
 					label: 'Resend invitation',
 					icon: 'send',
-					action: () => k.act(() => api.resendInvite(c.id, p.id), `Invitation resent to ${p.name}`),
+					action: () => k.act(() => k.api.resendInvite(c.id, p.id), `Invitation resent to ${p.name}`),
 					busy: 'Resending the invitation…',
 					done: 'Invitation resent'
 				}

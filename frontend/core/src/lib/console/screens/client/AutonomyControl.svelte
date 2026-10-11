@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { Agent, Autonomy, Client } from '@smart-clearance/api/console';
-	import { Segmented } from '@smart-clearance/core';
-	import { useConsole } from '#lib/console.svelte.ts';
-	import { Saving } from '#lib/saving.svelte.ts';
+	import { Segmented } from '../../../index';
+	import { useConsole } from '../../console.svelte';
+	import { Saving } from '../../saving.svelte';
 	import SaveLine from '../SaveLine.svelte';
 
 	// how far an agent may go, changed in place (the pipeline's stop, the inspector): the level pressed stays pressed

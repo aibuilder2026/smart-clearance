@@ -1,6 +1,8 @@
 // The console's API as the prototype answers it, in the browser (design3/core/platform.js and console.jsx): the seed,
 // kept per browser, and every change the console makes, each writing its audit line in the signed-in staff member's
-// name, word for word as the prototype writes it. backend-api implements the same contract.
+// name, word for word as the prototype writes it. backend-api implements the same contract. On the demo world (SC-169:
+// platform.js's P.seed({ world: 'demo' }), which the guided demo's console opens on) it starts from that world instead,
+// fetched only when it is asked for.
 import seed from '../seed/console.json';
 import { browserStorage, catalog, lookupWorkspaces, waiter, type MockOptions } from '../mock/shared';
 import { ApiError, type Agent, type DemoRequest } from '../types/shared';
@@ -113,6 +115,22 @@ const fresh = (): State => ({
 	requests: structuredClone(REQUESTS),
 	nextAudit: 100
 });
+/** the demo world: design3's own requests come with it (on .example addresses) */
+type WorldSeed = { state: Omit<State, 'v' | 'requests' | 'nextAudit'>; requests: DemoRequest[] };
+const freshFrom = (w: WorldSeed): State => ({
+	v: VERSION,
+	...structuredClone(w.state),
+	requests: structuredClone(w.requests),
+	nextAudit: 100
+});
+
+export type ConsoleMockOptions = MockOptions & {
+	/** the world it starts from: the console's own seed (Munchly Foods alone), or 'demo' (Munchly Foods and four more
+	 *  clients with 180 days of batches, closed ones with what they kept and destroyed, and two demo requests) */
+	world?: 'demo';
+	/** a staff member signed in from the start (their id, 'neha'), unless the storage already keeps a session */
+	signedIn?: string;
+};
 
 const two = (n: number) => String(n).padStart(2, '0');
 /** what a change sends, as it would arrive over HTTP: plain JSON, never a live object of the caller's */
@@ -132,8 +150,16 @@ const RULE_LABEL: Record<string, string> = {
 	remindDays: 'ask again after days'
 };
 
-export function consoleMock({ latency = 0, storage = browserStorage }: MockOptions = {}): ConsoleApi {
-	const wait = waiter(latency);
+export function consoleMock({
+	latency = 0,
+	storage = browserStorage,
+	world,
+	signedIn
+}: ConsoleMockOptions = {}): ConsoleApi {
+	// a world of its own keeps its state under keys of its own, apart from the console's
+	const STATE_KEY = world ? `${CONSOLE_KEY}-${world}` : CONSOLE_KEY;
+	const SESSION = world ? `${SESSION_KEY}-${world}` : SESSION_KEY;
+	const lag = waiter(latency);
 	const read = <T>(key: string): T | null => {
 		try {
 			const raw = storage()?.getItem(key);
@@ -153,12 +179,26 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 		}
 	};
 
-	const saved = read<State>(CONSOLE_KEY);
-	let state: State = saved && saved.v === VERSION ? saved : fresh();
+	const saved = read<State>(STATE_KEY);
+	const kept = saved && saved.v === VERSION ? saved : null;
+	// the console's own seed is in this module; the demo world is its own chunk, fetched when it is asked for
+	const world0: Promise<WorldSeed> | null =
+		world === 'demo' ? import('../seed/console-demo.json').then((m) => m.default as unknown as WorldSeed) : null;
+	let state: State = kept ?? (world0 ? (undefined as unknown as State) : fresh());
+	let start: () => State = fresh;
+	const ready: Promise<void> | null = world0
+		? world0.then((w) => {
+				start = () => freshFrom(w);
+				if (!kept) state = start();
+			})
+		: null;
+	// every call waits for the world, then for the latency asked for
+	const wait = ready ? () => ready.then(lag) : lag;
+	if (signedIn && !read(SESSION)) write(SESSION, { uid: signedIn, at: Date.now() });
 	const out = <T>(v: T): T => structuredClone(v);
 
 	const me = (): Staff | null => {
-		const session = read<{ uid: string }>(SESSION_KEY);
+		const session = read<{ uid: string }>(SESSION);
 		return (session && state.staff.find((s) => s.id === session.uid && s.status === 'active')) || null;
 	};
 	const who = () => {
@@ -201,7 +241,7 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 			});
 		}
 		state = draft;
-		write(CONSOLE_KEY, state);
+		write(STATE_KEY, state);
 	}
 	// a change to one client, returning it as it now stands
 	const change = (id: string, fn: (c: Client, draft: State) => void, text?: string) => {
@@ -337,6 +377,7 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 	}
 
 	return {
+		world,
 		async catalog() {
 			await wait();
 			return catalog();
@@ -355,12 +396,12 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 			await wait();
 			const s = state.staff.find((x) => x.status === 'active' && x.email.toLowerCase() === email.trim().toLowerCase());
 			if (!s || !password) throw new ApiError(401, SIGN_IN_FAILED);
-			write(SESSION_KEY, { uid: s.id, at: Date.now() });
+			write(SESSION, { uid: s.id, at: Date.now() });
 			return out(s);
 		},
 		async signOut() {
 			await wait();
-			write(SESSION_KEY, null);
+			write(SESSION, null);
 		},
 		async me() {
 			await wait();
@@ -809,8 +850,8 @@ export function consoleMock({ latency = 0, storage = browserStorage }: MockOptio
 		},
 		async reset() {
 			await wait();
-			state = fresh();
-			write(CONSOLE_KEY, state);
+			state = start();
+			write(STATE_KEY, state);
 		}
 	};
 }

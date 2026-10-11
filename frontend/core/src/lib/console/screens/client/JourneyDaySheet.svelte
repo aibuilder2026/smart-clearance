@@ -9,10 +9,9 @@
 		possessive,
 		type Client
 	} from '@smart-clearance/api/console';
-	import { Button, cx, Field, Icon, Input, List, ListRow, Sheet, useApp } from '@smart-clearance/core';
+	import { Button, cx, Field, Icon, Input, List, ListRow, Sheet, useApp } from '../../../index';
 	import { untrack } from 'svelte';
-	import { api } from '#lib/api/client.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
+	import { useConsole } from '../../console.svelte';
 
 	// the length of a journey day (SC-68, option A): presets or any whole number of minutes from 1 to 1,440, with what
 	// the setting does to the agents, and a note when the client is live. Saving writes the audit line on the server
@@ -51,7 +50,7 @@
 		if (v === c.dayMinutes) return void (open = false);
 		const to = v;
 		await k.act(
-			() => api.setDayMinutes(c.id, to),
+			() => k.api.setDayMinutes(c.id, to),
 			`${c.name}: ${to >= DAY_MINUTES ? 'back to real time' : 'a journey day now lasts ' + dayWords(to)}`
 		);
 		open = false;

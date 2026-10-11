@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { SIZES } from '@smart-clearance/api/console';
-	import { Icon } from '@smart-clearance/core';
+	import { Icon } from '../../../index';
 	// a page of rows: where it is in the whole, rows a page, and the pages (previous and next only on phones)
 	let {
 		page,

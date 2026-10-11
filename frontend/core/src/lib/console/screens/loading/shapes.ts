@@ -1,5 +1,5 @@
 import type { ClientTab } from '@smart-clearance/api/console';
-import type { RouteName } from '#lib/links.ts';
+import type { ConsoleScreen } from '../../route';
 
 // The placeholders a screen or tab shows while it is read (SC-49), as design3's console draws them: each row is
 // [kind, height, columns, width or column weights]
@@ -40,7 +40,7 @@ export const SHAPES: Record<Shape, Row[]> = {
 	]
 };
 
-export const SCREEN_SHAPE: Partial<Record<RouteName, Shape>> = {
+export const SCREEN_SHAPE: Partial<Record<ConsoleScreen, Shape>> = {
 	overview: 'dashboard',
 	clients: 'table',
 	'new-client': 'form',

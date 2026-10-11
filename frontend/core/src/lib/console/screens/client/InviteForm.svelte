@@ -6,9 +6,8 @@
 
 <script lang="ts">
 	import { inviteError, type Client } from '@smart-clearance/api/console';
-	import { Button, Field, Input, refusal, Select } from '@smart-clearance/core';
-	import { api } from '#lib/api/client.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
+	import { Button, Field, Input, refusal, Select } from '../../../index';
+	import { useConsole } from '../../console.svelte';
 
 	// an invitation to a client's workspace is an email address only (SC-68): staff at its email domain, partners at any
 	// address. They sign in with it and the default password, which the operator hands over; nothing is ever mailed
@@ -30,7 +29,7 @@
 		busy = true;
 		try {
 			await k.act(
-				() => api.invitePerson(c.id, { ...$state.snapshot(f), contact: f.contact.trim().toLowerCase() }),
+				() => k.api.invitePerson(c.id, { ...$state.snapshot(f), contact: f.contact.trim().toLowerCase() }),
 				`${name} can sign in with the default password`
 			);
 		} catch (e) {

@@ -1,16 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Catalog, ConsoleConfig, Staff } from '@smart-clearance/api/console';
-import type { Notices } from '@smart-clearance/core';
+import type { Notices } from '../src/lib/notice.svelte';
+import { Console } from '../src/lib/console/console.svelte';
+import type { ConsoleData } from '../src/lib/console/data.svelte';
 
 // Console.act (SC-152): a button waits on it, so it resolves once the change is saved (the console is read again in
 // place, not awaited), says so only when it went through, and rejects with the API's own words for the button to say.
-// tell() is the same for a caller with no button: a refusal is a toast. The console's queries and core's runes are
-// stood in for, as this suite runs in node
-vi.mock('../../src/lib/api/queries', () => ({ refresh: () => Promise.resolve() }));
-vi.mock('@smart-clearance/core', () => ({
-	refusal: (e: unknown) => (e instanceof Error && e.message) || "That didn't go through. Try again."
-}));
-const { Console } = await import('../../src/lib/console.svelte.ts');
+// tell() is the same for a caller with no button: a refusal is a toast. The console's data is stood in for
+const consoleWith = (notices: Partial<Notices>, refresh: () => Promise<unknown>) =>
+	new Console({
+		data: {} as ConsoleData,
+		config: {} as ConsoleConfig,
+		catalog: {} as Catalog,
+		notices: notices as Notices,
+		me: () => ({}) as Staff,
+		refresh
+	});
 
 const later = <T>() => {
 	let resolve!: (v: T) => void;
@@ -27,7 +32,7 @@ describe('Console.act', () => {
 		toast = vi.fn<(t: { text: string; tone?: string }) => void>();
 		read = later<void>();
 		refresh = vi.fn<() => Promise<void>>(() => read.p);
-		k = new Console({} as ConsoleConfig, {} as Catalog, { toast } as unknown as Notices, () => ({}) as Staff, refresh);
+		k = consoleWith({ toast }, refresh);
 	});
 
 	it('resolves with the answer once the change is saved, without waiting for the console to be read again', async () => {
@@ -70,13 +75,7 @@ describe('Console.act', () => {
 describe('Console.tell', () => {
 	it('says a refusal in a toast and gives undefined', async () => {
 		const toast = vi.fn();
-		const k = new Console(
-			{} as ConsoleConfig,
-			{} as Catalog,
-			{ toast } as unknown as Notices,
-			() => ({}) as Staff,
-			() => Promise.resolve()
-		);
+		const k = consoleWith({ toast }, () => Promise.resolve());
 		expect(await k.tell(() => Promise.reject(new Error('The file is not a CSV.')), 'Uploaded')).toBeUndefined();
 		expect(toast).toHaveBeenCalledWith({ text: 'The file is not a CSV.', tone: 'err' });
 		toast.mockClear();

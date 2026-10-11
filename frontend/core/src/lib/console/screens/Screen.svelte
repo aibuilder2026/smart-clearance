@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ModeMenuButton, Page, useApp } from '@smart-clearance/core';
+	import { ModeMenuButton, Page, useApp } from '../../index';
 	import type { Snippet } from 'svelte';
 
 	type Props = {

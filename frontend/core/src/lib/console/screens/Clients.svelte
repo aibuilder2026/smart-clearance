@@ -1,34 +1,21 @@
 <script lang="ts">
 	import type { Client } from '@smart-clearance/api/console';
-	import {
-		Button,
-		Card,
-		DataTable,
-		fmt,
-		Product,
-		SearchField,
-		useApp,
-		WorkspaceMark,
-		type Column
-	} from '@smart-clearance/core';
+	import { Button, Card, DataTable, fmt, Product, SearchField, useApp, WorkspaceMark, type Column } from '../../index';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { goto } from '$app/navigation';
-	import { clientsQuery } from '#lib/api/queries.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
-	import { href } from '#lib/links.ts';
-	import ClientStatus from '#lib/screens/ClientStatus.svelte';
-	import Screen from '#lib/screens/Screen.svelte';
+	import { useConsole } from '../console.svelte';
+	import ClientStatus from './ClientStatus.svelte';
+	import Screen from './Screen.svelte';
 
 	// Clients: every manufacturer's workspace, as a table on tablets and desktops and a list on phones
 	const app = useApp();
 	const k = useConsole();
-	const clients = createQuery(() => clientsQuery());
+	const clients = createQuery(() => k.q.clients());
 	let q = $state('');
 	const all = $derived(clients.data ?? []);
 	const rows = $derived(
 		all.filter((c) => !q || `${c.name} ${c.domain} ${c.city}`.toLowerCase().includes(q.toLowerCase()))
 	);
-	const open = (c: Client) => goto(href('clients', c.id, 'agents'));
+	const open = (c: Client) => k.go({ screen: 'clients', id: c.id, tab: 'agents' });
 </script>
 
 {#snippet name(c: Client)}<span class="row tight"
@@ -45,22 +32,27 @@
 {#snippet recovered(c: Client)}{c.recovered ? fmt.inr(c.recovered) : 'none yet'}{/snippet}
 
 <Screen title="Clients" sub="Every manufacturer's workspace on Smart-Clearance">
-	{#snippet actions()}{#if app.bp !== 'phone'}<Button variant="primary" size="sm" icon="plus" href={href('new-client')}
-				>New client</Button
+	{#snippet actions()}{#if app.bp !== 'phone'}<Button
+				variant="primary"
+				size="sm"
+				icon="plus"
+				href={k.href({ screen: 'new-client' })}>New client</Button
 			>{/if}{/snippet}
 	<div class="stack" style="gap: 16px">
 		<div class="row wrap" style="gap: 10px">
 			<div class="grow" style="min-width: 220px">
 				<SearchField bind:value={q} placeholder="Search clients, addresses, people" />
 			</div>
-			{#if app.bp === 'phone'}<Button variant="primary" icon="plus" href={href('new-client')}>New client</Button>{/if}
+			{#if app.bp === 'phone'}<Button variant="primary" icon="plus" href={k.href({ screen: 'new-client' })}
+					>New client</Button
+				>{/if}
 		</div>
 		{#if app.bp === 'phone'}
 			<div class="list">
 				{#each rows as c (c.id)}<a
 						class="list-row"
 						style="grid-template-columns: 40px minmax(0,1fr) auto; width: 100%; text-align: left"
-						href={href('clients', c.id, 'agents')}
+						href={k.href({ screen: 'clients', id: c.id, tab: 'agents' })}
 						><WorkspaceMark ws={c} size={36} /><span class="stack tight" style="gap: 0; min-width: 0"
 							><b class="t-subhead">{c.name}</b><span class="t-caption subtle mono" style="overflow-wrap: anywhere"
 								>{c.domain}</span
@@ -104,7 +96,7 @@
 						Each client starts from its supply-chain profile: route to market, who owns the stock, its expiry policy and
 						the exits it allows. The agents and their limits follow from it.
 					</p>
-					<div><Button variant="primary" icon="plus" href={href('new-client')}>New client</Button></div>
+					<div><Button variant="primary" icon="plus" href={k.href({ screen: 'new-client' })}>New client</Button></div>
 				</div>
 			</Card>{/if}
 	</div>

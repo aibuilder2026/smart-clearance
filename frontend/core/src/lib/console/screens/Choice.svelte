@@ -1,5 +1,5 @@
 <script lang="ts" generics="T extends string">
-	import { Badge, cx, Icon } from '@smart-clearance/core';
+	import { Badge, cx, Icon } from '../../index';
 
 	type Props = {
 		name: string;

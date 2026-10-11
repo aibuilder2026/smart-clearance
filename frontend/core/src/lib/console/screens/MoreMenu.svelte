@@ -1,5 +1,5 @@
 <script lang="ts" module>
-	import type { MenuItem } from '@smart-clearance/core';
+	import type { MenuItem } from '../../index';
 
 	/** a menu item that calls the network (SC-152): what the "…" button says while it waits, and once it went through */
 	export type MoreItem =
@@ -7,9 +7,9 @@
 </script>
 
 <script lang="ts">
-	import { Icon, Menu, refusal, Wait } from '@smart-clearance/core';
+	import { Icon, Menu, refusal, Wait } from '../../index';
 	import { onDestroy } from 'svelte';
-	import { useConsole } from '#lib/console.svelte.ts';
+	import { useConsole } from '../console.svelte';
 
 	type Props = {
 		/** "Actions for Munchly Foods": the button's name and the menu's */

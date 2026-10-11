@@ -16,10 +16,8 @@
 		useApp,
 		type Column,
 		type IconName
-	} from '@smart-clearance/core';
-	import { api } from '#lib/api/client.ts';
-	import { clientBatchesQuery } from '#lib/api/queries.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
+	} from '../../../index';
+	import { useConsole } from '../../console.svelte';
 	import MoreMenu from '../MoreMenu.svelte';
 	import FirstExport from './FirstExport.svelte';
 	import GateValue from './GateValue.svelte';
@@ -33,7 +31,7 @@
 	let edit = $state(false);
 	let skuId: string | null = $state(null);
 	// the client's open batches with their gates (SC-47): each SKU's count and overrides, and its sheet's list
-	const batchesQ = createQuery(() => clientBatchesQuery(c.id));
+	const batchesQ = createQuery(() => k.q.clientBatches(c.id));
 	const open = $derived(batchesQ.data ?? []);
 	const hasOwn = (x: Sku) => x.gates.blinkitDays != null || x.gates.qcomPct != null;
 	const gateOf = (x: Sku, key: 'blinkitDays' | 'qcomPct') => x.gates[key] ?? c.gates[key];
@@ -66,7 +64,7 @@
 		],
 		['window', 'calendar-clock', 'Return window', `${c.returnWindowDays} days`]
 	]);
-	const ask = (d: Distributor) => k.act(() => api.remindDistributor(c.id, d.id), `Reminder sent to ${d.name}`);
+	const ask = (d: Distributor) => k.act(() => k.api.remindDistributor(c.id, d.id), `Reminder sent to ${d.name}`);
 </script>
 
 {#snippet step(icon: IconName, t: string, sub: string)}<div class="wschain-step">

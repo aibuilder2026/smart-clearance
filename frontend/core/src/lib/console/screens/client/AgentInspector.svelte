@@ -1,9 +1,8 @@
 <script lang="ts">
 	import type { Agent, AgentSettings, Autonomy, Client, Journey, JourneyTrigger } from '@smart-clearance/api/console';
-	import { Button, cx, Icon, List, ListRow, Switch, type IconName } from '@smart-clearance/core';
-	import { api } from '#lib/api/client.ts';
-	import { useConsole } from '#lib/console.svelte.ts';
-	import { Saving } from '#lib/saving.svelte.ts';
+	import { Button, cx, Icon, List, ListRow, Switch, type IconName } from '../../../index';
+	import { useConsole } from '../../console.svelte';
+	import { Saving } from '../../saving.svelte';
 	import SaveLine from '../SaveLine.svelte';
 	import AutonomyControl from './AutonomyControl.svelte';
 	import { EVENT_OF } from './journey.ts';
@@ -33,10 +32,10 @@
 
 	// Save waits on the platform and says Saved; the switch keeps its place while it saves and says so (SC-152)
 	const save = () =>
-		k.act(() => api.updateAgent(c.id, id, { settings: $state.snapshot(draft) }), `${a.name} saved for ${c.name}`);
+		k.act(() => k.api.updateAgent(c.id, id, { settings: $state.snapshot(draft) }), `${a.name} saved for ${c.name}`);
 	const on = new Saving(
 		() => cfg.on,
-		(v: boolean) => k.act(() => api.updateAgent(c.id, id, { on: v }))
+		(v: boolean) => k.act(() => k.api.updateAgent(c.id, id, { on: v }))
 	);
 </script>
 

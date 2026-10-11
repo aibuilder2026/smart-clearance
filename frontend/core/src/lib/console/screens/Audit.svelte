@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { WorkspaceMark } from '@smart-clearance/core';
+	import { WorkspaceMark } from '../../index';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { clientsQuery } from '#lib/api/queries.ts';
-	import AuditList from '#lib/screens/AuditList.svelte';
-	import Screen from '#lib/screens/Screen.svelte';
+	import { useConsole } from '../console.svelte';
+	import AuditList from './AuditList.svelte';
+	import Screen from './Screen.svelte';
 
 	// every change staff and client admins make, newest first; one client's, or everything
-	const clients = createQuery(() => clientsQuery());
+	const k = useConsole();
+	const clients = createQuery(() => k.q.clients());
 	let filter: string | null = $state(null);
 </script>
 

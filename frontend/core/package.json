@@ -33,6 +33,7 @@
 			"types": "./src/lib/console/demo.ts",
 			"default": "./src/lib/console/demo.ts"
 		},
+		"./console/console.css": "./src/lib/console/console.css",
 		"./firstpaint": "./src/lib/firstpaint.ts",
 		"./identity": "./src/lib/identity.ts",
 		"./format": "./src/lib/format.ts",

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useApp } from '@smart-clearance/core';
+	import { useApp } from '../../../index';
 	import { rows, type Kind, type Shape } from './shapes.ts';
 
 	// the screen's own shape while it is read (SC-49): blocks with the bones of what is coming, one green wash crossing

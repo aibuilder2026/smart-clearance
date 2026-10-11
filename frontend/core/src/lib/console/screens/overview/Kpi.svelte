@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { cx, Icon, type IconName } from '@smart-clearance/core';
+	import { cx, Icon, type IconName } from '../../../index';
 	import type { Snippet } from 'svelte';
 	import Sparkline from './Sparkline.svelte';
 

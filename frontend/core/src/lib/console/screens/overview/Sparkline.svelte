@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ease, prefersReducedMotion } from '@smart-clearance/core';
+	import { ease, prefersReducedMotion } from '../../../index';
 	import { Tween } from 'svelte/motion';
 
 	// a sparkline: one series, a 10% wash under a 2 px line (SC-48). The line draws itself once (700 ms) and the wash

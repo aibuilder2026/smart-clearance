@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { prefersReducedMotion } from '@smart-clearance/core';
+	import { prefersReducedMotion } from '../../../index';
 
 	// the route along the top of what is loading (SC-49), as the landing page's loader draws it: it eases most of the
 	// way and waits there (1.2 s), then, once the read is in, completes (160 ms), lands its amber pin (420 ms) and fades

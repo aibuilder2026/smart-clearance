@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Client, JourneyTrigger } from '@smart-clearance/api/console';
-	import { Button, cx, Icon } from '@smart-clearance/core';
-	import { useConsole } from '#lib/console.svelte.ts';
+	import { Button, cx, Icon } from '../../../index';
+	import { useConsole } from '../../console.svelte';
 	import { everyOf, fromNow, journeyTime, TRIG } from './journey.ts';
 
 	// a scheduled run or a pending timer: what it is, when it falls due (journey time), how long that is from now, and
