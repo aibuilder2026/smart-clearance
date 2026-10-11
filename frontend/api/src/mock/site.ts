@@ -1,6 +1,6 @@
 // The landing page's API as the prototype answers it, in the browser: the seed and the prototype's own rule for taking
 // a demo request (design3/site's DemoSheet). backend-api implements the same contract.
-import { isEmail } from '@smart-clearance/core/identity';
+import { isEmail } from '../identity';
 import showcase from '../seed/showcase.json';
 import { ApiError, type DemoRequest, type DemoRequestInput } from '../types/shared';
 import type { Showcase, SiteApi } from '../types/site';

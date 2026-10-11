@@ -1,6 +1,6 @@
 // What every surface's mock answers alike: the platform's catalog and finding a workspace, from the seed (generated
 // from design3/core by scripts/seed.mjs). backend-api implements the same contract.
-import { digits, isEmail } from '@smart-clearance/core/identity';
+import { digits, isEmail } from '../identity';
 import catalogSeed from '../seed/catalog.json';
 import directory from '../seed/directory.json';
 import { ApiError, type Catalog, type WorkspaceMatch, type WorkspaceSummary } from '../types/shared';

@@ -17,6 +17,10 @@
 			"types": "./src/console/index.ts",
 			"default": "./src/console/index.ts"
 		},
+		"./identity": {
+			"types": "./src/identity.ts",
+			"default": "./src/identity.ts"
+		},
 		"./workspace": {
 			"types": "./src/workspace/index.ts",
 			"default": "./src/workspace/index.ts"
@@ -32,7 +36,6 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
-		"@smart-clearance/core": "workspace:*",
 		"firebase": "12.19.0"
 	},
 	"devDependencies": {
