@@ -1,0 +1,67 @@
+[
+ {
+  "url": "http://127.0.0.1:8796/designs/SC-176/option-a/mockup.html?shot=1",
+  "out": "option-a/command-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200
+ },
+ {
+  "url": "http://127.0.0.1:8796/designs/SC-176/option-a/mockup.html?shot=1",
+  "out": "option-a/command-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2200
+ },
+ {
+  "url": "http://127.0.0.1:8796/designs/SC-176/option-a/mockup.html?shot=1",
+  "out": "option-a/command-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200
+ },
+ {
+  "url": "http://127.0.0.1:8796/designs/SC-176/option-a/mockup.html?shot=1",
+  "out": "option-a/command-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2200
+ },
+ {
+  "url": "http://127.0.0.1:8796/designs/SC-176/option-a/mockup.html?state=route-switch&shot=1",
+  "out": "option-a/route-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200
+ },
+ {
+  "url": "http://127.0.0.1:8796/designs/SC-176/option-a/mockup.html?shot=1",
+  "out": "option-a/guide-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2200,
+  "click": [
+   ".pt-info:not(.short)"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8796/designs/SC-176/option-a/mockup.html?shot=1",
+  "out": "option-a/guide-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2200,
+  "click": [
+   ".pt-info:not(.short)"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8796/designs/SC-176/option-a/mockup.html?shot=1",
+  "out": "option-a/guide-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2200,
+  "click": [
+   ".pt-info:not(.short)"
+  ]
+ }
+]

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-176 The journey clock explained</title>
+<meta name="description" content="Three ways for the workspace to say that its date and time are the prototype's own journey clock, and how staff start the journey again or move it forward.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<link rel="stylesheet" href="board.css">
+<body>
+<main class="wrap">
+<h1>The journey clock explained</h1>
+<p class="lede">SC-176 · Munchly's workspace, live · three ways to say, wherever the workspace shows the journey's date and time, that it is <b>the prototype's own clock</b>, and to show how it is <b>started again</b> and <b>moved forward</b>.</p>
+<p>The maintainer (11 Oct), with a screenshot of the Command Center's “Live · Fri 2 Oct 08:00”:</p>
+<blockquote><p>“Wherever on UI we see date and time I want an info note to be added that this was done as part of the prototype to be able to run it with defined dataset of SKU with best before dates. And show them steps how journey can be reset fast forwarded.”</p></blockquote>
+
+<h2>Why the workspace has its own clock</h2>
+<div class="shared">
+<div class="card"><h3 class="sub">A fixed dataset</h3><p>Munchly's nine batches of eight SKUs each carry a best-before date (MF-2409-117, the Masala Chips: 18 Nov 2026). A synthetic workspace replays the story's own calendar, from <b>Fri 2 Oct 2026, day 0</b>, so the gates, the sell-through and every figure come out as the story has them (SC-73, SC-81).</p></div>
+<div class="card"><h3 class="sub">Days can be short</h3><p>A client's journey day lasts 1 to 1,440 minutes (SC-66): Real time, Rehearsal (an hour), Demo (five minutes) or Fast (a minute), set in the console's badge (SC-68).</p></div>
+<div class="card"><h3 class="sub">Staff move it</h3><p>In the console, Reset journey puts the journey back to day 0 and keeps the client's setup (SC-79, SC-88); the Agents tab fires a scheduled run or timer now: Run now, Close now, Report now (SC-79, SC-94).</p></div>
+</div>
+
+<h2>What the workspace shows today</h2>
+<div class="desks">
+<figure><img src="current/command-1440-light.webp" width="1440" height="900" loading="lazy" alt="Today: the Command Center's live line, Live · Fri 2 Oct 09:31 · 1 day = 5 min, with nothing to say what that date is."><figcaption>Command Center · the clock under the title</figcaption></figure>
+<figure><img src="current/route-1440-light.webp" width="1440" height="900" loading="lazy" alt="Today: the Mango Drink's batch page, the clock in its head."><figcaption>A batch's page · the clock in its head</figcaption></figure>
+</div>
+
+<h2>In every option</h2>
+<div class="shared">
+<div class="card"><h3 class="sub">One guide, “Prototype time”</h3><p>Why the date is the story's, the journey time now and its pace, then <b>Start the journey again</b> (Clients → Munchly Foods → ⋯ → Reset journey…, a day length, Reset journey) and <b>Move it forward</b> (the badge's shorter days; the Agents tab's Run now, Close now, Report now), and setting the badge back to Real time afterwards. <b>Open the console</b> under it. At the side on a desktop, from the bottom on a phone.</p></div>
+<div class="card"><h3 class="sub">Wherever the clock is</h3><p>Every page's title and a batch's head in the workspace, for every role, and the bar's short line once a title collapses. In the console, the same note beside Munchly's journey-day badge, where the controls are. Only the live workspace has the clock; the stub and the guided demo don't change.</p></div>
+<div class="card"><h3 class="sub">Nothing else moves</h3><p>The clock still steps a quarter hour at a time and is never announced (WCAG 2.2.2, SC-68). The note is a button or a link, focusable, with a 44 px target.</p></div>
+</div>
+
+<h2>The options</h2>
+<section class="opt rec" id="option-a"><header><h3>Option A · At the clock</h3><span class="tag">Recommended</span></header>
+<p>The clock gains one more piece after the date, the time and the pace: a small blue <b>ⓘ Prototype time</b> button. It opens the guide. Under the bar's collapsed title it is the icon alone. On a phone it wraps to its own row under the clock.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Says “prototype” right where the date is, on every page, at the cost of one pill.</li><li>The steps stay out of the way until someone asks.</li><li>The other dates on a page (the tracker's stops, the feed, best-before) are not marked; they all run on this clock.</li></ul></dd></dl>
+<div class="desks"><figure><img src="option-a/command-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option A: the Command Center's clock with a Prototype time button."><figcaption>Command Center · light</figcaption></figure><figure><img src="option-a/guide-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option A: the Prototype time guide open at the side."><figcaption>The guide · light</figcaption></figure></div>
+<div class="desks"><figure><img src="option-a/command-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option A in dark."><figcaption>Command Center · dark</figcaption></figure><figure><img src="option-a/route-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option A: a batch's head with the clock and its Prototype time button."><figcaption>A batch's page</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-a/command-390-light.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone."><figcaption>Phone · light</figcaption></figure><figure><img src="option-a/command-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone in dark."><figcaption>Phone · dark</figcaption></figure><figure><img src="option-a/guide-390-light.webp" width="780" height="1688" loading="lazy" alt="Option A: the guide from the bottom on a phone."><figcaption>The guide · phone</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="option-a/mockup.html?theme=light">Open option A</a><a class="btn" href="option-a/mockup.html?theme=light&state=route-switch">A batch's page</a></div>
+</section>
+
+<section class="opt" id="option-b"><header><h3>Option B · A note under the clock</h3></header>
+<p>Under the clock, a line of its own: <b>“Prototype time: the story's own calendar, so its batches' best-before dates hold.”</b> and a link, <b>How to reset or fast-forward</b>, which opens the guide. Always in view, never behind an icon. Under the bar's collapsed title the time keeps an info button.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Nobody misses it: the reason is read without a tap.</li><li>A second line under every title, read again on every page, for as long as the prototype runs.</li><li>Like A, the other dates are not marked.</li></ul></dd></dl>
+<div class="desks"><figure><img src="option-b/command-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option B: a Prototype time note under the clock."><figcaption>Command Center · light</figcaption></figure><figure><img src="option-b/guide-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option B: the guide open."><figcaption>The guide · light</figcaption></figure></div>
+<div class="desks"><figure><img src="option-b/command-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option B in dark."><figcaption>Command Center · dark</figcaption></figure><figure><img src="option-b/route-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option B: a batch's head with the note."><figcaption>A batch's page</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-b/command-390-light.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone."><figcaption>Phone · light</figcaption></figure><figure><img src="option-b/command-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone in dark."><figcaption>Phone · dark</figcaption></figure><figure><img src="option-b/guide-390-light.webp" width="780" height="1688" loading="lazy" alt="Option B: the guide on a phone."><figcaption>The guide · phone</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="option-b/mockup.html?theme=light">Open option B</a><a class="btn" href="option-b/mockup.html?theme=light&state=route-switch">A batch's page</a></div>
+</section>
+
+<section class="opt" id="option-c"><header><h3>Option C · Every date marked</h3></header>
+<p>Every date and time of the journey on the page is <b>underlined with dots</b>: the clock, the tracker's stops, the agents' feed, a batch's best-before. Pointing at one or focusing it says <b>“Prototype time · press for how to reset or fast-forward”</b>, and pressing it opens the guide. The clock also gains a small <b>Prototype</b> tag.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The most literal answer to “wherever we see date and time”.</li><li>Dozens of dotted underlines on a busy page; they read as links or as warnings, and a tooltip doesn't reach a phone.</li><li>The build touches every component that prints a date (the tracker, the feeds, the papers, the timelines), not one line.</li></ul></dd></dl>
+<div class="desks"><figure><img src="option-c/command-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option C: dotted underlines on the clock, the tracker's times and best-before."><figcaption>Command Center · light</figcaption></figure><figure><img src="option-c/tip-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option C: a tracker time's tooltip, Prototype time."><figcaption>A date pointed at</figcaption></figure></div>
+<div class="desks"><figure><img src="option-c/command-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option C in dark."><figcaption>Command Center · dark</figcaption></figure><figure><img src="option-c/guide-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option C: the guide open, dark."><figcaption>The guide · dark</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="option-c/command-390-light.webp" width="780" height="1688" loading="lazy" alt="Option C on a phone."><figcaption>Phone · light</figcaption></figure><figure><img src="option-c/command-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option C on a phone in dark."><figcaption>Phone · dark</figcaption></figure><figure><img src="option-c/guide-390-light.webp" width="780" height="1688" loading="lazy" alt="Option C: the guide on a phone."><figcaption>The guide · phone</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="option-c/mockup.html?theme=light">Open option C</a><a class="btn" href="option-c/mockup.html?theme=light&state=route-switch">A batch's page</a></div>
+</section>
+
+<h2>Side by side</h2>
+<div class="tablewrap"><table class="cmp"><thead><tr><th></th><th>A · At the clock</th><th>B · A note under the clock</th><th>C · Every date marked</th></tr></thead><tbody>
+<tr><th>Where the note is</th><td>A “Prototype time” button beside the clock</td><td>A line under the clock</td><td>Every journey date and time, and a tag on the clock</td></tr>
+<tr><th>Read without a tap</th><td>“Prototype time”</td><td>The reason, in a sentence</td><td>Only on pointing at a date</td></tr>
+<tr><th>The steps</th><td colspan="3">The same guide in all three: why, the time now, start again, move forward, afterwards, Open the console</td></tr>
+<tr><th>On every page</th><td>One pill</td><td>One more line</td><td>Many underlines</td></tr>
+<tr><th>What the build touches</th><td>The clock's line (design3 <code>live.jsx</code>, core <code>LiveLine</code>), the guide, the console's badge</td><td>The same</td><td>The same, and every component that prints a date</td></tr>
+</tbody></table></div>
+
+<h2>Recommended: option A</h2>
+<div class="rec-box"><p><b>At the clock</b> puts the note where every date on the page comes from: the journey clock under the title. It says “prototype” on every page without adding a line to read, and the guide carries the full steps for whoever wants to reset or fast-forward. Marking every date (C) answers the words of the request but clutters every screen; a sentence on every page (B) is read once and then skipped.</p></div>
+
+<div class="q" style="margin-top:20px"><h3>To decide</h3><ul><li>Which option to build.</li><li>The guide's steps name the staff console. Should a workspace member who isn't Smart-Clearance staff (Priya, Rakesh, a kirana) see them too, or a shorter “Ask Smart-Clearance to reset it”? The options show the full steps to everyone, since a judge may sign in as anyone.</li></ul></div>
+
+<footer>Smart-Clearance · SC-176 · every company, person and figure fictional · mockups on design system v3, the workspace in its live mode at journey day 0 with a five-minute day</footer>
+</main>
+</body>
+</html>

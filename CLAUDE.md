@@ -2227,6 +2227,33 @@
     changes. `check.sh` passes.
   - **Docs:** `infra/README.md`, the README's project table, and DEMO.md's known limits (the caveat is gone).
 
+- **SC-176** (PR #155, merged): the journey clock explained. Wherever the live workspace
+  shows the journey's date and time, a note says it is the prototype's own clock, with how to reset or fast-forward.
+  - **The request:** "Wherever on UI we see date and time I want an info note to be added that this was done as part of
+    the prototype to be able to run it with defined dataset of SKU with best before dates. And show them steps how
+    journey can be reset fast forwarded."
+  - **Design first:** three options on one board in app v3, `SC-176 design review.html`:
+    - A, at the clock (recommended);
+    - B, a note under the clock;
+    - C, every date marked.
+
+    The maintainer picked **B**, with the steps shown to everyone. Designs, stills and the decision are in
+    `design3/designs/SC-176/`.
+  - **The note:** under the clock on every title and a batch's head, "Prototype time: the story's own calendar, so its
+    batches' best-before dates hold.", with **How to reset or fast-forward**. Under the bar's collapsed title it is an
+    info icon. In the console, the same note under a live client's head.
+  - **The guide**, "Prototype time": why (a fixed dataset of SKUs and batches with their best-before dates; the journey
+    starts on the story's day 0), the journey time now and its pace, **Start the journey again** (Clients, the client,
+    ⋯, Reset journey…, a day length), **Move it forward** (the journey-day badge's shorter days; the Agents tab's Run
+    now, Close now, Report now), and the badge back to Real time afterwards, with Open the console (in the console, "Here
+    in the console").
+  - **The build:** design3 first (`screens/common.jsx` `ClockGuide`, `ClockNote`, `ClockInfo`; `screens/live.jsx`;
+    `console/console.jsx`; `screens/screens.css`), then core (`workspace/screens/common/Clock*.svelte`, `LiveLine`, the
+    console's `ClientPage`, `screens.css` verbatim). DEMO.md names it.
+  - **Checks:** the frontend gate passes (api 83, core 381, admin 22, console 2, demo 9, workspace 106, with a new live
+    test of the note and its guide that fails without it); design3's workspace, batch page and console, and the port's
+    console on its mock, played in the browser with no console errors. The browser suites were not run (SC-55).
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app and console pages stay on their pinned commits.
 - **SC-177** (PR, merged): Reject beside Approve on the plan, not built yet.
   - **The request:** "where there is approve button for supply chain to get things moving, I want to add a reject button but it will be disabled, clicking that will say a note saying \"Coming Soon\"". The maintainer named the change outright, so no design round.
   - **The button:** **Reject the plan** sits between Approve · release the agents and Not now on the plan's approval sheet (design3 `brand.jsx` ApproveSheet first, then core's `ApproveSheet.svelte`). It is drawn disabled (`aria-disabled`, the offline approve's `lv-blocked`) but can be pressed: a press shows "Coming Soon" in the status line it is described by, sends nothing, and leaves the plan waiting. The guided demo shows it too, on the same sheet.

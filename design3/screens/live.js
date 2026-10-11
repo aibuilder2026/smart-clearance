@@ -34,11 +34,11 @@
   function Line() {
     const live = useLive();
     const c = live.clock;
-    return /* @__PURE__ */ React.createElement("span", { className: cx("lv-line", live.conn !== "live" && "off") }, /* @__PURE__ */ React.createElement(ConnMark, { conn: live.conn }), /* @__PURE__ */ React.createElement("span", { className: "lv-st" }, stateWord(live.conn)), /* @__PURE__ */ React.createElement("span", { className: "lv-sep", "aria-hidden": "true" }), /* @__PURE__ */ React.createElement("span", { className: "lv-time" }, /* @__PURE__ */ React.createElement("span", { className: "lv-date" }, c.date), /* @__PURE__ */ React.createElement("span", { className: "tnum" }, c.time)), /* @__PURE__ */ React.createElement(Cue, { perDay: c.perDay }));
+    return /* @__PURE__ */ React.createElement("span", { className: "lv-clock" }, /* @__PURE__ */ React.createElement("span", { className: cx("lv-line", live.conn !== "live" && "off") }, /* @__PURE__ */ React.createElement(ConnMark, { conn: live.conn }), /* @__PURE__ */ React.createElement("span", { className: "lv-st" }, stateWord(live.conn)), /* @__PURE__ */ React.createElement("span", { className: "lv-sep", "aria-hidden": "true" }), /* @__PURE__ */ React.createElement("span", { className: "lv-time" }, /* @__PURE__ */ React.createElement("span", { className: "lv-date" }, c.date), /* @__PURE__ */ React.createElement("span", { className: "tnum" }, c.time)), /* @__PURE__ */ React.createElement(Cue, { perDay: c.perDay })), /* @__PURE__ */ React.createElement(S.ClockNote, { client: WS.name, clock: c }));
   }
   function BarSub() {
     const live = useLive();
-    return /* @__PURE__ */ React.createElement("span", { className: "lv-barsub" }, /* @__PURE__ */ React.createElement(ConnMark, { conn: live.conn, size: 6 }), /* @__PURE__ */ React.createElement("span", { className: "tnum" }, live.clock.time), /* @__PURE__ */ React.createElement(Cue, { perDay: live.clock.perDay, short: true }));
+    return /* @__PURE__ */ React.createElement("span", { className: "lv-barsub" }, /* @__PURE__ */ React.createElement(ConnMark, { conn: live.conn, size: 6 }), /* @__PURE__ */ React.createElement("span", { className: "tnum" }, live.clock.time), /* @__PURE__ */ React.createElement(Cue, { perDay: live.clock.perDay, short: true }), /* @__PURE__ */ React.createElement(S.ClockInfo, { client: WS.name, clock: live.clock }));
   }
   function Band() {
     const live = useLive();
