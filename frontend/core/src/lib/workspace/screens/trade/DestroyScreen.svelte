@@ -481,7 +481,7 @@
 							as signed.</span
 						>
 						<div class="dz-progress" role="status">
-							<span class="dz-bar" aria-hidden="true"><i style="width: {(nSigned / 4) * 100}%"></i></span><b
+							<span class="dz-bar" aria-hidden="true"><i style="transform: scaleX({nSigned / 4})"></i></span><b
 								>{nSigned} of 4 signed</b
 							>{#if next}<span class="muted">· next: {next.name || next.label}</span>{/if}
 						</div>

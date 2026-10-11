@@ -611,7 +611,7 @@
           {draft && <>
             <span className="t-headline" style={{ marginTop: 6 }}>Sign the certificate</span>
             <span className="t-footnote muted">{possessive(a.name)} certificate {no}, laid out from what you entered above. Once the cover is done, hand the device to each of them in turn: each signs in their own place, as on paper. {op.short} reviews this page as signed.</span>
-            <div className="dz-progress" role="status"><span className="dz-bar" aria-hidden="true"><i style={{ width: `${(nSigned / 4) * 100}%` }} /></span><b>{nSigned} of 4 signed</b>{next && <span className="muted">· next: {next.name || next.label}</span>}</div>
+            <div className="dz-progress" role="status"><span className="dz-bar" aria-hidden="true"><i style={{ transform: `scaleX(${nSigned / 4})` }} /></span><b>{nSigned} of 4 signed</b>{next && <span className="muted">· next: {next.name || next.label}</span>}</div>
             <div className="dz-paper"><S.Certificate d={draft} c={{ dist, sku, batch: { id: n.ref, bestBefore: draft.bestBefore, mfg: draft.mfg } }} draft={{ stamp: "TO SIGN", place }} /></div>
           </>}
           {err && <p className="cam-alert" role="alert"><Icon name="triangle-alert" size={15} />{err}</p>}

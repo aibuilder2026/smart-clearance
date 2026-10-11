@@ -35,7 +35,7 @@ button.s183-pad:focus-visible { outline: 2px solid var(--focus, var(--primary));
 /* ---- B · signed on the certificate ---- */
 .s183-progress { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; font-size: 13.5px; }
 .s183-bar { position: relative; width: 120px; height: 6px; border-radius: 99px; background: var(--fill-2); overflow: hidden; }
-.s183-bar i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: var(--primary); transition: width var(--t-base) var(--ease); }
+.s183-bar i { position: absolute; inset: 0; border-radius: inherit; background: var(--primary); transform-origin: left center; transition: transform var(--t-base) var(--ease); }
 .s183-paperframe { padding: 12px; border-radius: 14px; background: var(--fill); }
 .s183-cert .cert-pages { gap: 0; }
 .s183-cert.draft .paper.cert:nth-child(2) { display: none; }

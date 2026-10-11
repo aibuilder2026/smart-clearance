@@ -145,7 +145,7 @@
     return <>
       <span className="t-headline" style={{ marginTop: 6 }}>Sign the certificate</span>
       <span className="t-footnote muted">{possessive(AG.name)} certificate {NO}, laid out from what you entered above. Hand the tablet to each of them in turn: each signs in their own place, as on paper. {D.PEOPLE.priya.short} reviews this page as signed.</span>
-      <div className="s183-progress" role="status"><span className="s183-bar"><i style={{ width: `${(n / 4) * 100}%` }} /></span><b>{n} of 4 signed</b>{n < 4 && <span className="muted">· next: {SIGNERS.find(p => !signed.includes(p.id)).name}</span>}</div>
+      <div className="s183-progress" role="status"><span className="s183-bar"><i style={{ transform: `scaleX(${n / 4})` }} /></span><b>{n} of 4 signed</b>{n < 4 && <span className="muted">· next: {SIGNERS.find(p => !signed.includes(p.id)).name}</span>}</div>
       <div className="s183-paperframe"><div className="s183-cert draft"><S.Certificate d={draftD} c={CASE} /></div>
         <CertSpots page1Only render={(who, kind) => (signed.includes(who) ? <Signature who={who} kind={kind} /> : kind === "ini" ? null : <button type="button" className="s183-here" onClick={() => setSheet(who)}><span className="s183-here-n">{BY[who].n}</span>Sign here<span className="sr-only">: {BY[who].name}, {BY[who].role}</span></button>)} /></div>
     </>;

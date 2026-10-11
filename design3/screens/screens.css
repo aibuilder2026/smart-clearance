@@ -748,7 +748,7 @@ button.dist-line:focus-visible { outline: 3px solid var(--ring); outline-offset:
    own place, the progress, and the sheet's sentence; on Priya's desk the page as signed, scaled to her sheet */
 .dz-progress { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; font-size: 13.5px; }
 .dz-bar { position: relative; width: 120px; height: 6px; border-radius: 99px; background: var(--fill-2); overflow: hidden; }
-.dz-bar i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: var(--primary); transition: width var(--t-base) var(--ease); }
+.dz-bar i { position: absolute; inset: 0; border-radius: inherit; background: var(--primary); transform-origin: left center; transition: transform var(--t-base) var(--ease); }
 .dz-paper { padding: 12px; border-radius: 14px; background: var(--fill); }
 .dz-paper .cert-pages, .dz-signedpaper .cert-pages { gap: 0; }
 .dz-here { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px 0 6px; border: 0; border-radius: 99px; background: var(--amber); color: var(--amber-fg); font: 650 13.5px/1 var(--font-ui); cursor: pointer; box-shadow: 0 1px 0 rgb(0 0 0 / 0.08); }
