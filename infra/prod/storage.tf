@@ -1,4 +1,5 @@
-# Cloud Storage (SC-66): three buckets per environment, in the region, private, and emptied after 30 days.
+# Cloud Storage (SC-66): three buckets per environment, in the region, private. The photos and the papers are kept for
+# good, as the batches' records (SC-171); the exports, working copies, are emptied after 30 days.
 # - photos: the label photos Rakesh takes for the Vision agent. The workspace app uploads straight to the bucket through
 #   a signed URL backend-api makes (sc-api signs as itself; no key), so the bucket answers the app's origins (CORS).
 # - docs: the PDFs the Paperwork agent renders (invoice, credit note, ITC memo, FSSAI checklist), downloaded through
@@ -62,12 +63,17 @@ resource "google_storage_bucket" "app" {
   public_access_prevention    = "enforced"
   labels                      = { app = "smart-clearance", env = each.value.env }
 
-  lifecycle_rule {
-    condition {
-      age = 30
-    }
-    action {
-      type = "Delete"
+  # only the exports are working copies (the Data agent has loaded them into BigQuery), so only they are emptied after
+  # 30 days; the photos and the papers are the batches' records and stay for good (SC-171)
+  dynamic "lifecycle_rule" {
+    for_each = each.value.kind == "exports" ? [1] : []
+    content {
+      condition {
+        age = 30
+      }
+      action {
+        type = "Delete"
+      }
     }
   }
 

@@ -303,7 +303,7 @@ before adding anything that costs money.
 | Pub/Sub | per environment (`prod`, `local`): `batch.at_risk`, `offer.received`, `deal.closed`, `journey.step`, `notify`, a dead letter; push subscriptions in prod, pull subscriptions locally |
 | Cloud Scheduler | `sc-tick` every minute (the journey clock's timers and daily runs); `sc-journey-reset`, paused |
 | BigQuery | datasets `smartclearance` and `smartclearance_local`, seven tables each |
-| Cloud Storage | the photos, docs and exports buckets for each environment (files deleted after 30 days) |
+| Cloud Storage | the photos, docs and exports buckets for each environment; photos and papers kept for good, exports deleted after 30 days |
 | Artifact Registry, Cloud Build | repository `sc`; builds run as `sc-builder` |
 | Secret Manager | `sc-default-user-password`, `sc-local-db-app-password`, `sc-local-db-migrator-password` |
 | Service accounts | `sc-api`, `sc-migrator`, `sc-agents`, `sc-invoker`, `sc-builder`, the local `sc-api-local` and `sc-agents-local`, and CI's keyless `github-deployer` and `github-backend` |

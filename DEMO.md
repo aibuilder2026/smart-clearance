@@ -147,7 +147,4 @@ of a demo.**
 - The agents' Pro model is a preview with a tight quota: a step can take a few seconds longer while a call retries,
   and falls back safely if it can't get through.
 - ExpireSoon, the food banks, Tally and the stock exports are mocked; pushes, papers, photos and Gemini are real.
-- The photos, papers and exports buckets delete files 30 days after they are written (`infra/prod/storage.tf`), so the
-  pilot quarter's PDFs and photos need laying out again after that (`hydrate.sh --papers munchly --again` and
-  `--photos munchly`, or the hydrate job in production).
 - The live workspace and local development share one Firebase user pool: the same accounts sign in to both.
