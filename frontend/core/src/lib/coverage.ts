@@ -47,6 +47,9 @@ export const COVERAGE: Record<string, Coverage> = {
 	Switch: built,
 	Stepper: built,
 	OTP: built,
+	// a signature (SC-183): the pad, and the ink as drawn
+	SignPad: built,
+	InkStrokes: built,
 	Tabs: built,
 	Check: built,
 	SearchField: built,

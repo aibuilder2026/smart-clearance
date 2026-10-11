@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+from markupsafe import Markup
 
 from sc_agents import fmt
 from sc_agents.tools import papers
@@ -58,6 +59,42 @@ def mark(kind: str, ident: Any) -> str | None:
 
 
 _env.globals["mark"] = mark
+
+# a signature's ink as the pen drew it (SC-183): blue-black, about a ballpoint's width on the page
+INK = "#1f2a86"
+PEN_MM = 0.32
+
+
+def drawn(ink: dict[str, Any] | None, name: str, h: float = 13, cls: str = "hand") -> Markup:
+    """a signature signed in place at the facility, `h` mm high: its strokes as inline SVG, fitted to the ink and the
+    pen a steady width whatever the size; a typed signature is the name, set in italic. Empty for no ink"""
+    if not ink:
+        return Markup("")
+    strokes = [st for st in ink.get("strokes") or [] if st]
+    if ink.get("typed") or not strokes:
+        return Markup('<span class="{} typed" style="font-size: {:.1f}mm">{}</span>').format(cls, h * 0.6, name)
+    xs = [float(p[0]) for st in strokes for p in st]
+    ys = [float(p[1]) for st in strokes for p in st]
+    m = 6.0
+    x0, y0 = min(xs) - m, min(ys) - m
+    w, hh = max(xs) - x0 + m, max(ys) - y0 + m
+    sw = PEN_MM * hh / h
+
+    def path(st: list[list[float]]) -> str:
+        if len(st) == 1:
+            return f"M{st[0][0]:g} {st[0][1]:g}l0.1 0"
+        return "".join(("L" if i else "M") + f"{float(p[0]):g} {float(p[1]):g}" for i, p in enumerate(st))
+
+    paths = Markup("").join(Markup('<path d="{}"/>').format(path(st)) for st in strokes)
+    return Markup(
+        '<svg class="{cls}" xmlns="http://www.w3.org/2000/svg" viewBox="{x0:g} {y0:g} {w:g} {hh:g}" '
+        'style="height: {h:g}mm; width: {wmm:.1f}mm" role="img" aria-label="Signed by {name}">'
+        '<g fill="none" stroke="{ink}" stroke-width="{sw:.2f}" stroke-linecap="round" stroke-linejoin="round">'
+        "{paths}</g></svg>"
+    ).format(cls=cls, x0=x0, y0=y0, w=w, hh=hh, h=h, wmm=h * w / hh, name=name, ink=INK, sw=sw, paths=paths)
+
+
+_env.globals["drawn"] = drawn
 
 
 # the log's photos print about 62 mm wide: 900 px is ample at 300 dpi, and keeps the PDF small

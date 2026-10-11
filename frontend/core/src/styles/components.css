@@ -522,6 +522,22 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
 .app.app-overlays { position: fixed; inset: 0; z-index: var(--z-sheet); height: auto; min-height: 0; background: none; overflow: hidden; pointer-events: none; }
 .app.app-overlays > * { pointer-events: auto; }
 
+/* ---------- a signature (SC-183): the pad, and the ink as drawn. A signature is ink on a white page in either theme, so
+   the pad keeps a paper's own inks (each measured on #fdfcf9) ---------- */
+.signpad { position: relative; border: 1.5px dashed #b9c0bb; border-radius: 14px; background: #fdfcf9; color: #1f2a86; overflow: hidden; }
+.signpad.inked { border-style: solid; border-color: #d4d9d4; }
+.signpad svg { display: block; width: 100%; height: auto; aspect-ratio: 640 / 220; touch-action: none; cursor: crosshair; }
+.signpad-base { stroke: #b3bab5; stroke-width: 1.2; }
+.signpad-x { fill: #6b736e; font: 500 22px var(--font-ui); }
+.signpad-ink { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.signpad-hint { position: absolute; left: 0; right: 0; top: 36%; text-align: center; font: 500 15px var(--font-ui); color: #5d6762; pointer-events: none; }
+.signpad-under { position: absolute; left: 0; right: 0; bottom: 8px; text-align: center; font: 500 12px var(--font-ui); color: #3f4743; pointer-events: none; }
+.signpad-clear { position: absolute; right: 8px; top: 6px; min-height: 36px; padding: 0 10px; border: 0; border-radius: 9px; background: transparent; color: #3f4743; font: 550 13px/1 var(--font-ui); cursor: pointer; }
+.signpad-clear:hover { background: rgb(0 0 0 / 0.05); }
+.signpad-clear:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+.inkstrokes { display: block; flex: none; max-width: 100%; overflow: visible; color: #1f2a86; }
+.inkstrokes g { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+.ink-typed { display: inline-block; font: italic 500 calc(var(--h, 40px) * 0.6)/1.1 Georgia, "Times New Roman", serif; color: #1f2a86; white-space: nowrap; }
 /* @port adapters: what the SvelteKit build needs beyond the prototype's CSS (frontend/core/README.md, "Ported CSS").
    .when-light / .when-dark: one icon for each appearance, chosen by <html data-theme> before the page hydrates. */
 [data-theme="dark"] .when-light, :root:not([data-theme="dark"]) .when-dark { display: none; }

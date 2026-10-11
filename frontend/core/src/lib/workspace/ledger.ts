@@ -6,14 +6,13 @@
 import history from './seed/history.json';
 import { D, storyOf } from './data';
 import { stageOf } from './flow';
-import { destructionLog } from './papers';
+import { destructionDoc, type DestructionDone } from './certificate';
 import type {
 	Assess,
 	KiranaInvoice,
 	BrsrRow,
 	Batch,
 	CaseData,
-	Destruction,
 	Distributor,
 	Doc,
 	ExpirySettlement,
@@ -479,125 +478,7 @@ function storyRow(state: State): LedgerBatch {
 /* ---------- expiry day's papers (ledger.js expiryPapers) ---------- */
 
 const possessive = (n: string) => n + (/s$/.test(n) ? "'" : "'s");
-/** the destruction as its papers read it: its agency, certificate, method, the photos' times and Priya's yes */
-export type DestructionDone = Destruction & {
-	agency: NonNullable<Destruction['agency']>;
-	certificate: string;
-	method: string;
-	photos: NonNullable<Destruction['photos']>;
-	checks: NonNullable<Destruction['checks']>;
-	approvedAt: string;
-	approvedBy: string;
-};
-/** the certificate in full (SC-174, option B; ledger.js destructionDetail): the goods, the reason, the agency's method
- *  and facility, the day and the window they were destroyed in, its supervising officer and the two independent
- *  witnesses (a witness on the agency's panel signs with the specimen it keeps), who handed the packs over, and the log
- *  from the godown to the cover */
-function destructionDetail(xd: DestructionDone, batch: Batch, sku: Sku, dist: Distributor): Partial<Doc> {
-	const ag = D.setup.destruction.agencies.find((a) => a.id === xd.agency.id),
-		how = D.setup.destruction.methods?.[ag?.method || 'landfill'];
-	const after = xd.photos.after.at,
-		on = after.slice(0, 10);
-	// the window the agency destroyed them in, as he gave it; else the 25 minutes up to the after photo
-	const win = xd.window || {
-		from: new Date(Date.parse(after + ':00Z') - 25 * 60e3).toISOString().slice(11, 16),
-		to: after.slice(11, 16)
-	};
-	const panel = ag?.witnesses || [];
-	const witnesses = (xd.witnesses && xd.witnesses.length ? xd.witnesses : panel).map(
-		(w: { name: string; address?: string; proof?: string | null }) => {
-			const p = panel.find((x) => x.name === w.name);
-			return {
-				name: w.name,
-				address: w.address || p?.address || '',
-				proof: w.proof || p?.proof || null,
-				sign: p ? (p.sign ?? null) : null
-			};
-		}
-	);
-	const units = xd.units,
-		kg = r2(units * sku.kgPerUnit),
-		packKg = r2(units * (sku.packKg || 0));
-	const photos = {
-		before: { name: xd.photos.before.name!, at: xd.photos.before.at },
-		after: { name: xd.photos.after.name!, at: after }
-	};
-	const s = dist.signatory;
-	return {
-		reason: 'expiry',
-		methodId: ag?.method || 'landfill',
-		methodName: how?.name,
-		methodHow: how?.how,
-		facility: ag?.facility || null,
-		vehicle: ag?.vehicle || null,
-		officer: ag?.officer || null,
-		seal: ag?.seal || null,
-		witnesses,
-		window: win,
-		destroyedOn: on,
-		photos,
-		handedBy: s ? { name: s.name, title: s.title, sign: s.sign } : null,
-		goods: `${sku.brand} ${sku.name}`,
-		mfg: batch.mfg,
-		mrp: sku.mrp,
-		perCarton: sku.perCarton,
-		log: destructionLog({
-			units,
-			kg,
-			packKg,
-			batch: batch.id,
-			no: xd.certificate,
-			from: dist.godown,
-			destroyedOn: on,
-			window: win,
-			photos,
-			agency: xd.agency.name,
-			vehicle: ag?.vehicle,
-			facility: ag?.facility,
-			method: ag?.method
-		})
-	};
-}
-/** the agency's destruction certificate for packs destroyed at a distributor's godown (SC-139) */
-function destructionDoc(
-	xd: DestructionDone,
-	x: ExpirySettlement | null,
-	batch: Batch,
-	sku: Sku,
-	dist: Distributor
-): Doc {
-	const units = xd.units,
-		approver = D.people[xd.approvedBy] ?? { name: xd.approvedBy };
-	return {
-		id: 'destruction',
-		type: 'Destruction certificate',
-		owner: xd.agency.name,
-		no: xd.certificate,
-		status: 'generated',
-		amount: 0,
-		units,
-		kg: r2(units * sku.kgPerUnit),
-		packKg: r2(units * (sku.packKg ?? 0)),
-		at: 'godown',
-		method: xd.method,
-		site: xd.agency.site,
-		agency: xd.agency.name,
-		auth: xd.agency.auth,
-		for: { name: dist.name, address: dist.address, gstin: dist.gstin },
-		from: dist.godown,
-		batch: batch.id,
-		bestBefore: batch.bestBefore,
-		hsn: sku.hsn,
-		destroyedAt: xd.photos.after.at,
-		evidence: { photos: 2, checks: xd.checks.filter((c) => c.ok).length, of: xd.checks.length },
-		approvedBy: approver.name,
-		approvedAt: xd.approvedAt,
-		reversed: x && x.reversal != null ? x.reversal : r2(units * (sku.dp || 0) * sku.gst),
-		date: xd.approvedAt.slice(0, 10),
-		note: `Destroyed at ${xd.agency.site} on expiry day, from ${dist.godown || dist.city}. ${dist.name} reverses the input GST on these packs in GSTR-3B Table 4(B)(1) under section 17(5)(h).`,
-		...destructionDetail(xd, batch, sku, dist)
-	};
-}
+export type { DestructionDone } from './certificate';
 /** the staff sale's consolidated receipt as a paper of the pack (SC-174): the photo the distributor sent with the sale,
  *  his own, and what Vision read from it */
 const staffDoc = (r: StaffReceipt, dist: Distributor): Doc => ({
@@ -658,6 +539,6 @@ export function expiryPapers(
 			note: `A financial credit note: no GST is charged or adjusted on it, and ${possessive(C)} output tax on the original sale stands. Issued against destruction certificate ${xd.certificate}; adjusted against ${possessive(dist.name)} account.`
 		});
 	const i = docs.findIndex((d) => d.id === 'destruction');
-	docs[i] = destructionDoc(xd, x, batch, sku, dist);
+	docs[i] = destructionDoc(xd, x, batch, sku, dist, D.setup.destruction, D.people);
 	return docs;
 }

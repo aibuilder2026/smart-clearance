@@ -706,13 +706,15 @@ export class LiveSource implements WorkspaceSource {
 						});
 					const before = await photo('before', x.before);
 					const after = await photo('after', x.after);
-					// with the window the agency destroyed them in and its two witnesses, for its certificate in full (SC-174)
+					// with the window the agency destroyed them in and its two witnesses, for its certificate in full (SC-174),
+					// signed in place by its officer, both witnesses and him (SC-183)
 					return api.sendDestruction(ref, {
 						agency: x.agency.id,
 						certificate: x.certificate,
 						photos: { before, after },
 						...(x.window ? { window: x.window } : {}),
-						...(x.witnesses ? { witnesses: x.witnesses } : {})
+						...(x.witnesses ? { witnesses: x.witnesses } : {}),
+						...(x.signatures ? { signatures: x.signatures } : {})
 					});
 				});
 			}

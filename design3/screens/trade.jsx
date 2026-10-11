@@ -16,7 +16,7 @@
   const storyOf = () => D.story(Store.get());
   const holderOf = C => C.people[C.accounts.distributor] || { short: C.dist.short, name: C.dist.name };
   // a partner's own history (SC-130): ledger.js's partners, and the pieces their pages share
-  const P = () => window.SC3_LEDGER.partners;
+  const P = () => window.SC3_LEDGER.partners, LG = () => window.SC3_LEDGER;
   const asDate = iso => new Date((iso.length > 10 ? iso : iso + "T00:00") + ":00+05:30");
   const day = iso => asDate(iso.slice(0, 10)).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
   const when = iso => (iso.length > 10 ? `${day(iso)}, ${iso.slice(11, 16)}` : day(iso));
@@ -505,6 +505,30 @@
       {!busy && <div className="cam-two"><Button size="sm" variant={shot ? "ghost" : "secondary"} icon={shot ? "rotate-ccw" : "camera"} aria-label={`${shot ? "Retake" : "Take"} the ${slot.id} photo`} onClick={onTake}>{shot ? "Retake" : "Take"}</Button><Button size="sm" variant="ghost" icon="upload" aria-label={`Upload the ${slot.id} photo`} onClick={onUpload}>Upload</Button></div>}
     </div>;
   }
+  // the certificate's four signers (SC-183, option B), in the order they sign: the agency's supervising officer, the two
+  // independent witnesses, and the distributor for the goods he handed over
+  const SIGNERS = [{ role: "officer", n: 1, label: "Supervising officer" }, { role: "w1", n: 2, label: "Independent witness 1" }, { role: "w2", n: 3, label: "Independent witness 2" }, { role: "handed", n: 4, label: "Goods handed over by" }];
+  const plusMin = (t, m) => { const [h, mm] = t.split(":").map(Number), x = h * 60 + mm + m; return `${String(Math.floor(x / 60) % 24).padStart(2, "0")}:${String(x % 60).padStart(2, "0")}`; };
+  // the sheet a signature is drawn in: who signs, the sentence they sign to, the pad (or the name typed), and Sign
+  function SignSheet({ who, onClose, onSign }) {
+    const [ink, setInk] = useState(null), [typed, setTyped] = useState(false), [text, setText] = useState("");
+    useEffect(() => { setInk(null); setTyped(false); setText(""); }, [who && who.role]);
+    const ok = who && (typed ? text.trim().toLowerCase() === who.name.toLowerCase() : !!(ink && ink.strokes.length));
+    // the button names them by their first name, past an initial (M. Srinivas Reddy signs as Srinivas)
+    const first = who ? who.name.split(" ").find(w => w.replace(".", "").length > 1) || who.name : "";
+    return <Sheet open={!!who} onClose={onClose} title={who ? `${who.name} signs` : ""}
+      footer={who ? <div className="dz-foot"><Button variant="secondary" size="lg" onClick={onClose}>Cancel</Button><Button variant="primary" size="lg" block icon="signature" disabled={!ok} aria-describedby="dz-sign-how" onClick={() => onSign(typed ? { typed: true } : ink)}>Sign as {first}</Button></div> : null}>
+      {who && <div className="stack" style={{ gap: 14 }}>
+        <div className="row" style={{ gap: 10 }}><span className="dz-avatar" aria-hidden="true">{who.name.split(" ").map(x => x[0]).join("").slice(0, 2)}</span><div className="grow"><b>{who.label}</b><div className="t-footnote muted">{who.sub}</div></div></div>
+        {who.role !== "handed" && <span className="row tight t-footnote muted" style={{ gap: 6 }}><Icon name="hand" size={14} />Hand the device to {who.name}</span>}
+        <div className="dz-decl">{who.decl}</div>
+        {typed ? <K.Field label={`Type your name: ${who.name}`} htmlFor="dz-typed" help="The certificate marks the signature as typed"><K.Input id="dz-typed" value={text} onChange={e => setText(e.target.value)} autoComplete="off" spellCheck={false} /></K.Field>
+          : <K.SignPad name={who.name} value={ink} onChange={setInk} />}
+        <div className="row between wrap" style={{ gap: 8 }}><span id="dz-sign-how" className="t-caption subtle">{typed ? "Typed, it goes on the certificate as the name, marked typed, with the time." : "Sign with a finger, a stylus or a mouse. It goes on the certificate as drawn, with the time."}</span>
+          <button type="button" className="pt-link t-footnote" onClick={() => setTyped(t => !t)}>{typed ? "Draw the signature instead" : "Type the name instead"}</button></div>
+      </div>}
+    </Sheet>;
+  }
   function DestroyScreen({ me }) {
     const s = useStore(); const dist = distOf(me); const { route, go } = useRoute(); const live = S.useLive(); const reduce = useReducedMotion();
     const ns = P().distNow(dist.id, s), ref = route.params && route.params.ref;
@@ -515,7 +539,11 @@
     // watched, the agency's own panel to start
     const panel = id => ((agencies.find(x => x.id === id) || {}).witnesses || []).map(w => ({ name: w.name, address: w.address }));
     const [win, setWin] = useState({ from: "12:55", to: "13:20" }); const [wit, setWit] = useState(() => panel(agencies[0] ? agencies[0].id : ""));
-    const setW = (i, k) => e => { const v = e.target.value; setWit(ws => ws.map((w, j) => (j === i ? Object.assign({}, w, { [k]: v }) : w))); };
+    // the four signatures (SC-183, option B), each in its own place on the certificate; sent again after Priya asked,
+    // what was signed before stands until it is cleared. A signature is its signer's: a witness renamed signs again
+    const [sigs, setSigs] = useState(() => (n && n.destruction && n.destruction.signatures) || {}); const [signing, setSigning] = useState(null);
+    const unsign = (...roles) => setSigs(g => { const r = Object.assign({}, g); roles.forEach(k => delete r[k]); return r; });
+    const setW = (i, k) => e => { const v = e.target.value; setWit(ws => ws.map((w, j) => (j === i ? Object.assign({}, w, { [k]: v }) : w))); if (k === "name") unsign(`w${i + 1}`); };
     const cam = useRef({}), pick = useRef({});
     const C = D.CLIENT.short, op = D.PEOPLE.priya;
     if (!n) return <Screen me={me} title="Destroy expired packs" sub="Requests from the client" back="Today"><Card style={{ maxWidth: 560, margin: "0 auto", width: "100%" }}><Empty img="godown" title="No destruction asked for now" body={`When packs expire at your godown and no channel took them, ${C} asks here for the evidence of their destruction.`} /></Card></Screen>;
@@ -534,24 +562,43 @@
     const upload = id => { setErr(null); if (pick.current[id]) pick.current[id].click(); };
     const hhmm = /^([01]\d|2[0-3]):[0-5]\d$/;
     const timed = hhmm.test(win.from) && hhmm.test(win.to) && win.from < win.to, witnessed = wit.length === 2 && wit.every(w => w.name.trim().length >= 3 && w.address.trim().length >= 6);
-    const ready = shots.before && shots.after && a && cert.trim().length >= 4 && timed && witnessed;
+    // who signs where, and the sentence each signs to, from what he entered above
+    const fac = (a && a.facility && a.facility.name) || (a && a.site) || "the facility", day = fmt.date(D.story(s).expiryDay), no = cert.trim() || (a ? `${a.series.prefix}…` : "");
+    const how = a && a.method === "incineration" ? "fed whole to the incinerator" : "slit open, emptied into the cell and covered";
+    const people = a ? SIGNERS.map(x => { const w = x.role === "officer" ? a.officer : x.role === "handed" ? dist.signatory : wit[x.role === "w1" ? 0 : 1];
+      const sub = x.role === "officer" ? `${a.officer.title}, ${a.name}` : x.role === "handed" ? `${dist.signatory.title}, ${dist.name}` : w && w.address;
+      const decl = x.role === "officer" ? <>I supervised the destruction of these <b>{fmt.num(d.units)} packs of batch {n.ref}</b> at the {fac.toLowerCase()}, from {win.from} to {win.to} on {day}: {how}.</>
+        : x.role === "handed" ? <>I handed over <b>{fmt.num(d.units)} packs of batch {n.ref}</b> from {dist.godown} to {a.name}, destroyed as set out on its certificate {no}.</>
+          : <>I watched these <b>{fmt.num(d.units)} packs of batch {n.ref}</b> destroyed at the {fac.toLowerCase()}, from {win.from} to {win.to} on {day}. I do not work for {dist.name} or {a.name}.</>;
+      return Object.assign({}, x, { name: (w && w.name ? w.name : "").trim(), sub, decl }); }) : [];
+    const signedOk = p => !!(sigs[p.role] && sigs[p.role].name === p.name && p.name);
+    const nSigned = people.filter(signedOk).length, next = people.find(p => !signedOk(p));
+    const sign = ink => { const p = signing, at = plusMin(win.to, 2 + nSigned); setSigs(g => Object.assign({}, g, { [p.role]: Object.assign({ name: p.name, at }, ink.typed ? { typed: true } : { box: ink.box, strokes: ink.strokes }) })); setSigning(null); };
+    const draft = a ? LG().draftCertificate({ units: d.units, agency: { id: a.id, name: a.name, auth: a.auth, site: a.site }, certificate: no, window: timed ? win : null, witnesses: wit, signatures: sigs }, s) : null;
+    // each signature's own place on the certificate: its ink with the time, or a numbered Sign here
+    const place = (k, w) => { const p = people.find(x => x.role === k); if (!p) return null;
+      if (w && w.ink) return <span className="dz-signed"><S.Ink who={w} seal={k === "officer" ? draft.seal : null} h={k === "handed" ? 34 : 40} /><span className="cert-when">{w.ink.typed ? "typed" : "signed"} here {w.ink.at}</span><button type="button" className="dz-unsign" onClick={() => unsign(k)} aria-label={`Clear ${possessive(p.name)} signature`}>Clear</button></span>;
+      return <button type="button" className="dz-here" onClick={() => setSigning(p)} disabled={!p.name}><span className="dz-here-n" aria-hidden="true">{p.n}</span>Sign here<span className="sr-only">: {p.name}, {p.label}</span></button>; };
+    const ready = shots.before && shots.after && a && cert.trim().length >= 4 && timed && witnessed && nSigned === 4;
     const send = () => {
       if (!ready) return;
-      const x = { agency: a, certificate: cert.trim(), before: shots.before.file, after: shots.after.file, window: win, witnesses: wit.map(w => ({ name: w.name.trim(), address: w.address.trim() })) };
+      const signatures = Object.fromEntries(people.map(p => [p.role, sigs[p.role]]));
+      const x = { agency: a, certificate: cert.trim(), before: shots.before.file, after: shots.after.file, window: win, witnesses: wit.map(w => ({ name: w.name.trim(), address: w.address.trim() })), signatures };
       if (live && live.destruction) { live.destruction("send", x); return; }
       setSending(true); setTimeout(() => { setSending(false); setShots({}); setCert(""); Flow.act("sendDestruction", x); }, 700);
     };
+    const need = [!(shots.before && shots.after) && "both photos", !(cert.trim().length >= 4) && "the certificate number", !timed && "the time", !witnessed && "both witnesses", nSigned < 4 && `${4 - nSigned} more ${4 - nSigned === 1 ? "signature" : "signatures"}`].filter(Boolean);
     const say = DZ_SAY[d.status];
     return <Screen me={me} title="Destroy expired packs" sub={`Batch ${n.ref} · ${dist.godown}`} back="Today">
-      <div className="stack" style={{ gap: 16, maxWidth: 640, margin: "0 auto", width: "100%" }}>
+      <div className="stack" style={{ gap: 16, maxWidth: 760, margin: "0 auto", width: "100%" }}>
         <BatchLine sku={sku} id={n.ref} badge={<Badge size="sm" tone={due ? "amber" : d.status === "approved" ? "green" : "blue"} dot={d.status !== "approved"}>{due ? "for you" : d.status === "approved" ? "approved" : "sent"}</Badge>} sub={`${fmt.num(d.units)} packs expired at ${dist.godown}`} />
         {d.status === "asked" && <p className="cam-alert" role="alert"><Icon name="rotate-ccw" size={15} />{op.short} asked again: {d.reason}</p>}
         {due ? <Card className="stack snug">
-          <span className="t-subhead">Destroy the {fmt.num(d.units)} packs through an authorised agency, then send the two photos and the agency's certificate number. {op.short} at {C} approves, and {C} credits you the dealer price, the GST you reverse and the agency's charges.</span>
+          <span className="t-subhead">Destroy the {fmt.num(d.units)} packs through an authorised agency, then send the two photos and the agency's certificate, signed. {op.short} at {C} approves, and {C} credits you the dealer price, the GST you reverse and the agency's charges.</span>
           <div className="dz-two">{DZ_SLOTS.map(sl => <DzSlot key={sl.id} slot={sl} ref_={n.ref} shot={shots[sl.id]} busy={sending} onTake={() => take(sl.id)} onUpload={() => upload(sl.id)} />)}</div>
           {DZ_SLOTS.map(sl => <Fragment key={sl.id}><input ref={el => (cam.current[sl.id] = el)} type="file" accept={PHOTO_TYPES.join(",")} capture="environment" onChange={picked(sl.id)} className="sr-only" tabIndex={-1} aria-hidden="true" /><input ref={el => (pick.current[sl.id] = el)} type="file" accept={PHOTO_TYPES.join(",")} onChange={picked(sl.id)} className="sr-only" tabIndex={-1} aria-hidden="true" /></Fragment>)}
           <div className="dz-fields">
-            <K.Field label="Agency" htmlFor="dz-agency" help={a ? `Authorisation ${a.auth}${a.facility ? ` · ${a.facility.name}` : ""}${a.officer ? ` · supervising officer ${a.officer.name}` : ""}` : undefined}><K.Select id="dz-agency" value={agency} onChange={e => { setAgency(e.target.value); setWit(panel(e.target.value)); }}>{agencies.map(x => <option key={x.id} value={x.id}>{x.name}</option>)}</K.Select></K.Field>
+            <K.Field label="Agency" htmlFor="dz-agency" help={a ? `Authorisation ${a.auth}${a.facility ? ` · ${a.facility.name}` : ""}${a.officer ? ` · supervising officer ${a.officer.name}` : ""}` : undefined}><K.Select id="dz-agency" value={agency} onChange={e => { setAgency(e.target.value); setWit(panel(e.target.value)); unsign("officer", "w1", "w2"); }}>{agencies.map(x => <option key={x.id} value={x.id}>{x.name}</option>)}</K.Select></K.Field>
             <K.Field label="Agency's certificate number" htmlFor="dz-cert"><K.Input id="dz-cert" value={cert} onChange={e => setCert(e.target.value)} placeholder={a ? `${a.series.prefix}0000` : ""} spellCheck={false} autoCapitalize="characters" /></K.Field>
           </div>
           <div className="dz-fields">
@@ -561,9 +608,15 @@
           <span className="t-headline" style={{ marginTop: 6 }}>Two independent witnesses</span>
           <span className="t-footnote muted">People who watched the destruction and are not your staff: a neighbouring trader, a resident. They sign the agency's certificate with its officer.</span>
           {wit.map((w, i) => <div key={i} className="dz-fields"><K.Field label={`Witness ${i + 1} · name`} htmlFor={`dz-w${i}`}><K.Input id={`dz-w${i}`} value={w.name} onChange={setW(i, "name")} autoComplete="off" /></K.Field><K.Field label="Address" htmlFor={`dz-w${i}a`}><K.Input id={`dz-w${i}a`} value={w.address} onChange={setW(i, "address")} autoComplete="off" /></K.Field></div>)}
+          {draft && <>
+            <span className="t-headline" style={{ marginTop: 6 }}>Sign the certificate</span>
+            <span className="t-footnote muted">{possessive(a.name)} certificate {no}, laid out from what you entered above. Once the cover is done, hand the device to each of them in turn: each signs in their own place, as on paper. {op.short} reviews this page as signed.</span>
+            <div className="dz-progress" role="status"><span className="dz-bar" aria-hidden="true"><i style={{ width: `${(nSigned / 4) * 100}%` }} /></span><b>{nSigned} of 4 signed</b>{next && <span className="muted">· next: {next.name || next.label}</span>}</div>
+            <div className="dz-paper"><S.Certificate d={draft} c={{ dist, sku, batch: { id: n.ref, bestBefore: draft.bestBefore, mfg: draft.mfg } }} draft={{ stamp: "TO SIGN", place }} /></div>
+          </>}
           {err && <p className="cam-alert" role="alert"><Icon name="triangle-alert" size={15} />{err}</p>}
           <Button variant="primary" size="lg" block icon="send" loading={sending} busy="Sending the evidence…" done="Sent for approval" disabled={!ready} aria-describedby="dz-need" onClick={send}>Send to {C} for approval</Button>
-          <span id="dz-need" className="t-caption subtle">{ready ? `Then reverse ${fmt.inr2(his)} of input GST on these packs in your GSTR-3B (Table 4(B)(1)). ${possessive(C)} credit note makes it good.` : `Both photos, the certificate number, the time and both witnesses are needed. ${PHOTO_RULE}.`}</span>
+          <span id="dz-need" className="t-caption subtle">{ready ? `Then reverse ${fmt.inr2(his)} of input GST on these packs in your GSTR-3B (Table 4(B)(1)). ${possessive(C)} credit note makes it good.` : `Still needed: ${need.join(", ")}. ${PHOTO_RULE}.`}</span>
         </Card>
           : <Card className="stack snug">
             <div className="row" style={{ gap: 12 }}><Aura on={d.status === "reading"} className="icontile" style={{ borderRadius: 12, width: 40, height: 40 }}><Icon name={say[0]} size={19} /></Aura><div className="grow"><b>{say[1]}</b><div className="t-footnote muted">{d.status === "checked" ? `${op.short} at ${C} ${say[2]}` : say[2]}</div></div></div>
@@ -572,6 +625,7 @@
             <Button variant="secondary" block onClick={() => go(d.status === "approved" ? "batches" : "home", d.status === "approved" ? { ref: n.ref } : undefined)}>{d.status === "approved" ? "Open the batch's papers" : "Back to today"}</Button>
           </Card>}
       </div>
+      <SignSheet who={signing} onClose={() => setSigning(null)} onSign={sign} />
     </Screen>;
   }
   const possessive = n => (/s$/.test(n) ? `${n}'` : `${n}'s`);

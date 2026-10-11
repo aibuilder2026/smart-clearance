@@ -2,6 +2,8 @@
      the images are transparent, so the stamp sits under the ink at an impression's opacity */
   .ink { display: inline-block; position: relative; vertical-align: middle; }
   .ink .hand { position: relative; display: block; width: auto; }
+  .ink svg.hand { max-width: 44mm; }
+  .hand.typed, .ini.typed { display: block; font-family: "DejaVu Serif", Georgia, serif; font-style: italic; color: #1f2a86; white-space: nowrap; }
   .ink .seal { position: absolute; opacity: 0.84; }
   .ink.rect { width: 38mm; height: 20.3mm; }
   .ink.rect .seal { left: 0; top: 0; width: 38mm; height: 20.3mm; }

@@ -355,3 +355,56 @@ def test_weasyprint_renders_the_certificate_on_two_pages():
     doc = HTML(string=page, base_url=str(pdf.TEMPLATES)).render()
     assert len(doc.pages) == 2
     assert doc.write_pdf().startswith(b"%PDF")
+
+
+# a signature as the pad keeps it (SC-183): its strokes in the pad's 640 x 220 box
+PEN = [[[60.0, 150.0], [110.5, 118.0], [170.0, 158.5], [230.0, 120.0]], [[260.0, 140.0], [300.0, 132.0]]]
+
+
+def signed_certificate() -> dict:
+    """the agency's certificate signed in place at the facility (SC-183): three drawn, one typed, with the log"""
+    _, cert = godown_docs()
+
+    def ink(at: str, typed: bool = False) -> dict:
+        return {"at": f"2026-10-03T{at}", "typed": typed, "box": [640, 220], "strokes": None if typed else PEN}
+
+    log = [
+        {"at": "2026-10-03T11:40", "step": "Photographed at the godown", "detail": "144 packs", "photo": None},
+        {"at": "2026-10-03T13:20", "step": "Buried and covered", "detail": "Covered with 30 cm of soil"},
+    ]
+    return {
+        **cert,
+        "officer": {"name": "Sachin Bhoyar", "title": "Site supervisor", "sign": None, "ink": ink("13:22")},
+        "seal": "oce",
+        "witnesses": [
+            {"name": "Pradeep Meshram", "address": "Plot 22, Wathoda Layout", "sign": None, "ink": ink("13:23")},
+            {"name": "Asha Kale", "address": "House 9, Pardi Naka", "sign": None, "ink": ink("13:24", typed=True)},
+        ],
+        "handedBy": {"name": "Rakesh Jaiswal", "title": "Proprietor", "sign": None, "ink": ink("13:25")},
+        "window": {"from": "12:55", "to": "13:20"},
+        "destroyedOn": "2026-10-03",
+        "log": log,
+    }
+
+
+def test_a_certificate_signed_in_place_draws_each_signature_as_signed():
+    """SC-183: the officer's, a witness's and his signatures as drawn (inline SVG, the agency's seal still beside the
+    officer's), the typed one as the name, each with its time; the log initialled with the same ink"""
+    page = pdf.html(signed_certificate(), case(phase="cleared", photo="verified"))
+    assert page.count('<svg class="hand"') == 3 and page.count('<svg class="ini"') == 4
+    assert '<span class="hand typed"' in page and "Asha Kale</span>" in page
+    for when in ("signed 13:22", "signed 13:23", "typed 13:24", "signed 13:25"):
+        assert when in page, when
+    assert "marks/seals/oce.webp" in page and "marks/signatures/" not in page
+    assert 'aria-label="Signed by Sachin Bhoyar"' in page and "M60 150L110.5 118" in page
+
+
+@pytest.mark.skipif(not pdf.available(), reason="WeasyPrint's system libraries (Pango) are not installed")
+def test_weasyprint_draws_the_signed_certificate():
+    from weasyprint import HTML
+
+    rendered = HTML(
+        string=pdf.html(signed_certificate(), case(phase="cleared", photo="verified")), base_url=str(pdf.TEMPLATES)
+    ).render()
+    assert len(rendered.pages) == 2
+    assert rendered.write_pdf().startswith(b"%PDF")

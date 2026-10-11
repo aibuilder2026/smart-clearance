@@ -715,6 +715,54 @@
     if (app.bp === "tablet") return /* @__PURE__ */ React.createElement("div", { className: "layer", style: { position: "absolute", inset: 0, display: "grid", gridTemplateColumns: "76px minmax(0,1fr)" } }, /* @__PURE__ */ React.createElement("nav", { className: "sidebar rail-compact", "aria-label": "Main", style: { padding: "14px 10px" } }, /* @__PURE__ */ React.createElement("div", { className: "sb-brand", style: { justifyContent: "center", padding: "2px 0 8px" } }, brandMark || /* @__PURE__ */ React.createElement(Mark, { size: 36 })), ws && /* @__PURE__ */ React.createElement("button", { type: "button", className: "sb-ws-rail", onClick: onWorkspace, "aria-label": `${ws.name} workspace`, title: `${ws.name} · ${ws.domain}` }, /* @__PURE__ */ React.createElement(WorkspaceMark, { ws, size: 30 })), nav.map((n) => /* @__PURE__ */ React.createElement("button", { key: n.id, type: "button", className: cx("sb-item", n.product && "sb-batch"), title: n.label, "aria-label": n.aria || n.label, "aria-current": current === n.id ? "page" : void 0, onClick: () => onNav(n.id), style: { position: "relative" } }, n.product ? /* @__PURE__ */ React.createElement(NavPic, { n, size: 26 }) : /* @__PURE__ */ React.createElement(Icon, { name: n.icon, size: 21 }), n.badge ? /* @__PURE__ */ React.createElement("span", { className: "badge-count", style: { position: "absolute", top: 3, right: 6 } }, n.badge) : null)), /* @__PURE__ */ React.createElement("div", { className: "sb-foot" }, user && /* @__PURE__ */ React.createElement("button", { type: "button", className: "sb-user", style: { justifyContent: "center", padding: 6 }, onClick: onUser, "aria-label": user.name }, /* @__PURE__ */ React.createElement(Avatar, { person: user, size: "sm" })))), /* @__PURE__ */ React.createElement("div", { className: "scroll", style: { position: "relative", minWidth: 0 }, id: "main" }, children));
     return /* @__PURE__ */ React.createElement("div", { className: "layer", style: { position: "absolute", inset: 0, display: "grid", gridTemplateColumns: "var(--sidebar-w) minmax(0,1fr)" } }, /* @__PURE__ */ React.createElement("nav", { className: "sidebar", "aria-label": "Main" }, /* @__PURE__ */ React.createElement("div", { className: "sb-brand" }, brand || /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Mark, { size: 32 }), /* @__PURE__ */ React.createElement(Wordmark, { size: 18 })), brandRight), ws && /* @__PURE__ */ React.createElement("button", { type: "button", className: "sb-ws", onClick: onWorkspace, "aria-label": `${ws.name} workspace, ${ws.domain}` }, /* @__PURE__ */ React.createElement(WorkspaceMark, { ws, size: 30 }), /* @__PURE__ */ React.createElement("span", { className: "who" }, /* @__PURE__ */ React.createElement("span", { className: "ws-name" }, /* @__PURE__ */ React.createElement("b", null, ws.name), /* @__PURE__ */ React.createElement(Icon, { name: "chevron-down", size: 15, className: "subtle" })), /* @__PURE__ */ React.createElement("span", { className: "ws-dom" }, ws.domain))), nav.map((n, i) => /* @__PURE__ */ React.createElement(Fragment, { key: n.id }, n.section && /* @__PURE__ */ React.createElement("div", { className: "sb-label" }, n.section), /* @__PURE__ */ React.createElement("button", { type: "button", className: cx("sb-item", n.product && "sb-batch"), "aria-label": n.aria, "aria-current": current === n.id ? "page" : void 0, onClick: () => onNav(n.id) }, n.product ? /* @__PURE__ */ React.createElement(NavPic, { n, size: 24 }) : /* @__PURE__ */ React.createElement(Icon, { name: n.icon, size: 19 }), /* @__PURE__ */ React.createElement("span", { className: n.product ? "sbb-name" : void 0 }, n.label), n.stop ? /* @__PURE__ */ React.createElement("span", { className: cx("sbb-stop", n.human && "human"), "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("i", null), n.stop) : n.badge ? /* @__PURE__ */ React.createElement("span", { className: "badge-count" }, n.badge) : n.count != null ? /* @__PURE__ */ React.createElement("span", { className: "sb-n" }, n.count) : null))), /* @__PURE__ */ React.createElement("div", { className: "sb-foot" }, footer, user && /* @__PURE__ */ React.createElement("button", { type: "button", className: "sb-user", onClick: onUser, title: `${user.name} · ${user.role}${user.org ? " · " + user.org : ""}` }, /* @__PURE__ */ React.createElement(Avatar, { person: user, size: "sm" }), /* @__PURE__ */ React.createElement("span", { className: "who" }, /* @__PURE__ */ React.createElement("b", null, user.name), /* @__PURE__ */ React.createElement("span", null, user.role, user.org ? " · " + user.org : "")), /* @__PURE__ */ React.createElement(Icon, { name: "ellipsis", size: 18, className: "subtle" })))), /* @__PURE__ */ React.createElement("div", { className: "scroll", style: { position: "relative", minWidth: 0 }, id: "main" }, children));
   }
+  const PAD = [640, 220];
+  const inkPath = (s) => s.length === 1 ? `M${s[0][0]} ${s[0][1]}l0.1 0` : s.map((p, i) => (i ? "L" : "M") + p[0] + " " + p[1]).join("");
+  function SignPad({ name, value, onChange, label }) {
+    const ref = useRef(null), all = useRef([]), drawing = useRef(false);
+    const lines = value && value.strokes || [];
+    all.current = lines;
+    const pt = (e) => {
+      const r = ref.current.getBoundingClientRect();
+      return [Math.round((e.clientX - r.left) * PAD[0] / r.width * 2) / 2, Math.round((e.clientY - r.top) * PAD[1] / r.height * 2) / 2];
+    };
+    const put = (strokes) => {
+      all.current = strokes;
+      onChange(strokes.length ? { box: PAD, strokes } : null);
+    };
+    const down = (e) => {
+      if (e.button > 0) return;
+      e.preventDefault();
+      ref.current.setPointerCapture(e.pointerId);
+      drawing.current = true;
+      put([...all.current, [pt(e)]]);
+    };
+    const move = (e) => {
+      if (!drawing.current) return;
+      const p = pt(e), s = all.current.slice(), last = s[s.length - 1], q = last[last.length - 1];
+      if (Math.hypot(p[0] - q[0], p[1] - q[1]) < 1.5) return;
+      s[s.length - 1] = [...last, p];
+      put(s);
+    };
+    const up = () => {
+      drawing.current = false;
+    };
+    return /* @__PURE__ */ React.createElement("div", { className: cx("signpad", lines.length > 0 && "inked") }, /* @__PURE__ */ React.createElement("svg", { ref, viewBox: `0 0 ${PAD[0]} ${PAD[1]}`, onPointerDown: down, onPointerMove: move, onPointerUp: up, onPointerCancel: up, role: "img", "aria-label": label || `Signature pad${name ? ` for ${name}` : ""}: draw with a finger, a stylus or a mouse` }, /* @__PURE__ */ React.createElement("line", { className: "signpad-base", x1: "28", x2: "612", y1: "176", y2: "176" }), /* @__PURE__ */ React.createElement("text", { className: "signpad-x", x: "30", y: "166", "aria-hidden": "true" }, "×"), /* @__PURE__ */ React.createElement("g", { className: "signpad-ink" }, lines.map((st, i) => /* @__PURE__ */ React.createElement("path", { key: i, d: inkPath(st) })))), !lines.length && /* @__PURE__ */ React.createElement("span", { className: "signpad-hint", "aria-hidden": "true" }, "Sign here"), name && /* @__PURE__ */ React.createElement("span", { className: "signpad-under", "aria-hidden": "true" }, name), lines.length > 0 && /* @__PURE__ */ React.createElement("button", { type: "button", className: "signpad-clear", onClick: () => put([]) }, "Clear"));
+  }
+  function InkStrokes({ ink, name, h = 44, play, delay = 0, className }) {
+    const reduce = useReducedMotion();
+    if (!ink) return null;
+    if (ink.typed || !ink.strokes || !ink.strokes.length) return /* @__PURE__ */ React.createElement("span", { className: cx("ink-typed", className), style: { "--h": `${h}px` }, role: "img", "aria-label": `Typed by ${name}` }, name);
+    const pts = ink.strokes.flat(), xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]), m = 6;
+    const x0 = Math.min(...xs) - m, y0 = Math.min(...ys) - m, w = Math.max(...xs) - x0 + m, hh = Math.max(...ys) - y0 + m;
+    const px = h >= 90 ? 2.4 : h >= 50 ? 1.9 : h >= 24 ? 1.45 : 1.1, sw = px * hh / h;
+    const lens = ink.strokes.map((st) => st.reduce((t, p, i) => i ? t + Math.hypot(p[0] - st[i - 1][0], p[1] - st[i - 1][1]) : 0, 0) || 1), total = lens.reduce((a, b) => a + b, 0);
+    let acc = 0;
+    return /* @__PURE__ */ React.createElement("svg", { className: cx("inkstrokes", className), viewBox: `${x0} ${y0} ${w} ${hh}`, style: { height: h, width: h * w / hh }, role: "img", "aria-label": `Signed by ${name}` }, /* @__PURE__ */ React.createElement("g", { strokeWidth: sw }, ink.strokes.map((st, i) => {
+      const start = acc / total, frac = lens[i] / total;
+      acc += lens[i];
+      return play && !reduce ? /* @__PURE__ */ React.createElement(motion.path, { key: i, d: inkPath(st), initial: { pathLength: 0, opacity: 0 }, animate: { pathLength: 1, opacity: 1 }, transition: { pathLength: { duration: Math.max(0.03, 1.6 * frac), delay: delay + 1.6 * start, ease: "linear" }, opacity: { duration: 0.01, delay: delay + 1.6 * start } } }) : /* @__PURE__ */ React.createElement("path", { key: i, d: inkPath(st) });
+    })));
+  }
   function Page({ title, sub, back, onBack, actions, lead, children, wide, pad = true, hideLarge, top, below, barSub }) {
     const sentinel = useRef(null);
     const edge = useRef(null);
@@ -786,6 +834,8 @@
     Splash,
     Shell,
     Page,
-    ModeMenuButton
+    ModeMenuButton,
+    SignPad,
+    InkStrokes
   });
 })();

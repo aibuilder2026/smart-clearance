@@ -47,13 +47,16 @@
     // the window the agency destroyed them in, as he gave it; else the 25 minutes up to the after photo
     const win = xd.window || { from: new Date(Date.parse(after + ":00Z") - 25 * 60e3).toISOString().slice(11, 16), to: after.slice(11, 16) };
     const panel = ag.witnesses || [];
-    const witnesses = (xd.witnesses && xd.witnesses.length ? xd.witnesses : panel).map(w => { const p = panel.find(x => x.name === w.name); return { name: w.name, address: w.address || (p && p.address) || "", proof: w.proof || (p && p.proof) || null, sign: p ? p.sign : null }; });
+    // the four signatures as drawn on the certificate at the facility (SC-183): each signer's ink in place of a specimen
+    // on file; a certificate signed before keeps its specimens
+    const sg = xd.signatures || {}, signed = (role, p) => { const g = sg[role]; return g && p && g.name === p.name ? Object.assign({}, p, { sign: null, ink: { at: g.at, typed: !!g.typed, box: g.box || null, strokes: g.strokes || null } }) : p; };
+    const witnesses = (xd.witnesses && xd.witnesses.length ? xd.witnesses : panel).map((w, i) => { const p = panel.find(x => x.name === w.name); return signed(`w${i + 1}`, { name: w.name, address: w.address || (p && p.address) || "", proof: w.proof || (p && p.proof) || null, sign: p ? p.sign : null }); });
     const units = xd.units, kg = r2(units * sku.kgPerUnit), packKg = r2(units * (sku.packKg || 0));
     const photos = { before: { name: xd.photos.before.name, at: xd.photos.before.at }, after: { name: xd.photos.after.name, at: after } };
     return {
       reason: "expiry", methodId: ag.method || "landfill", methodName: how.name, methodHow: how.how, facility: ag.facility || null, vehicle: ag.vehicle || null,
-      officer: ag.officer || null, seal: ag.seal || null, witnesses, window: win, destroyedOn: on, photos,
-      handedBy: dist.signatory ? { name: dist.signatory.name, title: dist.signatory.title, sign: dist.signatory.sign } : null,
+      officer: signed("officer", ag.officer || null), seal: ag.seal || null, witnesses, window: win, destroyedOn: on, photos,
+      handedBy: signed("handed", dist.signatory ? { name: dist.signatory.name, title: dist.signatory.title, sign: dist.signatory.sign } : null),
       goods: `${sku.brand} ${sku.name}`, mfg: batch.mfg, mrp: sku.mrp, perCarton: sku.perCarton,
       log: P().destructionLog({ units, kg, packKg, batch: batch.id, no: xd.certificate, from: dist.godown, destroyedOn: on, window: win, photos, agency: xd.agency.name, vehicle: ag.vehicle, facility: ag.facility, method: ag.method }),
     };
@@ -69,6 +72,15 @@
       reversed: x && x.reversal != null ? x.reversal : r2(units * (sku.dp || 0) * sku.gst), date: xd.approvedAt.slice(0, 10),
       note: `Destroyed at ${xd.agency.site} on expiry day, from ${dist.godown || dist.city}. ${dist.name} reverses the input GST on these packs in GSTR-3B Table 4(B)(1) under section 17(5)(h).`,
     }, destructionDetail(xd, batch, sku, dist));
+  }
+  // the agency's certificate as it will be issued (SC-183, option B), laid out from the evidence he is sending (or sent)
+  // for the four to sign on, and for Priya to review as signed; its times on expiry day, and no yes of hers yet
+  function draftCertificate(xd, state) {
+    const s = state || store(), S = D.story(s), day = S.expiryDay, at = t => (t && t.length <= 5 ? `${day}T${t}` : t);
+    const photos = xd.photos || { before: { name: S.evidence.before, at: "11:40" }, after: { name: S.evidence.after, at: "13:20" } };
+    const x = Object.assign({ checks: [], method: D.SETUP.destruction.method }, xd, { approvedAt: `${day}T00:00`, approvedBy: "",
+      photos: Object.fromEntries(Object.entries(photos).map(([w, p]) => [w, Object.assign({}, p, { at: at(p.at) })])) });
+    return destructionDoc(x, s.hero.expiry, S.batch, S.sku, S.dist);
   }
   // the staff sale's consolidated receipt as a paper of the pack (SC-174): the photo the distributor sent with the sale,
   // his own, and what Vision read from it
@@ -856,5 +868,5 @@
     return withBatches[withBatches.length - 1] || book.periods[book.periods.length - 1];
   }
 
-  window.SC3_LEDGER = { HISTORY, STORY_CLEARED, historyCase, storyCase, caseOf, rowOf, rowsOf, totals, periods, ledger, ordersOf, outcomeOf, MIX, partners, record, KIRANA_START, storyInvoices, invoicesOf, dashboard, impactPeriod };
+  window.SC3_LEDGER = { HISTORY, STORY_CLEARED, historyCase, storyCase, caseOf, draftCertificate, rowOf, rowsOf, totals, periods, ledger, ordersOf, outcomeOf, MIX, partners, record, KIRANA_START, storyInvoices, invoicesOf, dashboard, impactPeriod };
 })();

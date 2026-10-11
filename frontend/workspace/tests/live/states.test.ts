@@ -1106,6 +1106,12 @@ describe('packs destroyed at the godown, live (SC-139)', () => {
 		expect(t).toContain(`Expiry credit note to Lakshmi Agencies`);
 		expect(t).toContain(`₹${c.expiry!.amount!.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`);
 		expect(sheet.querySelectorAll('img.cam-feed').length).toBe(2); // her two photos, from their links
+		// the certificate as signed at the facility (SC-183): page 1 as she sent it, each of the four in its own place
+		expect(t).toContain('The certificate, as signed at the facility');
+		expect(t).toContain('Four signatures on the certificate: the officer, both witnesses and Lakshmi');
+		expect(sheet.querySelector('.dz-signedpaper .pp-stamp')?.textContent).toBe('SIGNED');
+		expect(sheet.querySelectorAll('.dz-signedpaper svg.inkstrokes').length).toBe(4);
+		expect(t).toMatch(/signed \d\d:\d\d.*M\. Srinivas Reddy/);
 		await fireEvent.click(r.getByRole('button', { name: 'Approve · issue the papers' }));
 		await waitFor(() => expect(approveDestruction).toHaveBeenCalledWith(MANGO));
 	});
@@ -1149,6 +1155,42 @@ describe('packs destroyed at the godown, live (SC-139)', () => {
 		expect((r.getByLabelText('Witness 1 · name') as HTMLInputElement).value).toBe('Syed Mujeeb');
 		await fireEvent.input(r.getByLabelText('To'), { target: { value: '13:25' } });
 		await fireEvent.input(r.getByLabelText('Witness 2 · name'), { target: { value: 'R. Kavitha' } });
+		// the certificate signed in place (SC-183): laid out from what she entered, each of the four signs in their own
+		// place, and Send waits for all four. The officer draws on the pad; the others type their names
+		expect(text(r)).toContain('0 of 4 signed');
+		expect(text(r)).toContain('DGW/DC/26-27/0099, laid out from what you entered above');
+		expect(r.getByRole('button', { name: 'Send to Munchly for approval' })).toHaveProperty('disabled', true);
+		const here = (who: string) =>
+			r.getByRole('button', { name: new RegExp(`^Sign here: ${who.replace('.', '\\.')},`) });
+		Element.prototype.setPointerCapture ??= () => {};
+		await fireEvent.click(here('M. Srinivas Reddy'));
+		let sheet = await waitFor(() => r.getByRole('dialog'));
+		expect(norm(sheet.textContent)).toContain('I supervised the destruction of these');
+		const pad = sheet.querySelector('.signpad svg') as SVGSVGElement;
+		pad.getBoundingClientRect = () =>
+			({ left: 0, top: 0, width: 640, height: 220, right: 640, bottom: 220 }) as DOMRect;
+		const sign = within(sheet).getByRole('button', { name: 'Sign as Srinivas' });
+		expect(sign).toHaveProperty('disabled', true);
+		await fireEvent.pointerDown(pad, { clientX: 60, clientY: 150, pointerId: 1, button: 0 });
+		await fireEvent.pointerMove(pad, { clientX: 120, clientY: 120, pointerId: 1 });
+		await fireEvent.pointerMove(pad, { clientX: 200, clientY: 160, pointerId: 1 });
+		await fireEvent.pointerUp(pad, { pointerId: 1 });
+		await fireEvent.click(sign);
+		await waitFor(() => expect(text(r)).toContain('1 of 4 signed'));
+		for (const [who, first] of [
+			['Syed Mujeeb', 'Syed'],
+			['R. Kavitha', 'Kavitha'],
+			['K. Lakshmi Narayana', 'Lakshmi']
+		]) {
+			await fireEvent.click(here(who));
+			sheet = await waitFor(() => r.getByRole('dialog'));
+			await fireEvent.click(within(sheet).getByRole('button', { name: 'Type the name instead' }));
+			await fireEvent.input(within(sheet).getByLabelText(`Type your name: ${who}`), { target: { value: who } });
+			await fireEvent.click(within(sheet).getByRole('button', { name: `Sign as ${first}` }));
+		}
+		await waitFor(() => expect(text(r)).toContain('4 of 4 signed'));
+		expect(r.container.querySelectorAll('.dz-paper svg.inkstrokes').length).toBe(1);
+		expect(r.container.querySelectorAll('.dz-paper .ink-typed').length).toBe(3);
 		await fireEvent.click(r.getByRole('button', { name: 'Send to Munchly for approval' }));
 		await waitFor(() => expect(sendDestruction).toHaveBeenCalled());
 		expect(links).toEqual(['before', 'after']);
@@ -1160,7 +1202,25 @@ describe('packs destroyed at the godown, live (SC-139)', () => {
 			witnesses: [
 				{ name: 'Syed Mujeeb', address: 'House 14, Gandhi Nagar, Hyderabad 500080' },
 				{ name: 'R. Kavitha', address: 'Flat 3, Kavadiguda, Hyderabad 500080' }
-			]
+			],
+			// each with the device's time, which backend-api reads on the journey's clock
+			signatures: {
+				officer: {
+					name: 'M. Srinivas Reddy',
+					at: expect.stringMatching(/Z$/),
+					box: [640, 220],
+					strokes: [
+						[
+							[60, 150],
+							[120, 120],
+							[200, 160]
+						]
+					]
+				},
+				w1: { name: 'Syed Mujeeb', at: expect.stringMatching(/Z$/), typed: true },
+				w2: { name: 'R. Kavitha', at: expect.stringMatching(/Z$/), typed: true },
+				handed: { name: 'K. Lakshmi Narayana', at: expect.stringMatching(/Z$/), typed: true }
+			}
 		});
 		vi.unstubAllGlobals();
 	});

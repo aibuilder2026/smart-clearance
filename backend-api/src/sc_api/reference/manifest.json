@@ -3,14 +3,14 @@
 	"sources": {
 		"design3/core/money.js": "9f73bdd0916a5b2d",
 		"design3/core/papers.js": "6ab322044c02cb2a",
-		"design3/core/data.js": "a72c9eb98977c3e4",
+		"design3/core/data.js": "d015ed1440668445",
 		"design3/core/store.js": "fb131f55274e4a33",
 		"design3/core/platform.js": "3f1a7b998f279b39",
 		"design3/screens/admin.jsx": "bb2a12a8695d75e0",
 		"design3/system/product.jsx": "b467c3aaafe94fbf",
 		"design3/core/world.js": "3abd2d8a87155c43",
-		"design3/core/flow.js": "9e3df174d221c1df",
-		"design3/core/ledger.js": "3cea81edaf320ecc"
+		"design3/core/flow.js": "a7e5f4e1e1f65c77",
+		"design3/core/ledger.js": "465092f423e9d5c6"
 	},
 	"files": {
 		"showcase.json": "3df8650776ab231c",

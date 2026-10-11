@@ -575,6 +575,23 @@ async def test_the_mango_drinks_journey_end_to_end(api, munchly, cloud, ctx):
     assert snap["distributors"]["lakshmi"]["upi"] == J["distributors"]["lakshmi"]["upi"]
 
 
+# a signature as the pad sends it (SC-183): a few strokes in its 640 x 220 box
+PEN = [[[60.0, 150.0], [110.5, 118.0], [170.0, 158.5], [230.0, 120.0]], [[260.0, 140.0], [300.0, 132.0]]]
+
+
+def signatures(agency: str, dist: str = "rakesh", witnesses: list[dict] | None = None, **over) -> dict:
+    """the certificate signed in place (SC-183): the agency's officer, each witness (its panel unless he named others)
+    and the distributor's signatory, each drawn; `over` replaces one (typed, or another name)"""
+    ag = next(a for a in J["setup"]["destruction"]["agencies"] if a["id"] == agency)
+    ws = [*(witnesses or ag["witnesses"]), *ag["witnesses"]]
+    names = {"officer": ag["officer"]["name"], "w1": ws[0]["name"], "w2": ws[1]["name"]}
+    names["handed"] = J["distributors"][dist]["signatory"]["name"]
+    out = {
+        k: {"name": v, "at": "2026-10-11T13:22:00+05:30", "box": [640, 220], "strokes": PEN} for k, v in names.items()
+    }
+    return out | over
+
+
 async def destroyed_at_godown(api, cloud, ref: str, who: dict, *, agency: str, units: int) -> dict:
     """the distributor's evidence of packs destroyed at his godown (SC-139): both photos to their links, the agency
     and its certificate, then Vision's read of them; the destruction as he then reads it"""
@@ -588,7 +605,8 @@ async def destroyed_at_godown(api, cloud, ref: str, who: dict, *, agency: str, u
         assert r.status_code == 200, r.text
         ids[which] = r.json()["id"]
         cloud.storage.objects[("photos-test", f"munchly/{ref}/destruction-{which}-{ids[which]}")] = b"jpeg"
-    body = {"agency": agency, "certificate": "DGW/DC/26-27/0099", "photos": ids}
+    dist = "lakshmi" if who is LAKSHMI else "rakesh"
+    body = {"agency": agency, "certificate": "DGW/DC/26-27/0099", "photos": ids, "signatures": signatures(agency, dist)}
     r = await api.post(f"{WS}/cases/{ref}/destruction", json=body, headers=who)
     assert r.status_code == 200, r.text
     read = {

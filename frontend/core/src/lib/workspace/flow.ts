@@ -7,7 +7,17 @@ import { fmt } from '../format';
 import { D, SHOPS_ALL, storyOf } from './data';
 import { stageAt } from './model';
 import { store } from './store.svelte';
-import type { DestructionAgency, PlanLine, StaffReceipt, State, Story, StoryKey } from './types';
+import type {
+	DestructionAgency,
+	Distributor,
+	PlanLine,
+	Signature,
+	Signatures,
+	StaffReceipt,
+	State,
+	Story,
+	StoryKey
+} from './types';
 
 let nid = 0;
 const id = (p: string) => p + '-' + Date.now().toString(36) + '-' + ++nid;
@@ -54,6 +64,23 @@ function advance(s: State) {
 const nameOf = (sku: { name: string }) => sku.name.replace(/\s+\d+(\.\d+)?\s?(g|ml|kg|l)$/i, '');
 
 // each action changes a draft of the store; names follow the journey map
+
+/** the story's four signatures on the slow chips' certificate (SC-183; flow.js storySignatures): the officer's, each
+ *  witness's and the distributor's strokes as traced from their specimens (the seed's strokes), a minute apart after
+ *  the cover; a signer with no strokes on file signs typed */
+function storySignatures(agency: DestructionAgency, dist: Distributor, win: { from: string; to: string }): Signatures {
+	const at = (m: number) => {
+		const [h, mm] = win.to.split(':').map(Number),
+			t = h * 60 + mm + m;
+		return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
+	};
+	const one = (p: { name: string; sign?: string | null } | null | undefined, m: number): Signature => {
+		const k = p?.sign ? D.strokes[p.sign] : null;
+		return { name: p?.name ?? '', at: at(m), ...(k ? { box: k.box, strokes: k.strokes } : { typed: true }) };
+	};
+	const w = agency.witnesses ?? [];
+	return { officer: one(agency.officer, 2), w1: one(w[0], 3), w2: one(w[1], 4), handed: one(dist.signatory, 5) };
+}
 export const A = {
 	connect: (s: State) => {
 		s.setup.confirmed = true;
@@ -446,6 +473,7 @@ export const A = {
 			certificate?: string;
 			window?: { from: string; to: string };
 			witnesses?: { name: string; address: string }[];
+			signatures?: Signatures;
 		};
 		const agency = sent.agency ?? D.setup.destruction.agencies[0];
 		Object.assign(d, {
@@ -459,6 +487,9 @@ export const A = {
 			// the window the agency destroyed them in and its two independent witnesses, as he gave them (SC-174)
 			window: sent.window || { from: '12:55', to: '13:20' },
 			witnesses: (sent.witnesses || agency.witnesses || []).map((w) => ({ name: w.name, address: w.address })),
+			// the four signatures as drawn on the certificate at the facility (SC-183): his, or the story's own when
+			// nobody plays him (each signer's strokes, a minute apart after the cover)
+			signatures: sent.signatures ?? storySignatures(agency, S.dist, sent.window || { from: '12:55', to: '13:20' }),
 			checks: (
 				[
 					['batch', `Batch ${h.id} read on the carton label`],

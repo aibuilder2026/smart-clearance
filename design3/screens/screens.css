@@ -744,6 +744,28 @@ button.dist-line:focus-visible { outline: 3px solid var(--ring); outline-offset:
 .rcpt-table th:nth-child(2), .rcpt-table td:nth-child(2), .rcpt-table th:nth-child(3), .rcpt-table td:nth-child(3) { text-align: left; }
 @media (max-width: 760px) { .dz-fields { grid-template-columns: minmax(0, 1fr); } }
 .dz-foot { display: flex; gap: 10px; }
+/* the certificate signed in place (SC-183, option B): the draft under his form, a numbered Sign here in each signature's
+   own place, the progress, and the sheet's sentence; on Priya's desk the page as signed, scaled to her sheet */
+.dz-progress { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; font-size: 13.5px; }
+.dz-bar { position: relative; width: 120px; height: 6px; border-radius: 99px; background: var(--fill-2); overflow: hidden; }
+.dz-bar i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: var(--primary); transition: width var(--t-base) var(--ease); }
+.dz-paper { padding: 12px; border-radius: 14px; background: var(--fill); }
+.dz-paper .cert-pages, .dz-signedpaper .cert-pages { gap: 0; }
+.dz-here { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px 0 6px; border: 0; border-radius: 99px; background: var(--amber); color: var(--amber-fg); font: 650 13.5px/1 var(--font-ui); cursor: pointer; box-shadow: 0 1px 0 rgb(0 0 0 / 0.08); }
+.dz-here:disabled { opacity: 0.5; cursor: not-allowed; }
+.dz-here:focus-visible { outline: 2px solid #161a18; outline-offset: 2px; }
+.dz-here-n { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 99px; background: rgb(255 255 255 / 0.55); font-size: 12.5px; }
+.dz-signed { position: relative; display: grid; gap: 2px; justify-items: start; }
+.dz-unsign { min-height: 28px; padding: 0 6px; border: 0; border-radius: 7px; background: transparent; color: #3f4743; font: 550 11.5px/1 var(--font-ui); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.dz-unsign:focus-visible { outline: 2px solid #161a18; outline-offset: 1px; }
+.dz-decl { padding: 12px 14px; border-radius: 12px; background: var(--fill); font-size: 14.5px; line-height: 1.45; }
+.dz-avatar { display: grid; place-items: center; width: 40px; height: 40px; flex: none; border-radius: 99px; background: var(--primary-soft); color: var(--primary-text); font: 700 14px var(--font-ui); }
+.dz-signedpaper { border-radius: 12px; background: var(--fill); padding: 8px; overflow: hidden; }
+.dz-zoom { zoom: 0.72; }
+/* the time a signature drawn at the facility was signed, under it on the certificate (SC-183) */
+.cert-when { font: 500 9.5px/1.2 var(--font-mono); color: #4b5550; }
+.cert-ini .inkstrokes { display: inline-block; vertical-align: middle; margin-right: 6px; }
+
 .dz-foot > .btn:last-child, .dz-foot > .btn-wait:last-child { flex: 1; }
 .dz-foot > .btn-wait:last-child { justify-items: stretch; }
 @media (max-width: 520px) { .dz-foot { flex-direction: column-reverse; } }

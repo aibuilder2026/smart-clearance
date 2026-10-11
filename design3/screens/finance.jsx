@@ -60,12 +60,18 @@
      agency's); from the signature maker (system/img/signatures, system/img/seals). A name with no specimen on file (a
      witness he named who is not on the agency's panel) signs on the agency's original, and the paper says so ---------- */
   const SIGN_SRC = id => `${window.SC3_IMG}signatures/${id}.webp`, SEAL_SRC = id => `${window.SC3_IMG}seals/${id}.webp`;
-  function Ink({ who, seal, stamp = "round", h = 46 }) {
+  // a signature drawn on the certificate at the facility (SC-183) is its own ink, drawn as signed (`play`), or the name
+  // typed; the seal goes beside it as it does a specimen
+  function Ink({ who, seal, stamp = "round", h = 46, play, delay }) {
     if (!who) return null;
+    if (who.ink) return <span className={cx("sig-ink", seal && "sealed", stamp)} style={{ "--h": `${h}px` }}>
+      {seal && <img className="sig-seal" src={SEAL_SRC(seal)} alt="" aria-hidden="true" />}<K.InkStrokes className="sig-hand" ink={who.ink} name={who.name} h={h} play={play} delay={delay} /></span>;
     if (!who.sign) return <span className="sig-none">signed on the agency's original</span>;
     return <span className={cx("sig-ink", seal && "sealed", stamp)} style={{ "--h": `${h}px` }}>
       {seal && <img className="sig-seal" src={SEAL_SRC(seal)} alt="" aria-hidden="true" />}<img className="sig-hand" src={SIGN_SRC(who.sign)} alt={`Signed by ${who.name}`} /></span>;
   }
+  // when a signature drawn at the facility was signed, or typed (SC-183)
+  const SignedWhen = ({ who }) => (who && who.ink ? <span className="cert-when">{who.ink.typed ? "typed" : "signed"} {hhmm(who.ink.at) || who.ink.at}</span> : null);
   // the Tally papers' signatory block: for the firm, the signature and stamp, "Authorised Signatory", who signed
   const TallySign = ({ firm, who, seal, stamp }) => <><div className="tl-sign">for <b>{firm}</b></div>{who && <div className="tl-signed"><Ink who={who} seal={seal} stamp={stamp} /></div>}<div className="tl-num">Authorised Signatory</div>{who && <div className="tl-signer">{who.name}, {who.title}</div>}</>;
   // the app's own papers (the GST memo, the FSSAI checklist): signed at their foot for the client
@@ -218,9 +224,11 @@
   const hhmm = t => (t || "").slice(11, 16), kg2 = n => `${(Math.round((n || 0) * 100) / 100).toFixed(2)} kg`;
   const cartonsOf = (u, per) => { const n = Math.floor(u / per), r = u % per; return !per ? "" : r ? `${n} cartons of ${per} and ${r} loose` : `${n} cartons of ${per}`; };
   const certPhoto = (c, d, w) => { const p = d.photos && d.photos[w]; if (!p) return null; if (p.url) return p.url; return `${window.SC3_IMG}evidence/${LG().record.evidenceFile(c.batch.id, w, p)}`; };
-  function Certificate({ d, c }) {
+  // `draft` (SC-183, option B): the certificate before Priya's yes, page 1 alone, for the four to sign on (`place` puts a
+  // Sign here, or the ink, in each signature's own place) and for her to review as signed (`stamp`)
+  function Certificate({ d, c, draft }) {
     const R = c.dist, F = d.for || { name: R.name, gstin: R.gstin, address: R.address };
-    if (d.status !== "generated") return <div className="paper pp">
+    if (d.status !== "generated" && !draft) return <div className="paper pp">
       <div className="pp-head"><div><div className="pp-title">Destruction certificate</div><div className="pp-no">{c.batch.id} · {R.name}</div></div><span className="pp-stamp">AWAITING</span></div>
       <div className="pp-sub">For {R.name}, {R.address} · GSTIN {R.gstin}</div>
       <Line k={`${c.sku.brand} ${c.sku.name}`} sub={`HSN ${c.sku.hsn} · batch ${c.batch.id} · best before ${fmt.date(c.batch.bestBefore)}`} v={`${fmt.num(d.units)} packs`} strong />
@@ -241,22 +249,23 @@
     const initials = [d.officer, ...(d.witnesses || [])].filter(Boolean);
     return <div className="cert-pages">
       <div className="paper cert">
-        <div className="cert-lh"><div><b>{(d.agency || "").toUpperCase()}</b><span>Authorised waste-management agency · authorisation {d.auth}</span></div><span className="pp-stamp ok">DESTROYED</span></div>
+        <div className="cert-lh"><div><b>{(d.agency || "").toUpperCase()}</b><span>Authorised waste-management agency · authorisation {d.auth}</span></div><span className={cx("pp-stamp", !draft && "ok")}>{draft ? draft.stamp : "DESTROYED"}</span></div>
         <div className="cert-t">Certificate of Destruction</div>
         <div className="cert-m"><span>No. <b>{d.no}</b></span><span>Dated <b>{dmy(on)}</b></span><span>Page 1 of 2</span></div>
         <dl className="cert-kv">{kv.map(([k, v, mono]) => <Fragment key={k}><dt>{k}</dt><dd className={mono ? "mono" : ""}>{v}</dd></Fragment>)}</dl>
         <div className="cert-sec">Signed at the facility, as set out in the log overleaf</div>
-        <div className="cert-sigs">{sigs.map(([k, label, w]) => <div key={k} className="cert-sig"><span className="cert-k">{label}</span><div className="cert-ink">{w ? <Ink who={w} seal={k === "officer" ? d.seal : null} h={40} /> : null}</div><b>{w ? w.name : "—"}</b><span>{k === "officer" ? (w ? `${w.title}, ${d.agency}` : "") : w ? w.address : ""}</span>{w && w.proof && <span className="mono">{w.proof}</span>}</div>)}</div>
+        <div className="cert-sigs">{sigs.map(([k, label, w]) => <div key={k} className="cert-sig"><span className="cert-k">{label}</span><div className="cert-ink">{draft ? draft.place(k, w) : w ? <Ink who={w} seal={k === "officer" ? d.seal : null} h={40} /> : null}</div>{!draft && <SignedWhen who={w} />}<b>{w ? w.name : "—"}</b><span>{k === "officer" ? (w ? `${w.title}, ${d.agency}` : "") : w ? w.address : ""}</span>{w && w.proof && <span className="mono">{w.proof}</span>}</div>)}</div>
         <div className="cert-hand">
-          <div><span className="cert-k">Goods handed over by</span>{d.handedBy && <div className="cert-ink"><Ink who={d.handedBy} h={34} /></div>}<b>{d.handedBy ? d.handedBy.name : F.name}</b><span>{d.handedBy ? `${d.handedBy.title}, ${F.name}` : ""}</span></div>
-          <div><span className="cert-k">Evidence approved by</span><b>{d.approvedBy}</b><span>for {D.CLIENT.name}, {recWhen(d.approvedAt)}</span><span className="muted">two photos · Vision's checks {d.evidence ? `${d.evidence.checks} of ${d.evidence.of}` : ""}</span></div>
+          <div><span className="cert-k">Goods handed over by</span>{d.handedBy && <div className="cert-ink">{draft ? draft.place("handed", d.handedBy) : <Ink who={d.handedBy} h={34} />}</div>}{!draft && <SignedWhen who={d.handedBy} />}<b>{d.handedBy ? d.handedBy.name : F.name}</b><span>{d.handedBy ? `${d.handedBy.title}, ${F.name}` : ""}</span></div>
+          {draft ? <div><span className="cert-k">Evidence approved by</span><b>{D.PEOPLE.priya.name}</b><span>for {D.CLIENT.name}, once she has reviewed it</span></div>
+            : <div><span className="cert-k">Evidence approved by</span><b>{d.approvedBy}</b><span>for {D.CLIENT.name}, {recWhen(d.approvedAt)}</span><span className="muted">two photos · Vision's checks {d.evidence ? `${d.evidence.checks} of ${d.evidence.of}` : ""}</span></div>}
         </div>
       </div>
-      {d.log && <div className="paper cert">
+      {d.log && !draft && <div className="paper cert">
         <div className="cert-m"><span><b>Destruction log</b> · {d.no}</span><span>Page 2 of 2</span></div>
         <table className="cert-log"><thead><tr><th>Time</th><th>Step</th><th>Detail</th><th>Initials</th></tr></thead><tbody>
           {d.log.map(x => <tr key={x.step}><td className="mono">{hhmm(x.at)}</td><td><b>{x.step}</b></td><td>{x.detail}{x.photo && certPhoto(c, d, x.photo) && <span className="cert-ph"><S.Photo src={certPhoto(c, d, x.photo)} alt={x.photo === "before" ? "The packs at the godown, the carton's batch label in view" : "The packs at the landfill, the slate in view"} loading="lazy" /></span>}</td>
-            <td className="cert-ini">{initials.map(w => (w.sign ? <img key={w.name} src={SIGN_SRC(w.sign)} alt={`Initialled by ${w.name}`} /> : <span key={w.name} className="cert-ini-none">{w.name.split(" ").map(x => x[0]).join("")}</span>))}</td></tr>)}</tbody></table>
+            <td className="cert-ini">{initials.map(w => (w.ink && !w.ink.typed ? <K.InkStrokes key={w.name} className="cert-ini-ink" ink={w.ink} name={w.name} h={15} /> : w.sign && !w.ink ? <img key={w.name} src={SIGN_SRC(w.sign)} alt={`Initialled by ${w.name}`} /> : <span key={w.name} className="cert-ini-none">{w.name.split(" ").map(x => x[0]).join("")}</span>))}</td></tr>)}</tbody></table>
         <p className="cert-note">Initialled at each step by the supervising officer and the two independent witnesses, who watched it from receipt to cover.</p>
       </div>}
     </div>;
@@ -875,5 +884,5 @@
     return ref && LG().caseOf(ref) ? <BatchPage key={ref} me={me} at={ref} tab={(at && at.tab) || p.tab} /> : <Ledger me={me} />;
   }
 
-  Object.assign(window.SC3_SCREENS, { Ink, Certificate, ReceiptRead, StaffReceiptPaper, RecordTab, RecordPhotos, PhotoSheet, PhotoFacts, Paperwork, PaperPack, Report, Ledger, BatchPage, Paper, Receipt, KiranaInvoice, KiranaRegister, KeepsWhat, OutcomeBadge, printPage, download, csv });
+  Object.assign(window.SC3_SCREENS, { Ink, SignedWhen, Certificate, ReceiptRead, StaffReceiptPaper, RecordTab, RecordPhotos, PhotoSheet, PhotoFacts, Paperwork, PaperPack, Report, Ledger, BatchPage, Paper, Receipt, KiranaInvoice, KiranaRegister, KeepsWhat, OutcomeBadge, printPage, download, csv });
 })();

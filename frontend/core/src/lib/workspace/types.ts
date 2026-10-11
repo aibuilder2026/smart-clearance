@@ -81,10 +81,24 @@ export type Distributor = {
 
 /** who signs a party's papers (SC-174): the signatory's name and title, the specimen signature on file
  *  (system/img/signatures/<sign>.webp) and the firm's stamp or seal (system/img/seals/<seal>.webp) */
-export type Signatory = { name: string; title: string; sign: string | null; seal?: string | null };
+export type Signatory = { name: string; title: string; sign: string | null; seal?: string | null; ink?: Ink | null };
 /** a witness to a destruction (SC-174): name, address, the ID proof's last four, and a specimen signature where the
- *  agency keeps one */
-export type Witness = { name: string; address: string; proof?: string | null; sign?: string | null };
+ *  agency keeps one; signed in place at the facility, its ink (SC-183) */
+export type Witness = { name: string; address: string; proof?: string | null; sign?: string | null; ink?: Ink | null };
+/** a signature as signed in place on the certificate at the facility (SC-183): when, and its strokes in the pad's box
+ *  (640 x 220), or the name typed */
+export type Ink = { at: string; typed?: boolean; box?: [number, number] | null; strokes?: [number, number][][] | null };
+/** the certificate's four signers (SC-183): the agency's supervising officer, the two witnesses, the distributor */
+export type SignatureRole = 'officer' | 'w1' | 'w2' | 'handed';
+/** one of the four as signed: by the name the certificate prints, when, and the strokes or the name typed */
+export type Signature = {
+	name: string;
+	at: string;
+	typed?: boolean;
+	box?: [number, number];
+	strokes?: [number, number][][];
+};
+export type Signatures = Record<SignatureRole, Signature>;
 
 /** one staff member's UPI payment, as a staff sale's consolidated receipt lists it (SC-174, papers.js staffPayments):
  *  its UPI reference (the 12-digit RRN), who paid, when, the packs it paid for and the amount */
@@ -527,6 +541,8 @@ export type Destruction = {
 	/** the window the agency destroyed them in and its two independent witnesses, as he gave them (SC-174) */
 	window?: { from: string; to: string } | null;
 	witnesses?: { name: string; address: string }[] | null;
+	/** the certificate as signed in place at the facility by its officer, both witnesses and him (SC-183) */
+	signatures?: Partial<Signatures> | null;
 };
 
 export type Rules = {
@@ -858,6 +874,8 @@ export type WorkspaceSeed = {
 		expiry: ExpiryPolicy;
 		destruction: DestructionSettings;
 	};
+	/** each signer's strokes, for the stub to sign the slow chips' certificate as a person would (SC-183) */
+	strokes: Record<string, { box: [number, number]; strokes: [number, number][][] }>;
 	risk: Assess;
 	plan: Plan;
 	counter: { action: string; price: number; below: boolean };
@@ -1431,6 +1449,8 @@ export type ActionArgs = {
 		/** the window the agency destroyed them in, and its two independent witnesses (SC-174) */
 		window?: { from: string; to: string };
 		witnesses?: { name: string; address: string }[];
+		/** the certificate signed in place by its officer, both witnesses and him (SC-183) */
+		signatures?: Signatures;
 	};
 	approveDestruction: undefined;
 	/** what the operator asks him to send again */

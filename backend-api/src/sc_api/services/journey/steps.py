@@ -2162,6 +2162,77 @@ def _minute(at: datetime) -> str:
     return at.astimezone(IST).strftime("%Y-%m-%dT%H:%M")
 
 
+SIGNERS = ("officer", "w1", "w2", "handed")
+PAD_POINTS = 6000
+
+
+def _signatures(
+    ctx: Ctx,
+    s: Any,
+    agency: dict[str, Any],
+    witnesses: list[dict[str, Any]],
+    given: dict[str, dict[str, Any]] | None,
+    now: datetime,
+) -> dict[str, dict[str, Any]]:
+    """the certificate's four signatures as signed in place at the facility (SC-183): the agency's supervising officer,
+    each witness he named, and his firm's signatory, each by the name the certificate prints, drawn (strokes in the
+    pad's box) or typed. Each is kept with when it was signed, on the journey's clock: the device's time, unless it is
+    not a time of today's"""
+    if not given or set(given) != set(SIGNERS):
+        raise ApiError(
+            422,
+            "The officer, both witnesses and you sign the certificate before it is sent.",
+            {"signatures": "Four signatures."},
+        )
+    officer = (agency.get("officer") or {}).get("name", "")
+    sig = world.dist_obj(s.dist).get("signatory") or {}
+    names = {
+        "officer": officer,
+        "w1": (witnesses[0] if len(witnesses) > 0 else {}).get("name", ""),
+        "w2": (witnesses[1] if len(witnesses) > 1 else {}).get("name", ""),
+        "handed": sig.get("name") or s.dist.name,
+    }
+    clock = ev.clock_of(s.c)
+    out: dict[str, dict[str, Any]] = {}
+    for role in SIGNERS:
+        g = given[role]
+        name = (g.get("name") or "").strip()
+        if name.casefold() != (names[role] or "").strip().casefold():
+            raise ApiError(
+                422, f"{name or 'A signature'} signed where the certificate names {names[role]}.", {"signatures": role}
+            )
+        one: dict[str, Any] = {"name": names[role]}
+        if g.get("typed"):
+            one["typed"] = True
+        else:
+            box = g.get("box") or (640, 220)
+            strokes = g.get("strokes") or []
+            points = sum(len(st) for st in strokes)
+            inside = all(-20 <= x <= box[0] + 20 and -20 <= y <= box[1] + 20 for st in strokes for x, y in st)
+            if not strokes or points < 2 or points > PAD_POINTS or not inside:
+                raise ApiError(
+                    422, f"{names[role]}'s signature did not come through. Sign again.", {"signatures": role}
+                )
+            one["box"] = [int(box[0]), int(box[1])]
+            one["strokes"] = [[[round(float(x), 1), round(float(y), 1)] for x, y in st] for st in strokes]
+        wall = _wall(g.get("at"))
+        real = ctx.clock.now()
+        if wall is None or not (real - timedelta(hours=12) <= wall <= real + timedelta(minutes=2)):
+            wall = real
+        one["at"] = _minute(clock.at(wall))
+        out[role] = one
+    return out
+
+
+def _wall(at: Any) -> datetime | None:
+    """a device's time, as an ISO moment with its zone"""
+    try:
+        t = datetime.fromisoformat(str(at).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return t if t.tzinfo else None
+
+
 def _godown(s: Scene) -> str:
     return s.dist.godown or f"{s.dist.city} godown"
 
@@ -2252,11 +2323,15 @@ async def send_destruction(
     photos: dict[str, str],
     window: dict[str, str] | None = None,
     witnesses: list[dict[str, str]] | None = None,
+    *,
+    signatures: dict[str, dict[str, Any]] | None = None,
+    signed: bool = False,
 ) -> None:
     """his evidence: the agency on the client's list and its certificate number, and both photos arrived; with the
     window the agency destroyed them in and its two independent witnesses, for the certificate in full (SC-174: the
-    agency's own panel, and the 25 minutes up to the after photo, when he gives none). Vision checks it next (or, with
-    Vision's check off, it goes straight to the operator)"""
+    agency's own panel, and the 25 minutes up to the after photo, when he gives none). From the workspace (`signed`)
+    the certificate comes signed in place by its officer, both witnesses and him (SC-183); the history's certificates
+    were signed on paper. Vision checks it next (or, with Vision's check off, it goes straight to the operator)"""
     s = await scene(ctx, client_id, ref)
     me = await _holder(ctx, s, client_id, "the destruction's evidence")
     _guard(s, "destroy")
@@ -2289,6 +2364,8 @@ async def send_destruction(
         raise ApiError(422, "The window ends after it starts.", {"window": "From before to."})
     panel = [{"name": w["name"], "address": w.get("address", "")} for w in agency.get("witnesses") or []]
     dz = s.case.destruction or {}
+    given = witnesses or dz.get("witnesses") or panel
+    inks = _signatures(ctx, s, agency, given, signatures, at) if signed or signatures else None
     s.case.destruction = {
         **dz,
         "status": "reading",
@@ -2300,7 +2377,8 @@ async def send_destruction(
         "checks": [],
         # sent again after the operator asked, what he gave before stands unless he gives it anew
         **({"window": window or dz["window"]} if window or dz.get("window") else {}),
-        "witnesses": witnesses or dz.get("witnesses") or panel,
+        "witnesses": given,
+        **({"signatures": inks} if inks else {}),
     }
     text = copy.destroy_sent_event(agency=agency["name"], certificate=cert)
     await ev.feed(ctx, s.c, s.case, "destroySent", "report", text, person=me.ref, human=True, icon="camera")

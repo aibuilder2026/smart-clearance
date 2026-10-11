@@ -119,15 +119,28 @@ def destruction_detail(
     }
     panel = agency.get("witnesses") or []
     given = dz.get("witnesses") or panel
+    # the four signatures as signed in place at the facility (SC-183): each signer's ink in place of a specimen on
+    # file; a certificate signed before (the history's) keeps its specimens
+    inks = dz.get("signatures") or {}
 
-    def witness(w: dict[str, Any]) -> dict[str, Any]:
+    def signed(role: str, p: dict[str, Any] | None) -> dict[str, Any] | None:
+        g = inks.get(role)
+        if not g or not p or g.get("name") != p.get("name"):
+            return p
+        ink = {"at": g.get("at"), "typed": bool(g.get("typed")), "box": g.get("box"), "strokes": g.get("strokes")}
+        return {**p, "sign": None, "ink": ink}
+
+    def witness(i: int, w: dict[str, Any]) -> dict[str, Any] | None:
         p = next((x for x in panel if x.get("name") == w.get("name")), None)
-        return {
-            "name": w.get("name", ""),
-            "address": w.get("address") or (p or {}).get("address") or "",
-            "proof": w.get("proof") or (p or {}).get("proof"),
-            "sign": (p or {}).get("sign"),
-        }
+        return signed(
+            f"w{i + 1}",
+            {
+                "name": w.get("name", ""),
+                "address": w.get("address") or (p or {}).get("address") or "",
+                "proof": w.get("proof") or (p or {}).get("proof"),
+                "sign": (p or {}).get("sign"),
+            },
+        )
 
     method = agency.get("method") or "landfill"
     how = methods.get(method) or {}
@@ -153,13 +166,15 @@ def destruction_detail(
         "methodHow": how.get("how", ""),
         "facility": agency.get("facility"),
         "vehicle": agency.get("vehicle"),
-        "officer": agency.get("officer"),
+        "officer": signed("officer", agency.get("officer")),
         "seal": agency.get("seal"),
-        "witnesses": [witness(w) for w in given],
+        "witnesses": [witness(i, w) for i, w in enumerate(given)],
         "window": win,
         "destroyedOn": on,
         "photos": photos,
-        "handedBy": {"name": sig["name"], "title": sig["title"], "sign": sig.get("sign")} if sig else None,
+        "handedBy": signed(
+            "handed", {"name": sig["name"], "title": sig["title"], "sign": sig.get("sign")} if sig else None
+        ),
         "goods": f"{sku.get('brand', '')} {sku.get('name', '')}".strip(),
         "mfg": batch.get("mfg"),
         "mrp": sku.get("mrp"),

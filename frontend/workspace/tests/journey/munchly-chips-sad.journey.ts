@@ -4,6 +4,7 @@ import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { mint } from './auth.ts';
 import { HERO } from './chips.ts';
+import { signCertificate } from './destruction.ts';
 import { AGENT_WAIT, begin, caseAs, inr, running, story, STORY, until, type Case } from './flow.ts';
 import { Stage } from './stage.ts';
 
@@ -19,9 +20,10 @@ import { Stage } from './stage.ts';
 // invoice and runs his van round to the shops that ordered. Neha fires expiry day: Munchly's policy destroys what is
 // left at Rakesh's godown (SC-139, route B). Rakesh sends the evidence (the photos before and after, made for the packs
 // left, the agency, its certificate number, the window the agency destroyed them in and the two witnesses who sign
-// with its officer, SC-174), and Vision checks the photos on live Gemini while his tablet shows it working. Priya reads
-// Vision's checks one by one and gives her second yes; Impact reports, and the agency's certificate of destruction is
-// issued, signed by its officer and the two witnesses, with Rakesh's signature for the packs he handed over. Then Priya
+// with its officer, SC-174), the four signing the certificate in place on his tablet (SC-183), and Vision checks the
+// photos on live Gemini while his tablet shows it working. Priya reads Vision's checks one by one, with the certificate
+// as signed, and gives her second yes; Impact reports, and the agency's certificate of destruction is issued with the
+// four signatures as drawn: its officer's, the two witnesses' and Rakesh's for the packs he handed over. Then Priya
 // reads the certificate and its log, the Expiry credit note, glances at the kiranas' tax invoices, and reads the Impact
 // screens; Rakesh reads his batch and his signed certificate; the phone reads a shop's order and a declined offer.
 //
@@ -67,7 +69,8 @@ type Offer = { status: string; declined?: Record<string, unknown> };
 const offerOf = (c: Case) => c.journey.offer as unknown as Offer | null;
 /** a screen's own content: the app's banners (a push arriving on a screen that stays signed in) sit outside it */
 const main = (page: Page) => page.locator('#main');
-const sigs = (scope: Locator) => scope.locator('img[alt^="Signed by"]');
+// a signature on a paper: a specimen's image, or the ink drawn on the certificate at the facility (SC-183)
+const sigs = (scope: Locator) => scope.locator('img[alt^="Signed by"], svg[role="img"][aria-label^="Signed by"]');
 /** the cursor reads down a list of things on screen, resting on each */
 async function readEach(s: Stage, items: Locator, most = 8, rest = 450) {
 	const n = Math.min(await items.count(), most);
@@ -450,6 +453,9 @@ const STEPS: Step[] = [
 			await s.point(body.getByLabel('Witness 1 · name'), 600);
 			await s.point(body.getByLabel('Witness 2 · name'), 600);
 			await running().done('The window and the two witnesses who sign the certificate with the agency’s officer');
+			// the certificate signed in place (SC-183): each of the four signs in their own place on his tablet
+			await signCertificate(page, body, (l) => s.click(l, 400));
+			await running().done('The certificate signed in place: the officer, both witnesses and Rakesh');
 			await s.click(body.getByRole('button', { name: /Send to .* for approval/ }), 150);
 			await expect(body.getByText(/Vision is checking/).first()).toBeVisible({ timeout: 15_000 });
 			await running().done('Vision is checking the two photos: the label, the count, the slate, the landfill', 200);

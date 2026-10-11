@@ -1393,6 +1393,28 @@
           "photos": {
             "$ref": "#/components/schemas/DestructionPhotos"
           },
+          "signatures": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/Signature"
+                },
+                "propertyNames": {
+                  "enum": [
+                    "officer",
+                    "w1",
+                    "w2",
+                    "handed"
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signatures"
+          },
           "window": {
             "anyOf": [
               {
@@ -2738,6 +2760,83 @@
           "on"
         ],
         "title": "SignInMethod",
+        "type": "object"
+      },
+      "Signature": {
+        "additionalProperties": false,
+        "description": "one of the four signatures on the certificate, signed in place at the facility (SC-183): who signed, when (the\ndevice's time, which backend-api reads on the journey's clock), and the strokes in the pad's box, or the name\ntyped",
+        "properties": {
+          "at": {
+            "maxLength": 40,
+            "title": "At",
+            "type": "string"
+          },
+          "box": {
+            "anyOf": [
+              {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Box"
+          },
+          "name": {
+            "maxLength": 80,
+            "minLength": 3,
+            "title": "Name",
+            "type": "string"
+          },
+          "strokes": {
+            "anyOf": [
+              {
+                "items": {
+                  "items": {
+                    "maxItems": 2,
+                    "minItems": 2,
+                    "prefixItems": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ],
+                    "type": "array"
+                  },
+                  "type": "array"
+                },
+                "maxItems": 120,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Strokes"
+          },
+          "typed": {
+            "default": false,
+            "title": "Typed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "at"
+        ],
+        "title": "Signature",
         "type": "object"
       },
       "SkuGates": {
@@ -5756,7 +5855,7 @@
             "HTTPBearer": []
           }
         ],
-        "summary": "The destruction's evidence: the agency, its certificate, two photos",
+        "summary": "The destruction's evidence: the agency, its signed certificate, two photos",
         "tags": [
           "workspace"
         ]
