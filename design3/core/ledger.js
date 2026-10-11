@@ -97,6 +97,8 @@
       lines: { kirana: kl || NONE("kirana"), expiresoon: es || NONE("expiresoon") },
       award: h.award ? Object.assign({}, h.award, { price: h.price, bid: h.bid }) : null,
       support: h.support, supportPlan: M.priceSupport(h.plan, sku), claim: M.expiryClaim(h.plan.units, sku),
+      // issued from Tally on its invoice step: the e-invoice's IRN and signed QR are worked out from it (SC-148)
+      invoiceIssuedAt: es ? when("invoice") : null,
       docs, invoice: docs.find(d => d.id === "invoice") || null, receipt,
       returnBy: D.addDays(h.bestBefore, -M.RULES.returnWindowDays), expiry: h.expiry,
       listing: n.listing ? { id: n.listing, units: es ? es.units : 0 } : null,
@@ -107,6 +109,37 @@
     };
   }
   const HISTORY = D.HISTORY.batches.map(historyCase);
+
+  /* ---------- the kiranas' tax invoices (SC-153, option A) ---------- */
+  // One from the distributor for each shop's order (money.js kiranaInvoice), numbered in his own sales series as the
+  // orders were placed: the history's first, then the story's from the series' next. backend-api's steps.order issues
+  // them, which history.py runs on the history's timeline: each batch's orders step in turn, its shops two minutes apart
+  const SERIES = Object.fromEntries(Object.values(D.DISTRIBUTORS).map(d => [d.id, d.series]));
+  const invoiceNo = (distId, n) => SERIES[distId].prefix + String(n).padStart(SERIES[distId].width, "0");
+  const plusMinutes = (iso, n) => new Date(Date.parse(iso + ":00Z") + n * 60e3).toISOString().slice(0, 16);
+  const shopOf = id => { const k = W.KIRANAS.find(x => x.id === id) || D.KIRANAS.find(x => x.id === id) || { id, name: id, area: "" }; return { id: k.id, name: k.name, area: k.area, pincode: k.pincode || "" }; };
+  const invoiceOf = (no, at, kirana, units, line, sku) => Object.assign({ no, date: at.slice(0, 10), at, kirana, shop: shopOf(kirana) }, M.kiranaInvoice(units, line, sku));
+  // where each distributor's series began, for backend-api's history to start from (seed.mjs, journey.json history.start)
+  const KIRANA_START = {};
+  (function () {
+    const byDist = {};
+    HISTORY.filter(c => c.kiranas.length).map(c => ({ c, at: (c.steps.find(x => x.step === "orders") || {}).at }))
+      .sort((a, z) => (a.at < z.at ? -1 : a.at > z.at ? 1 : a.c.ref < z.c.ref ? -1 : 1))
+      .forEach(({ c, at }) => c.kiranas.forEach((k, i) => (byDist[c.dist.id] = byDist[c.dist.id] || []).push({ c, k, at: plusMinutes(at, 2 * i) })));
+    Object.entries(byDist).forEach(([distId, list]) => {
+      const start = SERIES[distId].next - list.length;
+      KIRANA_START["kirana." + distId] = start;
+      list.forEach(({ c, k, at }, i) => { k.at = at; k.invoice = invoiceOf(invoiceNo(distId, start + i), at, k.kirana, k.units, c.lines.kirana, c.sku); });
+    });
+  })();
+  // the story's: the chips' shops in the order they ordered, from Rakesh Traders' next number on
+  function storyInvoices(state) {
+    const kl = D.PLAN.lines.find(l => l.id === "kirana"), sku = D.SKUS[HERO.sku], next = SERIES[HERO.distributor].next;
+    return ((state && state.hero.orders) || []).map((o, i) => invoiceOf(invoiceNo(HERO.distributor, next + i), `${D.DAY0}T${o.at}`, o.id, o.units, kl, sku));
+  }
+  // a batch's invoices to its shops, in the order they were issued: the history's from its case, the story's from the
+  // journey's state
+  const invoicesOf = (c, state) => (c.history ? c.kiranas.map(k => k.invoice) : storyInvoices(state));
 
   /* ---------- the ledger's row for a cleared batch ---------- */
   const FIGURES = ["net", "swing", "pnl", "writeOff", "itcKept", "itcReversed", "kg", "co2", "meals", "units", "sold", "donated", "godown", "destroyed", "resoldKg", "donatedKg", "destroyedKg", "packResoldKg", "packDonatedKg", "packDestroyedKg", "credit", "support"];
@@ -291,7 +324,11 @@
     const past = HISTORY.filter(c => c.dist.id === distId).sort((a, z) => (a.flagged < z.flagged ? 1 : -1));
     const story = D.BATCHES.filter(b => b.distributor === distId);
     const inJourney = b => (b.hero && state.hero.phase !== "watching") || (b.second && state.mango.phase && state.mango.phase !== "watching");
-    return { journey: story.filter(inJourney), watching: story.filter(b => !inJourney(b)), past };
+    // a story batch whose journey has cleared (Impact posted it) is one of his cleared batches, no longer in a journey
+    // (SC-162): on Batches in its cleared month, in his sums from the story's own figures (storySum)
+    const done = b => b.hero && !!state.hero.posted;
+    return { journey: story.filter(b => inJourney(b) && !done(b)), watching: story.filter(b => !inJourney(b)), past,
+      done: story.filter(done).map(b => ({ ref: b.id, sku: D.SKUS[b.sku], flagged: D.DAY0, cleared: STORY_CLEARED, outcome: "sold", story: true })) };
   }
   // the papers a distributor sees: those he issues (his tax invoice and its e-way bill check) and those issued to him
   // (Munchly's price-support and expiry credit notes); and copies of what concerns his packs (the food bank's receipt,
@@ -361,11 +398,25 @@
     const w = whole(c), r2 = n => Math.round(n * 100) / 100;
     return { ref: c.ref, sold: r2(w.rows.filter(r => !r.paper).reduce((t, r) => t + r.v, 0)), credit: r2(w.rows.filter(r => r.paper).reduce((t, r) => t + r.v, 0)), cost: w.paid };
   }
-  // every batch he cleared, summed: the sales, the credit, the cost, and the credit notes that carried the credit
-  function sumsOf(past) {
-    const xs = past.map(sumOf), t = k => Math.round(xs.reduce((a, x) => a + x[k], 0) * 100) / 100;
-    const notes = past.reduce((n, c) => n + c.docs.filter(d => (d.id === "support" || d.id === "expiry") && d.status !== "not required").length, 0);
-    return { n: past.length, sold: t("sold"), credit: t("credit"), cost: t("cost"), notes, batches: xs };
+  // every batch he cleared, summed: the sales, the credit, the cost, and the credit notes that carried the credit; with
+  // the story's own once its journey has cleared (SC-162: `story`, storySum's, each on its price-support credit note)
+  function sumsOf(past, story) {
+    story = story || [];
+    const xs = past.map(sumOf).concat(story), t = k => Math.round(xs.reduce((a, x) => a + x[k], 0) * 100) / 100;
+    const notes = past.reduce((n, c) => n + c.docs.filter(d => (d.id === "support" || d.id === "expiry") && d.status !== "not required").length, 0) + story.length;
+    return { n: past.length + story.length, sold: t("sold"), credit: t("credit"), cost: t("cost"), notes, batches: xs };
+  }
+  // the story's chips batch once its journey has cleared (SC-162): its sum from its own money, as its page's Money tab
+  // reads it (storyWhole): what he sold, what the client credited him, and what it cost him
+  function storySum(state) {
+    const w = storyWhole(state), r2 = n => Math.round(n * 100) / 100;
+    const credit = w.rows.filter(r => r.k === "Price-support credit note").reduce((t, r) => t + r.v, 0);
+    return { ref: HERO.id, sold: r2(w.recv - credit), credit: r2(credit), cost: w.paid };
+  }
+  // his cleared batches summed, the story's with them once its journey has cleared (SC-162), as Batches and Orders show it
+  function sumsAt(distId, state) {
+    const b = distBatches(distId, state);
+    return sumsOf(b.past, b.done.map(() => storySum(state)));
   }
   // the story's chips batch while in a journey: what has happened so far (the feed), the next three, and the plan's money
   const STORY_MOMENTS = [["permit", "handshake", "You gave the one-time permission"], ["watch", "radar", "The Watcher flagged 1,360 packs at risk"], ["ask", "scan-line", "Vision asked you for a label photo"], ["photo", "camera", "You sent the label photo"], ["read", "scan-line", "Vision read the label"],
@@ -383,8 +434,9 @@
     return { rows, recv, paid, gain: Math.round(recv - paid), dp: sku.dp, units: D.PLAN.units };
   }
 
-  // a shop's scheme: pay the pack price for 10 of every 12, sell all 12 at MRP
-  const scheme = (n, pack, mrp) => { const free = Math.floor(n / 12) * 2, paid = n - free; return { n, free, paid, pay: Math.round(paid * pack * 100) / 100, sell: n * mrp, margin: Math.round((n * mrp - paid * pack) * 100) / 100 }; };
+  // a shop's order as its tax invoice has it (SC-153): every packet at the pack price less the scheme's discount, the
+  // GST on that, what the shop paid, and its margin selling them all at MRP
+  const scheme = (n, line, sku) => { const inv = M.kiranaInvoice(n, line, sku); return { n, rate: inv.rate, discountPct: inv.discountPct, taxable: inv.taxable, gstPct: inv.gstPct, tax: inv.tax, pay: inv.total, sell: n * sku.mrp, margin: r2(n * sku.mrp - inv.total) }; };
   // every offer a shop was sent: its distributor's cleared batches with a kirana line, then the story's own. An offer is
   // open, ordered, declined (Not this time) or expired: its 48 hours ended, or the scheme filled before the shop ordered
   function offersFor(shop, state) {
@@ -394,7 +446,7 @@
       const sent = stepAt(c, "offer"), filled = c.kirana.ordered >= c.kirana.planned;
       const closed = filled ? stepAt(c, "orders") : stepAt(c, "closeOffer") || plusHours(sent, 48);
       return { ref: c.ref, sku: c.sku, dist: c.dist, sent, closed, share: shop.sales14 * cap, pack: kl.packPrice, mrp: c.sku.mrp, bestBefore: c.batch.bestBefore,
-        status: o ? "ordered" : "expired", why: o ? null : filled ? "filled" : "time", units: o ? o.units : 0, orderedAt: o ? stepAt(c, "orders") : null, van: o ? stepAt(c, "van") : null, m: o ? scheme(o.units, kl.packPrice, c.sku.mrp) : null };
+        status: o ? "ordered" : "expired", why: o ? null : filled ? "filled" : "time", units: o ? o.units : 0, orderedAt: o ? o.at || stepAt(c, "orders") : null, van: o ? stepAt(c, "van") : null, m: o ? scheme(o.units, kl, c.sku) : null, invoice: o ? o.invoice || null : null };
     }).sort((a, z) => (a.sent < z.sent ? 1 : -1));
     const h = state.hero;
     if (shop.distributor !== HERO.distributor || !h.offer) return past;
@@ -405,7 +457,7 @@
     const last = h.orders.reduce((t, x) => (x.at > t ? x.at : t), "00:00");
     return [{ ref: HERO.id, story: true, open: !filled, sku, dist: D.DISTRIBUTORS[HERO.distributor], sent, closed: filled ? `${D.DAY0}T${last}` : plusHours(sent, 48), share: shop.sales14 * cap, pack: KL.packPrice, mrp: sku.mrp, bestBefore: HERO.bestBefore,
       status, why: status === "expired" ? "filled" : null, declinedAt: dec ? `${D.DAY0}T${dec.at}` : null, units: o ? o.units : 0, orderedAt: o ? `${D.DAY0}T${o.at}` : null,
-      van: o && h.van.status === "done" ? D.addDays(D.DAY0, 4) + "T09:00" : null, m: o ? scheme(o.units, KL.packPrice, sku.mrp) : null }].concat(past);
+      van: o && h.van.status === "done" ? D.addDays(D.DAY0, 4) + "T09:00" : null, m: o ? scheme(o.units, KL, sku) : null, invoice: o ? storyInvoices(state).find(x => x.kirana === shop.id) || null : null }].concat(past);
   }
 
   // a food bank's pickups: the story's Mango Drink while it is coming or once collected, then the donations it collected
@@ -437,7 +489,7 @@
     return { ref: HERO.id, sku: HERO.sku, dist: HERO.distributor, flagged: D.DAY0, phase: h.phase, units: D.PLAN.units, shelf: HERO.shelf || null,
       photo: h.photo.status, approved: ROUTED.includes(h.phase), lines: h.plan ? linesOf(D.PLAN) : [],
       offer: h.offer ? { open: h.offer.status === "sent" && units < D.PLAN.lines.find(l => l.id === "kirana").units, offered: D.OFFERED, shops: h.orders.length, units } : null,
-      shops: h.orders.map(o => ({ kirana: o.id, units: o.units, at: `${D.DAY0}T${o.at}` })),
+      shops: storyInvoices(state).map(x => ({ kirana: x.kirana, units: x.units, at: x.at, invoice: { no: x.no, total: x.total, tax: x.tax } })),
       listing: h.listing ? { id: D.JOURNEY.listing.id } : null, award: h.award ? { price: D.COUNTER.price, token: D.AWARD.token } : null, awardAt: h.award && h.award.at ? `${D.DAY0}T${h.award.at}` : null,
       truck: h.truck.status === "dispatched", van: h.van.status === "done", papers: !!h.docs,
       invoice: h.docs ? { no: D.INVOICE.no, total: D.INVOICE.total, issued: !!h.invoiceIssued } : null,
@@ -519,20 +571,25 @@
   // what a batch in a journey has sold so far: the buyer's lot, the kiranas' orders, the staff sale, the food bank
   function ordersNow(n, shopName, w) {
     w = w || WORLD;
-    const shops = n.shops.map(k => ({ name: shopName(k.kirana), units: k.units, at: k.at || null }));
+    const shops = n.shops.map(k => ({ name: shopName(k.kirana), units: k.units, at: k.at || null, invoice: k.invoice || null }));
     const sku = w.skus[n.sku], dist = w.distributors[n.dist], out = [], o = n.offer;
     const line = id => n.lines.find(l => l.id === id) || null;
     const kl = line("kirana"), es = line("expiresoon"), st = line("staff"), fb = line("foodbank");
     if (es && n.award) out.push({ id: "expiresoon", units: es.units, who: `${w.buyer.name}, ${w.buyer.city}`, what: `lot ${n.listing ? n.listing.id : ""} · ${num(es.units)} × ${rate(n.award.price)}`,
       sub: `token ${inr(n.award.token)} · balance ${inr(Math.round((es.units * n.award.price - n.award.token) * 100) / 100)} · ${n.truck ? "collected by the buyer's truck" : "the buyer's truck collects"}`,
       amount: Math.round(es.units * n.award.price * 100) / 100, at: n.awardAt || null, paper: n.invoice ? { no: n.invoice.no, label: n.invoice.issued ? "issued from Tally" : "drafted by the Paperwork agent", issue: !n.invoice.issued } : null });
-    if (kl && o && o.shops) { const amount = Math.round(shops.reduce((t, k) => t + scheme(k.units, kl.packPrice, sku.mrp).pay, 0) * 100) / 100;
+    if (kl && o && o.shops) { const amount = Math.round(shops.reduce((t, k) => t + M.kiranaInvoice(k.units, kl, sku).taxable, 0) * 100) / 100;
       out.push({ id: "kirana", units: o.units, who: `${o.shops} ${o.shops === 1 ? "kirana" : "kiranas"}`, what: schemeWhat(o.units, amount, kl.packPrice, w.scheme),
         sub: n.van ? `delivered on ${n.round ? `the ${n.round.day} round` : "the van round"}` : n.round ? `on the ${n.round.day} round, ${n.round.date}` : "on the van round once the papers are drafted",
-        amount, at: shops.reduce((t, k) => (k.at && (!t || k.at > t) ? k.at : t), null), shops }); }
+        amount, at: shops.reduce((t, k) => (k.at && (!t || k.at > t) ? k.at : t), null), shops, invoices: invoicesLine(shops) }); }
     if (st && n.staff && n.staff.status === "recorded" && n.staff.sold) out.push({ id: "staff", units: n.staff.sold, who: "Your staff sale", what: `${num(n.staff.sold)} packs at ${rate(st.price)}`, sub: `at ${dist.godown}`, amount: Math.round(n.staff.sold * st.price * 100) / 100, at: null });
     if (fb && n.donation && n.donation.status === "collected") out.push({ id: "foodbank", units: fb.units, who: n.donation.partner, what: `${num(fb.units)} packs given`, sub: "the receipt is in the batch's papers", amount: 0, at: null });
     return out;
+  }
+  // a scheme's invoices, as its row names them: how many, from the first number to the last, and the GST he collected
+  function invoicesLine(shops) {
+    const v = shops.map(k => k.invoice).filter(Boolean); if (!v.length) return null;
+    return { n: v.length, first: v[0].no, last: v[v.length - 1].no, tax: r2(v.reduce((t, x) => t + x.tax, 0)), total: r2(v.reduce((t, x) => t + x.total, 0)) };
   }
   // a cleared batch's orders: the lot the buyer took, the kiranas' scheme, the staff sale, what went to the food bank
   function ordersPast(c, shopName, w) {
@@ -545,7 +602,8 @@
       amount: Math.round(es.units * c.award.price * 100) / 100, at: stepAt(c, "accept"), paper: inv ? { no: inv.no, label: issued ? "issued from Tally" : "drafted" } : null });
     if (kl) out.push({ id: "kirana", units: kl.units, who: `${c.kiranas.length} ${c.kiranas.length === 1 ? "kirana" : "kiranas"}`, what: schemeWhat(kl.units, kl.gross, planned(c, "kirana").packPrice, w.scheme),
       sub: `${c.kirana && c.kirana.ordered < c.kirana.planned ? `of ${num(c.kirana.planned)} offered · ` : ""}${stepAt(c, "van") ? `delivered on the ${weekday(stepAt(c, "van"))} round` : "delivered on the van round"}`,
-      amount: kl.gross, at: stepAt(c, "orders"), shops: c.kiranas.map(k => ({ name: shopName(k.kirana), units: k.units, at: k.at || null })) });
+      amount: kl.gross, at: stepAt(c, "orders"), shops: c.kiranas.map(k => ({ name: shopName(k.kirana), units: k.units, at: k.at || null, invoice: k.invoice ? { no: k.invoice.no, total: k.invoice.total, tax: k.invoice.tax } : null })) });
+    const row = out.find(x => x.id === "kirana"); if (row) row.invoices = invoicesLine(row.shops);
     if (st) out.push({ id: "staff", units: st.units, who: "Your staff sale", what: `${num(st.units)} packs at ${rate(st.price)}`, sub: `at ${w.distributors[c.dist].godown}`, amount: st.gross, at: stepAt(c, "staff") });
     if (fb) out.push({ id: "foodbank", units: fb.units, who: c.partner ? c.partner.name : "The food bank", what: `${num(fb.units)} packs given`, sub: c.receipt ? `receipt ${c.receipt.no} · a copy in the batch's papers` : "", amount: 0, at: stepAt(c, "collect") });
     return out;
@@ -572,7 +630,7 @@
   const WORLD = { skus: D.SKUS, distributors: D.DISTRIBUTORS, buyer: D.BUYER, scheme: M.RULES.scheme, short: C };
   // the history's cases as partner facts name them: a shop by its id
   const shopName = id => (D.KIRANAS.find(k => k.id === id) || W.KIRANAS.find(k => k.id === id) || { name: id }).name;
-  const historyFacts = c => Object.assign({}, c, { sku: c.sku.id || c.sku, dist: c.dist.id || c.dist, kiranas: c.kiranas.map(k => ({ kirana: k.kirana, units: k.units, at: k.at })) });
+  const historyFacts = c => Object.assign({}, c, { sku: c.sku.id || c.sku, dist: c.dist.id || c.dist, kiranas: c.kiranas.map(k => ({ kirana: k.kirana, units: k.units, at: k.at, invoice: k.invoice })) });
 
   // ---------- a batch's record (SC-142): the photos sent for it, the human yeses and the audit trail ----------
   // backend-api writes the trail from the case's feed (each agent's run) and the audit log (each person's decision, in
@@ -663,8 +721,43 @@
   }
   const record = { recordOf, storyRecord, photosOf, storyPhotos, YES };
 
-  const partners = { distBatches, distPapers, moments, whole, sumOf, sumsOf, storyMoments, storyWhole, scheme, offersFor, pickupsFor, fssaiItems, stepAt, plusHours,
-    STOP, distNow, journeyOf, journeys, ordersNow, ordersPast, deliveriesPast, photoOf, shopName, historyFacts, WORLD };
+  const partners = { distBatches, distPapers, moments, whole, sumOf, sumsOf, storySum, sumsAt, storyMoments, storyWhole, scheme, offersFor, pickupsFor, fssaiItems, stepAt, plusHours,
+    STOP, distNow, journeyOf, journeys, ordersNow, ordersPast, deliveriesPast, photoOf, shopName, historyFacts, WORLD, storyInvoices, invoicesOf };
 
-  window.SC3_LEDGER = { HISTORY, STORY_CLEARED, historyCase, storyCase, caseOf, rowOf, rowsOf, totals, periods, ledger, ordersOf, outcomeOf, MIX, partners, record };
+  /* ---------- the Impact dashboard (SC-157): a period's figures drawn from its rows ---------- */
+  // the kilos by the week each batch cleared, by distributor, by product and by channel, and the period before, all from
+  // the ledger's rows; the screens (design3 finance.jsx, core's Svelte) read this, and core's ledger.ts is held to it
+  const MS = 864e5;
+  const CH = ["kirana", "expiresoon", "staff", "d2c", "foodbank", "writeoff"];
+  function dashboard(book, pid) {
+    const periods = book.periods; const p = periods.find(x => x.id === pid) || periods[periods.length - 1];
+    const rows = book.batches.filter(r => r.cleared >= p.from && r.cleared <= p.to);
+    const qs = periods.filter(x => x.kind === "quarter"); const qi = qs.findIndex(x => x.id === p.id);
+    const prev = p.kind === "quarter" && qi > 0 ? qs[qi - 1] : null;
+    const end = p.current ? book.today : p.to;
+    // the weeks run from the period's start, or from the first batch the workspace cleared when that came later (the
+    // year starts in April; the workspace since July), in whole weeks
+    const firstEver = book.batches.length ? Date.parse(book.batches[0].cleared) : Date.parse(p.from);
+    const d0 = Math.max(Date.parse(p.from), firstEver - ((firstEver - Date.parse(p.from)) % (7 * MS))), dEnd = Date.parse(end);
+    const weeks = [];
+    for (let t = d0; t <= dEnd; t += 7 * MS) weeks.push({ from: new Date(t).toISOString().slice(0, 10), kept: 0, resold: 0, donated: 0, destroyed: 0, closed: 0, net: 0, meals: 0 });
+    rows.forEach(r => { const i = Math.min(weeks.length - 1, Math.floor((Date.parse(r.cleared) - d0) / (7 * MS))); const w = weeks[i]; const F = r.figures; w.kept = r2(w.kept + F.kg); w.resold = r2(w.resold + F.resoldKg); w.donated = r2(w.donated + F.donatedKg); w.destroyed = r2(w.destroyed + F.destroyedKg); w.closed += 1; w.net = r2(w.net + F.net); w.meals += F.meals; });
+    const group = key => { const by = {}; rows.forEach(r => { const k = r[key]; by[k] = by[k] || { label: k, img: r.img, resold: 0, donated: 0, destroyed: 0, batches: 0 }; by[k].resold = r2(by[k].resold + r.figures.resoldKg); by[k].donated = r2(by[k].donated + r.figures.donatedKg); by[k].destroyed = r2(by[k].destroyed + r.figures.destroyedKg); by[k].batches += 1; }); return Object.values(by).map(x => Object.assign(x, { kept: r2(x.resold + x.donated) })).sort((a, b) => b.kept - a.kept || (a.label < b.label ? -1 : 1)); };
+    const mix = {}; rows.forEach(r => { const per = (r.figures.kg + r.figures.destroyedKg) / (r.figures.units || 1); r.lines.forEach(l => (mix[l.id] = (mix[l.id] || 0) + l.units * per)); mix.writeoff = (mix.writeoff || 0) + r.figures.destroyedKg; });
+    const mixKg = CH.filter(id => mix[id] > 0).map(id => [id, Math.round(mix[id] * 10) / 10]);
+    const t = p.totals, tPrev = prev ? prev.totals : null;
+    const share = t.kg + t.destroyedKg ? Math.round((t.kg / (t.kg + t.destroyedKg)) * 1000) / 10 : null;
+    return { pid: p.id, prev: prev ? prev.id : null, rows: rows.map(r => r.ref), weeks, byDist: group("distributorName"), bySku: group("name"), mixKg, share, end };
+  }
+  // the period the Command Center's Impact card reads (SC-157): the current quarter once a batch has cleared in it,
+  // else the latest quarter that has one, else the year so far
+  function impactPeriod(book) {
+    const qs = book.periods.filter(x => x.kind === "quarter");
+    const cur = qs.find(x => x.current);
+    if (cur && cur.totals.batches) return cur;
+    const withBatches = qs.filter(x => x.totals.batches);
+    return withBatches[withBatches.length - 1] || book.periods[book.periods.length - 1];
+  }
+
+  window.SC3_LEDGER = { HISTORY, STORY_CLEARED, historyCase, storyCase, caseOf, rowOf, rowsOf, totals, periods, ledger, ordersOf, outcomeOf, MIX, partners, record, KIRANA_START, storyInvoices, invoicesOf, dashboard, impactPeriod };
 })();

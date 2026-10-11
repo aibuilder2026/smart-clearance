@@ -43,6 +43,20 @@ for (const [who, screens] of PEOPLE)
 		await report(testInfo, findings);
 	});
 
+test("workspace · Priya's Impact reading (SC-157): the dashboard, its table, and the Command Center's card", async ({
+	page
+}, testInfo) => {
+	await openWorkspace(page, '/report?reading=impact', { as: 'priya' });
+	await expect(page.getByText('Food, by week')).toBeVisible();
+	const findings: Finding[] = [...(await scan(page, 'priya · /report · Impact'))];
+	await page.getByRole('button', { name: 'Show as a table' }).click();
+	await expect(page.getByText('Week of')).toBeVisible();
+	findings.push(...(await scan(page, 'priya · /report · Impact as a table')));
+	await go(page, '/command');
+	await expect(page.getByRole('button', { name: 'Open the ledger' })).toBeVisible();
+	findings.push(...(await scan(page, 'priya · /command · the Impact card')));
+	await report(testInfo, findings);
+});
 const dialog = (page: Page, name: string | RegExp) => page.getByRole('dialog', { name });
 /** a sheet opens with a spring; scan it once it has settled */
 const settled = (page: Page) => page.waitForTimeout(500);
@@ -241,6 +255,9 @@ test('Execution with every order in and the lot awarded', async ({ page }, testI
 	// the Lister's raw call, opened from its card (SC-151): the request and the response
 	await page.getByRole('button', { name: 'The API call' }).click();
 	await expect(page.getByRole('button', { name: 'The API call' })).toHaveAttribute('aria-expanded', 'true');
+	// the Outreach card's push, as sent (SC-156), behind its own button
+	await page.getByRole('button', { name: 'The push, as sent' }).click();
+	await expect(page.getByRole('button', { name: 'The push, as sent' })).toHaveAttribute('aria-expanded', 'true');
 	await hold(page);
 	findings.push(...(await scanHeld(page, "Execution · the Lister's API call open")));
 	await report(testInfo, findings);

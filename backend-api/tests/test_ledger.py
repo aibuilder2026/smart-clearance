@@ -119,7 +119,7 @@ async def test_paperwork_is_asked_only_for_the_pdfs_still_missing(ctx):
     """SC-125: a paper drafted before its template existed (the expiry credit note), or whose PDF failed, is laid out
     on request; a batch whose papers all have theirs, or lack one only for a record (the client's own destruction
     certificate), is left alone. The agency's certificate of packs destroyed at his godown is laid out too (SC-139),
-    once it is issued"""
+    once it is issued. Each kirana's tax invoice is its own PDF (SC-153), asked for where it has none"""
     from sqlalchemy import select
 
     from sc_api import models as m
@@ -131,15 +131,25 @@ async def test_paperwork_is_asked_only_for_the_pdfs_still_missing(ctx):
     sold = next(b["ref"] for b in H["batches"] if b["outcome"] == "sold")
     agency = lambda d: d["id"] == "destruction" and d.get("at") == "godown"  # noqa: E731
     assert any(agency(d) for d in cases[leftover].docs)
-    for ref in (sold, leftover):  # every paper laid out, but the leftover's certificate
+    orders = lambda ref: select(m.CaseOrder).where(m.CaseOrder.case_id == cases[ref].id)  # noqa: E731
+    for ref in (sold, leftover):  # every paper laid out, but the leftover's certificate; its kiranas' invoices too
         pdf = lambda d, ref=ref: None if agency(d) else f"munchly/{ref}/{d['id']}.pdf"  # noqa: E731
         cases[ref].docs = [{**d, "pdf": pdf(d)} for d in cases[ref].docs]
+        for o in (await ctx.session.execute(orders(ref))).scalars():
+            assert o.invoice and o.invoice["no"].startswith(("RT/26-27/", "LA/26-27/"))
+            o.invoice = {**o.invoice, "pdf": f"munchly/{ref}/kirana-{o.kirana_id}.pdf"}
     await ctx.session.flush()
     asked = await steps.lay_out_missing(ctx, "munchly")
     assert set(asked) == REFS - {sold}
     sent = (await ctx.session.execute(select(m.Outbox).where(m.Outbox.published_wall.is_(None)))).scalars().all()
     settles = [o.payload["ref"] for o in sent if o.payload.get("type") == "settle" and o.payload.get("ref") in asked]
     assert sorted(set(settles)) == asked
+    # each kirana's invoice without its PDF, every history batch's but those laid out
+    kiranas = [(o.payload["ref"], o.payload["kirana"]) for o in sent if o.payload.get("type") == "kirana"]
+    with_orders = {b["ref"] for b in H["batches"] if (b.get("kirana") or {}).get("ordered")}
+    assert {r for r, _ in kiranas} == with_orders - {sold, leftover}
+    placed = [len((await ctx.session.execute(orders(r))).scalars().all()) for r in with_orders - {sold, leftover}]
+    assert len(kiranas) == len(set(kiranas)) == sum(placed)
     # a certificate still awaiting the agency's is not laid out
     cases[leftover].docs = [{**d, "status": "awaiting"} if agency(d) else d for d in cases[leftover].docs]
     await ctx.session.flush()

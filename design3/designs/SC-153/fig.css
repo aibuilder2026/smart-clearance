@@ -1,0 +1,27 @@
+/* SC-153's mockups: the pieces the options add, on the kit's tokens */
+/* a shop's order as a button, its invoice under it (option A) */
+.dist-shops.sk-shops { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 4px 12px; padding: 6px; }
+.sk-shop { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 8px; min-height: 44px; padding: 8px 10px; border: 0; border-radius: 10px; background: transparent; color: inherit; font: inherit; font-size: 13px; text-align: left; cursor: pointer; transition: background-color var(--t-fast) var(--ease); }
+.sk-shop:hover { background: var(--surface); }
+.sk-shop:focus-visible { outline: 3px solid var(--ring); outline-offset: -3px; }
+.sk-shop b { font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sk-shop em { grid-row: 2; font-style: normal; font-size: 12px; color: var(--fg-2); }
+.sk-shop > .tnum { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+.sk-shop .sk-no { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 8px; margin-top: 4px; padding-top: 4px; border-top: var(--hair) solid var(--line); font-size: 12px; color: var(--fg-2); }
+.sk-shop .sk-no .mono { font-family: var(--font-mono); font-size: 11.5px; color: var(--primary-text); }
+/* the shops with a PDF each (option C) */
+.sk-pdfs { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 4px 12px; margin-top: 6px; padding: 6px; border-radius: 12px; background: var(--fill); }
+.sk-pdf { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0 8px; min-height: 44px; padding: 6px 10px; border-radius: 10px; font-size: 13px; }
+.sk-pdf b { font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sk-pdf em { grid-row: 2; font-style: normal; font-size: 12px; color: var(--fg-2); }
+.sk-pdf .mono { font-family: var(--font-mono); font-size: 11.5px; }
+.sk-pdf .btn { grid-column: 2; grid-row: 1 / span 2; }
+/* the sales register, on paper */
+.skr .skr-table td, .skr .skr-table th { white-space: nowrap; }
+.skr .skr-table td:nth-child(3) { white-space: normal; }
+.skr .pt-link { font-size: inherit; padding: 0; min-height: 0; }
+.skr-wrap { overflow-x: auto; }
+/* the kirana's bill book (option B) */
+.sk-bill { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; }
+.sk-bill .mono { font-family: var(--font-mono); font-size: 12.5px; }
+.sk-inline { margin-top: 4px; }

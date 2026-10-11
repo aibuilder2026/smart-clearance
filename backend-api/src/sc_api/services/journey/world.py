@@ -130,6 +130,9 @@ def sku_obj(x: m.Sku) -> dict[str, Any]:
     return out
 
 
+DIST_IDENTITY = ("stateCode", "pan", "fssai", "email", "bank")
+
+
 def dist_obj(d: m.Distributor) -> dict[str, Any]:
     return {
         "id": d.id,
@@ -140,6 +143,8 @@ def dist_obj(d: m.Distributor) -> dict[str, Any]:
         "godown": d.godown or f"{d.city} godown",
         "address": d.address,
         "gstin": d.gstin,
+        # his invoice's identity beside it (SC-148): the PAN, state code, FSSAI licence, e-mail and bank
+        **{k: (d.details or {}).get(k) for k in DIST_IDENTITY},
         "kiranas": d.kiranas,
         "cluster": d.cluster or d.city,
         "territory": d.territory or d.city,

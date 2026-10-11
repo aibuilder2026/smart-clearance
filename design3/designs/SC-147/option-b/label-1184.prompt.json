@@ -1,0 +1,9 @@
+{
+  "model": "Qwen-Image 2.1 (bf16), text to image, local (qwen-image-bf16 0.2.0), the blank base only",
+  "seed": 14702,
+  "size": 1024,
+  "aspect": "4:3",
+  "prompt": "A realistic close-up smartphone photo of the plain side of a brown corrugated cardboard shipping carton in a distributor's godown, nothing printed on it, visible corrugation texture and a strip of brown packing tape along the top edge, even daylight, the camera square on to the carton side, sharp focus, natural colours.",
+  "post": "codes/label.py option b drawn as HTML (the codes from codes/codes.py), printed onto the base by codes/compose.mjs: rendered at 2x, multiplied into the print box with a 0.55 px blur, every code read back with Chromium's BarcodeDetector; cwebp -q 86",
+  "purpose": "SC-147 option B, the printed shipper carton with its inkjet box: the label photo for batch MF-2409-117, every company, number and code fictional"
+}

@@ -55,54 +55,185 @@
     </div>;
   }
 
+  /* ---------- the GST papers in Tally's layout (SC-148, option B): the tax invoice with its e-invoice, the credit notes.
+     Bordered blocks side by side where there is room, stacked on a phone; the PDF is the same paper on A4. The IRN,
+     acknowledgement and signed QR are worked out from the issued invoice and its parties (core/papers.js) ---------- */
+  const PA = () => window.SC3_PAPERS;
+  // when the tax invoice was issued from Tally: the live workspace's paper says so, a history batch on its invoice step,
+  // the story's once Rakesh bhai issues it
+  const issuedWhen = (c, inv, st) => (!inv ? null : inv.status === "issued" ? inv.issuedAt || `${inv.date}T11:00` : c.history ? c.invoiceIssuedAt || null : st && st.hero.invoiceIssued ? `${inv.date}T11:00` : null);
+  const n2 = n => (n < 0 ? "-" : "") + Math.abs(n).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const dmy = iso => (iso ? `${iso.slice(8, 10)}/${iso.slice(5, 7)}/${iso.slice(0, 4)}` : "");
+  const Cell = ({ k, children, className }) => <div className={cx("tl-cell", className)}>{k && <em>{k}</em>}{children}</div>;
+  const Party = ({ k, p, extra }) => <Cell k={k}><b>{p.name}</b><br />{p.address}<br />GSTIN/UIN: {p.gstin || "Unregistered"}<br />State Name: {p.state}, Code: {p.stateCode}{extra}</Cell>;
+  function SignedQR({ text }) { const q = PA().qrPath(PA().qr(text, "L")); return <svg viewBox={q.viewBox} role="img" aria-label="The e-invoice's signed QR code" shapeRendering="crispEdges"><rect width="100%" height="100%" fill="#fff" /><path d={q.d} fill="#111" /></svg>; }
+  // the tax invoice the distributor issues from Tally for the ExpireSoon lot: inter-state, so IGST; once issued, its
+  // e-invoice block (a B2B supply by a distributor over ₹5 crore of turnover)
+  function TallyInvoice({ c, inv, issuedAt }) {
+    const R = c.dist, B = c.buyer, sku = c.sku, inter = R.stateCode !== B.stateCode, lot = c.listing ? c.listing.id : (c.numbers && c.numbers.listing) || "";
+    const e = issuedAt ? PA().einvoice({ no: inv.no, date: inv.date, issuedAt, total: inv.total, hsn: sku.hsn }, R, B) : null;
+    const tax = inter ? [[`IGST @ ${inv.gstPct}%`, inv.igst]] : [[`CGST @ ${inv.gstPct / 2}%`, inv.igst / 2], [`SGST @ ${inv.gstPct / 2}%`, inv.igst / 2]];
+    const token = c.award && c.award.token;
+    return <div className="paper tl">
+      <div className="tl-title">Tax Invoice</div>
+      <div className="tl-copy">{e ? "(ORIGINAL FOR RECIPIENT)" : `(DRAFT, for ${R.short || R.name} to issue from Tally)`}</div>
+      {e ? <div className="tl-grid"><Cell className="tl-einv"><div><b>e-Invoice</b><br /><span className="tl-small">IRN:</span> <span className="tl-mono">{e.irn}</span><br /><b>Ack No.:</b> {e.ackNo} &nbsp; <b>Ack Date:</b> {dmy(e.ackDate.slice(0, 10))} {e.ackDate.slice(11, 16)}<br /><span className="tl-small">Signed QR code from the Invoice Registration Portal (its signature illustrative)</span></div><SignedQR text={e.signed} /></Cell></div>
+        : <div className="tl-grid"><Cell><b>e-Invoice</b> <span className="tl-small">· the IRN and the signed QR code come from the Invoice Registration Portal once {R.short || R.name} issues it</span></Cell></div>}
+      <div className="tl-grid tl-two">
+        <Party p={R} extra={<>{R.fssai && <><br />FSSAI Lic. No.: {R.fssai}</>}{R.email && <><br />E-Mail: {R.email}</>}</>} />
+        <div className="tl-meta">
+          <Cell k="Invoice No."><b>{inv.no}</b></Cell><Cell k="Dated"><b>{dmy(inv.date)}</b></Cell>
+          <Cell k="Delivery Note">{lot}</Cell><Cell k="Mode/Terms of Payment">{token ? `Token ₹${M.fmt.num(token)} paid; balance in ${D.MARKET.balanceHours} h` : `Balance in ${D.MARKET.balanceHours} h`}</Cell>
+          <Cell k="Buyer's Order No.">ExpireSoon lot {lot}</Cell><Cell k="Dated">{dmy(inv.date)}</Cell>
+          <Cell k="Dispatched through">Buyer's own truck</Cell><Cell k="Destination">{B.city}</Cell>
+        </div>
+      </div>
+      <div className="tl-grid tl-two">
+        <Party k="Consignee (Ship to)" p={B} />
+        <Cell k="Terms of Delivery" className="tl-tall">Ex-godown, {R.godown}, {R.city}<em style={{ marginTop: 8 }}>Reverse charge</em>No<em style={{ marginTop: 8 }}>E-way bill</em>{inv.total < M.RULES.ewayThreshold ? `Not required: the consignment is under ₹${M.fmt.num(M.RULES.ewayThreshold)}` : "Generated with the dispatch"}</Cell>
+        <Party k="Buyer (Bill to)" p={B} extra={<><br />Place of Supply: {B.state} ({B.stateCode})</>} />
+      </div>
+      <table className="tl-table tl-items"><thead><tr><th>Sl</th><th>Description of Goods</th><th>HSN/SAC</th><th>Quantity</th><th>Rate</th><th>per</th><th>Amount</th></tr></thead><tbody>
+        <tr><td>1</td><td><b>{sku.brand} {sku.name}</b><br /><span className="tl-small">Batch {c.batch.id} · best before {dmy(c.batch.bestBefore)} · MRP ₹{sku.mrp.toFixed(2)} a pack, incl. of all taxes</span>{tax.map(([k]) => <div key={k} className="tl-num" style={{ marginTop: 6 }}><b>{k}</b></div>)}<div className="tl-num">Round off</div></td>
+          <td>{sku.hsn}</td><td className="tl-num"><b>{M.fmt.num(inv.units)} PCS</b></td><td className="tl-num">{inv.price.toFixed(2)}</td><td>PCS</td>
+          <td className="tl-num">{n2(inv.taxable)}{tax.map(([k, v]) => <div key={k} style={{ marginTop: 6 }}><b>{n2(v)}</b></div>)}<div>{n2(inv.roundOff)}</div></td></tr>
+        <tr><td /><td className="tl-num"><b>Total</b></td><td /><td className="tl-num"><b>{M.fmt.num(inv.units)} PCS</b></td><td /><td /><td className="tl-num"><b>₹ {n2(inv.total)}</b></td></tr>
+        <tr><td colSpan={7}>Amount Chargeable (in words)<br /><b>{PA().words(inv.total)}</b></td></tr>
+      </tbody></table>
+      <table className="tl-table"><thead><tr><th>HSN/SAC</th><th>Taxable Value</th>{tax.map(([k]) => <th key={k}>{k.split(" @")[0]} · Rate</th>)}{tax.map(([k]) => <th key={k + "a"}>Amount</th>)}<th>Total Tax</th></tr></thead><tbody>
+        <tr><td>{sku.hsn}</td><td className="tl-num">{n2(inv.taxable)}</td>{tax.map(([k]) => <td key={k} className="tl-num">{k.split("@ ")[1]}</td>)}{tax.map(([k, v]) => <td key={k + "a"} className="tl-num">{n2(v)}</td>)}<td className="tl-num">{n2(inv.igst)}</td></tr>
+        <tr><td colSpan={2 + tax.length * 2 + 1}>Tax Amount (in words): <b>{PA().words(inv.igst)}</b></td></tr>
+      </tbody></table>
+      <div className="tl-grid tl-two">
+        <Cell>Company's PAN: <b>{R.pan}</b><em style={{ marginTop: 8 }}>Declaration</em>We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct. Goods sold within their best-before date, under the brand's one-time permission.</Cell>
+        <Cell k="Company's Bank Details">{R.bank ? <>Bank Name: {R.bank.name}<br />A/c No.: {R.bank.account}<br />Branch &amp; IFS Code: {R.bank.ifsc}</> : null}<div className="tl-sign">for <b>{R.name}</b></div><div className="tl-num">Authorised Signatory</div></Cell>
+      </div>
+      <div className="tl-foot">SUBJECT TO {(R.city || "").toUpperCase()} JURISDICTION · This is a Computer Generated Invoice</div>
+    </div>;
+  }
+  // the tax invoice the distributor issues from Tally for one shop's scheme order (SC-153): a B2C supply within the
+  // state, so CGST and SGST and no IRN; every packet at the pack price, less the scheme's discount (money.js
+  // kiranaInvoice). `inv` is the order's invoice with its shop; `c` the batch's case
+  function KiranaInvoice({ c, inv }) {
+    const R = c.dist, k = inv.shop, sku = c.sku, half = inv.gstPct / 2, sc = M.RULES.scheme;
+    const rows = [[`Less: Scheme discount, buy ${sc.buy} get ${sc.free} free`, `${n2(inv.discountPct)}%`, -inv.discount], [`CGST @ ${half}%`, "", inv.cgst], [`SGST @ ${half}%`, "", inv.sgst], ["Round off", "", inv.roundOff]];
+    return <div className="paper tl">
+      <div className="tl-title">Tax Invoice</div>
+      <div className="tl-copy">(ORIGINAL FOR RECIPIENT)</div>
+      <div className="tl-grid tl-two">
+        <Party p={R} extra={<>{R.fssai && <><br />FSSAI Lic. No.: {R.fssai}</>}{R.email && <><br />E-Mail: {R.email}</>}</>} />
+        <div className="tl-meta">
+          <Cell k="Invoice No."><b>{inv.no}</b></Cell><Cell k="Dated"><b>{dmy(inv.date)}</b></Cell>
+          <Cell k="Buyer's Order No.">Scheme order, {inv.at.slice(11, 16)}</Cell><Cell k="Mode/Terms of Payment">Cash on delivery</Cell>
+          <Cell k="Dispatched through">Own van, the scheme's round</Cell><Cell k="Destination">{k.area}</Cell>
+        </div>
+      </div>
+      <div className="tl-grid tl-two">
+        <Cell k="Buyer (Bill to and Ship to)"><b>{k.name}</b><br />{k.area}, {R.city}{k.pincode ? ` ${k.pincode}` : ""}, {R.state}<br />GSTIN/UIN: Unregistered<br />State Name: {R.state}, Code: {R.stateCode}<br />Place of Supply: {R.state} ({R.stateCode})</Cell>
+        <Cell k="Terms of Delivery">Door delivery on the van round<em style={{ marginTop: 8 }}>Reverse charge</em>No<em style={{ marginTop: 8 }}>E-way bill</em>Not required: within {R.city}, under ₹{M.fmt.num(M.RULES.ewayThreshold)}</Cell>
+      </div>
+      <table className="tl-table tl-items"><thead><tr><th>Sl</th><th>Description of Goods</th><th>HSN/SAC</th><th>Quantity</th><th>Rate</th><th>per</th><th>Amount</th></tr></thead><tbody>
+        <tr><td>1</td><td><b>{sku.brand} {sku.name}</b><br /><span className="tl-small">Batch {c.batch.id} · best before {dmy(c.batch.bestBefore)} · MRP ₹{sku.mrp.toFixed(2)} a pack, incl. of all taxes</span></td>
+          <td>{inv.hsn || sku.hsn}</td><td className="tl-num"><b>{M.fmt.num(inv.units)} PCS</b></td><td className="tl-num">{inv.rate.toFixed(2)}</td><td>PCS</td><td className="tl-num">{n2(inv.gross)}</td></tr>
+        {rows.map(([t, pct, v]) => <tr key={t} className="tl-sub"><td /><td className="tl-right"><b>{t}</b></td><td /><td /><td className="tl-num">{pct}</td><td /><td className="tl-num">{n2(v)}</td></tr>)}
+        <tr><td /><td className="tl-num"><b>Total</b></td><td /><td className="tl-num"><b>{M.fmt.num(inv.units)} PCS</b></td><td /><td /><td className="tl-num"><b>₹ {n2(inv.total)}</b></td></tr>
+        <tr><td colSpan={7}>Amount Chargeable (in words)<br /><b>{PA().words(inv.total)}</b></td></tr>
+      </tbody></table>
+      <table className="tl-table"><thead><tr><th>HSN/SAC</th><th>Taxable Value</th><th>CGST · Rate</th><th>Amount</th><th>SGST · Rate</th><th>Amount</th><th>Total Tax</th></tr></thead><tbody>
+        <tr><td>{inv.hsn || sku.hsn}</td><td className="tl-num">{n2(inv.taxable)}</td><td className="tl-num">{half}%</td><td className="tl-num">{n2(inv.cgst)}</td><td className="tl-num">{half}%</td><td className="tl-num">{n2(inv.sgst)}</td><td className="tl-num">{n2(inv.tax)}</td></tr>
+        <tr><td colSpan={7}>Tax Amount (in words): <b>{PA().words(inv.tax)}</b></td></tr>
+      </tbody></table>
+      <div className="tl-grid tl-two">
+        <Cell>Company's PAN: <b>{R.pan}</b><em style={{ marginTop: 8 }}>Declaration</em>We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct. Sold under {W.short}'s scheme, within the best-before date.</Cell>
+        <Cell k="Company's Bank Details">{R.bank ? <>Bank Name: {R.bank.name}<br />A/c No.: {R.bank.account}<br />Branch &amp; IFS Code: {R.bank.ifsc}</> : null}<div className="tl-sign">for <b>{R.name}</b></div><div className="tl-num">Authorised Signatory</div></Cell>
+      </div>
+      <div className="tl-foot">SUBJECT TO {(R.city || "").toUpperCase()} JURISDICTION · This is a Computer Generated Invoice</div>
+    </div>;
+  }
+  // a batch's invoices to its shops as Tally's sales register: a row each, its number opening the invoice, and the
+  // totals; the taxable value is what the scheme sold
+  function KiranaRegister({ c, list, onOpen }) {
+    const R = c.dist, add = k => r2(list.reduce((t, x) => t + x[k], 0)), kl = c.lines.kirana;
+    return <div className="paper tl tl-reg">
+      <div className="tl-title">Sales Register</div>
+      <div className="tl-copy">{R.name} · tax invoices to kiranas · {c.sku.brand} {c.sku.name}, batch {c.batch.id}</div>
+      <table className="tl-table"><thead><tr><th>Date</th><th>Invoice No.</th><th>Particulars</th><th>Packs</th><th>Taxable</th><th className="tl-gst">CGST</th><th className="tl-gst">SGST</th><th>Total</th></tr></thead><tbody>
+        {list.map(x => <tr key={x.no}><td className="tl-num">{dmy(x.date).slice(0, 5)}</td><td>{onOpen ? <button type="button" className="tl-link" onClick={() => onOpen(x)}>{x.no}</button> : x.no}</td><td>{x.shop.name}</td><td className="tl-num">{x.units}</td><td className="tl-num">{n2(x.taxable)}</td><td className="tl-num tl-gst">{n2(x.cgst)}</td><td className="tl-num tl-gst">{n2(x.sgst)}</td><td className="tl-num">{n2(x.total)}</td></tr>)}
+        <tr><td colSpan={3}><b>{list.length} {list.length === 1 ? "invoice" : "invoices"}</b></td><td className="tl-num"><b>{M.fmt.num(add("units"))}</b></td><td className="tl-num"><b>{n2(add("taxable"))}</b></td><td className="tl-num tl-gst"><b>{n2(add("cgst"))}</b></td><td className="tl-num tl-gst"><b>{n2(add("sgst"))}</b></td><td className="tl-num"><b>{n2(add("total"))}</b></td></tr>
+      </tbody></table>
+      <div className="tl-foot">The taxable value is what the scheme sold: {M.fmt.num(add("units"))} packets at ₹{kl.price.toFixed(2)} effective</div>
+    </div>;
+  }
+  // Munchly's credit notes to the distributor, in the same layout: financial, so no GST is adjusted and nothing goes to
+  // the IRP; against the invoice it billed the batch on (core/papers.js dispatchOf)
+  function TallyCredit({ c, d, title, sub, reason, rows, note, after }) {
+    const C = D.CLIENT, R = c.dist, against = PA().dispatchOf(c.batch);
+    return <div className="paper tl">
+      <div className="tl-title">{title}</div><div className="tl-copy">({sub})</div>
+      <div className="tl-grid tl-two">
+        <Cell><b>{C.name}</b><br />{C.address}<br />GSTIN/UIN: {C.gstin}<br />State Name: {C.state}, Code: {C.stateCode}<br />CIN: {C.cin}<br />FSSAI Lic. No.: {C.fssai}</Cell>
+        <div className="tl-meta">
+          <Cell k="Credit Note No."><b>{d.no}</b></Cell><Cell k="Dated"><b>{dmy(d.date)}</b></Cell>
+          <Cell k="Against our invoice" className="tl-span"><b>{against.no}</b> dated {dmy(against.date)}<br />Batch {c.batch.id}, {c.sku.brand} {c.sku.name}</Cell>
+        </div>
+      </div>
+      <div className="tl-grid tl-two"><Party k="Issued to" p={R} /><Cell k="Reason">{reason}</Cell></div>
+      <table className="tl-table"><thead><tr><th>Sl</th><th>Particulars</th><th>Packs</th><th>Rate</th><th>Amount</th></tr></thead><tbody>
+        {rows.map((r, i) => <tr key={i}><td>{i + 1}</td><td>{r.k}</td><td className="tl-num">{r.units != null ? M.fmt.num(r.units) : ""}</td><td className="tl-num">{r.rate != null ? n2(r.rate) : ""}</td><td className="tl-num">{n2(r.amount)}</td></tr>)}
+        {d.roundOff ? <tr><td /><td className="tl-num">Round off</td><td /><td /><td className="tl-num">{n2(d.roundOff)}</td></tr> : null}
+        <tr><td /><td className="tl-num"><b>Credit to {R.name}</b></td><td /><td /><td className="tl-num"><b>₹ {n2(d.amount)}</b></td></tr>
+        <tr><td colSpan={5}>Amount (in words): <b>{PA().words(d.amount)}</b></td></tr>
+      </tbody></table>
+      <div className="tl-grid tl-two">
+        <Cell className="tl-small">Financial credit note: not a GST credit note under section 34 of the CGST Act, so no tax is adjusted and it is not reported to the IRP. The output tax on the original sale stands.{note ? <><br /><br />{note}</> : null}<br /><br />Company's PAN: <b>{C.pan}</b></Cell>
+        <Cell><div className="tl-sign">for <b>{C.name}</b></div><div className="tl-num">Authorised Signatory</div></Cell>
+      </div>
+      {after}
+      <div className="tl-foot">Adjusted against {possessive(R.name)} account · This is a Computer Generated Document</div>
+    </div>;
+  }
+
   // a paper of a batch's pack (`c`, the batch's case: the story's chips batch, or a batch from the history). Each
   // reads what its batch did: the lines it ran, the credit kept and reversed, the packs given away or destroyed
   const stamp = t => (!t ? "" : t.length > 5 ? `${fmt.day(t.slice(0, 10))}, ${t.slice(11, 16)}` : t);
   function Paper({ id, c: given }) {
-    const c = given || LG().storyCase();
+    const st = useStore(); const c = given || LG().storyCase();
     const DOC = x => c.docs.find(d => d.id === x); const d = DOC(id); const inv = c.invoice || DOC("invoice"); const R = c.dist, B = c.buyer, dp = c.sku.dp, sp = c.support;
     const head = (title, no, stamp, ok) => <div className="pp-head"><div><div className="pp-title">{title}</div><div className="pp-no">{no}</div></div><span className={cx("pp-stamp", ok && "ok")}>{stamp}</span></div>;
-    if (id === "invoice" && inv) return <div className="paper pp">
-      {head("Tax invoice", `${inv.no} · draft · ${fmt.date(inv.date)}`, "IGST")}
-      <div className="pp-parties"><div><em>From</em><b>{R.name}</b><span>{R.address}</span><span className="pp-mono">GSTIN {R.gstin}</span></div><div><em>To</em><b>{B.name}</b><span>{B.address} · place of supply {B.stateCode}</span><span className="pp-mono">GSTIN {B.gstin}</span></div></div>
-      <table className="pp-table"><thead><tr><th>Item</th><th>HSN</th><th>Qty</th><th>Rate</th><th>Taxable</th></tr></thead><tbody><tr><td>{c.sku.brand} {c.sku.name}<br /><em>Batch {c.batch.id} · best before {fmt.date(c.batch.bestBefore)}</em></td><td>{c.sku.hsn}</td><td>{inv.units}</td><td>₹{inv.price.toFixed(2)}</td><td>{fmt.inr2(inv.taxable)}</td></tr></tbody></table>
-      <Line k="Taxable value" v={fmt.inr2(inv.taxable)} /><Line k={`IGST ${inv.gstPct}%`} sub={`${R.state} → ${B.state}`} v={fmt.inr2(inv.igst)} /><Line k="Round off" v={fmt.inr2(inv.roundOff)} /><Line k="Invoice total" v={fmt.inr2(inv.total)} strong />
-      <p className="pp-note">Drafted by the Paperwork agent for {R.name} to issue from Tally. {c.sku.gstNote} The MRP of {fmt.rate(c.sku.mrp)} stays printed on every pack: a discounted sale is fine, a second MRP is not (Legal Metrology).</p>
-    </div>;
-    if (id === "eway" && inv) return <div className="paper pp">{head("E-way bill check", `${c.batch.id} · ${c.listing ? c.listing.id : ""}`, "NOT REQUIRED", true)}<Line k="Consignment value with GST" v={fmt.inr2(inv.total)} /><Line k="Threshold, inter-state" v={fmt.inr2(M.RULES.ewayThreshold)} /><Line k="E-way bill" v="not required" strong /><p className="pp-note">{d.note} A transporter note travels with the {cartons(c.lines.expiresoon.units, c.sku.perCarton)} on the buyer's truck instead.</p></div>;
-    if (id === "support") { const order = ["expiresoon", "kirana", "staff", "foodbank"]; const rows = sp.rows.slice().sort((a, z) => order.indexOf(a.id) - order.indexOf(z.id)); const kRow = sp.rows.find(r => r.id === "kirana"); const kl = c.lines.kirana;
-      return <div className="paper pp">{head("Price-support credit note", `${d.no} · ${D.CLIENT.short} → ${R.name}`, "NO GST ADJ.", true)}
-        {rows.map(r => r.id === "expiresoon" ? <Line key={r.id} k={`${r.units} sold on ExpireSoon at ₹${r.price.toFixed(2)}`} sub={`₹${dp} − ₹${r.price.toFixed(2)} = ₹${r.gap.toFixed(2)} a pack`} v={fmt.inr2(r.amount)} />
-          : r.id === "kirana" ? <Line key={r.id} k={`${r.units} sold to ${c.kiranas.length} kiranas at ₹${kl.price} effective`} sub={`₹${dp} − ₹${kl.price} = ₹${r.gap.toFixed(2)}, free packs included`} v={fmt.inr2(r.amount)} />
-          : <Line key={r.id} k={`${r.units} to the ${r.short} at ₹${r.price.toFixed(2)}`} sub={`₹${dp} − ₹${r.price.toFixed(2)} = ₹${r.gap.toFixed(2)} a pack`} v={fmt.inr2(r.amount)} />)}
-        {kRow && <Line k="Van delivery" sub={`${kRow.units} × ₹${M.RULES.vanPerUnit.toFixed(2)}`} v={fmt.inr2(sp.van)} />}{sp.fee ? <Line k="ExpireSoon listing fee" v={fmt.inr2(sp.fee)} /> : null}<Line k="Round off" v={fmt.inr2(d.roundOff || 0)} />
-        <Line k={`Credit to ${R.name}`} v={fmt.inr2(d.amount)} strong />
-        <p className="pp-note">A financial credit note, with no GST adjustment, so {R.name} ends whole at the ₹{dp} it paid. It covers the buy-{c.scheme.buy}-get-{c.scheme.free} scheme too, so no separate scheme note is needed. {W.short} pays this instead of an expiry claim of {fmt.inr(c.claim.total)}. Trued up after the return window closes on {fmt.day(c.returnBy)}.</p>
-      </div>; }
+    // issued from Tally: by the story's Rakesh bhai, on a history batch's invoice step, or on the live workspace (SC-148)
+    const issuedAt = issuedWhen(c, inv, st);
+    if (id === "invoice" && inv) return <TallyInvoice c={c} inv={inv} issuedAt={issuedAt} />;
+    if (id === "eway" && inv) return <div className="paper pp">{head("E-way bill check", `${c.batch.id} · ${c.listing ? c.listing.id : ""}`, "NOT REQUIRED", true)}<Line k="Supplier" sub={`GSTIN ${R.gstin}`} v={R.name} /><Line k="Recipient" sub={`GSTIN ${B.gstin}`} v={B.name} /><Line k="Consignment value with GST" v={fmt.inr2(inv.total)} /><Line k="Threshold, inter-state" v={fmt.inr2(M.RULES.ewayThreshold)} /><Line k="E-way bill" v="not required" strong /><p className="pp-note">{d.note} A transporter note travels with the {cartons(c.lines.expiresoon.units, c.sku.perCarton)} on the buyer's truck instead.</p></div>;
+    if (id === "support") { const order = ["expiresoon", "kirana", "staff", "foodbank"]; const kRow = sp.rows.find(r => r.id === "kirana"); const kl = c.lines.kirana;
+      const rows = sp.rows.slice().sort((a, z) => order.indexOf(a.id) - order.indexOf(z.id)).map(r => r.id === "expiresoon" ? { k: `ExpireSoon: ${fmt.num(r.units)} packs sold at ₹${r.price.toFixed(2)}, ₹${r.gap.toFixed(2)} under the dealer price`, units: r.units, rate: r.gap, amount: r.amount }
+        : r.id === "kirana" ? { k: `Kirana scheme: ${fmt.num(r.units)} packs to ${c.kiranas.length} kiranas at ₹${kl.price} effective, free packs included`, units: r.units, rate: r.gap, amount: r.amount }
+        : { k: `${r.short.charAt(0).toUpperCase() + r.short.slice(1)}: ${fmt.num(r.units)} packs at ₹${r.price.toFixed(2)}, ₹${r.gap.toFixed(2)} under the dealer price`, units: r.units, rate: r.gap, amount: r.amount });
+      if (kRow) rows.push({ k: "Van round, the scheme's deliveries", units: kRow.units, rate: M.RULES.vanPerUnit, amount: sp.van });
+      if (sp.fee) rows.push({ k: "ExpireSoon listing fee", amount: sp.fee });
+      return <TallyCredit c={c} d={Object.assign({ date: inv && inv.date }, d, { roundOff: d.roundOff || 0 })} title="Credit Note" sub="Price support · financial, no GST adjusted" rows={rows}
+        reason={`Price support on the batch's clearance: the gap to the dealer price of ₹${dp} a pack on what each exit sold, and the costs ${R.short || R.name} met. It covers the buy-${c.scheme.buy}-get-${c.scheme.free} scheme too, instead of an expiry claim of ${fmt.inr(c.claim.total)}.`} />; }
     // the credit kept on what was sold under tax invoices, and reversed on what was given away or destroyed (SC-122);
     // an SKU with no cost sheet of its own has its credit worked out as cost × GST, so it is estimated
     if (id === "itc") { const away = d.away != null ? d.away : (c.plan.donated || 0) + (c.plan.leftover || 0), sold = d.units != null ? d.units : c.plan.soldUnits, rev = d.reversed != null ? d.reversed : away ? c.plan.itcReversed : 0;
       const from = c.sku.itcPerUnit == null ? "estimated from the cost and the GST rate" : "from the cost sheet";
-      return <div className="paper pp">{head("GST ITC memo", `Section 17(5)(h) · ${D.CLIENT.short}`, away ? "ITC PART REVERSED" : "ITC KEPT", !away)}<Line k="Packets sold under tax invoices" v={fmt.num(sold)} /><Line k="Destroyed, gifted or lost" v={fmt.num(away)} />{d.atGodown ? <Line k={`Destroyed at ${possessive(c.dist.name)} godown`} sub="his stock: he reverses their credit" v={fmt.num(d.atGodown)} /> : null}<Line k="Input GST kept" sub={`₹${c.plan.writeOff.itcPerUnit.toFixed(2)} a pack, ${from}`} v={fmt.inr2(d.amount)} strong /><Line k="Reversal in GSTR-3B, Table 4(B)(1)" v={rev ? fmt.inr2(rev) : "none"} />
+      return <div className="paper pp">{head("GST ITC memo", `Section 17(5)(h) · ${D.CLIENT.short} · GSTIN ${D.CLIENT.gstin}`, away ? "ITC PART REVERSED" : "ITC KEPT", !away)}<Line k="Packets sold under tax invoices" v={fmt.num(sold)} /><Line k="Destroyed, gifted or lost" v={fmt.num(away)} />{d.atGodown ? <Line k={`Destroyed at ${possessive(c.dist.name)} godown`} sub="his stock: he reverses their credit" v={fmt.num(d.atGodown)} /> : null}<Line k="Input GST kept" sub={`₹${c.plan.writeOff.itcPerUnit.toFixed(2)} a pack, ${from}`} v={fmt.inr2(d.amount)} strong /><Line k="Reversal in GSTR-3B, Table 4(B)(1)" v={rev ? fmt.inr2(rev) : "none"} />
         <p className="pp-note">{rev ? `Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. The ${fmt.num(away)} packs of this batch given away or destroyed have their credit reversed; the ${fmt.num(sold)} sold under tax invoices keep theirs. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.` : `Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. These packs were sold under tax invoices, so it does not apply. The credit would be reversed only if the stock came back under the expiry claim and ${W.short} destroyed it. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.`}{d.atGodown ? ` The ${fmt.num(d.atGodown)} packs destroyed at ${possessive(c.dist.name)} godown were his stock, bought under tax invoice: he reverses their input credit, and ${D.CLIENT.short} keeps its own.` : ""}</p></div>; }
     if (id === "expiry" && d) { const C = D.CLIENT.short, x = d;
       if (x.policy === "none") return <div className="paper pp">{head("Expiry notice", `${c.batch.id} · ${R.name}`, "NO RETURNS")}<Line k="Packs expired at the godown" v={fmt.num(x.units)} strong /><Line k={`Credit from ${C}`} v="none" /><p className="pp-note">{x.note}</p></div>;
       // destroyed at his godown (SC-139): a financial note, against the agency's certificate: the dealer price, the input
       // GST he reverses on them (grossed up) and the agency's charges
-      if (x.policy === "godown") return <div className="paper pp">{head(x.type, `${x.no} · ${C} → ${R.name}`, "NO GST ADJ.", true)}
-        <Line k={`${fmt.num(x.units)} packs destroyed at the godown`} sub={`at the ${fmt.rate(x.dp != null ? x.dp : dp)} dealer price`} v={fmt.inr2(x.credit)} />
-        {x.gst ? <Line k="Input GST he reverses on them" sub={`${x.gstPct != null ? x.gstPct : Math.round(c.sku.gst * 100)}%, section 17(5)(h)`} v={fmt.inr2(x.gst)} /> : null}
-        {x.charges ? <Line k="Destruction charges" sub={`${x.agency || "the agency"}, ₹${(x.charges / x.units).toFixed(2)} a pack`} v={fmt.inr2(x.charges)} /> : null}
-        <Line k={`Credit to ${R.name}`} v={fmt.inr2(x.amount)} strong />
-        <p className="pp-note">{x.note}</p></div>;
-      return <div className="paper pp">{head(x.type, `${x.no} · ${C} → ${R.name}`, "NO GST ADJ.", true)}
-        <Line k={`${fmt.num(x.units)} packs expired at the godown`} sub="at the dealer price" v={x.amount != null ? fmt.inr2(x.amount) : "—"} />
-        <Line k={`Credit to ${R.name}`} v={x.amount != null ? fmt.inr2(x.amount) : "—"} strong />
-        {x.policy === "full-credit" && <><div className="pp-sub">{possessive(C)} own costs, on destroying them</div><Line k="Disposal" v={fmt.inr2(x.disposal)} /><Line k="EPR on the packaging" v={fmt.inr2(x.epr)} /><Line k="Input GST reversed" sub="section 17(5)(h)" v={fmt.inr2(x.itc)} /><Line k="Expiry, all in" v={fmt.inr2((x.amount || 0) + x.disposal + x.epr + x.itc)} strong /></>}
-        <p className="pp-note">{x.note}</p></div>; }
+      if (x.policy === "godown") return <TallyCredit c={c} d={x} title="Credit Note" sub="Expiry, destroyed at the godown · financial, no GST adjusted" note={x.certificate ? `Issued against destruction certificate ${x.certificate}, on ${possessive(W.short)} approval of the evidence.` : null}
+        reason={`The ${fmt.num(x.units)} packs left at the godown on the best-before, destroyed there${x.agency ? ` by ${x.agency}` : ""}${x.certificate ? ` under certificate ${x.certificate}` : ""}.`}
+        rows={[{ k: `${fmt.num(x.units)} packs destroyed at the godown, at the dealer price`, units: x.units, rate: x.dp != null ? x.dp : dp, amount: x.credit },
+          ...(x.gst ? [{ k: `Input GST he reverses on them, ${x.gstPct != null ? x.gstPct : Math.round(c.sku.gst * 100)}%, section 17(5)(h)`, amount: x.gst }] : []),
+          ...(x.charges ? [{ k: `Destruction charges, ${x.agency || "the agency"}`, units: x.units, rate: x.charges / x.units, amount: x.charges }] : [])]} />;
+      return <TallyCredit c={c} d={x} title="Credit Note" sub={`Expiry · ${x.policy === "full-credit" ? "full credit" : "price support"} · financial, no GST adjusted`}
+        reason={`The ${fmt.num(x.units)} packs left at the godown on the best-before${x.policy === "full-credit" ? `, taken back at the dealer price; ${C} destroys them` : `: the gap to the dealer price paid, and ${R.short || R.name} destroys them`}.`}
+        rows={[{ k: `${fmt.num(x.units)} packs expired at the godown${x.policy === "full-credit" ? ", at the dealer price" : ", price support"}`, units: x.units, rate: x.amount != null ? x.amount / x.units : null, amount: x.amount || 0 }]}
+        after={x.policy === "full-credit" ? <div className="tl-grid"><Cell className="tl-small">{possessive(C)} own costs on destroying them, not on this note: disposal ₹{n2(x.disposal)}, EPR on the packaging ₹{n2(x.epr)}, input GST reversed under section 17(5)(h) ₹{n2(x.itc)}; the expiry, all in, ₹{n2((x.amount || 0) + x.disposal + x.epr + x.itc)}.</Cell></div> : null} />; }
     if (id === "receipt" && d) return <Receipt doc={d} batch={c.batch} sku={c.sku} dist={c.dist} />;
     if (id === "fssai") { const own = d && d.status === "generated" && c.donation; const other = !own && c.donation && c.donation.batch && c.donation.batch.id !== c.batch.id && c.donation.units > 0 ? c.donation : null;
-      return <div className="paper pp">{own ? <>{head("FSSAI surplus-food checklist", c.batch.id, "GENERATED", true)}<Line k="Packs donated" v={fmt.num(c.plan.donated)} /><Line k="Food bank" v={c.donation.partner.name} /><p className="pp-note">The batch's own checklist for the surplus food: {c.donation.units} packs from {c.donation.from || c.dist.godown} to {c.donation.partner.name}, inside their best-before, with the label photo attached.</p></>
+      return <div className="paper pp">{own ? <>{head("FSSAI surplus-food checklist", `${c.batch.id} · FSSAI Lic. No. ${D.CLIENT.fssai}`, "GENERATED", true)}<Line k="Packs donated" v={fmt.num(c.plan.donated)} /><Line k="Food bank" v={c.donation.partner.name} /><p className="pp-note">The batch's own checklist for the surplus food: {c.donation.units} packs from {c.donation.from || c.dist.godown} to {c.donation.partner.name}, inside their best-before, with the label photo attached.</p></>
         : <>{head("FSSAI surplus-food checklist", c.batch.id, "NOT REQUIRED")}<p className="pp-note">Nothing from this batch was donated.{other ? ` The ${S.shortName(other.sku)} batch ${other.batch.id} has its own checklist: ${other.units} packs to ${other.partner.name}, ${other.dist.city}.` : ""}</p></>}</div>; }
     // destroyed at his godown (SC-139): the authorised agency's certificate, for him, once the evidence is approved: the
     // batch, the packs and kilos, the method, the agency and its authorisation, the evidence and who approved it, and the
@@ -163,9 +294,16 @@
     const app = useApp(); const { toast } = useNotice(); const paperRef = useRef(null); const sheetRef = useRef(null);
     const DOC = id => c.docs.find(d => d.id === id);
     const ready = !!h.docs; const awarded = c.lines.expiresoon.units > 0; const his = first(c.dist.short);
-    const [picked, setPicked] = useState(null); const sel = picked && DOC(picked) ? picked : DOC("expiry") ? "expiry" : (c.docs[0] || { id: "invoice" }).id; const [sheet, setSheet] = useState(false);
-    const doc = DOC(sel), invoice = DOC("invoice"), support = DOC("support");
-    const open = id => { setPicked(id); if (app.bp !== "desktop") setSheet(true); };
+    const st = useStore();
+    // the kiranas' tax invoices (SC-153): one card, the batch's sales register, each number opening its invoice
+    const kiranas = LG().invoicesOf(c, st), [inv, setInv] = useState(null);
+    const register = kiranas.length ? { id: "kiranas", type: "Tax invoices to kiranas", owner: c.dist.name, no: `${kiranas.length} invoices`, status: "generated", amount: r2(kiranas.reduce((t, x) => t + x.total, 0)) } : null;
+    const [picked, setPicked] = useState(null); const sel = picked && (DOC(picked) || (register && picked === "kiranas")) ? picked : DOC("expiry") ? "expiry" : (c.docs[0] || { id: "invoice" }).id; const [sheet, setSheet] = useState(false);
+    const doc = sel === "kiranas" ? register : DOC(sel), invoice = DOC("invoice"), support = DOC("support");
+    // an invoice issued from Tally reads issued, with its e-invoice (SC-148)
+    const issued = !!issuedWhen(c, invoice, st), shown = d => (issued && d.id === "invoice" ? Object.assign({}, d, { status: "issued" }) : d);
+    const open = id => { setPicked(id); setInv(null); if (app.bp !== "desktop") setSheet(true); };
+    const paperOf = id => (id !== "kiranas" ? <Paper id={id} c={c} /> : inv ? <div className="stack snug"><button type="button" className="pt-link t-footnote" style={{ justifySelf: "start" }} onClick={() => setInv(null)}>All {kiranas.length} invoices</button><KiranaInvoice c={c} inv={inv} /></div> : <KiranaRegister c={c} list={kiranas} onOpen={setInv} />);
     const exportPack = () => { download(`${c.batch.id}-document-pack.csv`, csv([["Document", "Issued by", "Number", "Status", "Amount (₹)", "Note"], ...c.docs.map(d => [d.type, d.owner, d.no, d.status, d.amount ? d.amount.toFixed(2) : "", d.note || ""])])); toast({ text: "Document pack exported", tone: "ok" }); };
     // the stub's PDF is the paper printed: the browser saves it (on the live workspace, the Paperwork agent's own PDF)
     const pdf = node => () => { if (node.current) printPage(`${doc.type} ${doc.no || ""} · ${c.batch.id}`, `<div class="${node.current.className}">${node.current.innerHTML}</div>`, { styles: true }); };
@@ -181,12 +319,12 @@
         </div>
         <Columns sideWidth={460}
           main={<><SectionTitle sub="Generated, drafted or not required, each with its reason" right={<span className="row tight"><Button variant="secondary" size="sm" icon="download" onClick={exportPack}>Export</Button>{h.reviewed ? <Badge tone="green" icon="check">reviewed</Badge> : <Button variant="primary" size="sm" icon="check" action={() => { Flow.act("review"); toast({ text: "Pack reviewed · logged", tone: "ok" }); }} busy="Marking reviewed…" done="Reviewed">Mark reviewed</Button>}</span>}>Document pack</SectionTitle>
-            <div className="docgrid">{c.docs.map(d => <div key={d.id} className={cx("docpick", sel === d.id && app.bp === "desktop" && "on")}><DocCard doc={d} onOpen={() => open(d.id)} /></div>)}</div>
+            <div className="docgrid">{c.docs.concat(register ? [register] : []).map(d => <div key={d.id} className={cx("docpick", sel === d.id && app.bp === "desktop" && "on")}><DocCard doc={shown(d)} onOpen={() => open(d.id)} /></div>)}</div>
             <KeepsWhat c={c} />
 </>}
-          side={app.bp === "desktop" && doc ? <><SectionTitle sub={doc.owner === D.CLIENT.short ? `Issued by ${W.short}` : `Drafted for ${c.dist.name}`} right={pdfButton(paperRef)}>{doc.type}</SectionTitle><AnimatePresence mode="wait"><motion.div key={sel} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}><div ref={paperRef}><Paper id={sel} c={c} /></div></motion.div></AnimatePresence></> : null} />
+          side={app.bp === "desktop" && doc ? <><SectionTitle sub={doc.id === "kiranas" ? `Issued by ${c.dist.name} from Tally · one for each shop's order` : doc.owner === D.CLIENT.short ? `Issued by ${W.short}` : doc.id === "invoice" && issued ? `Issued by ${c.dist.name} from Tally` : `Drafted for ${c.dist.name}`} right={pdfButton(paperRef)}>{doc.type}</SectionTitle><AnimatePresence mode="wait"><motion.div key={sel} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}><div ref={paperRef}>{paperOf(sel)}</div></motion.div></AnimatePresence></> : null} />
       </div>}
-      <Sheet open={sheet} onClose={() => setSheet(false)} title={doc ? doc.type : ""} footer={pdfButton(sheetRef)}><div ref={sheetRef}><Paper id={sel} c={c} /></div></Sheet>
+      <Sheet open={sheet} onClose={() => setSheet(false)} title={doc ? doc.type : ""} footer={pdfButton(sheetRef)}><div ref={sheetRef}>{paperOf(sel)}</div></Sheet>
     </>;
   }
 
@@ -194,6 +332,140 @@
   function Paperwork({ me }) {
     const s = useStore(); const c = LG().storyCase(); const awarded = c.lines.expiresoon.units > 0;
     return <Screen me={me} title="Paperwork" sub={`${c.batch.id} · prepared by the Paperwork agent ${awarded ? "at the award" : "once every line was done"}`}><PaperPack me={me} c={c} h={s.hero} /></Screen>;
+  }
+
+  /* ---------- the Impact reading's dashboard (SC-157, option B) ---------- */
+  // Every figure is a period's rows, derived by core/ledger.js dashboard(). The chart inks are the console's (SC-149),
+  // validated with the dataviz script on the app's surfaces: kept out of landfill in the green, destroyed in clay with a
+  // hatch, donated in the food bank's own ink. One axis, a legend, a table view; the bars grow once (420 ms)
+  const CH_INK = { kirana: "var(--ch-kirana)", expiresoon: "var(--ch-expiresoon)", staff: "var(--ch-staff)", d2c: "var(--ch-d2c)", foodbank: "var(--ch-foodbank)", writeoff: "var(--viz-gone)" };
+  const CH_NAMES = { kirana: "Kirana scheme", expiresoon: "ExpireSoon", staff: "Staff sale", d2c: "Discount D2C", foodbank: "Food bank", writeoff: "Destroyed" };
+  const kgAxis = v => (v >= 1000 ? (v / 1000).toLocaleString("en-IN", { maximumFractionDigits: 1 }) + " t" : Math.round(v) + " kg");
+  const weekLabel = iso => new Date(iso + "T00:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+  const pct = (a, b) => (b ? Math.round(((a - b) / b) * 100) : null);
+  const splitKg = v => (v >= 1000 ? [(v / 1000).toLocaleString("en-IN", { maximumFractionDigits: 2 }), "t"] : [Math.round(v).toLocaleString("en-IN"), "kg"]);
+  function useWidth2(init) { const ref = useRef(null); const [w, setW] = useState(init); useEffect(() => { if (!ref.current || !window.ResizeObserver) return; const ro = new ResizeObserver(e => setW(e[0].contentRect.width)); ro.observe(ref.current); return () => ro.disconnect(); }, []); return [ref, w]; }
+
+  function Spark({ values, gone }) {
+    const W = 92, H = 28, max = Math.max(1, ...values), n = values.length;
+    const X = i => (n > 1 ? (i / (n - 1)) * W : W / 2), Y = v => H - 2 - (v / max) * (H - 6);
+    const line = values.map((v, i) => (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(v).toFixed(1)).join(" ");
+    return <svg className={cx("im-spark", gone && "gone")} viewBox={`0 0 ${W} ${H}`} aria-hidden="true"><path className="a" d={`${line} L${W} ${H} L0 ${H} Z`} /><path className="l" d={line} /></svg>;
+  }
+  function ImpactTile({ icon, label, value, unit, foot, spark, gone, delta, deltaGood }) {
+    const cls = delta == null || delta === 0 ? "" : (delta > 0) === deltaGood ? "up" : "down";
+    return <div className={cx("im-tile", gone && "gone")}>
+      <span className="lbl"><Icon name={icon} size={15} />{label}</span>
+      <span className="val">{value}{unit && <small>{unit}</small>}</span>
+      <span className="foot"><span>{delta != null ? <><span className={cx("delta", cls)}>{delta > 0 ? "+" : ""}{delta}%</span> {foot}</> : foot}</span>{spark}</span>
+    </div>;
+  }
+  // the three figures against the period before, each with its weeks as a sparkline
+  function ImpactTiles({ d, p, prev }) {
+    const t = p.totals, tp = prev && prev.totals; const vs = f => d.weeks.map(f);
+    const [k, ku] = splitKg(t.kg), [g, gu] = splitKg(t.destroyedKg), [c, cu] = splitKg(t.co2);
+    const before = tp ? `vs ${prev.label}` : "first period";
+    return <div className="im-tiles">
+      <ImpactTile icon="leaf" label="Kept out of landfill" value={k} unit={ku} delta={tp ? pct(t.kg, tp.kg) : null} deltaGood foot={before} spark={<Spark values={vs(w => w.kept)} />} />
+      <ImpactTile icon="trash-2" label="Destroyed" value={g} unit={gu} gone foot={d.share != null ? `${d.share}% of the food saved` : "nothing cleared yet"} spark={<Spark values={vs(w => w.destroyed)} gone />} />
+      <ImpactTile icon="cloud" label="CO₂e avoided" value={c} unit={cu} delta={tp ? pct(t.co2, tp.co2) : null} deltaGood foot={`indicative, ${M.RULES.co2PerKg} kg a kg`} spark={<Spark values={vs(w => w.kept)} />} />
+    </div>;
+  }
+
+  const niceStep = x => { const mag = Math.pow(10, Math.floor(Math.log10(x))); return mag * ([1, 2, 2.5, 5, 10].find(m => x / mag <= m) || 10); };
+  function FoodWeeks({ weeks, height = 220, current }) {
+    const [hover, setHover] = useState(null); const [box, cw] = useWidth2(640); const reduce = useReducedMotion();
+    const W = Math.max(300, Math.round(cw)), H = height, pl = 52, pr = 8, pt = 12, pb = 26, n = weeks.length;
+    const up = Math.max(0, ...weeks.map(w => w.kept)), down = Math.max(0, ...weeks.map(w => w.destroyed));
+    const step = up || down ? niceStep(Math.max(up, down * 2) / 4) : 100;
+    const top = Math.max(step * 2, step * Math.ceil(up / step)), bottom = Math.max(step, step * Math.ceil(down / step));
+    const Y = x => pt + ((top - x) / (top + bottom)) * (H - pt - pb); const y0 = Y(0);
+    const slot = (W - pl - pr) / n, bw = Math.max(3, Math.min(26, slot - 6)); const X = i => pl + slot * (i + 0.5);
+    const ticks = []; for (let t = -bottom; t <= top + step / 2; t += step) ticks.push(Math.round(t));
+    const every = Math.max(1, Math.ceil(64 / slot));
+    const bar = (x, y1, from) => { const h = Math.abs(y1 - from), r = Math.min(3, bw / 2, h), k = y1 < from ? 1 : -1; if (h < 0.5) return `M${x} ${from} h${bw} h${-bw} Z`; return `M${x} ${from} V${y1 + k * r} Q${x} ${y1} ${x + r} ${y1} H${x + bw - r} Q${x + bw} ${y1} ${x + bw} ${y1 + k * r} V${from} Z`; };
+    const move = e => { const r = e.currentTarget.getBoundingClientRect(); const px = ((e.clientX - r.left) / r.width) * W; setHover(Math.max(0, Math.min(n - 1, Math.floor((px - pl) / slot)))); };
+    const kept = weeks.reduce((t, w) => t + w.kept, 0), gone = weeks.reduce((t, w) => t + w.destroyed, 0);
+    const w = hover != null ? weeks[hover] : null;
+    return <div className={cx("fw", reduce && "still")} ref={box} onMouseLeave={() => setHover(null)}>
+      <svg viewBox={`0 0 ${W} ${H}`} height={H} onMouseMove={move} role="img" aria-label={`Food a week: ${kg(kept)} kept out of landfill and ${kg(gone)} destroyed`}>
+        <defs><pattern id="fw-hatch" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)"><rect width="5" height="5" className="hatch-bg" /><line x1="0" y1="0" x2="0" y2="5" className="hatch-ln" /></pattern></defs>
+        {ticks.map(t => <line key={t} className={t ? "gl" : "base"} x1={pl} x2={W - pr} y1={Y(t)} y2={Y(t)} />)}
+        {ticks.map(t => <text key={"t" + t} className="ax" x={pl - 8} y={Y(t) + 4} textAnchor="end">{t < 0 ? "−" + kgAxis(-t) : kgAxis(t)}</text>)}
+        {weeks.map((wk, i) => ((i % every === 0 && i < n - 1) || i === n - 1) && <text key={"x" + i} className="ax" x={X(i)} y={H - 6} textAnchor={i === n - 1 ? "end" : "middle"}>{i === n - 1 && current ? "this week" : weekLabel(wk.from)}</text>)}
+        {hover != null && <rect className="col" x={X(hover) - slot / 2} y={pt} width={slot} height={H - pt - pb} />}
+        {weeks.map((wk, i) => <g key={i}>
+          <path className="kept" style={{ animationDelay: `${Math.min(6 * i, 300)}ms` }} d={bar(X(i) - bw / 2, Y(wk.kept), y0)} />
+          {wk.destroyed > 0 && <path className="gone" style={{ animationDelay: `${Math.min(6 * i, 300) + 120}ms` }} d={bar(X(i) - bw / 2, Y(-wk.destroyed) + 1, y0 + 1)} />}
+        </g>)}
+      </svg>
+      {w && <div className="tip" style={{ left: hover > n / 2 ? `calc(${(X(hover) / W) * 100}% - 204px)` : `calc(${(X(hover) / W) * 100}% + 12px)`, top: 8 }}>
+        <b>Week of {weekLabel(w.from)}</b>
+        <div className="tr"><span><i className="im-sw kept" aria-hidden="true" />Kept out of landfill</span><span>{kg(w.kept)}</span></div>
+        <div className="tr"><span><i className="im-sw gone" aria-hidden="true" />Destroyed</span><span>{w.destroyed ? kg(w.destroyed) : "none"}</span></div>
+        <div className="tr"><span>Batches cleared</span><span>{w.closed}</span></div>
+        <div className="tr"><span>Recovered</span><span>{fmt.inr(w.net)}</span></div>
+      </div>}
+    </div>;
+  }
+  function FoodTable({ weeks }) {
+    return <table className="fw-table"><thead><tr><th>Week of</th><th>Kept out (kg)</th><th>Resold</th><th>Donated</th><th>Destroyed</th><th>Batches</th><th>Recovered</th></tr></thead>
+      <tbody>{weeks.map((w, i) => <tr key={i}><td>{weekLabel(w.from)}</td><td>{w.kept}</td><td>{w.resold}</td><td>{w.donated}</td><td>{w.destroyed}</td><td>{w.closed}</td><td>{fmt.inr(w.net)}</td></tr>)}</tbody></table>;
+  }
+  // food by week: the two figures and the share saved, the legend, the chart or its table
+  function FoodCard({ d, p, prev, height }) {
+    const [table, setTable] = useState(false); const t = p.totals;
+    return <div className="fw-card stack" style={{ gap: 14 }}>
+      <div className="card-head"><span className="card-title">Food, by week</span><Button variant="secondary" size="sm" icon={table ? "activity" : "file-spreadsheet"} aria-pressed={table} onClick={() => setTable(v => !v)}>{table ? "Show as a chart" : "Show as a table"}</Button></div>
+      <div className="fw-head"><span className="fig"><b>{kg(t.kg)}</b><span>kept out of landfill in {p.label}</span></span>{d.share != null && <span className="share">{d.share}% saved</span>}<span className="fig gone"><b>{kg(t.destroyedKg)}</b><span>destroyed</span></span></div>
+      <ul className="fw-legend"><li><i className="im-sw kept" aria-hidden="true" />Kept out of landfill (sold or given)</li><li><i className="im-sw gone" aria-hidden="true" />Destroyed (no channel took it)</li></ul>
+      {table ? <div style={{ overflowX: "auto" }}><FoodTable weeks={d.weeks} /></div> : <FoodWeeks weeks={d.weeks} height={height} current={p.current} />}
+      <span className="im-note">{prev ? `${kg(prev.totals.kg)} kept out and ${kg(prev.totals.destroyedKg)} destroyed in ${prev.label}.` : `Every batch ${W.short} has cleared since ${W.since}; a week is counted when its batches clear.`} CO₂e, disposal and EPR are indicative.</span>
+    </div>;
+  }
+  // where the kilos went, by channel
+  function MixCard({ d, p }) {
+    const total = d.mixKg.reduce((t, m) => t + m[1], 0) || 1; let acc = 0;
+    return <Card className="stack" style={{ gap: 12 }}>
+      <div className="card-head"><span className="card-title">Where the kilos went</span><span className="t-caption subtle">{kg(total)} flagged at risk</span></div>
+      <div className="chart stack snug">
+        <svg viewBox="0 0 600 28" width="100%" height="28" preserveAspectRatio="none" role="img" aria-label="Where the kilos went, by channel">
+          <defs><pattern id="fw-hatch-mix" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)"><rect width="5" height="5" fill="var(--viz-gone-soft)" /><line x1="0" y1="0" x2="0" y2="5" stroke="var(--viz-gone)" strokeWidth="2.6" /></pattern></defs>
+          {d.mixKg.map(([id, v]) => { const w = (v / total) * 600, x = acc; acc += w; return <rect key={id} x={x + 1} y="0" width={Math.max(0, w - 2)} height="28" rx="5" fill={id === "writeoff" ? "url(#fw-hatch-mix)" : CH_INK[id]} stroke={id === "writeoff" ? "var(--viz-gone)" : "none"}><title>{CH_NAMES[id]}: {kg(v)}</title></rect>; })}
+        </svg>
+      </div>
+      <List>{d.mixKg.map(([id, v]) => <ListRow key={id} leading={<i className={cx("im-sw", id === "writeoff" && "gone")} style={id === "writeoff" ? undefined : { background: CH_INK[id] }} aria-hidden="true" />} title={CH_NAMES[id]} sub={id === "writeoff" ? "expired at the godown; destroyed on your yes" : id === "foodbank" ? `${fmt.num(p.totals.meals)} meals, on the food banks' receipts` : "sold under tax invoices and order logs"} value={<span className="tnum strong">{kg(v)} <span className="subtle t-caption">{Math.round((v / total) * 100)}%</span></span>} />)}</List>
+    </Card>;
+  }
+  // by distributor, by product: a row each, resold, donated and destroyed on one scale
+  function HBars({ rows, product }) {
+    const max = Math.max(1, ...rows.map(r => r.kept + r.destroyed));
+    return <div className="hb">{rows.map(r => <div key={r.label} className="hb-row">
+      <span className="lab">{product && <Product name={r.img} size={26} />}<span>{r.label}</span></span>
+      <span className="bar" aria-hidden="true"><i className="k" style={{ width: (r.resold / max) * 100 + "%" }} />{r.donated > 0 && <i className="n" style={{ width: (r.donated / max) * 100 + "%" }} />}{r.destroyed > 0 && <i className="d" style={{ width: (r.destroyed / max) * 100 + "%" }} />}</span>
+      <span className="v"><b>{kg(r.kept)}</b>{r.destroyed ? ` · ${kg(r.destroyed)} destroyed` : ""} · {r.batches} {r.batches === 1 ? "batch" : "batches"}</span>
+    </div>)}</div>;
+  }
+  function ByCard({ d }) {
+    const [by, setBy] = useState("dist");
+    return <Card className="stack" style={{ gap: 12 }}>
+      <div className="card-head"><span className="card-title">By {by === "dist" ? "distributor" : "product"}</span><Segmented size="sm" label="Group by" value={by} onChange={setBy} options={[{ id: "dist", label: "Distributor" }, { id: "sku", label: "Product" }]} /></div>
+      <HBars rows={by === "dist" ? d.byDist : d.bySku} product={by === "sku"} />
+      <ul className="fw-legend"><li><i className="im-sw kept" aria-hidden="true" />Resold</li><li><i className="im-sw donated" aria-hidden="true" />Donated</li><li><i className="im-sw gone" aria-hidden="true" />Destroyed</li></ul>
+    </Card>;
+  }
+  // the Impact reading, grown into the dashboard (option B): the headline and its working, the tiles and food by week in
+  // the same card, then where the kilos went and by distributor or product, over the period's batches
+  function ImpactReading({ book, p }) {
+    const d = useMemo(() => LG().dashboard(book, p.id), [book, p.id]); const prev = d.prev ? book.periods.find(x => x.id === d.prev) : null;
+    const app = useApp(); const phone = app.bp === "phone";
+    return <>
+      <Card className="stack" style={{ gap: 18 }}>
+        <Headline t={p.totals} reading="impact" p={p} />
+        {p.totals.batches ? <><ImpactTiles d={d} p={p} prev={prev} /><FoodCard d={d} p={p} prev={prev} height={phone ? 200 : 220} /></> : <Empty icon="book-open" title={`Nothing cleared in ${p.label} yet`} body="Each batch joins the ledger when Impact posts it, after its return window closes." />}
+      </Card>
+      {p.totals.batches ? <div className="im-grid two"><MixCard d={d} p={p} /><ByCard d={d} /></div> : null}
+    </>;
   }
 
   /* ---------- the ledger ---------- */
@@ -308,7 +580,8 @@
     const book = useMemo(() => LG().ledger(s), [s.hero.posted, s.hero.phase, s.mango.phase]);
     const year = book.periods.find(x => x.kind === "year" && x.current) || book.periods[book.periods.length - 1];
     const [pid, setPid] = useState(year.id); const p = book.periods.find(x => x.id === pid) || year;
-    const [reading, setReading] = useState("money");
+    // the reading the address asks for (the Command Center's Impact card opens the ledger on Impact, SC-157)
+    const { route } = useRoute(); const [reading, setReading] = useState((route && route.params && route.params.reading) || "money");
     const list = book.batches.filter(r => r.cleared >= p.from && r.cleared <= p.to);
     const open = r => go("report", { ref: r.ref });
     const flying = p.current ? book.inFlight : [];
@@ -318,10 +591,10 @@
     return <Screen me={me} title="Ledger" sub={`One ledger, three readings · every batch ${W.short} has cleared since ${book.since}`} actions={!phone && exports}>
       <div className="stack" style={{ gap: 20 }}>
         <div className="row wrap between" style={{ gap: 12 }}><Segmented label="Period" value={p.id} onChange={setPid} options={book.periods.map(x => ({ id: x.id, label: x.label }))} /><span className="row tight wrap" style={{ gap: 12 }}><Segmented label="Reading" value={reading} onChange={setReading} options={READINGS} />{phone && exports}</span></div>
-        <Card className="stack" style={{ gap: 18 }}>
+        {reading === "impact" ? <ImpactReading book={book} p={p} /> : <Card className="stack" style={{ gap: 18 }}>
           <Headline t={p.totals} reading={reading} p={p} />
           {list.length ? <Strip list={list} reading={reading} onOpen={open} /> : <Empty icon="book-open" title={`Nothing cleared in ${p.label} yet`} body={`Each batch joins the ledger when Impact posts it, after its return window closes. ${flying.length ? `${flying.length} ${flying.length === 1 ? "batch is" : "batches are"} still out.` : ""}`} />}
-        </Card>
+        </Card>}
         {flying.length ? <List head="Still out">{flying.map(b => <ListRow key={b.ref} leading={<Product name={b.img} size={40} />} title={b.name} sub={`${b.ref} · ${b.distributorName} · flagged ${dayOf(b.flagged)}`} value={<Badge tone="blue" dot live>{(D.STAGES.find(x => x.id === b.stage) || { title: b.stage }).title}</Badge>} />)}</List> : null}
         {months.map(g => <List key={g.month} head={`${g.label} · ${g.totals.batches} ${g.totals.batches === 1 ? "batch" : "batches"} · ${sumOf(g.totals)}`}>
           {g.items.map(r => <ListRow key={r.ref} chevron onClick={() => open(r)} leading={<Product name={r.img} size={40} />}
@@ -506,5 +779,5 @@
     return ref && LG().caseOf(ref) ? <BatchPage key={ref} me={me} at={ref} tab={(at && at.tab) || p.tab} /> : <Ledger me={me} />;
   }
 
-  Object.assign(window.SC3_SCREENS, { RecordTab, RecordPhotos, PhotoSheet, PhotoFacts, Paperwork, PaperPack, Report, Ledger, BatchPage, Paper, Receipt, KeepsWhat, OutcomeBadge, printPage, download, csv });
+  Object.assign(window.SC3_SCREENS, { RecordTab, RecordPhotos, PhotoSheet, PhotoFacts, Paperwork, PaperPack, Report, Ledger, BatchPage, Paper, Receipt, KiranaInvoice, KiranaRegister, KeepsWhat, OutcomeBadge, printPage, download, csv });
 })();

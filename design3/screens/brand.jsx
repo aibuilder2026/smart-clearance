@@ -106,6 +106,31 @@
 
   /* ---------- S1 Command Center ---------- */
   // the first viewport is the batch, tracked like an order: tracker first, the agents beside it, the cluster under it
+  // the Impact card on the Command Center (SC-157): the quarter so far (or the latest with a batch cleared), its kilos
+  // kept out of landfill, CO₂e and meals, with its weeks as a sparkline, opening the Ledger on its Impact reading
+  function ImpactCard() {
+    const s = useStore(); const { go } = useRoute(); const L = window.SC3_LEDGER; // core/ledger.js (the design-system page loads no ledger)
+    const book = useMemo(() => (L ? L.ledger(s) : null), [s.hero.posted, s.hero.phase, s.mango.phase]);
+    const p = book && L.impactPeriod(book); const d = useMemo(() => (book ? L.dashboard(book, p.id) : null), [book, p && p.id]);
+    if (!book) return null;
+    const t = p.totals;
+    const kgOf = v => fmt.kg(Math.round(v * 100) / 100); // as the Ledger reads kilos
+    const max = Math.max(1, ...d.weeks.map(w => w.kept)), n = d.weeks.length;
+    const line = d.weeks.map((w, i) => (i ? "L" : "M") + (n > 1 ? (i / (n - 1)) * 120 : 60).toFixed(1) + " " + (26 - (w.kept / max) * 22).toFixed(1)).join(" ");
+    return <Card className="imc stack snug">
+      <div className="card-head"><span className="row tight"><span className="icontile" style={{ borderRadius: 9 }}><Icon name="leaf" size={17} stroke={2} /></span><span className="card-title">Impact · {p.label}</span></span>{d.share != null && <Badge size="sm" tone="green">{d.share}% saved</Badge>}</div>
+      {t.batches ? <>
+        <div className="imc-figs">
+          <div><b>{kgOf(t.kg)}</b><span>kept out of landfill</span></div>
+          <div><b>{kgOf(t.co2)}</b><span>CO₂e avoided</span></div>
+          <div><b>{fmt.num(t.meals)}</b><span>meals</span></div>
+        </div>
+        <svg className="imc-spark" viewBox="0 0 120 28" aria-hidden="true"><path className="a" d={`${line} L120 28 L0 28 Z`} /><path className="l" d={line} /></svg>
+        <span className="t-footnote subtle">{t.batches} {t.batches === 1 ? "batch" : "batches"} cleared{p.current ? " so far" : ""} · {kgOf(t.destroyedKg)} destroyed · CO₂e indicative</span>
+      </> : <span className="t-footnote muted">Nothing has cleared in {p.label} yet. Each batch joins the ledger when Impact posts it.</span>}
+      <Button variant="secondary" size="sm" icon="book-open" onClick={() => go("report", { reading: "impact" })}>Open the ledger</Button>
+    </Card>;
+  }
   function CommandCenter({ me, onOpenRoute }) {
     const s = useStore(); const { go } = useRoute(); const app = useApp(); const hm = heroModel(s); const phone = app.bp === "phone";
     const [sel, setSel] = useState(null); const [dz, setDz] = useState(false);
@@ -130,7 +155,7 @@
       <div className="card-head" style={{ padding: "14px 16px 10px" }}><span className="card-title">Nagpur cluster</span><Badge size="sm" tone={hm.ordered ? "green" : undefined} dot={!!hm.ordered} live={hm.ordered > 0 && hm.ordered < SHOPS}>{hm.ordered ? `${hm.ordered} of ${D.OFFERED} kiranas ordered` : s.hero.offer ? `${D.OFFERED} kiranas messaged` : `${D.OFFERED} kiranas`}</Badge></div>
       <ClusterMap kiranas={D.KIRANAS} orderedCount={hm.ordered} route={routed} vanProgress={s.hero.van.status === "done" ? 1 : hm.ordered / SHOPS * 0.6} height={phone ? 220 : 280} />
     </Card>;
-    const feed = <div className="stack snug"><SectionTitle sub="Every hand-off, as it happens">Agent activity</SectionTitle><Card>{s.feed.length ? <AgentFeed events={s.feed} people={D.PEOPLE} live={hm.agentLive ? s.feed.length - 1 : -1} max={phone ? 3 : 6} /> : <span className="t-footnote muted">The agents report here once the Watcher runs.</span>}</Card></div>;
+    const feed = <div className="stack snug"><SectionTitle sub="Every hand-off, as it happens">Agent activity</SectionTitle><Card>{s.feed.length ? <AgentFeed events={s.feed} people={D.PEOPLE} live={hm.agentLive ? s.feed.length - 1 : -1} max={phone ? 3 : 6} /> : <span className="t-footnote muted">The agents report here once the Watcher runs.</span>}</Card><ImpactCard /></div>;
     const list = <div className="stack snug"><SectionTitle sub="Sorted by days to best-before; at-risk batches first">Watchlist</SectionTitle><div className="list">{watchlist.map(v => <BatchRow key={v.id} view={v} selected={sel === v.id} compact={phone} onOpen={() => { setSel(v.id); openBatch(v.id); }} />)}</div></div>;
     const live = S.useLive();
     if (live) return <LiveCommandCenter me={me} live={live} hm={hm} money={money} watchlist={watchlist} sel={sel} setSel={setSel} feed={feed} cluster={cluster} />;
@@ -160,11 +185,16 @@
   }
 
   /* ---------- S2 Route Room ---------- */
-  // the carton on shelf B4, with its label printed in type so it stays legible at any size
-  function LabelShot({ cover, dim, children }) {
+  // the carton's label photo (SC-147): the batch's own photo, the full statutory sticker with its barcode, QR code and
+  // FSSAI licence (system/img/labels, made by system/labels); the carton on shelf B4 with its label set in type where a
+  // batch has no photo
+  const LABEL_PHOTOS = ["MF-2406-105", "MF-2406-106", "MF-2406-107", "MF-2406-108", "MF-2406-109", "MF-2407-110", "MF-2407-111", "MF-2407-112", "MF-2407-113", "MF-2407-114", "MF-2407-115", "MF-2407-116", "MF-2409-117", "MF-2410-118"];
+  function LabelShot({ cover, dim, batch = "MF-2409-117", children }) {
+    const img = window.SC3_IMG || "system/img/";
+    const photo = LABEL_PHOTOS.includes(batch);
     return <div className={cx("lshot", cover && "cover")} style={dim ? { filter: "saturate(0.85) brightness(0.94)" } : undefined}>
-      <img src={(window.SC3_IMG || "system/img/") + "label-shot.webp"} alt="" />
-      <div className="lshot-label" aria-hidden="true"><b>MUNCHLY</b><span className="ls-prod">Masala Chips 150 g</span><span>BATCH&nbsp; MF-2409-117</span><span>MFG&nbsp; 18 MAY 2026</span><span>BEST BEFORE&nbsp; 18 NOV 2026</span><span>MRP ₹30.00 incl. of all taxes</span><span>24 × 150 g</span></div>
+      <img src={photo ? img + "labels/" + batch + ".webp" : img + "label-shot.webp"} alt="" />
+      {!photo && <div className="lshot-label" aria-hidden="true"><b>MUNCHLY</b><span className="ls-prod">Masala Chips 150 g</span><span>BATCH&nbsp; MF-2409-117</span><span>MFG&nbsp; 18 MAY 2026</span><span>BEST BEFORE&nbsp; 18 NOV 2026</span><span>MRP ₹30.00 incl. of all taxes</span><span>24 × 150 g</span></div>}
       {children}
     </div>;
   }
@@ -390,9 +420,60 @@
   // the raw call stays one tap away, closed, for the audit
   const lotPrice = p => "₹" + (Number.isInteger(p) ? p : p.toFixed(2));
   const andList = a => (a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1]);
-  function ApiCall({ lead, children }) {
+  function ApiCall({ lead, label = "The API call", children }) {
     const [open, setOpen] = useState(false);
-    return <div className="xcall"><div className="row between wrap" style={{ gap: 8 }}>{lead}<button type="button" className="xcall-btn" aria-expanded={open} onClick={() => setOpen(o => !o)}><Icon name="chevron-right" size={15} stroke={2.2} />The API call</button></div>{open && <div className="xcall-body stack tight">{children}</div>}</div>;
+    return <div className="xcall"><div className="row between wrap" style={{ gap: 8 }}>{lead}<button type="button" className="xcall-btn" aria-expanded={open} onClick={() => setOpen(o => !o)}><Icon name="chevron-right" size={15} stroke={2.2} />{label}</button></div>{open && <div className="xcall-body stack tight">{children}</div>}</div>;
+  }
+  // Outreach's scheme to the kiranas (SC-156, option A): the scheme as the shops see it, the figures, the offer window
+  // as one line, four stops with their times, the cluster map and the latest orders as before, and the one push every
+  // shop got behind a button. The window is the client's 48 hours; what no shop takes moves to ExpireSoon when it ends
+  const OFFER_HOURS = 48;
+  const hhmm = t => { const m = /(\d{1,2}):(\d{2})$/.exec(t || ""); return m ? +m[1] + m[2] / 60 : null; };
+  // the share of the window gone, from two same-day times (the stub has no clock); the live source sends its own
+  const windowShare = (from, to) => { const a = hhmm(from), b = hhmm(to); return a != null && b != null && b >= a ? Math.min(1, (b - a) / OFFER_HOURS) : null; };
+  function SchemeCard({ h, line, sku, batch, dist, shops, kiranas, push, vanDate, children }) {
+    const sent = !!h.offer, ordered = h.orders.length, units = h.orders.reduce((t, o) => t + o.units, 0);
+    const filled = sent && units >= line.units, closed = sent && (h.offer.status === "closed" || filled);
+    const last = h.orders[h.orders.length - 1];
+    const closedAt = closed ? h.offer.closedAt || (filled && last ? last.at : h.offer.closesAt) : null;
+    const left = line.units - units, delivered = h.van.status === "done";
+    const elapsed = !sent ? 0 : h.offer.elapsed != null ? h.offer.elapsed : closed ? (filled ? windowShare(h.offer.at, closedAt) || 0 : 1) : 0; // open: the stub has no clock; the live source sends elapsed
+    const badge = !sent ? <Badge>queued</Badge> : delivered ? <Badge tone="green" icon="check">delivered</Badge> : filled ? <Badge tone="green" dot>filled</Badge> : closed ? <Badge icon="hourglass">window over</Badge> : <Badge tone="blue" dot live>open</Badge>;
+    const result = !closed ? null : delivered ? `Delivered on ${possessive(dist.name.split(" ")[0])} van round, ${vanDate}: ${fmt.num(units)} packets to ${ordered} shops.`
+      : filled ? `Filled at ${closedAt}: ${ordered} of ${shops} shops took every packet, before the window closed.`
+      : `The window ended ${closedAt} with ${ordered} of ${shops} shops ordering ${fmt.num(units)}; the ${fmt.num(left)} left moved to ExpireSoon.`;
+    const steps = [["Sent", sent && h.offer.at], ["First order", h.orders[0] && h.orders[0].at], ["Closed", closedAt], ["Van round", delivered && vanDate]];
+    const done = !sent ? 0 : delivered ? 4 : closed ? 3 : ordered ? 2 : 1;
+    const nowAt = !sent || delivered ? -1 : done;
+    const bb = fmt.date(batch.bestBefore);
+    return <Card className="stack snug">
+      <div className="card-head"><span className="row tight"><Aura on={sent && !closed} className="icontile" style={{ borderRadius: 9 }}><Icon name="send" size={17} stroke={2} /></Aura><span className="card-title">Outreach · {shops} kiranas</span></span>{badge}</div>
+      {!sent && <span className="t-footnote muted">Sending the scheme to {shops} kiranas now, in {possessive(dist.name)} name.</span>}
+      <div className="ks" role="group" aria-label="The scheme as the shops see it">
+        <div className="ks-top"><span className="ks-logo" aria-hidden="true"><Icon name="store" size={13} stroke={2.2} /></span><span className="ks-word">The scheme</span><span className="t-caption subtle">as the shops see it</span><span className="ks-win">{OFFER_HOURS}-hour window</span></div>
+        <div className="ks-lot"><span className="ks-thumb"><Product name={sku.img} size={50} /></span>
+          <div className="stack tight" style={{ gap: 3, minWidth: 0 }}>
+            <b className="t-subhead">{sku.brand} {sku.name} · {fmt.num(line.units)} packets</b>
+            <span className="ks-price"><span className="ks-big">₹{line.packPrice.toFixed(2)}</span><span className="t-footnote muted">a pack · {M.RULES.scheme.free} free with every {M.RULES.scheme.buy} · ₹{line.price.toFixed(2)} effective</span></span>
+            <span><span className="ks-date">Best before {bb} · {batch.daysLeft} days</span></span>
+            <span className="t-caption subtle">From {dist.name}, {dist.city} · each shop up to {M.RULES.shopCapTimes}× its {M.RULES.kiranaWindowDays}-day sales</span>
+          </div>
+        </div>
+        {result && <div className="ks-result"><Icon name={filled || delivered ? "badge-check" : "hourglass"} size={17} /><span>{result}</span></div>}
+      </div>
+      <div className="row wrap" style={{ gap: 18 }}><div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={ordered} /><span className="subtle" style={{ fontSize: "0.45em" }}> / {shops}</span></span><span className="t-footnote subtle">kiranas ordered</span></div><div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={units} /><span className="subtle" style={{ fontSize: "0.45em" }}> / {line.units}</span></span><span className="t-footnote subtle">packets</span></div></div>
+      <div className="kwin" aria-label="The offer window">
+        <div className="kwin-head"><span>Offer window · <b>{OFFER_HOURS} h</b></span><span>{!sent ? "opens when the push goes out" : !closed ? <>closes <b>{h.offer.closesAt}</b></> : filled ? <>filled at <b>{closedAt}</b> · closed early</> : <>ended <b>{closedAt}</b></>}</span></div>
+        <div className="kwin-bar"><i className={cx(filled && "filled", closed && !filled && "over")} style={{ width: elapsed * 100 + "%" }} />{closed && <s style={{ left: elapsed * 100 + "%" }} />}</div>
+        <div className="kwin-ticks" aria-hidden="true"><span>{sent ? h.offer.at : "—"}</span><span>{OFFER_HOURS / 2} h</span><span>{OFFER_HOURS} h</span></div>
+      </div>
+      <ol className="esl-steps green" aria-label="Where the scheme stands">{steps.map(([k, t], i) => { const d = done > i && !!t; const now = i === nowAt; return <li key={k} className={cx(d && "done", now && "now")} aria-current={now ? "step" : undefined}><i /><b>{k}</b><span>{d ? t : now ? "waiting" : "\u00a0"}</span></li>; })}</ol>
+      {children}
+      <ClusterMap kiranas={kiranas} orderedCount={ordered} route height={200} />
+      <div className="stack tight">{h.orders.slice(-3).reverse().map(o => { const k = kiranas.find(x => x.id === o.id) || window.SC3_WORLD.KIRANAS.find(x => x.id === o.id); return <div key={o.id} className="row between t-subhead"><span>{k.name} <span className="subtle t-footnote">{k.area}</span></span><span className="tnum strong">{o.units} <span className="subtle t-caption">{o.at}</span></span></div>; })}{!ordered && <span className="t-footnote muted">Orders arrive as shops tap the offer. No shop can order more than {M.RULES.shopCapTimes}× its own {M.RULES.kiranaWindowDays}-day sales.</span>}</div>
+      <ApiCall label="The push, as sent"><div className="kpush"><K.Mark size={28} /><div><span className="hi t-subhead" lang="hi">{push.body.replace(kiranas[0].name, "{shop}")}</span><small>{push.en} · one message to all {shops} shops, each with its own name, in Hindi.</small></div></div></ApiCall>
+      <span className="t-footnote subtle">A shop that says Not this time keeps its {OFFER_HOURS} hours to change its mind. What no shop takes moves to ExpireSoon when the window ends.</span>
+    </Card>;
   }
   function ListerCard({ h, lot, sku, batch, dist, buyer, reserve, client, territories, req, res, onOpen }) {
     const ended = !!h.listing && h.listing.status === "ended"; const last = h.bids[h.bids.length - 1];
@@ -449,15 +530,9 @@
             <div className="card-head"><span className="row tight"><span className="icontile gray" style={{ borderRadius: 9 }}><Icon name="shopping-bag" size={17} stroke={2} /></span><span className="card-title">Lister · ExpireSoon</span></span><Badge>not in this plan</Badge></div>
             <span className="t-footnote muted">{esRow && !esRow.eligible ? `ExpireSoon is left out of this plan (${esRow.reason}).` : "The Router gave ExpireSoon nothing: the other exits pay more a unit."} The Lister has nothing to list.</span>
           </Card>}
-          <Card className="stack snug">
-            <div className="card-head"><span className="row tight"><Aura on={h.offer && units < KL.units} className="icontile" style={{ borderRadius: 9 }}><Icon name="send" size={17} stroke={2} /></Aura><span className="card-title">Outreach · {D.OFFERED} kiranas</span></span><Badge tone="blue" icon="bell">push · Hindi</Badge></div>
-            {h.offer && <div className="banner" style={{ boxShadow: "none", background: "var(--fill)", gridTemplateColumns: "28px minmax(0,1fr)" }}><K.Mark size={28} /><span className="hi t-subhead" lang="hi" style={{ lineHeight: 1.45 }}>{D.PUSH.offer.body}</span></div>}
-            <div className="row wrap" style={{ gap: 18 }}><div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={h.orders.length} /><span className="subtle" style={{ fontSize: "0.45em" }}> / {D.OFFERED}</span></span><span className="t-footnote subtle">kiranas ordered</span></div><div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={units} /><span className="subtle" style={{ fontSize: "0.45em" }}> / {KL.units}</span></span><span className="t-footnote subtle">units</span></div></div>
-            <K.Progress value={units / KL.units} label="Units ordered" />
+          <SchemeCard h={h} line={KL} sku={D.SKUS[HERO.sku]} batch={HERO} dist={D.DISTRIBUTORS[HERO.distributor]} shops={D.OFFERED} kiranas={D.KIRANAS} push={D.PUSH.offer} vanDate={D.JOURNEY.van.date}>
             {h.offer && !h.orders.some(o => o.id === "k0") && <S.PlayAs who="ganesh" route="offer">Order as Ganesh ji</S.PlayAs>}
-            <ClusterMap kiranas={D.KIRANAS} orderedCount={h.orders.length} route height={200} />
-            <div className="stack tight">{h.orders.slice(-3).reverse().map(o => { const k = D.KIRANAS.find(x => x.id === o.id) || window.SC3_WORLD.KIRANAS.find(x => x.id === o.id); return <div key={o.id} className="row between t-subhead"><span>{k.name} <span className="subtle t-footnote">{k.area}</span></span><span className="tnum strong">{o.units} <span className="subtle t-caption">{o.at}</span></span></div>; })}{!h.orders.length && <span className="t-footnote muted">Orders arrive as shops tap the offer. No shop can order more than {M.RULES.shopCapTimes}× its own 14-day sales.</span>}</div>
-          </Card>
+          </SchemeCard>
           <Card className="stack snug">
             <div className="card-head"><span className="row tight"><Aura on={!!lastBid && lastBid.status === "placed"} className="icontile gray" style={{ borderRadius: 9 }}><Icon name="messages-square" size={17} stroke={2} /></Aura><span className="card-title">Negotiator</span></span>{h.award ? <Badge tone="green" icon="check">awarded · ₹{D.COUNTER.price.toFixed(2)}</Badge> : <Badge>reserve ₹13.50 · hidden</Badge>}</div>
             {h.chat.length ? <Chat chat={h.chat} typing={lastBid && lastBid.status === "placed"} /> : <span className="t-footnote muted">Waiting for a bid from outside Munchly's territories. The agent counters anything under the reserve and promises only what Rakesh's calendar can keep.</span>}

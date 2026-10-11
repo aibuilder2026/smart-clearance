@@ -119,7 +119,7 @@ export const A = {
 		feed(s, EV('list'));
 	},
 	outreach: (s: State) => {
-		s.hero.offer = { status: 'sent', at: '09:41', shops: D.offered };
+		s.hero.offer = { status: 'sent', at: '09:41', closesAt: 'Sun 4 Oct · 09:41', shops: D.offered };
 		feed(s, EV('outreach'));
 		notify(s, 'ganesh', { link: 'offer', ...P.offer });
 	},

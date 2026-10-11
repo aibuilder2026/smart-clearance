@@ -125,7 +125,46 @@ async def test_hydrate_puts_the_history_label_photos_where_their_cases_keep_them
     names = {c.batch_ref: c.photo["object"] for c in cases}
     for name in names.values():
         cloud.storage.objects.pop(("photos-test", name), None)
-    put = await history.put_labels(ctx, "munchly")
-    assert put == sorted(names) and len(put) == 12
+    put, there = await history.put_labels(ctx, "munchly")
+    assert put == sorted(names) and len(put) == 12 and there == []
     for name in names.values():
         assert cloud.storage.objects[("photos-test", name)][:4] == b"RIFF"
+    # the bucket is written once: a second run finds them there, and says so (SC-159)
+    assert await history.put_labels(ctx, "munchly") == ([], sorted(names))
+
+
+async def test_a_rebuilt_history_writes_its_photos_under_fresh_names(ctx, monkeypatch, cloud):
+    """the history is built with seeded ids, so a rebuild could give a photo the name it had before, where the bucket,
+    written once, would keep the old photo: its label and evidence photos take fresh ids instead (SC-159)"""
+    from dataclasses import replace
+
+    from sc_api.cli import live
+    from sc_api.domain.clock import Ids, SeededIds
+
+    class Fresh(Ids):
+        n = 0
+
+        def token(self, n: int = 8) -> str:
+            Fresh.n += 1
+            return f"fresh{Fresh.n:0{n - 5}d}"
+
+    monkeypatch.setattr(history, "Ids", Fresh)
+    await live.build(replace(ctx, ids=SeededIds(7)))
+    await ctx.session.commit()
+    cases = (
+        (await ctx.session.execute(select(m.Case).where(m.Case.client_id == "munchly", m.Case.history.is_(True))))
+        .scalars()
+        .all()
+    )
+    labels = [c.photo["object"].rsplit("/", 1)[-1] for c in cases]
+    evidence = [
+        p["object"].rsplit("/", 1)[-1] for c in cases if c.destruction for p in c.destruction["photos"].values()
+    ]
+    assert len(labels) == 12 and len(evidence) == 6
+    assert all(x.startswith("ph-fresh") for x in labels), labels
+    assert all("-fresh" in x for x in evidence), evidence
+    for c in cases:  # each photo in the bucket is the batch's own
+        assert (
+            cloud.storage.objects[("photos-test", c.photo["object"])]
+            == history.LABELS.joinpath(f"{c.batch_ref}.webp").read_bytes()
+        )

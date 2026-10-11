@@ -1,0 +1,4 @@
+[
+ {"url": "http://127.0.0.1:8787/designs/SC-148/build/mockup.html?who=priya&theme=light#/report/MF-2406-105", "out": "build/history-invoice-1440-light", "width": 1440, "theme": "light", "wait": 2600, "height": 1900, "js": "(()=>{[...document.querySelectorAll('button,[role=tab]')].find(b=>/^Papers/.test(b.textContent.trim())).click(); setTimeout(()=>[...document.querySelectorAll('button')].find(b=>/Tax invoice/.test(b.textContent)).click(), 400);})()"},
+ {"url": "http://127.0.0.1:8787/designs/SC-148/build/mockup.html?who=priya&theme=light#/report/MF-2407-116", "out": "build/history-expiry-1440-light", "width": 1440, "theme": "light", "wait": 2600, "height": 1500, "js": "(()=>{[...document.querySelectorAll('button,[role=tab]')].find(b=>/^Papers/.test(b.textContent.trim())).click();})()"}
+]

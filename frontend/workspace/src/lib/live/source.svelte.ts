@@ -624,7 +624,8 @@ export class LiveSource implements WorkspaceSource {
 					this.#show((c) => {
 						c.journey.orders = [
 							...c.journey.orders,
-							{ id: kirana, units: n, at: this.#now(), by: this.#member?.id ?? '' }
+							// its tax invoice comes with backend-api's answer (SC-153)
+							{ id: kirana, units: n, at: this.#now(), by: this.#member?.id ?? '', invoice: null }
 						];
 					})
 				);

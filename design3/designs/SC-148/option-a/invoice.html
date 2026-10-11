@@ -1,0 +1,61 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tax invoice · option A</title><style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #fff; color: #111; font: 12.5px/1.35 Arial, Helvetica, sans-serif; }
+.page { width: 794px; padding: 26px 28px; }
+.t { border-collapse: collapse; width: 100%; }
+.t td, .t th { border: 1px solid #222; padding: 4px 6px; vertical-align: top; }
+.t th { font-weight: 700; text-align: center; background: #f3f3f3; }
+.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.c { text-align: center; }
+.small { font-size: 10.5px; color: #333; }
+.h { font-size: 15px; font-weight: 700; }
+.title { text-align: center; font-size: 17px; font-weight: 700; letter-spacing: 0.5px; margin: 0 0 4px; }
+.sub { text-align: center; font-size: 10.5px; margin-bottom: 8px; }
+.qr svg { width: 120px; height: 120px; display: block; }
+.mono { font-family: Menlo, monospace; font-size: 10.5px; word-break: break-all; }
+.sign { height: 64px; }
+/* C, the app's paper */
+.pp { width: 600px; margin: 28px auto; border: 1px solid #d8ded9; border-radius: 16px; padding: 22px 24px; font: 13.5px/1.45 Geist, Arial; color: #0e1a13; }
+.pp .row { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; border-bottom: 1px solid #edf1ee; }
+.pp .row:last-child { border: 0; }
+.pp .cap { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #5b6a62; margin: 14px 0 4px; }
+.pp .stamp { float: right; border: 2px solid #1f6f43; color: #1f6f43; border-radius: 6px; padding: 2px 8px; font-weight: 700; font-size: 11px; transform: rotate(-4deg); }
+.pp h3 { margin: 0 0 2px; font-size: 18px; }
+</style></head><body><div class="page">
+<div class="title">Tax Invoice</div><div class="sub">(ORIGINAL FOR RECIPIENT)</div>
+
+<table class="t">
+<tr><td rowspan="3" style="width:52%"><b>Rakesh Traders</b><br>Shop 12, Kalamna Market, Nagpur 440035<br>GSTIN/UIN: 27ABHPR0000K1ZW<br>State Name: Maharashtra, Code: 27<br>FSSAI Lic. No.: 21526000000117<br>E-Mail: accounts@rakeshtraders.example</td>
+<td>Invoice No.<br><b>INV/26-27/0931</b></td><td>Dated<br><b>05/10/2026</b></td></tr>
+<tr><td>Delivery Note<br>ES-24117</td><td>Mode/Terms of Payment<br>Token ₹1,644 paid; balance in 48 h</td></tr>
+<tr><td>Buyer's Order No.<br>ExpireSoon lot ES-24117</td><td>Dated<br>05/10/2026</td></tr>
+<tr><td rowspan="2">Consignee (Ship to)<br><b>Agrawal Wholesale</b><br>Ganj Mandi, Raipur 492001<br>GSTIN/UIN: 22AAGFA0000A1ZW<br>State Name: Chhattisgarh, Code: 22</td><td>Dispatched through<br>Buyer's own truck</td><td>Destination<br>Raipur</td></tr>
+<tr><td colspan="2">Terms of Delivery<br>Ex-godown, Kalamna Market, Nagpur</td></tr>
+<tr><td>Buyer (Bill to)<br><b>Agrawal Wholesale</b><br>Ganj Mandi, Raipur 492001<br>GSTIN/UIN: 22AAGFA0000A1ZW<br>State Name: Chhattisgarh, Code: 22<br>Place of Supply: Chhattisgarh (22)</td>
+<td colspan="2">Reverse charge: No<br>E-way bill: not required (consignment value under ₹50,000)</td></tr>
+</table>
+<table class="t" style="margin-top:-1px">
+<tr><th style="width:4%">Sl</th><th>Description of Goods</th><th>HSN/SAC</th><th>Quantity</th><th>Rate</th><th>per</th><th>Amount</th></tr>
+<tr style="height:200px"><td class="c">1</td><td><b>Munchly Masala Chips 150 g</b><br><span class="small">Batch MF-2409-117 · best before 18/11/2026 · MRP ₹30.00 a pack, incl. of all taxes</span>
+<br><br><div class="num"><b>IGST @ 5%</b><br>Round off</div></td>
+<td class="c">2005</td><td class="num"><b>772 PCS</b></td><td class="num">14.20</td><td class="c">PCS</td>
+<td class="num">10,962.40<br><br><br><b>548.00</b><br>-0.40</td></tr>
+<tr><td></td><td class="num"><b>Total</b></td><td></td><td class="num"><b>772 PCS</b></td><td></td><td></td><td class="num"><b>₹ 11,510.00</b></td></tr>
+<tr><td colspan="7">Amount Chargeable (in words)<br><b>INR Eleven Thousand Five Hundred Ten Only</b></td></tr>
+</table>
+<table class="t" style="margin-top:-1px">
+<tr><th rowspan="2">HSN/SAC</th><th rowspan="2">Taxable Value</th><th colspan="2">Integrated Tax</th><th rowspan="2">Total Tax Amount</th></tr>
+<tr><th>Rate</th><th>Amount</th></tr>
+<tr><td>2005</td><td class="num">10,962.40</td><td class="num">5%</td><td class="num">548.00</td><td class="num">548.00</td></tr>
+<tr><td class="num"><b>Total</b></td><td class="num"><b>10,962.40</b></td><td></td><td class="num"><b>548.00</b></td><td class="num"><b>548.00</b></td></tr>
+<tr><td colspan="5">Tax Amount (in words): <b>INR Five Hundred Forty Eight Only</b></td></tr>
+</table>
+<table class="t" style="margin-top:-1px">
+<tr><td style="width:52%">Company's PAN: <b>ABHPR0000K</b><br><br><u>Declaration</u><br>We declare that this invoice shows the actual
+price of the goods described and that all particulars are true and correct. Goods sold within their best-before date,
+under the brand's one-time permission.</td>
+<td>Company's Bank Details<br>Bank Name: Example Co-operative Bank, Itwari, Nagpur<br>A/c No.: 0000 0117 2409<br>Branch &amp; IFS Code: EXMP0000117
+<div style="text-align:right;margin-top:10px">for <b>Rakesh Traders</b><div class="sign"></div>Authorised Signatory</div></td></tr>
+</table>
+<div class="sub" style="margin-top:6px">SUBJECT TO NAGPUR JURISDICTION · This is a Computer Generated Invoice</div>
+</div></body></html>

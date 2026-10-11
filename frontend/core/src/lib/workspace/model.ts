@@ -10,7 +10,9 @@ import type {
 	BatchView,
 	CaseData,
 	Distributor,
+	Hero,
 	Kirana,
+	KiranaInvoice,
 	Shop,
 	Phase,
 	RoleId,
@@ -287,14 +289,105 @@ export const cartons = (u: number, per: number) => {
 	const r = u % per;
 	return r * 2 === per ? `${c}½ cartons` : r ? `${c} cartons + ${r}` : `${c} carton${c === 1 ? '' : 's'}`;
 };
-/** the scheme: pay the pack price for `buy` of every `buy + free`, sell them all at MRP */
-export const offerMath = (n: number, c: Pick<CaseData, 'lines' | 'sku' | 'scheme'>) => {
-	const lot = c.scheme.buy + c.scheme.free;
-	const free = Math.floor(n / lot) * c.scheme.free;
-	const paid = n - free;
-	const pack = c.lines.kirana.packPrice!;
-	return { n, free, paid, pack, pay: paid * pack, sell: n * c.sku.mrp, margin: n * c.sku.mrp - paid * pack };
+/** a kirana's scheme order as its distributor invoices it (SC-153; money.js kiranaInvoice): every packet at the pack
+ *  price, less the scheme's discount, which leaves the taxable value the ledger counts; CGST and SGST at half the SKU's
+ *  rate each, within the state; the total to the rupee */
+export function kiranaInvoice(
+	units: number,
+	line: { price: number; packPrice?: number | null },
+	sku: { gst: number; hsn?: string },
+	scheme: { buy: number; free: number }
+) {
+	const c2 = (n: number) => Math.round(n * 100) / 100;
+	const gross = c2(units * line.packPrice!),
+		taxable = c2(units * line.price),
+		discount = c2(gross - taxable);
+	const cgst = c2((taxable * sku.gst) / 2),
+		sgst = cgst,
+		tax = c2(cgst + sgst),
+		exact = c2(taxable + tax),
+		total = Math.round(exact);
+	return {
+		units,
+		rate: line.packPrice!,
+		gross,
+		discountPct: c2((scheme.free / (scheme.buy + scheme.free)) * 100),
+		discount,
+		taxable,
+		gstPct: Math.round(sku.gst * 100),
+		cgst,
+		sgst,
+		tax,
+		roundOff: c2(total - exact),
+		total,
+		hsn: sku.hsn ?? ''
+	};
+}
+/** a shop's order as its invoice has it: before GST, the GST, what it pays, and its margin selling it all at MRP */
+export const schemeOf = (
+	n: number,
+	line: { price: number; packPrice?: number | null },
+	sku: { gst: number; hsn?: string; mrp: number },
+	scheme: { buy: number; free: number }
+) => {
+	const inv = kiranaInvoice(n, line, sku, scheme);
+	return {
+		n,
+		rate: inv.rate,
+		discountPct: inv.discountPct,
+		taxable: inv.taxable,
+		gstPct: inv.gstPct,
+		tax: inv.tax,
+		pay: inv.total,
+		sell: n * sku.mrp,
+		margin: Math.round((n * sku.mrp - inv.total) * 100) / 100
+	};
 };
+/** the scheme for the batch in a journey, as the invoice will have it */
+export const offerMath = (n: number, c: Pick<CaseData, 'lines' | 'sku' | 'scheme'>) =>
+	schemeOf(n, c.lines.kirana, c.sku, c.scheme);
+/** a batch's invoices to its shops (SC-153): its own, where its shops carry them (a cleared batch's case), else the
+ *  journey's for the batch in a journey */
+export function invoicesOfCase(
+	c: Pick<CaseData, 'lines' | 'sku' | 'scheme' | 'kiranas' | 'dist'>,
+	orders: Hero['orders'] | null,
+	day0: string,
+	shops?: readonly Shop[]
+): KiranaInvoice[] {
+	const own = c.kiranas.map((k) => k.invoice).filter((x): x is KiranaInvoice => !!x);
+	return own.length || !orders ? own : journeyInvoices(c, orders, day0, shops);
+}
+/** the batch in a journey's invoices to its shops, in the order they ordered (SC-153): the live workspace's as
+ *  backend-api issued them, the stub's numbered from its distributor's next (ledger.js storyInvoices) */
+export function journeyInvoices(
+	c: Pick<CaseData, 'lines' | 'sku' | 'scheme' | 'kiranas' | 'dist'>,
+	orders: Hero['orders'],
+	day0: string,
+	shops?: readonly Shop[]
+): KiranaInvoice[] {
+	const s = c.dist.series;
+	return orders
+		.map((o, i): KiranaInvoice | null => {
+			if (o.invoice) return o.invoice;
+			if (!s) return null;
+			const at = /^\d\d:\d\d$/.test(o.at) ? `${day0}T${o.at}` : o.at;
+			const k = shops?.find((x) => x.id === o.id) ?? c.kiranas.find((x) => x.id === o.id);
+			return {
+				no: s.prefix + String(s.next + i).padStart(s.width, '0'),
+				date: at.slice(0, 10),
+				at,
+				kirana: o.id,
+				shop: {
+					id: o.id,
+					name: k?.name ?? o.id,
+					area: k?.area ?? '',
+					pincode: (k && 'pincode' in k && k.pincode) || ''
+				},
+				...kiranaInvoice(o.units, c.lines.kirana, c.sku, c.scheme)
+			};
+		})
+		.filter((x): x is KiranaInvoice => !!x);
+}
 
 /* ---------- people and their access ---------- */
 

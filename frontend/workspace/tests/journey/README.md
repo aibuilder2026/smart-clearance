@@ -4,25 +4,28 @@ The Masala Chips 150 g batch (MF-2409-117, Rakesh Traders, Nagpur) taken from a 
 real browser, on the happy path, with every person acting in the real UI in turn (SC-95). The agents do their part on
 live Gemini through the local pull worker. One page drives everyone, so the whole journey is one recording.
 
-| #   | Step                                                                                                                                                                            | Who                           | Where                                                        |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------------ |
-| 1   | Reset journey, at 60 min a journey day (Rehearsal)                                                                                                                              | Neha, staff                   | console, Munchly · Agents · Actions                          |
-| 2   | Confirm Setup: the export's mapping and the guardrails                                                                                                                          | Priya, Supply Chain           | `/setup`                                                     |
-| 3   | The one-time permission                                                                                                                                                         | Rakesh, distributor           | `/home`, Allow                                               |
-| 4   | The Watcher flags the chips (Run now, unless the 09:00 check already has)                                                                                                       | Neha                          | console, Watcher · Run now                                   |
-| 5   | The label photo, uploaded (`agents/evals/vision/images/story-clean.webp`)                                                                                                       | Rakesh                        | `/photo/MF-2409-117`                                         |
-| 6   | The Valuer prices, the Router plans; the plan approved                                                                                                                          | Priya                         | `/route/MF-2409-117`                                         |
-| 7   | The Lister lists 772 on ExpireSoon, Outreach offers 588 to 38 kiranas                                                                                                           | the agents                    | `/execution/MF-2409-117`                                     |
-| 8   | Each of the 31 ordering kiranas orders its own share; the scheme fills and closes                                                                                               | each kirana                   | `/offer/MF-2409-117`                                         |
-| 9   | A bid at ₹13, the Negotiator's counter, the counter taken                                                                                                                       | Agrawal Wholesale, ExpireSoon | `/market`, `/listing`                                        |
-| 10  | The buyer's truck loaded                                                                                                                                                        | Rakesh                        | `/van`                                                       |
-| 11  | Paperwork drafts the pack; the invoice issued from Tally; the van round                                                                                                         | Rakesh                        | `/orders`, `/van`                                            |
-| 12  | Every paper read (tax invoice, e-way bill check, credit note, GST ITC memo, FSSAI, destruction certificate); the pack reviewed                                                  | Priya, Supply Chain           | `/paperwork/MF-2409-117`                                     |
-| 13  | Expiry day's report fired; Impact posts the ledger                                                                                                                              | Neha                          | console, Impact · Report now                                 |
-| 14  | Priya verifies the tax: the ledger's GST reading for the quarter, the GST summary exported, the batch's GST ITC memo (its stamp and its PDF), tax invoice and credit note       | Priya, Supply Chain           | `/report`, `/report/MF-2409-117`                             |
-| 15  | Priya verifies the ESG: the ledger's Impact reading, the BRSR table exported, the batch's BRSR line and its evidence; the year so far                                           | Priya, Supply Chain           | `/report`, `/report/MF-2409-117`                             |
-| 16  | Rakesh reads his portal back: Today with nothing left for him, the batch's page (what happened, he ends whole, his papers and their PDFs), Orders, Deliveries, his label photos | Rakesh, distributor           | `/home`, `/batches/MF-2409-117`, `/orders`, `/van`, `/photo` |
-| 17  | The batch's money in the ledger; Execution and the Command Center at the end                                                                                                    | Priya                         | `/report`, `/execution`                                      |
+| #   | Step                                                                                                                                                                                                                    | Who                           | Where                                            |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- | ------------------------------------------------ |
+| 1   | Reset journey, at 60 min a journey day (Rehearsal)                                                                                                                                                                      | Neha, staff                   | console, Munchly · Agents · Actions              |
+| 2   | Confirm Setup: the export's mapping and the guardrails                                                                                                                                                                  | Priya, Supply Chain           | `/setup`                                         |
+| 3   | The one-time permission                                                                                                                                                                                                 | Rakesh, distributor           | `/home`, Allow                                   |
+| 4   | The Watcher flags the chips (Run now, unless the 09:00 check already has)                                                                                                                                               | Neha                          | console, Watcher · Run now                       |
+| 5   | The label photo, uploaded (`agents/evals/vision/images/story-clean.webp`)                                                                                                                                               | Rakesh                        | `/photo/MF-2409-117`                             |
+| 6   | The Valuer prices, the Router plans; the plan approved                                                                                                                                                                  | Priya                         | `/route/MF-2409-117`                             |
+| 7   | The Lister lists 772 on ExpireSoon, Outreach offers 588 to 38 kiranas                                                                                                                                                   | the agents                    | `/execution/MF-2409-117`                         |
+| 8   | Each of the 31 ordering kiranas orders its own share; the scheme fills and closes                                                                                                                                       | each kirana                   | `/offer/MF-2409-117`                             |
+| 9   | A bid at ₹13, the Negotiator's counter, the counter taken                                                                                                                                                               | Agrawal Wholesale, ExpireSoon | `/market`, `/listing`                            |
+| 10  | The buyer's truck loaded                                                                                                                                                                                                | Rakesh                        | `/van`                                           |
+| 11  | Paperwork drafts the pack; the invoice issued from Tally; the van round                                                                                                                                                 | Rakesh                        | `/orders`, `/van`                                |
+| 12  | Every paper read (tax invoice, e-way bill check, credit note, GST ITC memo, FSSAI, destruction certificate); the pack reviewed                                                                                          | Priya, Supply Chain           | `/paperwork/MF-2409-117`                         |
+| 13  | Expiry day's report fired; Impact posts the ledger                                                                                                                                                                      | Neha                          | console, Impact · Report now                     |
+| 14  | Priya verifies the tax: the ledger's GST reading for the quarter, the GST summary exported, the batch's GST ITC memo (its stamp and its PDF), tax invoice and credit note                                               | Priya, Supply Chain           | `/report`, `/report/MF-2409-117`                 |
+| 15  | Priya verifies the ESG: the ledger's Impact reading, the BRSR table exported, the batch's BRSR line and its evidence; the year so far                                                                                   | Priya, Supply Chain           | `/report`, `/report/MF-2409-117`                 |
+| 16  | Priya reads the batch's Record: the photos sent for it, the audit trail (People only, then as CSV), the yeses; the same tab on her batch page                                                                           | Priya, Supply Chain           | `/report/MF-2409-117?tab=record`, `/execution`   |
+| 17  | Priya reads the Impact dashboard (tiles, Food by week as a table, where the kilos went, by product) and the Command Center's Impact card                                                                                | Priya, Supply Chain           | `/report?reading=impact`, `/command`             |
+| 18  | Rakesh reads his portal back: Today with nothing left for him, the batch's page (what happened, he ends whole, his papers and their PDFs), Orders and Batches with their sums, his Photos, Deliveries, his label photos | Rakesh, distributor           | `/home`, `/batches`, `/orders`, `/van`, `/photo` |
+| 19  | The batch's money in the ledger; Execution with the lot collected and the scheme delivered; the Command Center at the end                                                                                               | Priya                         | `/report`, `/execution`                          |
+| 20  | The console's Overview: Food, by day, across every client, and as a table                                                                                                                                               | Neha                          | console, Overview                                |
 
 The story's figures are checked as it goes (softly, so the run reaches the end): a plan of ₹21,770 net (588 to kiranas,
 772 to ExpireSoon), 38 kiranas offered, 31 ordering 588 packets, an award of 772 at ₹14.20 with a ₹1,644 token, an
@@ -31,7 +34,32 @@ if destroyed on the Command Center at Detect, the Lot won bill's total of ₹11,
 signs, one day for the van round on Deliveries, in its push and in the timeline, and an FSSAI paper that names no
 batch as donated.
 
-Its run of 9 Oct with Rakesh's portal (SC-133) is in `runs/2026-10-09-distributor/`; the one with Priya's tax and ESG (SC-128) is in `runs/2026-10-09/`; the run of 8 Oct, after SC-96 to SC-100, is
+**What SC-139 to SC-157 added, checked as the journey reaches it (SC-161):**
+
+- **The label photo (SC-147):** the EAN-13 and the batch's QR code read back from the file Rakesh sends (Chromium's
+  BarcodeDetector), and Vision's read of the sticker as the batch's record has it.
+- **Execution's channel cards (SC-151, SC-156):** the ExpireSoon lot as buyers see it (its id, 772 units, ₹15, 50% off,
+  the reserve and the hidden territories), live, awarded and collected, with its stops and the API call behind its
+  button; the kirana scheme as the shops see it (₹21.60 a pack, ₹18.00 effective, the 48-hour window), open, filled and
+  delivered, with its stops and the push behind its button.
+- **The kiranas' tax invoices (SC-153):** one for every order, RT/26-27/1279 on, at ₹18.00 a packet taxable with CGST and
+  SGST at 2.5% each, to the rupee; the first shop's order page and invoice; the sales register in Priya's pack; every
+  invoice's PDF.
+- **The Tally papers (SC-148):** the issued tax invoice reads "issued" in the pack, ORIGINAL FOR RECIPIENT, with its
+  IRN worked out from Rakesh Traders' GSTIN and its number, and the three parties' GSTINs; the credit note names
+  Munchly's dispatch invoice, MFL/26-27/02417.
+- **Destroyed at the godown (SC-139):** Munchly's policy, with nothing left on the happy path, so nothing to destroy.
+- **The Record (SC-142, SC-144, SC-146):** the photo sent, Vision's read and the match, the audit trail and the yeses;
+  every photo drawn, none failed; Rakesh's Photos tab.
+- **The distributor's figures (SC-141, SC-145):** the scheme's row at ₹18.00 effective on its 31 invoices; the sum card
+  on Orders and Batches (cost = sold + credited), and a cleared batch's own sum; once the chips clear, they are among
+  them (SC-162).
+- **The Impact dashboard (SC-157)** and **the console's Food by day (SC-149)**, and Munchly's address,
+  munchly-smartclearance.web.app, in the console (SC-150).
+- **The buttons (SC-152):** every button the run presses is watched as it waits; its words go in the report, and a blank
+  or transparent face, or a refusal, is a finding.
+
+Its run of 11 Oct with these checks (SC-161) is in `runs/2026-10-11/`. Its run of 9 Oct with Rakesh's portal (SC-133) is in `runs/2026-10-09-distributor/`; the one with Priya's tax and ESG (SC-128) is in `runs/2026-10-09/`; the run of 8 Oct, after SC-96 to SC-100, is
 in `runs/2026-10-08/`.
 
 ## Munchly Mango E2E

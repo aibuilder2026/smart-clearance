@@ -1867,6 +1867,56 @@
     - with the photos held back mid-load, design3 (light and dark) and core's stub build each showed the shimmer placeholders with their tags, then the photos once they landed;
     - the frontend gate passes: core 270, api 78, workspace 92, admin 17, demo 5, console 3.
 
+- **SC-147** (PR #134, merged): every carton label photo carries a barcode, a QR code and the FSSAI licence, past and present.
+  - **The request:** "food labels uploaded should have FSSAI approved bar code and QR code on the cartons. this should updated for all past batches and orders on munchly", with a real snack label for reference. The GST papers, its second part, are SC-148.
+  - **Design first:** three options on one board in app v3, `SC-147 design review.html`:
+    - A, the full statutory sticker (recommended);
+    - B, the printed shipper carton;
+    - C, today's label with a coded foot.
+
+    The maintainer picked **A**, and answered the eval set's question with "Relabel all 73, everything in past and present to new format". Designs and the decision are in `design3/designs/SC-147/`.
+  - **The label:** the product in a band (the veg mark on food), the ingredients, the net quantity and MRP, the batch and its dates boxed, the maker and customer care, the FSSAI mark and licence `10019022001234` (a cosmetic, Glowra's face wash and hair oil: its manufacturing licence and "use before", no FSSAI), the pack's EAN-13 and the batch's QR code, the storage line.
+    - FSSAI asks for its mark and licence; the barcode is GS1's. Every number is fictional: GTINs under GS1 India's 890 with a company number no business holds (8900000), the QR a GS1 Digital Link on `id.munchly.example` (GTIN, batch, best-before), the fssai mark drawn here.
+    - The batch, dates and MRP print as each batch's record has them, so Vision's check still matches.
+  - **The label maker,** `design3/system/labels/` (`make.py labels`): `label.py` (the sticker as HTML, in five print styles), `codes.py` (EAN-13, ITF-14, the QR, GSTINs), `quad.py` (each base's blank sticker found), `compose.mjs` (the label warped onto the sticker in perspective, multiplied, any cover laid over a line, every code read back with Chromium's BarcodeDetector), `bases.sh` and 16 Qwen-Image base photos (`bases/`, with sidecars and `bases.json`).
+  - **Rebuilt:**
+    - the 14 label photos in `design3/system/img/labels/`: the history's twelve, the Masala Chips, and the Mango Drink's (new); `seed.mjs` copies the history's into backend-api;
+    - all 73 of Vision's eval photos (`agents/evals/vision/plan.py` on the label maker): the clean ones, the five print styles, and hard cases made exactly (tape over a line, a thumb over both dates, a tear over the MRP, Pillow's blur, glare, darkness, angles, compression, a smear). `story-clean` and `mango` are design3's own photos for MF-2409-117 and MF-2410-118, byte for byte. A thumb now hides what it covers, so story-thumb is no-date, story-tape no-batch, story-dim unreadable and damaged has no MRP; `seen.json` is gone;
+    - **LabelShot**, the example and the stub's photo (design3 `brand.jsx`, core `LabelShot.svelte`): the batch's own label photo; the typeset label where there is none, as on a live build. The workspace's live tests now leave the story's photos out, as a live build does.
+  - **Vision's prompt** knows USE BEFORE and EXPIRY, and never takes a field from the barcode, the licence or the QR code.
+  - **Not changed:** the five destruction "before" photos keep their large batch slips, which Vision's destruction check reads.
+  - **Checks:**
+    - the frontend gate passes: core 273 (30 goldens lose the typeset label), api 78, workspace 93, admin 17, demo 5, console 3; a live workspace build passes `no-seed.mjs`;
+    - backend-api 552 passed, 1 skipped; agents 202 passed;
+    - every visible barcode and QR code read back from its photo;
+    - the evals were not run on live Gemini (on request only, about GBP 1 to 2).
+
+- **SC-148** (PR #135, merged): the GST papers in Tally's layout, every party with a valid GSTIN, and the tax invoice with its e-invoice, past and present.
+  - **The request:** "Same for GST bills and invoices, they should be proper with GST number and realistic as much as possible. I need you to update all images and invoices as needed for all past and present batches." Found: no GSTIN on the papers passed its check character; Lakshmi Agencies, Patil Distributors and Gupta & Sons had none ("GSTIN undefined"); Paperwork's PDFs named Munchly by its name only; the invoice lacked most of CGST rule 46; the credit notes named no invoice.
+  - **Design first:** three options on one board in app v3, `SC-148 design review.html`:
+    - A, as Tally prints it;
+    - B, the e-invoice (recommended);
+    - C, the app's paper, completed.
+
+    The maintainer picked **B**, and answered the open question with "an invoice per order" for the kiranas, which is SC-153 ("before GST", with the scheme as a discount). Designs, the build's stills and the decision are in `design3/designs/SC-148/`.
+  - **The parties** (design3 `data.js`, fictional, each PAN's digits 0000, never issued): Munchly Foods Ltd `27AAKCM0000M1ZN` (PAN, CIN `L15400MH2011PLC000117`, address, state code, email); Rakesh Traders `27ABHPR0000K1ZW`, Lakshmi Agencies `36AAJFL0000L1ZM`, Patil Distributors `27AAKFP0000P1Z8`, Gupta & Sons `23AAHFG0000G1ZB`, each with its address and pincode, PAN, state code, FSSAI licence, email and bank (`EXMP…` IFS codes); Agrawal Wholesale `22AAGFA0000A1ZW`, with its PAN.
+  - **The tax invoice** (Tally's layout): the seller with his GSTIN, state, FSSAI licence and email; the invoice's number and date, the lot as delivery note and buyer's order, the token and the balance's hours, the buyer's truck, Raipur; consignee and buyer with GSTIN and state; place of supply; reverse charge; the e-way bill line ("not required: the consignment is under ₹50,000"); the line with its batch, best-before and MRP, IGST, the round-off and the total; the amount and the tax in words; the HSN summary; his PAN, the declaration, his bank, the signatory, the jurisdiction. Drafted, it reads "DRAFT, for Rakesh Traders to issue from Tally"; **issued**, "ORIGINAL FOR RECIPIENT" with its **e-invoice**: the IRN (SHA-256 of his GSTIN, the year, INV and the number, as the portal works it out), the acknowledgement number and date, and the signed QR code, a JWT of the invoice's key facts whose signature says it is illustrative. Worked out from the paper and its parties when drawn, never stored (`core/papers.js`: `sha256`, `qr`, `words`, `fy`, `einvoice`, `dispatchOf`).
+  - **Munchly's credit notes** (price support, and the expiry notes under each policy) in the same layout: Munchly's identity, the distributor's, the reason, the rows, the credit in words, against the invoice Munchly billed the batch on (`MFL/{year}/{2300 + the batch's number}`, three days after it was made: the chips' `MFL/26-27/02417`, 21/05/2026), and why it adjusts no GST: a financial note, not under section 34, not reported to the portal.
+  - **Also:** the e-way check and the ITC memo carry the GSTINs, the FSSAI checklist the licence; an issued invoice reads "issued" in the pack (DocCard) and "Issued by … from Tally".
+  - **The build:** design3 first (`core/papers.js`, `data.js`, `ledger.js`'s `invoiceIssuedAt`, `finance.jsx` TallyInvoice and TallyCredit, `product.jsx` DocCard, `screens.css`'s `.tl`), then core (`papers.ts`, held to papers.js QR module for module by `papers.test.ts`; `TallyInvoice.svelte`, `TallyCredit.svelte`, `Paper.svelte`, `ledger.ts` `issuedWhen`, `PaperPack`, `DocCard`, `screens.css` verbatim).
+  - **backend-api:** migration 0014 (`distributors.details`; 0012 and 0013 are SC-149's and SC-150's); `services/journey/identity.py`, the client's and the buyer's identity, set by hydrate's live build and topped up by Reset journey; the snapshot carries them, and the journey `invoiceIssuedAt`; the agents' case read gives Paperwork the client, the buyer, the balance's hours and the e-way threshold; issuing the invoice stamps its time and asks Paperwork to lay it out again, with its e-invoice.
+  - **agents:** Paperwork's PDFs in the same layout (`tally.html`, `invoice.html`, `_credit.html`, `credit_note.html`, `expiry_note.html`); `tools/papers.py` works out the e-invoice, the words and the dispatch invoice as papers.js does (`test_papers.py`), and draws the QR with segno 1.6.
+  - **The contract:** `WsDistributor` gains `stateCode`, `pan`, `fssai`, `email`, `bank`; `WsBuyer` `pan`; `WsClient` `pan`, `cin`, `address`, `state`, `stateCode`, `email`; the journey `invoiceIssuedAt`.
+  - **Checks:**
+    - backend-api 552 passed, 1 skipped (the story's journey test: issuing the invoice keeps its time, asks for its PDF again, and gives Paperwork the three GSTINs);
+    - agents 206 passed (the issued invoice's IRN, acknowledgement and QR; the credit notes against the dispatch invoice);
+    - the frontend gate passes: core 277 (`papers.test.ts`; the finance goldens in the new layout), api 78, workspace 94 (a new live test: the chips' issued invoice on the cleared moment, its IRN worked out in the test from the GSTINs), admin 17, demo 5, console 3;
+    - the live fixtures were regenerated; every QR code drawn decodes with Chromium's BarcodeDetector;
+    - the browser suites were not run (SC-55).
+  - **Locally:** migrated, rebuilt with `hydrate.sh --reset`, then `--papers munchly --again`: Paperwork laid out all 44 of the history's PDFs afresh (each invoice issued, with its IRN; each credit note against its dispatch invoice). The day is 24 hours.
+  - **Production:** CI deployed `3e7a4c6` (SC-147, SC-148 and SC-153), and SC-160 replaced production's data with local's, so the identities, the history's papers and the kirana invoices are there as locally.
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
+
 - **SC-149** (In Review, branch `SC-149-overview-destroyed`): the console's Overview stops drawing what it recovered twice, and shows the food destroyed.
   - **The request:** "Console dashboard graph across all clients seems to be duplicating the recovered graph, see if we can add destroyed food into the graphs too... Agents at work and other sections looks fine dont touch them". The Recovered figure's sparkline and the Recovered, by day card drew the same series under the same total, and nothing recorded what a closed batch destroyed.
   - **Design first:** three options on one board in platform v3, `SC-149 design review.html`, each the console on a review world (Munchly and four fictional clients, 180 days of batches):
@@ -1925,6 +1975,45 @@
   - **The workspace:** a step sent `inline` (`SendOptions`) rejects with the API's words instead of raising the band, and shows once it has gone through, never before. **The console:** `Console.act` resolves once saved (the console reads itself again without waiting) and rejects with the API's words; controls keep the value pressed; a menu item waits on its "…" button.
   - **Checks:** the frontend gate passes (core 278 with 5 new, api 79, admin 17, console 8 with 5 new, workspace 96 with 3 new, demo 5). The workspace's sign-in was pressed in a headless browser on the stub build; the console agent played its states in the browser pane on the mock build. The browser suites were not run (SC-55); the motion specs count `.btn-arc` as a loading indicator.
   - **Hosting:** the hosted landing page and console load commit `852020d`; every pinned file was checked on jsDelivr first, and both pages render. The app, demo and design-system pages stay on their pins; design3's design-system page crashes on load, which predates SC-152 (a task is offered for it).
+- **SC-153** (PR #136, merged): a tax invoice from the distributor for every kirana order, past and present.
+  - **The request:** SC-148's board asked whether each shop's order should get its own tax invoice; the maintainer answered **"An invoice per order"**, then **"Before GST"** (₹18.00 effective, plus CGST and SGST at 2.5% each, the shop paying the total) and **"Scheme discount"** (the packets at ₹21.60, less 16.67%, so every invoice equals what the ledger counts).
+  - **Design first:** three options on one board in app v3, `SC-153 design review.html`, each the app on its stub with only its screens changed:
+    - A, with each order (recommended);
+    - B, the bill book;
+    - C, as PDFs.
+
+    The maintainer picked **A**. Designs, the build's stills and the decision are in `design3/designs/SC-153/`.
+  - **The invoice** (money.js `kiranaInvoice`, money.py `kirana_invoice`, held by fixtures): Tally's tax invoice (SC-148's layout) for a B2C supply within the state: the distributor's identity, the shop as buyer (Unregistered) with its address and pincode, the place of supply, every packet at the pack price less the scheme's discount, CGST and SGST as rows of their own, the total to the rupee, the amounts in words; no IRN. Ganesh ji's 24 packets: ₹518.40 less ₹86.40 = ₹432.00, ₹10.80 + ₹10.80, round-off ₹0.40, **₹454**.
+  - **Numbered** in each distributor's own sales series (`data.js` `series`, `world.js` `NUMBERS` `kirana.<id>`): the history's 214 as they were placed, two minutes apart from each batch's orders step (Rakesh Traders `RT/26-27/1164` to `1278`, Lakshmi Agencies `LA/26-27/0873` to `0971`), then the story's from the series' next (the chips' 31: `RT/26-27/1279` to `1309`). Issued as the shop orders, dated then.
+  - **Where it shows** (design3 first, then core):
+    - the kirana's order page: its figures as the invoice has them (before GST, the GST, what he paid, his margin: ₹266 where it read ₹288) and "Tax invoice · RT/26-27/1279", opening in a sheet with its PDF; his Orders name each invoice; the ordering screen's figures follow it;
+    - the distributor's Orders: the scheme's row names its invoices and the GST he collected; each shop's order shows its invoice and total, and opens it; his batch's papers gain the sales register;
+    - Priya's pack: one card, "Tax invoices to kiranas", the register beside it, each number opening its invoice.
+  - **Also:** the order page's free packets ("2 in every 12") read more paid than the ledger counted on an order not in twelves (73 of the history's: Mauli Kirana's 10 packets read ₹288 where the ledger had ₹240); as a discount on the invoice every order equals the ledger.
+  - **backend-api:** migration 0015 (`case_orders.invoice`); `steps.order` issues it in the distributor's series and asks Paperwork for its PDF (`journey.step kirana`); the case detail, the shops' list and the partner facts carry it (a kirana its own); `GET …/documents/{ref}/kirana.{shop}` serves its PDF to the shop, its distributor and Munchly; `hydrate.sh --papers` lays out any that lack one; the history numbers them as ledger.js does, and Reset journey puts the series back.
+  - **agents:** Paperwork's `kirana_invoice.html`, laid out as `{client}/{ref}/kirana-{shop}.pdf`.
+  - **The contract:** `WsKiranaInvoice`, on the journey's orders, `KiranaOffer` and `WsPartnerCase.kiranas`; `contracts.sh` re-exported the OpenAPI.
+  - **Found on the way, fixed on SC-148:** on a phone the Tally papers' blocks ran past the paper's right edge; a narrow paper now keeps its one track to the paper's width and hides the items' per column, so every header stays whole.
+  - **Checks:**
+    - backend-api 567 passed, 1 skipped (the story's invoices numbered from RT/26-27/1279, who may open a PDF; the history's 214 held to ledger.js through the partner facts; `--papers` asking for the invoices without one);
+    - agents 207 passed (the kirana invoice laid out and reported);
+    - the frontend gate passes: core 285 (`invoices.test.ts`: money.js's figures, ledger.js's story and history invoices; the goldens follow), api 79, workspace 100 (3 new live tests: Ganesh ji's invoice and its PDF, Rakesh's shop and register, Priya's pack), admin 17, demo 5, console 8, after merging main (SC-149 to SC-152, SC-154);
+    - the live fixtures and the seeds were regenerated; design3's `dist/` is rebuilt;
+    - the browser suites were not run (SC-55).
+  - **Locally:** migrated to 0015, rebuilt with `hydrate.sh --reset`, and `--papers munchly` had Paperwork lay out the history's 214 kirana invoices. The day is 24 hours.
+  - **Hosting:** the hosted app page stays on its pinned commit.
+- **SC-159** (In Review, branch `SC-159-history-photo-ids`; bug): a rebuilt history kept an old label or evidence photo where its object name repeated.
+  - **Found** while readying the local history for SC-160: MF-2406-105's label photo was still the one from before SC-147, though the other eleven were SC-147's.
+  - **The cause:** `hydrate.sh --reset` builds the world with seeded ids, so a rebuild could give a history photo the object name it had before; the bucket is written once and never replaced (`Storage.write`), so the old photo stayed. `--photos` counted every photo as put, written or not.
+  - **The fix** (`services/journey/history.py`): the history's label and evidence uploads take fresh ids (`_fresh`); `put_labels` returns what it wrote and what was already there, and `--photos` prints both.
+  - **Checks:** backend-api 568 passed, 1 skipped; the new test (`test_record.py`) builds the history on seeded ids and holds each photo to a fresh name and its batch's own bytes, and fails without the fix.
+  - **Locally:** rebuilt on the fix; all 18 history photos the case details serve (12 labels; the 3 godown batches' before and after) match the reference byte for byte. Paperwork laid out every history paper and the 214 kirana invoices with the current templates, run in process, since another session's agents worker (SC-158, on `main` from before SC-147) shares the local subscriptions, dropped the kirana events and laid out 10 batches' papers with the old templates.
+
+- **SC-160** (In Review; operations): production's data replaced with local's after SC-147, SC-148, SC-153 and SC-159, asked for by the maintainer ("sync all photos, documents, papers, postgresql and big query data to production").
+  - **Done (11 Oct)** with `backend-api/scripts/sync.sh` (SC-136), production at schema 0015 after CI deployed `3e7a4c6`: rehearsed into a scratch database first, then the on-demand backup `1791675143836` (23:32 UTC, 10 Oct), the database (37 tables, 5,882 rows, 19 sequences), the photos, docs and exports buckets, and BigQuery's seven tables. The plan after it shows every table equal.
+  - **Read back through production's API:** all 18 history photos match the reference; the history's tax invoice (issued, with its IRN), credit note (against `MFL/25-26/02405`), a kirana invoice (`RT/26-27/1164`, ₹605) and an agency's destruction certificate (`OCE/DC/26-27/0218`) serve as PDFs; the ledger reads Q2 FY27 as 12 batches and ₹2,20,383.58; Munchly's journey is at day 0 on 24-hour days.
+  - **Replaced with it:** production's own journeys since SC-136 (31 cases, 614 kirana orders), its 2 devices registered for pushes (no push reaches them until they register again from the app), and its idempotency keys. Objects only production had stay in its buckets for the backup, until the 30-day lifecycle removes them.
+
 - **SC-154** (In Review, branch `SC-154-hero-film-vertex`): the hero film, live action on Vertex AI. The landing page's film tells the journey with real people, made with Google's models.
   - **The request:** "a really awesome video projecting the journey of the application in about 15 seconds", with "realistic human characters instead of cartoon", showing brands, distributors, kiranas, donations and the staff sale, made with Google's video and image models, with a plan of the Vertex AI models and their prices; professional and aesthetically pleasing.
   - **The maintainer's decisions (10 Oct):** tracked scripts rather than a plugin; the design round as storyboards plus one Veo 3.1 Fast draft clip per option at 720p without audio (about $8); the final on Veo 3.1 at 1080p without audio (the hero plays muted; silent video is half the price); no night act, both themes starting on the same frame; two money gates, each answered with a figure.
@@ -1943,5 +2032,71 @@
   - **Cost:** $18.76 (£14.07) in all: the design round $5.66, seven final clips $11.20 (one more was filtered, free) and three keyframe edits, against the $45 cap.
   - **Docs:** AGENTS.md (the loop exemption names the new film; the Vertex rule), DESIGN.md (the hero film's material), this file's tool list.
   - **Hosting:** design3's `dist/` is rebuilt; the hosted landing page and console load commit `699c1af`, the branch brought up to date with main (SC-151, SC-152, SC-155), so both carry SC-152's buttons too; every pinned file checked on jsDelivr and GitHub raw first, and the landing page plays the film from it with no console errors.
+- **SC-156** (In Review, branch `SC-156-outreach-card`): Execution's Outreach card drops the sample message and says where the kirana scheme stands.
+  - **The request:** "messages are sent to multiple kiranas, no need to show them here"; "this block should show something like offer window over like other channels"; "Dont change anything with the VAN delivery map".
+  - **Design first:** three options on one board in app v3, `SC-156 design review.html`, each in five states (queued, open, filled, window over, delivered):
+    - A, the scheme's stops (recommended);
+    - B, the window first;
+    - C, the shops.
+
+    The maintainer picked **A**. Designs, stills and the decision are in `design3/designs/SC-156/`.
+  - **The card** (design3 `brand.jsx` `SchemeCard`, core `SchemeCard.svelte`): the scheme as the shops see it, the figures, the offer window as one line filled by the time gone, four stops with their times (Sent, First order, Closed, Van round), the cluster map untouched, the latest orders, and **The push, as sent** behind a button. The badge follows: queued, open, filled, window over, delivered.
+  - **The data:** the stub's offer carries `closesAt`; backend-api's case view and the contract carry `closedAt`; the live projection carries both and `elapsed`.
+  - **Checks:** backend-api 554; the frontend gate passes (core 273 with 9 goldens updated, api 79, workspace 95 with 2 new live tests, admin 17, demo 5, console 3); the e2e and a11y specs follow the card; the browser suites were not run.
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
+
+- **SC-157** (In Review, branch `SC-157-esg-dashboard`, stacked on SC-156): Supply chain's ESG and food-waste dashboard, live from the ledger.
+  - **The request:** "Supply chain can have some cool ESG & food waste savings dashboard", with the console's Food kept out of landfill card as the reference.
+  - **Design first:** three options on one board in app v3, `SC-157 design review.html`, each the app itself on the stub:
+    - A, Impact, its own page (recommended);
+    - B, the Impact reading, grown;
+    - C, the flow.
+
+    The maintainer picked **B**, and a small card on the Command Center. Designs, stills and the decision are in `design3/designs/SC-157/`.
+  - **The Impact reading** keeps its headline and gains three tiles against the quarter before (with sparklines), Food by week (SC-149's form, with a table view), Where the kilos went and By distributor or product, over the period's batches. **The Command Center's card** reads the quarter so far and opens the Ledger on Impact (`/report?reading=impact`).
+  - **The figures:** `core/ledger.js` `dashboard()` and `impactPeriod()`, and core's `impact.ts` held to them; derived from the ledger's rows, so the live workspace needs no new route. The inks are SC-149's, validated on the app's surfaces.
+  - **Checks:** the frontend gate passes (core 276 with 3 new, api 79, workspace 97 with 2 new, admin 17, demo 5, console 3); the a11y spec scans the reading, its table and the card; the browser suites were not run.
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
+
+- **SC-161** (PR #141, merged): Munchly Chips E2E checks what SC-139 to SC-157 built, and a recorded run, asked for by the maintainer ("run munchly chips happy path end to end journey flow, verify each and every step, especially the new features that developed").
+  - **The suite** (`frontend/workspace/tests/journey/features.ts`, called from `chips.ts` as the journey reaches each feature):
+    - the label photo's EAN-13 and QR code read back with Chromium's BarcodeDetector, and Vision's read (SC-147);
+    - Execution's ExpireSoon and Outreach cards, each at three states with its stops, the API call and the push behind their buttons (SC-151, SC-156);
+    - a tax invoice for every kirana order, the first shop's order page and invoice, the sales register, every PDF (SC-153);
+    - the issued invoice's e-invoice (its IRN worked out from the GSTIN and number), the GSTINs, the credit note against the dispatch invoice, "issued" in the pack (SC-148);
+    - nothing to destroy under the godown policy (SC-139);
+    - the Record, with the photo loader (SC-142, SC-144, SC-146), and Rakesh's Photos;
+    - Rakesh's effective prices and sums on Orders and Batches (SC-141, SC-145);
+    - the Impact dashboard and the Command Center's card (SC-157);
+    - the console's Food by day and Munchly's web.app address (SC-149, SC-150);
+    - every button the run presses, watched as it waits (SC-152).
+
+    Three new steps: `record`, `impact` and `console` (20 in all).
+  - **The run of 11 Oct** (`runs/2026-10-11/REPORT.md`; the 8 min 46 s recording local): passed in 8 min 45 s, 99 steps, from a reset, every figure the story's. Four shorter runs before it stopped on the new checks' own selectors; no app code changed.
+  - **Findings, not fixed:**
+    - Rakesh's sums on Orders and Batches leave out the chips once they clear ("the batch still in a journey"), as design3's `ledger.js` does (offered as a separate task);
+    - the kirana's order button tells a screen reader "Working" and "Done", its Hindi words being snippets.
+  - **Checks:** the frontend gate passes (core 288, api 79, workspace 104, admin 17, console 8, demo 5). The day is back at 24 hours.
+
+- **SC-162** (PR #142, merged; bug found by Munchly Chips E2E, SC-161): a batch whose journey has cleared is one of the distributor's cleared batches.
+  - **Found:** once the chips cleared, Rakesh's Batches still listed them under "In a journey now" (stop Report). His sums counted only the history's six batches. Orders said their ₹21,546 "sold from the batch still in a journey joins the sum once it clears".
+  - **The cause:** core's `clearedOf` and design3's `distBatches` took any phase but watching as in a journey, and design3's sums took only the history.
+  - **The fix,** design3 first (`ledger.js` `distBatches` `done`, `storySum`, `sumsAt`; `trade.jsx` DistBatches and DistOrders), then core (`partners.ts` `storySum`, `sumsOf` with the story's; `pt.ts` `inJourney`, `storyCleared`, `clearedSums`; DistBatches, DistOrders):
+    - Batches lists the cleared batch in its cleared month with its sum, and no longer under "In a journey now";
+    - Orders gives its row its sum, and counts only a batch still under way as "still in a journey";
+    - both sums count it: Rakesh's seven come to ₹1,27,474 sold + ₹75,686 credited = ₹2,03,160 on 9 credit notes, the chips ₹21,546 + ₹8,768 = ₹30,314.
+
+    On the live workspace it comes from his partner facts. In design3 and the stub, the story's own figures count once Impact has posted. No design round: one obvious fix.
+  - **Checks:**
+    - the frontend gate passes (core 291, api 79, workspace 105, admin 17, console 8, demo 5);
+    - core's sums are held to ledger.js at stages 8 and 9, and Rakesh's stage 9 goldens follow;
+    - a live test on the cleared moment fails without the fix;
+    - backend-api 568 passed, 1 skipped (only the seed manifest changed);
+    - Munchly Chips E2E now checks it;
+    - design3 and the local live app read the same.
+- **SC-163** (PR #143, merged; bug found by Munchly Chips E2E, SC-161): a button's status line says its own words when they are markup.
+  - **Found:** the kirana's order button gives its words as Hindi snippets (ऑर्डर हो रहा है…). A screen reader heard "Working" and "Done", because core's Button read its words into the status line only when they were a string.
+  - **The fix** (core's `Button.svelte`): the status line renders the button's busy and done words in whatever form, so the Hindi keeps its `lang`. "Working" and "Done" stay for a button given none. design3's kit already did this (`busy || "Working"` renders markup), so design3 needed no change. The order button is the only one with markup words.
+  - **Checks:** the frontend gate passes (core 290, with two new Button tests; the Hindi one fails without the fix; api 79, workspace 104, admin 17, console 8, demo 5).
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

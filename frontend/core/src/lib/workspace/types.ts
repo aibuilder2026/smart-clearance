@@ -54,6 +54,13 @@ export type Distributor = {
 	godown: string;
 	address?: string;
 	gstin?: string;
+	/** the identity its papers carry (SC-148): every GSTIN fictional, on a PAN no one holds */
+	stateCode?: string;
+	pan?: string;
+	fssai?: string;
+	email?: string;
+	/** where a buyer pays his invoice */
+	bank?: { name: string; account: string; ifsc: string } | null;
 	kiranas: number;
 	cluster: string;
 	territory: string;
@@ -61,6 +68,8 @@ export type Distributor = {
 	staffCap?: number;
 	/** where its staff pay at a staff sale (SC-87) */
 	upi?: string | null;
+	/** his own sales series, for the tax invoice he issues each kirana's scheme order (SC-153) */
+	series?: { prefix: string; next: number; width: number } | null;
 };
 
 export type Buyer = {
@@ -72,6 +81,7 @@ export type Buyer = {
 	stateCode: string;
 	address: string;
 	gstin: string;
+	pan?: string;
 	kind: string;
 };
 
@@ -131,7 +141,40 @@ export type Batch = {
 /** a batch with its SKU and distributor, and the phase the journey has it at (the prototype's batchView) */
 export type BatchView = Batch & { skuObj: Sku; dist: Distributor; phase?: string };
 
-export type Kirana = { id: string; name: string; area: string; units: number; at: string };
+/** a kirana's tax invoice from its distributor, for one scheme order (SC-153; money.js kiranaInvoice): every packet at
+ *  the pack price, less the scheme's discount, which leaves the taxable value the ledger counts; CGST and SGST within the
+ *  state; the total to the rupee. Numbered in the distributor's own series as the shop ordered */
+export type KiranaInvoice = {
+	no: string;
+	date: string;
+	at: string;
+	kirana: string;
+	shop: { id: string; name: string; area: string; pincode: string };
+	units: number;
+	rate: number;
+	gross: number;
+	discountPct: number;
+	discount: number;
+	taxable: number;
+	gstPct: number;
+	cgst: number;
+	sgst: number;
+	tax: number;
+	roundOff: number;
+	total: number;
+	hsn: string;
+	/** the live workspace's: the Paperwork agent has laid out its PDF */
+	pdf?: boolean;
+};
+
+export type Kirana = {
+	id: string;
+	name: string;
+	area: string;
+	units: number;
+	at: string;
+	invoice?: KiranaInvoice | null;
+};
 
 export type Stage = {
 	id: string;
@@ -269,7 +312,7 @@ export type Doc = {
 	owner: string;
 	no: string;
 	/** awaiting: another's paper still to come (the agency's destruction certificate, SC-139) */
-	status: 'generated' | 'drafted' | 'awaiting' | 'not required';
+	status: 'generated' | 'drafted' | 'issued' | 'awaiting' | 'not required';
 	amount: number;
 	note?: string;
 	taxable?: number;
@@ -282,6 +325,8 @@ export type Doc = {
 	exact?: number;
 	/** when the document is dated (the invoice) */
 	date?: string;
+	/** when the distributor issued the invoice from Tally (SC-148) */
+	issuedAt?: string | null;
 	/** the expiry paper's settlement (SC-94) */
 	policy?: ExpiryPolicy;
 	destroyedBy?: 'client' | 'distributor' | null;
@@ -475,8 +520,10 @@ export type Hero = {
 		reserve: number;
 		at: string;
 	};
-	offer: null | { status: string; at: string; shops: number };
-	orders: { id: string; units: number; at: string }[];
+	/** the scheme to the kiranas: when it went, when its window closes (and closed), and the share of the window gone
+	 *  where the source has a clock (SC-156) */
+	offer: null | { status: string; at: string; shops: number; closesAt?: string; closedAt?: string; elapsed?: number };
+	orders: { id: string; units: number; at: string; invoice?: KiranaInvoice | null }[];
 	/** the shops that said not this time to the open scheme (SC-130); an order after all takes its shop off */
 	declined?: Record<string, { at: string }>;
 	bids: Bid[];
@@ -486,6 +533,8 @@ export type Hero = {
 	truck: { status: 'idle' | 'dispatched'; at?: string };
 	docs: null | { id: string; status: string }[];
 	invoiceIssued: boolean;
+	/** when, on the journey's clock (SC-148) */
+	invoiceIssuedAt?: string | null;
 	posted: boolean;
 	reviewed?: boolean;
 	/** the plan's staff sale at the distributor's godown (SC-86), open once approved, then recorded with what sold; the
@@ -586,6 +635,13 @@ export type WorkspaceSeed = {
 		listed: string;
 		gstin: string;
 		fssai: string;
+		/** the identity its own papers carry (SC-148) */
+		pan?: string;
+		cin?: string;
+		address?: string;
+		state?: string;
+		stateCode?: string;
+		email?: string;
 		revenue: string;
 		skus: number;
 		distributors: number;
@@ -797,6 +853,9 @@ export type CaseData = {
 	docs: Doc[];
 	/** the invoice the distributor issues to the buyer */
 	invoice: Doc;
+	/** when he issued it from Tally (SC-148): its e-invoice is worked out from it; a history batch's, or a page's in the
+	 *  ledger (the batch in focus reads the hero's) */
+	invoiceIssuedAt?: string | null;
 	/** scheme packs may come back until this day */
 	returnBy: string;
 	/** the pushes of the case, by moment */
@@ -836,6 +895,7 @@ export type Shop = {
 	id: string;
 	name: string;
 	area: string;
+	pincode?: string;
 	sales14: number;
 	distributor: string;
 	member: string | null;
@@ -864,7 +924,7 @@ export type PartnerCase = {
 	listing: { id: string } | null;
 	/** how many shops the scheme went to, the shops that ordered (a kirana sees its own), and the scheme's count */
 	offered: number;
-	kiranas: { kirana: string; units: number; at?: string }[];
+	kiranas: { kirana: string; units: number; at?: string; invoice?: KiranaInvoice | null }[];
 	kirana: { planned: number; ordered: number } | null;
 	/** the scheme while it runs, and the shops that said not this time (a kirana is sent its own); the live workspace's */
 	offer?: { status: 'open' | 'closed'; closesAt: string | null; closedAt?: string | null } | null;
@@ -940,7 +1000,19 @@ export type PtOffer = {
 	units: number;
 	orderedAt: string | null;
 	van: string | null;
-	m: { n: number; free: number; paid: number; pay: number; sell: number; margin: number } | null;
+	/** the order as its invoice has it (SC-153): before GST, the GST, what the shop paid, its margin at MRP */
+	m: {
+		n: number;
+		rate: number;
+		discountPct: number;
+		taxable: number;
+		gstPct: number;
+		tax: number;
+		pay: number;
+		sell: number;
+		margin: number;
+	} | null;
+	invoice?: KiranaInvoice | null;
 };
 /** a donation a food bank collected, with its receipt */
 export type PtPickup = {

@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { createHash } from 'node:crypto';
 import { dayLabel } from '../../src/lib/live/when';
 import { fireEvent, render, waitFor, within, type RenderResult } from '@testing-library/svelte';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -645,15 +646,25 @@ describe("expiry day's settlement (SC-94)", () => {
 		await waitFor(() => expect(text(r)).toContain('Expiry credit note'));
 		const d = moment('cleared').members.priya.cases[MANGO].docs.find((x) => x.id === 'expiry')!;
 		const t = text(r);
-		expect(t).toContain(`${d.no} · Munchly → Lakshmi Agencies`);
-		expect(t).toContain(
-			`${d.units!.toLocaleString('en-IN')} packs destroyed at the godown at the ₹14.50 dealer price${inr2(d.credit!)}`
-		);
-		expect(t).toContain(`Input GST he reverses on them 5%, section 17(5)(h)${inr2(d.gst!)}`);
-		expect(t).toContain(`Destruction charges Deccan Green Waste Management, ₹1.50 a pack${inr2(d.charges!)}`);
-		expect(t).toContain(`Credit to Lakshmi Agencies${inr2(d.amount!)}`);
+		// Tally's layout (SC-148): Munchly's credit note to the distributor, against the invoice it billed the batch on
+		const n2 = (n: number) => n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+		const u = d.units!.toLocaleString('en-IN');
+		expect(t).toContain(`Credit Note No.${d.no}`);
+		expect(t).toContain('Issued toLakshmi Agencies');
+		expect(t).toContain('GSTIN/UIN: 27AAKCM0000M1ZN');
+		expect(t).toContain('GSTIN/UIN: 36AAJFL0000L1ZM');
+		expect(t).toContain('Against our invoiceMFL/26-27/02418');
+		expect(t).toContain(`${u} packs destroyed at the godown, at the dealer price${u}14.50${n2(d.credit!)}`);
+		expect(t).toContain(`Input GST he reverses on them, 5%, section 17(5)(h)${n2(d.gst!)}`);
+		expect(t).toContain(`Destruction charges, Deccan Green Waste Management${u}1.50${n2(d.charges!)}`);
+		expect(t).toContain(`Credit to Lakshmi Agencies₹ ${n2(d.amount!)}`);
 		expect(t).not.toContain("Munchly's own costs, on destroying them");
-		expect(t).toContain(d.note);
+		// what the paper's note says, in the layout's words: financial, against the certificate, on his account
+		expect(t).toContain('not a GST credit note under section 34 of the CGST Act');
+		expect(t).toContain(
+			`Issued against destruction certificate ${d.certificate}, on Munchly's approval of the evidence.`
+		);
+		expect(t).toContain("Adjusted against Lakshmi Agencies' account");
 	});
 
 	it("the agency's certificate, and the GST ITC memo keeping Munchly's credit on the packs destroyed at his godown", async () => {
@@ -1302,7 +1313,8 @@ describe('Finance & ESG, one ledger (SC-121)', () => {
 		const opened = vi.spyOn(window, 'open').mockImplementation(() => null);
 		const r = await draw(source(fakeApi(m, 'priya', { documentUrl: url })), 'report', CHIPS);
 		await tab(r, 'Papers');
-		await fireEvent.click(await waitFor(() => r.getByRole('button', { name: /Tax invoice/ })));
+		// the batch's own tax invoice, not the kiranas' register beside it (SC-153)
+		await fireEvent.click(await waitFor(() => r.getByRole('button', { name: /Tax invoice(?!s)/ })));
 		const sheet = await waitFor(() => r.getByRole('dialog'));
 		await fireEvent.click(within(sheet).getByRole('button', { name: 'Download Tax invoice as a PDF' }));
 		await waitFor(() =>
@@ -1392,6 +1404,29 @@ describe("the partners' own history (SC-130)", () => {
 		r.unmount();
 	});
 
+	it('once the chips clear, they are one of his cleared batches on Batches and Orders, and in both sums (SC-162)', async () => {
+		const m = moment('cleared');
+		const r = await draw(source(partnerApi(m, 'rakesh')), 'batches');
+		await waitFor(() => expect(text(r)).toContain('How your 7 cleared batches add up'));
+		let t = text(r);
+		// out of "In a journey now", into its own cleared month with its sum: ₹8,768 credited + ₹21,546 sold
+		expect(t).not.toContain('In a journey now');
+		expect(t).toContain('Cleared · October 2026');
+		expect(t).toMatch(/MF-2409-117 · flagged \d+ Oct · cleared \d+ Oct/);
+		expect(t).toContain('₹8,768 credited+ ₹21,546 sold = ₹30,314');
+		expect(t).toContain('₹75,686Munchly credited youthis page');
+		r.unmount();
+		const o = await draw(source(partnerApi(m, 'rakesh')), 'orders');
+		await waitFor(() => expect(text(o)).toContain('How your 7 cleared batches add up'));
+		t = text(o);
+		expect(t).toContain('₹1,27,474you soldthis page');
+		expect(t).toContain('₹75,686Munchly credited you9 credit notes · on Batches');
+		expect(t).toContain('₹21,546 sold+ ₹8,768 credited = ₹30,314');
+		expect(t).not.toContain('still in a journey');
+		expect(t).not.toMatch(/NaN|undefined|Invalid Date/);
+		o.unmount();
+	});
+
 	it('a batch he cleared opens on what happened, how he ended whole, and his papers with the copies', async () => {
 		const m = moment('executing');
 		const r = await draw(source(partnerApi(m, 'rakesh')), 'batches', 'MF-2407-114');
@@ -1452,6 +1487,73 @@ describe("the partners' own history (SC-130)", () => {
 		r = await draw(source(partnerApi(m, 'ganesh')), 'offer', 'MF-2407-116');
 		await waitFor(() => expect(text(r)).toContain('Your order'));
 		expect(text(r)).toContain('What was offered');
+		r.unmount();
+	});
+
+	it("Ganesh ji's order names its tax invoice, which opens with its PDF once laid out (SC-153)", async () => {
+		const m = moment('executing');
+		const seen = m.members.ganesh;
+		// the Paperwork agent has laid out the chips' invoice to his shop
+		seen.partner!.cases = seen.partner!.cases.map((c) =>
+			c.ref === CHIPS
+				? { ...c, kiranas: c.kiranas.map((k) => ({ ...k, invoice: k.invoice && { ...k.invoice, pdf: true } })) }
+				: c
+		);
+		const url = vi.fn(() => Promise.resolve({ url: 'https://storage.example/kirana-k0.pdf', expiresAt: '' }));
+		const opened = vi.spyOn(window, 'open').mockImplementation(() => null);
+		const r = await draw(source(partnerApi(m, 'ganesh', { documentUrl: url })), 'offer', CHIPS);
+		await waitFor(() => expect(text(r)).toContain('RT/26-27/1279'));
+		let t = text(r);
+		expect(t).toContain('Before GST');
+		expect(t).toContain('₹432.00');
+		expect(t).toContain('₹454');
+		expect(t).toContain('₹266.00');
+		await fireEvent.click(r.getByRole('button', { name: /Tax invoice/ }));
+		const sheet = await waitFor(() => r.getByRole('dialog'));
+		t = text(r);
+		expect(t).toContain('GSTIN/UIN: Unregistered');
+		expect(t).toContain('Place of Supply: Maharashtra (27)');
+		expect(t).toContain('₹ 454.00');
+		expect(t).not.toMatch(/NaN|undefined|Invalid Date/);
+		await fireEvent.click(within(sheet).getByRole('button', { name: 'Download PDF' }));
+		await waitFor(() =>
+			expect(opened).toHaveBeenCalledWith('https://storage.example/kirana-k0.pdf', '_blank', 'noopener')
+		);
+		expect(url).toHaveBeenCalledWith(CHIPS, 'kirana.k0');
+		opened.mockRestore();
+		r.unmount();
+	});
+
+	it("Rakesh opens a shop's tax invoice from his Orders, and the batch's register from its papers (SC-153)", async () => {
+		const m = moment('executing');
+		let r = await draw(source(partnerApi(m, 'rakesh')), 'orders');
+		// the scheme's orders so far, each with its invoice in Rakesh Traders' series from the story's next
+		await waitFor(() => expect(text(r)).toContain('RT/26-27/1279 to 1283'));
+		expect(text(r)).toContain('5 tax invoices');
+		await fireEvent.click(r.getAllByRole('button', { name: /shops' orders/ })[0]);
+		await fireEvent.click(await waitFor(() => r.getByRole('button', { name: /Shree Ganesh Kirana.*RT\/26-27\/1279/ })));
+		await waitFor(() => expect(text(r)).toContain('(ORIGINAL FOR RECIPIENT)'));
+		expect(text(r)).toContain('Invoice No.RT/26-27/1279');
+		expect(text(r)).toContain('Buyer (Bill to and Ship to)Shree Ganesh Kirana');
+		r.unmount();
+		r = await draw(source(partnerApi(m, 'rakesh')), 'batches', 'MF-2407-116');
+		await tab(r, 'Papers');
+		await fireEvent.click(await waitFor(() => r.getByRole('button', { name: /Tax invoices to kiranas · 24/ })));
+		await waitFor(() => expect(text(r)).toContain('Sales Register'));
+		expect(text(r)).toContain('RT/26-27/1255');
+		expect(text(r)).toContain('24 invoices');
+		r.unmount();
+	});
+
+	it("Priya's pack holds the batch's tax invoices to its kiranas, each opening from the register (SC-153)", async () => {
+		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1440);
+		const r = await draw(source(fakeApi(moment('cleared'), 'priya')), 'paperwork', CHIPS);
+		await fireEvent.click(await waitFor(() => r.getByRole('button', { name: /Tax invoices to kiranas/ })));
+		await waitFor(() => expect(text(r)).toContain('Sales Register'));
+		expect(text(r)).toContain('31 invoices');
+		await fireEvent.click(r.getByRole('button', { name: 'RT/26-27/1279' }));
+		await waitFor(() => expect(text(r)).toContain('Shree Ganesh Kirana'));
+		expect(text(r)).toContain('Less: Scheme discount, buy 10 get 2 free');
 		r.unmount();
 	});
 
@@ -1585,6 +1687,92 @@ describe("a batch's record (SC-142)", () => {
 		expect(t).toMatch(/Approved the destruction of [\d,]+ packs at /);
 		expect(t).toContain('Munchly credited you on CN/0119 once it approved.');
 		expect(r.container.querySelectorAll('.rec-shot img')).toHaveLength(3);
+		expect(t).not.toMatch(/NaN|undefined|Invalid Date/);
+		r.unmount();
+	});
+});
+
+describe("Execution's Outreach card says where the kirana scheme stands (SC-156)", () => {
+	it('while the window is open: the scheme as the shops see it, its close, and the push behind a button', async () => {
+		const s = source(fakeApi(moment('executing'), 'priya'));
+		const r = await draw(s, 'execution', CHIPS);
+		await waitFor(() => expect(text(r)).toContain('Outreach · 38 kiranas'));
+		const ex = text(r);
+		expect(ex).toContain('The scheme');
+		expect(ex).toContain('588 packets');
+		expect(ex).toContain('Offer window · 48 h');
+		expect(ex).toMatch(/closes Sun \d\d:\d\d/); // 48 hours after the push, the Sunday
+		expect(ex).toMatch(/Sent\d\d:\d\dFirst order\d\d:\d\dClosedwaiting/); // the stops, with their times
+		expect(ex).not.toContain('नमस्ते'); // one message to every shop: not on the card
+		await fireEvent.click(r.getByRole('button', { name: 'The push, as sent' }));
+		await waitFor(() => expect(text(r)).toContain('{shop}'));
+		expect(text(r)).toContain('one message to all 38 shops');
+	});
+	it('once the batch has cleared: filled early, and the van round delivered it', async () => {
+		const s = source(fakeApi(moment('cleared'), 'priya'));
+		const r = await draw(s, 'execution', CHIPS);
+		await waitFor(() => expect(text(r)).toContain('Outreach · 38 kiranas'));
+		const ex = text(r);
+		expect(ex).toContain('delivered');
+		expect(ex).toMatch(/Delivered on Rakesh's van round/);
+		expect(ex).toContain('closed early');
+		expect(ex).not.toContain('push · Hindi');
+	});
+});
+
+describe("the Ledger's Impact reading is the dashboard, and the Command Center points at it (SC-157)", () => {
+	it("Priya's Impact reading draws the tiles, food by week, where the kilos went and by distributor", async () => {
+		const s = source(fakeApi(moment('cleared'), 'priya'));
+		const r = await draw(s, 'report');
+		await waitFor(() => expect(text(r)).toContain('One ledger, three readings'));
+		await fireEvent.click(r.getByRole('button', { name: 'Impact' }));
+		await waitFor(() => expect(text(r)).toContain('Food, by week'));
+		const t = text(r);
+		expect(t).toContain('Kept out of landfill');
+		expect(t).toContain('CO₂e avoided');
+		expect(t).toContain('Where the kilos went');
+		expect(t).toContain('Kirana scheme');
+		expect(t).toContain('By distributor');
+		expect(t).toContain('Rakesh Traders');
+		expect(r.getByRole('img', { name: /Food a week/ })).toBeTruthy();
+		await fireEvent.click(r.getByRole('button', { name: 'Show as a table' }));
+		await waitFor(() => expect(text(r)).toContain('Week of'));
+	});
+	it("the Command Center's Impact card reads the quarter and opens the ledger on Impact", async () => {
+		const s = source(fakeApi(moment('cleared'), 'priya'));
+		const go = vi.fn();
+		const r = render(LiveHost, {
+			props: { source: s, screen: 'command', at: null, onnavigate: go }
+		}) as unknown as RenderResult<never>;
+		await waitFor(() => expect(s.status.phase).toBe('ready'));
+		await waitFor(() => expect(text(r)).toContain('Impact · '));
+		expect(text(r)).toContain('kept out of landfill');
+		expect(text(r)).toContain('meals');
+		await fireEvent.click(r.getByRole('button', { name: 'Open the ledger' }));
+		expect(go).toHaveBeenCalledWith('report', expect.objectContaining({ reading: 'impact' }));
+	});
+});
+
+describe('the GST papers in Tally’s layout (SC-148)', () => {
+	it("an invoice Rakesh issued carries its e-invoice: the IRN from the parties' GSTINs, its acknowledgement and the signed QR", async () => {
+		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1440);
+		const s = source(fakeApi(moment('cleared'), 'priya'));
+		const r = await draw(s, 'paperwork', CHIPS);
+		await waitFor(() => expect(text(r)).toContain('Tax invoice'));
+		const c = moment('cleared').members.priya.cases[CHIPS];
+		const inv = c.docs.find((d) => d.id === 'invoice')!;
+		expect(c.journey.invoiceIssuedAt).toBeTruthy();
+		await fireEvent.click(r.getAllByRole('button', { name: /Tax invoice/ })[0]);
+		await waitFor(() => expect(text(r)).toContain('(ORIGINAL FOR RECIPIENT)'));
+		const irn = createHash('sha256').update(`27ABHPR0000K1ZW2026-27INV${inv.no}`).digest('hex');
+		const t = text(r);
+		expect(t).toContain(irn);
+		expect(t).toMatch(/Ack No\.:\s*1126\d{11}/);
+		expect(t).toContain('GSTIN/UIN: 27ABHPR0000K1ZW');
+		expect(t).toContain('GSTIN/UIN: 22AAGFA0000A1ZW');
+		expect(t).toContain('Place of Supply: Chhattisgarh (22)');
+		expect(t).not.toContain('DRAFT, for Rakesh Traders');
+		expect(r.container.querySelector('.tl-einv svg')).not.toBeNull();
 		expect(t).not.toMatch(/NaN|undefined|Invalid Date/);
 		r.unmount();
 	});

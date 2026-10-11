@@ -111,6 +111,13 @@ def _iso(at: datetime | None) -> str | None:
     return at.astimezone(IST).isoformat() if at else None
 
 
+def invoice_out(inv: dict[str, Any] | None) -> dict[str, Any] | None:
+    """a kirana order's tax invoice as the screens read it (SC-153): its PDF as whether there is one"""
+    if not inv:
+        return None
+    return {**{k: v for k, v in inv.items() if k != "pdf"}, "pdf": bool(inv.get("pdf"))}
+
+
 def clock_out(ctx: Ctx, c: m.Client) -> dict[str, Any]:
     now = ev.now(ctx, c)
     day0 = c.journey_day0
@@ -352,6 +359,8 @@ async def snapshot(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, An
             "city": c.city,
             "gstin": doc.get("gstin", ""),
             "fssai": doc.get("fssai", ""),
+            # the identity its own papers carry (SC-148): its PAN, CIN, address and state
+            **{k: (doc.get("identity") or {}).get(k) for k in ("pan", "cin", "address", "state", "stateCode", "email")},
             # the client as its profile states it; its SKUs and distributors as the workspace holds them
             "listed": (doc.get("client") or {}).get("listed", ""),
             "revenue": (doc.get("client") or {}).get("revenue", ""),
@@ -412,7 +421,7 @@ def _peer(me: m.ClientMember, other: m.ClientMember, beat: dict[str, str]) -> bo
 
 def _buyer_details(p: m.Partner) -> dict[str, Any]:
     d = p.details or {}
-    return {k: d.get(k, "") for k in ("state", "stateCode", "address", "gstin", "kind")}
+    return {k: d.get(k, "") for k in ("state", "stateCode", "address", "gstin", "pan", "kind")}
 
 
 def _batch_out(bo: dict[str, Any]) -> dict[str, Any]:
@@ -603,6 +612,7 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
                 "at": case.offer["at"],
                 "shops": case.offer["shops"],
                 "closesAt": case.offer["closesAt"],
+                "closedAt": case.offer.get("closedAt"),
                 # the shops that said not this time (SC-130): a kirana is told its own
                 "declined": {
                     k: {"at": v.get("at")}
@@ -613,7 +623,16 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
             if case.offer and role != "buyer"
             else None
         ),
-        "orders": [{"id": o.kirana_id, "units": o.units, "at": _iso(o.at), "by": o.member_ref} for o in orders],
+        "orders": [
+            {
+                "id": o.kirana_id,
+                "units": o.units,
+                "at": _iso(o.at),
+                "by": o.member_ref,
+                "invoice": invoice_out(o.invoice),
+            }
+            for o in orders
+        ],
         "bids": [
             {
                 "id": x_.id,
@@ -653,6 +672,8 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
         ),
         "docs": [{"id": d_["id"], "status": d_["status"]} for d_ in case.docs] if case.docs else None,
         "invoiceIssued": case.invoice_issued_at is not None,
+        # when he issued it, on the journey's clock: its e-invoice is worked out from it (SC-148)
+        "invoiceIssuedAt": _iso(case.invoice_issued_at),
         "posted": case.ledger is not None,
         "reviewed": case.reviewed is not None,
     }
@@ -739,6 +760,7 @@ async def case_detail(ctx: Ctx, client_id: str, ref: str, cm: m.ClientMember) ->
                     "units": o.units if o else 0,
                     "at": _iso(o.at) if o else None,
                     "member": k.member_ref,
+                    "invoice": invoice_out(o.invoice) if o else None,
                 }
             )
 
@@ -971,6 +993,10 @@ async def document_object(ctx: Ctx, client_id: str, ref: str, doc: str) -> str |
     rcpt = (case.donation or {}).get("receipt") or {}
     if doc == "receipt" and rcpt.get("pdf"):
         return rcpt["pdf"]
+    if doc.startswith("kirana."):  # a kirana order's tax invoice (SC-153)
+        q = select(m.CaseOrder).where(m.CaseOrder.case_id == case.id, m.CaseOrder.kirana_id == doc.split(".", 1)[1])
+        o = (await ctx.session.execute(q)).scalars().first()
+        return (o.invoice or {}).get("pdf") if o else None
     return next((d.get("pdf") for d in case.docs or [] if d["id"] == doc), None)
 
 

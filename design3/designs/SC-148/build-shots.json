@@ -1,0 +1,5 @@
+[
+ {"url": "http://127.0.0.1:8787/designs/SC-148/build/mockup.html?who=priya&theme=light#/paperwork/MF-2409-117", "out": "build/invoice-1440-light", "width": 1440, "theme": "light", "wait": 2600, "height": 1500, "js": "[...document.querySelectorAll('button')].find(b => /Tax invoice/.test(b.textContent)).click()"},
+ {"url": "http://127.0.0.1:8787/designs/SC-148/build/mockup.html?who=priya&theme=light#/paperwork/MF-2409-117", "out": "build/credit-1440-light", "width": 1440, "theme": "light", "wait": 2600, "height": 1300, "js": "[...document.querySelectorAll('button')].find(b => /Price-support credit/.test(b.textContent)).click()"},
+ {"url": "http://127.0.0.1:8787/designs/SC-148/build/mockup.html?who=priya&theme=dark#/paperwork/MF-2409-117", "out": "build/invoice-390-dark", "width": 390, "theme": "dark", "wait": 2600, "full": true, "js": "[...document.querySelectorAll('button')].find(b => /Tax invoice/.test(b.textContent)).click()"}
+]

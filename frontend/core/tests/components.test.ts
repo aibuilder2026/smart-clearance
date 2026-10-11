@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@testing-library/svelte';
-import { flushSync } from 'svelte';
+import { createRawSnippet, flushSync } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Button from '../src/lib/components/Button.svelte';
 import Money from '../src/lib/components/Money.svelte';
@@ -129,6 +129,29 @@ describe('a button that waits', () => {
 		expect(container.querySelector('[role=status]')!.textContent).toBe('Plan approved');
 		await later(WAIT.hold + 10);
 		expect(b.dataset.phase).toBe('idle');
+	});
+	it('its status line says its own words when they are markup, in their language (SC-163)', async () => {
+		// the kirana's order button (OfferOrder.svelte): Hindi words, as snippets
+		const hi = (t: string) => createRawSnippet(() => ({ render: () => `<span class="hi" lang="hi">${t}</span>` }));
+		const action = () => new Promise((r) => setTimeout(r, 900));
+		const { container } = render(Button, {
+			props: { action, busy: hi('ऑर्डर हो रहा है…'), done: hi('ऑर्डर हो गया') }
+		});
+		const b = container.querySelector('button')!;
+		const status = () => container.querySelector('[role=status]')!;
+		await fireEvent.click(b);
+		await later(WAIT.show + 10);
+		expect(status().textContent).toBe('ऑर्डर हो रहा है…');
+		expect(status().querySelector('[lang=hi]')).not.toBeNull();
+		await later(900);
+		expect(status().textContent).toBe('ऑर्डर हो गया');
+	});
+	it('says Working and Done for a button given no words', async () => {
+		const action = () => new Promise((r) => setTimeout(r, 900));
+		const { container } = render(Button, { props: { action, done: '' } });
+		await fireEvent.click(container.querySelector('button')!);
+		await later(WAIT.show + 10);
+		expect(container.querySelector('[role=status]')!.textContent).toBe('Working');
 	});
 	it('says when it is slow, and puts a refusal under itself with Try again', async () => {
 		let fail = true;

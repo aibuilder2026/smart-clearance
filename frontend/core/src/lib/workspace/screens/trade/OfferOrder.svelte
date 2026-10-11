@@ -15,7 +15,8 @@
 	import OfferCard from './OfferCard.svelte';
 	import { shopOf } from './pt';
 
-	// the scheme in full: how many packets in twelves, what he pays, the free ones, his margin at MRP; then one tap orders
+	// the scheme in full: how many packets in twelves, what he pays as the invoice will have it (before GST, the GST, the
+	// total; SC-153), his margin at MRP; then one tap orders
 	let { me }: { me: User } = $props();
 	const ws = useWorkspace();
 	const c = $derived(ws.case!);
@@ -28,8 +29,9 @@
 	// the order with the count he chose, as one change; the button waits on it (SC-152)
 	const order = () => ws.act('order', { kirana: k.id, units: n }, { feel: 650, inline: true });
 	const lines = $derived<[string, string, string][]>([
-		['You pay', `${m.paid} × ₹${m.pack.toFixed(2)}`, fmt.inr(m.pay)],
-		['Free packets', `${c.scheme.free} with every ${c.scheme.buy}`, `${m.free}`],
+		['Before GST', `${n} × ₹${m.rate.toFixed(2)}, less the scheme's ${m.discountPct}%`, fmt.inr2(m.taxable)],
+		['GST', `CGST ${m.gstPct / 2}% + SGST ${m.gstPct / 2}%`, fmt.inr2(m.tax)],
+		['You pay', 'on the invoice, to the rupee', fmt.inr(m.pay)],
 		['You sell at MRP', `${n} × ₹${c.sku.mrp}`, fmt.inr(m.sell)]
 	]);
 </script>
@@ -53,7 +55,9 @@
 						><Icon name="check" size={28} stroke={2.4} /></span
 					>
 					<div class="t-title2 hi" lang="hi">ऑर्डर हो गया</div>
-					<span class="muted">{mine.units} packets on {c.van.day}'s van · pay on delivery</span>
+					<span class="muted"
+						>{mine.units} packets on {c.van.day}'s van · pay {fmt.inr(offerMath(mine.units, c).pay)} on delivery, GST included</span
+					>
 					<Money value={offerMath(mine.units, c).margin} size="m" style="color: var(--primary-text)" /><span
 						class="t-footnote subtle">your margin at MRP on this order</span
 					>

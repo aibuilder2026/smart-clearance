@@ -18,6 +18,7 @@ from sc_api.identity import synthetic_uid
 from sc_api.services import people, users
 from sc_api.services.context import Ctx
 from sc_api.services.journey import history, reset
+from sc_api.services.journey.identity import BUYER_DETAILS, parties
 from sc_api.services.reference import load
 
 PROVIDER = people.EMAIL_AND_PASSWORD
@@ -92,6 +93,7 @@ async def build(ctx: Ctx, client_id: str = "munchly", *, with_history: bool = Tr
         d.upi = x.get("upi")
         if x.get("staffCap") is not None:
             d.staff_cap = x["staffCap"]
+    await parties(ctx, c, j)
 
     await _members(ctx, c, j)
 
@@ -104,7 +106,7 @@ async def build(ctx: Ctx, client_id: str = "munchly", *, with_history: bool = Tr
         b["name"],
         b["short"],
         b["city"],
-        {k: b[k] for k in ("state", "stateCode", "address", "gstin", "kind")},
+        {k: b.get(k) for k in BUYER_DETAILS},
         _member_of(j, b["id"]),
     )
     for p in j["setup"]["partners"]:

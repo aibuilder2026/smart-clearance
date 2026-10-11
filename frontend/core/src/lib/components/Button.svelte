@@ -221,7 +221,9 @@
 					>{/key}</span
 			>{#if face !== 'rest'}<i class="btn-line" class:full={face === 'done'} aria-hidden="true"></i>{/if}</button
 		><span class="sr-only" role="status"
-			>{#if face === 'busy'}{#if typeof busy === 'string'}{busy}{:else}Working{/if}{:else if face === 'done'}{#if typeof done === 'string'}{done}{:else}Done{/if}{/if}</span
+			>{#if face === 'busy'}{#if typeof busy === 'function'}{@render busy()}{:else}{busy ||
+						'Working'}{/if}{:else if face === 'done'}{#if typeof done === 'function'}{@render done()}{:else}{done ||
+						'Done'}{/if}{/if}</span
 		>{#if note}<span
 				id={noteId}
 				class="btn-note"

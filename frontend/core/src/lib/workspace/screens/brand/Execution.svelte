@@ -3,19 +3,15 @@
 	import Aura from '../../../components/Aura.svelte';
 	import Badge from '../../../components/Badge.svelte';
 	import Card from '../../../components/Card.svelte';
-	import ClusterMap from '../../../components/ClusterMap.svelte';
 	import Empty from '../../../components/Empty.svelte';
 	import List from '../../../components/List.svelte';
 	import ListRow from '../../../components/ListRow.svelte';
-	import Mark from '../../../components/Mark.svelte';
 	import Product from '../../../components/Product.svelte';
-	import Progress from '../../../components/Progress.svelte';
-	import Roll from '../../../components/Roll.svelte';
 	import Sheet from '../../../components/Sheet.svelte';
 	import Icon from '../../../icons/Icon.svelte';
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
-	import { castOf, clusterOf, first, fmt, heroModel, isRouted, productName, shopById } from '../../model';
+	import { castOf, first, fmt, heroModel, isRouted, productName } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import PlayAs from '../common/PlayAs.svelte';
@@ -26,6 +22,7 @@
 	import DestructionSheet from './DestructionSheet.svelte';
 	import ExpirySettlement from './ExpirySettlement.svelte';
 	import ListerCard from './ListerCard.svelte';
+	import SchemeCard from './SchemeCard.svelte';
 	import GodownLeft from './GodownLeft.svelte';
 	import StaffOps from './StaffOps.svelte';
 
@@ -45,7 +42,6 @@
 	const approver = $derived(dz?.approvedBy ? (ws.data.people[dz.approvedBy]?.short ?? dz.approvedBy) : null);
 
 	const started = $derived(isRouted(h.phase));
-	const units = $derived(h.orders.reduce((t, o) => t + o.units, 0));
 	const lastBid = $derived(h.bids[h.bids.length - 1]);
 	const all = $derived(h.orders.length === c.kiranas.length);
 	const ML = (id: string) => c.donation.plan.lines.find((l) => l.id === id) || { units: 0 };
@@ -116,52 +112,18 @@
 						ExpireSoon nothing: the other exits pay more a unit.{/if} The Lister has nothing to list.</span
 				>
 			</Card>{/if}
-		{#if hasKirana}<Card class="stack snug">
-				<div class="card-head">
-					<span class="row tight"
-						><Aura on={!!h.offer && units < c.lines.kirana.units} class="icontile" style="border-radius: 9px"
-							><Icon name="send" size={17} stroke={2} /></Aura
-						><span class="card-title">Outreach · {c.offered} kiranas</span></span
-					><Badge tone="blue" icon="bell">push · Hindi</Badge>
-				</div>
-				{#if h.offer}<div
-						class="banner"
-						style="box-shadow: none; background: var(--fill); grid-template-columns: 28px minmax(0,1fr)"
-					>
-						<Mark size={28} /><span class="hi t-subhead" lang="hi" style="line-height: 1.45">{c.push.offer.body}</span>
-					</div>{/if}
-				<div class="row wrap" style="gap: 18px">
-					<div class="stack tight" style="gap: 0">
-						<span class="num m"
-							><Roll value={h.orders.length} /><span class="subtle" style="font-size: 0.45em">{` / ${c.offered}`}</span
-							></span
-						><span class="t-footnote subtle">kiranas ordered</span>
-					</div>
-					<div class="stack tight" style="gap: 0">
-						<span class="num m"
-							><Roll value={units} /><span class="subtle" style="font-size: 0.45em">{` / ${c.lines.kirana.units}`}</span
-							></span
-						><span class="t-footnote subtle">units</span>
-					</div>
-				</div>
-				<Progress value={units / c.lines.kirana.units} label="Units ordered" />
+		{#if hasKirana}<SchemeCard
+				{h}
+				{c}
+				hours={s.rules.offerWindowHours}
+				rules={ws.data.rules}
+				shops={ws.data.shops ?? []}
+			>
 				{#if h.offer && c.kiranas[0] && !h.orders.some((o) => o.id === c.kiranas[0].id)}<PlayAs
 						who={cast.kirana.id}
 						route="offer">Order as {cast.kirana.short}</PlayAs
 					>{/if}
-				<ClusterMap {...clusterOf(c.dist)} kiranas={c.kiranas} orderedCount={h.orders.length} route height={200} />
-				<div class="stack tight">
-					{#each h.orders.slice(-3).reverse() as o (o.id)}{@const k = shopById(o.id, c, ws.data.shops)}
-						<div class="row between t-subhead">
-							<span>{k.name} <span class="subtle t-footnote">{k.area}</span></span><span class="tnum strong"
-								>{o.units} <span class="subtle t-caption">{o.at}</span></span
-							>
-						</div>{/each}{#if !h.orders.length}<span class="t-footnote muted"
-							>Orders arrive as shops tap the offer. No shop can order more than {ws.data.rules.shopCapTimes}× its own
-							{ws.data.rules.kiranaWindowDays}-day sales.</span
-						>{/if}
-				</div>
-			</Card>{/if}
+			</SchemeCard>{/if}
 		{#if hasES}<Card class="stack snug">
 				<div class="card-head">
 					<span class="row tight"
