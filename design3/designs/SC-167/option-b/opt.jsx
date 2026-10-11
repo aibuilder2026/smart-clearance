@@ -79,8 +79,9 @@
 
   /* ---------- on a phone: the lines as a list, each with its stops and where it ends ---------- */
   function PhoneLines({ onPick }) {
-    return <ol className="rb-plines" aria-label="The lines">{["console", "chips", "mango", "slow"].map(id => { const a = ACTS[AI[id]];
+    return <ol className="rb-plines" aria-label="The lines">{["console", "chips", "slow", "mango"].map(id => { const a = ACTS[AI[id]];
       return <li key={id} className={cx("rb-pline", id === "slow" && "branch")}>
+        {id === "slow" && <svg className="rb-pline-branch" viewBox="0 0 16 40" preserveAspectRatio="none" aria-hidden="true"><path d="M4 0 V28 Q4 38 14 38" vectorEffect="non-scaling-stroke" /></svg>}
         <button type="button" onClick={() => onPick(AI[id], 0)} className="rb-pline-btn">
           <span className="rb-pline-head">{a.console ? <span className="rb-badge-ic"><Icon name="layout-dashboard" size={18} /></span> : <img src={img(a.img)} alt="" />}<span className="rb-badge-t"><b>{a.title}{id === "slow" ? " · a slow week" : ""}</b><span>{id === "slow" ? "branches off the chips after the yes" : BADGE[id]} · {a.minutes} min</span></span></span>
           <span className="rb-pline-rail">{a.stations.map(st => <i key={st.id} className={toneOf(st) || ""} />)}<em className={a.outcome.red ? "red" : ""} /></span>
