@@ -73,7 +73,7 @@ The Claude Design projects hold the pages: one each for the design system, the d
 
 ## Demo controls
 
-Arrow keys or the Next button step through beats; keys 1 to 9 jump to a stage; P toggles phone-only; N toggles the notes; the play button runs the demo on its own. On a real phone the demo opens full screen with a slim stage bar.
+The demo opens on its route map (SC-167): the platform's console line, then three journeys, each station a button. Arrow keys or the Next button step through beats (an agent's beats also happen on their own); keys 1 to 4 jump to a line's start; M opens the map; P toggles phone-only; N toggles the notes; the play button rides the route on its own. The place is in the address (`#at=line.station.beat`). The story is `demo/story.jsx`, the director `demo/director.jsx`, and the console on Neha's laptop is `console/` embedded (`SC3_CONSOLE_EMBED`, SC-169). On a real phone the demo opens full screen with a slim bar.
 
 ## Data
 
