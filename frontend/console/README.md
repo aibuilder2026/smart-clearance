@@ -3,7 +3,8 @@
 The staff console (smartclearance-console.web.app), in SvelteKit 3: where Smart-Clearance's own staff set up and run each
 manufacturer's workspace, its agents, supply chain, channels and rules, people, integrations and plan. It is a faithful
 port of `design3/console` (SC-25's approved design, hosted in platform v3), built and deployed on its own, apart from
-the landing page (`../admin`).
+the landing page (`../admin`). The console itself lives in core (`@smart-clearance/core/console`, SC-169), so the guided
+demo can show it too; this app is its host: its addresses, its load functions, its API and Firebase, and its splash.
 
 There is no backend yet: the console talks to a typed API whose in-browser mock holds the prototype's platform
 (`@smart-clearance/api/console`). Set `PUBLIC_API_BASE` and the same calls go to backend-api over HTTP.
@@ -45,13 +46,17 @@ Until a staff member is signed in, every route shows the sign-in in place, and t
   it (`../firebase.json`).
 - **The shell** is core's `Shell` (a sidebar on desktops, a rail on tablets, a tab bar on phones), whose places are
   links. The screens scroll inside `#main`, as the prototype's do; each new screen fades in and starts at its top.
-- **Screens** are in `src/lib/screens/`: `App` (the sign-in or the shell), `SignIn`, `AccountSheet`, `Screen` (core's
-  `Page` with the appearance menu), and the client's tabs in `client/`. The routes in `src/routes/` hold the screens
-  that are one page each.
-- **Data:** TanStack Query over `src/lib/api/client.ts`. Each route's `load` fills the cache before the screen draws
-  (`prefetch` in `queries.ts`), so a screen opens with its data. A change goes through `act()` on the console's
-  context (`src/lib/console.svelte.ts`): it calls the API, refreshes everything under `['console']`, and confirms in a
-  toast, or says what went wrong.
+- **The console is core's `ConsoleApp`** (`../core/src/lib/console/`, SC-169): `App` (the sign-in or the shell),
+  `SignIn`, `AccountSheet`, `Screen` (core's `Page` with the appearance menu), each screen (Overview, Clients, a
+  client's page and its tabs in `client/`, New client, Agents, Connectors, Plans, Staff, Audit log) and the loaders.
+  `src/routes/+layout.svelte` renders it with the route the address names (`routeOf`), moves it with `goto`
+  (`routePath`), and says which route is being read (`navigating`); one route, `src/routes/[...path]/`, reads each
+  place before it draws; an address the console doesn't have is its Not found.
+- **Data:** TanStack Query over the API in `src/lib/api/client.ts`, through core's `ConsoleData` (`data` there): its
+  cache, what each screen reads, and each screen's code. `+layout.ts` reads who is in and the platform's description
+  (`data.boot()`), and each route's `load` reads its place (`data.load(route)`), so a screen opens with its data. A
+  change goes through `act()` on the console's context (core's `Console`): it calls the API, refreshes everything under
+  `['console']`, and confirms in a toast, or says what went wrong.
 - **The platform's rules** (what a supply-chain profile switches on, the presets, the line under each agent, what an
   invitation or the setup flow accepts) come from `@smart-clearance/api/console`, the same functions the mock applies.
   The setup flow previews with them; the server has the last word.
@@ -63,11 +68,12 @@ mark as the loader, option B of SC-131), one surface that says what it waits for
 
 - **The first load.** `hooks.server.ts` puts the script first in the page's `<body>` (`firstPaint`): it brings its
   own styles, the app's stylesheets no longer block the first paint, and the connection to backend-api opens early, so
-  the cover is up with the page's first bytes. `+layout.ts` tells it the code is running and the reads have gone out,
-  marks the session, the config and the catalog as they answer (or fails it if one is refused), and `App.svelte` asks
-  the splash to open onto whatever it has drawn. The sign-in fetches the Overview's code while the person types.
-- **Signing in.** After "Welcome, <name>", `App.svelte` begins the splash from the card's mark, then refreshes; the
-  page's `prefetch` names its reads and marks each as it lands; the splash opens from the sidebar's mark.
+  the cover is up with the page's first bytes. `+layout.ts` (`data.boot()`) tells it the code is running and the reads
+  have gone out, marks the session, the config and the catalog as they answer (or fails it if one is refused), and
+  core's `App.svelte` asks the splash to open onto whatever it has drawn. The sign-in fetches the Overview's code while
+  the person types. `ConsoleData` is given the splash (`window.SC3_SPLASH`) in `src/lib/api/client.ts`.
+- **Signing in.** After "Welcome, <name>", `App.svelte` begins the splash from the card's mark, then reads the page
+  (`data.load`), which names its reads and marks each as it lands; the splash opens from the sidebar's mark.
 - **Signing out.** Two stops: backend-api closes the session, then Firebase signs out (`firebase.ts` marks both); the
   sign-in takes the console's place and the splash opens onto it.
 
@@ -79,6 +85,7 @@ a slow download is never a failure (SC-131).
 
 | What                                                                                                                                 | Where                                                               |
 | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| The console: its screens, components, loaders, routes and data (SC-169)                                                              | `@smart-clearance/core/console`                                     |
 | Design-system components: Shell, Page, DataTable, Empty, Progress, Alert, NoticeHost (toasts), Tracker, TrackerCompact, and the rest | `@smart-clearance/core`                                             |
 | Columns and SectionTitle (`design3/screens/common.jsx`), FindWorkspace                                                               | `@smart-clearance/core`, `patterns/`                                |
 | `screens.css` (`design3/screens/screens.css`: the sign-in, the supply-chain strip)                                                   | `@smart-clearance/core/styles/screens.css`                          |
@@ -87,7 +94,8 @@ a slow download is never a failure (SC-131).
 | The cascade (`src/app.css`)                                                                                                          | admin's, plus `screens.css`, held equal by the same test            |
 | The axe scan and the pixel compare of the test suites                                                                                | `@smart-clearance/testing`                                          |
 
-`src/lib/console.css` is the console's own stylesheet, design3's verbatim (the same test checks it).
+The console's own stylesheet is core's `src/lib/console/console.css` (`@smart-clearance/core/console/console.css`,
+imported by the layout after `app.css`), design3's verbatim (`../core/tests/drift.test.ts` checks it).
 
 ### Fixed from the prototype, none of it visible
 
@@ -135,7 +143,7 @@ bits-ui and its floating-ui layer, as on the landing page.
 
 | Suite                      | Command                     | What                                                                                                                                                                                                                                                                                                                                                                                                        |
 | -------------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Unit (Vitest)              | `corepack pnpm test`        | `console.css` against design3; `app.html` and the cascade against admin's                                                                                                                                                                                                                                                                                                                                   |
+| Unit (Vitest)              | `corepack pnpm test`        | `app.html` and the cascade against admin's; the console's own (its stylesheet against design3, its routes and reads, `act()`, the embedded console) are core's (`../core/tests/console*.test.ts`)                                                                                                                                                                                                           |
 | Accessibility (Playwright) | `corepack pnpm test:a11y`   | the a11y suite (SC-58), on the build: axe-core WCAG 2.2 AA in five projects (1440 light and dark, 820, 390 light and dark): the sign-in and its sheets, every screen, an agent's settings, a menu, its alert and the toast after it, each step of the setup flow; keyboard (sheets, alerts, menus, links, rows); motion (nothing loops); then every core component the console uses, on screen in some scan |
 | End to end (Playwright)    | `corepack pnpm test:e2e`    | the console's flows against the mock; smoke in Firefox and WebKit                                                                                                                                                                                                                                                                                                                                           |
 | Parity                     | `corepack pnpm test:parity` | every screen and the sign-in against `design3/console`, pixel by pixel, in five projects                                                                                                                                                                                                                                                                                                                    |

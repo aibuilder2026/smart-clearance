@@ -199,6 +199,26 @@ const workspaceSeed = {
  *  staff, today's runs and batches, and the audit log */
 const R = window.SC3_MONEY.RULES;
 const platform = P.seed();
+/** a platform's state as the console's mock keeps it */
+const consoleState = (platform) => ({
+	clients: platform.clients,
+	staff: platform.staff,
+	runs: platform.runs.map((r) => pick(r, ['at', 'agent', 'client', 'text'])),
+	// each batch names its product and distributor, as the console shows them
+	tracks: platform.tracks.map((t) => ({
+		client: t.client,
+		batch: t.batch,
+		product: D.SKUS[t.sku].name,
+		distributor: D.DISTRIBUTORS[t.distributor].name,
+		city: D.DISTRIBUTORS[t.distributor].city,
+		...pick(t, ['done', 'current', 'note', 'money', 'split'])
+	})),
+	// the batches the Watcher sees, with their best-before dates and any gate override (SC-47)
+	batches: platform.batches,
+	audit: platform.audit,
+	// each live client's journey, as the console fires its runs and timers and resets it (SC-79)
+	journeys: platform.journeys
+});
 const consoleSeed = {
 	config: {
 		autonomy: P.AUTONOMY,
@@ -220,28 +240,15 @@ const consoleSeed = {
 			destruction: P.destructionDefaults()
 		}
 	},
-	state: {
-		clients: platform.clients,
-		staff: platform.staff,
-		runs: platform.runs.map((r) => pick(r, ['at', 'agent', 'client', 'text'])),
-		// each batch names its product and distributor, as the console shows them
-		tracks: platform.tracks.map((t) => ({
-			client: t.client,
-			batch: t.batch,
-			product: D.SKUS[t.sku].name,
-			distributor: D.DISTRIBUTORS[t.distributor].name,
-			city: D.DISTRIBUTORS[t.distributor].city,
-			...pick(t, ['done', 'current', 'note', 'money', 'split'])
-		})),
-		// the batches the Watcher sees, with their best-before dates and any gate override (SC-47)
-		batches: platform.batches,
-		audit: platform.audit,
-		// each live client's journey, as the console fires its runs and timers and resets it (SC-79)
-		journeys: platform.journeys
-	},
+	state: consoleState(platform),
 	// the day the console opens on, which every batch's days left counts from
 	today: P.TODAY
 };
+/** the console's demo world (SC-169: platform.js's P.seed({ world: 'demo' })), which the guided demo's console opens on:
+ *  Munchly Foods and four fictional clients with 180 days of their batches, the closed ones with what they kept and
+ *  destroyed, and two demo requests. Only the frontend's mock reads it (consoleMock({ world: 'demo' })) */
+const demoWorld = P.seed({ world: 'demo' });
+const consoleDemo = { state: consoleState(demoWorld), requests: demoWorld.requests };
 
 /** backend-api's tests: what platform.js itself answers, so the Python ports of its rules can be checked against it */
 const PROFILES = [];
@@ -904,7 +911,8 @@ const outputs = {
 		'showcase.json': json(showcase),
 		'catalog.json': json(catalog),
 		'directory.json': json(directory),
-		'console.json': json(consoleSeed)
+		'console.json': json(consoleSeed),
+		'console-demo.json': json(consoleDemo)
 	},
 	'admin/src/lib/seed': { 'ds.json': json(ds) },
 	'core/src/lib/workspace/seed': {

@@ -1,5 +1,10 @@
 /* Smart-Clearance v3 · the console (smartclearance-console.web.app): platform staff set up each client's workspace */
 
+/* the console's root (SC-169): a box of no size of its own, so the shell and the sign-in lay out as before, and the one
+   ancestor this stylesheet's rules on the kit's shared components are scoped to, so another page that hosts the console
+   (the guided demo) keeps its own look. Everything else here is a .cs- class of the console's own */
+.cs-app { display: contents; }
+
 /* the sidebar's lockup: the product, then where you are */
 .cs-brand { display: grid; gap: 1px; line-height: 1.1; }
 .cs-brand-sub { font-size: 12px; font-weight: 600; color: var(--fg-3); }
@@ -107,7 +112,7 @@
   .cs-trig-act { justify-content: flex-start; }
 }
 .cs-ctl { flex: none; display: grid; justify-items: end; gap: 4px; } /* the level, then its save line while it saves (SC-152) */
-.segmented.sm .seg { height: 26px; padding: 0 10px; font-size: 12.5px; }
+.cs-app .segmented.sm .seg { height: 26px; padding: 0 10px; font-size: 12.5px; }
 .cs-gate-note { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; font-size: 14px; background: var(--amber-soft); color: var(--amber-text); }
 .cs-gate-note .ic { flex: none; margin-top: 2px; }
 
@@ -164,7 +169,7 @@
 .cs-agentcard.is-gate { box-shadow: 0 0 0 1px color-mix(in oklab, var(--amber) 55%, transparent); background: color-mix(in oklab, var(--amber-soft) 55%, var(--surface)); }
 .cs-connectors { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); align-items: start; }
 .cs-plans { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); align-items: start; }
-.chip .wsmark { flex: none; }
+.cs-app .chip .wsmark { flex: none; }
 
 /* SC-47: quick-commerce gates per SKU, with a per-batch override. A value of the SKU's own reads in the primary ink at
    600 with "this SKU" under it; the client's default reads in the secondary ink with "default", so they never differ by
