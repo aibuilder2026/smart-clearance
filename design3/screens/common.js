@@ -38,8 +38,8 @@
   const useRoute = () => useContext(RouteCtx);
   const PHASE_STATUS = { watching: "watching", "at-risk": "at-risk", verified: "routing", valued: "routing", planned: "awaiting", approved: "executing", executing: "executing", dispatched: "dispatched", settled: "settled", cleared: "cleared" };
   function heroModel(s) {
-    const h = s.hero;
-    const view = D.batchView(D.BATCHES[0]);
+    const h = s.hero, C = D.story(s);
+    const view = D.batchView(C.batch);
     const idx = Flow.stageOf(s);
     view.phase = PHASE_STATUS[h.phase];
     const ordered = h.orders.length, orderedUnits = h.orders.reduce((t, o) => t + o.units, 0);
@@ -60,8 +60,15 @@
       eta = "Waiting for your approval";
       etaTone = "amber";
     } else if (h.phase === "approved" || h.phase === "executing") {
-      eta = h.award ? `Awarded at ₹${D.COUNTER.price.toFixed(2)} · ${ordered} of ${D.KIRANAS.length} kiranas ordered` : `Listing live · ${ordered} of ${D.KIRANAS.length} kiranas ordered`;
-      agentLive = h.award && ordered === D.KIRANAS.length ? "" : "Lister, Outreach and Negotiator at work";
+      const has = (id) => C.plan.lines.some((l) => l.id === id && l.units > 0), shops = `${ordered} of ${C.kiranas.length} kiranas ordered`;
+      if (has("expiresoon")) {
+        eta = h.award ? `Awarded at ₹${C.counter.price.toFixed(2)} · ${shops}` : `Listing live · ${shops}`;
+        agentLive = h.award && ordered === C.kiranas.length ? "" : "Lister, Outreach and Negotiator at work";
+      } else {
+        eta = has("kirana") ? `Scheme open · ${shops}` : "Carrying out the plan";
+        const at = [has("kirana") && "Outreach", has("foodbank") && "Donation"].filter(Boolean);
+        agentLive = at.length ? `${at.join(" and ")} at work` : "";
+      }
     } else if (h.phase === "dispatched") {
       eta = "Paperwork in progress";
       agentLive = "Paperwork is drafting the pack";
@@ -73,7 +80,7 @@
     }
     const dz = h.destruction && h.phase !== "cleared" ? h.destruction.status : null;
     if (dz === "requested" || dz === "asked") {
-      const who = D.DISTRIBUTORS[D.BATCHES[0].distributor].short;
+      const who = C.dist.short;
       eta = `Waiting for ${who + (/s$/.test(who) ? "'" : "'s")} destruction evidence`;
       etaTone = "amber";
       agentLive = "";
@@ -85,8 +92,9 @@
       etaTone = "amber";
       agentLive = "";
     }
-    return { h, view, idx, done: Math.min(idx, 9), current: idx < 9 ? idx : -1, eta, etaTone, agentLive, ordered, orderedUnits, plan: D.PLAN };
+    return { h, view, idx, done: Math.min(idx, 9), current: idx < 9 ? idx : -1, eta, etaTone, agentLive, ordered, orderedUnits, plan: C.plan };
   }
+  const useStory = () => D.story(useStore());
   const unreadFor = (s, me) => s.notifications.filter((n) => n.to === (me && me.id) && !n.read).length;
   function TopActions({ me, extra }) {
     const s = useStore();
@@ -131,7 +139,7 @@
   const AccountCtx = createContext({});
   function PlayAs({ who, route, children }) {
     const acc = useContext(AccountCtx);
-    const p = D.PEOPLE[who];
+    const p = D.story(Store.get()).people[who] || Store.get().users.find((u) => u.id === who);
     if (!acc.switchTo || !p) return null;
     return /* @__PURE__ */ React.createElement("button", { type: "button", className: "playas", onClick: () => acc.switchTo(who, route) }, /* @__PURE__ */ React.createElement(Avatar, { person: p, size: "xs" }), /* @__PURE__ */ React.createElement("span", null, children || `Continue as ${p.short}`), /* @__PURE__ */ React.createElement(Icon, { name: "arrow-right", size: 14 }));
   }
@@ -165,5 +173,5 @@
     }, initial: reduce ? false : { opacity: 0, y: -26, scale: 0.94 }, animate: { opacity: 1, y: 0, scale: 1 }, transition: { type: "spring", stiffness: 420, damping: 32 } }, /* @__PURE__ */ React.createElement("span", { className: "ln-head" }, push.app ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { className: "ln-app", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Icon, { name: push.icon || "message-circle", size: 14, stroke: 2.2 })), /* @__PURE__ */ React.createElement("span", null, push.app)) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(K.Mark, { size: 22, still: true }), /* @__PURE__ */ React.createElement("span", null, "Smart-Clearance")), /* @__PURE__ */ React.createElement("span", { className: "ln-now" }, "now")), /* @__PURE__ */ React.createElement("b", null, push.title), /* @__PURE__ */ React.createElement("span", { className: cx("ln-body", hindi && "hi"), lang: hindi ? "hi" : void 0 }, push.body))), /* @__PURE__ */ React.createElement("div", { className: "lock-foot" }, push ? "Tap the notification to open" : `${p.short || p.name}'s phone`));
   }
   const PEOPLE_BY_ID = (id) => D.PEOPLE[id] || (Store.get().users.find((u) => u.id === id) || { name: id });
-  window.SC3_SCREENS = Object.assign(window.SC3_SCREENS || {}, { LockScreen, AccountCtx, WorkspaceCtx, LiveCtx, BatchCtx, useLive, PlayAs, Photo, PushBanners, useStore, Router, useRoute, heroModel, unreadFor, TopActions, Screen, Columns, SectionTitle, Locked, PEOPLE_BY_ID, PHASE_STATUS });
+  window.SC3_SCREENS = Object.assign(window.SC3_SCREENS || {}, { LockScreen, AccountCtx, WorkspaceCtx, LiveCtx, BatchCtx, useLive, PlayAs, Photo, PushBanners, useStore, useStory, Router, useRoute, heroModel, unreadFor, TopActions, Screen, Columns, SectionTitle, Locked, PEOPLE_BY_ID, PHASE_STATUS });
 })();
