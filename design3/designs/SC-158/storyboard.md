@@ -92,3 +92,31 @@ overlays (11 pop-ups, 40 captions, 11 chapter labels, the title and the end card
   bass from 0:35, a shaker and a tak from 1:04, lifting at the ledger and fading at the end.
 - **Checks:** every segment's frames were looked at from contact sheets of the draft and the final; the audio measures
   −16.4 dB mean, −1.5 dB peak; `ffprobe` reads 296.5 s, h264 1920×1080 at 24 fps, AAC 48 kHz.
+
+## Rebuilding the film from a fresh clone
+
+Everything the cut needs is tracked: the clips in `media/`, the keyframes in `img/`, the app screens in `screens/`,
+the timeline in `src/film.json` with the run's figures and pushes beside it, and the scripts. `src/` holds the
+originals while a session works (PNG keyframes, the raw clips, the screenshots, the overlays, the music, the build);
+each script reads from `src/` when the file is there and from the tracked copy otherwise.
+
+1. Install the frontend once (`cd frontend && corepack pnpm install`): the overlays and captures use its Playwright.
+2. From `design3/designs/SC-158/src/`:
+
+   ```sh
+   node overlays.mjs                                                  # the pop-ups, captions, title and end card
+   uv run --with numpy --with scipy python music.py --length 320 --lift 250 --out music.wav
+   uv run --with pillow --with numpy python assemble.py               # the cut, to ../media/mango-drink-demo.mp4
+   ```
+
+   About 12 minutes on this Mac; `--draft` halves it. `--only 3,4` re-renders two segments and re-cuts.
+3. To change a caption, edit `film.py`, run `python3 film.py`, then `node overlays.mjs cap-NN` and `assemble.py --only NN`.
+4. To retake one clip (about 9 minutes each, LTX Desktop installed, the ltx-video plugin's server present):
+   `uv run --python 3.12 --script gen-ltx.py c05-priya-phone`, then delete `build/seg-NN.mp4` and run `assemble.py`.
+   A new keyframe comes from `gen-qwen.sh` (the qwen-image-bf16 plugin; it skips keyframes that exist in `src/img/`).
+5. To capture the screens afresh (a new run of the journey, so the figures change): a stack of your own as
+   `director.sh` sets it up (`PORT`, `WS_ORIGIN`, the apps' `.env.local` pointing at it), then `./director.sh`; it
+   writes `screens/`, `pushes.json` and, with `--dump-only`, `figures.json`. Then `python3 film.py` and the steps above.
+
+Only the 68 MB film is tracked; the crf-18 master is not, so a rebuild makes a fresh one (`assemble.py` without
+`--draft` writes crf 18; the tracked copy was re-encoded at crf 24 to stay under GitHub's 100 MB).
