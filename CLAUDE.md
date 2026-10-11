@@ -2214,4 +2214,17 @@
     agents live, four apps, Pub/Sub, Scheduler, BigQuery, the buckets, the GBP 30 budget, `app-env.sh`).
   - **Checks:** every relative link and anchor in the five documents resolves.
 
+- **SC-171** (In Review, branch `SC-171-buckets-keep`; bug): the photos and docs buckets kept for good.
+  - **Found:** every app bucket deleted its files 30 days after they were written (`infra/prod/storage.tf`, SC-70, when
+    every file there was a working copy). The pilot quarter's papers and photos (SC-123), the Record and Photos tabs
+    (SC-142) and the destruction evidence (SC-139) keep them for good, and production's copies, made on 10 Oct, would
+    have gone around 9 Nov: Download PDF failing, "The photo did not load", and a journey's photos lost.
+  - **The fix,** on the maintainer's ask: the delete rule only on the exports buckets (a dynamic `lifecycle_rule`); the
+    photos and docs buckets, in prod and local, never expire. Exports keep 30 days: their CSVs are loaded into BigQuery.
+  - **Terraform,** applied on the maintainer's yes (11 Oct): the plan read in full, 0 to add, 4 changed in place (the
+    rule removed from the photos and docs buckets of both environments), 0 destroyed; nothing else drifted. Read back
+    from Google: the four buckets have no lifecycle rule, the two exports buckets keep theirs. A fresh plan shows no
+    changes. `check.sh` passes.
+  - **Docs:** `infra/README.md`, the README's project table, and DEMO.md's known limits (the caveat is gone).
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
