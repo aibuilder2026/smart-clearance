@@ -111,6 +111,39 @@
   const MANGO_FB = (MANGO_PLAN.lines.find(l => l.id === "foodbank") || { units: 0 }).units;
   const RETURN_BY = addDays(hero.bestBefore, -M.RULES.returnWindowDays);
 
+  // Lakshmi Agencies' cluster in Hyderabad's old city (SC-86), so the Mango Drink's scheme has shops to go to: as many as
+  // she supplies, round the Begum Bazaar godown. Their 14-day sales add up to the batch's 28 packets a day (392), so
+  // their caps (4×) hold the plan's kirana line; `orders` is what each orders when the scheme runs (walk.sh, and the
+  // Mango Drink's own journey in the stub, SC-168): its cap until the line is full. world.js adds their pincodes and
+  // accounts
+  const HYD_SHOPS = [
+    ["Sri Lakshmi Ganapathi Kirana", "Begum Bazaar"], ["Al-Noor Provision Store", "Charminar"], ["Deccan General Stores", "Abids"], ["Sai Krishna Kirana", "Koti"],
+    ["Hussaini Provision", "Dabeerpura"], ["Bhavani Kirana", "Malakpet"], ["Golconda Stores", "Afzal Gunj"], ["Moazzam Kirana", "Charminar"],
+    ["Anjaneya Provision Store", "Sultan Bazar"], ["Shalimar General Store", "Nampally"], ["Ravi Teja Kirana", "Chaderghat"], ["Madina Provision", "Charminar"],
+    ["Sri Durga Bhavani Stores", "Begum Bazaar"], ["Hyderabadi Kirana", "Abids"], ["Gulzar House Stores", "Charminar"], ["Padmavathi Kirana", "Koti"],
+    ["Asif Nagar Provisions", "Nampally"], ["Ramakrishna General Store", "Malakpet"], ["Taj Kirana", "Dabeerpura"], ["Sitara Provision Store", "Afzal Gunj"],
+    ["Vinayaka Stores", "Sultan Bazar"], ["Nizam Kirana", "Charminar"], ["Annapurna Provisions", "Chaderghat"], ["Musi River Stores", "Afzal Gunj"],
+    ["Kothi Kirana", "Koti"], ["Siddiq General Store", "Dabeerpura"], ["Lalitha Provision", "Malakpet"], ["Mehboob Kirana", "Begum Bazaar"],
+    ["Srinivasa Stores", "Abids"], ["Zam Zam Provisions", "Charminar"], ["Pochamma Kirana", "Chaderghat"], ["Rahmat General Store", "Nampally"],
+    ["Krishnaveni Provisions", "Sultan Bazar"], ["Shah Ali Kirana", "Dabeerpura"], ["Mahalakshmi Stores", "Malakpet"], ["Banjara Provision Store", "Abids"],
+    ["Ghouse Kirana", "Charminar"], ["Sri Rama Stores", "Koti"], ["Patel Market Kirana", "Afzal Gunj"], ["Yadamma Provisions", "Chaderghat"],
+    ["Darussalam Stores", "Nampally"], ["Gowri Kirana", "Begum Bazaar"], ["Irani Gali Provisions", "Charminar"], ["Satyanarayana Stores", "Sultan Bazar"],
+    ["Farhan General Store", "Dabeerpura"], ["Sunanda Kirana", "Malakpet"], ["Mir Alam Provisions", "Afzal Gunj"], ["Jyothi Stores", "Koti"],
+    ["Purani Haveli Kirana", "Charminar"], ["Narayana Provision Store", "Abids"], ["Bilal Stores", "Nampally"], ["Saraswathi Kirana", "Chaderghat"],
+    ["Osman Gunj Provisions", "Begum Bazaar"], ["Vijaya Stores", "Sultan Bazar"], ["Akbar Kirana", "Dabeerpura"], ["Manjula Provisions", "Malakpet"],
+    ["Laad Bazaar Stores", "Charminar"], ["Sri Venu Kirana", "Afzal Gunj"],
+  ];
+  const HYD_SALES = [6, 7, 8, 5, 9, 6, 7, 4, 8, 7];
+  const HYDERABAD = (() => {
+    let toOrder = (MANGO_PLAN.lines.find(l => l.id === "kirana") || { units: 0 }).units;
+    return HYD_SHOPS.map(([name, area], i) => {
+      const sales14 = i < 50 ? HYD_SALES[i % 10] : i < 57 ? 7 : 8;
+      const orders = Math.min(toOrder, sales14 * M.RULES.shopCapTimes);
+      toOrder -= orders;
+      return { id: "h" + i, name, area, sales14, orders };
+    });
+  })();
+
 
   const WORKSPACE = {
     id: "munchly", name: "Munchly Foods", short: "Munchly", domain: "munchly-" + PLATFORM.domain, emailDomain: "munchly.in",
@@ -442,7 +475,180 @@
     accounts: [["priya", PEOPLE.priya.email], ["rakesh", PEOPLE.rakesh.phone], ["ganesh", PEOPLE.ganesh.phone], ["shreesai", "+91 98230 60013"]],
   };
 
+  /* ---------- the guided demo's three journeys (SC-168) ----------
+     The stub runs one journey at a time, each following its own batch (its hero): the story's Masala Chips at Rakesh
+     Traders, the default and as it always was, with the Mango Drink donation staged beside it; the Mango Drink at
+     Lakshmi Agencies as the hero of its own journey (its scheme to her Hyderabad kiranas, her staff sale, its donation to
+     Feeding India); or the chips again, slow: 23 of the 31 shops order, the window closes on the rest, and the packs left
+     at Kalamna Market godown are destroyed there on expiry day, against evidence Priya approves (SC-139). Each story is
+     everything its journey and screens read: its batch and people, the plan, the money as money.js works it out, the
+     papers, the pushes, the timeline and the moments. flow.js runs it; ledger.js and the screens read it. */
+  const slugOf = s => s.toLowerCase().replace(/&/g, " ").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  // a shop's account in the workspace, as world.js names it
+  const shopMember = name => "kirana-" + slugOf(name);
+  const clockAt = m => String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
+  const lineIn = (p, id) => p.lines.find(l => l.id === id && l.units > 0) || null;
+  const flagless = b => { const { hero: _h, second: _s, ...rest } = b; return rest; };
+  const baseName = sku => sku.name.replace(/\s+\d+(\.\d+)?\s?(g|ml|kg|l)$/i, "");
+  const tightName = sku => sku.name.replace(/(\d) (g|ml|kg|l)\b/gi, "$1$2");
+  const STAGE_IDS = STAGES.map(s => s.id);
+
+  // the story's own: every value is the constant the prototype always read, so the chips journey is unchanged
+  const CHIPS_STORY = {
+    key: "chips", title: "Masala Chips at Rakesh Traders", batch: hero, sku: chips, dist: DISTRIBUTORS.rakesh, buyer: BUYER, batches: BATCHES,
+    accounts: { distributor: "rakesh", kirana: "ganesh", foodbank: "meera", buyer: "agrawal", decliner: null },
+    people: PEOPLE, users: [], kiranas: KIRANAS, offered: OFFERED, shop: "k0", decliner: null, fills: true, scheme: "Masala Chips scheme",
+    risk: RISK, plan: PLAN, KL, ES, ask: ASK, counter: COUNTER, award: AWARD, actual: ACTUAL, support: SUPPORT, supportPlan: SUPPORT_PLAN, claim: CLAIM,
+    docs: DOCS, invoice: INVOICE, returnBy: RETURN_BY, realised: null, godownLeft: null, expiry: null,
+    push: PUSH, chat: CHAT, events: EVENTS, journey: JOURNEY, listing: JOURNEY.listing,
+    // the batch the same agents donate beside the story's (its pickup and receipt), and the second batch in motion
+    donation: { batch: BATCHES[1], sku: SKUS.mango, dist: DISTRIBUTORS.lakshmi, plan: MANGO_PLAN, units: MANGO_FB, partner: FOODBANK, receipt: MANGO_RECEIPT },
+    second: BATCHES[1],
+    evidence: { before: "MF-2409-117-before.webp", after: "MF-2409-117-after.webp", slate: null, when: "Both photos taken today, at the godown and the landfill" },
+    at: { ask: "09:05", photo: "09:19", read: "09:20", plan: "09:22", approve: "09:40", list: "09:41", offer: "09:41", closes: "Sun 4 Oct · 09:41", decline: "10:12", bid: "11:02", award: "11:09",
+      dispatch: "Mon 5 Oct", invoice: "Mon 5 Oct", review: "Mon 5 Oct", van: "Tue 6 Oct", report: "30 Oct", staff: "Day 1", confirm: "Day 1", collect: "Day 4", expiry: "Expiry day" },
+    // the day Impact posts it (the return window closed the day before), what it came to, and the van round's day
+    cleared: addDays(RETURN_BY, 1), outcome: "sold", vanDay: 4, pron: "his",
+    explore: EXPLORE, stages: STAGE_IDS, setupDone: false,
+  };
+
+  // the Mango Drink at Lakshmi Agencies, as the hero of its own journey: Setup is confirmed and she gave her permission on
+  // 1 Oct (SETUP.permissions), so it starts at the Watcher's run. 22 days is too few for ExpireSoon, so its plan is the
+  // scheme to her kiranas, her staff sale and a food bank; 52 of her 58 shops order its 1,372 packets by the cap rule
+  const MANGO = BATCHES[1], MSKU = SKUS.mango, LAKSHMI = DISTRIBUTORS.lakshmi;
+  const MANGO_RISK = M.assess(MANGO, MSKU);
+  const MKL = lineIn(MANGO_PLAN, "kirana"), MST = lineIn(MANGO_PLAN, "staff");
+  const MANGO_KIRANAS = HYDERABAD.filter(k => k.orders).map((k, i) => ({ id: k.id, name: k.name, area: k.area, units: k.orders, at: clockAt(9 * 60 + 48 + i * 3) }));
+  const MANGO_SHOP = HYDERABAD[0];
+  const MANGO_REALISED = M.realised(MANGO_PLAN, MSKU, null, FOODBANK.meals, SETUP.expiry, SETUP.destruction);
+  const MANGO_SUPPORT = M.priceSupport(MANGO_REALISED, MSKU);
+  const MANGO_ACTUAL = M.actualNet(MANGO_REALISED, 0);
+  const MANGO_DOCS = M.documents(MANGO_REALISED, MSKU, null, MANGO_SUPPORT, { seller: LAKSHMI, buyer: BUYER, client: CLIENT }, MANGO_RECEIPT);
+  const MANGO_RETURN_BY = addDays(MANGO.bestBefore, -M.RULES.returnWindowDays);
+  const MANGO_TOOK = 9 * 60 + 48 + (MANGO_KIRANAS.length - 1) * 3 - (9 * 60 + 36), MANGO_HOURS = Math.round(MANGO_TOOK / 60);
+  const lakshmiPerson = { id: "lakshmi-owner", name: LAKSHMI.name, short: LAKSHMI.short, role: "Owner, distributor", org: LAKSHMI.name, city: LAKSHMI.city, phone: "+91 98480 10550", sign: "Phone OTP", lang: "hi", kind: "partner" };
+  const mangoShopPerson = { id: shopMember(MANGO_SHOP.name), name: MANGO_SHOP.name, short: MANGO_SHOP.name, role: "Owner, kirana", org: MANGO_SHOP.name, city: `${MANGO_SHOP.area}, ${LAKSHMI.city}`, phone: "+91 98480 60011", sign: "Phone OTP", lang: "hi", kind: "partner" };
+  const mGates = MANGO_RISK.gates.map(g => `${g.app} ${g.has}/${g.need}`).join(" · ");
+  const MDN = JOURNEY.donation;
+  const mangoPush = {
+    detect: { to: "priya", at: "09:00", title: `${MSKU.name} · ${LAKSHMI.city}`, body: `Priya ji, ${LAKSHMI.city} godown mein ${tightName(MSKU)} (batch ${MANGO.id}) ki ${n0(MANGO_RISK.atRisk)} units ${fmt.day(MANGO.bestBefore)} se pehle nahi bikengi. Q-commerce block hai. Route dekhne ke liye tap karein.` },
+    verify: { to: "lakshmi-owner", at: "09:05", title: "Ek photo chahiye", body: `${LAKSHMI.name}, ${tightName(MSKU)} ka ek carton ka label photo bhej dein (batch ${MANGO.id}). Bas ek photo, baaki hum kar lenge.` },
+    plan: { to: "priya", at: "09:20", title: `Plan ready · ${MANGO.id}`, body: `Plan for ${MANGO.id}: ${n0(MKL.units)} units kirana (₹${MKL.price}), ${n0(MST.units)} units staff sale (₹${MST.price}), ${MANGO_FB} units food bank (₹0). Net ${inr(MANGO_PLAN.net)}, ${inr(MANGO_PLAN.swing)} better than write-off. GST ITC ${inr(MANGO_PLAN.itcRetained)} safe. Tap to review and approve.` },
+    approved: { to: "lakshmi-owner", at: "09:35", title: `Plan approved · ${baseName(MSKU)}`, body: `${LAKSHMI.name}, Munchly ne ${MANGO.id} ka plan approve kiya: ${n0(MKL.units)} packets aapke kiranas ko scheme par, ${n0(MST.units)} godown ki staff sale mein, ${MANGO_FB} food bank ko. Kuch rokna ho to app mein Pause dabayein.` },
+    offer: { to: mangoShopPerson.id, at: "09:36", title: "आज का खास ऑफर", hindi: true, body: `नमस्ते ${MANGO_SHOP.name}! Munchly ${tightName(MSKU)} पर आज खास ऑफर: 10 पैकेट लो, 2 मुफ़्त. Best before ${fmt.date(MANGO.bestBefore)}. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें — ${LAKSHMI.name}`, en: `Today's offer on Munchly ${MSKU.name}: buy 10 packets, get 2 free. Best before ${fmt.date(MANGO.bestBefore)}. 48 hours only. Tap to order. ${LAKSHMI.name}` },
+    van: { to: "lakshmi-owner", at: "Tue 18:00", title: "Van route for Wednesday", body: `Van route for Wednesday updated: ${MANGO_KIRANAS.length} kiranas, ${n0(MKL.units)} packets.` },
+    papers: { to: "priya", at: "Tue 6 Oct", title: `Document pack ready · ${MANGO.id}`, body: `Papers ready for ${MANGO.id}: price-support credit note, GST memo, FSSAI checklist, ${FOODBANK.name}'s receipt. Nothing to chase.` },
+    support: { to: "lakshmi-owner", at: "Tue 6 Oct", title: "Credit note on its way", body: `Munchly's price-support credit note CN/0117 for ${inr(MANGO_SUPPORT.total)} is drafted for ${MANGO.id}: what the kiranas, the staff sale and the food bank fetched, made up to what you paid.` },
+    closed: { to: "priya", at: "Wed 7 Oct", title: "Batch closed · 0 cartons destroyed", body: `${inr(MANGO_ACTUAL.net)} recovered, ${inr(MANGO_REALISED.itcRetained)} GST credit kept, ${fmt.kg(MANGO_REALISED.kg)} kept out of landfill, ${MANGO_REALISED.meals} meals.` },
+  };
+  const MANGO_EVENTS = [
+    { key: "watch", stage: "detect", agent: "Watcher", icon: "radar", at: "09:00", min: 0, text: `Checked 312 batches across 4 distributors. ${MANGO.id} fails all three quick-commerce gates and will not sell through.`, calls: [["gates.check", mGates, "bad"], ["sellthrough.project", `${MANGO.sellPerDay}/day × ${MANGO_RISK.usableDays} days = ${n0(MANGO_RISK.willSell)} of ${n0(MANGO.units)}`, ""], ["pubsub.publish", "batch.at_risk", "ok"]] },
+    { key: "ask", stage: "verify", agent: "Vision", icon: "scan-line", at: "09:05", min: 5, text: `Asked ${LAKSHMI.name} for one label photo before quoting any price.`, calls: [["fcm.send", `${LAKSHMI.name} · Hindi`, "ok"]] },
+    { key: "photo", stage: "verify", person: "lakshmi-owner", at: "09:16", min: 11, text: `Sent one photo of the carton label from ${LAKSHMI.godown}.` },
+    { key: "read", stage: "verify", agent: "Vision", icon: "scan-line", at: "09:17", min: 1, text: `Read the label: batch ${MANGO.id}, MFG ${fmt.date(MANGO.mfg)}, best before ${fmt.date(MANGO.bestBefore)}, MRP ${fmt.rate(MSKU.mrp)}, confidence 0.97. Matches the DMS record.`, calls: [["gemini.vision.read_label", "confidence 0.97", "ok"], ["dms.reconcile", "match", "ok"]] },
+    { key: "value", stage: "value", agent: "Valuer", icon: "scale", at: "09:18", min: 1, text: `Priced five channels against ${MANGO.daysLeft} days left. Destroying costs ${fmt.inr2(-MANGO_PLAN.writeOff.perUnit)} a unit, ${inr(-MANGO_PLAN.writeOff.total)} for the batch.`, calls: [["bigquery.price_history", `${MSKU.category} · ${MANGO.daysLeft} days`, ""], ["gst.rate", `HSN ${MSKU.hsn} → ${Math.round(MSKU.gst * 100)}%`, ""], ["cost_sheet.input_gst", `${fmt.rate(M.itcOf(MSKU))} a pack, estimated`, ""], ["epr.factor", `₹${M.RULES.eprPerKg} / kg`, ""]] },
+    { key: "route", stage: "decide", agent: "Router", icon: "split", at: "09:19", min: 1, text: `${n0(MKL.units)} units to the kirana cluster at ₹${MKL.price} effective, capped by what ${LAKSHMI.kiranas} kiranas can move in 14 days; ${n0(MST.units)} to the ${MST.name} at ₹${MST.price}; ${MANGO_FB} to a food bank. ExpireSoon needs 30+ days, so this batch cannot go there.`, calls: [["allocate.greedy", `${n0(MANGO_PLAN.units)} units → net ${inr(MANGO_PLAN.net)}`, "ok"]] },
+    { key: "notify", stage: "approve", agent: "Notifier", icon: "bell", at: "09:20", min: 1, text: `Sent Priya the plan to review, and ${LAKSHMI.name} the same plan with a pause button.` },
+    { key: "approved", stage: "approve", person: "priya", at: "09:35", min: 15, text: "Approved the plan from her phone.", human: true },
+    { key: "outreach", stage: "execute", agent: "Outreach", icon: "send", at: "09:36", min: 1, text: `Pushed the Hindi scheme to ${LAKSHMI.kiranas} kiranas in the ${LAKSHMI.city} cluster: buy 10 get 2 for 48 hours, no shop over ${M.RULES.shopCapTimes}× its own 14-day sales.`, calls: [["fcm.send", `${LAKSHMI.kiranas} kiranas · Hindi`, "ok"]] },
+    EV("donate") && Object.assign({}, EV("donate"), { at: "09:36", min: 0 }),
+    { key: "orders", stage: "execute", agent: "Outreach", icon: "store", at: MANGO_KIRANAS[MANGO_KIRANAS.length - 1].at, min: MANGO_TOOK, text: `${MANGO_KIRANAS.length} of ${LAKSHMI.kiranas} kiranas ordered all ${n0(MKL.units)} units in about ${MANGO_HOURS} hours, each under its cap.`, calls: [["orders.sum", `${n0(MKL.units)} units · ${MANGO_KIRANAS.length} shops`, "ok"]] },
+    { key: "staff", stage: "execute", person: "lakshmi-owner", at: "Day 1", min: 1200, text: `Recorded the staff sale at ${LAKSHMI.godown}: ${n0(MST.units)} of ${n0(MST.units)} packs sold at ₹${MST.price}.` },
+    { key: "collect", stage: "execute", person: "meera", at: "Day 4", min: 4320, text: `Collected ${MANGO_FB} packs at ${LAKSHMI.godown} and issued ${MANGO_RECEIPT.type.toLowerCase()} ${MANGO_RECEIPT.no}.` },
+    { key: "papers", stage: "settle", agent: "Paperwork", icon: "file-check", at: "Tue 6 Oct", min: 30, text: `Issued the price-support credit note CN/0117, wrote the ITC memo and the FSSAI checklist, and filed ${FOODBANK.name}'s receipt ${MANGO_RECEIPT.no} with the pack.`, calls: [["docs.credit_note", inr(MANGO_SUPPORT.total), "ok"], ["itc.memo", `${inr(MANGO_REALISED.itcRetained)} retained`, "ok"], ["fssai.checklist", `${MANGO_FB} units`, "ok"]] },
+    { key: "van", stage: "settle", person: "lakshmi-owner", at: "Wed 7 Oct", min: 1260, text: `Ran the Wednesday round: ${MANGO_KIRANAS.length} drops, ${n0(MKL.units)} packets.` },
+    { key: "ledger", stage: "report", agent: "Impact", icon: "leaf", at: "Wed 7 Oct", min: 600, text: `The return window closed on ${fmt.day(MANGO_RETURN_BY)}. Posted the ledger: ${fmt.kg(MANGO_REALISED.kg)} diverted, ${fmt.kg(MANGO_REALISED.co2)} CO₂e avoided (indicative), ${MANGO_REALISED.meals} meals. BRSR row written.`, calls: [["ledger.post", inr(MANGO_ACTUAL.net), "ok"], ["brsr.rows", "Principle 6", "ok"]] },
+  ].filter(Boolean);
+  const MANGO_STORY = {
+    key: "mango", title: "Mango Drink at Lakshmi Agencies", batch: Object.assign(flagless(MANGO), { hero: true }), sku: MSKU, dist: LAKSHMI, buyer: BUYER,
+    batches: BATCHES.map(b => (b.id === MANGO.id ? Object.assign(flagless(b), { hero: true }) : flagless(b))),
+    accounts: { distributor: "lakshmi-owner", kirana: mangoShopPerson.id, foodbank: "meera", buyer: null, decliner: null },
+    people: Object.assign({}, PEOPLE, { "lakshmi-owner": lakshmiPerson, [mangoShopPerson.id]: mangoShopPerson }),
+    users: [{ id: mangoShopPerson.id, name: MANGO_SHOP.name, short: MANGO_SHOP.name, org: MANGO_SHOP.name, role: "retailer", provider: "phone", phone: mangoShopPerson.phone, email: "", status: "active", invitedBy: LAKSHMI.name, kind: "partner", lastSeen: null, extra: true }],
+    kiranas: MANGO_KIRANAS, offered: LAKSHMI.kiranas, shop: MANGO_SHOP.id, decliner: null, fills: true, scheme: `${baseName(MSKU)} scheme`,
+    risk: MANGO_RISK, plan: MANGO_PLAN, KL: MKL, ES: null, ask: null, counter: null, award: null, actual: MANGO_ACTUAL, support: MANGO_SUPPORT, supportPlan: MANGO_SUPPORT, claim: M.expiryClaim(MANGO_PLAN.units, MSKU),
+    docs: MANGO_DOCS, invoice: null, returnBy: MANGO_RETURN_BY, realised: MANGO_REALISED, godownLeft: null, expiry: null,
+    push: mangoPush, chat: [], events: MANGO_EVENTS,
+    journey: { today: JOURNEY.today, planMinutes: 15, permissionAsked: SETUP.permissions.lakshmi, listing: null,
+      van: { day: "Wednesday", date: "Wed 7 Oct", leaves: "07:00", depot: LAKSHMI.godown, reply: "Theek hai. Budhwar subah nikal jayenge.", replyAt: "Tue 18:04" },
+      donation: MDN },
+    listing: null,
+    donation: { batch: MANGO, sku: MSKU, dist: LAKSHMI, plan: MANGO_PLAN, units: MANGO_FB, partner: FOODBANK, receipt: MANGO_RECEIPT },
+    second: null,
+    evidence: { before: `${MANGO.id}-before.webp`, after: `${MANGO.id}-after.webp`, slate: null, when: "Both photos taken at the godown and the landfill" },
+    at: { ask: "09:05", photo: "09:16", read: "09:17", plan: "09:19", approve: "09:35", offer: "09:36", closes: "Sun 4 Oct · 09:36", decline: "10:12", staff: "Day 1", confirm: "Day 1", collect: "Day 4",
+      review: "Tue 6 Oct", van: "Wed 7 Oct", report: "Wed 7 Oct", expiry: "Expiry day" },
+    cleared: "2026-10-07", outcome: "donation", vanDay: 5, pron: "its",
+    explore: { groups: [
+      { group: WORKSPACE.name, note: "staff · Google Workspace", ids: [["priya", "Approve the plan, review the papers, read the ledger"], ["arjun", "The workspace, its people and the guardrails"]] },
+      { group: "Invited partners", note: "a one-time code or Google", ids: [["lakshmi-owner", "Send the photo, record the staff sale, run the van"], [mangoShopPerson.id, "Order from the Hindi offer"], ["meera", "Confirm and collect the food-bank pickup"]] },
+    ], code: EXPLORE.code, accounts: [["priya", PEOPLE.priya.email], ["lakshmi-owner", lakshmiPerson.phone], [mangoShopPerson.id, mangoShopPerson.phone]] },
+    stages: STAGE_IDS.filter(id => id !== "connect"), setupDone: true,
+  };
+
+  // the chips, slow: the same batch and plan, but 23 of the 31 shops order (444 of 588 packets), Shubham Provision says
+  // Not this time, and the window closes on the rest; the lot still sells on the counter. On expiry day the 144 packs
+  // left at Kalamna Market godown are destroyed there through the city's authorised agency, by Munchly's policy
+  // (SC-139): Rakesh sends two photos and the certificate, Vision checks them, and Priya's second yes issues the expiry
+  // credit note and lets Impact report
+  const SLOW_SHOPS = 23, SLOW_DECLINER = KIRANAS[SLOW_SHOPS + 0];
+  const SLOW_KIRANAS = KIRANAS.slice(0, SLOW_SHOPS);
+  const SLOW_ORDERED = SLOW_KIRANAS.reduce((t, k) => t + k.units, 0);
+  const SLOW_REALISED = M.realised(PLAN, chips, { kirana: SLOW_ORDERED }, null, SETUP.expiry, SETUP.destruction);
+  const SLOW_ACTUAL = M.actualNet(SLOW_REALISED, COUNTER.price);
+  const SLOW_SUPPORT = M.priceSupport(SLOW_REALISED, chips, COUNTER.price);
+  const SLOW_EXPIRY = M.expirySettlement(SLOW_REALISED.godown, chips, SETUP.expiry, SETUP.destruction);
+  const SLOW_DOCS = M.documents(SLOW_REALISED, chips, AWARD, SLOW_SUPPORT, { seller: DISTRIBUTORS.rakesh, buyer: BUYER, client: CLIENT });
+  SLOW_DOCS.find(d => d.id === "invoice").date = INVOICE.date;
+  const SLOW_AGENCY = SETUP.destruction.agencies.find(a => a.city === DISTRIBUTORS.rakesh.city);
+  const SLOW_CERT = SLOW_AGENCY.series.prefix + String(SLOW_AGENCY.series.next).padStart(SLOW_AGENCY.series.width, "0");
+  const slowShopPerson = { id: shopMember(SLOW_DECLINER.name), name: SLOW_DECLINER.name, short: SLOW_DECLINER.name, role: "Owner, kirana", org: SLOW_DECLINER.name, city: `${SLOW_DECLINER.area}, Nagpur`, phone: "+91 98230 60034", sign: "Phone OTP", lang: "hi", kind: "partner" };
+  const slate = iso => `${iso.slice(8, 10)}-${iso.slice(5, 7)}-${iso.slice(2, 4)}`;
+  const godown = DISTRIBUTORS.rakesh.godown, left = SLOW_REALISED.godown;
+  const slowEvent = (key, patch) => Object.assign({}, EV(key), patch);
+  const SLOW_EVENTS = EVENTS.filter(e => !["donate", "orders", "papers", "van", "ledger"].includes(e.key)).concat([
+    { key: "orders", stage: "execute", agent: "Outreach", icon: "store", at: SLOW_KIRANAS[SLOW_SHOPS - 1].at, min: 5, text: `${SLOW_SHOPS} of ${OFFERED} kiranas ordered ${n0(SLOW_ORDERED)} of ${KL.units} units in the first two hours, each under its cap.`, calls: [["orders.sum", `${n0(SLOW_ORDERED)} units · ${SLOW_SHOPS} shops`, "ok"]] },
+    { key: "closeOffer", stage: "execute", agent: "Outreach", icon: "store", at: "Sun 09:41", min: 2787, text: `The 48-hour window closed: ${SLOW_SHOPS} of ${OFFERED} kiranas ordered ${n0(SLOW_ORDERED)} of ${KL.units} packets. The ${n0(left)} no shop took stay at ${godown}.`, calls: [["offer.close", `${n0(left)} packets unordered`, ""]] },
+    slowEvent("papers", { calls: [["docs.invoice", `${inr(INVOICE.total)} · draft`, "ok"], ["eway.check", "below ₹50,000", ""], ["docs.credit_note", inr(SLOW_SUPPORT.total), "ok"], ["itc.memo", `${inr(SLOW_REALISED.itcRetained)} retained`, "ok"]] }),
+    slowEvent("van", { text: `Ran the Tuesday round: ${SLOW_SHOPS} drops, ${n0(SLOW_ORDERED)} packets.` }),
+    { key: "expire", stage: "report", agent: "Impact", icon: "warehouse", at: "18 Nov", min: 60000, text: `Expiry day: the journey closed as it stood. ${n0(left)} packs no channel took expired at ${godown}.` },
+    { key: "destroyAsk", stage: "report", agent: "Impact", icon: "recycle", at: "18 Nov · 10:00", min: 0, text: `Asked Rakesh Traders to destroy the ${n0(left)} packs left at ${godown} through an authorised agency, and to send two photos and the agency's certificate number.`, calls: [["fcm.send", "Rakesh bhai · Hindi", "ok"]] },
+    { key: "destroySent", stage: "report", person: "rakesh", at: "18 Nov · 14:00", min: 240, text: `Sent the destruction's evidence: two photos, ${SLOW_AGENCY.name}, certificate ${SLOW_CERT}.` },
+    { key: "destroyChecked", stage: "report", agent: "Vision", icon: "scan-line", at: "18 Nov · 14:05", min: 5, text: `Checked the evidence: batch ${hero.id} on the carton label, about ${Math.round(left / 10) * 10} packs in view, and the slate at the landfill reads ${hero.id} · ${left} packets · ${slate(hero.bestBefore)}. 4 of 4 checks pass.`, calls: [["gemini.vision.check_destruction", "4 of 4 checks", "ok"]] },
+    { key: "destroyApproved", stage: "report", person: "priya", at: "19 Nov · 11:00", min: 1255, text: `Approved the destruction of ${n0(left)} packs at ${godown}.`, human: true },
+    { key: "ledger", stage: "report", agent: "Impact", icon: "leaf", at: "19 Nov", min: 30, text: `The return window closed on ${fmt.day(RETURN_BY)}. Posted the ledger: ${fmt.kg(SLOW_REALISED.kg)} diverted, ${fmt.kg(SLOW_REALISED.co2)} CO₂e avoided (indicative), 0 meals. BRSR row written.`, calls: [["ledger.post", inr(SLOW_ACTUAL.net), "ok"], ["brsr.rows", "Principle 6", "ok"]] },
+  ]);
+  const SLOW_STORY = Object.assign({}, CHIPS_STORY, {
+    key: "slow", title: "Masala Chips, a slow scheme", batches: BATCHES.map(b => (b.second ? flagless(b) : b)),
+    accounts: { distributor: "rakesh", kirana: "ganesh", foodbank: null, buyer: "agrawal", decliner: slowShopPerson.id },
+    people: Object.assign({}, PEOPLE, { [slowShopPerson.id]: slowShopPerson }),
+    users: [{ id: slowShopPerson.id, name: SLOW_DECLINER.name, short: SLOW_DECLINER.name, org: SLOW_DECLINER.name, role: "retailer", provider: "phone", phone: slowShopPerson.phone, email: "", status: "active", invitedBy: DISTRIBUTORS.rakesh.name, kind: "partner", lastSeen: null, extra: true }],
+    kiranas: SLOW_KIRANAS, decliner: SLOW_DECLINER.id, fills: false,
+    actual: SLOW_ACTUAL, support: SLOW_SUPPORT, docs: SLOW_DOCS, realised: SLOW_REALISED, expiry: SLOW_EXPIRY,
+    godownLeft: { lines: SLOW_REALISED.lines.filter(l => l.id !== "writeoff" && l.units > 0).map(l => ({ id: l.id, units: l.units })), godown: left },
+    push: Object.assign({}, PUSH, {
+      van: { to: "rakesh", at: "Mon 18:00", title: "Van route for Tuesday", body: `Van route for Tuesday updated: ${SLOW_SHOPS} kiranas, ${n0(SLOW_ORDERED)} packets. The ${BUYER.city} lot (${ES.units}) is collected by the buyer's truck once the balance lands.` },
+      invoice: { to: "rakesh", at: "Mon 5 Oct", title: "Invoice draft ready", body: `Invoice draft to ${BUYER.name}, ${BUYER.city}: ${ES.units} × ₹${COUNTER.price.toFixed(2)}, IGST ${INVOICE.gstPct}%, ${inr(INVOICE.total)}. Issue it from Tally. Munchly's price support of ${inr(SLOW_SUPPORT.total)} is on its way.` },
+      destroy: { to: "rakesh", at: "18 Nov · 10:00", title: "Expired packs destroy karein", body: `Rakesh bhai, ${tightName(chips)} (batch ${hero.id}) ke ${n0(left)} packs ${godown} mein expire ho gaye. Authorised agency se destroy karwayein, aur do photo aur certificate number bhej dein. Munchly credit note dega.` },
+      evidence: { to: "priya", at: "18 Nov · 14:05", title: `Review the destruction · ${hero.id}`, body: `Rakesh Traders sent the evidence for ${n0(left)} packs at ${godown}, and Vision checked both photos. Your yes issues the expiry credit note and the agency's certificate.` },
+    }),
+    events: SLOW_EVENTS, donation: null, second: null,
+    evidence: { before: `${hero.id}-before.webp`, after: `${hero.id}-after-expiry.webp`, slate: slate(hero.bestBefore), when: "Both photos taken on expiry day, at the godown and the landfill" },
+    agency: SLOW_AGENCY, certificate: SLOW_CERT, expiryNo: "CN/0118",
+    at: Object.assign({}, CHIPS_STORY.at, { closed: "Sun 4 Oct · 09:41", report: "19 Nov", expiry: "18 Nov", approved: "19 Nov" }),
+    // expiry day is the batch's best-before; Priya approves the evidence the next morning, when Impact reports
+    expiryDay: hero.bestBefore, cleared: addDays(hero.bestBefore, 1), outcome: "leftover",
+    explore: { groups: EXPLORE.groups.map(g => (g.group === "Invited partners" ? Object.assign({}, g, { ids: g.ids.filter(([id]) => id !== "meera").concat([[slowShopPerson.id, "Say Not this time to the scheme"]]) }) : g)), code: EXPLORE.code, accounts: EXPLORE.accounts },
+  });
+  const STORIES = { chips: CHIPS_STORY, mango: MANGO_STORY, slow: SLOW_STORY };
+  const SCENARIOS = Object.keys(STORIES);
+  // a journey's story by its key (the stub's state.scenario; chips when it has none)
+  const storyOf = key => STORIES[key] || CHIPS_STORY;
+
   window.SC3_DATA = { DAY0, addDays, PLATFORM, WORKSPACE, CLIENT, SKUS, DISTRIBUTORS, BUYER, PEOPLE, KIRANAS, OFFERED, BATCHES, STAGES, PUSH, CHAT, EVENTS, EV, QUARTER, SETUP,
     RISK, PLAN, ASK, COUNTER, AWARD, ACTUAL, SUPPORT, SUPPORT_PLAN, CLAIM, DOCS, INVOICE, MANGO_PLAN, MANGO_FB, MANGO_RECEIPT, RETURN_BY, IMG, JOURNEY, MARKET, EXPLORE, HISTORY, HISTORY_AT,
+    HYDERABAD, SCENARIOS, STORIES, storyOf,
+    // the story of the journey the store holds now (the store's scenario; the chips before the store has loaded)
+    story: state => storyOf(((state || (window.SC3_STORE && window.SC3_STORE.get()) || {}).scenario) || "chips"),
     batchView: b => { const sku = SKUS[b.sku]; return { ...b, skuObj: sku, dist: DISTRIBUTORS[b.distributor], assess: M.assess(b, sku) }; } };
 })();
