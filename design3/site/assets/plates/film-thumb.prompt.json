@@ -1,0 +1,12 @@
+{
+  "derived_from": "design3/designs/SC-158/src/build/mango-drink-demo-master.mp4",
+  "film_sidecar": "design3/designs/SC-158/media/mango-drink-demo.prompt.json",
+  "model": "LTX 2.5 Fast (clip c01-factory-dawn) from a Qwen-Image 2.1 keyframe, cut by ffmpeg (SC-158)",
+  "created": "2026-10-11",
+  "designed_in": "design3/designs/SC-164 (option A, the theatre)",
+  "name": "film-thumb",
+  "at_s": 0.5,
+  "output": "film-thumb.webp 208x208",
+  "post_process": "film-poster.png cropped square from x=576 (the bay's pallets and trucks), 208x208 (Lanczos), WebP q78",
+  "use": "the demo pill's thumbnail, shown at 52 px"
+}

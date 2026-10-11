@@ -4,11 +4,17 @@
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import type { Figures } from './figures';
-	import { LINKS, linkProps } from './links';
-	import { FILM } from './media';
+	import { DEMO_FILM, FILM } from './media';
 	import { PLATES } from './plates';
+	import Watch from './Watch.svelte';
 
-	let { f, ondemo }: { f: Figures; ondemo: () => void } = $props();
+	// `hold`: the demo film is playing over the page (SC-164), and the hero's own film holds where it is till it closes
+	let {
+		f,
+		ondemo,
+		onwatch,
+		hold = false
+	}: { f: Figures; ondemo: () => void; onwatch: () => void; hold?: boolean } = $props();
 
 	// The first viewport (SC-154): the journey through one day, live action, on film under the heading. One film of
 	// four chapters with real people (every one fictional, every pack unbranded, no client named) that loops through a
@@ -79,6 +85,12 @@
 		const v = vid;
 		if (!v) return;
 		if (!reduce && go) v.play().catch(() => {});
+	});
+	$effect(() => {
+		const v = vid;
+		if (!v || reduce) return;
+		if (hold) v.pause();
+		else if (playing && go) v.play().catch(() => {});
 	});
 	const toggle = () => {
 		if (!vid) return;
@@ -218,10 +230,10 @@
 			AI agents find the best exit for short-dated stock, and do the running around. You say yes once.
 		</p>
 		<div class="film-ctas">
-			<Button variant="primary" size="lg" pill onclick={() => ondemo()}>Book a demo</Button><a
+			<Button variant="primary" size="lg" pill onclick={() => ondemo()}>Book a demo</Button><Watch
+				{onwatch}
 				class="btn btn-lg btn-pill film-ghost"
-				{...linkProps(LINKS.demo)}
-				><i aria-hidden="true"><Icon name="play" size={12} stroke={2.6} /></i>Watch the 6-minute demo</a
+				><i aria-hidden="true"><Icon name="play" size={12} stroke={2.6} /></i>{DEMO_FILM.label}</Watch
 			>
 		</div>
 	</div>

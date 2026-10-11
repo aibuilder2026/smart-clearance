@@ -3,7 +3,8 @@
 // strip reading its chapters;
 // a statement that fills in as it is read; the agents at work on the table, one in focus at a time; the product's
 // moments as chapters; Impact's ledger; the workspace itself on a device, one tab per team; plans and the close. In
-// the manner of shopify.com/uk, in the design system's own grammar.
+// the manner of shopify.com/uk, in the design system's own grammar. Every Watch plays the demo film in a theatre over
+// the page (SC-164).
 (function () {
   const { useState, useEffect, useLayoutEffect, useRef, useMemo } = React;
   const { useReducedMotion, motion, useScroll, useTransform, useInView, AnimatePresence, animate } = Motion;
@@ -109,6 +110,122 @@
     </header>;
   }
 
+  /* ---------- the demo film, in a theatre over the page (SC-164) ---------- */
+  // SC-158's film, 4 min 56 s: one batch from the brand to the ledger. Every Watch (the hero, the pill, the close) opens
+  // it in a dark room over the page, which stays where it was. It plays from YouTube, unlisted, on the no-cookie host:
+  // nothing of YouTube loads before Watch. Its poster is the bay at dawn before the title card, which names the client;
+  // the page names none (SC-28), and the film, played on request, may. Without an id, Watch opens the guided demo.
+  // The film is youtu.be/EWFLqM3oHYU, unlisted, on the maintainer's channel (@arundutta3411)
+  const DEMO_FILM = Object.assign({ youtube: "EWFLqM3oHYU", runtime: "4:56", label: "Watch the 5-minute demo", title: "The 5-minute demo", sub: "One batch, from the brand to the ledger",
+    poster: "film-poster.webp", thumb: "film-thumb.webp", words: "demo-film.json" }, window.SC3_FILM || {});
+  const clock = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
+  // the film's chapters and captions (design3/designs/SC-164/transcript.py, from the film's own timeline), read once,
+  // when the theatre first opens
+  let filmWords = null;
+  const readFilmWords = () => filmWords || (filmWords = fetch(MEDIA + DEMO_FILM.words).then(r => r.json()).catch(() => { filmWords = null; return null; }));
+  // YouTube's IFrame API, loaded once and only after the first Watch
+  let ytApi = null;
+  const loadYT = () => ytApi || (ytApi = new Promise(res => {
+    if (window.YT && window.YT.Player) return res(window.YT);
+    const prev = window.onYouTubeIframeAPIReady; window.onYouTubeIframeAPIReady = () => { if (prev) prev(); res(window.YT); };
+    const s = document.createElement("script"); s.src = "https://www.youtube.com/iframe_api"; s.async = true; document.head.appendChild(s);
+  }));
+  // the player: it plays from the start, reports the time and the end, and takes a seek through its handle
+  const FilmPlayer = React.forwardRef(function FilmPlayer({ onTime, onEnd }, handle) {
+    const host = useRef(null); const yt = useRef(null); const cb = useRef({}); cb.current = { onTime, onEnd };
+    useEffect(() => {
+      let live = true, poll;
+      loadYT().then(YT => {
+        if (!live || !host.current) return;
+        yt.current = new YT.Player(host.current, { host: "https://www.youtube-nocookie.com", videoId: DEMO_FILM.youtube, width: "100%", height: "100%",
+          playerVars: { autoplay: 1, rel: 0, playsinline: 1 },
+          events: {
+            onReady: e => { e.target.getIframe().title = "Smart-Clearance demo film"; },
+            onStateChange: e => { if (e.data === 0 && cb.current.onEnd) cb.current.onEnd(); },
+          } });
+        poll = setInterval(() => { const p = yt.current; if (p && p.getCurrentTime && cb.current.onTime) cb.current.onTime(p.getCurrentTime()); }, 500);
+      });
+      return () => { live = false; clearInterval(poll); if (yt.current && yt.current.destroy) yt.current.destroy(); yt.current = null; };
+    }, []);
+    React.useImperativeHandle(handle, () => ({ seek: t => { const p = yt.current; if (p && p.seekTo) { p.seekTo(t, true); p.playVideo(); } } }));
+    return <div className="fp-media"><img className="fp-poster" src={IMG + DEMO_FILM.poster} alt="" /><div ref={host} /></div>;
+  });
+  // where the film ends: the guided demo, to play each part yourself, and the ways on. Focus comes here only when it
+  // was in the player, which the card replaces
+  function FilmEnd({ onReplay, onBook }) {
+    const reduce = useReducedMotion(); const box = useRef(null); const go = useRef(null);
+    useEffect(() => { const a = document.activeElement; if (!a || a === document.body || (box.current && box.current.parentElement.contains(a))) go.current && go.current.focus({ preventScroll: true }); }, []);
+    return <motion.div ref={box} className="fp-end" role="group" aria-labelledby="fp-end-h" initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.42, ease: EASE }}>
+      <img className="fp-end-bg" src={IMG + DEMO_FILM.poster} alt="" />
+      <div className="fp-end-in">
+        <h3 id="fp-end-h">One batch, start to finish.</h3>
+        <p>Now play each part yourself. The guided demo runs the same journey in your browser, a beat at a time.</p>
+        <div className="fp-end-ctas">
+          <a ref={go} className="btn btn-lg btn-pill fp-go" {...linkProps(LINKS.demo)}>Try the guided demo<Icon name="arrow-up-right" size={16} stroke={2.4} /></a>
+          <button type="button" className="btn btn-lg btn-pill film-ghost" onClick={onBook}>Book a demo</button>
+          <button type="button" className="btn fp-again" onClick={onReplay}><Icon name="rotate-ccw" size={16} />Watch again</button>
+        </div>
+      </div>
+    </motion.div>;
+  }
+  // the chapters, as chips: the one playing marked, a click plays from it
+  function FilmChapters({ chapters, now, onPick }) {
+    return <nav className="fp-ch" aria-label="Chapters"><ol>
+      {chapters.map((c, i) => <li key={c.id}><button type="button" className={cx(i === now && "now")} aria-current={i === now ? "true" : undefined} onClick={() => onPick(c.at)}><span className="fp-ch-at">{clock(c.at)}</span><span className="fp-ch-t">{c.title}</span></button></li>)}
+    </ol></nav>;
+  }
+  // the film in words (WCAG 1.2: its sound is music; the captions on screen say what happens), on request
+  function FilmWords({ chapters }) {
+    const open1 = e => { const el = e.currentTarget; if (el.open) requestAnimationFrame(() => el.scrollIntoView({ block: "nearest", behavior: "smooth" })); };
+    return <details className="fp-read" onToggle={open1}>
+      <summary><Icon name="scroll-text" size={16} />Read the film instead</summary>
+      <div className="fp-read-in">{chapters.map(c => <section key={c.id}><h4><span>{clock(c.at)}</span>{c.title}</h4>{c.lines.map(l => <p key={l.at}>{l.text}</p>)}</section>)}</div>
+    </details>;
+  }
+  // the theatre: a dialog over the page, the film as large as the window allows, its chapters and words under it.
+  // Escape, Close or the scrim put focus back on the Watch that opened it; the page never scrolls behind it
+  const FOCUSABLE_FILM = 'a[href], button:not([disabled]), iframe, summary, [tabindex]:not([tabindex="-1"])';
+  function Theatre({ open: isOpen, onClose, onBook }) {
+    const reduce = useReducedMotion(); const panel = useRef(null); const player = useRef(null); const close = useRef(onClose); close.current = onClose;
+    const [ended, setEnded] = useState(false); const [t, setT] = useState(0); const [words, setWords] = useState(null);
+    useEffect(() => {
+      if (!isOpen) return; setEnded(false); setT(0); readFilmWords().then(w => w && setWords(w.chapters));
+      const opener = document.activeElement; const raf = requestAnimationFrame(() => panel.current && panel.current.focus({ preventScroll: true }));
+      const onKey = e => {
+        const el = panel.current; if (!el) return;
+        if (e.key === "Escape") { close.current(); return; }
+        if (e.key !== "Tab") return;
+        const items = [...el.querySelectorAll(FOCUSABLE_FILM)].filter(n => n.getClientRects().length); if (!items.length) return;
+        const first = items[0], last = items[items.length - 1], at = document.activeElement;
+        if (!el.contains(at)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+        else if (e.shiftKey && (at === first || at === el)) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && at === last) { e.preventDefault(); first.focus(); }
+      };
+      document.addEventListener("keydown", onKey);
+      return () => { cancelAnimationFrame(raf); document.removeEventListener("keydown", onKey); if (opener && opener.isConnected) opener.focus({ preventScroll: true }); };
+    }, [isOpen]);
+    const chapters = words || [];
+    let now = chapters.length - 1; if (!ended) { now = 0; while (now + 1 < chapters.length && t >= chapters[now + 1].at) now++; }
+    const pick = s => { if (ended) setEnded(false); setTimeout(() => player.current && player.current.seek(s), ended ? 600 : 0); };
+    const spring = reduce ? { duration: 0.01 } : { type: "spring", stiffness: 420, damping: 40, mass: 0.9 };
+    return <K.Portal><AnimatePresence>{isOpen && <React.Fragment key="th">
+      <motion.div className="th-scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduce ? 0 : 0.24 }} onClick={onClose} />
+      <motion.div ref={panel} className="th" role="dialog" aria-modal="true" aria-labelledby="th-h" tabIndex={-1}
+        initial={reduce ? false : { opacity: 0, scale: 0.96, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: 8 }} transition={spring}>
+        <div className="th-head"><div className="th-t"><h2 id="th-h">{DEMO_FILM.title}</h2><p>{DEMO_FILM.sub} · {DEMO_FILM.runtime}</p></div><button type="button" className="th-x" onClick={onClose} aria-label="Close the film"><Icon name="x" size={20} /></button></div>
+        <div className="th-frame">{ended ? <FilmEnd onReplay={() => setEnded(false)} onBook={() => { onClose(); onBook(); }} /> : <FilmPlayer ref={player} onTime={setT} onEnd={() => setEnded(true)} />}</div>
+        <div className="th-foot">{chapters.length > 0 && <FilmChapters chapters={chapters} now={now} onPick={pick} />}{chapters.length > 0 && <FilmWords chapters={chapters} />}</div>
+      </motion.div>
+    </React.Fragment>}</AnimatePresence></K.Portal>;
+  }
+  // while the film plays, the hero's own film holds, so only one picture moves
+  const FilmHold = React.createContext(false);
+  // the way into the film: a button that opens the theatre, or, until the film's id is set, the guided demo's link
+  function Watch({ onWatch, className, label, children }) {
+    if (!DEMO_FILM.youtube) return <a className={className} aria-label={label} {...linkProps(LINKS.demo)}>{children}</a>;
+    return <button type="button" className={className} aria-label={label} aria-haspopup="dialog" onClick={() => onWatch()}>{children}</button>;
+  }
+
   /* ---------- 1. the first viewport: the journey through one day on film, live action, under the heading (SC-154) ---------- */
   // One film of four chapters with real people (every one fictional, every pack unbranded, no client named), looping
   // under its Pause control (WCAG 2.2.2): dawn at the factory's bay, the brand's planner and the distributor over the
@@ -175,8 +292,8 @@
       return { scale: s, x: tx, y: ty };
     }, [at, s, ar, reduce, box]);
   }
-  function Hero({ onDemo }) {
-    const night = useTheme().resolved === "dark"; const reduce = useReducedMotion();
+  function Hero({ onDemo, onWatch }) {
+    const night = useTheme().resolved === "dark"; const reduce = useReducedMotion(); const hold = React.useContext(FilmHold);
     const poster = IMG + (night ? POSTER.night : POSTER.day);
     // the loader's handshake (SC-35): the plate is in once the film's poster has decoded, for each theme
     useEffect(() => {
@@ -195,6 +312,8 @@
     useEffect(() => { if (go) return; const f = () => setGo(true); window.addEventListener("sc3:loader-lifted", f); return () => window.removeEventListener("sc3:loader-lifted", f); }, [go]);
     // both themes start on the same frame; the poster swaps with the theme
     useEffect(() => { setPlaying(!reduce); const v = vid.current; if (v && !reduce && go) v.play().catch(() => {}); }, [night, reduce, go]);
+    // while the demo film plays, the hero's own film holds where it is, and goes on after (SC-164)
+    useEffect(() => { const v = vid.current; if (!v || reduce) return; if (hold) v.pause(); else if (playing && go) v.play().catch(() => {}); }, [hold]);
     const toggle = () => { const v = vid.current; if (!v) return; if (playing) { v.pause(); setPlaying(false); } else { v.play(); setPlaying(true); } };
     const clk = useClock(vid, playing && !reduce, FILM.bounds);
     const cam = useLean(stage, FILM.at[clk.i], FILM.lean, FILM.ar, reduce);
@@ -212,7 +331,7 @@
             <motion.span key={WORDS[w]} aria-hidden="true" initial={reduce ? false : { opacity: 0, y: "0.5em" }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: "-0.5em" }} transition={{ duration: 0.42, ease: EASE }}>{WORDS[w]}</motion.span>
           </AnimatePresence></span>.</h1>
         <p className="film-sub">AI agents find the best exit for short-dated stock, and do the running around. You say yes once.</p>
-        <div className="film-ctas"><Button variant="primary" size="lg" pill onClick={() => onDemo()}>Book a demo</Button><a className="btn btn-lg btn-pill film-ghost" {...linkProps(LINKS.demo)}><i aria-hidden="true"><Icon name="play" size={12} stroke={2.6} /></i>Watch the 6-minute demo</a></div>
+        <div className="film-ctas"><Button variant="primary" size="lg" pill onClick={() => onDemo()}>Book a demo</Button><Watch onWatch={onWatch} className="btn btn-lg btn-pill film-ghost"><i aria-hidden="true"><Icon name="play" size={12} stroke={2.6} /></i>{DEMO_FILM.label}</Watch></div>
       </div>
       <Story beats={CHAPTERS} i={reduce ? 3 : clk.i} p={reduce ? 1 : clk.p} label="The journey, through one day" />
       {!reduce && <div className="film-ctl"><button type="button" onClick={toggle} aria-pressed={!playing}><Icon name={playing ? "pause" : "play"} size={16} />{playing ? "Pause" : "Play"}</button></div>}
@@ -473,11 +592,11 @@
       <p className="ledger-note">An illustrative batch. Every figure is worked out from the journey map.</p>
     </section>;
   }
-  function DemoPill({ hidden }) {
-    return <a className={cx("pill", hidden && "off")} {...linkProps(LINKS.demo)} aria-label="Watch the 6-minute demo">
-      <span className="thumb" aria-hidden="true"><img src={(window.SC3_IMG || "system/img/").replace(/img\/$/, "media/") + "carton-loop-poster.webp"} alt="" /><i><Icon name="play" size={12} stroke={2.6} /></i></span>
-      <span>Watch the 6-minute demo</span>
-    </a>;
+  function DemoPill({ hidden, onWatch }) {
+    return <Watch onWatch={onWatch} className={cx("pill", hidden && "off")} label={DEMO_FILM.label}>
+      <span className="thumb" aria-hidden="true"><img src={IMG + DEMO_FILM.thumb} alt="" /><i><Icon name="play" size={12} stroke={2.6} /></i></span>
+      <span>{DEMO_FILM.label}</span>
+    </Watch>;
   }
 
   /* ---------- 6. a workspace per manufacturer: the workspace itself, on a device (SC-78) ---------- */
@@ -584,11 +703,11 @@
       </div>
     </section>;
   }
-  function Close({ onDemo, closeRef }) {
+  function Close({ onDemo, onWatch, closeRef }) {
     return <section className="close" aria-labelledby="close-h" ref={closeRef}>
       <div className="close-copy">
         <h2 id="close-h" className="close-h">Give your next batch a second chance.</h2>
-        <div className="close-ctas"><Button variant="primary" onClick={() => onDemo()}>Book a demo</Button><a className="btn btn-secondary" {...linkProps(LINKS.demo)}>Watch the 6-minute demo</a></div>
+        <div className="close-ctas"><Button variant="primary" onClick={() => onDemo()}>Book a demo</Button><Watch onWatch={onWatch} className="btn btn-secondary">{DEMO_FILM.label}</Watch></div>
       </div>
       <img className="close-plate" src={IMG + "dusk.webp"} width="4128" height="1024" alt="" loading="lazy" />
     </section>;
@@ -653,23 +772,26 @@
     // the bar is clear over the film, and takes its glass once the page has scrolled
     useEffect(() => { const f = () => setScrolled(window.scrollY > 40); f(); window.addEventListener("scroll", f, { passive: true }); return () => window.removeEventListener("scroll", f); }, []);
     const onDemo = plan => setDemo({ plan: typeof plan === "string" ? plan : null });
-    return <div className={cx("site", scrolled && "scrolled")} id="top">
+    // the demo film's theatre (SC-164): every Watch opens it
+    const [film, setFilm] = useState(false); const onWatch = () => setFilm(true);
+    return <FilmHold.Provider value={film}><div className={cx("site", scrolled && "scrolled")} id="top">
       <Nav />
       <main>
-        <Hero onDemo={onDemo} />
+        <Hero onDemo={onDemo} onWatch={onWatch} />
         <Statement id="how" text="Short-dated stock that quick commerce sent back. Priced to every exit, the bin included. Sold in the days it has left." />
         <Table />
         <Chapters />
         <Ledger />
         <Workspace />
         <Plans onDemo={onDemo} />
-        <Close onDemo={onDemo} closeRef={closeRef} />
+        <Close onDemo={onDemo} onWatch={onWatch} closeRef={closeRef} />
       </main>
       <Footer onFind={() => setFind(true)} />
-      <DemoPill hidden={nearEnd || !pastHero || onTeams} />
+      <DemoPill hidden={nearEnd || !pastHero || onTeams || film} onWatch={onWatch} />
+      <Theatre open={film} onClose={() => setFilm(false)} onBook={() => onDemo()} />
       <S.FindWorkspace open={find} onClose={() => setFind(false)} onUse={() => { setFind(false); open(LINKS.app); }} note="One manufacturer's workspace is set up in this prototype." />
       <DemoSheet open={!!demo} plan={demo && demo.plan} onClose={() => setDemo(null)} />
-    </div>;
+    </div></FilmHold.Provider>;
   }
   // the loader (loader.js, SC-35) covers each change of theme: the plates swap under dusk or dawn, never in sight. The
   // page scrolls the window, as the SvelteKit build does, so its sticky bar and scroll-driven motion work the same way

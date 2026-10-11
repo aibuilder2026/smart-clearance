@@ -1,0 +1,147 @@
+/* SC-164 · the demo film on the landing page, three options over site/site.css: the player, its end, its chapters and
+   its words (shared); A the theatre; B the film's own section; C the hero taken over. Review-only: the switcher, the tag */
+
+/* ---------- review only ---------- */
+.tag164 { display: inline-flex; align-items: center; padding: 5px 10px; border-radius: 999px; font: 600 12px/1.2 var(--font-ui); background: var(--amber-soft); color: var(--amber-text); }
+.sw154 { position: fixed; left: 12px; top: calc(66px + var(--safe-top, 0px) + 12px); z-index: 60; display: flex; align-items: center; gap: 6px; padding: 6px 8px 6px 12px; border-radius: 999px; background: var(--glass-strong); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); font: 600 12.5px/1 var(--font-ui); color: var(--fg-2); }
+.sw154 b { margin-right: 4px; }
+.sw154 a { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; min-height: 32px; border-radius: 999px; text-decoration: none; color: var(--fg); background: var(--fill); }
+.sw154 a[aria-current="true"] { background: var(--primary); color: var(--primary-fg); }
+.sw154 a:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+/* ---------- the Watch buttons keep the links' look ---------- */
+button.film-ghost, button.pill { border: 0; font: inherit; cursor: pointer; }
+button.pill { font: 600 14px/1 var(--font-ui); }
+.close-ctas button.btn-secondary { border: 0; cursor: pointer; }
+
+/* ---------- the player, shared: 16:9, black behind, the stand-in's tag at its corner ---------- */
+.fp-media { position: absolute; inset: 0; background: #000; }
+.fp-media video, .fp-media iframe, .fp-media > div { display: block; width: 100%; height: 100%; border: 0; }
+.fp-tag { position: absolute; left: 12px; top: 12px; pointer-events: none; }
+@media (max-width: 560px) { .fp-tag { left: 8px; top: 8px; padding: 3px 8px; font-size: 10.5px; } }
+
+/* where it ends: the poster, darkened, under the guided demo and the ways on (white ink on the night shade: 15:1+) */
+.fp-end { position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; color: #fff; background: #07100c; }
+.fp-end-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(6px) saturate(1.05); transform: scale(1.06); opacity: 0.38; }
+.fp-end-in { position: relative; display: grid; gap: 12px; justify-items: center; text-align: center; padding: 24px; max-width: 46rem; }
+.fp-end h3 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 3.2vw, 40px); line-height: 1.06; letter-spacing: -0.02em; }
+.fp-end p { margin: 0; font-size: 16px; line-height: 1.5; color: rgb(255 255 255 / 0.86); max-width: 40ch; text-wrap: pretty; }
+.fp-end-ctas { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 12px; margin-top: 8px; }
+.fp-end .btn { min-height: 48px; }
+.fp-go { display: inline-flex; align-items: center; gap: 8px; color: #0d1c15; background: #fff; text-decoration: none; }
+.fp-go:hover { background: #eef3ef; }
+.fp-again { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: #fff; font: 600 15px/1 var(--font-ui); cursor: pointer; }
+.fp-again:hover { background: rgb(255 255 255 / 0.1); }
+.fp-end :focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.fp-end.compact h3 { font-size: clamp(22px, 2.6vw, 34px); }
+@media (max-width: 560px) { .fp-end-in { gap: 8px; padding: 14px; } .fp-end p { font-size: 14px; } .fp-end-ctas .btn { min-height: 44px; height: 44px; padding: 0 16px; font-size: 15px; } }
+
+/* the chapters: a row of chips (A, C) or a list (B); the one playing is marked; each is a 44 px target */
+.fp-ch ol { list-style: none; margin: 0; padding: 0; }
+.fp-ch button { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 0; border-radius: 999px; font: 600 13.5px/1.2 var(--font-ui); color: inherit; background: transparent; cursor: pointer; text-align: left; }
+.fp-ch-at { font: 600 12px/1 var(--font-mono); font-variant-numeric: tabular-nums; opacity: 0.78; }
+.fp-ch-row ol { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px; scroll-snap-type: x proximity; }
+.fp-ch-row ol::-webkit-scrollbar { display: none; }
+.fp-ch-row { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); }
+.fp-ch-row li { flex: none; scroll-snap-align: start; }
+.fp-ch-list ol { display: grid; gap: 2px; }
+.fp-ch-list button { width: 100%; border-radius: 12px; padding: 0 12px; color: var(--fg); }
+.fp-ch-list button:hover { background: var(--fill); }
+.fp-ch-list button.now { background: var(--primary-soft); color: var(--primary-text); }
+.fp-ch-list .fp-ch-at { min-width: 3.2em; color: var(--fg-3); opacity: 1; }
+.fp-ch-list button.now .fp-ch-at { color: var(--primary-text); }
+.fp-ch button:focus-visible { outline: 3px solid var(--ring); outline-offset: 1px; }
+
+/* the film in words, on request */
+.fp-read { margin-top: 14px; }
+.fp-read summary { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 999px; font: 600 14px/1 var(--font-ui); color: var(--fg-2); cursor: pointer; list-style: none; }
+.fp-read summary::-webkit-details-marker { display: none; }
+.fp-read summary:hover { background: var(--fill); color: var(--fg); }
+.fp-read summary:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+.fp-read-in { display: grid; gap: 14px; margin-top: 8px; padding: 16px 18px; border-radius: 16px; background: var(--surface-2); box-shadow: 0 0 0 var(--hair) var(--line); max-height: 22rem; overflow: auto; }
+.fp-read-in h4 { display: flex; gap: 10px; align-items: baseline; margin: 0 0 4px; font: 650 15px/1.3 var(--font-ui); color: var(--fg); }
+.fp-read-in h4 span { font: 600 12px/1 var(--font-mono); color: var(--fg-3); }
+.fp-read-in p { margin: 0 0 4px; font-size: 14.5px; line-height: 1.5; color: var(--fg-2); max-width: 72ch; }
+
+/* ---------- A · the theatre: a dark room over the page, the film as large as the window allows ---------- */
+.th-scrim { position: fixed; inset: 0; z-index: 80; background: rgb(4 9 7 / 0.88); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.th { position: fixed; z-index: 81; left: 50%; top: 50%; translate: -50% -50%; width: min(1280px, calc(100vw - 48px), calc((100svh - 190px) * 16 / 9)); display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; max-height: calc(100svh - 24px); overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; color: #fff; outline: none; }
+.th-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.th-t { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; min-width: 0; }
+.th-t h2 { margin: 0; font: 650 17px/1.3 var(--font-ui); letter-spacing: -0.005em; }
+.th-t p { margin: 0; font: 500 15px/1.3 var(--font-ui); color: rgb(255 255 255 / 0.74); }
+.th-x { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; color: #fff; background: rgb(255 255 255 / 0.12); cursor: pointer; }
+.th-x:hover { background: rgb(255 255 255 / 0.2); }
+.th-x:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.th-frame { position: relative; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden; background: #000; box-shadow: 0 30px 80px rgb(0 0 0 / 0.5), 0 0 0 1px rgb(255 255 255 / 0.08); }
+.th-foot { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; min-width: 0; }
+.th .fp-ch-row button { color: rgb(255 255 255 / 0.8); }
+.th .fp-ch-row button:hover { background: rgb(255 255 255 / 0.1); color: #fff; }
+.th .fp-ch-row button.now { color: #0d1c15; background: #fff; }
+.th .fp-ch-row button:focus-visible, .th .fp-read summary:focus-visible { outline-color: #fff; }
+.th .fp-read { margin-top: 0; }
+.th .fp-read summary { color: rgb(255 255 255 / 0.8); }
+.th .fp-read summary:hover { color: #fff; background: rgb(255 255 255 / 0.1); }
+.th .fp-read-in { max-height: min(30svh, 16rem); }
+.th .fp-read-in { background: rgb(255 255 255 / 0.07); box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1); }
+.th .fp-read-in h4 { color: #fff; }
+.th .fp-read-in h4 span { color: rgb(255 255 255 / 0.66); }
+.th .fp-read-in p { color: rgb(255 255 255 / 0.82); }
+@media (max-width: 760px) {
+  .th { left: 0; top: 0; translate: none; width: 100%; height: 100svh; padding: calc(var(--safe-top, 0px) + 10px) 12px calc(var(--safe-bottom, 0px) + 12px); align-content: center; overflow: auto; background: #050c09; }
+  .th-head { position: absolute; left: 12px; right: 12px; top: calc(var(--safe-top, 0px) + 10px); align-items: flex-start; }
+  .th-t { display: grid; } .th-t p { font-size: 14px; }
+  .th-frame { border-radius: 12px; }
+  .th-frame:has(.fp-end) { aspect-ratio: auto; min-height: calc((100vw - 24px) * 9 / 16); }
+  .th-frame .fp-end { position: relative; inset: auto; min-height: inherit; }
+}
+
+/* ---------- B · the film's own section, after the statement ---------- */
+.sec-film { padding-top: 40px; scroll-margin-top: 72px; }
+.film-box { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: stretch; }
+.fb-frame { position: relative; aspect-ratio: 16 / 9; border-radius: 20px; overflow: hidden; background: #07100c; box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.fb-poster { position: absolute; inset: 0; padding: 0; border: 0; cursor: pointer; background: #07100c; color: #fff; }
+.fb-poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 700ms var(--ease); }
+.fb-poster .fb-preview { filter: blur(16px); transform: scale(1.06); }
+.fb-poster::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgb(5 12 9 / 0.72) 0, rgb(5 12 9 / 0.2) 46%, rgb(5 12 9 / 0.06) 100%); }
+.fb-poster:hover img:not(.fb-preview) { transform: scale(1.02); }
+.fb-poster:focus-visible { outline: 4px solid var(--ring); outline-offset: -4px; }
+.fb-play { position: absolute; left: 24px; bottom: 22px; z-index: 1; display: flex; align-items: center; gap: 14px; text-align: left; }
+.fb-play i { display: grid; place-items: center; width: 72px; height: 72px; border-radius: 50%; color: #0d1c15; background: #fff; box-shadow: 0 10px 30px rgb(0 0 0 / 0.35); transition: transform 240ms var(--ease); }
+.fb-play i svg { margin-left: 4px; }
+.fb-poster:hover .fb-play i { transform: scale(1.06); }
+.fb-play b { display: block; font: 700 20px/1.2 var(--font-display); letter-spacing: -0.01em; }
+.fb-play span span { display: block; margin-top: 4px; font: 500 14px/1 var(--font-ui); color: rgb(255 255 255 / 0.86); }
+.fb-side { contain: size; overflow: auto; align-content: start; display: grid; gap: 6px; padding: 14px 8px 8px; border-radius: 20px; background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+.fb-side-h { padding: 0 12px 4px; font: 650 13px/1 var(--font-ui); color: var(--fg-3); text-transform: uppercase; letter-spacing: 0.06em; }
+@media (max-width: 1023px) {
+  .film-box { grid-template-columns: minmax(0, 1fr); }
+  .fb-side { contain: none; overflow: visible; padding: 10px 6px; }
+  .fb-side .fp-ch-list ol { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; scrollbar-width: none; }
+  .fb-side .fp-ch-list button { width: auto; border-radius: 999px; }
+}
+@media (max-width: 560px) { .fb-play { left: 14px; bottom: 14px; gap: 10px; } .fb-play i { width: 56px; height: 56px; } .fb-play b { font-size: 17px; } .fb-frame { border-radius: 14px; } }
+@media (prefers-reduced-motion: reduce) { .fb-poster img, .fb-play i { transition: none; } }
+
+/* ---------- C · the hero taken over: the film in the first screen, the bar and the chapters in the hero's grammar ---------- */
+.hero.film.taken .film-copy, .hero.film.taken .film-story, .hero.film.taken .film-ctl { opacity: 0; visibility: hidden; transition: opacity 240ms var(--ease), visibility 0s 240ms; }
+.hf { position: absolute; inset: 0; z-index: 3; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; gap: 10px; padding: calc(66px + var(--safe-top, 0px) + 10px) 16px 14px; background: #050c09; color: #fff; outline: none; }
+.hf-bar { display: flex; align-items: center; gap: 12px; max-width: 1344px; width: 100%; margin: 0 auto; }
+.hf-bar b { font: 650 16px/1.2 var(--font-ui); }
+.hf-bar > span { flex: 1; min-width: 0; font: 500 14px/1.2 var(--font-ui); color: rgb(255 255 255 / 0.74); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hf-back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px 0 12px; border: 0; border-radius: 999px; font: 600 14px/1 var(--font-ui); color: #fff; background: rgb(255 255 255 / 0.12); cursor: pointer; }
+.hf-back:hover { background: rgb(255 255 255 / 0.2); }
+.hf-back:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.hf-frame { position: relative; justify-self: center; height: 100%; max-width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #000; }
+.hf-strip { max-width: 1344px; width: 100%; margin: 0 auto; }
+.hf .fp-ch-row button { color: rgb(255 255 255 / 0.78); }
+.hf .fp-ch-row button:hover { background: rgb(255 255 255 / 0.1); color: #fff; }
+.hf .fp-ch-row button.now { color: #0d1c15; background: #fff; }
+.hf .fp-ch-row button:focus-visible { outline-color: #fff; }
+@media (max-width: 760px) {
+  .hf { grid-template-rows: auto auto auto; align-content: center; padding-top: calc(60px + var(--safe-top, 0px) + 8px); }
+  .hf-bar > span { display: none; }
+  .hf-bar b { flex: 1; }
+  .hf-frame { align-self: center; height: auto; width: 100%; border-radius: 10px; }
+}
+@media (prefers-reduced-motion: reduce) { .hero.film.taken .film-copy, .hero.film.taken .film-story, .hero.film.taken .film-ctl { transition: none; } }

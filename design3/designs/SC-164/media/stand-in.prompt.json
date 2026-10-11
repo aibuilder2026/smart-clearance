@@ -1,0 +1,9 @@
+{
+  "name": "stand-in",
+  "derived_from": "design3/designs/SC-158/media/mango-drink-demo-720p.mp4",
+  "film_sidecar": "design3/designs/SC-158/media/mango-drink-demo.prompt.json",
+  "created": "2026-10-11",
+  "output": "stand-in.mp4 1280x720, 30 s",
+  "post_process": "ffmpeg -t 30 -c copy -movflags +faststart",
+  "use": "the design round's stand-in for the YouTube player, until the film's unlisted upload exists; the build embeds YouTube"
+}

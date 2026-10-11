@@ -286,3 +286,59 @@ test.describe('the film and the table, with motion on (SC-60, SC-111)', () => {
 		await expect(page.locator('.tb-focus .n')).toHaveText('1 of 11', { timeout: 2000 });
 	});
 });
+
+// YouTube stands in for the theatre's checks: its player script makes an empty frame, so the run needs no network and
+// the film's end can be called (SC-164)
+const YOUTUBE_STUB = `
+	window.YT = { Player: function (el, o) {
+		var f = document.createElement('iframe'); f.src = 'about:blank'; el.replaceWith(f);
+		this.getIframe = function () { return f; }; this.getCurrentTime = function () { return 0; };
+		this.seekTo = function () {}; this.playVideo = function () {}; this.destroy = function () { f.remove(); };
+		var me = this; window.__filmEnd = function () { o.events.onStateChange({ data: 0 }); };
+		setTimeout(function () { o.events.onReady({ target: me }); });
+	} };
+	window.onYouTubeIframeAPIReady && window.onYouTubeIframeAPIReady();`;
+
+test('keyboard · Watch opens the demo film over the page, keeps focus in it, ends on the guided demo, and Escape gives it back (SC-164)', async ({
+	page
+}, testInfo) => {
+	const watch = page.locator('.film-ctas').getByText('Watch the 5-minute demo');
+	test.skip(
+		(await watch.evaluate((e) => e.tagName)) !== 'BUTTON',
+		'this build has no film id (PUBLIC_DEMO_FILM): Watch opens the guided demo'
+	);
+	const youtube: string[] = [];
+	page.on('request', (r) => /youtube|ytimg|googlevideo/.test(r.url()) && youtube.push(r.url()));
+	await page.route('https://www.youtube.com/iframe_api', (r) =>
+		r.fulfill({ contentType: 'text/javascript', body: YOUTUBE_STUB })
+	);
+	expect(youtube, 'nothing of YouTube before Watch').toHaveLength(0);
+	const y = await page.evaluate(() => scrollY);
+
+	await watch.focus();
+	await page.keyboard.press('Enter');
+	const theatre = page.getByRole('dialog', { name: 'The 5-minute demo' });
+	await expect(theatre).toBeVisible();
+	expect(await inDialog(page), 'the theatre takes focus').toBe(true);
+	await expect(theatre.locator('iframe[title="Smart-Clearance demo film"]')).toHaveCount(1);
+	await expect(theatre.getByRole('navigation', { name: 'Chapters' }).getByRole('button')).toHaveCount(12);
+	await theatre.getByText('Read the film instead').click();
+	await expect(theatre.locator('.fp-read-in section')).toHaveCount(12);
+	const findings: Finding[] = await scan(page, 'demo film open');
+	for (let i = 0; i < 16; i += 1) await page.keyboard.press('Tab');
+	expect(await inDialog(page), 'Tab stays in the theatre').toBe(true);
+
+	await page.evaluate(() => (window as unknown as { __filmEnd: () => void }).__filmEnd());
+	await expect(
+		theatre.getByRole('link', { name: 'Try the guided demo' }),
+		'the film ends on the guided demo'
+	).toBeVisible();
+	await expect(theatre.getByRole('link', { name: 'Try the guided demo' })).toHaveAttribute('target', '_blank');
+	findings.push(...(await scan(page, 'demo film ended')));
+
+	await page.keyboard.press('Escape');
+	await expect(theatre, 'Escape closes the theatre').toHaveCount(0);
+	await expect(watch, 'focus returns to Watch').toBeFocused();
+	expect(await page.evaluate(() => scrollY), 'the page stays where it was').toBe(y);
+	await report(testInfo, findings);
+});
