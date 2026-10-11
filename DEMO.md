@@ -91,6 +91,9 @@ Neha runs the demo from the console (Clients, Munchly Foods):
   Real time (a day is a day), Rehearsal (an hour), Demo (five minutes) or Fast (a minute), or any length from 1 to
   1,440 minutes.
 - **Reset journey…**, in the client's actions menu, starts the journey again (below).
+- **Prototype time** (SC-176): under the journey's date and time, on every page of the live workspace and under a live
+  client's head in the console, a note says it is the story's own calendar; "How to reset or fast-forward" opens a
+  guide with these same steps, so anyone signed in can see how the demo is driven.
 
 ## Reset journey
 

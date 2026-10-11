@@ -4,6 +4,7 @@
 	import { createQuery } from '@tanstack/svelte-query';
 	import { untrack } from 'svelte';
 	import { useConsole } from '../console.svelte';
+	import ClockNote from '../../workspace/screens/common/ClockNote.svelte';
 	import AuditList from './AuditList.svelte';
 	import AgentsTab from './client/AgentsTab.svelte';
 	import IntegrationsTab from './client/IntegrationsTab.svelte';
@@ -147,6 +148,7 @@
 							onopen={() => (clock = true)}
 						/></span
 					>
+					{#if journey.data?.live}<ClockNote client={c.name} here />{/if}
 				</div>
 			</div>
 			<div class="cs-tabs"><Tabs tabs={TABS} value={tab} onchange={show} /></div>
