@@ -2221,9 +2221,10 @@
     have gone around 9 Nov: Download PDF failing, "The photo did not load", and a journey's photos lost.
   - **The fix,** on the maintainer's ask: the delete rule only on the exports buckets (a dynamic `lifecycle_rule`); the
     photos and docs buckets, in prod and local, never expire. Exports keep 30 days: their CSVs are loaded into BigQuery.
-  - **Terraform:** plan saved and read in full: 0 to add, 4 to change in place (the rule removed from the photos and
-    docs buckets of both environments), 0 to destroy; nothing else drifted. `check.sh` passes. Applied only on the
-    maintainer's yes.
+  - **Terraform,** applied on the maintainer's yes (11 Oct): the plan read in full, 0 to add, 4 changed in place (the
+    rule removed from the photos and docs buckets of both environments), 0 destroyed; nothing else drifted. Read back
+    from Google: the four buckets have no lifecycle rule, the two exports buckets keep theirs. A fresh plan shows no
+    changes. `check.sh` passes.
   - **Docs:** `infra/README.md`, the README's project table, and DEMO.md's known limits (the caveat is gone).
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
