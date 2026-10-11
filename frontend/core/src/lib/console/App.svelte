@@ -86,7 +86,7 @@
 	const client = $derived(id ? clients.data?.find((c) => c.id === id) : undefined);
 	const title = $derived(
 		me
-			? `${client ? client.name : name && !error ? TITLES[name] : 'Not found'} · Smart-Clearance Console`
+			? `${client ? client.name : name ? TITLES[name] : 'Not found'} · Smart-Clearance Console`
 			: 'Sign in · Smart-Clearance Console'
 	);
 	const nav = $derived(navOf(k.href).map((n) => (n.id === 'clients' ? { ...n, count: clients.data?.length } : n)));
