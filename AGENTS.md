@@ -32,7 +32,7 @@ The production code starts in `frontend/` (SC-27): design system v3 in Svelte, t
 | `docs/` | Story pages: `dobara-journey-map.html` (Journey Map v4.1, the source of every figure), the story, the tech stack (the 2 Oct plan), the technical architecture as built (`smart-clearance-architecture.html`, its PDF, whose diagrams are all Lucidchart's, and `smart-clearance-architecture.drawio` for Lucidchart; SC-140) and the walkthrough. |
 | `video/` | The narrated walkthrough. `build.py` builds the page and `record.mjs` records it with Playwright; `recorder/` is a local voice-recording page. |
 | `PRODUCT.md`, `DESIGN.md` | Product context, and the design system of record. |
-| `PLAN.md` | The product plan (2 Oct 2026). |
+| `TESTING.md`, `DEMO.md` | How every test is run, and which journeys to cover; how the prototype is demoed, and how Reset journey keeps a demo repeatable. |
 | `.claude/`, `.mcp.json` | Claude Code project configuration (see Tooling). |
 
 ## Commands

@@ -2,7 +2,10 @@
 
 <!-- impeccable:product-schema 1 -->
 
-Written from the brief, the journey map (docs/dobara-journey-map.html, v4.1), the tech-stack document (docs/smart-clearance-tech-stack.html) and the illustrated story (docs/smart-clearance-story.html, v6) without a user interview; facts marked *(inferred)* were not confirmed by the user. The SaaS model and the workspace sign-in come from the maintainer's brief for SC-24 (4 Oct 2026).
+Written from the brief, the journey map (docs/dobara-journey-map.html, v4.1), the illustrated story
+(docs/smart-clearance-story.html, v6) and what has been built since (CLAUDE.md records every change by issue); facts
+marked *(inferred)* were not confirmed by the maintainer. Brought up to date on 11 Oct 2026 (SC-170), when the
+original plan of 2 Oct (PLAN.md) was retired and its market reasoning folded into Positioning below.
 
 ## Platform
 
@@ -10,86 +13,211 @@ web
 
 ## Stack
 
-Installable PWA: SvelteKit 3 + Svelte 5 (adapter-static) on Firebase Hosting, Firebase Auth (each client workspace signs its staff in through its own identity provider, Google Workspace for Munchly's munchly.in; phone OTP for distributors and retailers by invitation; email-or-phone-first sign-in at the client's own subdomain; demo "Explore as someone in the story" accounts for judges), FCM web push with an in-app inbox, Tailwind 4 and shadcn-svelte; agents on Google Cloud Run (Google ADK, Gemini on Vertex AI). The design prototype in Claude Design is React + framer-motion *(inferred: the user asked for framer animations in the prototype)*.
+- **Four web apps**, each its own Firebase Hosting site: the landing page (smartclearance.web.app), the staff console
+  (smartclearance-console.web.app), a client's workspace (munchly-smartclearance.web.app, installable) and the guided
+  demo (smartclearance-demo.web.app). SvelteKit 3 and Svelte 5 (adapter-static), TypeScript, Tailwind 4 over the design
+  tokens, bits-ui, TanStack Query and `motion`, in one pnpm workspace (`frontend/`), sharing design system v3, the
+  workspace app's screens and the console's screens through `core`.
+- **backend-api**, the system of record: FastAPI on PostgreSQL 18 (Cloud Run and Cloud SQL), Firebase Authentication,
+  every secret in Secret Manager, every change with its audit line, every request traced.
+- **The agents**: Google ADK pipelines on Gemini through Vertex AI (Pro where a person decides on the words, Flash for
+  reading and drafting), one run a Pub/Sub event, on Cloud Run; Cloud Scheduler ticks the journey clock; BigQuery holds
+  the sell-through and the agents' runs; Cloud Storage the photos, papers and exports. The Paperwork agent lays out
+  every paper as a PDF (WeasyPrint).
+- **Live updates and pushes**: server-sent events while someone is using the app, Firebase Cloud Messaging for pushes,
+  and an in-app inbox.
+- **Sign-in**: email and password for everyone (staff, Munchly's people and its partners alike), every account
+  onboarded on a default password that an operator hands over; no email is ever sent. On the stub the workspace offers
+  "Explore as someone in the story".
+- **The design**: `design3/`, React 18 and framer-motion prototypes on in-browser mocks, published to Claude Design; the
+  frontend implements them, held to them by drift and parity tests.
 
 ## Business Model
 
-Smart-Clearance is sold to manufacturers as software as a service. Each client gets a workspace at its own address (`<client>-smartclearance.web.app`), set up for its supply chain: its route to market, who owns short-dated stock, its expiry policy, the exits it allows, its territory guard and how its people sign in. The prototype is Munchly Foods' workspace at munchly-smartclearance.web.app. A smartclearance.web.app landing page and a super-admin console for managing client workspaces and their users are planned (SC-25).
+Smart-Clearance is sold to manufacturers as software as a service. Each client gets a workspace at its own address
+(`<client>-smartclearance.web.app`), set up by Smart-Clearance's staff in the console for that client's supply chain:
+its route to market and distributors, who owns short-dated stock, its expiry policy, the exits it allows, the
+quick-commerce gates per SKU with overrides per batch, its territory guard, its agents' settings and its first stock
+export, mapped before the client's operator ever signs in. A landing page sells it, and its Book a demo becomes a new
+client in the console. The prototype client is Munchly Foods (snacks, beverages, and Glowra personal care).
 
 ## Users
 
-- **Priya Deshmukh**, supply chain at Munchly Foods, Pune. On her phone at 09:00 with chai, or at her desk. Job: decide what happens to short-dated stock before it is too late, with the money in front of her. Approves plans with one tap. Reviews the papers the Paperwork agent drafts, and reads the ledger: the money, the GST credit and the BRSR line, batch by batch, quarter and year (SC-127: one operator does it all).
-- **Rakesh bhai**, owner of Rakesh Traders, Nagpur (distributor). He owns the stock he bought at ₹22 and supplies his kiranas and the Blinkit, Zepto and Instamart warehouses in Nagpur. Runs the godown and the van from his phone and signs in with his phone number. Job: give a one-time permission for the agent to act in his name (and pause it when he wants), send one label photo, run the van and load the buyer's truck, issue the drafted invoice, and end whole through Munchly's price support.
-- **Ganesh ji** and 37 other kirana owners (retailers, Nagpur cluster). Job: accept a Hindi scheme from a notification with one tap and see the order.
-- **Agrawal ji**, Agrawal Wholesale, Raipur (ExpireSoon buyer, outside every Munchly territory). Job: see dates and the label photo, bid, get a fair counter, pay a token. *(ExpireSoon is a mocked marketplace; buyers never sign in to the client's workspace.)*
-- **Arjun Nair**, workspace admin at Munchly. Job: see how Munchly's workspace is set up (sign-in, supply-chain profile, branding), invite and deactivate people, set the guardrails the agents run by, watch the integrations and the audit log.
-- **Hackathon judges**: sign in as any role in demo mode and follow one batch end to end in about six minutes.
+- **Neha Kulkarni**, Smart-Clearance staff, a Super admin in the console. Job: turn a demo request into a client, map
+  its first stock export, tune its gates, rules and agents, watch every client's batches and agents, fire a scheduled
+  run or a timer early, and start a client's journey again for a demo. (Sameer Rao, a platform engineer, is the other
+  named staff member.)
+- **Priya Deshmukh**, supply chain at Munchly Foods, Pune, the one operator (SC-127). On her phone at 09:00, or at her
+  desk. Job: decide what happens to short-dated stock with the money in front of her; approve the plan with one tap;
+  give the second yes on packs destroyed at a godown, against their evidence; review the papers the Paperwork agent
+  drafts; read the Ledger (the money, the GST and the BRSR line, batch by batch, by quarter and year) and the Impact
+  dashboard; read any batch's record.
+- **Arjun Nair**, Munchly's workspace admin. Job: the workspace's sign-in, profile and branding, its people, the
+  guardrails the agents run by, integrations and the audit log.
+- **Rakesh bhai**, Rakesh Traders, Nagpur, a distributor. He owns the stock he bought at ₹22 and supplies kiranas and
+  the quick-commerce warehouses. Job, from his phone: give the one-time permission for the agents to act in his name
+  (and pause it), send the label photo, record the staff sale, load the buyer's truck, issue the drafted invoice from
+  Tally, run the van round, send the evidence when packs are destroyed at his godown, and end whole through Munchly's
+  price support. His portal shows each batch in a journey as a card, and every batch he cleared with its papers,
+  deliveries, orders and photos.
+- **Lakshmi Agencies**, Hyderabad, the Mango Drink's distributor, with the same portal.
+- **Ganesh ji** and the other kirana owners (38 in Nagpur, 58 in Hyderabad). Job: accept a Hindi scheme from a push in
+  one tap, or say Not this time; see the order, its margin and its tax invoice; look back over earlier offers and
+  orders.
+- **Agrawal ji**, Agrawal Wholesale, Raipur, a buyer on ExpireSoon (outside every Munchly territory). Job: see the lot,
+  its dates and label photo, bid, get a fair counter from the Negotiator, pay a token, collect. *(ExpireSoon is a mocked
+  marketplace; its buyers never sign in to a client's workspace.)*
+- **Meera**, Feeding India, Hyderabad, a food bank. Job: confirm and collect a pickup, and issue its donation receipt.
+  India FoodBanking Network is the second food bank, with its own receipt series and meals rule.
+- **Hackathon judges**: the guided demo, about 18 minutes along a route map (see DEMO.md), or the live apps.
 
 ## Product Purpose
 
-Smart-Clearance routes near-expiry FMCG stock that quick-commerce apps have rejected to the channel that earns the most in the days it has left (online clearance marketplace, kirana cluster push, a staff sale at the distributor's godown, food bank; discount D2C only for the manufacturer's own warehouse stock), asks a human for one approval, then executes: listing, outreach, negotiation, donation booking, paperwork and the impact ledger. Success: the batch leaves the godown inside its date, the brand recovers money instead of paying an expiry claim and writing the stock off, the distributor ends whole, the GST input credit is kept, and the waste avoided lands as an audited line in the BRSR report.
+Smart-Clearance routes near-expiry FMCG stock that quick-commerce apps have rejected to the exits that earn the most in
+the days it has left (an online clearance marketplace, a kirana scheme pushed from the distributor, a staff sale at the
+distributor's godown, a food bank; discount D2C only for the manufacturer's own warehouse stock), asks one person for
+one approval, then executes: listing, outreach, negotiation, donation booking, the papers and the impact ledger. What
+no exit takes by expiry day is settled by the client's expiry policy: destroyed at the godown by an authorised agency,
+against two photos and a second yes, with the credit note and the certificate to match. Success: the batch leaves the
+godown inside its date, the brand recovers money instead of paying an expiry claim and writing the stock off, the
+distributor ends whole, the GST input credit is kept, and the waste avoided lands as an audited BRSR line.
 
 ## Positioning
 
-The only tool that combines the quick-commerce shelf-life gates (Blinkit 90+ days; Zepto and Instamart 60% of life), real sell-through by pincode and by shop and a label-photo verification into a priced choice of exits per carton, including the true cost of the bin (stock, ITC reversal under CGST s.17(5)(h), disposal, EPR), and then does the running around itself, in the distributor's name. Agents decide; one human tap releases execution. Each manufacturer gets it as its own workspace, set up for its own supply chain.
+The only tool that combines the quick-commerce shelf-life gates (Blinkit 90+ days; Zepto and Instamart 60% of life),
+real sell-through by pincode and by shop, and a label-photo check into a priced choice of exits per carton, including
+the true cost of the bin (the stock, the ITC reversal under CGST s.17(5)(h), disposal, EPR), and then does the running
+around itself, in the distributor's name. Agents decide; one human tap releases execution. Each manufacturer gets it as
+its own workspace, set up for its own supply chain.
+
+**Why India, and why a router rather than a marketplace** (from the plan of 2 Oct 2026): Spoiler Alert proves the
+economics of AI-priced closeouts in the US, but it assumes a few large liquidators buying by the truckload. Indian
+recovery demand is fragmented across millions of kiranas, a hundred thousand distributors, young marketplaces
+(NearXpiry, EOL Stocks, Excess2Sell, the model for the prototype's mocked ExpireSoon) and food banks. Marketplaces want a
+listing and distributor management systems record the write-off; nobody decides, batch by batch, where short-dated
+stock earns the most and then executes across channels. Three Indian facts make it pay: GST makes destruction expensive
+(the input credit is reversed on goods destroyed, written off or given away); waste is a board-level number (SEBI's
+BRSR Core, assured for the top listed companies from FY 2026-27); and FSSAI's surplus-food regulations (2019) give a
+legal path to donate packaged food before expiry through licensed food banks.
 
 ## Operating Context
 
-- Demo batch: MF-2409-117, Munchly Masala Chips 150 g, 24 packets a carton, MRP ₹30, Munchly's cost ₹16, distributor price ₹22, GST 5% after GST 2.0 with ₹0.90 of input GST a packet, best before 18 Nov 2026 (a 184-day life), 77 cartons (1,840 packets) in Rakesh Traders' godown at Kalamna Market, Nagpur, selling 12 packets a day; 57 cartons (1,360 packets) at risk; destroying them costs Munchly ₹26,330 (₹19.36 a packet).
-- Recommended split: 588 packets (24½ cartons) to the kirana cluster at ₹18 effective (₹21.60 a pack, 2 free with every 10), ordered by 31 of 38 shops; 772 packets (32 cartons + 4) on ExpireSoon at ₹15 in Rakesh Traders' name, reserve ₹13.50, hidden from buyers inside Munchly's territories; net ₹21,770 (53% of MRP), P&L +₹10, ₹26,340 better than the bin; GST credit ₹1,224 kept. Negotiation: Agrawal Wholesale bids ₹13, counter ₹14.20, accepted; 15% token ₹1,644; actual ₹21,152 net, a ₹25,722 swing. Rakesh's invoice to Raipur: IGST 5% ₹548, ₹11,510 in all. Munchly's price support to Rakesh: ₹8,768 instead of a ₹34,490 expiry claim. Day-7 shelf check; scheme returns until 29 Oct.
-- Second batch: Mango Drink, 22 days left, Lakshmi Agencies Hyderabad; 1,372 packs to her kiranas, 150 to her staff sale, 58 to Feeding India.
-- Workflow stages: connect (data, guardrails, the distributor's one-time permission), detect risk (daily 09:00 Watcher), verify (label photo read by Gemini), value (five exits including the bin), route (greedy allocation under caps), approve (one tap), execute (list in the distributor's name, push offer in Hindi, negotiate, book pickup), settle (the distributor's invoice draft, e-way bill check, price-support credit note, ITC memo, FSSAI checklist), report (ledger after the return window: ₹ recovered, ITC retained, kg diverted, CO₂e, meals; BRSR Principle 6 rows).
-- Devices: phones for Priya, Rakesh bhai and the retailers; Priya's laptop for the papers and the ledger; any browser for judges. Push notifications are the trigger for every human moment; WhatsApp is future scope.
-- Languages: English, Hindi, Marathi strings (Paraglide). Retailer offers go out in Hindi.
+- **The story's batch:** MF-2409-117, Munchly Masala Chips 150 g, 24 packets a carton, MRP ₹30, Munchly's cost ₹16,
+  the distributor's price ₹22, GST 5% with ₹0.90 of input GST a packet, best before 18 Nov 2026 (a 184-day life),
+  1,840 packets in Rakesh Traders' godown at Kalamna Market, Nagpur, selling 12 a day; 1,360 packets at risk;
+  destroying them would cost Munchly ₹26,330.
+  - **The plan:** 588 packets to the kirana scheme at ₹18 effective (₹21.60 a pack, 2 free with every 10), ordered by
+    31 of 38 shops; 772 on ExpireSoon at ₹15 in Rakesh Traders' name, reserve ₹13.50, hidden inside Munchly's
+    territories. Net ₹21,770, ₹26,340 better than the bin, GST credit ₹1,224 kept.
+  - **What happens:** Agrawal Wholesale bids ₹13, the Negotiator counters at ₹14.20, accepted, a ₹1,644 token; actual
+    ₹21,152.40. Rakesh's tax invoice to Raipur INV/26-27/0931 (₹11,510 with IGST, its e-invoice IRN once issued from
+    Tally), a tax invoice to each kirana (RT/26-27/1279 on), Munchly's price support CN/0117 (₹8,768) instead of a
+    ₹34,490 expiry claim, the GST ITC memo.
+- **The Mango Drink:** MF-2410-118, 200 ml, 22 days left, Lakshmi Agencies, Hyderabad. 1,372 packs to 52 kiranas, 150
+  to her staff sale, 58 to Feeding India; no ExpireSoon lot (under its 30 days). Net ₹16,917.10; CN/0117 (₹5,932), the
+  ITC memo, the FSSAI checklist and Feeding India's receipt FI/HYD/26-27/0417.
+- **The slow week:** the chips again, with 23 shops ordering 444 of 588 and one declining; the lot still sells. On
+  expiry day the 144 packs left are destroyed at Rakesh's godown: his two photos, Vision's checks, Priya's second yes,
+  the Expiry credit note CN/0118 (₹3,542.40: the dealer price, the GST he reverses and the agency's charges) and the
+  agency's certificate OCE/DC/26-27/0219. Net ₹18,632.40.
+- **The pilot quarter:** Munchly has been live since 1 Jul 2026. Q2 FY27 holds 12 cleared batches (7 sold through, 3
+  destroyed at the godown, 2 donated), ₹2,20,383.58 recovered, each with its papers, photos and record.
+- **The nine stops:** connect (the export, the guardrails, the distributor's one-time permission), detect (the Watcher's
+  daily check), verify (the label photo, read by Vision on Gemini), value (every exit including the bin), decide (the
+  Router's split under each exit's caps), approve (one tap), execute (list, offer in Hindi, negotiate, book the pickup,
+  the staff sale), settle (the papers: tax invoices, e-way bill check, credit notes, ITC memo, FSSAI checklist, receipts,
+  the destruction's papers), report (on expiry day: the ledger, ₹ recovered, ITC kept and reversed, kilos and plastic
+  kept out of landfill, CO₂e, meals, BRSR Principle 6 rows).
+- **The journey clock:** a demo workspace replays the story's own calendar from day 0 (2 Oct 2026). The console sets a
+  journey day's length (1 to 1,440 minutes) while a case is open, fires scheduled runs and timers early, and starts the
+  journey again (DEMO.md).
+- **Devices:** phones for the distributors, the kiranas, the food bank and the buyer; Priya on her phone and her laptop;
+  the staff on laptops. Pushes are the trigger for every human moment; WhatsApp is future scope.
+- **Languages:** the kiranas' offers go out in Hindi, with an English toggle. Marathi is not built.
 
 ## Capabilities and Constraints
 
-- Screens in design v3 (design3/, current): one set of role screens shared by the guided demo and the app, inside Munchly's workspace.
-  - Sign-in at munchly-smartclearance.web.app: email or phone first, Google Workspace for munchly.in, a one-time code for invited numbers, joining on a first invitation, "Find your workspace", a workspace sheet inside the app.
-  - Brand: Setup (S0, with the territory guard, the distributors' permissions and the return window), Command Center (S1), Route Room with label, five channels, split, money and the approve sheet (S2), Execution with the listing API card, kirana orders on the cluster map, negotiation, the Mango Drink donation and the day-7 shelf check (S3), Batches.
-  - Distributor: Today (one-time permission with pause, the plan, the van, the Raipur lot, the invoice draft, ending whole), label photo camera, van route, orders.
-  - Kirana: offers in Hindi with an English toggle, offer and order with margin, orders.
-  - ExpireSoon buyer, in ExpireSoon's own violet look and outside the workspace: marketplace, lot ES-24117 with bid panel and seller chat, my bids (S4).
-  - Food bank: pickups with the FSSAI checklist. The papers and the ledger are the operator's: Paperwork with each document on paper and "who keeps what" (S5), and the Ledger with the BRSR export (S6).
-  - Admin: Workspace (sign-in, supply-chain profile, distributors, branding), users, guardrails, integrations, audit. Every role: inbox and profile.
-  - The guided demo plays the nine journey stages as beats on a laptop (its address bar at munchly-smartclearance.web.app) and a phone running these screens, with both sign-ins in stage 1, lock-screen pushes and narration; the app adds sign-in, a person switcher and agents that run live.
-- Screens in design v2 (design2/, superseded): the sheet (Today), batch detail tabs, Approvals, Orders, Partners, Reports and the role surfaces of the label world.
-- Money shown before any yes; nothing is listed, messaged or shipped before the approval tap, and nothing in the distributor's name before his one-time permission. ITC on donations is reversed as a rule; disposal, EPR and CO₂e factors are labelled indicative.
-- Medicines are out of scope. ExpireSoon and the food-bank partner are mocked in the prototype.
-- Mobile hit targets never below 44 px; works at 390, 820 and 1440 px; installable PWA.
-- Undecided *(inferred)*: whether the retailer and distributor surfaces ship as the same PWA with role-based layouts (the tech-stack doc says yes) or as a separate lightweight app.
+- **The landing page:** a live-action hero film of one day of the journey (Veo 3.1), the agents at work on a miniature
+  table one at a time, the product's moments, Impact's ledger, the workspace itself, plans, and the 5-minute demo film
+  in a theatre on request. It names no client.
+- **The console:** a splash for every wait; the Overview (the figures, Food by day across every client, the agents at
+  work, every batch a page at a time); Clients and a client's tabs (Agents with their scheduled runs and timers, Supply
+  chain with the first stock export, SKUs and gates, Channels and rules with the destruction settings, People,
+  Integrations, Plan); New client from a demo request; Agents, Connectors, Plans, Staff and the audit log; Reset journey
+  and the journey-day badge.
+- **The workspace, for the operator:** the Command Center (the watchlist, the Impact card); Batches (in view, and every
+  cleared batch by month); a batch's page (Journey, Route Room, Execution, Paperwork, Record); Setup; the Ledger (Money,
+  GST and Impact readings by quarter and year, the BRSR, GST and ledger exports, the printed report); the destruction's
+  review sheet.
+- **The workspace, for partners:** the distributor's Today, Batches, Deliveries, Orders and label photos, and a batch's
+  page (what happened, money, papers with Download PDF, photos); the kirana's Offers and Orders with each tax invoice;
+  the food bank's Pickups and receipts; the ExpireSoon buyer's market, lot, bids and chat, in ExpireSoon's own violet
+  look.
+- **The admin:** Workspace, Users, Rules, Integrations, Audit. Every role: inbox and profile.
+- **The guided demo:** a route map of four lines (the platform's console, the chips sold through, the Mango Drink sold
+  through, the slow week destroyed on a second yes), every beat on the real screens with stub data, in the browser.
+- **The papers** are real documents in Tally's layout, every party with a well-formed fictional GSTIN; an issued tax
+  invoice carries its e-invoice (IRN and an illustrative signed QR). Every figure is computed by `design3/core/money.js`
+  and its ports.
+- **Rules:** the money is shown before any yes; nothing is listed, messaged or shipped before the approval, and nothing
+  in the distributor's name before his permission; packs destroyed at a godown wait for a second yes on their evidence.
+  Disposal, EPR, CO₂e and packaging factors are labelled indicative.
+- **Out of scope:** medicines; real marketplace, food-bank, WhatsApp and Tally integrations (ExpireSoon, the food banks
+  and Tally are mocked); live payments.
+- **Quality bars:** WCAG 2.2 AA on every app's real UI; 44 px targets; 390, 820 and 1440 px; nothing animates forever
+  except the hero film under its Pause.
 
 ## Brand Commitments
 
-Name: Smart-Clearance. Tagline: "Every near-expiry carton gets a second chance, chosen by AI." Hindi line: हर कार्टन को दूसरा मौका. Internal name of the routing engine: Short-Date Router.
+Name: Smart-Clearance. Tagline: "Every near-expiry carton gets a second chance, chosen by AI." Hindi line: हर कार्टन को
+दूसरा मौका. Internal name of the routing engine: Short-Date Router.
 
-Client workspaces (SC-24, 4 Oct 2026): the Smart-Clearance mark and theming lead every screen of a client's workspace, and the client's workspace mark sits under it (a pill under the sidebar lockup, the mark on the tablet rail, a button at the left of the phone bar). The client's own colours stay inside its mark. On its sign-in page the client leads, with "Powered by Smart-Clearance" at the foot. Munchly's mark is an orange tile with a bite out of one corner and a white m.
+Client workspaces (SC-24, 4 Oct 2026): the Smart-Clearance mark and theming lead every screen of a client's workspace,
+and the client's workspace mark sits under it (a pill under the sidebar lockup, the mark on the tablet rail, a button at
+the left of the phone bar). The client's own colours stay inside its mark. On its sign-in page the client leads, with
+"Powered by Smart-Clearance" at the foot. Munchly's mark is an orange tile with a bite out of one corner and a white m.
 
-Identity v3 (design3, SC-12, 3 Oct 2026), carried by the design system, the guided demo and the application: every at-risk batch is a live order, tracked to its best exit the way India tracks a delivery. Apple HIG behaviour and shadcn anatomy: frosted bars and sidebar, large titles that collapse, inset grouped lists, sheets with detents, a nine-stop tracker, a schematic cluster map with the godown pin and the van route. Sage-tinted neutrals: light ground #f2f6f3 with white cards, dark ground #070b09 with #101613 surfaces and a faint green aurora. The v1 green modernised as the brand (#167a52 light, #3ccb8a dark); amber only for the human yes (the approval, the distributor's permission); red only for risk and the bin; violet only for ExpireSoon; colour only where something is live. Type: Bricolage Grotesque for display and numerals at Monzo weight, with the rupee sign and paise set small and urgency carried in the numeral's own width and weight; Geist for the interface; Geist Mono for ids, times and API cards; Noto Sans Devanagari for Hindi. The mark is a green squircle with the route drawn as an S from the godown dot to an amber pin; the splash draws it. Numbers roll in place when an agent changes them; Approve fills the tracker, draws the van route and rolls the swing. Soft 3D renders (local Qwen, provenance in design3/system/img/manifest.json) and an LTX carton loop are the imagery. Tokens, components and screens live in design3/; DESIGN.md records the system.
+Identity v3 (design3, SC-12, 3 Oct 2026), carried by every app: every at-risk batch is a live order, tracked to its best
+exit the way India tracks a delivery. Apple HIG behaviour and shadcn anatomy: frosted bars and sidebar, large titles that
+collapse, inset grouped lists, sheets with detents, a nine-stop tracker, a schematic cluster map with the godown pin and
+the van route. Sage-tinted neutrals: light ground #f2f6f3 with white cards, dark ground #070b09 with #101613 surfaces.
+The v1 green modernised as the brand (#167a52 light, #3ccb8a dark); amber only for the human yes (the approval, the
+distributor's permission, the second yes); red only for risk and the bin; violet only for ExpireSoon; colour only where
+something is live. Type: Bricolage Grotesque for display and numerals, with the rupee sign and paise set small; Geist for
+the interface; Geist Mono for ids, times and API cards; Noto Sans Devanagari for Hindi. The mark is a green squircle with
+the route drawn as an S from the godown dot to an amber pin; the loaders draw it. Numbers roll in place when an agent
+changes them. Soft 3D renders and live-action film (Qwen-Image, LTX, Veo 3.1, each with a provenance sidecar) are the
+imagery. DESIGN.md records the system.
 
-Identity v2 (design2, SC-7), superseded by v3: Sivakasi matchbox label chromolithography (Day #f2eee4, Night #101433, seven inks, Bungee and Anek). It remains in design2/ for reference.
-
-The v1 identity (deep green #176b4e with amber #e3b74d, red for risk, purple for ExpireSoon, blue for push; Bricolage Grotesque, IBM Plex Sans, IBM Plex Mono, Noto Sans Devanagari; the green rounded-square mark) remains in the earlier documents (journey map, tech-stack document, story, video) and the v1 prototype under design/.
-
-Portraits of the people and the admin exist in docs/story-img/p-*.jpg and, cropped for v3, in design3/system/img/people/; v3 product and scene renders in design3/system/img/ and the carton loop in design3/system/media/ (each with a provenance sidecar).
+Earlier identities remain for reference only: v2 (design2/, Sivakasi matchbox chromolithography) and v1 (design/, and
+the journey map, story and walkthrough video).
 
 ## Evidence on Hand
 
-- Money model, product table and demo data: docs/dobara-journey-map.html (v4.1) and docs/smart-clearance-story.html (v6); computed in design3/core/money.js.
-- Journey map with nine stages and the prototype screen list: docs/dobara-journey-map.html.
-- Tech stack with roles, sign-in modes, Playwright flows at 390/820/1440: docs/smart-clearance-tech-stack.html.
-- Illustrations and portraits: docs/story-img/ (public at raw.githubusercontent.com/aibuilder2026/smart-clearance/main/docs/story-img/).
-- No real customers, benchmarks or prices beyond the demo data set; Munchly Foods, Glowra, ExpireSoon and Agrawal Wholesale are fictional.
+- The money model, product table and demo data: docs/dobara-journey-map.html (v4.1) and docs/smart-clearance-story.html
+  (v6); computed in design3/core/money.js, the ledger in design3/core/ledger.js, the papers in design3/core/papers.js,
+  and ported to backend-api and core, held to them by fixtures.
+- The agents' eval sets and their live runs (agents/evals/, summaries committed), and the recorded journey runs
+  (frontend/workspace/tests/journey/runs/).
+- Illustrations and portraits: docs/story-img/ and design3/system/img/.
+- No real customers, benchmarks or prices beyond the demo data; Munchly Foods, Glowra, ExpireSoon, Agrawal Wholesale,
+  the distributors, kiranas, agencies and every person are fictional.
 
 ## Product Principles
 
 1. Show the money before asking for the yes; every number carries its working.
 2. One human tap releases execution; the agents do the running around and show their work as a timeline.
 3. Verify from the shelf, not the spreadsheet: the label photo is the source of truth.
-4. Every rupee, credit and kilo lands in one ledger, with the paper behind each, that the operator reads for the money, the GST and the BRSR line.
-5. Phone-first for the trade: the distributor and the retailer act from a notification in one tap, in their language, and nothing happens in the distributor's name without his permission.
-6. One product, many manufacturers: each client's workspace is set up for its own supply chain, and the client's brand never overrides the product's.
+4. Every rupee, credit and kilo lands in one ledger, with the paper behind each, that the operator reads for the money,
+   the GST and the BRSR line.
+5. Phone-first for the trade: the distributor and the retailer act from a push in one tap, in their language, and
+   nothing happens in the distributor's name without his permission.
+6. Nothing is destroyed on the agents' word: what is left at a godown goes on evidence and a second yes.
+7. One product, many manufacturers: each client's workspace is set up for its own supply chain, and the client's brand
+   never overrides the product's.
 
 ## Accessibility & Inclusion
 
-Hindi and Marathi strings for retailers and distributors; 44 px targets; readable on cheap Android phones in sunlight (strong contrast, no colour-only meaning); reduced-motion respected.
+WCAG 2.2 AA, measured on every app's production build by the a11y suite (TESTING.md), with every core component the
+apps use reached by a scan; Hindi for the kiranas; 44 px targets; readable on cheap Android phones in sunlight (strong
+contrast, no colour-only meaning); reduced motion respected, with every animation landing on its final state at once.
