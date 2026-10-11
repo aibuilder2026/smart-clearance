@@ -12,9 +12,10 @@ import { defineConfig } from '@playwright/test';
 //                                                   closed by Report now (it resets the journey)
 //   corepack pnpm test:journey:mango-leftover       Munchly Mango Leftover E2E (SC-135): the Mango Drink with kiranas
 //                                                   that do not buy, settled on expiry day (it resets the journey)
-//   corepack pnpm test:journey:sad                  Munchly Chips Sad Path E2E (SC-179): two kiranas order, the rest
-//                                                   decline, the packs left destroyed at the godown; three screens live
-//                                                   side by side, recorded as one video (it resets the journey)
+//   corepack pnpm test:journey:sad                  Munchly Chips Sad Path E2E (SC-179, SC-184): two kiranas order, the
+//                                                   window closes on the rest, the packs left destroyed at the godown;
+//                                                   three screens side by side, everyone signing in on screen, recorded
+//                                                   as one video (it resets the journey)
 //   corepack pnpm test:journey --headed             watch it run (E2E_SLOWMO=250 slows each action, in ms)
 //   corepack pnpm test:journey --ui                 Playwright's UI mode, step by step
 //

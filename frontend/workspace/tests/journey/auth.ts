@@ -136,6 +136,66 @@ async function record(app: App, id: string) {
 	};
 }
 
+/** what the stage types into an app's password field (SC-184): a stand-in, never a password, since the password check
+ *  is answered by signInOnScreen's route below */
+export const STAND_IN = 'not-a-password';
+
+/** the person an email belongs to, among those minted */
+const byEmail = (email: string) =>
+	Object.entries(people).find(([, p]) => p.email.toLowerCase() === email.trim().toLowerCase())?.[0];
+
+const answered = new WeakSet<Page>();
+
+/** signing in on the app's own sign-in screen (SC-184), with no password handled: the person types their email on the
+ *  app's form and presses Sign in, and the app's own code signs in through its Firebase SDK. The one call that checks a
+ *  password, Identity Toolkit's signInWithPassword, is answered here with that person's own Firebase session, the custom
+ *  token minted by sessions.sh exchanged with the app's key; the password field took STAND_IN, and it is never sent.
+ *  Everything after it is real: the SDK reads the account from Firebase, the app opens its session with backend-api and
+ *  shows its own welcome. An email the suite has no session for is refused as Firebase refuses a wrong sign-in */
+export async function signInOnScreen(page: Page) {
+	if (answered.has(page)) return;
+	answered.add(page);
+	await page.route('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword*', async (route) => {
+		const req = route.request();
+		const origin = (await req.headerValue('origin')) ?? '*';
+		const cors = {
+			'Access-Control-Allow-Origin': origin,
+			'Access-Control-Allow-Headers': (await req.headerValue('access-control-request-headers')) ?? '*',
+			'Access-Control-Allow-Methods': 'POST, OPTIONS',
+			Vary: 'Origin'
+		};
+		if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
+		const key = new URL(req.url()).searchParams.get('key');
+		const app = (['workspace', 'console'] as App[]).find((a) => appEnv(a).PUBLIC_FIREBASE_API_KEY === key);
+		const { email } = JSON.parse(req.postData() ?? '{}') as { email?: string };
+		const id = email ? byEmail(email) : undefined;
+		if (!app || !id)
+			return route.fulfill({
+				status: 400,
+				headers: cors,
+				contentType: 'application/json',
+				body: JSON.stringify({ error: { code: 400, message: 'INVALID_LOGIN_CREDENTIALS', errors: [] } })
+			});
+		const p = person(id);
+		const s = await session(app, id);
+		await route.fulfill({
+			status: 200,
+			headers: cors,
+			contentType: 'application/json',
+			body: JSON.stringify({
+				kind: 'identitytoolkit#VerifyPasswordResponse',
+				localId: p.uid,
+				email: p.email,
+				displayName: '',
+				idToken: s.idToken,
+				registered: true,
+				refreshToken: s.refreshToken,
+				expiresIn: String(Math.max(60, Math.floor((s.expiresAt - Date.now()) / 1000)))
+			})
+		});
+	});
+}
+
 const BLANK = '/__e2e-session';
 const routed = new WeakSet<Page>();
 

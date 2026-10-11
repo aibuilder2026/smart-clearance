@@ -8,26 +8,30 @@ import {
 	type TestInfo
 } from '@playwright/test';
 import { spawn, type ChildProcess } from 'node:child_process';
-import { ORIGIN, openAs, person, type App } from './auth.ts';
+import { ORIGIN, person, signInOnScreen, STAND_IN, type App } from './auth.ts';
 import { ROLES, settled } from './flow.ts';
 import { Run, type About } from './record.ts';
 
-// Three screens at once (SC-179): a journey played out as it would be in the field. The supply chain operator and the
-// distributor each hold a tablet in landscape, and a phone serves everyone else (each kirana, the ExpireSoon buyer,
-// Smart-Clearance staff in the console), side by side in one live window. The two tablets sign in before the recording
-// starts and stay signed in, moving from screen to screen in the app; the phone signs people in as they are needed.
+// Three screens at once (SC-179): a journey played out as it would be in the field. The supply chain operator holds a
+// tablet in landscape and the distributor one in portrait (SC-184), and a phone serves everyone else (each kirana, the
+// ExpireSoon buyer, Smart-Clearance staff in the console), side by side in one window. Everyone signs in on the app's
+// own sign-in screen, on camera: the two tablets at the start, staying signed in to the end and moving from screen to
+// screen in the app; the phone as each person is needed, the last one signing out of the workspace before the next
+// signs in (the console stays signed in on its own address, as an app on a phone does: the console has no sign-out on a
+// phone). The password check is answered with the person's own session (auth.ts signInOnScreen): no password is typed.
 //
 // The three screens run in a headless Chromium, each at its own size; each streams its frames (CDP screencast) into
-// the stage, a page in a visible Chromium window that lays them out as devices, names who holds each, and captions
-// who is acting and what they do. The stage itself is recorded: its frames are piped into ffmpeg at a steady 25 fps,
-// so the recording is the stage as watched, every screen in it, timed as it happened.
+// the stage, a page in a second headless Chromium that lays them out as devices, names who holds each, and captions who
+// is acting and what they do. The stage itself is recorded: its frames are piped into ffmpeg at a steady 25 fps, so the
+// recording is the stage as it was, every screen in it, timed as it happened. The stage is never a window on the
+// screen, so nothing about a window (its size, a display it moves to) can crop what is recorded (SC-184: a visible stage
+// window was captured cropped from a minute in); a monitor window shows the recorded frames live.
 //
-// Every screen draws a cursor (an init script): each click glides it to its target and ripples where it lands, and a
-// person reading glides it over what they read. While the phone signs someone in, its last frame holds under a
-// "Signing in" chip, so no screen ever shows a blank page; and a step ends only once every screen's photos and
-// placeholders have landed.
+// Every screen draws a cursor (an init script): each click glides it to its target and ripples where it lands, a
+// person reading glides it over what they read, and a pen drawing on a signature pad is followed exactly. A step ends
+// only once every screen's photos and placeholders have landed.
 //
-// E2E_LIVE=0 keeps the stage window hidden (it is still recorded).
+// E2E_LIVE=0 opens no monitor window (the stage is recorded all the same).
 
 export type PaneId = 'operator' | 'distributor' | 'phone';
 
@@ -40,47 +44,55 @@ type PaneSpec = {
 	max: { width: number; height: number };
 };
 
-/** the stage window, in CSS pixels (drawn at twice that on a Retina screen); it fits a 14-inch MacBook's screen */
+/** the stage, in CSS pixels (drawn at twice that, and recorded at 2560 × 1440) */
 const W = 1720;
 const H = 968;
 const M = 14;
+/** the bar along the top, and a device's label and address above it */
+const TOP = 64;
+const HEAD = 46;
 /** a tablet's bezel and a phone's, each side */
 const TAB_BEZEL = 11;
 const PHONE_BEZEL = 9;
-const PHONE_SCALE = 0.8;
+/** the distributor's tablet, in portrait, takes the stage's height */
+const DIST_SCALE = (H - TOP - HEAD - M - 2 * TAB_BEZEL) / 1180;
+const DIST_COL = 820 * DIST_SCALE + 2 * TAB_BEZEL;
+const PHONE_SCALE = 0.78;
 const PHONE_COL = 390 * PHONE_SCALE + 2 * PHONE_BEZEL;
-const TAB_COL = (W - 4 * M - PHONE_COL) / 2;
-const TAB_SCALE = (TAB_COL - 2 * TAB_BEZEL) / 1180;
+/** the operator's tablet, in landscape, takes what is left, the narrator under it */
+const OP_COL = W - 4 * M - DIST_COL - PHONE_COL;
+const OP_SCALE = (OP_COL - 2 * TAB_BEZEL) / 1180;
 
 const PANES: Record<PaneId, PaneSpec> = {
 	operator: {
 		label: 'Tablet',
 		size: '1180 × 820 · landscape',
 		viewport: { width: 1180, height: 820 },
-		scale: TAB_SCALE,
+		scale: OP_SCALE,
 		max: { width: 1600, height: 1112 }
 	},
 	distributor: {
 		label: 'Tablet',
-		size: '1180 × 820 · landscape',
-		viewport: { width: 1180, height: 820 },
-		scale: TAB_SCALE,
-		max: { width: 1600, height: 1112 }
+		size: '820 × 1180 · portrait',
+		viewport: { width: 820, height: 1180 },
+		scale: DIST_SCALE,
+		max: { width: 1180, height: 1698 }
 	},
 	phone: {
 		label: 'Phone',
 		size: '390 × 844',
 		viewport: { width: 390, height: 844 },
 		scale: PHONE_SCALE,
-		max: { width: 640, height: 1385 }
+		max: { width: 700, height: 1515 }
 	}
 };
+const COL: Record<PaneId, number> = { operator: OP_COL, distributor: DIST_COL, phone: PHONE_COL };
 
 /** the recording's size */
 const OUT = { width: 2560, height: 1440 };
 const FPS = 25;
 const LIVE = process.env.E2E_LIVE !== '0';
-/** flags that keep a hidden or covered window drawing, so its screencast never stalls */
+/** flags that keep every page drawing, so no screencast stalls */
 const KEEP_DRAWING = [
 	'--disable-backgrounding-occluded-windows',
 	'--disable-renderer-backgrounding',
@@ -111,10 +123,15 @@ const CURSOR = `(() => {
 	};
 	if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', make); else make();
 	addEventListener('mousemove', (e) => {
-		make().style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+		const c = make();
+		// a pen on a pad is followed exactly; otherwise the cursor glides to where the mouse went
+		c.style.transitionDuration = e.buttons & 1 ? '0ms' : '${GLIDE - 60}ms';
+		c.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
 		try { sessionStorage.setItem(KEY, JSON.stringify([e.clientX, e.clientY])); } catch {}
 	}, true);
 	addEventListener('mousedown', (e) => {
+		// no ripple for a pen touching a signature pad: it draws
+		if (e.target instanceof Element && e.target.closest('.signpad')) return;
 		const r = document.createElement('div');
 		r.setAttribute('aria-hidden', 'true');
 		r.style.cssText = 'position:fixed;left:' + (e.clientX - 22) + 'px;top:' + (e.clientY - 22) + 'px;width:44px;height:44px;border-radius:50%;border:3px solid #f5c542;background:rgba(245,197,66,.28);z-index:2147483646;pointer-events:none;transform:scale(.35);opacity:1;transition:transform .5s ease-out,opacity .6s ease-out';
@@ -128,12 +145,13 @@ type Pane = {
 	id: PaneId;
 	page: Page;
 	cdp: CDPSession;
-	/** who is signed in on it, and to which app */
+	/** who holds it now, and in which app */
 	who: string | null;
 	app: App | null;
+	/** who is signed in to each app on it: the console stays signed in on its own address while the phone is in the
+	 *  workspace */
+	signedIn: Partial<Record<App, string>>;
 	lastFrame: number;
-	/** while someone signs in on it, its frames are held back: the stage keeps its last one, under a chip */
-	held: boolean;
 };
 
 /** the people who keep a screen of their own; everyone else takes the phone */
@@ -148,6 +166,8 @@ const initials = (name: string) =>
 		.map((w) => w[0]!.toUpperCase())
 		.join('');
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+const appOf = (who: string): App => (who === 'neha' ? 'console' : 'workspace');
+const roleOf = (who: string) => ROLES[who] ?? `Kirana · ${person(who).org}`;
 
 /** a run whose caption, step log and stills are the stage's */
 class StageRun extends Run {
@@ -201,7 +221,10 @@ export class Stage {
 	private latest: Partial<Record<PaneId, string>> = {};
 	private pumping = false;
 	private timers: NodeJS.Timeout[] = [];
+	/** the stage's newest frame: as the recording writes it, and as the monitor shows it */
 	private frame: Buffer | null = null;
+	private frame64: string | null = null;
+	private shown: string | null = null;
 	private ffmpeg: ChildProcess | null = null;
 	private written = 0;
 	private recording = 0;
@@ -210,6 +233,7 @@ export class Stage {
 	private constructor(
 		private stageBrowser: Browser,
 		private paneBrowser: Browser,
+		private monitor: Page | null,
 		readonly stage: Page,
 		info: TestInfo,
 		about: About,
@@ -218,21 +242,31 @@ export class Stage {
 		this.run = new StageRun(stage, info, about, this);
 	}
 
-	/** opens the stage and its three screens; the recording starts with record(), once they are signed in */
+	/** opens the stage and its three screens, each on its app's sign-in screen; the recording starts with record() */
 	static async open(info: TestInfo, about: About, video: string): Promise<Stage> {
-		const stageBrowser = await chromium.launch({
-			headless: !LIVE,
-			args: [...KEEP_DRAWING, '--window-position=0,0', `--window-size=${W},${H + 88}`]
-		});
+		const stageBrowser = await chromium.launch({ headless: true, args: KEEP_DRAWING });
 		const paneBrowser = await chromium.launch({ headless: true, args: KEEP_DRAWING });
 		const ctx = await stageBrowser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 2 });
 		const stage = await ctx.newPage();
 		await stage.setContent(STAGE_HTML(about));
 		await stage.evaluate(() => document.fonts.ready);
-		const s = new Stage(stageBrowser, paneBrowser, stage, info, about, video);
+		let monitor: Page | null = null;
+		if (LIVE) {
+			// the monitor: a window that shows the stage as it is recorded, whatever its size
+			const mb = await chromium.launch({
+				headless: false,
+				args: [...KEEP_DRAWING, '--window-position=0,0', '--window-size=1440,860']
+			});
+			monitor = await (await mb.newContext({ viewport: null })).newPage();
+			await monitor.setContent(
+				'<!doctype html><title>Munchly Chips Sad Path E2E · the stage, live</title><style>html,body{margin:0;height:100%;background:#0c1311}img{width:100vw;height:100vh;object-fit:contain;display:block}</style><img id="m" alt="">'
+			);
+		}
+		const s = new Stage(stageBrowser, paneBrowser, monitor, stage, info, about, video);
 		for (const id of Object.keys(PANES) as PaneId[]) await s.addPane(id);
 		s.timers.push(setInterval(() => void s.pump(), 50));
 		s.timers.push(setInterval(() => void s.watchdog(), 3000));
+		if (monitor) s.timers.push(setInterval(() => void s.show(), 160));
 		return s;
 	}
 
@@ -250,10 +284,12 @@ export class Stage {
 		ctx.setDefaultTimeout(20_000);
 		await ctx.addInitScript(CURSOR);
 		const page = await ctx.newPage();
+		// a sign-in on the app's own screen, its password check answered with the person's session (auth.ts)
+		await signInOnScreen(page);
 		const cdp = await ctx.newCDPSession(page);
-		const pane: Pane = { id, page, cdp, who: null, app: null, lastFrame: 0, held: false };
+		const pane: Pane = { id, page, cdp, who: null, app: null, signedIn: {}, lastFrame: 0 };
 		cdp.on('Page.screencastFrame', (f: { data: string; sessionId: number }) => {
-			if (!pane.held) this.latest[id] = f.data;
+			this.latest[id] = f.data;
 			pane.lastFrame = Date.now();
 			cdp.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => {});
 		});
@@ -282,8 +318,7 @@ export class Stage {
 	}
 
 	private async watchdog() {
-		for (const pane of Object.values(this.panes))
-			if (!pane.held && Date.now() - pane.lastFrame > 6000) await this.recast(pane);
+		for (const pane of Object.values(this.panes)) if (Date.now() - pane.lastFrame > 6000) await this.recast(pane);
 	}
 
 	/** the screens' newest frames onto the stage, at most one a screen per tick */
@@ -305,18 +340,26 @@ export class Stage {
 		}
 	}
 
-	/** signs the people who start the journey in on their screens, before anything is recorded */
-	async ready(people: { who: string; path: string; app?: App }[]) {
-		for (const p of people) {
-			const id = this.paneOf(p.who);
-			const pane = this.panes[id];
-			const app = p.app ?? (p.who === 'neha' ? 'console' : 'workspace');
-			await openAs(pane.page, app, p.who, p.path);
-			pane.who = p.who;
-			pane.app = app;
-			await this.hold(id, p.who, app);
-			await settled(pane.page);
-			await loaded(pane.page);
+	/** the monitor window shows the stage's newest frame */
+	private async show() {
+		if (!this.monitor || !this.frame64 || this.frame64 === this.shown) return;
+		this.shown = this.frame64;
+		await this.monitor
+			.evaluate(
+				(d) => ((document.getElementById('m') as HTMLImageElement).src = `data:image/jpeg;base64,${d}`),
+				this.shown
+			)
+			.catch(() => {});
+	}
+
+	/** every screen on its app's sign-in screen, fully drawn, before anything is recorded */
+	async ready(apps: Record<PaneId, App>) {
+		for (const id of Object.keys(apps) as PaneId[]) {
+			const page = this.panes[id].page;
+			await page.goto(ORIGIN[apps[id]] + '/');
+			await settled(page);
+			await expect(page.locator('#si-email')).toBeVisible({ timeout: 30_000 });
+			await loaded(page);
 			await this.address(id);
 		}
 		await this.stage.waitForTimeout(800);
@@ -326,6 +369,7 @@ export class Stage {
 	async record() {
 		const cdp = await this.stage.context().newCDPSession(this.stage);
 		cdp.on('Page.screencastFrame', (f: { data: string; sessionId: number }) => {
+			this.frame64 = f.data;
 			this.frame = Buffer.from(f.data, 'base64');
 			cdp.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => {});
 		});
@@ -378,10 +422,9 @@ export class Stage {
 	}
 
 	/** who holds a screen, as its label names them */
-	private async hold(id: PaneId, who: string, app: App) {
-		const p = person(who);
-		const role = who === 'neha' ? ROLES.neha : (ROLES[who] ?? `Kirana · ${p.org}`);
-		const org = who === 'neha' || ROLES[who] === undefined || who === 'agrawal' ? '' : p.org;
+	private async hold(id: PaneId, who: string | null, app: App | null) {
+		const p = who ? person(who) : null;
+		const org = !p || who === 'neha' || ROLES[who!] === undefined || who === 'agrawal' ? '' : p.org;
 		await this.stage.evaluate(
 			([id, ini, name, sub]) => {
 				document.getElementById(`ini-${id}`)!.textContent = ini;
@@ -390,78 +433,110 @@ export class Stage {
 			},
 			[
 				id,
-				initials(p.name),
-				p.name,
-				[role, org].filter(Boolean).join(' · ') + (app === 'console' ? ' · console' : '')
+				p ? initials(p.name) : '·',
+				p ? p.name : 'Signed out',
+				p ? [roleOf(who!), org].filter(Boolean).join(' · ') + (app === 'console' ? ' · console' : '') : PANES[id].label
 			] as const
 		);
 	}
 
-	/** a screen's frames held back while someone signs in on it, the stage keeping its last under a chip */
-	private async signing(id: PaneId, name: string | null, verb = 'Signing in') {
-		const pane = this.panes[id];
-		pane.held = !!name;
-		if (!name) delete this.latest[id];
-		await this.stage
-			.evaluate(
-				([id, name, verb]) => {
-					const el = document.getElementById(`hold-${id}`)!;
-					el.classList.toggle('on', !!name);
-					if (name) {
-						el.querySelector('em')!.textContent = verb;
-						el.querySelector('b')!.textContent = name;
-					}
-				},
-				[id, name, verb] as const
-			)
-			.catch(() => {});
-		if (!name) await this.recast(pane);
-	}
-
-	/** a screen that stays signed in loads again where it is (after a reset the stream does not announce), its last
-	 *  frame held meanwhile */
+	/** a screen that stays signed in loads again where it is (after a reset the stream does not announce): the app's own
+	 *  loader shows while it reads the fresh journey */
 	async refresh(who: string) {
-		const id = this.paneOf(who);
-		const pane = this.panes[id];
-		await this.signing(id, person(who).name, 'Catching up');
-		try {
-			await pane.page.reload();
-			await settled(pane.page);
-			if (pane.app === 'workspace') await expect(pane.page.locator('#main')).toBeVisible();
-			await loaded(pane.page);
-		} finally {
-			await this.signing(id, null);
-		}
+		const pane = this.panes[this.paneOf(who)];
+		await pane.page.reload();
+		await settled(pane.page);
+		if (pane.app === 'workspace') await expect(pane.page.locator('#main')).toBeVisible();
+		await loaded(pane.page);
 	}
 
 	/** someone opens an app at a path on their screen, the caption naming them and what they are about to do. A screen
-	 *  already theirs moves within the app, as a click would; otherwise they sign in to it first */
-	async open(who: string, path: string, did: string, app: App = who === 'neha' ? 'console' : 'workspace') {
+	 *  already theirs moves within the app, as a click would; a phone handed over is signed out of the workspace by the
+	 *  one who had it, and the next person signs in on the app's own screen */
+	async open(who: string, path: string, did: string, app: App = appOf(who)) {
 		const id = this.paneOf(who);
 		const pane = this.panes[id];
 		const p = person(who);
-		await this.run.act(p.name, ROLES[who] ?? `Kirana · ${p.org}`, did);
+		await this.run.act(p.name, roleOf(who), did);
 		await this.active(id);
-		if (pane.who === who && pane.app === app) await this.go(pane.page, app, path);
-		else {
-			await this.signing(id, p.name);
-			try {
-				await openAs(pane.page, app, who, path);
-				pane.who = who;
-				pane.app = app;
-				await this.hold(id, who, app);
-				await settled(pane.page);
-				if (app === 'workspace') await expect(pane.page.locator('#main')).toBeVisible();
-				await loaded(pane.page);
-			} finally {
-				await this.signing(id, null);
-			}
-		}
+		if (pane.who !== who || pane.app !== app) await this.handOver(pane, who, app);
+		await this.go(pane.page, app, path);
 		await settled(pane.page);
 		if (app === 'workspace') await expect(pane.page.locator('#main')).toBeVisible();
 		await loaded(pane.page);
 		await this.address(id);
 		return pane.page;
+	}
+
+	/** the screen passes to someone: whoever is in the workspace on it signs out first, then the next person signs in
+	 *  to their app (or finds it still signed in, the console on a phone) */
+	private async handOver(pane: Pane, who: string, app: App) {
+		if (pane.signedIn.workspace && pane.signedIn.workspace !== who) await this.signOut(pane);
+		if (pane.signedIn[app] === who) {
+			// still signed in on that app's address: the phone switches to it
+			await pane.page.goto(ORIGIN[app] + '/');
+			await settled(pane.page);
+		} else await this.signIn(pane, who, app);
+		pane.who = who;
+		pane.app = app;
+		await this.hold(pane.id, who, app);
+	}
+
+	/** signs a person in on the app's own sign-in screen: their email typed, the password field given the stand-in (the
+	 *  check is answered with their session, auth.ts), Sign in pressed, the app's welcome and its splash; a workspace asks
+	 *  once on a device about notifications, and the person says Not now */
+	private async signIn(pane: Pane, who: string, app: App) {
+		const page = pane.page;
+		if (new URL(page.url()).origin !== ORIGIN[app]) {
+			await page.goto(ORIGIN[app] + '/');
+			await settled(page);
+		}
+		await this.address(pane.id);
+		const email = page.locator('#si-email');
+		await expect(email).toBeVisible({ timeout: 30_000 });
+		await loaded(page);
+		await this.type(email, person(who).email);
+		await this.type(page.locator('#si-pw'), STAND_IN);
+		await this.click(page.getByRole('button', { name: 'Sign in', exact: true }), 200);
+		await expect(page.getByRole('button', { name: /^Welcome, / }).or(page.locator('#main'))).toBeVisible({
+			timeout: 30_000
+		});
+		await settled(page);
+		if (app === 'workspace') {
+			const later = page.locator('.lv-step-acts').getByRole('button', { name: /^(Not now|Continue to )/ });
+			await expect(page.locator('#main')).toBeVisible({ timeout: 30_000 });
+			if (await later.isVisible().catch(() => false)) {
+				await loaded(page);
+				await this.point(page.locator('.lv-step-t'), 500);
+				await this.click(later, 400);
+				await expect(later).toBeHidden();
+			}
+		}
+		await loaded(page);
+		pane.signedIn[app] = who;
+	}
+
+	/** signs whoever is in the workspace on a screen out, from Profile: the app's own sign-out, back to its sign-in */
+	private async signOut(pane: Pane) {
+		const page = pane.page;
+		if (new URL(page.url()).origin !== ORIGIN.workspace) {
+			await page.goto(ORIGIN.workspace + '/');
+			await settled(page);
+		}
+		await expect(page.locator('#main')).toBeVisible();
+		await this.click(page.getByRole('button', { name: 'Profile and settings' }).first(), 500);
+		await loaded(page);
+		const out = page.locator('#main').getByRole('button', { name: /^Sign out/ });
+		await out.scrollIntoViewIfNeeded();
+		await this.click(out, 300);
+		await settled(page);
+		await expect(page.locator('#si-email')).toBeVisible({ timeout: 30_000 });
+		await loaded(page);
+		delete pane.signedIn.workspace;
+		pane.who = null;
+		pane.app = null;
+		await this.hold(pane.id, null, null);
+		await this.address(pane.id);
 	}
 
 	/** moves within the app as a link would (SvelteKit's router takes the click), or loads the address if it does not */
@@ -525,7 +600,7 @@ export class Stage {
 
 	/** the page scrolled smoothly, by a share of the screen's height, as a person reading it scrolls */
 	async scroll(page: Page, by = 0.6) {
-		await page.mouse.wheel(0, Math.round(PANES.operator.viewport.height * by));
+		await page.mouse.wheel(0, Math.round((page.viewportSize()?.height ?? 820) * by));
 		await page.waitForTimeout(700);
 	}
 
@@ -566,7 +641,7 @@ export class Stage {
 		await this.stage.evaluate((t) => (document.getElementById('chapter')!.textContent = t), title).catch(() => {});
 	}
 
-	/** a figure the narrator keeps in view (the scheme's orders and declines, the packs left …) */
+	/** a figure the narrator keeps in view (the scheme's orders, the packs left …) */
 	async stat(key: string, label: string, value: string) {
 		await this.stage
 			.evaluate(
@@ -596,7 +671,7 @@ export class Stage {
 					li.innerHTML = `<i>${n}</i><span></span>`;
 					li.querySelector('span')!.textContent = did;
 					ol.prepend(li);
-					while (ol.children.length > 8) ol.lastElementChild!.remove();
+					while (ol.children.length > 7) ol.lastElementChild!.remove();
 				},
 				[n, did] as const
 			)
@@ -611,12 +686,17 @@ export class Stage {
 		await this.ended;
 		await this.paneBrowser.close().catch(() => {});
 		await this.stageBrowser.close().catch(() => {});
+		await this.monitor
+			?.context()
+			.browser()
+			?.close()
+			.catch(() => {});
 	}
 }
 
 // ---------------------------------------------------------------------------------------------------------------
-// The stage: the two tablets and the phone at the sizes above, each under its holder's name, the narrator under the
-// tablets
+// The stage: the operator's tablet in landscape with the narrator under it, the distributor's in portrait, and the
+// phone, each under its holder's name and the address it shows
 
 const px = (n: number) => `${Math.round(n)}px`;
 /** a screen before its first frame: blank white, as a device waking */
@@ -628,23 +708,26 @@ const scr = (id: PaneId) => ({
 });
 
 function STAGE_HTML(about: About) {
-	const T = scr('operator');
-	const P = scr('phone');
-	const TOP = 64;
-	/** a device's label and address above it */
-	const HEAD = 30 + 14 + 2;
-	const tabH = T.h + 2 * TAB_BEZEL;
-	const x = { operator: M, distributor: M + TAB_COL + M, phone: M + 2 * (TAB_COL + M) };
+	const O = scr('operator');
+	const opH = O.h + 2 * TAB_BEZEL;
+	const x = {
+		operator: M,
+		distributor: M + OP_COL + M,
+		phone: M + OP_COL + M + DIST_COL + M
+	};
 	const label = (id: PaneId) => `
 		<div class="label">
 			<span class="ini" id="ini-${id}">·</span>
-			<span class="who"><b id="name-${id}">Waiting to sign in</b><span id="sub-${id}">${esc(PANES[id].label)}</span></span>
+			<span class="who"><b id="name-${id}">Signed out</b><span id="sub-${id}">${esc(PANES[id].label)}</span></span>
 			<span class="dev-chip">${esc(PANES[id].label)} · ${esc(PANES[id].size)}</span>
 		</div>
 		<div class="url" id="url-${id}"></div>`;
-	const device = (id: PaneId, w: number, h: number) => `
-		<div class="dev" id="dev-${id}"><img id="scr-${id}" src="${BLANK}" style="width:${px(w)};height:${px(h)}" alt="">
-			<div class="hold" id="hold-${id}"><span><em>Signing in</em> · <b></b></span></div></div>`;
+	const device = (id: PaneId) => {
+		const { w, h } = scr(id);
+		return `<div class="dev" id="dev-${id}"><img id="scr-${id}" src="${BLANK}" style="width:${px(w)};height:${px(h)}" alt=""></div>`;
+	};
+	const col = (id: PaneId, extra = '') =>
+		`<div class="col" style="left:${px(x[id])};width:${px(COL[id])}">${label(id)}${device(id)}${extra}</div>`;
 	return `<!doctype html><html><head><meta charset="utf-8">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=block">
 <style>
@@ -673,35 +756,32 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 .dev.on{box-shadow:0 0 0 2px #f5c542,0 0 28px rgba(245,197,66,.25)}
 #dev-operator,#dev-distributor{padding:${px(TAB_BEZEL - 1)};border-radius:20px}
 #dev-operator img,#dev-distributor img{border-radius:9px}
-#dev-phone{padding:${px(PHONE_BEZEL - 1)};border-radius:34px}
-#dev-phone img{border-radius:26px}
-.hold{position:absolute;inset:0;display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .2s;border-radius:inherit;background:rgba(10,16,14,.32)}
-.hold.on{opacity:1}
-.hold span{background:rgba(15,23,20,.9);color:#fff;border:1px solid #2f4239;border-radius:999px;padding:7px 14px;font:500 12.5px Geist}
-.hold b{font-weight:700}
-.hold em{font-style:normal}
-#narr{position:absolute;left:${px(M)};top:${px(TOP + HEAD + tabH + M)};width:${px(2 * TAB_COL + M)};bottom:${px(M)};border:1px solid #22312b;border-radius:12px;background:rgba(18,28,24,.86);padding:14px 18px;display:grid;grid-template-columns:1.15fr 1fr;grid-template-rows:auto auto auto 1fr;column-gap:22px;row-gap:8px}
+#dev-phone{padding:${px(PHONE_BEZEL - 1)};border-radius:30px}
+#dev-phone img{border-radius:22px}
+#narr{position:absolute;left:${px(M)};top:${px(TOP + HEAD + opH + M)};width:${px(OP_COL)};bottom:${px(M)};border:1px solid #22312b;border-radius:12px;background:rgba(18,28,24,.86);padding:12px 16px;display:grid;grid-template-columns:1.1fr 1fr;grid-template-rows:auto auto auto 1fr;column-gap:18px;row-gap:7px;overflow:hidden}
 #chapter{grid-column:1/-1;font:600 12.5px Geist;color:#f5c542;letter-spacing:.01em}
 .cap{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
-#cap-who{font:700 20px/1.2 Geist;letter-spacing:-.01em}
-#cap-role{font-size:13px;color:#9fb3a8}
-#cap-did{font:500 16px/1.32 Geist;color:#e8efe9}
-#stats{display:flex;gap:8px;flex-wrap:wrap;align-content:flex-start}
-.stat{border:1px solid #2a3a33;border-radius:8px;padding:4px 9px;display:flex;gap:6px;align-items:baseline}
+#cap-who{font:700 19px/1.2 Geist;letter-spacing:-.01em}
+#cap-role{font-size:12.5px;color:#9fb3a8}
+#cap-did{font:500 15px/1.32 Geist;color:#e8efe9}
+#stats{display:flex;gap:7px;flex-wrap:wrap;align-content:flex-start}
+.stat{border:1px solid #2a3a33;border-radius:8px;padding:3px 8px;display:flex;gap:6px;align-items:baseline}
 .stat b{font:600 13px 'Geist Mono',monospace;color:#7fe0a8}
 .stat span{font-size:11px;color:#9fb3a8}
-#log{grid-column:2;grid-row:2/5;list-style:none;padding:0;display:flex;flex-direction:column;gap:3px;overflow:hidden;border-left:1px solid #22312b;padding-left:18px}
+#log{grid-column:2;grid-row:2/5;list-style:none;padding:0;display:flex;flex-direction:column;gap:3px;overflow:hidden;border-left:1px solid #22312b;padding-left:16px}
 #log li{display:flex;gap:8px;font-size:12px;color:#b9c9c0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #log li:first-child{color:#e8efe9}
 #log i{font:500 11px 'Geist Mono',monospace;color:#6f877c;font-style:normal;min-width:20px;text-align:right}
-#phone-note{position:absolute;font-size:11.5px;color:#8aa196;line-height:1.45}
+.note{margin-top:12px;font-size:11.5px;color:#8aa196;line-height:1.45}
 </style></head><body>
 <div id="bar"><span class="mark">S</span><div><h1>${esc(about.flow)}</h1><p>${esc(about.batch)} · live on this machine's stack</p></div>
 <span class="grow"></span><span id="step"></span><span class="rec"><i></i>REC</span><span id="clock">00:00</span></div>
-<div class="col" style="left:${px(x.operator)};width:${px(TAB_COL)}">${label('operator')}${device('operator', T.w, T.h)}</div>
-<div class="col" style="left:${px(x.distributor)};width:${px(TAB_COL)}">${label('distributor')}${device('distributor', T.w, T.h)}</div>
-<div class="col" style="left:${px(x.phone)};width:${px(PHONE_COL)}">${label('phone')}${device('phone', P.w, P.h)}
-	<div id="phone-note" style="top:${px(HEAD + P.h + 2 * PHONE_BEZEL + 14)};width:${px(PHONE_COL)}">Signs people in as they are needed: each kirana, Agrawal Wholesale on ExpireSoon, and Neha in the Smart-Clearance console.</div></div>
+${col('operator')}
+${col('distributor')}
+${col(
+	'phone',
+	`<div class="note" style="width:${px(PHONE_COL)}">Each kirana, Agrawal Wholesale on ExpireSoon and Neha in the console sign in here as they are needed.</div><div class="note" style="width:${px(PHONE_COL)}">Everyone signs in on the app's own screen. The password check is answered with that person's own session, so no password is typed: the field takes a stand-in.</div>`
+)}
 <div id="narr"><div id="chapter"></div><div class="cap"><span id="cap-who"></span><span id="cap-role"></span></div><ol id="log"></ol><div id="cap-did"></div><div id="stats"></div></div>
 <script>
 let t0 = 0;

@@ -156,21 +156,32 @@ Its run of 10 Oct is in `runs/2026-10-10-mango-leftover/`.
 
 ## Munchly Chips Sad Path E2E
 
-The chips' sad path, on three screens at once (SC-179), `munchly-chips-sad.journey.ts` with `stage.ts`. Almost no shop
-buys, and what is left is destroyed at the godown.
+The chips' sad path, on three screens at once (SC-179, SC-184), `munchly-chips-sad.journey.ts` with `stage.ts`. Almost
+no shop buys, and what is left is destroyed at the godown.
 
-**The three screens** run in their own headless Chromium, side by side on a stage, a page in a visible Chromium window
-(`E2E_LIVE=0` hides it):
+**The three screens** run in their own headless Chromium, side by side on a stage:
 
-- a tablet in landscape (1180 × 820) for Priya, Munchly's supply chain operator;
-- a tablet in landscape (1180 × 820) for Rakesh, the distributor;
+- a tablet in landscape (1180 × 820) for Priya, Munchly's supply chain operator, with the narrator under it;
+- a tablet in portrait (820 × 1180) for Rakesh, the distributor;
 - a phone (390 × 844) for everyone else: each kirana, Agrawal Wholesale on ExpireSoon, and Neha in the console.
 
-Priya, Rakesh and Neha sign in before the recording starts, so it opens on three loaded screens. Priya and Rakesh stay
-online to the end: their screens move within the app as a link would, the pushes that reach them show as the app's
-banners, and after the reset each reloads in place. The phone signs each person in as they are needed, its last frame
-held under a "Signing in" chip meanwhile, so no screen ever shows a blank page. A step ends only once every screen's
-photos and placeholders have landed.
+The stage is a page in a second headless Chromium, never a window on the screen, so nothing about a window can crop
+what is recorded (the visible stage window of SC-179's run was captured cropped from a minute in). A monitor window
+shows the stage live as it is recorded (`E2E_LIVE=0` opens none).
+
+**Sign-ins on the apps' own screens (SC-184):** the recording opens on three sign-in screens. Priya and Rakesh sign in
+on their tablets and stay online to the end: their screens move within the app as a link would, the pushes that reach
+them show as the app's banners, and after the reset each reloads in place behind the app's own loader. Neha signs in to
+the console on the phone. Each kirana and Agrawal sign in on the phone when they are needed, and the one before signs
+out of the workspace from Profile; the console stays signed in on its own address, as an app on a phone does (the
+console has no sign-out on a phone). Each sign-in types the person's email, presses Sign in and goes through the app's
+welcome, its splash and, the first time on a device, its notifications step. **No password is typed:** the password
+field takes a stand-in (`STAND_IN`), and the one call that checks it, Identity Toolkit's `signInWithPassword`, is
+answered by the suite with that person's own Firebase session, the custom token `sessions.sh` mints, exchanged with the
+app's key (`auth.ts` `signInOnScreen`). Everything after it is real: the SDK reads the account from Firebase, and the app
+opens its session with backend-api.
+
+A step ends only once every screen's photos and placeholders have landed.
 
 **Every click shows:** each screen draws a cursor (an init script) that glides to its target and ripples where it
 presses, and a person reading glides it over what they read: Vision's checks, the certificate's signatures, the Impact
@@ -185,17 +196,21 @@ H.264 at 2560 × 1440, as `recording.mp4` in the run's output folder (`E2E_KEEP=
 
 - Neha resets the journey from the console. Priya confirms Setup, Rakesh gives his permission, and Neha runs the Watcher.
 - Rakesh sends the label photo, and Priya approves the plan (₹21,770).
-- Of Rakesh's 38 kiranas, only the first `E2E_BUYERS` (2) of those that order in the story order their 24 packets each.
-  Every other shop that has joined the app signs in on the phone and presses Not this time (35). Shree Sai Kirana's
-  invitation is still open, so it cannot sign in to answer; the report says so.
+- Of Rakesh's 38 kiranas, only the first `E2E_BUYERS` (2) of those that order in the story order their 24 packets
+  each, each signing in on the phone. Priya's tablet stays on Execution, and each order arrives there live, over the
+  stream: the shop in the scheme's latest orders, the count moved on. An order that has not reached her screen within
+  45 s is an error in the report.
 - Agrawal Wholesale wins the ExpireSoon lot (₹13 bid, ₹14.20 counter). While the scheme is still open, Rakesh's
   Deliveries reads "Load once the scheme closes".
-- Neha closes the offer window from the console. The lot was already won, so the 540 packets no shop took stay at the
-  godown rather than moving onto it.
+- Neha closes the offer window from the console on the other 36 shops; none of them answers it. The lot was already
+  won, so the 540 packets no shop took stay at the godown rather than moving onto it, and Priya's Execution says so as
+  the window ends (SC-185).
 - Rakesh loads the truck, issues his invoice from Tally, and runs his van round to the two shops.
 - Neha fires expiry day. Rakesh sends the destruction's evidence: the photos for 540 packets (`evidence/`, Qwen-Image,
   with sidecars), Orange City Enviro Services, its certificate number, and the window and two witnesses from the agency's
-  panel. Vision checks it on live Gemini, and Priya approves from her Command Center. Impact reports: the Expiry credit
+  panel. The officer, both witnesses and Rakesh sign the certificate in place on his tablet, each signature drawn
+  stroke by stroke on the pad (SC-183). Vision checks it on live Gemini, and Priya approves from her Command Center,
+  after reading the certificate as signed. Impact reports: the Expiry credit
   note (₹13,284: the dealer price, the GST he reverses and the agency's charges) and the two-page certificate of
   destruction.
 - **The validation, on screen:** Rakesh's tablet shows Vision reading the label, and Vision checking the two
@@ -208,7 +223,7 @@ H.264 at 2560 × 1440, as `recording.mp4` in the run's output folder (`E2E_KEEP=
   - the Impact screens: the quarter's tiles, food by week, where the kilos went, by product, the batch's BRSR line, and
     the Command Center's Impact card;
   - Rakesh's batch: what happened, his money, his signed papers and his photos;
-  - on the phone, Shree Ganesh Kirana's order, and the offer a shop declined;
+  - on the phone, Shree Ganesh Kirana's order and its tax invoice, and the offer of a shop the window closed on;
   - Execution's settlement and the ledger.
 
 **The evidence photos** were made for 540 packets, the count left when 2 shops order. Vision counted 500 to 540 packs in
