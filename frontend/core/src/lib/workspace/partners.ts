@@ -79,7 +79,8 @@ export function distPapers(c: Pick<PartnerCase, 'docs'>): { mine: Doc[]; copies:
 	// packs destroyed at his own godown (SC-139): the agency's certificate is issued for him, so it is his paper
 	const his = (d: Doc | undefined) => !!d && d.id === 'destruction' && d.at === 'godown';
 	return {
-		mine: ['invoice', 'eway', 'support', 'expiry', 'destruction']
+		// the staff sale's consolidated receipt he sent (SC-174) is his own
+		mine: ['invoice', 'eway', 'support', 'staff', 'expiry', 'destruction']
 			.map(doc)
 			.filter(
 				(d): d is Doc =>

@@ -11,7 +11,7 @@ import { run } from './design3';
 // step of the journey leaves the store exactly as flow.js does, stage by stage, in each of the stub's three journeys
 // (SC-168): the story's chips, the Mango Drink's own and the slow chips. Ids are made from the clock, so they are left
 // out of the comparison.
-const W = run('core/money.js', 'core/data.js', 'core/store.js', 'core/flow.js', 'core/world.js');
+const W = run('core/money.js', 'core/papers.js', 'core/data.js', 'core/store.js', 'core/flow.js', 'core/world.js');
 const strip = (o: unknown): unknown =>
 	Array.isArray(o)
 		? o.map(strip)

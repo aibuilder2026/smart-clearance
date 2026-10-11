@@ -10,7 +10,15 @@ import { run } from './design3';
 // A batch's record (SC-142) is design3/core/ledger.js's record: for every batch of the history and for the story's batch
 // as the journey moves on, the same steps, oldest first, by the same agents and people, the same yeses and the same
 // photos with what Vision read and checked.
-const W = run('core/money.js', 'core/data.js', 'core/store.js', 'core/flow.js', 'core/world.js', 'core/ledger.js');
+const W = run(
+	'core/money.js',
+	'core/papers.js',
+	'core/data.js',
+	'core/store.js',
+	'core/flow.js',
+	'core/world.js',
+	'core/ledger.js'
+);
 const R = W.SC3_LEDGER.record;
 const plain = (o: unknown) => JSON.parse(JSON.stringify(o));
 
@@ -32,7 +40,8 @@ describe("a batch's record is ledger.js's", () => {
 			expect(yes).toEqual(
 				c.destruction ? ['plan.approve', 'docs.review', 'destruction.approve'] : ['plan.approve', 'docs.review']
 			);
-			expect(photosOf(c).length).toBe(c.destruction ? 3 : 1);
+			// and with a staff sale, its consolidated receipt (SC-174)
+			expect(photosOf(c).length).toBe((c.destruction ? 3 : 1) + (c.staffReceipt ? 1 : 0));
 		}
 	});
 	for (const n of [0, 2, 3, 6, 9])

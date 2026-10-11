@@ -23,7 +23,15 @@ import { run } from './design3';
 // The partners' own history (SC-130) is design3/core/ledger.js's partners: from the history's cases in the seed and the
 // journey's state, a distributor's batches, their moments, money and papers, every offer a shop was sent and what came
 // of it, and a food bank's pickups come out as ledger.js draws them, for every shop and both distributors.
-const W = run('core/money.js', 'core/data.js', 'core/store.js', 'core/flow.js', 'core/world.js', 'core/ledger.js');
+const W = run(
+	'core/money.js',
+	'core/papers.js',
+	'core/data.js',
+	'core/store.js',
+	'core/flow.js',
+	'core/world.js',
+	'core/ledger.js'
+);
 const P = W.SC3_LEDGER.partners;
 const plain = (o: unknown) => JSON.parse(JSON.stringify(o));
 const byRef = (ref: string) => HISTORY_CASES.find((c) => c.ref === ref)!;

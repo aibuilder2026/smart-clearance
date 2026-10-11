@@ -23,7 +23,7 @@ export function prototype(): Record<string, any> {
 		JSON,
 		structuredClone
 	});
-	for (const p of ['core/money.js', 'core/data.js', 'core/store.js', 'core/platform.js'])
+	for (const p of ['core/money.js', 'core/papers.js', 'core/data.js', 'core/store.js', 'core/platform.js'])
 		vm.runInContext(read(p), sandbox, { filename: p });
 	return window;
 }

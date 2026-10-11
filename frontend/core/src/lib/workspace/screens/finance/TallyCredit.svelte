@@ -5,6 +5,7 @@
 	import { useWorkspace } from '../../source';
 	import type { CaseData } from '../../types';
 	import { possessive } from './ledger';
+	import TallySign from './TallySign.svelte';
 
 	// Munchly's credit notes to the distributor (SC-148, option B; screens/finance.jsx TallyCredit): financial, so no GST
 	// is adjusted and nothing goes to the IRP; against the invoice it billed the batch on (papers.ts dispatchOf)
@@ -92,11 +93,9 @@
 			reported to the IRP. The output tax on the original sale stands.{#if note}<br /><br />{note}{/if}<br /><br
 			/>Company's PAN: <b>{C.pan}</b>
 		</div>
-		<div class="tl-cell">
-			<div class="tl-sign">for <b>{C.name}</b></div>
-			<div class="tl-num">Authorised Signatory</div>
-		</div>
+		<!-- signed for the client beside its round seal (SC-174) -->
+		<div class="tl-cell"><TallySign firm={C.name} who={C.signatory} seal={C.signatory?.seal} /></div>
 	</div>
 	{@render after?.()}
-	<div class="tl-foot">Adjusted against {possessive(R.name)} account · This is a Computer Generated Document</div>
+	<div class="tl-foot">Adjusted against {possessive(R.name)} account</div>
 </div>

@@ -7,7 +7,7 @@ import { fmt } from '../format';
 import { D, SHOPS_ALL, storyOf } from './data';
 import { stageAt } from './model';
 import { store } from './store.svelte';
-import type { DestructionAgency, PlanLine, State, Story, StoryKey } from './types';
+import type { DestructionAgency, PlanLine, StaffReceipt, State, Story, StoryKey } from './types';
 
 let nid = 0;
 const id = (p: string) => p + '-' + Date.now().toString(36) + '-' + ++nid;
@@ -293,12 +293,23 @@ export const A = {
 	},
 	// the staff sale, recorded once by the distributor (SC-87): the chips' plan opens none, the Mango Drink's has one at
 	// Lakshmi Agencies (SC-133), staged beside the chips or opened by its own journey's approval
-	recordStaffSale: (s: State, sold?: Arg) => {
+	// With it, the consolidated receipt she sent (SC-174): `x` is the count, or { sold, receipt }; in the stub the receipt
+	// is the batch's own, its payments as Vision reads them
+	recordStaffSale: (s: State, x?: Arg) => {
+		const given = (typeof x === 'number' ? { sold: x } : x) as
+			{ sold?: number; receipt?: StaffReceipt | null } | undefined;
+		const sold = given?.sold;
 		if (typeof sold !== 'number') return;
 		const S = story(s);
 		const st = s.hero.staff;
+		const receiptOf = (r: StaffReceipt | null | undefined) => (r ? { read: true, ...r } : null);
 		if (st && st.status === 'open') {
-			Object.assign(st, { status: 'recorded', sold, left: st.units - sold });
+			Object.assign(st, {
+				status: 'recorded',
+				sold,
+				left: st.units - sold,
+				receipt: receiptOf(given?.receipt || S.staffReceipt)
+			});
 			if (S.key !== 'chips') {
 				audit(
 					s,
@@ -316,7 +327,13 @@ export const A = {
 		const line = D.mangoPlan.lines.find((l) => l.id === 'staff');
 		const m = s.mango;
 		if (!line || !m.phase || m.phase === 'watching' || m.staff?.status === 'recorded') return;
-		m.staff = { status: 'recorded', units: line.units, sold, left: line.units - sold };
+		m.staff = {
+			status: 'recorded',
+			units: line.units,
+			sold,
+			left: line.units - sold,
+			receipt: receiptOf(given?.receipt || storyOf('mango').staffReceipt)
+		};
 		audit(
 			s,
 			'lakshmi-owner',
@@ -424,7 +441,12 @@ export const A = {
 			h = s.hero,
 			d = h.destruction;
 		if (!d || (d.status !== 'requested' && d.status !== 'asked')) return;
-		const sent = (x && typeof x === 'object' ? x : {}) as { agency?: DestructionAgency; certificate?: string };
+		const sent = (x && typeof x === 'object' ? x : {}) as {
+			agency?: DestructionAgency;
+			certificate?: string;
+			window?: { from: string; to: string };
+			witnesses?: { name: string; address: string }[];
+		};
 		const agency = sent.agency ?? D.setup.destruction.agencies[0];
 		Object.assign(d, {
 			status: 'checked',
@@ -434,6 +456,9 @@ export const A = {
 			reason: null,
 			photos: { before: { name: S.evidence.before, at: '11:40' }, after: { name: S.evidence.after, at: '13:20' } },
 			sentAt: '14:00',
+			// the window the agency destroyed them in and its two independent witnesses, as he gave them (SC-174)
+			window: sent.window || { from: '12:55', to: '13:20' },
+			witnesses: (sent.witnesses || agency.witnesses || []).map((w) => ({ name: w.name, address: w.address })),
 			checks: (
 				[
 					['batch', `Batch ${h.id} read on the carton label`],

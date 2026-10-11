@@ -1,6 +1,6 @@
 // The photos sent for a batch, from a partner's facts (SC-142): a distributor's batch page reads the label photo and the
 // destruction's two from his own facts (GET …/partner), each with its short-lived link, and the client's yes on the
-// destruction. The stub's photos come through its record (stub.svelte.ts); nothing here reads the seed, so a live build
+// destruction; and the staff sale's consolidated receipt (SC-174). The stub's photos come through its record (stub.svelte.ts); nothing here reads the seed, so a live build
 // carries none of it. Also the days in India's time the record and Batches print.
 import { fmt } from '../format';
 import type { PartnerCase, RecordPhoto, RecordStep, StoryPerson } from './types';
@@ -47,6 +47,25 @@ export function factsPhotos(pc: PartnerCase, by: string): RecordPhoto[] | null {
 					)
 				});
 		}
+	// the staff sale's consolidated receipt he sent (SC-174), once Vision has read it
+	const sr = pc.staffReceipt;
+	if (sr?.url && sr.no && sr.payments.length)
+		out.push({
+			id: 'receipt',
+			src: sr.url,
+			at: min(sr.at || sr.to),
+			by,
+			receipt: {
+				no: sr.no,
+				payments: sr.payments.length,
+				paid: sr.paid,
+				units: sr.units,
+				from: sr.from,
+				to: sr.to,
+				matches: true,
+				list: sr.payments
+			}
+		});
 	return out;
 }
 /** the client's yes on the destruction he evidenced, from his facts */

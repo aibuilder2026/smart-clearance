@@ -3,15 +3,26 @@
 	import Card from '../../../components/Card.svelte';
 	import Progress from '../../../components/Progress.svelte';
 	import Icon from '../../../icons/Icon.svelte';
+	import { imgUrl } from '../../../assets';
 	import { fmt } from '../../model';
 	import type { Distributor, PlanLine, StaffSale } from '../../types';
+	import ReceiptRead from '../finance/ReceiptRead.svelte';
 
 	// the staff sale on Execution (SC-87, option A; screens/brand.jsx StaffOps): the distributor runs it at the godown and
-	// records what sold, once; no agent acts here. Before it opens, the plan's line
-	let { staff, line, dist }: { staff: StaffSale | null | undefined; line: PlanLine; dist: Distributor } = $props();
+	// records what sold, once; no agent acts here. Before it opens, the plan's line; once recorded, the consolidated
+	// receipt she sent with the count, as Vision read it (SC-174)
+	let {
+		staff,
+		line,
+		dist,
+		batch
+	}: { staff: StaffSale | null | undefined; line: PlanLine; dist: Distributor; batch: string } = $props();
 	const units = $derived(staff ? staff.units : line.units);
 	const price = $derived(staff ? staff.price : line.price);
 	const sold = $derived(staff && staff.status === 'recorded' ? (staff.sold ?? 0) : null);
+	// the receipt Vision read, once the sale is recorded with it (a live receipt still being read waits)
+	const receipt = $derived(sold != null && staff?.receipt?.payments.length ? staff.receipt : null);
+	const src = $derived(receipt ? receipt.url || imgUrl(receipt.file || `receipts/${batch}.webp`) || null : null);
 </script>
 
 <Card class="stack snug">
@@ -38,7 +49,8 @@
 		</div>
 	</div>
 	<Progress value={(sold ?? 0) / units} label="Staff packs sold" />
-	<span class="t-footnote muted"
-		>{dist.short} runs it at {staff?.godown || dist.godown} and records what sold; no agent acts here.</span
-	>
+	{#if receipt}<ReceiptRead r={receipt} count={sold ?? 0} {price} {src} />{:else}<span class="t-footnote muted"
+			>{dist.short} runs it at {staff?.godown || dist.godown} and records what sold, with the consolidated receipt of the
+			staff's UPI payments; no agent acts here.</span
+		>{/if}
 </Card>

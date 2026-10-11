@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dispatchOf, einvoice, fy, qr, sha256, words } from '../src/lib/workspace/papers';
+import { destructionLog, dispatchOf, einvoice, fy, qr, sha256, words } from '../src/lib/workspace/papers';
 import { run } from './design3';
 
 // What the GST papers print beyond their figures (SC-148) is design3/core/papers.js's: core's port gives the same IRN,
@@ -47,5 +47,33 @@ describe("the papers' figures are papers.js's", () => {
 				expect([mine.version, mine.mask]).toEqual([theirs.version, theirs.mask]);
 				expect(mine.modules).toEqual(theirs.modules);
 			}
+	});
+	it("logs a destruction step by step, as the certificate's second page has it (SC-174)", () => {
+		const base = {
+			units: 144,
+			kg: 31.68,
+			packKg: 0.86,
+			batch: 'MF-2409-117',
+			no: 'OCE/DC/26-27/0219',
+			from: 'Kalamna Market godown',
+			destroyedOn: '2026-11-18',
+			window: { from: '12:55', to: '13:20' },
+			photos: { before: { at: '2026-11-18T11:40' } },
+			agency: 'Orange City Enviro Services',
+			vehicle: 'MH-31-ZX-0000',
+			facility: { name: 'Municipal sanitary landfill, cell 4' },
+			method: 'landfill'
+		};
+		const cases = [
+			base,
+			// a before photo too close to the window, a short window, an agency ending in s, incineration
+			{ ...base, photos: { before: { at: '2026-11-18T12:40' } }, window: { from: '09:05', to: '09:12' } },
+			{ ...base, agency: 'Deccan Green Waste Managements', method: 'incineration', photos: null },
+			{ ...base, destroyedOn: '2026-03-31', window: { from: '23:10', to: '23:55' } }
+		];
+		for (const d of cases) expect(destructionLog(d)).toEqual(P.destructionLog(d));
+		const log = destructionLog(base);
+		expect(log.map((x) => x.photo).filter(Boolean)).toEqual(['before', 'after']);
+		expect(log[5].detail).toBe('Slate: MF-2409-117 · 144 packs · 18/11/2026');
 	});
 });

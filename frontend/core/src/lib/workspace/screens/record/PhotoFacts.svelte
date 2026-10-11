@@ -4,7 +4,8 @@
 	import type { RecordPhoto } from '../../types';
 	import { recWhen } from './record';
 
-	// what a photo shows and what was made of it: who sent it and when, what Vision read, its checks
+	// what a photo shows and what was made of it: who sent it and when, what Vision read, its checks; for the staff sale's
+	// consolidated receipt, its payments and whether they match the count (SC-174)
 	let { p }: { p: RecordPhoto } = $props();
 	const r = $derived(p.read);
 	const read = $derived(
@@ -36,4 +37,18 @@
 	{#each p.checks ?? [] as x (x.id)}<div class="row tight t-footnote rec-check">
 			<Icon name={x.ok ? 'circle-check' : 'circle-alert'} size={15} class={x.ok ? 'rec-ok' : 'rec-warn'} />{x.label}
 		</div>{/each}
+	<!-- the staff sale's consolidated receipt (SC-174): what Vision read from it, and whether it matches the count -->
+	{#if p.receipt}{@const x = p.receipt}
+		<div class="row tight t-footnote rec-check">
+			<Icon name="circle-check" size={15} class="rec-ok" />Vision read {x.no}: {x.payments} UPI payments, {fmt.inr2(
+				x.paid
+			)}
+		</div>
+		<div class="row tight t-footnote rec-check">
+			<Icon
+				name={x.matches !== false ? 'circle-check' : 'circle-alert'}
+				size={15}
+				class={x.matches !== false ? 'rec-ok' : 'rec-warn'}
+			/>{x.matches !== false ? `Matches the ${fmt.num(x.units)} packs recorded` : 'Does not match the count'}
+		</div>{/if}
 </div>

@@ -176,7 +176,14 @@ export type WsStaffReceipt = {
 };
 /** one staff member's UPI payment, as the receipt lists it: its UPI reference (the 12-digit RRN), who paid, when (as
  *  printed), the packs it paid for at the staff price, and the amount */
-export type WsReceiptPayment = { n: number; rrn: string | null; who: string; at: string; units: number; amount: number };
+export type WsReceiptPayment = {
+	n: number;
+	rrn: string | null;
+	who: string;
+	at: string;
+	units: number;
+	amount: number;
+};
 
 export type WsBuyer = {
 	id: string;
@@ -766,7 +773,10 @@ export type DestructionDocFields = {
 	witnesses?: WsWitness[];
 	window?: { from: string; to: string };
 	destroyedOn?: string;
-	photos?: { before: { name: string; at: string; url?: string | null }; after: { name: string; at: string; url?: string | null } };
+	photos?: {
+		before: { name: string; at: string; url?: string | null };
+		after: { name: string; at: string; url?: string | null };
+	};
 	handedBy?: WsSignatory | null;
 	goods?: string;
 	mfg?: string | null;

@@ -7,7 +7,7 @@ import { D, SHOPS_ALL, storyOf } from './data';
 import history from './seed/history.json';
 import { fmt } from '../format';
 import { evidenceFile } from './screens/brand/destruction';
-import type { BatchRecord, RecordPhoto, RecordStep, RecordWho, State, StoryPerson } from './types';
+import type { BatchRecord, RecordPhoto, RecordStep, RecordWho, StaffReceipt, State, StoryPerson } from './types';
 
 export const YES = ['plan.approve', 'docs.review', 'destruction.approve'];
 
@@ -37,6 +37,8 @@ type Case = {
 		checkedAt?: string | null;
 		approvedAt?: string | null;
 	} | null;
+	/** the staff sale's consolidated receipt (SC-174), its photo under design3's system/img/ */
+	staffReceipt?: StaffReceipt | null;
 };
 const CASES = (history as unknown as { cases: Case[] }).cases;
 
@@ -302,8 +304,27 @@ export function photosOf(c: Case): RecordPhoto[] {
 					by: dp.name,
 					checks: xd.checks.filter((x) => (w === 'before' ? ['batch', 'count'] : ['slate', 'when']).includes(x.id))
 				});
+	// the staff sale's consolidated receipt (SC-174), sent with the sale, and what Vision read from it
+	if (c.staffReceipt) out.push(receiptPhoto(c.staffReceipt, at('staff'), dp.name));
 	return out;
 }
+/** the staff sale's consolidated receipt as a photo of the record, with what Vision read from it */
+const receiptPhoto = (r: StaffReceipt, at: string | null, by: string): RecordPhoto => ({
+	id: 'receipt',
+	img: r.file,
+	at: at || r.to,
+	by,
+	receipt: {
+		no: r.no,
+		payments: r.payments.length,
+		paid: r.paid,
+		units: r.units,
+		from: r.from,
+		to: r.to,
+		matches: true,
+		list: r.payments
+	}
+});
 
 /** the story's batch: its label photo once Rakesh has sent it, and the destruction's two once he has sent them */
 export function storyPhotos(s: State): RecordPhoto[] {
@@ -346,6 +367,16 @@ export function storyPhotos(s: State): RecordPhoto[] {
 						(w === 'before' ? ['batch', 'count'] : ['slate', 'when']).includes(x.id)
 					)
 				});
+	const st = h.staff,
+		sr = st?.receipt?.no ? st.receipt : null;
+	if (st && sr)
+		out.push(
+			receiptPhoto(
+				{ ...sr, file: sr.file || `receipts/${hero.id}.webp` },
+				st.recordedAt ? at(st.recordedAt) : sr.to,
+				rakesh
+			)
+		);
 	return out;
 }
 

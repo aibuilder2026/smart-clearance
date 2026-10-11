@@ -56,6 +56,7 @@ export const PAPER_ICON: Record<string, IconName> = {
 	invoice: 'receipt',
 	eway: 'truck',
 	support: 'hand-coins',
+	staff: 'users',
 	expiry: 'warehouse',
 	receipt: 'heart-handshake',
 	destruction: 'trash-2',
@@ -63,15 +64,17 @@ export const PAPER_ICON: Record<string, IconName> = {
 };
 /** who issued a paper, from the distributor's side */
 export const issuedBy = (c: Pick<PartnerCase, 'partner'>, d: Doc, short: string) =>
-	d.id === 'invoice' || d.id === 'eway'
-		? 'You issue it'
-		: d.id === 'receipt'
-			? `${c.partner ? c.partner.name : 'The food bank'} issued it to ${short} · a copy for you`
-			: d.id === 'destruction'
-				? d.at === 'godown'
-					? `${d.agency || 'The agency'} destroyed them for you`
-					: `${short} destroyed the packs · a copy for you`
-				: `${short} issued it to you`;
+	d.id === 'staff'
+		? 'You sent it with the staff sale'
+		: d.id === 'invoice' || d.id === 'eway'
+			? 'You issue it'
+			: d.id === 'receipt'
+				? `${c.partner ? c.partner.name : 'The food bank'} issued it to ${short} · a copy for you`
+				: d.id === 'destruction'
+					? d.at === 'godown'
+						? `${d.agency || 'The agency'} destroyed them for you`
+						: `${short} destroyed the packs · a copy for you`
+					: `${short} issued it to you`;
 
 /** the world a partner's moments name: the workspace's products and distributors, the buyer, the client */
 export const worldOf = (ws: WorkspaceSource): PartnerWorld => ({

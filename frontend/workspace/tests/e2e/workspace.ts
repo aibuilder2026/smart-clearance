@@ -10,7 +10,8 @@ import vm from 'node:vm';
 // every stage, so the prototype and the port read the same journey.
 
 const design3 = new URL('../../../../design3/', import.meta.url);
-const CORE = ['core/money.js', 'core/data.js', 'core/store.js', 'core/flow.js'];
+// papers.js before data.js: the staff sales' consolidated receipts are worked out as it loads (SC-174)
+const CORE = ['core/money.js', 'core/papers.js', 'core/data.js', 'core/store.js', 'core/flow.js'];
 const cache = new Map<string, string>();
 
 /** The store at the start of stage n (0–9; 9 is the batch cleared, where no agent has anything left to do), as JSON.
@@ -21,7 +22,7 @@ export function storeAt(stage: number, img = 'sc3img:/', after: string[] = []): 
 	if (!cache.has(key)) {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- the prototype's modules are untyped browser globals
 		const window: Record<string, any> = { SC3_IMG: img };
-		const sandbox = vm.createContext({ window, console, Date, Intl, Math, JSON });
+		const sandbox = vm.createContext({ window, console, Date, Intl, Math, JSON, btoa, unescape, encodeURIComponent });
 		for (const p of CORE) vm.runInContext(readFileSync(new URL(p, design3), 'utf8'), sandbox);
 		window.SC3_FLOW.fastForward(stage);
 		for (const a of after) window.SC3_FLOW.act(a);

@@ -1497,6 +1497,178 @@
 		],
 		"invoice": null,
 		"returnBy": "2026-10-04",
+		"staffReceipt": {
+			"no": "LA/SR/26-27/0002",
+			"date": "2026-10-03",
+			"payments": [
+				{
+					"n": 1,
+					"who": "Ayesha Sultana",
+					"vpa": "ayesh••••@exampleupi",
+					"at": "2026-10-02T16:42",
+					"rrn": "627516578395",
+					"units": 12,
+					"amount": 96
+				},
+				{
+					"n": 2,
+					"who": "D. Ramya",
+					"vpa": "dramy••••@exampleupi",
+					"at": "2026-10-02T17:22",
+					"rrn": "627517019023",
+					"units": 8,
+					"amount": 64
+				},
+				{
+					"n": 3,
+					"who": "Shaik Imran",
+					"vpa": "shaik••••@exampleupi",
+					"at": "2026-10-02T17:53",
+					"rrn": "627517767110",
+					"units": 12,
+					"amount": 96
+				},
+				{
+					"n": 4,
+					"who": "B. Yadagiri",
+					"vpa": "byada••••@exampleupi",
+					"at": "2026-10-02T18:25",
+					"rrn": "627518084744",
+					"units": 2,
+					"amount": 16
+				},
+				{
+					"n": 5,
+					"who": "Syed Ameer",
+					"vpa": "syeda••••@exampleupi",
+					"at": "2026-10-02T18:52",
+					"rrn": "627518883577",
+					"units": 5,
+					"amount": 40
+				},
+				{
+					"n": 6,
+					"who": "T. Rajesh",
+					"vpa": "traje••••@exampleupi",
+					"at": "2026-10-02T19:19",
+					"rrn": "627519441220",
+					"units": 10,
+					"amount": 80
+				},
+				{
+					"n": 7,
+					"who": "M. Anil",
+					"vpa": "manil••••@exampleupi",
+					"at": "2026-10-03T09:11",
+					"rrn": "627609657239",
+					"units": 9,
+					"amount": 72
+				},
+				{
+					"n": 8,
+					"who": "S. Haritha",
+					"vpa": "shari••••@exampleupi",
+					"at": "2026-10-03T09:35",
+					"rrn": "627609021474",
+					"units": 5,
+					"amount": 40
+				},
+				{
+					"n": 9,
+					"who": "P. Swathi",
+					"vpa": "pswat••••@exampleupi",
+					"at": "2026-10-03T10:23",
+					"rrn": "627610118786",
+					"units": 11,
+					"amount": 88
+				},
+				{
+					"n": 10,
+					"who": "K. Divya",
+					"vpa": "kdivy••••@exampleupi",
+					"at": "2026-10-03T10:50",
+					"rrn": "627610387873",
+					"units": 12,
+					"amount": 96
+				},
+				{
+					"n": 11,
+					"who": "G. Srinivas",
+					"vpa": "gsrin••••@exampleupi",
+					"at": "2026-10-03T11:05",
+					"rrn": "627611175053",
+					"units": 9,
+					"amount": 72
+				},
+				{
+					"n": 12,
+					"who": "S. Ravi Kumar",
+					"vpa": "sravi••••@exampleupi",
+					"at": "2026-10-03T11:40",
+					"rrn": "627611564343",
+					"units": 6,
+					"amount": 48
+				},
+				{
+					"n": 13,
+					"who": "Md Saleem",
+					"vpa": "mdsal••••@exampleupi",
+					"at": "2026-10-03T12:13",
+					"rrn": "627612210268",
+					"units": 10,
+					"amount": 80
+				},
+				{
+					"n": 14,
+					"who": "Mohd Irfan",
+					"vpa": "mohdi••••@exampleupi",
+					"at": "2026-10-03T12:43",
+					"rrn": "627612137140",
+					"units": 6,
+					"amount": 48
+				},
+				{
+					"n": 15,
+					"who": "Fatima Begum",
+					"vpa": "fatim••••@exampleupi",
+					"at": "2026-10-03T13:24",
+					"rrn": "627613385560",
+					"units": 5,
+					"amount": 40
+				},
+				{
+					"n": 16,
+					"who": "J. Suresh",
+					"vpa": "jsure••••@exampleupi",
+					"at": "2026-10-03T13:37",
+					"rrn": "627613171045",
+					"units": 12,
+					"amount": 96
+				},
+				{
+					"n": 17,
+					"who": "N. Mahesh",
+					"vpa": "nmahe••••@exampleupi",
+					"at": "2026-10-03T14:18",
+					"rrn": "627614058571",
+					"units": 12,
+					"amount": 96
+				},
+				{
+					"n": 18,
+					"who": "R. Kavya",
+					"vpa": "rkavy••••@exampleupi",
+					"at": "2026-10-03T14:41",
+					"rrn": "627614237871",
+					"units": 4,
+					"amount": 32
+				}
+			],
+			"units": 150,
+			"paid": 1200,
+			"from": "2026-10-02T16:42",
+			"to": "2026-10-03T14:41"
+		},
 		"realised": null,
 		"expiry": null,
 		"push": {
@@ -3857,6 +4029,7 @@
 			"date": "2026-10-05"
 		},
 		"returnBy": "2026-10-29",
+		"staffReceipt": null,
 		"realised": {
 			"lines": [
 				{

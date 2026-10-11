@@ -1728,7 +1728,8 @@ def receipt_of(read: dict[str, Any], price: float) -> dict[str, Any]:
         )
     return {
         "no": read.get("no"),
-        "date": read.get("date"),
+        # as an ISO day, as every other paper's, whatever way the receipt prints it
+        "date": papers.iso_day(read.get("date")),
         "payments": payments,
         "paid": money.r2(sum(p["amount"] for p in payments)),
         "units": sum(p["units"] for p in payments),

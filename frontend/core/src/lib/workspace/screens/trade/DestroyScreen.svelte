@@ -22,8 +22,10 @@
 
 	// destroying the packs left at his godown on expiry day (SC-139, option B; screens/trade.jsx DestroyScreen): through
 	// an authorised agency, with two photos (before, at the godown with the batch label in view; after, at the landfill
-	// with the slate), the agency and its certificate number. Vision checks them, the client's operator gives the second
-	// yes, and the credit note and the certificate follow. A request on another batch acts on that batch (the address)
+	// with the slate), the agency and its certificate number, and for the certificate in full (SC-174) the window the
+	// agency destroyed them in and two independent witnesses, the agency's own panel to start. Vision checks them, the
+	// client's operator gives the second yes, and the credit note and the certificate follow. A request on another batch
+	// acts on that batch (the address)
 	let { me }: { me: User } = $props();
 	const ws = useWorkspace();
 	const router = useRoute();
@@ -88,13 +90,36 @@
 	let sending = $state(false);
 	const cam: Partial<Record<DzWhich, HTMLInputElement>> = {};
 	const pick: Partial<Record<DzWhich, HTMLInputElement>> = {};
+	// the window and the two witnesses, re-filled from the agency's panel when the agency changes; an agency with no
+	// panel on file leaves two to fill in
+	const panel = (id: string) => {
+		const p = (agencies.find((x) => x.id === id)?.witnesses ?? [])
+			.slice(0, 2)
+			.map((w) => ({ name: w.name, address: w.address }));
+		while (p.length < 2) p.push({ name: '', address: '' });
+		return p;
+	};
+	let win = $state({ from: '12:55', to: '13:20' });
+	let wit = $state<{ name: string; address: string }[]>([]);
 	$effect(() => {
-		if (!agency && agencies[0]) agency = agencies[0].id;
+		if (!agency && agencies[0]) {
+			agency = agencies[0].id;
+			wit = panel(agency);
+		}
 	});
+	const setAgency = (id: string) => {
+		agency = id;
+		wit = panel(id);
+	};
 	const a = $derived(agencies.find((x) => x.id === agency) ?? null);
 	const due = $derived(!!d && (d.status === 'requested' || d.status === 'asked'));
 	const his = $derived(d && sku ? Math.round(d.units * (sku.dp ?? 0) * sku.gst * 100) / 100 : 0);
-	const ready = $derived(!!shots.before && !!shots.after && !!a && cert.trim().length >= 4);
+	const hhmm = /^([01]\d|2[0-3]):[0-5]\d$/;
+	const timed = $derived(hhmm.test(win.from) && hhmm.test(win.to) && win.from < win.to);
+	const witnessed = $derived(
+		wit.length === 2 && wit.every((w) => w.name.trim().length >= 3 && w.address.trim().length >= 6)
+	);
+	const ready = $derived(!!shots.before && !!shots.after && !!a && cert.trim().length >= 4 && timed && witnessed);
 
 	const use = (id: DzWhich, f: File | undefined) => {
 		if (!f) return;
@@ -132,7 +157,14 @@
 		try {
 			await ws.act(
 				'sendDestruction',
-				{ agency: a, certificate: cert.trim(), before: shots.before?.file, after: shots.after?.file },
+				{
+					agency: a,
+					certificate: cert.trim(),
+					before: shots.before?.file,
+					after: shots.after?.file,
+					window: { ...win },
+					witnesses: wit.map((w) => ({ name: w.name.trim(), address: w.address.trim() }))
+				},
 				{ feel: live ? 0 : 700, ref: n.ref, inline: true }
 			);
 			shots = {};
@@ -231,8 +263,16 @@
 							</div>{/each}
 					</div>
 					<div class="dz-fields">
-						<Field label="Agency" htmlFor="dz-agency" help={a ? `Authorisation ${a.auth}` : undefined}
-							><Select id="dz-agency" bind:value={agency}
+						<Field
+							label="Agency"
+							htmlFor="dz-agency"
+							help={a
+								? `Authorisation ${a.auth}${a.facility ? ` · ${a.facility.name}` : ''}${a.officer ? ` · supervising officer ${a.officer.name}` : ''}`
+								: undefined}
+							><Select
+								id="dz-agency"
+								value={agency}
+								onchange={(e: Event) => setAgency((e.currentTarget as HTMLSelectElement).value)}
 								>{#each agencies as x (x.id)}<option value={x.id}>{x.name}</option>{/each}</Select
 							></Field
 						>
@@ -246,6 +286,26 @@
 							/></Field
 						>
 					</div>
+					<div class="dz-fields">
+						<Field label="Destroyed from" htmlFor="dz-from" help="The time the agency began, as its certificate says"
+							><Input id="dz-from" type="time" bind:value={win.from} /></Field
+						>
+						<Field label="To" htmlFor="dz-to" help="When the cover was done: the after photo's time"
+							><Input id="dz-to" type="time" bind:value={win.to} /></Field
+						>
+					</div>
+					<span class="t-headline" style="margin-top: 6px">Two independent witnesses</span>
+					<span class="t-footnote muted"
+						>People who watched the destruction and are not your staff: a neighbouring trader, a resident. They sign the
+						agency's certificate with its officer.</span
+					>
+					{#each wit as w, i (i)}<div class="dz-fields">
+							<Field label={`Witness ${i + 1} · name`} htmlFor={`dz-w${i}`}
+								><Input id={`dz-w${i}`} bind:value={w.name} autocomplete="off" /></Field
+							><Field label="Address" htmlFor={`dz-w${i}a`}
+								><Input id={`dz-w${i}a`} bind:value={w.address} autocomplete="off" /></Field
+							>
+						</div>{/each}
 					{#if err}<p class="cam-alert" role="alert"><Icon name="triangle-alert" size={15} />{err}</p>{/if}
 					<Button
 						variant="primary"
@@ -261,7 +321,7 @@
 					<span id="dz-need" class="t-caption subtle"
 						>{ready
 							? `Then reverse ${fmt.inr2(his)} of input GST on these packs in your GSTR-3B (Table 4(B)(1)). ${whose(C)} credit note makes it good.`
-							: `Both photos and the certificate number are needed. ${RULE}.`}</span
+							: `Both photos, the certificate number, the time and both witnesses are needed. ${RULE}.`}</span
 					>
 				</Card>{:else if say}<Card class="stack snug">
 					<div class="row" style="gap: 12px">

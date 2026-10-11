@@ -21,7 +21,15 @@ import { run } from './design3';
 // the history's cases, each batch in a journey stands where ledger.js has it (its lines, his steps, what it waits for),
 // and its orders, a cleared batch's orders and deliveries, and his label photos come out as ledger.js draws them, for
 // both distributors at every stage.
-const W = run('core/money.js', 'core/data.js', 'core/store.js', 'core/flow.js', 'core/world.js', 'core/ledger.js');
+const W = run(
+	'core/money.js',
+	'core/papers.js',
+	'core/data.js',
+	'core/store.js',
+	'core/flow.js',
+	'core/world.js',
+	'core/ledger.js'
+);
 const P = W.SC3_LEDGER.partners;
 const plain = (o: unknown) => JSON.parse(JSON.stringify(o));
 const WORLD: DistWorld = {
@@ -72,7 +80,9 @@ describe("a distributor's batches in a journey are ledger.js's", () => {
 		const [mine] = nows('lakshmi');
 		const [theirs] = P.distNow('lakshmi', W.SC3_STORE.get());
 		expect(plain(bare(mine))).toEqual(plain(theirs));
-		expect(mine.staff).toEqual({ status: 'recorded', units: 150, price: theirs.staff.price, sold: 140 });
+		expect(mine.staff).toMatchObject({ status: 'recorded', units: 150, price: theirs.staff.price, sold: 140 });
+		// with the consolidated receipt she sent (SC-174), the story's in the stub
+		expect(mine.staff?.receipt).toMatchObject({ no: 'LA/SR/26-27/0002', paid: 1200, units: 150, read: true });
 		expect(journeyOf(mine, WORLD).todo.map((t) => t.id)).not.toContain('staff');
 	});
 });

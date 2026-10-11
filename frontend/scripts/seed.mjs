@@ -882,6 +882,8 @@ const storiesSeed = (() => {
 			docs: S.docs,
 			invoice: S.invoice,
 			returnBy: S.returnBy,
+			// the staff sale's consolidated receipt the stub records with the sale (SC-174): the Mango Drink's
+			staffReceipt: S.staffReceipt ?? null,
 			realised: S.godownLeft,
 			expiry: S.expiry,
 			push: S.push,

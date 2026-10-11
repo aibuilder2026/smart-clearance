@@ -27,6 +27,19 @@ test("workspace · Lakshmi Agencies' Today, Deliveries and Orders, the Mango Dri
 	findings.push(...(await scan(page, 'lakshmi · /home, the staff sale asked for')));
 	await go(page, '/van');
 	findings.push(...(await scan(page, 'lakshmi · /van, the staff sale and the pickup')));
+	// the staff sale's consolidated receipt (SC-174): read by the stub's stand-in for Vision, its references opened, the
+	// sale recorded with it, and the receipt opened as a paper
+	const sale = page.locator('.card', { hasText: 'Staff sale ·' });
+	await sale.getByRole('button', { name: 'Take a photo' }).click();
+	await expect(sale.getByText(/matches your count/)).toBeVisible();
+	await sale.getByRole('button', { name: /^Show the \d+ UPI references$/ }).click();
+	findings.push(...(await scan(page, "lakshmi · /van, the staff sale's receipt read, its references opened")));
+	await sale.getByRole('button', { name: 'Record the sale' }).click();
+	await expect(sale.getByText('recorded', { exact: true })).toBeVisible();
+	await sale.getByRole('button', { name: /^Consolidated receipt/ }).click();
+	await settled(page);
+	findings.push(...(await scan(page, "lakshmi · /van, the staff sale's receipt as a paper")));
+	await page.keyboard.press('Escape');
 	await go(page, '/orders');
 	findings.push(...(await scan(page, 'lakshmi · /orders')));
 	await report(testInfo, findings);
@@ -348,6 +361,16 @@ test("a distributor's photos of a batch destroyed at his godown, and the client'
 	await page.locator('.bh-tabs').getByRole('button', { name: 'Photos' }).click();
 	await expect(page.getByText('Approved', { exact: true })).toBeVisible();
 	await report(testInfo, await scan(page, "a distributor's batch · Photos, destroyed at his godown"));
+});
+
+test("the agency's certificate of destruction in full, and its log (SC-174)", async ({ page }, testInfo) => {
+	await openWorkspace(page, '/batches/MF-2407-116', { as: 'rakesh' });
+	await expect(page.locator('.bhead h1')).toHaveText('Peanut Chikki 100 g');
+	await page.locator('.bh-tabs').getByRole('button', { name: 'Papers' }).click();
+	await page.getByRole('button', { name: /Destruction certificate/ }).click();
+	await expect(page.getByText('Certificate of Destruction')).toBeVisible();
+	await settled(page);
+	await report(testInfo, await scan(page, "a distributor's batch · the agency's certificate and its log"));
 });
 
 test("a kirana's earlier offer, ordered (SC-130)", async ({ page }, testInfo) => {

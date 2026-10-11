@@ -90,6 +90,10 @@
 .tl-table td:nth-child(2) { min-width: 9em; }
 .tl-small { font-size: 10.5px; color: #4b5550; }
 .tl-sign { min-height: 44px; margin-top: 8px; text-align: right; }
+/* signed (SC-174): the specimen signature in ink over the firm's stamp, between "for …" and "Authorised Signatory" */
+.tl-sign:has(+ .tl-signed) { min-height: 0; }
+.tl-signed { display: flex; justify-content: flex-end; padding: 6px 4px; min-height: 104px; align-items: center; }
+.tl-signer { text-align: right; font-size: 10.5px; color: #3a423e; }
 .tl-foot { text-align: center; font-size: 10px; color: #4b5550; margin-top: 8px !important; }
 /* a label in the items' description, right-aligned and wrapping (the kirana invoice's scheme discount, SC-153) */
 .tl-right { text-align: right; }
@@ -113,6 +117,52 @@
 }
 /* a phone's paper keeps its blocks inside its edges: a tighter inset, as a container cannot style itself */
 @media (max-width: 560px) { .tl { padding: 14px 10px 12px; } }
+/* the signatures (SC-174, option A): the hand over the firm's stamp (a distributor's rectangle) or beside its seal; the
+   ink and the stamp multiply onto the white page as an impression does */
+.sig-ink { position: relative; display: inline-grid; place-items: center; min-height: calc(var(--h, 46px) + 12px); }
+.sig-ink.sealed { padding: 0 18px; }
+.sig-hand { position: relative; height: var(--h, 46px); width: auto; max-width: 100%; display: block; }
+.sig-seal { position: absolute; pointer-events: none; mix-blend-mode: multiply; opacity: 0.84; }
+.sig-ink.rect .sig-seal { width: 172px; height: auto; left: 50%; top: 50%; margin: -46px 0 0 -104px; }
+.sig-ink.round .sig-seal { width: 96px; height: 96px; left: -58px; top: 50%; margin-top: -48px; }
+.sig-none { font-size: 11px; font-style: italic; color: #5d6762; }
+.pp-sign { display: grid; justify-items: end; gap: 0; margin-top: 10px; padding-top: 8px; border-top: 1px solid #ebeeea; font-size: 12px; color: #3a423e; }
+.pp-sign .sig-ink { margin: 2px 0; }
+.pp-sign-who { font-size: 11.5px; }
+/* the certificate of destruction in full (SC-174, option B): the certificate, then its log */
+.cert-pages { display: grid; gap: 16px; }
+.cert { container-type: inline-size; padding: 28px 30px 22px; display: grid; gap: 12px; font: 400 12.5px/1.45 var(--font-ui); color: #161a18; }
+@media (max-width: 560px) { .cert { padding: 18px 14px 16px; font-size: 12px; } }
+.cert-lh { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; border-bottom: 2px solid #161a18; padding-bottom: 10px; }
+.cert-lh > div { display: grid; gap: 1px; }
+.cert-lh b { font-size: 15px; letter-spacing: 0.06em; }
+.cert-lh span { font-size: 10.5px; color: #4b5550; }
+.cert-t { text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 22px; letter-spacing: -0.01em; }
+.cert-m { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; font-size: 12px; }
+.cert-kv { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 5px 14px; margin: 0; }
+.cert-kv dt { color: #5d6762; }
+.cert-kv dd { margin: 0; font-weight: 600; }
+.cert-kv dd.mono, .cert .mono { font-family: var(--font-mono); font-size: 11.5px; }
+.cert-sec { font-weight: 700; margin-top: 4px; }
+.cert-sigs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.cert-sig, .cert-hand > div { display: grid; gap: 1px; align-content: start; border-top: 1px solid #b9c0bb; padding-top: 6px; font-size: 11px; }
+.cert-k { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #5d6762; }
+.cert-ink { min-height: 62px; display: flex; align-items: center; }
+.cert-sig .sig-ink.round .sig-seal { left: auto; right: -14px; }
+.cert-sig b, .cert-hand b { font-size: 12px; }
+.cert-hand { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.cert-log { width: 100%; border-collapse: collapse; font-size: 12px; }
+.cert-log th, .cert-log td { border: 1px solid #b9c0bb; padding: 5px 7px; text-align: left; vertical-align: top; }
+.cert-log th { background: #f0f2ee; font-weight: 650; font-size: 11px; }
+.cert-log td:first-child { white-space: nowrap; }
+.cert-ph { position: relative; display: block; width: 168px; height: 112px; margin-top: 6px; border-radius: 3px; overflow: hidden; }
+.cert-ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cert-ini { white-space: nowrap; }
+.cert-ini img { height: 15px; width: auto; margin-right: 6px; vertical-align: middle; }
+.cert-ini-none { font-size: 10.5px; color: #3a423e; margin-right: 6px; }
+.cert-note { margin: 0; font-size: 11.5px; color: #4b5550; }
+/* a narrow paper (a phone, the pack's side panel): the signatures stacked, the log tighter */
+@container (max-width: 520px) { .cert-sigs { grid-template-columns: minmax(0, 1fr); } .cert-kv { grid-template-columns: 92px minmax(0, 1fr); } .cert-log { font-size: 11px; } .cert-ph { width: 120px; height: 80px; } .cert-ini img { height: 12px; display: block; margin: 0 0 3px; } }
 /* the food bank's receipt, opened from the pickup it records (SC-110) */
 .receipt-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 12px 14px; border: 0; border-radius: 14px; background: var(--primary-soft); color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background-color var(--t-fast) var(--ease); }
 .receipt-row:hover { background: color-mix(in oklab, var(--primary) 20%, var(--surface)); }
@@ -640,6 +690,24 @@ button.dist-line:focus-visible { outline: 3px solid var(--ring); outline-offset:
 .dz-ok { color: var(--primary-text); flex: none; margin-top: 2px; }
 .dz-warn { color: var(--amber-text); flex: none; margin-top: 2px; }
 .dz-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+/* the staff sale's consolidated receipt (SC-174, option A): the slot it is attached in, Vision's read of it, the paper */
+.rcpt-slot { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; align-items: start; padding: 14px; border-radius: var(--r-lg); background: var(--surface-2); box-shadow: inset 0 0 0 1.5px var(--line); }
+.rcpt-slot > .grow { display: grid; gap: 2px; }
+.rcpt-btns { grid-column: 1 / -1; margin-top: 8px; }
+.rcpt-btns .btn { min-height: 44px; }
+.rcpt-read { display: grid; gap: 10px; padding: 12px; border-radius: var(--r-lg); background: var(--surface-2); }
+.rcpt-read.ok { box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--primary) 45%, transparent); }
+.rcpt-read.bad { box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--amber) 60%, transparent); }
+.rcpt-thumb { position: relative; flex: none; width: 76px; height: 96px; border-radius: 8px; overflow: hidden; background: var(--fill-2); }
+.rcpt-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rcpt-tick { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--primary-text); }
+.rcpt-tick.bad { color: var(--amber-text); }
+.rcpt-refs { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; max-height: 220px; overflow: auto; font-size: 12.5px; }
+.rcpt-refs li { display: grid; grid-template-columns: 112px minmax(0, 1fr) auto; gap: 10px; padding: 5px 2px; border-bottom: var(--hair) solid var(--line); }
+.rcpt-refs .mono { font-family: var(--font-mono); font-size: 12px; }
+.rcpt-photo { position: relative; border-radius: 6px; overflow: hidden; max-height: 420px; background: #efece2; }
+.rcpt-photo img { width: 100%; height: auto; display: block; }
+.rcpt-table th:nth-child(2), .rcpt-table td:nth-child(2), .rcpt-table th:nth-child(3), .rcpt-table td:nth-child(3) { text-align: left; }
 @media (max-width: 760px) { .dz-fields { grid-template-columns: minmax(0, 1fr); } }
 .dz-foot { display: flex; gap: 10px; }
 .dz-foot > .btn:last-child, .dz-foot > .btn-wait:last-child { flex: 1; }

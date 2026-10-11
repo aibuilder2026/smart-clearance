@@ -20,6 +20,7 @@ import type {
 	KiranaInvoice,
 	Shop,
 	Sku,
+	StaffReceipt,
 	State
 } from './types';
 
@@ -55,7 +56,14 @@ export type DistNow = {
 	van: boolean;
 	papers: boolean;
 	invoice: { no: string; total: number; issued: boolean } | null;
-	staff: { status: 'open' | 'recorded'; units: number; price: number; sold: number | null } | null;
+	/** the consolidated receipt he sent with it (SC-174) */
+	staff: {
+		status: 'open' | 'recorded';
+		units: number;
+		price: number;
+		sold: number | null;
+		receipt?: StaffReceipt | null;
+	} | null;
 	donation: {
 		status: string;
 		partner: string;
@@ -249,7 +257,13 @@ export function nowOfFocus(
 		papers: !!h.docs,
 		invoice: h.docs && inv ? { no: inv.no, total: inv.total ?? inv.amount, issued: !!h.invoiceIssued } : null,
 		staff: h.staff
-			? { status: h.staff.status, units: h.staff.units, price: h.staff.price, sold: h.staff.sold ?? null }
+			? {
+					status: h.staff.status,
+					units: h.staff.units,
+					price: h.staff.price,
+					sold: h.staff.sold ?? null,
+					receipt: h.staff.receipt || null
+				}
 			: null,
 		donation: d
 			? {
@@ -267,12 +281,7 @@ export function nowOfFocus(
 }
 /** the stub's second batch (the Mango Drink), executing from the story's start: the scheme open to its distributor's
  *  shops, the staff sale, the pickup */
-export function nowOfSecond(
-	m: State['mango'] & { staff?: { status: 'open' | 'recorded'; units: number; sold: number | null } | null },
-	c: CaseData,
-	shops: readonly Shop[],
-	day0: string
-): DistNow {
+export function nowOfSecond(m: State['mango'], c: CaseData, shops: readonly Shop[], day0: string): DistNow {
 	const dn = c.donation;
 	const st = dn.plan.lines.find((l) => l.id === 'staff' && l.units > 0);
 	return {
@@ -297,7 +306,13 @@ export function nowOfSecond(
 		invoice: null,
 		staff: st
 			? m.staff
-				? { status: m.staff.status, units: m.staff.units, price: st.price, sold: m.staff.sold }
+				? {
+						status: m.staff.status,
+						units: m.staff.units,
+						price: st.price,
+						sold: m.staff.sold,
+						receipt: m.staff.receipt || null
+					}
 				: { status: 'open', units: st.units, price: st.price, sold: null }
 			: null,
 		donation: m.donation
@@ -344,7 +359,15 @@ export function nowOfFacts(pc: PartnerCase, phase: Phase | string | null | undef
 		van: has('van'),
 		papers: has('papers'),
 		invoice: inv && has('papers') ? { no: inv.no, total: inv.total ?? inv.amount, issued: has('invoice') } : null,
-		staff: st ? { status: has('staff') ? 'recorded' : 'open', units: st.units, price: st.price, sold } : null,
+		staff: st
+			? {
+					status: has('staff') ? 'recorded' : 'open',
+					units: st.units,
+					price: st.price,
+					sold,
+					receipt: has('staff') ? (pc.staffReceipt ?? null) : null
+				}
+			: null,
 		donation: donationOf(pc),
 		round: null,
 		destruction: destructionOf(pc.destruction),

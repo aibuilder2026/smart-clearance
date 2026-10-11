@@ -3,9 +3,9 @@
 // the workspace's data and the batch in focus are the seed's, built once, and each step a person takes is flow.ts's
 // action, made as today's screens made it. Importing this module makes it the default source, so a screen drawn
 // outside any provider (the guided demo, the design-system page) reads it.
-import { CHIPS, D, ES, INVOICE, KL, SHOPS_ALL, storyOf } from './data';
+import { CHIPS, D, ES, INVOICE, KL, SCENARIOS, SHOPS_ALL, storyOf } from './data';
 import { A, act as run, Agents, type ActionName } from './flow';
-import { expiryPapers, stubLedger, stubPage, type DestructionDone } from './ledger';
+import { expiryPapers, stubLedger, stubPage, withStaff, type DestructionDone } from './ledger';
 import { historyCase, recordOf, storyRecord } from './record';
 import history from './seed/history.json';
 import type { PartnerWorld } from './partners';
@@ -151,7 +151,8 @@ const publicOf = (key: StoryKey) =>
 
 /** the batch in focus on the journey the state holds: the story's chips (`kase`), or another journey's batch, its papers
  *  as the state has them: on the slow chips' expiry day, once Priya approves the destruction, the expiry credit note and
- *  the agency's certificate (ledger.js storyCase) */
+ *  the agency's certificate, and the staff sale's consolidated receipt once it is recorded with one (SC-174; ledger.js
+ *  storyCase) */
 export function caseOf(state: State): CaseData {
 	const key = state.scenario ?? 'chips';
 	if (key === 'chips') return kase;
@@ -169,7 +170,13 @@ export function caseOf(state: State): CaseData {
 				)
 			} as DestructionDone)
 		: null;
-	const docs = xd ? expiryPapers([...S.docs], h.expiry!, xd, S.batch, S.sku, S.dist, S.expiryNo!) : S.docs;
+	const r = h.staff?.receipt;
+	const sr = r?.no ? { ...r, file: r.file || `receipts/${S.batch.id}.webp` } : null;
+	const docs = withStaff(
+		xd ? expiryPapers([...S.docs], h.expiry!, xd, S.batch, S.sku, S.dist, S.expiryNo!) : S.docs,
+		sr,
+		S.dist
+	);
 	const x = S.donation;
 	return {
 		batch: S.batch,
@@ -202,6 +209,7 @@ export function caseOf(state: State): CaseData {
 		van: S.journey.van,
 		realised: S.realised,
 		expiry: approved ? h.expiry : null,
+		staffReceipt: sr,
 		story: {
 			key,
 			fills: S.fills,
@@ -304,6 +312,11 @@ class StubSource implements WorkspaceSource {
 		if (c) return recordOf(c);
 		if (ref === storyOf(this.#scenario).batch.id) return storyRecord(store.state);
 		return D.batches.some((b) => b.id === ref) ? { ref, steps: [], photos: [] } : null;
+	}
+	// the consolidated receipt Vision reads from a staff sale (SC-174): the batch's own, whichever journey it is in (the
+	// Mango Drink's, beside the chips or as its own journey's hero), as design3's StaffSale stands in for Gemini vision
+	staffReceiptOf(ref: string) {
+		return SCENARIOS.map((k) => storyOf(k)).find((S) => S.batch.id === ref && S.staffReceipt)?.staffReceipt ?? null;
 	}
 	// a partner's own history (SC-130): the client's history; each partner's screens take their own part of it, a
 	// kirana its shop among every shop the schemes go to (data.shops)

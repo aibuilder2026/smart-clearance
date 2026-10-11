@@ -204,7 +204,7 @@
 						>Confirm as {cast.foodbank.short}</PlayAs
 					>{/if}
 			</Card>{/if}
-		{#if staffLine}<StaffOps staff={h.staff} line={staffLine} dist={c.dist} />{/if}
+		{#if staffLine}<StaffOps staff={h.staff} line={staffLine} dist={c.dist} batch={c.batch.id} />{/if}
 		{#if c.realised && c.realised.godown > 0 && done}<GodownLeft
 				realised={c.realised}
 				plan={c.plan}

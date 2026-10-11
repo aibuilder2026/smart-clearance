@@ -22,6 +22,18 @@ def _fy_short(iso: str) -> str:
     return f"{start % 100:02d}-{(start + 1) % 100:02d}"
 
 
+def iso_day(printed: str | None) -> str | None:
+    """a date as a receipt prints it (03/10/2026, 3-10-26, 03.10.2026 or 2026-10-03), as an ISO day; None when it is
+    none of those, or no real day"""
+    t = (printed or "").strip()
+    for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y", "%d.%m.%Y", "%d/%m/%y", "%d-%m-%y", "%d.%m.%y"):
+        try:
+            return datetime.strptime(t[:10] if fmt == "%Y-%m-%d" else t, fmt).strftime("%Y-%m-%d")
+        except ValueError:
+            continue
+    return None
+
+
 def _possessive(name: str) -> str:
     return f"{name}'" if name.endswith("s") else f"{name}'s"
 

@@ -58,7 +58,14 @@ export type Case = {
 		award: { units: number; price: number; token: number } | null;
 		truck: { status: string };
 		van: { status: string };
-		staff: { status: string; units: number; sold: number | null; godown: string } | null;
+		staff: {
+			status: string;
+			units: number;
+			sold: number | null;
+			godown: string;
+			/** the consolidated receipt Vision read (SC-174) */
+			receipt?: { status: string; no: string | null } | null;
+		} | null;
 		invoiceIssued: boolean;
 		reviewed: boolean;
 		posted: boolean;

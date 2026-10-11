@@ -2,6 +2,7 @@
 its UPI reference, a photo or a PDF; Vision reads its payments, and the sale records only once they come to what sold.
 The receipt is then a paper of the pack, his own, with a short-lived link."""
 
+from sc_api.domain.papers import iso_day
 from tests.test_workspace import (
     LAKSHMI,
     MANGO,
@@ -98,11 +99,13 @@ async def test_the_receipt_is_a_paper_of_the_pack_with_its_link(api, munchly, cl
     ids = [d["id"] for d in (await case(api, PRIYA, MANGO))["docs"]]
     assert ids[ids.index("support") + 1] == "staff"
     paper = next(d for d in (await case(api, PRIYA, MANGO))["docs"] if d["id"] == "staff")
-    assert (paper["type"], paper["no"], paper["amount"], paper["owner"]) == (
+    # dated as every other paper is, an ISO day, though the receipt prints 03/10/2026
+    assert (paper["type"], paper["no"], paper["amount"], paper["owner"], paper["date"]) == (
         "Staff sale receipt",
         "LA/SR/26-27/0002",
         1200.0,
         "Lakshmi Agencies",
+        "2026-10-03",
     )
     # his own paper too, and its link is the receipt he sent
     assert "staff" in [d["id"] for d in (await case(api, LAKSHMI, MANGO))["docs"]]
@@ -111,3 +114,10 @@ async def test_the_receipt_is_a_paper_of_the_pack_with_its_link(api, munchly, cl
     facts = (await api.get(f"{WS}/partner", headers=LAKSHMI)).json()
     mine = next(x for x in facts["cases"] if x["ref"] == MANGO)
     assert mine["staffReceipt"]["no"] == "LA/SR/26-27/0002" and mine["staffReceipt"]["url"]
+
+
+def test_a_receipt_s_printed_date_reads_as_a_day():
+    assert [iso_day(t) for t in ("03/10/2026", "3-10-26", "03.10.2026", "2026-10-03", "2026-10-03T17:04")] == [
+        "2026-10-03"
+    ] * 5
+    assert [iso_day(t) for t in (None, "", "Oct 3", "31/02/2026")] == [None] * 4
