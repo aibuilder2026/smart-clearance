@@ -71,7 +71,7 @@
     if (!operator) return { nav: NAV[me.role], frame: null };
     const want = ref || (inBatch && last.current) || null;
     const it = inBatch ? (want ? items.find(i => i.ref === want) : items[0]) || null : null;
-    const v = inBatch ? (it ? it.view : S.viewOf(s, want || D.BATCHES[0].id, live)) : null;
+    const v = inBatch ? (it ? it.view : S.viewOf(s, want || D.story(s).batch.id, live)) : null;
     if (inBatch && v) last.current = v.id;
     const part = it ? name : "journey";
     // the sidebar lists the batches still in a journey (a cleared one is in Batches and on the Command Center)

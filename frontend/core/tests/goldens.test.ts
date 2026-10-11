@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/svelte';
 import { flushSync, type Component } from 'svelte';
-import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import * as W from '../src/lib/workspace';
 import { stubPage } from '../src/lib/workspace/ledger';
 import { data, kase } from '../src/lib/workspace/stub.svelte';
@@ -325,4 +325,33 @@ describe('the parts a tap opens', () => {
 		}
 		expect(text(r.container)).toMatchSnapshot();
 	});
+});
+
+// the stub's other two journeys (SC-168): the Mango Drink at Lakshmi Agencies as the hero of its own, and the slow
+// chips, whose scheme closes short and whose packs left at the godown are destroyed there on expiry day. Every screen of
+// each person who acts in them, at the stages the guided demo shows them, on a desktop. (The slow chips' screens that
+// draw the landfill photo of expiry day are left out until that photo is in design3/system/img/evidence)
+describe("the stub's other journeys (SC-168)", () => {
+	const acts = (...names: string[]) => names.forEach((a) => W.act(a as W.ActionName));
+	const MANGO = ['priya', 'lakshmi-owner', 'kirana-sri-lakshmi-ganapathi-kirana', 'meera'];
+	const journeys: [W.StoryKey, string, string[], () => void][] = [
+		['mango', 'stage 2 · photo asked', MANGO, () => (fastForward(2), acts('requestPhoto'))],
+		['mango', 'stage 5', MANGO, () => fastForward(5)],
+		['mango', 'stage 6 · executing', MANGO, () => (fastForward(6), acts('outreach', 'donate'))],
+		['mango', 'stage 7', MANGO, () => fastForward(7)],
+		['mango', 'stage 9', MANGO, () => fastForward(9)],
+		['slow', 'stage 7', ['priya', 'rakesh', 'kirana-shubham-provision'], () => fastForward(7)],
+		['slow', 'expiry day · asked', ['priya'], () => (fastForward(8), acts('vanRound', 'expire'))],
+		['slow', 'stage 9', ['kirana-shubham-provision'], () => fastForward(9)]
+	];
+	afterAll(() => W.useScenario('chips'));
+	for (const [key, state, people, put] of journeys)
+		describe(`${key} · ${state}`, () => {
+			for (const id of people)
+				it(id, () => {
+					W.useScenario(key);
+					put();
+					expect(screensOf(id, DESKTOP)).toMatchSnapshot();
+				});
+		});
 });

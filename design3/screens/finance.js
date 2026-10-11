@@ -95,7 +95,7 @@
   const stamp = (t) => !t ? "" : t.length > 5 ? `${fmt.day(t.slice(0, 10))}, ${t.slice(11, 16)}` : t;
   function Paper({ id, c: given }) {
     const st = useStore();
-    const c = given || LG().storyCase();
+    const c = given || LG().storyCase(st);
     const DOC = (x) => c.docs.find((d2) => d2.id === x);
     const d = DOC(id);
     const inv = c.invoice || DOC("invoice");
@@ -175,7 +175,7 @@
   }
   function KeepsWhat({ c: given }) {
     const s = useStore();
-    const c = given || LG().storyCase();
+    const c = given || LG().storyCase(s);
     const x0 = c.history ? c.expiry : s.hero.expiry;
     const x = x0 && x0.units > 0 ? x0 : null;
     const dp = c.sku.dp;
@@ -233,7 +233,7 @@
   }
   function Paperwork({ me }) {
     const s = useStore();
-    const c = LG().storyCase();
+    const c = LG().storyCase(s);
     const awarded = c.lines.expiresoon.units > 0;
     return /* @__PURE__ */ React.createElement(Screen, { me, title: "Paperwork", sub: `${c.batch.id} · prepared by the Paperwork agent ${awarded ? "at the award" : "once every line was done"}` }, /* @__PURE__ */ React.createElement(PaperPack, { me, c, h: s.hero }));
   }
@@ -470,7 +470,7 @@
     const app = useApp();
     const phone = app.bp === "phone";
     const { go } = useRoute();
-    const book = useMemo(() => LG().ledger(s), [s.hero.posted, s.hero.phase, s.mango.phase]);
+    const book = useMemo(() => LG().ledger(s), [s.hero.posted, s.hero.phase, s.mango.phase, s.scenario]);
     const year = book.periods.find((x) => x.kind === "year" && x.current) || book.periods[book.periods.length - 1];
     const [pid, setPid] = useState(year.id);
     const p = book.periods.find((x) => x.id === pid) || year;
@@ -497,7 +497,7 @@
   }
   const TABS = [{ id: "money", label: "Money", icon: "coins" }, { id: "papers", label: "Papers", icon: "file-text" }, { id: "impact", label: "Impact", icon: "leaf" }, { id: "record", label: "Record", icon: "history" }];
   const Row = ({ k, sub, v, tone, strong }) => /* @__PURE__ */ React.createElement("div", { className: cx("lg-line", strong && "strong") }, /* @__PURE__ */ React.createElement("span", null, k, sub && /* @__PURE__ */ React.createElement("em", null, " ", sub)), /* @__PURE__ */ React.createElement("span", { className: cx("tnum", tone) }, v));
-  const NotPosted = ({ h }) => /* @__PURE__ */ React.createElement(Locked, { icon: "book-open-check", agent: "Impact agent", live: h.phase === "settled" && h.van && h.van.status === "done", text: `Posts the batch to the ledger once the return window closes on ${fmt.day(D.RETURN_BY)}, and writes the BRSR row with evidence links.` });
+  const NotPosted = ({ h }) => /* @__PURE__ */ React.createElement(Locked, { icon: "book-open-check", agent: "Impact agent", live: h.phase === "settled" && h.van && h.van.status === "done", text: `Posts the batch to the ledger once the return window closes on ${fmt.day(D.story().returnBy)}, and writes the BRSR row with evidence links.` });
   function MoneyTab({ c, row, h }) {
     const app = useApp();
     if (!row) return /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 16 } }, /* @__PURE__ */ React.createElement(NotPosted, { h }), /* @__PURE__ */ React.createElement(SectionTitle, { sub: "Planned on the Route Room; actual after the negotiation" }, "Money reading"), /* @__PURE__ */ React.createElement(MoneyPanel, { plan: c.plan, actual: h.award ? c.actual : void 0, compact: app.bp !== "desktop" }));
@@ -583,7 +583,7 @@
     const s = useStore();
     const app = useApp();
     const phone = app.bp === "phone";
-    const c = LG().caseOf(at);
+    const c = LG().caseOf(at, s);
     const story = !c.history, h = story ? s.hero : CLEARED, row = !story || s.hero.posted ? LG().rowOf(c) : null;
     const [tab, setTab] = useState(tab0 || "money");
     const head = /* @__PURE__ */ React.createElement("div", { className: "bhead" }, /* @__PURE__ */ React.createElement("div", { className: "bh-id" }, /* @__PURE__ */ React.createElement("span", { className: "bh-pic", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Product, { name: c.sku.img, size: phone ? 46 : 72, alt: "" })), /* @__PURE__ */ React.createElement("div", { className: "bh-tt" }, /* @__PURE__ */ React.createElement("h1", null, c.sku.name), /* @__PURE__ */ React.createElement("div", { className: "bh-meta" }, /* @__PURE__ */ React.createElement("span", { className: "mono" }, c.batch.id), /* @__PURE__ */ React.createElement("span", { className: "sep", "aria-hidden": "true" }, "·"), /* @__PURE__ */ React.createElement("span", null, c.dist.name, ", ", c.dist.city)), /* @__PURE__ */ React.createElement("div", { className: "bh-meta" }, row ? /* @__PURE__ */ React.createElement(OutcomeBadge, { o: row.outcome }) : /* @__PURE__ */ React.createElement(Badge, { tone: "blue", dot: true, live: true }, "In flight"), /* @__PURE__ */ React.createElement("span", null, "Flagged ", dayOf(c.flagged), row ? ` · cleared ${dayOf(row.cleared)}` : "")))), /* @__PURE__ */ React.createElement("nav", { className: "bh-tabs", "aria-label": `${c.sku.name}, ${c.batch.id}` }, TABS.map((t) => /* @__PURE__ */ React.createElement("button", { key: t.id, type: "button", className: "bh-tab", "aria-current": tab === t.id ? "page" : void 0, onClick: () => setTab(t.id) }, tab === t.id && /* @__PURE__ */ React.createElement(motion.span, { layoutId: "lg-tab-thumb", className: "bh-tab-thumb", transition: { type: "spring", stiffness: 500, damping: 40 } }), !phone && /* @__PURE__ */ React.createElement(Icon, { name: t.icon, size: 16 }), /* @__PURE__ */ React.createElement("span", null, t.label)))));

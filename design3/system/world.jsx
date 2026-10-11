@@ -86,7 +86,7 @@
     return <div className="feed" aria-live="polite">{list.map((e, i) => {
       const next = list[i + 1]; const isLive = events.indexOf(e) === live; const person = e.person && people[e.person];
       return <motion.div key={(e.id || e.at) + i + (e.agent || e.person)} className={cx("ev", isLive && "live")} style={{ "--gap": next ? gapFor(next.min) + "px" : "0px" }} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}>
-        {person ? <span className="ag person"><img src={person.img} alt="" /></span> : <Aura on={isLive} className="ag" style={{ borderRadius: 11 }}><Icon name={e.icon || "bot"} size={18} /></Aura>}
+        {person ? <span className="ag person">{person.img ? <img src={person.img} alt="" /> : <Icon name="user" size={18} />}</span> : <Aura on={isLive} className="ag" style={{ borderRadius: 11 }}><Icon name={e.icon || "bot"} size={18} /></Aura>}
         <div style={{ minWidth: 0 }}>
           <div className="ev-head"><span className="ev-who">{person ? person.short : e.agent}</span>{e.human || person ? <Badge size="sm" tone="amber">person</Badge> : <Badge size="sm">agent</Badge>}<span className="ev-time">{e.at}</span></div>
           {isLive && typing ? <div className="ev-text"><span className="typing" role="img" aria-label="Working"><i /><i /><i /></span></div> : <div className="ev-text">{e.text}</div>}

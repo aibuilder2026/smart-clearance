@@ -9,9 +9,12 @@
   const distOf = me => Object.values(D.DISTRIBUTORS).find(d => d.name === (me && me.org)) || D.DISTRIBUTORS.rakesh;
   // a kirana by its member's shop: one of the story's 31, else another of Rakesh's shops, an invited one (world.js, SC-130)
   const WK = () => (window.SC3_WORLD && window.SC3_WORLD.KIRANAS) || [];
-  const kOf = me => { const name = me && me.org; const d = D.KIRANAS.find(k => k.name === name); if (d) return d; const w = WK().find(k => k.name === name); return w ? { id: w.id, name: w.name, area: w.area, units: w.sales14 * M.RULES.shopCapTimes, at: "10:15" } : D.KIRANAS[0]; };
+  const kOf = me => { const name = me && me.org; const d = storyOf().kiranas.find(k => k.name === name); if (d) return d; const w = WK().find(k => k.name === name); return w ? { id: w.id, name: w.name, area: w.area, units: w.sales14 * M.RULES.shopCapTimes, at: "10:15" } : D.KIRANAS[0]; };
   const shopOf = me => WK().find(k => k.name === (me && me.org)) || WK()[0];
-  const shopById = id => D.KIRANAS.find(k => k.id === id) || WK().find(k => k.id === id);
+  const shopById = id => storyOf().kiranas.find(k => k.id === id) || WK().find(k => k.id === id);
+  // the journey the store holds (SC-168, data.js STORIES): its batch, its people, its plan's lines and its shops
+  const storyOf = () => D.story(Store.get());
+  const holderOf = C => C.people[C.accounts.distributor] || { short: C.dist.short, name: C.dist.name };
   // a partner's own history (SC-130): ledger.js's partners, and the pieces their pages share
   const P = () => window.SC3_LEDGER.partners;
   const asDate = iso => new Date((iso.length > 10 ? iso : iso + "T00:00") + ":00+05:30");
@@ -81,9 +84,6 @@
     </button>;
   }
   const cartons = u => { const c = Math.floor(u / 24), r = u % 24; return r === 12 ? `${c}½ cartons` : r ? `${c} cartons + ${r}` : `${c} carton${c === 1 ? "" : "s"}`; };
-  const ES = D.PLAN.lines.find(l => l.id === "expiresoon"), KL = D.PLAN.lines.find(l => l.id === "kirana");
-  const SHOPS = D.KIRANAS.length, CHIPS = D.SKUS.chips;
-  const all = h => h.orders.length === SHOPS;
 
   /* ======================= Rakesh bhai · distributor ======================= */
   // the one-time permission: the agent may act in his name, inside Munchly's floors, and he can pause it
@@ -93,9 +93,9 @@
     if (later) return <Card className="row wrap" style={{ gap: 14 }}><WorkspaceMark ws={D.WORKSPACE} size={36} /><div className="grow"><b>Munchly is waiting for your permission</b><div className="t-footnote muted">Nothing is listed or offered in your name until you allow it.</div></div><Button variant="secondary" onClick={() => setLater(false)}>Review</Button></Card>;
     return <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bezel"><div className="card raised stack snug" style={{ padding: 20 }}>
       <div className="row tight"><WorkspaceMark ws={D.WORKSPACE} size={30} /><span className="t-footnote subtle strong">{D.WORKSPACE.name} · {D.JOURNEY.permissionAsked}</span></div>
-      <div className="t-title3">Let Smart-Clearance act for Rakesh Traders</div>
+      <div className="t-title3">Let Smart-Clearance act for {storyOf().dist.name}</div>
       <div className="stack tight">{D.SETUP.acts.map(t => <div key={t} className="row top t-subhead" style={{ gap: 10 }}><Icon name="check" size={17} stroke={2.4} style={{ color: "var(--primary-text)", marginTop: 2, flex: "none" }} /><span>{t}</span></div>)}</div>
-      <p className="t-footnote muted" style={{ margin: 0 }}>Always within Munchly's price floors. Every action shows here, and you can pause any of it. Munchly pays you the gap to the ₹{CHIPS.dp} you paid, so you end whole.</p>
+      <p className="t-footnote muted" style={{ margin: 0 }}>Always within Munchly's price floors. Every action shows here, and you can pause any of it. Munchly pays you the gap to the ₹{storyOf().sku.dp} you paid, so you end whole.</p>
       <div className="row wrap" style={{ gap: 10 }}><Button variant="approve" size="lg" icon="check" loading={busy} busy="Allowing…" done="Allowed" onClick={allow}>Allow</Button><Button variant="ghost" size="lg" onClick={() => setLater(true)}>Not now</Button></div>
     </div></motion.div>;
   }
@@ -152,7 +152,6 @@
   //   Label photo: the photo Vision asks for now, then every photo he sent and what Vision read from it;
   //   Orders: every batch's orders, in a journey and cleared: who bought what, for how much, on which paper.
   // Batches (SC-130) stays as it is. Every line, step and order is ledger.js's partners (journeyOf, ordersNow, …)
-  const HERO = D.BATCHES.find(b => b.hero);
   const CH = { kirana: { icon: "store", name: "Kirana scheme" }, expiresoon: { icon: "shopping-bag", name: "ExpireSoon lot" }, staff: { icon: "users", name: "Staff sale" }, foodbank: { icon: "heart-handshake", name: "Food bank" }, destroy: { icon: "recycle", name: "Destroyed at the godown", ch: "writeoff" } };
   const num = n => fmt.num(n), rate = n => "₹" + n.toFixed(2);
   const shortName = sku => sku.name.replace(/ \d+ ?(g|ml|kg|L)$/, "");
@@ -214,7 +213,7 @@
   }
   function DistHome({ me }) {
     const s = useStore(); const { go } = useRoute();
-    const dist = distOf(me), perm = s.setup.permission, asked = dist.id === HERO.distributor;
+    const dist = distOf(me), perm = s.setup.permission, asked = dist.id === storyOf().dist.id;
     // a cleared batch stays on Today only while something is left for him (an invoice to issue)
     const js = P().journeys(dist.id, s).filter(j => j.phase !== "cleared" || j.todo.length);
     const b = P().distBatches(dist.id, s);
@@ -240,8 +239,8 @@
   // papers are drafted (the van runs once the batch is settled, SC-97)
   function VanCard({ j, n }) {
     const app = useApp(); const reduce = useReducedMotion(); const { toast } = useNotice();
-    const story = j.ref === HERO.id;
-    const kir = story ? D.KIRANAS : WK().filter(k => k.distributor === j.dist.id).map(k => ({ id: k.id, name: k.name, area: k.area, units: k.sales14 * M.RULES.shopCapTimes }));
+    const C = storyOf(), story = j.ref === C.batch.id, nagpur = /^Kalamna/.test(j.dist.godown);
+    const kir = story ? C.kiranas : WK().filter(k => k.distributor === j.dist.id).map(k => ({ id: k.id, name: k.name, area: k.area, units: k.sales14 * M.RULES.shopCapTimes }));
     const o = n.offer || { open: false, offered: kir.length, shops: 0, units: 0 };
     const [p, setP] = useState(n.van ? 1 : 0); const [running, setRunning] = useState(false);
     useEffect(() => { if (n.van && !running) setP(1); }, [n.van]);
@@ -250,7 +249,7 @@
     const godown = j.dist.godown.replace(/ godown$/, "").replace(/ Market$/, "");
     return <Card className="stack snug">
       <div className="card-head"><span className="row tight"><Chan id="kirana" icon="route" /><span className="card-title">{n.round ? `${n.round.day} van round` : "Van round"}</span></span><Badge tone={n.van ? "green" : undefined} icon={n.van ? "check" : "calendar"}>{n.van ? "delivered" : n.round ? `${n.round.date} · from ${n.round.leaves}` : o.open ? "once the scheme closes" : "once the papers are drafted"}</Badge></div>
-      <div className="dist-map"><ClusterMap kiranas={kir} orderedCount={o.shops} route={o.shops > 0} vanProgress={p} height={app.bp === "phone" ? 220 : 320} {...(story ? {} : { title: j.dist.cluster, total: o.offered, godown })} /></div>
+      <div className="dist-map"><ClusterMap kiranas={kir} orderedCount={o.shops} route={o.shops > 0} vanProgress={p} height={app.bp === "phone" ? 220 : 320} {...(nagpur ? {} : { title: j.dist.cluster, total: o.offered, godown })} /></div>
       <div className="row wrap" style={{ gap: 24 }}>
         <div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={o.shops} /><span className="subtle" style={{ fontSize: "0.45em" }}> / {o.offered}</span></span><span className="t-footnote subtle">shops on the round</span></div>
         <div className="stack tight" style={{ gap: 0 }}><span className="num m"><Roll value={o.units} /></span><span className="t-footnote subtle">packets · {cartons(o.units)}</span></div>
@@ -333,7 +332,7 @@
     // the photo asked for now (or just sent, until the plan has its yes)
     const cur = ns.find(n => n.photo === "requested" || n.photo === "reading" || (n.photo === "verified" && !n.approved));
     // every photo he sent: the batches in a journey once their plan is approved, then the batches he cleared
-    const story = ns.filter(n => n !== cur && n.ref === HERO.id && s.hero.photo.at).map(n => ({ ref: n.ref, sku: D.SKUS[n.sku], sent: `${D.DAY0}T${s.hero.photo.at}`, bestBefore: HERO.bestBefore, mfg: HERO.mfg, mrp: D.SKUS[n.sku].mrp }));
+    const B = storyOf().batch, story = ns.filter(n => n !== cur && n.ref === B.id && s.hero.photo.at).map(n => ({ ref: n.ref, sku: D.SKUS[n.sku], sent: `${D.DAY0}T${s.hero.photo.at}`, bestBefore: B.bestBefore, mfg: B.mfg, mrp: D.SKUS[n.sku].mrp }));
     const earlier = story.concat(P().distBatches(dist.id, s).past.map(c => P().photoOf(P().historyFacts(c))).filter(Boolean));
     return <Screen me={me} title="Label photo" sub={cur ? `Batch ${cur.ref}${cur.shelf ? ` · shelf ${cur.shelf}` : ""}` : "Requests from the Vision agent"} back="Today">
       <div className="stack" style={{ gap: 24 }}>
@@ -364,7 +363,7 @@
   // the photo asked for now, for the batch n (in the stub, the story's chips)
   function CameraInner({ realCamera, n }) {
     const s = useStore(); const h = s.hero; const { go } = useRoute(); const reduce = useReducedMotion(); const app = useApp();
-    const sku = D.SKUS[n.sku], batch = D.BATCHES.find(b => b.id === n.ref) || HERO;
+    const C = storyOf(), sku = D.SKUS[n.sku], batch = C.batches.find(b => b.id === n.ref) || C.batch;
     const phoneCam = useRef(null), files = useRef(null), video = useRef(null), stream = useRef(null);
     const [shot, setShot] = useState(null); const [flash, setFlash] = useState(false); const [sending, setSending] = useState(false);
     const [camOn, setCamOn] = useState(false); const [camLive, setCamLive] = useState(null); const [over, setOver] = useState(false);
@@ -416,7 +415,7 @@
         <div className={cx("cam", camOn && "landscape")} style={photo && ratio ? { aspectRatio: String(ratio) } : undefined} {...drop}>
           {photo ? <motion.img key={shot.url} className="cam-feed whole" src={shot.url} alt="Your photo of the carton label" onLoad={e => setRatio(Math.max(0.75, Math.min(1.5, e.target.naturalWidth / e.target.naturalHeight)))} initial={reduce ? false : { opacity: 0, scale: 1.02 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }} />
             : camOn ? <video ref={feed} className="cam-feed" playsInline muted aria-label="The laptop's camera" />
-            : <S.LabelShot cover dim={!shot && !busy} />}
+            : <S.LabelShot cover dim={!shot && !busy} batch={batch.id} />}
           {!shot && !busy && <><div className="cam-frame" aria-hidden="true"><i /><i /><i /><i /></div><div className="cam-hint">{camOn ? (camLive ? "Fit one carton label in the frame" : "Starting the camera…") : "Like this: one carton label, close up"}</div></>}
           {!shot && !camOn && !busy && <span className="cam-tag">Example</span>}
           {camOn && <span className="cam-tag on"><i aria-hidden="true" />Laptop camera</span>}
@@ -427,7 +426,7 @@
           {h.photo.status === "reading" && !reduce && <motion.div aria-hidden="true" className="cam-scan" animate={{ top: ["20%", "76%", "20%"] }} transition={{ duration: 1.6, repeat: 2, ease: "easeInOut" }} />}
         </div>
         {sent ? <Card className="stack snug">
-          <div className="row" style={{ gap: 12 }}><Aura on={h.photo.status === "reading"} className="icontile" style={{ borderRadius: 12, width: 40, height: 40 }}><Icon name={h.photo.status === "verified" ? "badge-check" : "scan-line"} size={19} /></Aura><div className="grow"><b>{h.photo.status === "verified" ? "Done. Dhanyavaad, Rakesh bhai." : "Reading batch, dates and MRP"}</b><div className="t-footnote muted">{h.photo.status === "verified" ? "The plan for this batch will reach Priya in a few minutes." : "This takes a few seconds."}</div></div></div>
+          <div className="row" style={{ gap: 12 }}><Aura on={h.photo.status === "reading"} className="icontile" style={{ borderRadius: 12, width: 40, height: 40 }}><Icon name={h.photo.status === "verified" ? "badge-check" : "scan-line"} size={19} /></Aura><div className="grow"><b>{h.photo.status === "verified" ? `Done. Dhanyavaad, ${holderOf(C).short}.` : "Reading batch, dates and MRP"}</b><div className="t-footnote muted">{h.photo.status === "verified" ? "The plan for this batch will reach Priya in a few minutes." : "This takes a few seconds."}</div></div></div>
           {h.photo.status === "verified" && <List>{[["Batch", n.ref], ["Best before", fmt.date(batch.bestBefore)], ["MRP", rate(sku.mrp)]].map(([k, v]) => <ListRow key={k} title={k} value={v} />)}</List>}
           <Button variant="secondary" block onClick={() => go("home")}>Back to today</Button>
         </Card> : uploading ? <S.Live.SendFill p={live.uploads.photo} onCancel={() => live.cancelUpload("photo")} />
@@ -455,8 +454,16 @@
   const DZ_SAY = { reading: ["scan-line", "Vision is checking your photos", "The batch on the label, the count in view, and the slate"],
     checked: ["hourglass", "Sent for approval", "is reviewing your evidence. The credit note follows the yes."],
     approved: ["badge-check", "Approved · you are credited", "The expiry credit note and the agency's certificate are in your papers."] };
+  // a destruction photo: its link on the live workspace, else the file it was sent as (the slow chips' landfill photo on
+  // expiry day), else the journey's own evidence for its batch, else the batch's
+  function dzSrc(s, ref, which) {
+    const C = D.story(s), hd = s.hero.id === ref ? s.hero.destruction : null, p = hd && hd.photos && hd.photos[which];
+    if (p && p.url) return p.url;
+    const file = p ? window.SC3_LEDGER.record.evidenceFile(ref, which, p) : ref === C.batch.id ? C.evidence[which] : `${ref}-${which}.webp`;
+    return `${IMG()}evidence/${file}`;
+  }
   function DzSlot({ slot, ref_, shot, busy, onTake, onUpload }) {
-    const example = `${IMG()}evidence/${ref_}-${slot.id}.webp`;
+    const example = dzSrc(Store.get(), ref_, slot.id);
     return <div className="stack tight dz-slot">
       <div className="cam dz-cam">
         <S.Photo className="cam-feed whole" src={shot ? (shot.url || example) : example} alt={shot ? slot.alt : ""} aria-hidden={shot ? undefined : "true"} style={shot ? undefined : { opacity: 0.55 }} />
@@ -515,7 +522,7 @@
         </Card>
           : <Card className="stack snug">
             <div className="row" style={{ gap: 12 }}><Aura on={d.status === "reading"} className="icontile" style={{ borderRadius: 12, width: 40, height: 40 }}><Icon name={say[0]} size={19} /></Aura><div className="grow"><b>{say[1]}</b><div className="t-footnote muted">{d.status === "checked" ? `${op.short} at ${C} ${say[2]}` : say[2]}</div></div></div>
-            <div className="dz-two">{DZ_SLOTS.map(sl => <div key={sl.id} className="cam dz-cam"><S.Photo className="cam-feed whole" src={`${IMG()}evidence/${n.ref}-${sl.id}.webp`} alt={sl.alt} /><span className="cam-tag">{sl.n} · {sl.title}</span></div>)}</div>
+            <div className="dz-two">{DZ_SLOTS.map(sl => <div key={sl.id} className="cam dz-cam"><S.Photo className="cam-feed whole" src={dzSrc(s, n.ref, sl.id)} alt={sl.alt} /><span className="cam-tag">{sl.n} · {sl.title}</span></div>)}</div>
             {d.status === "reading" && !reduce && <span className="sr-only" role="status">Vision is checking your photos</span>}
             <Button variant="secondary" block onClick={() => go(d.status === "approved" ? "batches" : "home", d.status === "approved" ? { ref: n.ref } : undefined)}>{d.status === "approved" ? "Open the batch's papers" : "Back to today"}</Button>
           </Card>}
@@ -627,7 +634,7 @@
         {journey.length ? <List head="In a journey now">{journey.map(b => { const sku = D.SKUS[b.sku]; const phase = b.hero ? s.hero.phase : s.mango.phase;
           return <ListRow key={b.id} chevron onClick={() => go("batches", { ref: b.id })} leading={<Product name={sku.img} size={40} />}
             title={<span className="row tight" style={{ gap: 8, flexWrap: "wrap" }}><span>{sku.name}</span><Badge size="sm" tone="blue" dot live>{stopOf(phase)}</Badge></span>}
-            sub={`${b.id} · flagged ${day(D.DAY0)} · the agents act in your name`} value={phone ? null : `${fmt.num(b.hero ? D.PLAN.units : D.MANGO_PLAN.units)} packs`} />; })}</List> : null}
+            sub={`${b.id} · flagged ${day(D.DAY0)} · the agents act in your name`} value={phone ? null : `${fmt.num(b.hero ? storyOf().plan.units : D.MANGO_PLAN.units)} packs`} />; })}</List> : null}
         {cleared.length ? <SumCard t={sums} page="batches" /> : null}
         {months.map(g => <List key={g.m} head={`Cleared · ${g.label}`}>{g.items.map(c => {
           return <ListRow key={c.ref} chevron onClick={() => go("batches", { ref: c.ref })} leading={<Product name={c.sku.img} size={40} />}
@@ -657,8 +664,8 @@
   function DistBatch({ me, dist, id }) {
     const s = useStore(); const reduce = useReducedMotion(); const [tab, setTab] = useState("what"); const [paper, setPaper] = useState(null);
     const L = window.SC3_LEDGER; const past = P().distBatches(dist.id, s).past.find(c => c.ref === id);
-    const mine = D.BATCHES.find(b => b.id === id && b.distributor === dist.id); const hero = mine && mine.hero ? mine : null, second = mine && mine.second ? mine : null;
-    const c = past || (hero ? L.storyCase() : null);
+    const mine = storyOf().batches.find(b => b.id === id && b.distributor === dist.id); const hero = mine && mine.hero ? mine : null, second = mine && mine.second ? mine : null;
+    const c = past || (hero ? L.storyCase(s) : null);
     const kiranas = c ? L.invoicesOf(c, s) : [];
     if (!c && !second) return <Screen me={me} title="Batches" back="Batches"><Card><Empty icon="boxes" title="Not one of your batches" body="This batch is not at your godown." /></Card></Screen>;
     const sku = c ? c.sku : D.SKUS[second.sku];
@@ -706,13 +713,13 @@
   /* ======================= Ganesh ji · kirana ======================= */
   // the scheme as the invoice has it (SC-153): every packet at the pack price less the scheme's discount, the GST on
   // that, what he pays, and his margin selling them all at MRP
-  const offerMath = n => P().scheme(n, KL, CHIPS);
+  const offerMath = n => { const C = storyOf(); return P().scheme(n, C.KL, C.sku); };
   function OfferCard({ onOpen, compact, shop }) {
-    const [en, setEn] = useState(false); const p0 = D.PUSH.offer; const name = shop || "Shree Ganesh Kirana";
-    const p = Object.assign({}, p0, { body: p0.body.replace("Shree Ganesh Kirana", name) });
+    const [en, setEn] = useState(false); const C = storyOf(), KL = C.KL, p0 = C.push.offer, first = C.kiranas[0].name, name = shop || first;
+    const p = Object.assign({}, p0, { body: p0.body.replace(first, name) });
     return <div className="bezel"><div className="card raised" style={{ padding: compact ? 16 : 22, display: "grid", gap: 14 }}>
-      <div className="row between"><span className="row tight"><Mark size={28} /><span className="t-footnote subtle strong">Rakesh Traders · {p.at}</span></span><button type="button" className="btn btn-ghost btn-sm" onClick={() => setEn(!en)} aria-pressed={en}>{en ? <span lang="hi">हिन्दी में पढ़ें</span> : "Read in English"}</button></div>
-      <div className="row" style={{ gap: 14, alignItems: "center" }}><Product name="pack-chips" size={compact ? 76 : 96} float /><div className="stack tight" style={{ gap: 4 }}><div className={cx("t-title2", !en && "hi")} lang={en ? "en" : "hi"}>{en ? "Today's special offer" : p.title}</div><div className="row base" style={{ gap: 8 }}><span className="num m">₹{KL.packPrice.toFixed(2)}</span><span className="subtle t-subhead">a packet · MRP ₹{CHIPS.mrp}</span></div><span className="row tight wrap"><Badge tone="green" icon="gift">{en ? "Buy 10, get 2 free" : <span lang="hi">10 लो, 2 मुफ़्त</span>}</Badge><Badge icon="clock">{en ? "48 hours" : <span lang="hi">सिर्फ़ 48 घंटे</span>}</Badge></span></div></div>
+      <div className="row between"><span className="row tight"><Mark size={28} /><span className="t-footnote subtle strong">{C.dist.name} · {p.at}</span></span><button type="button" className="btn btn-ghost btn-sm" onClick={() => setEn(!en)} aria-pressed={en}>{en ? <span lang="hi">हिन्दी में पढ़ें</span> : "Read in English"}</button></div>
+      <div className="row" style={{ gap: 14, alignItems: "center" }}><Product name={C.sku.img} size={compact ? 76 : 96} float /><div className="stack tight" style={{ gap: 4 }}><div className={cx("t-title2", !en && "hi")} lang={en ? "en" : "hi"}>{en ? "Today's special offer" : p.title}</div><div className="row base" style={{ gap: 8 }}><span className="num m">₹{KL.packPrice.toFixed(2)}</span><span className="subtle t-subhead">a packet · MRP ₹{C.sku.mrp}</span></div><span className="row tight wrap"><Badge tone="green" icon="gift">{en ? "Buy 10, get 2 free" : <span lang="hi">10 लो, 2 मुफ़्त</span>}</Badge><Badge icon="clock">{en ? "48 hours" : <span lang="hi">सिर्फ़ 48 घंटे</span>}</Badge></span></div></div>
       <p className={cx("t-body", !en && "hi")} lang={en ? "en" : "hi"} style={{ margin: 0, lineHeight: 1.55 }}>{en ? p.en : p.body}</p>
       {onOpen && <Button variant="primary" size="lg" block iconRight="arrow-right" onClick={onOpen}>{en ? "See the offer" : <span lang="hi">ऑफर देखें</span>}</Button>}
     </div></div>;
@@ -730,13 +737,13 @@
     return <Screen me={me} title="Offers" sub={`${k.name} · ${k.area}, ${dist.city}`}>
       <div className="stack" style={{ gap: 16, maxWidth: 620 }}>
         {top && top.status === "open" ? <><OfferCard shop={k.name} onOpen={() => go("offer")} /><Button variant="ghost" size="lg" block action={no} busy="Declining…">Not this time</Button></>
-          : top && top.status === "ordered" ? <Card className="stack snug"><div className="row" style={{ gap: 14 }}><Product name={top.sku.img} size={64} /><div className="grow"><b>Ordered · {top.units} packets</b><div className="t-footnote muted">{top.sku.name} · placed {top.orderedAt.slice(11)} · comes on {D.JOURNEY.van.day}'s van</div></div><Badge tone="green" icon="check">confirmed</Badge></div></Card>
+          : top && top.status === "ordered" ? <Card className="stack snug"><div className="row" style={{ gap: 14 }}><Product name={top.sku.img} size={64} /><div className="grow"><b>Ordered · {top.units} packets</b><div className="t-footnote muted">{top.sku.name} · placed {top.orderedAt.slice(11)} · comes on {storyOf().journey.van.day}'s van</div></div><Badge tone="green" icon="check">confirmed</Badge></div></Card>
           : top && top.status === "declined" ? <Card className="stack snug"><div className="row" style={{ gap: 14 }}><Product name={top.sku.img} size={64} /><div className="grow"><b>You said not this time</b><div className="t-footnote muted">{top.sku.name} · declined {when(top.declinedAt)}. The offer stays open until {when(top.closed)} if you change your mind.</div></div></div><Button variant="secondary" block onClick={after}>Order after all</Button></Card>
           : <Card><Empty img="kirana" title="No open offer" body={`${dist.short}'s schemes arrive here as a notification, in Hindi, ready to order in one tap.`} /></Card>}
         {earlier.length ? <List head="Earlier offers">{earlier.map(o => <ListRow key={o.ref} chevron onClick={() => go("offer", { ref: o.ref })} leading={<Product name={o.sku.img} size={40} />}
           title={o.sku.name} sub={`${day(o.sent)} · ${o.dist.short} · ₹${o.pack.toFixed(2)} a packet`} value={<OfferStatus o={o} size="sm" />} />)}</List> : null}
         <SectionTitle>Your shop</SectionTitle>
-        <List>{[["Distributor", `${dist.name}, ${dist.city}`], ["Van day", D.JOURNEY.van.day], ["Unsold scheme packs", `back to the salesman until ${fmt.day(D.RETURN_BY)}`], ["Language", "हिन्दी · English"]].map(([a, v]) => <ListRow key={a} title={a} value={a === "Language" ? <span lang="hi">{v}</span> : v} />)}</List>
+        <List>{[["Distributor", `${dist.name}, ${dist.city}`], ["Van day", storyOf().journey.van.day], ["Unsold scheme packs", `back to the salesman until ${fmt.day(storyOf().returnBy)}`], ["Language", "हिन्दी · English"]].map(([a, v]) => <ListRow key={a} title={a} value={a === "Language" ? <span lang="hi">{v}</span> : v} />)}</List>
       </div>
     </Screen>;
   }
@@ -785,21 +792,22 @@
     const s = useStore(); const h = s.hero; const { go } = useRoute(); const k = kOf(me); const [n, setN] = useState(k.units); const [busy, setBusy] = useState(false); const m = offerMath(n);
     const mine = h.orders.find(o => o.id === k.id);
     const order = () => { setBusy(true); setTimeout(() => { setBusy(false); Store.update(st => { Flow.A.order(st, k.id); const o = st.hero.orders.find(x => x.id === k.id); if (o) o.units = n; }); }, 650); };
-    return <Screen me={me} title="Masala Chips 150 g" sub="Rakesh Traders · scheme for 48 hours" back="Offers">
+    const C = storyOf();
+    return <Screen me={me} title={C.sku.name} sub={`${C.dist.name} · scheme for 48 hours`} back="Offers">
       <div className="stack" style={{ gap: 16, maxWidth: 620 }}>
         {h.offer ? <OfferCard compact shop={k.name} /> : <Card><Empty img="kirana" title="No offer right now" body="This offer has not been sent to your shop yet." /></Card>}
         {!h.offer ? null : mine ? <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="card stack" style={{ padding: 22, justifyItems: "center", textAlign: "center" }}>
           <span className="icontile" style={{ width: 56, height: 56, borderRadius: 18 }}><Icon name="check" size={28} stroke={2.4} /></span>
           <div className="t-title2 hi" lang="hi">ऑर्डर हो गया</div>
-          <span className="muted">{mine.units} packets on {D.JOURNEY.van.day}'s van · pay {fmt.inr(offerMath(mine.units).pay)} on delivery, GST included</span>
+          <span className="muted">{mine.units} packets on {storyOf().journey.van.day}'s van · pay {fmt.inr(offerMath(mine.units).pay)} on delivery, GST included</span>
           <Money value={offerMath(mine.units).margin} size="m" style={{ color: "var(--primary-text)" }} /><span className="t-footnote subtle">your margin at MRP on this order</span>
           <Button variant="secondary" onClick={() => go("home")}>Done</Button>
         </motion.div> : <Card className="stack" style={{ gap: 16 }}>
           <div className="row between"><div className="stack tight" style={{ gap: 0 }}><b>How many packets?</b><span className="t-footnote subtle">In twelves · your share is up to {k.units}</span></div><Stepper value={n} onChange={setN} min={12} max={k.units} step={12} label="Packets" /></div>
-          <div className="stack tight">{[["Before GST", `${n} × ₹${m.rate.toFixed(2)}, less the scheme's ${m.discountPct}%`, fmt.inr2(m.taxable)], ["GST", `CGST ${m.gstPct / 2}% + SGST ${m.gstPct / 2}%`, fmt.inr2(m.tax)], ["You pay", "on the invoice, to the rupee", fmt.inr(m.pay)], ["You sell at MRP", `${n} × ₹${CHIPS.mrp}`, fmt.inr(m.sell)]].map(([k, sub, v]) => <div key={k} className="row between t-subhead"><span>{k} <span className="subtle t-footnote">{sub}</span></span><span className="tnum strong">{v}</span></div>)}</div>
-          <div className="row between" style={{ padding: "12px 14px", borderRadius: 14, background: "var(--primary-soft)" }}><span className="stack tight" style={{ gap: 0 }}><b>Margin today</b><span className="t-footnote muted">₹{(m.pay / n).toFixed(2)} a packet in effect, sold at ₹{CHIPS.mrp}</span></span><Money value={m.margin} size="s" roll style={{ color: "var(--primary-text)" }} /></div>
+          <div className="stack tight">{[["Before GST", `${n} × ₹${m.rate.toFixed(2)}, less the scheme's ${m.discountPct}%`, fmt.inr2(m.taxable)], ["GST", `CGST ${m.gstPct / 2}% + SGST ${m.gstPct / 2}%`, fmt.inr2(m.tax)], ["You pay", "on the invoice, to the rupee", fmt.inr(m.pay)], ["You sell at MRP", `${n} × ₹${C.sku.mrp}`, fmt.inr(m.sell)]].map(([k, sub, v]) => <div key={k} className="row between t-subhead"><span>{k} <span className="subtle t-footnote">{sub}</span></span><span className="tnum strong">{v}</span></div>)}</div>
+          <div className="row between" style={{ padding: "12px 14px", borderRadius: 14, background: "var(--primary-soft)" }}><span className="stack tight" style={{ gap: 0 }}><b>Margin today</b><span className="t-footnote muted">₹{(m.pay / n).toFixed(2)} a packet in effect, sold at ₹{C.sku.mrp}</span></span><Money value={m.margin} size="s" roll style={{ color: "var(--primary-text)" }} /></div>
           <Button variant="primary" size="xl" block loading={busy} busy={<span className="hi" lang="hi">ऑर्डर हो रहा है…</span>} done={<span className="hi" lang="hi">ऑर्डर हो गया</span>} onClick={order}><span className="hi" lang="hi">ऑर्डर करें</span> · {n} packets</Button>
-          <span className="t-caption subtle" style={{ textAlign: "center" }}>Best before 18 Nov 2026 · 47 days on every packet · unsold packs go back to the salesman until {fmt.day(D.RETURN_BY)}</span>
+          <span className="t-caption subtle" style={{ textAlign: "center" }}>Best before {fmt.date(storyOf().batch.bestBefore)} · {storyOf().batch.daysLeft} days on every packet · unsold packs go back to the salesman until {fmt.day(storyOf().returnBy)}</span>
         </Card>}
       </div>
     </Screen>;
@@ -836,7 +844,8 @@
   }
   function Market({ me }) {
     const s = useStore(); const h = s.hero; const { go } = useRoute(); const app = useApp(); const [q, setQ] = useState(""); const [cat, setCat] = useState("all");
-    const hero = h.listing && { id: D.JOURNEY.listing.id, name: "Munchly Masala Chips 150 g", units: ES.units, price: 15, mrp: 30, days: 47, seller: "Rakesh Traders, Nagpur" };
+    const ES = storyOf().ES; // the journey's lot (the Mango Drink's own journey lists none)
+    const hero = h.listing && ES && { id: D.JOURNEY.listing.id, name: "Munchly Masala Chips 150 g", units: ES.units, price: 15, mrp: 30, days: 47, seller: "Rakesh Traders, Nagpur" };
     const list = [hero, ...OTHER_LISTINGS].filter(Boolean).filter(l => (!q || l.name.toLowerCase().includes(q.toLowerCase())) && (cat === "all" || (cat === "snacks" ? /chips|biscuit|noodle/i.test(l.name) : cat === "staples" ? /atta|milk/i.test(l.name) : true)));
     return <div className="esw"><Screen me={me} title="Marketplace" sub={`Lots for ${D.BUYER.city} · every listing shows its dates`} hideLarge={false}>
       <div className="stack" style={{ gap: 16 }}>
@@ -855,7 +864,7 @@
   function ListingView({ readOnly, me }) {
     const s = useStore(); const h = s.hero; const app = useApp(); const [price, setPrice] = useState(13); const [msg, setMsg] = useState("");
     const last = h.bids[h.bids.length - 1]; const open = !last || last.status === "declined";
-    const token = Math.round(price * ES.units * M.RULES.tokenPct * 100) / 100; const inv = D.INVOICE;
+    const ES = storyOf().ES || { units: 0, price: 0 }; const token = Math.round(price * ES.units * M.RULES.tokenPct * 100) / 100; const inv = D.INVOICE;
     const place = () => Flow.act("bid", price);
     const accept = () => Flow.act("accept");
     if (!h.listing) return <Card><Empty icon="hourglass" title="Not listed yet" body="The Lister posts this lot the moment the plan is approved." /></Card>;
@@ -886,7 +895,7 @@
   }
   function Listing({ me }) { return <div className="esw"><Screen me={me} title={`Lot ${D.JOURNEY.listing.id}`} sub="Munchly Masala Chips 150 g · Rakesh Traders, Nagpur" back="Marketplace"><div className="stack" style={{ gap: 16 }}><EsBar /><ListingView me={me} /></div></Screen></div>; }
   function MyBids({ me }) {
-    const s = useStore(); const h = s.hero; const { go } = useRoute();
+    const s = useStore(); const h = s.hero; const { go } = useRoute(); const ES = storyOf().ES || { units: 0 };
     return <div className="esw"><Screen me={me} title="My bids" sub={`${D.BUYER.name} · ${D.BUYER.city}`}><div className="stack" style={{ gap: 16 }}><EsBar />
       {h.bids.length ? <div className="list" data-x="bids">{h.bids.map(b => <button type="button" key={b.id} className="list-row" onClick={() => go("listing")} style={{ gridTemplateColumns: "48px minmax(0,1fr) auto", textAlign: "left", width: "100%" }}><Product name="pack-chips" size={44} /><span className="stack tight" style={{ gap: 0 }}><b className="t-subhead">{D.JOURNEY.listing.id} · Masala Chips 150 g · {ES.units} units</b><span className="t-caption subtle">bid ₹{b.price.toFixed(2)} · {b.at}{b.counter ? ` · counter ₹${b.counter.toFixed(2)}` : ""}</span></span><Badge size="sm" tone={b.status === "accepted" ? "green" : "violet"}>{b.status === "accepted" ? "won" : b.status}</Badge></button>)}</div> : <Card><Empty img="marketplace-bag" title="No bids yet" body="Bids you place show here with the seller's reply." /></Card>}
     </div></Screen></div>;
@@ -903,7 +912,7 @@
     return <PickupsNow me={me} past={past} onOpen={p => go("pickups", { ref: p.ref })} />;
   }
   function PickupsNow({ me, past, onOpen }) {
-    const s = useStore(); const DN = D.JOURNEY.donation; const d = me.org === DN.partner ? s.mango.donation : null; const app = useApp(); const [later, setLater] = useState(false); const [paper, setPaper] = useState(false); const { toast } = useNotice(); const n = D.MANGO_FB;
+    const s = useStore(); const DN = D.JOURNEY.donation; const d = storyOf().donation && me.org === DN.partner ? s.mango.donation : null; const app = useApp(); const [later, setLater] = useState(false); const [paper, setPaper] = useState(false); const { toast } = useNotice(); const n = D.MANGO_FB;
     const bb = fmt.date(D.BATCHES[1].bestBefore);
     // the receipt Feeding India issued as the packs were collected (SC-110): opened from the pickup, in a sheet
     const R = D.MANGO_RECEIPT, mb = D.BATCHES[1];

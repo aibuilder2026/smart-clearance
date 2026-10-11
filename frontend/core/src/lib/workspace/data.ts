@@ -2,8 +2,21 @@
 // seed.mjs writes from design3: every figure was worked out by money.js, and none is typed here. The app's stub until
 // backend-api serves the workspace (SC-62).
 import history from './seed/history.json';
+import stories from './seed/stories.json';
 import seed from './seed/workspace.json';
-import type { Batch, BatchView, FeedEvent, PlanLine, Shop, WorkspaceSeed } from './types';
+import type {
+	Actual,
+	Batch,
+	BatchView,
+	Doc,
+	FeedEvent,
+	LedgerBatch,
+	PlanLine,
+	Shop,
+	Story,
+	StoryKey,
+	WorkspaceSeed
+} from './types';
 
 export const D = seed as unknown as WorkspaceSeed;
 
@@ -49,3 +62,113 @@ export const batchView = (b: Batch): BatchView => ({
 	skuObj: D.skus[b.sku],
 	dist: D.distributors[b.distributor]
 });
+
+/* ---------- the stub's three journeys (SC-168) ---------- */
+
+// the chips' own moments and people beside workspace.json, and the Mango Drink's and the slow chips' journeys whole,
+// as design3's data.js works them out (seed/stories.json)
+type StoryOwn = Pick<
+	Story,
+	| 'key'
+	| 'title'
+	| 'accounts'
+	| 'shop'
+	| 'decliner'
+	| 'fills'
+	| 'scheme'
+	| 'evidence'
+	| 'at'
+	| 'cleared'
+	| 'outcome'
+	| 'vanDay'
+	| 'pron'
+	| 'setupDone'
+	| 'stages'
+	| 'times'
+>;
+type StorySeed = StoryOwn &
+	Omit<Story, keyof StoryOwn | 'sku' | 'dist' | 'donation' | 'second' | 'actual'> & {
+		sku: string;
+		dist: string;
+		actual: Omit<Actual, 'esPlanned' | 'esActual'> & Partial<Pick<Actual, 'esPlanned' | 'esActual'>>;
+		donation: { batch: string; units: number; partner: string; receipt: Doc } | null;
+	};
+const S_ = stories as unknown as { chips: StoryOwn } & Record<'mango' | 'slow', StorySeed>;
+
+/** the journeys the stub runs, the story's chips first */
+export const SCENARIOS: StoryKey[] = ['chips', 'mango', 'slow'];
+const HERO = D.batches.find((b) => b.hero)!;
+const SECOND = D.batches.find((b) => b.second)!;
+const partnerNamed = (name: string) => D.setup.partners.find((p) => p.name === name) ?? D.setup.partners[0];
+const seeded = (key: 'mango' | 'slow'): Story => {
+	const x = S_[key];
+	const donated = x.donation;
+	return {
+		...x,
+		sku: D.skus[x.sku],
+		dist: D.distributors[x.dist],
+		actual: { esPlanned: 0, esActual: 0, ...x.actual },
+		donation: donated
+			? {
+					batch: D.batches.find((b) => b.id === donated.batch)!,
+					plan: D.mangoPlan,
+					units: donated.units,
+					partner: partnerNamed(donated.partner),
+					receipt: donated.receipt
+				}
+			: null,
+		second: null
+	};
+};
+const STORIES: Record<StoryKey, Story> = {
+	// the story's own: every value is the one the stub always read
+	chips: {
+		...S_.chips,
+		batch: HERO,
+		batches: D.batches,
+		sku: CHIPS,
+		dist: D.distributors[HERO.distributor],
+		people: D.people,
+		kiranas: D.kiranas,
+		offered: D.offered,
+		risk: D.risk,
+		plan: PLAN,
+		KL,
+		ES,
+		counter: D.counter,
+		award: D.award,
+		actual: D.actual,
+		support: D.support,
+		supportPlan: D.supportPlan,
+		claim: D.claim,
+		docs: D.docs,
+		invoice: INVOICE,
+		returnBy: D.returnBy,
+		realised: null,
+		expiry: null,
+		push: D.push,
+		chat: D.chat,
+		events: D.events,
+		journey: D.journey,
+		listing: D.journey.listing,
+		donation: {
+			batch: SECOND,
+			plan: D.mangoPlan,
+			units: D.mangoFb,
+			partner: partnerNamed(D.journey.donation.partner),
+			receipt: D.mangoReceipt
+		},
+		second: SECOND,
+		agency: null,
+		certificate: null,
+		expiryNo: null,
+		expiryDay: null,
+		explore: D.explore,
+		initial: D.initial,
+		end: { docs: D.docs, row: history.story.row as unknown as LedgerBatch }
+	},
+	mango: seeded('mango'),
+	slow: seeded('slow')
+};
+/** a journey's story by its key (the state's scenario; the chips when it has none) */
+export const storyOf = (key: StoryKey | undefined | null): Story => STORIES[key ?? 'chips'] ?? STORIES.chips;

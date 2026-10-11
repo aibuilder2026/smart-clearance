@@ -3,9 +3,10 @@
 // and the audit log (each person's decision, in their name, the kiranas' orders folded into one row); the stub writes
 // the same rows from the history's steps, or from the story's feed and audit (core/tests/record.test.ts holds them to
 // ledger.js)
-import { D, SHOPS_ALL } from './data';
+import { D, SHOPS_ALL, storyOf } from './data';
 import history from './seed/history.json';
 import { fmt } from '../format';
+import { evidenceFile } from './screens/brand/destruction';
 import type { BatchRecord, RecordPhoto, RecordStep, RecordWho, State, StoryPerson } from './types';
 
 export const YES = ['plan.approve', 'docs.review', 'destruction.approve'];
@@ -227,15 +228,18 @@ export function recordOf(c: Case): BatchRecord {
  *  workspace's setup or another batch's rows, and the decisions only its audit keeps (the papers' review after the
  *  pack, the BRSR sign-off after the ledger). The stub's times are its own (09:19, Mon 5 Oct): kept as they are */
 export function storyRecord(s: State): BatchRecord {
-	const hero = D.batches.find((b) => b.hero)!,
-		others = D.batches.filter((b) => !b.hero).map((b) => b.id);
+	// the batch of the journey the state holds (SC-168): beside the chips, the Mango Drink's donation is the other
+	// batch's; in its own journey, its own
+	const S = storyOf(s.scenario),
+		hero = S.batch,
+		others = S.batches.filter((b) => b.id !== hero.id).map((b) => b.id);
 	const KEY: Record<string, string> = { approved: 'plan.approve', destroyApproved: 'destruction.approve' };
-	const person = (id: string) => personOf(people()[id] ?? { id, name: id });
+	const person = (id: string) => personOf(S.people[id] ?? { id, name: id });
 	const rows: RecordStep[] = s.feed
 		.filter(
 			(e) =>
 				e.stage !== 'connect' &&
-				!/^Mango Drink batch/.test(e.text ?? '') &&
+				!(S.second && /^Mango Drink batch/.test(e.text ?? '')) &&
 				!others.some((id) => (e.text ?? '').includes(id))
 		)
 		.map((e) => {
@@ -303,12 +307,13 @@ export function photosOf(c: Case): RecordPhoto[] {
 
 /** the story's batch: its label photo once Rakesh has sent it, and the destruction's two once he has sent them */
 export function storyPhotos(s: State): RecordPhoto[] {
-	const hero = D.batches.find((b) => b.hero)!,
-		sku = D.skus[hero.sku],
+	const S = storyOf(s.scenario),
+		hero = S.batch,
+		sku = S.sku,
 		h = s.hero,
 		out: RecordPhoto[] = [];
 	const at = (t: string | null | undefined) => (/^\d\d:\d\d$/.test(t ?? '') ? `${D.day0}T${t}` : D.day0);
-	const rakesh = people().rakesh.name;
+	const rakesh = (S.people[S.accounts.distributor] ?? { name: S.dist.name }).name;
 	const photo = h.photo as { status?: string; at?: string } | null;
 	if (photo && photo.status && photo.status !== 'requested' && photo.status !== 'none')
 		out.push({
@@ -334,7 +339,7 @@ export function storyPhotos(s: State): RecordPhoto[] {
 			if (xd.photos[w])
 				out.push({
 					id: w,
-					img: `evidence/${hero.id}-${w}.webp`,
+					img: `evidence/${evidenceFile(hero.id, w, xd.photos[w])}`,
 					at: at(xd.photos[w].at),
 					by: rakesh,
 					checks: (xd.checks ?? []).filter((x) =>

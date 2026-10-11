@@ -20,7 +20,7 @@
   const DEMO_PEOPLE = D.EXPLORE.groups;
   const DEMO = DEMO_PEOPLE.reduce((t, g) => t.concat(g.ids), []);
   function PeopleList({ onPick, busy, current }) {
-    return <div className="stack" style={{ gap: 18 }}>{DEMO_PEOPLE.map(g => <div key={g.group} className="stack tight" style={{ gap: 8 }}>
+    return <div className="stack" style={{ gap: 18 }}>{D.story().explore.groups.map(g => <div key={g.group} className="stack tight" style={{ gap: 8 }}>
       <div className="row tight"><b className="t-subhead">{g.group}</b><span className="t-caption subtle">{g.note}</span></div>
       <div className="si-people">{g.ids.map(([id, what]) => { const u = userById(id); return <button type="button" key={id} className={cx("si-person", current === id && "on")} onClick={() => onPick(id)}><Avatar person={u} size="lg" /><span className="stack tight" style={{ gap: 1 }}><b>{u.name}</b><span className="t-caption subtle">{S.ROLES[u.role]} · {u.org}</span><span className="t-footnote">{what}</span></span>{busy === id ? <K.Spinner size={18} /> : current === id ? <Badge size="sm" tone="green">you</Badge> : null}</button>; })}</div>
     </div>)}</div>;
@@ -108,7 +108,7 @@
     };
     const verify = v => { const c = v || code; if (c.length < 6) return; setBusy("verify"); setTimeout(() => { setBusy(null); if (c !== TEST_CODE) { setCodeErr(`That code doesn't match. This prototype sends ${TEST_CODE}.`); setCode(""); return; } if (who.status === "invited") setSheet("join"); else finish(who.id); }, 700); };
     const join = () => { Flow.act("join", who.id); finish(who.id); };
-    const TRY = D.EXPLORE.accounts;
+    const TRY = D.story().explore.accounts; // the journey's own people (SC-168)
     const isPhone = who && !!who.phone && sheet !== "google";
     return <div className={cx("signin", guided && "guided")}>
       <div className="ground" aria-hidden="true" />

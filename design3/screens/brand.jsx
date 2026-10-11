@@ -6,17 +6,23 @@
   const { cx, Icon, IconButton, Avatar, Badge, Button, Card, List, ListRow, Segmented, Switch, Stepper, Tabs, Sheet, DataTable, Product, Empty, Progress, Money, Roll, DaysNum, GateChips, Tile, Aura, Tracker, VTracker, AgentFeed, ClusterMap, HaulLine, ChannelBars, MixBar, CodeBlock, TrackerCard, TrackerCompact, BatchRow, ChannelTable, SplitBar, MoneyPanel, StatusBadge, useApp, useNotice } = K;
   const { useStore, useRoute, heroModel, Screen, Columns, SectionTitle, Locked } = S;
   const CH_NAMES = D.SETUP.channelNames;
-  const ES = D.PLAN.lines.find(l => l.id === "expiresoon"), KL = D.PLAN.lines.find(l => l.id === "kirana");
-  const SHOPS = D.KIRANAS.length;
   const Pass = ({ children }) => children;
-  const HERO = D.BATCHES.find(b => b.hero);
   const possessive = n => (/s$/.test(n) ? `${n}'` : `${n}'s`);
+  // the journey the store holds (SC-168, data.js STORIES): its batch, its people, its plan's lines and its shops. Each
+  // screen reads it as it draws: the story's chips, the Mango Drink's own journey or the slow chips
+  const storyOf = s => D.story(s || Store.get());
+  const personOf = (C, id) => C.people[id] || Store.get().users.find(u => u.id === id) || { id, name: id, short: id };
+  const evAt = (C, key) => (C.events.find(e => e.key === key) || {}).at || "";
+  const noun = sku => (sku.id === "chips" ? "chips" : sku.name.replace(/\s+\d+(\.\d+)?\s?(g|ml|kg|l)$/i, ""));
+  const AGENTS = ["no agents", "one agent", "two agents", "three agents", "four agents"];
+  // the ClusterMap's godown: Nagpur's as drawn, any other's round its ring road
+  const godownOf = C => C.dist.godown.split(" ")[0];
 
   /* ---------- S0 Setup ---------- */
   const FLOOR_ROWS = [["snacks", "Snacks", "chips"], ["biscuits", "Biscuits", "biscuits"], ["staples", "Staples", "poha"], ["beverages", "Beverages", "mango"], ["personal-care", "Personal care", "facewash"]];
   // a distributor's one-time permission, as the store holds it
   function permissionOf(s, id) {
-    if (id === "rakesh") { const p = s.setup.permission; return p ? (p.paused ? { tone: "amber", label: "paused" } : { tone: "green", label: "granted · " + p.at }) : { tone: undefined, label: "requested" }; }
+    if (id === storyOf(s).dist.id) { const p = s.setup.permission; return p ? (p.paused ? { tone: "amber", label: "paused" } : { tone: "green", label: "granted · " + p.at }) : { tone: undefined, label: "requested" }; }
     return D.SETUP.permissions[id] ? { tone: "green", label: "granted · " + D.SETUP.permissions[id] } : { tone: undefined, label: "requested" };
   }
   // the DMS export's card (SC-79): before the first mapping it says so, keeps the fields the Data agent looks for, and
@@ -83,7 +89,7 @@
             </List>
             {!s.setup.permission && <S.PlayAs who="rakesh" route="home">Give the permission as Rakesh bhai</S.PlayAs>}
             <List head="Scheme returns and planning" foot="The uplift and the van rate are planning assumptions. The return window lets returned packs reach the godown in time for a staff sale or a food bank.">
-              <ListRow title="Kiranas may return scheme packs until" sub={`${fmt.day(D.addDays(D.BATCHES[0].bestBefore, -ret))} for this batch`} value={<Stepper value={ret} onChange={setRet} min={15} max={30} label="days before best-before" format={v => v + " days before"} />} />
+              <ListRow title="Kiranas may return scheme packs until" sub={`${fmt.day(D.addDays(storyOf(s).batch.bestBefore, -ret))} for this batch`} value={<Stepper value={ret} onChange={setRet} min={15} max={30} label="days before best-before" format={v => v + " days before"} />} />
               <ListRow title="Scheme uplift on normal sales" value={<Stepper value={uplift} onChange={v => setUplift(Math.round(v * 10) / 10)} min={2} max={5} step={0.5} label="Scheme uplift" format={v => v.toFixed(1) + "×"} />} />
               <ListRow title="Van rate, a unit" value={<Stepper value={van} onChange={v => setVan(Math.round(v * 100) / 100)} min={0.25} max={2} step={0.25} label="Van rate" format={v => "₹" + v.toFixed(2)} />} />
             </List>
@@ -110,7 +116,7 @@
   // kept out of landfill, CO₂e and meals, with its weeks as a sparkline, opening the Ledger on its Impact reading
   function ImpactCard() {
     const s = useStore(); const { go } = useRoute(); const L = window.SC3_LEDGER; // core/ledger.js (the design-system page loads no ledger)
-    const book = useMemo(() => (L ? L.ledger(s) : null), [s.hero.posted, s.hero.phase, s.mango.phase]);
+    const book = useMemo(() => (L ? L.ledger(s) : null), [s.hero.posted, s.hero.phase, s.mango.phase, s.scenario]);
     const p = book && L.impactPeriod(book); const d = useMemo(() => (book ? L.dashboard(book, p.id) : null), [book, p && p.id]);
     if (!book) return null;
     const t = p.totals;
@@ -132,9 +138,9 @@
     </Card>;
   }
   function CommandCenter({ me, onOpenRoute }) {
-    const s = useStore(); const { go } = useRoute(); const app = useApp(); const hm = heroModel(s); const phone = app.bp === "phone";
+    const s = useStore(); const { go } = useRoute(); const app = useApp(); const hm = heroModel(s); const phone = app.bp === "phone"; const C = storyOf(s);
     const [sel, setSel] = useState(null); const [dz, setDz] = useState(false);
-    const views = useMemo(() => D.BATCHES.map(b => { const v = D.batchView(b); if (b.hero) v.phase = hm.view.phase; if (b.second) v.phase = "executing"; return v; }), [s.seq]);
+    const views = useMemo(() => C.batches.map(b => { const v = D.batchView(b); if (b.hero) v.phase = hm.view.phase; if (b.second) v.phase = "executing"; return v; }), [s.seq, s.scenario]);
     const watchlist = views.filter(v => !(v.hero && s.hero.phase === "watching")).sort((a, b) => (a.phase === "at-risk" || (!a.phase && a.assess.status === "at-risk") ? -1 : 0) - (b.phase === "at-risk" || (!b.phase && b.assess.status === "at-risk") ? -1 : 0) || a.daysLeft - b.daysLeft);
     const openRoute = () => (onOpenRoute ? onOpenRoute() : go("route"));
     // every row opens its batch's page (SC-112), on the screen for where the batch stands
@@ -144,25 +150,28 @@
     const flagged = s.hero.phase !== "watching" && s.setup.confirmed;
     const routed = ["approved", "executing", "dispatched", "settled", "cleared"].includes(s.hero.phase);
     const perm = s.setup.permission;
-    const money = s.hero.plan ? <div className="stack tight" style={{ gap: 2 }}><Money value={s.hero.posted ? D.ACTUAL.net : D.PLAN.net} size={phone ? "s" : "m"} roll style={{ color: "var(--primary-text)" }} /><span className="t-footnote subtle">{s.hero.posted ? "recovered, after the negotiation" : routed ? "on plan · settles day 3–7" : "net recovered on the plan"} · swing {fmt.inr(s.hero.posted ? D.ACTUAL.swing : D.PLAN.swing)}</span></div> : undefined;
+    const money = s.hero.plan ? <div className="stack tight" style={{ gap: 2 }}><Money value={s.hero.posted ? C.actual.net : C.plan.net} size={phone ? "s" : "m"} roll style={{ color: "var(--primary-text)" }} /><span className="t-footnote subtle">{s.hero.posted ? (C.ES ? "recovered, after the negotiation" : "recovered, every line done") : routed ? "on plan · settles day 3–7" : "net recovered on the plan"} · swing {fmt.inr(s.hero.posted ? C.actual.swing : C.plan.swing)}</span></div> : undefined;
+    const holder = personOf(C, C.accounts.distributor);
+    // the batch placed, line by line (or what was destroyed at the godown, on the operator's yes)
+    const placed = C.plan.lines.filter(l => l.units > 0 && l.id !== "writeoff").map(l => l.id === "kirana" ? `${l.units} with ${C.kiranas.length} kiranas` : l.id === "expiresoon" ? `${l.units} with a ${D.BUYER.city} wholesaler` : l.id === "staff" ? `${l.units} at the staff sale` : `${l.units} to ${C.donation ? C.donation.partner.name : "a food bank"}`).join(", ");
     // the stock export mapped (on the live workspace once the console or Setup has an export mapped; SC-84): what is
     // left before the Watcher starts is the operator's yes to the guardrails
     const ready = !S.useLive() || s.setup.mapped > 0;
-    const tracker = flagged ? <TrackerCard view={hm.view} done={hm.done} current={hm.current} eta={perm && perm.paused ? "Paused by Rakesh bhai" : hm.eta} etaTone={perm && perm.paused ? "amber" : hm.etaTone} agentLive={perm && perm.paused ? "" : hm.agentLive} primary={primary} money={money}
-      line={s.hero.phase === "cleared" ? (s.hero.destruction ? `${fmt.num(D.PLAN.units - s.hero.destruction.units)} of ${fmt.num(D.PLAN.units)} units placed; ${fmt.num(s.hero.destruction.units)} expired and were destroyed at ${D.DISTRIBUTORS[HERO.distributor].godown}, on your yes.` : `All ${fmt.num(D.PLAN.units)} units placed: ${KL.units} with ${SHOPS} kiranas, ${ES.units} with a ${D.BUYER.city} wholesaler. Nothing went to the bin.`) : undefined} />
-      : <Card><Empty img="sprout-box" title={!s.setup.confirmed ? (ready ? "Confirm Setup to start watching" : "Connect your stock data to start") : !perm ? "Waiting for Rakesh Traders' permission" : "Nothing at risk yet"} body={!s.setup.confirmed ? (ready ? `Your distributors' stock export is mapped: ${fmt.num(D.SETUP.dms.rows)} batches from ${Object.keys(D.DISTRIBUTORS).length} distributors. Review the guardrails and confirm; the Watcher checks at ${s.rules.watchTime} the next morning.` : `Upload the distributor export once and set the guardrails. It takes about ${D.SETUP.minutes} minutes; the Watcher starts the next morning.`) : !perm ? "Rakesh bhai's stock is listed and offered in his name, so he gives a one-time permission in his app first. He can pause it at any time." : "The Watcher checks every batch against the quick-commerce gates and sell-through at 09:00. You get a push the moment one cannot make it."} action={!s.setup.confirmed ? <Button variant="primary" iconRight="arrow-right" onClick={() => go("setup")}>{ready ? "Review and confirm" : "Open Setup"}</Button> : !perm ? <S.PlayAs who="rakesh" route="home">Give the permission as Rakesh bhai</S.PlayAs> : null} /></Card>;
+    const tracker = flagged ? <TrackerCard view={hm.view} done={hm.done} current={hm.current} eta={perm && perm.paused ? `Paused by ${holder.short}` : hm.eta} etaTone={perm && perm.paused ? "amber" : hm.etaTone} agentLive={perm && perm.paused ? "" : hm.agentLive} primary={primary} money={money}
+      line={s.hero.phase === "cleared" ? (s.hero.destruction ? `${fmt.num(C.plan.units - s.hero.destruction.units)} of ${fmt.num(C.plan.units)} units placed; ${fmt.num(s.hero.destruction.units)} expired and were destroyed at ${C.dist.godown}, on your yes.` : `All ${fmt.num(C.plan.units)} units placed: ${placed}. Nothing went to the bin.`) : undefined} />
+      : <Card><Empty img="sprout-box" title={!s.setup.confirmed ? (ready ? "Confirm Setup to start watching" : "Connect your stock data to start") : !perm ? `Waiting for ${possessive(C.dist.name)} permission` : "Nothing at risk yet"} body={!s.setup.confirmed ? (ready ? `Your distributors' stock export is mapped: ${fmt.num(D.SETUP.dms.rows)} batches from ${Object.keys(D.DISTRIBUTORS).length} distributors. Review the guardrails and confirm; the Watcher checks at ${s.rules.watchTime} the next morning.` : `Upload the distributor export once and set the guardrails. It takes about ${D.SETUP.minutes} minutes; the Watcher starts the next morning.`) : !perm ? "Rakesh bhai's stock is listed and offered in his name, so he gives a one-time permission in his app first. He can pause it at any time." : "The Watcher checks every batch against the quick-commerce gates and sell-through at 09:00. You get a push the moment one cannot make it."} action={!s.setup.confirmed ? <Button variant="primary" iconRight="arrow-right" onClick={() => go("setup")}>{ready ? "Review and confirm" : "Open Setup"}</Button> : !perm ? <S.PlayAs who="rakesh" route="home">Give the permission as Rakesh bhai</S.PlayAs> : null} /></Card>;
     const cluster = flagged && <Card pad={false} className="stack" style={{ overflow: "hidden", gap: 0 }}>
-      <div className="card-head" style={{ padding: "14px 16px 10px" }}><span className="card-title">Nagpur cluster</span><Badge size="sm" tone={hm.ordered ? "green" : undefined} dot={!!hm.ordered} live={hm.ordered > 0 && hm.ordered < SHOPS}>{hm.ordered ? `${hm.ordered} of ${D.OFFERED} kiranas ordered` : s.hero.offer ? `${D.OFFERED} kiranas messaged` : `${D.OFFERED} kiranas`}</Badge></div>
-      <ClusterMap kiranas={D.KIRANAS} orderedCount={hm.ordered} route={routed} vanProgress={s.hero.van.status === "done" ? 1 : hm.ordered / SHOPS * 0.6} height={phone ? 220 : 280} />
+      <div className="card-head" style={{ padding: "14px 16px 10px" }}><span className="card-title">{C.dist.city} cluster</span><Badge size="sm" tone={hm.ordered ? "green" : undefined} dot={!!hm.ordered} live={hm.ordered > 0 && hm.ordered < C.kiranas.length}>{hm.ordered ? `${hm.ordered} of ${C.offered} kiranas ordered` : s.hero.offer ? `${C.offered} kiranas messaged` : `${C.offered} kiranas`}</Badge></div>
+      <ClusterMap kiranas={C.kiranas} total={C.offered} godown={godownOf(C)} orderedCount={hm.ordered} route={routed} vanProgress={s.hero.van.status === "done" ? 1 : hm.ordered / C.kiranas.length * 0.6} height={phone ? 220 : 280} />
     </Card>;
-    const feed = <div className="stack snug"><SectionTitle sub="Every hand-off, as it happens">Agent activity</SectionTitle><Card>{s.feed.length ? <AgentFeed events={s.feed} people={D.PEOPLE} live={hm.agentLive ? s.feed.length - 1 : -1} max={phone ? 3 : 6} /> : <span className="t-footnote muted">The agents report here once the Watcher runs.</span>}</Card><ImpactCard /></div>;
+    const feed = <div className="stack snug"><SectionTitle sub="Every hand-off, as it happens">Agent activity</SectionTitle><Card>{s.feed.length ? <AgentFeed events={s.feed} people={C.people} live={hm.agentLive ? s.feed.length - 1 : -1} max={phone ? 3 : 6} /> : <span className="t-footnote muted">The agents report here once the Watcher runs.</span>}</Card><ImpactCard /></div>;
     const list = <div className="stack snug"><SectionTitle sub="Sorted by days to best-before; at-risk batches first">Watchlist</SectionTitle><div className="list">{watchlist.map(v => <BatchRow key={v.id} view={v} selected={sel === v.id} compact={phone} onOpen={() => { setSel(v.id); openBatch(v.id); }} />)}</div></div>;
     const live = S.useLive();
     if (live) return <LiveCommandCenter me={me} live={live} hm={hm} money={money} watchlist={watchlist} sel={sel} setSel={setSel} feed={feed} cluster={cluster} />;
-    return <Screen me={me} title="Command Center" sub={flagged ? `${D.JOURNEY.today} · Watcher checked 312 batches at 09:00` : "Watcher runs daily at 09:00 across 312 batches"}>
+    return <Screen me={me} title="Command Center" sub={flagged ? `${C.journey.today} · Watcher checked 312 batches at 09:00` : "Watcher runs daily at 09:00 across 312 batches"}>
       {app.bp === "desktop" ? <Columns sideWidth={340} main={<>{tracker}{cluster}{list}</>} side={feed} />
         : <div className="stack" style={{ gap: 20 }}>{tracker}{feed}{list}{cluster}</div>}
-      <DestructionSheet open={dz && !!s.hero.destruction} onClose={() => setDz(false)} d={s.hero.destruction} x={s.hero.expiry} dist={D.DISTRIBUTORS[HERO.distributor]} sku={D.SKUS[HERO.sku]} batch={HERO} />
+      <DestructionSheet open={dz && !!s.hero.destruction} onClose={() => setDz(false)} d={s.hero.destruction} x={s.hero.expiry} dist={C.dist} sku={C.sku} batch={C.batch} />
     </Screen>;
   }
   // the Command Center on the live workspace (SC-73, SC-68 option B): the flagged batches as tabs over the tracker card,
@@ -199,17 +208,28 @@
     </div>;
   }
   function LabelPhoto({ status }) {
-    const reduce = useReducedMotion();
-    return <div role="img" aria-label={status === "verified" ? "Carton label on shelf B4: batch MF-2409-117, MFG 18 May 2026, best before 18 Nov 2026, MRP ₹30.00" : "Carton label, not yet photographed"} style={{ position: "relative", width: "100%", borderRadius: 16, overflow: "hidden", background: "var(--surface-sunken)" }}>
-      <LabelShot dim={status !== "verified"} />
+    const reduce = useReducedMotion(); const C = storyOf(useStore()), b = C.batch, holder = personOf(C, C.accounts.distributor);
+    const shelf = b.shelf ? ` on shelf ${b.shelf}` : "";
+    return <div role="img" aria-label={status === "verified" ? `Carton label${shelf}: batch ${b.id}, MFG ${fmt.date(b.mfg)}, best before ${fmt.date(b.bestBefore)}, MRP ${fmt.rate(C.sku.mrp)}` : "Carton label, not yet photographed"} style={{ position: "relative", width: "100%", borderRadius: 16, overflow: "hidden", background: "var(--surface-sunken)" }}>
+      <LabelShot dim={status !== "verified"} batch={b.id} />
       {status === "reading" && !reduce && <motion.div aria-hidden="true" initial={{ top: "18%" }} animate={{ top: ["18%", "78%", "18%"] }} transition={{ duration: 1.6, repeat: 2, ease: "easeInOut" }} style={{ position: "absolute", left: "10%", right: "10%", height: 3, borderRadius: 3, background: "var(--glow)", boxShadow: "0 0 18px var(--glow)" }} />}
       {status === "verified" && <span style={{ position: "absolute", left: 10, bottom: 10 }}><Badge solid tone="green" icon="check">Verified · Gemini vision · 0.97</Badge></span>}
-      {(status === "requested" || status === "none") && <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", background: "color-mix(in oklab, var(--bg) 55%, transparent)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)" }}><div className="stack tight" style={{ justifyItems: "center", textAlign: "center", padding: 16 }}><Avatar person={D.PEOPLE.rakesh} size="lg" /><b>{status === "requested" ? "Waiting for Rakesh bhai's photo" : "No label photo yet"}</b><span className="t-footnote muted">{status === "requested" ? "Asked at 09:05 · one carton on shelf B4" : "Vision asks the godown before quoting any price"}</span>{status === "requested" && <S.PlayAs who="rakesh" route="photo">Take the photo as Rakesh bhai</S.PlayAs>}</div></div>}
+      {(status === "requested" || status === "none") && <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", background: "color-mix(in oklab, var(--bg) 55%, transparent)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)" }}><div className="stack tight" style={{ justifyItems: "center", textAlign: "center", padding: 16 }}><Avatar person={holder} size="lg" /><b>{status === "requested" ? `Waiting for ${possessive(holder.short)} photo` : "No label photo yet"}</b><span className="t-footnote muted">{status === "requested" ? `Asked at ${C.at.ask} · one carton${shelf}` : "Vision asks the godown before quoting any price"}</span>{status === "requested" && <S.PlayAs who={C.accounts.distributor} route="photo">{`Take the photo as ${holder.short}`}</S.PlayAs>}</div></div>}
     </div>;
   }
   function ApproveSheet({ open, onClose, me }) {
     const { go } = useRoute(); const hero = useStore().hero; const [busy, setBusy] = useState(false); const [placed, setPlaced] = useState(false); const reduce = useReducedMotion();
     const s = S.useStore(); const approvedNow = !!(s.hero.plan && s.hero.plan.status === "approved");
+    // what the yes sets going, line by line of the journey's plan (SC-85, SC-168)
+    const C = storyOf(s), P = C.plan, KL = C.KL, ES = C.ES, holder = personOf(C, C.accounts.distributor), whose = possessive(C.dist.name);
+    const st = P.lines.find(l => l.id === "staff" && l.units > 0), fb = P.lines.find(l => l.id === "foodbank" && l.units > 0);
+    const after = [ES && ["shopping-bag", `Lister posts ${ES.units} units on ExpireSoon at ₹${ES.price} in ${whose} name, with the label photo and dates; reserve ₹13.50, hidden from buyers inside Munchly's territories.`],
+      KL && ["send", `Outreach pushes the Hindi scheme to ${C.offered} kiranas: ${KL.units} units at ₹${KL.packPrice.toFixed(2)} a pack, 2 free with every 10, for 48 hours.`],
+      st && ["users", `${C.dist.short} opens a staff sale of ${st.units} packs at ₹${st.price} at ${C.dist.godown}, and records what sold.`],
+      fb && ["heart-handshake", `Donation books a food bank for the last ${fb.units} packs, with the FSSAI checklist.`],
+      ["smartphone", `${holder.short} gets the same plan in ${C.pron} app and can pause it.`], ["shield-check", "Nothing is listed, messaged or shipped before this tap. The approval is logged with who, when and device."]].filter(Boolean);
+    const doing = [ES && `the Lister is posting on ExpireSoon in ${whose} name`, KL && `Outreach is messaging ${C.offered} kiranas`, fb && "Donation is booking a food bank"].filter(Boolean);
+    const now = doing.length > 1 ? doing.slice(0, -1).join(", ") + " and " + doing[doing.length - 1] : doing[0] || "the agents start";
     useEffect(() => { if (open) setPlaced(approvedNow); }, [open]);
     useEffect(() => { if (open && approvedNow) setPlaced(true); }, [approvedNow]);
     // live (SC-73): the approval goes to the workspace's backend, which may not answer; the sheet says so and offers Retry.
@@ -225,14 +245,14 @@
     return <Sheet open={open} onClose={onClose} title={placed ? "Plan placed" : "Approve the plan"} footer={placed ? <Button variant="primary" size="lg" block iconRight="arrow-right" onClick={() => { onClose(); go("execution", { ref: hero.id }); }}>Watch execution</Button> : <>{failed && !busy && <S.Live.ApproveFailed message={failed.message} />}{yes}<Button variant="ghost" block onClick={onClose}>Not now</Button></>}>
       {placed ? <div className="stack" style={{ justifyItems: "center", textAlign: "center", padding: "12px 0 8px" }}>
         <svg width="96" height="96" viewBox="0 0 96 96" aria-hidden="true"><motion.circle cx="48" cy="48" r="42" fill="none" stroke="var(--primary)" strokeWidth="6" initial={reduce ? false : { pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.6, ease: [0.65, 0, 0.35, 1] }} /><motion.path d="M30 49 L43 62 L67 36" fill="none" stroke="var(--primary)" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" initial={reduce ? false : { pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.45, duration: 0.4 }} /></svg>
-        <div className="t-title2">Approved · 09:40</div>
-        <div className="stack tight" style={{ justifyItems: "center" }}><Money value={D.PLAN.swing} size="l" roll from={0} style={{ color: "var(--primary-text)" }} /><span className="muted">better than the bin, on one batch of chips</span></div>
-        <p className="t-subhead muted" style={{ maxWidth: 40 + "ch" }}>The Lister is posting on ExpireSoon in Rakesh Traders' name and Outreach is messaging {D.OFFERED} kiranas now. Rakesh bhai has the plan in his app. The approval is logged with who, when and device.</p>
+        <div className="t-title2">Approved · {C.at.approve}</div>
+        <div className="stack tight" style={{ justifyItems: "center" }}><Money value={P.swing} size="l" roll from={0} style={{ color: "var(--primary-text)" }} /><span className="muted">better than the bin, on one batch of {noun(C.sku)}</span></div>
+        <p className="t-subhead muted" style={{ maxWidth: 40 + "ch" }}>{now[0].toUpperCase() + now.slice(1)} now. {holder.short} has the plan in {C.pron} app. The approval is logged with who, when and device.</p>
       </div> : <div className="stack">
-        <div className="stack tight"><Money value={D.PLAN.net} size="l" style={{ color: "var(--primary-text)" }} /><span className="muted">net recovered, {D.PLAN.pctMRP}% of MRP</span></div>
-        <List><ListRow icon="trending-up" title="Instead of destroying" value={fmt.inr(-D.PLAN.writeOff.total)} /><ListRow icon="scale" iconTone="blue" title="Swing on this batch" value={fmt.inr(D.PLAN.swing)} /><ListRow icon="badge-check" iconTone="gray" title="GST input credit retained" value={fmt.inr(D.PLAN.itcRetained)} /></List>
+        <div className="stack tight"><Money value={P.net} size="l" style={{ color: "var(--primary-text)" }} /><span className="muted">net recovered, {P.pctMRP}% of MRP</span></div>
+        <List><ListRow icon="trending-up" title="Instead of destroying" value={fmt.inr(-P.writeOff.total)} /><ListRow icon="scale" iconTone="blue" title="Swing on this batch" value={fmt.inr(P.swing)} /><ListRow icon="badge-check" iconTone="gray" title="GST input credit retained" value={fmt.inr(P.itcRetained)} /></List>
         <div className="stack tight"><b className="t-subhead">What happens the moment you tap</b>
-          {[["shopping-bag", `Lister posts ${ES.units} units on ExpireSoon at ₹15 in Rakesh Traders' name, with the label photo and dates; reserve ₹13.50, hidden from buyers inside Munchly's territories.`], ["send", `Outreach pushes the Hindi scheme to ${D.OFFERED} kiranas: ${KL.units} units at ₹${KL.packPrice.toFixed(2)} a pack, 2 free with every 10, for 48 hours.`], ["smartphone", "Rakesh bhai gets the same plan in his app and can pause it."], ["shield-check", "Nothing is listed, messaged or shipped before this tap. The approval is logged with who, when and device."]].map(([ic, t]) => <div key={ic} className="row top t-subhead" style={{ gap: 10 }}><Icon name={ic} size={18} style={{ marginTop: 2, color: "var(--fg-3)" }} /><span>{t}</span></div>)}
+          {after.map(([ic, t]) => <div key={ic} className="row top t-subhead" style={{ gap: 10 }}><Icon name={ic} size={18} style={{ marginTop: 2, color: "var(--fg-3)" }} /><span>{t}</span></div>)}
         </div>
       </div>}
     </Sheet>;
@@ -244,12 +264,15 @@
     const valued = ["valued", "planned", "approved", "executing", "dispatched", "settled", "cleared"].includes(h.phase);
     const planned = ["planned", "approved", "executing", "dispatched", "settled", "cleared"].includes(h.phase);
     const approved = ["approved", "executing", "dispatched", "settled", "cleared"].includes(h.phase);
-    const v = hm.view; const sku = v.skuObj;
+    const v = hm.view; const sku = v.skuObj; const C = storyOf(s), P = C.plan, KL = C.KL, ES = C.ES, holder = personOf(C, C.accounts.distributor);
     // the split, one sentence per line of the plan (SC-85); then the exits the Router left out: one that pays, but less
     // than the last it chose, and one that may not take the batch, with its reason (the food bank and write-off are the floor)
-    const heroDist = D.DISTRIBUTORS[D.BATCHES.find(b => b.hero).distributor];
-    const leftOut = D.PLAN.rows.filter(r => r.id !== "writeoff" && r.id !== "foodbank" && !D.PLAN.lines.some(l => l.id === r.id) && (!r.eligible || r.net > 0));
-    const lowest = (D.PLAN.lines.filter(l => l.id !== "writeoff").sort((a, b) => a.net / a.units - b.net / b.units)[0] || {}).short || "";
+    const heroDist = C.dist;
+    const leftOut = P.rows.filter(r => r.id !== "writeoff" && r.id !== "foodbank" && !P.lines.some(l => l.id === r.id) && (!r.eligible || r.net > 0));
+    const lowest = (P.lines.filter(l => l.id !== "writeoff").sort((a, b) => a.net / a.units - b.net / b.units)[0] || {}).short || "";
+    // the label as Vision reads it: the batch, its dates, its life and its MRP with the carton
+    const pack = (sku.name.match(/(\d+(\.\d+)?\s?(g|ml|kg|l))$/i) || [])[1] || sku.name;
+    const label = [["Batch", v.id], ["Manufactured", fmt.date(v.mfg)], ["Best before", fmt.date(v.bestBefore)], ["Shelf life", `${v.assess.life} days · ${v.assess.lifeUsedPct}% used`], ["MRP", `${fmt.rate(sku.mrp)} · ${sku.perCarton} × ${pack}`], ["Records", "match"]];
     useEffect(() => { const f = () => setSheet(true); window.addEventListener("sc3:approve-open", f); return () => window.removeEventListener("sc3:approve-open", f); }, []);
     // live (SC-73): each flagged batch has its own Route Room (#/route/<batch>), with the batches as tabs under the
     // title; updates paused grey the tracker, and offline the approval waits for a connection
@@ -268,47 +291,47 @@
             <div className="grow"><div className="row base" style={{ gap: 10 }}><DaysNum days={v.daysLeft} life={sku.lifeDays} size="l" style={{ color: approved ? "var(--fg)" : "var(--red-text)" }} /><span className="stack tight" style={{ gap: 0 }}><b>days left</b><span className="t-footnote subtle">best before {fmt.date(v.bestBefore)}</span></span></div></div>
             <div className="stack tight" style={{ justifyItems: app.bp === "phone" ? "start" : "end" }}><GateChips gates={v.assess.gates} /><span className="t-footnote subtle">{fmt.num(v.assess.atRisk)} of {fmt.num(v.units)} units at risk · sells {v.sellPerDay} a day</span></div>
           </div>
-          <Dim on={dim}>{app.bp === "phone" ? <TrackerCompact done={hm.done} current={hm.current} /> : <Tracker stages={stages} done={hm.done} current={hm.current} times={K.STAGE_TIMES} />}</Dim>
+          <Dim on={dim}>{app.bp === "phone" ? <TrackerCompact done={hm.done} current={hm.current} /> : <Tracker stages={stages} done={hm.done} current={hm.current} times={C.times || K.STAGE_TIMES} />}</Dim>
         </Card>
         <Columns sideWidth={340}
           main={<>
             <div data-anchor="label" />
-            <SectionTitle sub="Vision · 09:20" right={h.photo.status === "verified" && <Badge tone="green" icon="check">matches the DMS record</Badge>}>Label, read from the shelf</SectionTitle>
+            <SectionTitle sub={`Vision · ${C.at.read}`} right={h.photo.status === "verified" && <Badge tone="green" icon="check">matches the DMS record</Badge>}>Label, read from the shelf</SectionTitle>
             <Card className="stack" style={{ gap: 16 }}>
               <div style={{ containerType: "inline-size" }}><div className="labelgrid">
                 <LabelPhoto status={h.photo.status} />
-                <div className="stack snug">{h.photo.status === "verified" ? <List>{[["Batch", "MF-2409-117"], ["Manufactured", "18 May 2026"], ["Best before", "18 Nov 2026"], ["Shelf life", `${v.assess.life} days · ${v.assess.lifeUsedPct}% used`], ["MRP", "₹30.00 · 24 × 150 g"], ["Records", "match"]].map(([k, val]) => <ListRow key={k} title={k} value={val} />)}</List>
+                <div className="stack snug">{h.photo.status === "verified" ? <List>{label.map(([k, val]) => <ListRow key={k} title={k} value={val} />)}</List>
                   : <><Locked icon="scan-line" agent="Vision Agent" live={h.photo.status !== "none"} text={h.photo.status === "reading" ? "Reading batch, MFG, best-before and MRP from the photo." : "Prices nothing until a person photographs one carton label on the shelf."} />{[0, 1, 2, 3].map(i => <K.Skeleton key={i} h={44} r={12} />)}</>}</div>
               </div></div>
             </Card>
             <div data-anchor="channels" />
-            <SectionTitle sub="Valuer · 09:21 · per unit, after costs" right={valued && <Segmented options={[{ id: "chart", label: "Chart" }, { id: "table", label: "Table" }]} value={view} onChange={setView} label="View" />}>Five channels, priced</SectionTitle>
-            {valued ? (view === "chart" ? <Card><ChannelBars rows={D.PLAN.rows} chosen={planned ? D.PLAN.lines.map(l => l.id) : []} /><p className="t-footnote subtle" style={{ marginTop: 6 }}>Hover a bar for price, capacity, time to clear and what happens to the GST credit. Destroying costs {fmt.inr2(-D.PLAN.writeOff.perUnit)} a unit; a donation costs {fmt.inr2(-D.PLAN.rows.find(r => r.id === "foodbank").net)}, because the credit on a gift is reversed.</p></Card> : <ChannelTable rows={D.PLAN.rows} chosen={planned ? D.PLAN.lines.map(l => l.id) : []} />)
+            <SectionTitle sub={`Valuer · ${evAt(C, "value")} · per unit, after costs`} right={valued && <Segmented options={[{ id: "chart", label: "Chart" }, { id: "table", label: "Table" }]} value={view} onChange={setView} label="View" />}>Five channels, priced</SectionTitle>
+            {valued ? (view === "chart" ? <Card><ChannelBars rows={P.rows} chosen={planned ? P.lines.map(l => l.id) : []} /><p className="t-footnote subtle" style={{ marginTop: 6 }}>Hover a bar for price, capacity, time to clear and what happens to the GST credit. Destroying costs {fmt.inr2(-P.writeOff.perUnit)} a unit; a donation costs {fmt.inr2(-P.rows.find(r => r.id === "foodbank").net)}, because the credit on a gift is reversed.</p></Card> : <ChannelTable rows={P.rows} chosen={planned ? P.lines.map(l => l.id) : []} />)
               : <Locked icon="scale" agent="Valuer Agent" live={h.photo.status === "verified"} text={h.photo.status === "verified" ? `Pricing five channels against ${v.daysLeft} days left, capacities and the floor.` : "Prices five channels once the label is verified."} />}
             <div data-anchor="split" />
-            <SectionTitle sub="Router · 09:22">Recommended split</SectionTitle>
+            <SectionTitle sub={`Router · ${evAt(C, "route")}`}>Recommended split</SectionTitle>
             {planned ? <div className="stack" style={{ gap: 16 }}>
-              <Card className="stack snug"><SplitBar plan={D.PLAN} sku={sku} />
+              <Card className="stack snug"><SplitBar plan={P} sku={sku} />
                 <div className="stack tight t-subhead" style={{ marginTop: 4 }}>
-                  {D.PLAN.lines.map(ln => <div key={ln.id} className="row top" style={{ gap: 10 }}><span className="dotmark" style={{ background: `var(--ch-${ln.id})` }} />{
+                  {P.lines.map(ln => <div key={ln.id} className="row top" style={{ gap: 10 }}><span className="dotmark" style={{ background: `var(--ch-${ln.id})` }} />{
                     ln.id === "kirana" ? <span><b>{KL.units} units to the kirana cluster at ₹{KL.price} effective</b> (₹{KL.packPrice.toFixed(2)} a pack, 2 free with every 10). The best price, and it keeps stock inside Munchly's own trade. Capped by what {heroDist.kiranas} kiranas can move in 14 days with the scheme, on top of the {v.sellPerDay} a day they already sell.</span>
-                    : ln.id === "expiresoon" ? <span><b>{ES.units} units to ExpireSoon at ₹{ES.price}</b> (reserve ₹13.50), listed in Rakesh Traders' name and hidden from buyers inside Munchly's territories: unlimited depth, 5 to 9 days, the buyer pays freight.</span>
+                    : ln.id === "expiresoon" ? <span><b>{ES.units} units to ExpireSoon at ₹{ES.price}</b> (reserve ₹13.50), listed in {possessive(heroDist.name)} name and hidden from buyers inside Munchly's territories: unlimited depth, 5 to 9 days, the buyer pays freight.</span>
                     : ln.id === "staff" ? <span><b>{ln.units} units to the {ln.name} at ₹{ln.price}</b>, at {heroDist.godown}: {heroDist.short} sells them to staff and records what sold.</span>
                     : ln.id === "foodbank" ? <span><b>{ln.units} units to a food bank</b>, the last of the batch, booked with a partner whose rules it meets; the credit on a gift is reversed.</span>
                     : <span><b>{ln.units} units written off</b>: no exit takes them in time.</span>}</div>)}
                   {leftOut.map(r => <div key={r.id} className="row top muted" style={{ gap: 10 }}><span className="dotmark" style={{ background: "var(--fill-3)" }} /><span>{r.eligible ? `The ${r.name} is eligible but pays less a unit than ${lowest}, so it gets nothing this time.` : `${r.short} is left out (${r.reason}).`}</span></div>)}
                 </div>
               </Card>
-              {D.PLAN.alt && <Card className="row wrap" style={{ gap: 14, background: "var(--surface-2)" }}><span className="icontile soft"><Icon name="git-branch" size={17} /></span><div className="grow"><b>Alternative considered: {D.PLAN.alt.label}</b><div className="t-footnote muted">Net {fmt.inr(D.PLAN.alt.net)}: {fmt.inr(D.PLAN.net - D.PLAN.alt.net)} less, and nothing stays in Munchly's own trade.</div></div><Badge>not chosen</Badge></Card>}
-              <MoneyPanel plan={D.PLAN} compact={app.bp !== "desktop"} />
+              {P.alt && <Card className="row wrap" style={{ gap: 14, background: "var(--surface-2)" }}><span className="icontile soft"><Icon name="git-branch" size={17} /></span><div className="grow"><b>Alternative considered: {P.alt.label}</b><div className="t-footnote muted">Net {fmt.inr(P.alt.net)}: {fmt.inr(P.net - P.alt.net)} less, and nothing stays in Munchly's own trade.</div></div><Badge>not chosen</Badge></Card>}
+              <MoneyPanel plan={P} compact={app.bp !== "desktop"} />
             </div> : <Locked icon="split" agent="Router Agent" live={h.phase === "valued"} text={h.phase === "valued" ? "Filling the best-paying channel to its cap, then the next." : "Proposes a split once the channels are priced."} />}
-            {approved && <Card className="row wrap" style={{ gap: 14 }}><Avatar person={D.PEOPLE[(h.plan && h.plan.by) || "priya"]} size="lg" /><div className="grow"><b>Approved by {D.PEOPLE[(h.plan && h.plan.by) || "priya"].short} · 09:40 · phone</b><div className="t-footnote muted">Logged with who, when and device. The agents are executing; Rakesh bhai has the same plan in his app.</div></div><Button variant="primary" iconRight="arrow-right" onClick={() => go("execution", { ref: h.id })}>Watch execution</Button></Card>}
+            {approved && <Card className="row wrap" style={{ gap: 14 }}><Avatar person={D.PEOPLE[(h.plan && h.plan.by) || "priya"]} size="lg" /><div className="grow"><b>Approved by {D.PEOPLE[(h.plan && h.plan.by) || "priya"].short} · {C.at.approve} · phone</b><div className="t-footnote muted">Logged with who, when and device. The agents are executing; {holder.short} has the same plan in {C.pron} app.</div></div><Button variant="primary" iconRight="arrow-right" onClick={() => go("execution", { ref: h.id })}>Watch execution</Button></Card>}
           </>}
-          side={<><SectionTitle sub="Gaps drawn to the clock">Agent timeline</SectionTitle><Card><Dim on={dim}><AgentFeed events={s.feed.filter(e => e.stage !== "connect")} people={D.PEOPLE} live={hm.agentLive && !dim ? s.feed.filter(e => e.stage !== "connect").length - 1 : -1} /></Dim></Card></>} />
+          side={<><SectionTitle sub="Gaps drawn to the clock">Agent timeline</SectionTitle><Card><Dim on={dim}><AgentFeed events={s.feed.filter(e => e.stage !== "connect")} people={C.people} live={hm.agentLive && !dim ? s.feed.filter(e => e.stage !== "connect").length - 1 : -1} /></Dim></Card></>} />
       </div>
       {h.phase === "planned" && <div style={{ position: "sticky", bottom: 0, zIndex: 5, padding: "12px 0 16px", background: "linear-gradient(180deg, transparent, var(--bg) 35%)" }}>
         <div className="card raised row wrap" style={{ padding: "14px 16px", gap: 14 }}>
-          <div className="row wrap grow" style={{ gap: 18 }}>{[["You get", D.PLAN.net, "var(--primary-text)"], ["Instead of", -D.PLAN.writeOff.total, "var(--red-text)"], ["GST credit safe", D.PLAN.itcRetained, "var(--fg)"]].map(([k, val, c]) => <div key={k} className="stack tight" style={{ gap: 0 }}><span className="t-caption subtle strong">{k}</span><Money value={val} size="s" style={{ color: c, fontSize: 26 }} /></div>)}</div>
+          <div className="row wrap grow" style={{ gap: 18 }}>{[["You get", P.net, "var(--primary-text)"], ["Instead of", -P.writeOff.total, "var(--red-text)"], ["GST credit safe", P.itcRetained, "var(--fg)"]].map(([k, val, c]) => <div key={k} className="stack tight" style={{ gap: 0 }}><span className="t-caption subtle strong">{k}</span><Money value={val} size="s" style={{ color: c, fontSize: 26 }} /></div>)}</div>
           {offline ? <div className="stack tight" style={{ justifyItems: "end", gap: 6 }}><Button variant="approve" size="lg" icon="check" aria-disabled="true" aria-describedby="lv-needs-net" className="lv-blocked">Review and approve</Button><L.NeedsNet id="lv-needs-net" /></div>
             : <Button variant="approve" size="lg" icon="check" onClick={() => setSheet(true)}>Review and approve</Button>}
         </div>
@@ -368,13 +391,15 @@
       <div className="card-head"><span className="row tight"><span className="icontile" style={{ borderRadius: 9 }}><Icon name="hand-coins" size={17} stroke={2} /></span><span className="card-title">Expiry settlement</span></span><Badge tone={x.policy === "none" ? undefined : "green"} icon="check">{POLICY_NAME[x.policy]}</Badge></div>
       <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 120px), 1fr))" }}>{figures.map(([k, v]) => <div key={k} className="stack tight" style={{ gap: 2, padding: "10px 12px", borderRadius: 12, background: "var(--fill)" }}><span className="t-caption subtle">{k}</span><b className="tnum">{v}</b></div>)}</div>
       <span className="t-footnote muted">{expirySentence(x, client, dist)}</span>
-      {x.policy !== "none" && <Button variant="outline" icon="file-text" onClick={() => go("paperwork", { ref: D.BATCHES.find(b => b.hero).id })}>Open the paper</Button>}
+      {x.policy !== "none" && <Button variant="outline" icon="file-text" onClick={() => go("paperwork", { ref: storyOf().batch.id })}>Open the paper</Button>}
     </Card>;
   }
 
   // packs destroyed at the distributor's godown on expiry day (SC-139, option B): where the evidence stands, and on
   // Priya's desk the review: both photos, Vision's checks, the agency, and what her yes issues. The batch closes on it
-  const evidenceSrc = (ref, which, d) => (d && d.photos && d.photos[which] && d.photos[which].url) || `${window.SC3_IMG}evidence/${ref}-${which}.webp`;
+  // each photo as it was sent: its link on the live workspace, else its file (the slow chips' landfill photo on expiry
+  // day, SC-168), else the batch's own
+  const evidenceSrc = (ref, which, d) => { const p = d && d.photos && d.photos[which]; return (p && p.url) || `${window.SC3_IMG}evidence/${window.SC3_LEDGER ? window.SC3_LEDGER.record.evidenceFile(ref, which, p) : `${ref}-${which}.webp`}`; };
   const DSTATE = { requested: ["amber", "waiting for the evidence"], asked: ["amber", "asked again"], reading: ["violet", "Vision is checking"], checked: ["amber", "waiting for your yes"], approved: ["green", "approved"] };
   function DestructionCard({ d, dist, onReview }) {
     const [tone, label] = DSTATE[d.status] || [undefined, d.status];
@@ -384,7 +409,7 @@
       approved: `Approved${d.approvedBy && D.PEOPLE[d.approvedBy] ? ` by ${D.PEOPLE[d.approvedBy].short}` : ""}: the credit note and the agency's certificate are issued.` }[d.status];
     return <Card className="stack snug">
       <div className="card-head"><span className="row tight"><span className={cx("icontile", tone === "amber" && "amber")} style={{ borderRadius: 9 }}><Icon name="recycle" size={17} stroke={2} /></span><span className="card-title">Destruction at the godown</span></span><Badge tone={tone} dot={d.status !== "approved"} live={d.status === "reading"} icon={d.status === "approved" ? "check" : undefined}>{label}</Badge></div>
-      {d.photos && <div className="dz-two dz-pair">{["before", "after"].map(w => <div key={w} className="cam dz-cam"><S.Photo className="cam-feed whole" src={evidenceSrc(HERO.id, w, d)} alt={w === "before" ? "The packs at the godown, the batch label in view" : "The packs slit open at the landfill, the slate in view"} /><span className="cam-tag">{w === "before" ? "Before" : "After"}</span></div>)}</div>}
+      {d.photos && <div className="dz-two dz-pair">{["before", "after"].map(w => <div key={w} className="cam dz-cam"><S.Photo className="cam-feed whole" src={evidenceSrc(storyOf().batch.id, w, d)} alt={w === "before" ? "The packs at the godown, the batch label in view" : "The packs slit open at the landfill, the slate in view"} /><span className="cam-tag">{w === "before" ? "Before" : "After"}</span></div>)}</div>}
       <span className="t-footnote muted">{body}</span>
       {d.status === "checked" && <Button variant="approve" icon="check" onClick={onReview}>Review and approve</Button>}
     </Card>;
@@ -469,7 +494,7 @@
       </div>
       <ol className="esl-steps green" aria-label="Where the scheme stands">{steps.map(([k, t], i) => { const d = done > i && !!t; const now = i === nowAt; return <li key={k} className={cx(d && "done", now && "now")} aria-current={now ? "step" : undefined}><i /><b>{k}</b><span>{d ? t : now ? "waiting" : "\u00a0"}</span></li>; })}</ol>
       {children}
-      <ClusterMap kiranas={kiranas} orderedCount={ordered} route height={200} />
+      <ClusterMap kiranas={kiranas} total={shops} godown={dist.godown.split(" ")[0]} orderedCount={ordered} route height={200} />
       <div className="stack tight">{h.orders.slice(-3).reverse().map(o => { const k = kiranas.find(x => x.id === o.id) || window.SC3_WORLD.KIRANAS.find(x => x.id === o.id); return <div key={o.id} className="row between t-subhead"><span>{k.name} <span className="subtle t-footnote">{k.area}</span></span><span className="tnum strong">{o.units} <span className="subtle t-caption">{o.at}</span></span></div>; })}{!ordered && <span className="t-footnote muted">Orders arrive as shops tap the offer. No shop can order more than {M.RULES.shopCapTimes}× its own {M.RULES.kiranaWindowDays}-day sales.</span>}</div>
       <ApiCall label="The push, as sent"><div className="kpush"><K.Mark size={28} /><div><span className="hi t-subhead" lang="hi">{push.body.replace(kiranas[0].name, "{shop}")}</span><small>{push.en} · one message to all {shops} shops, each with its own name, in Hindi.</small></div></div></ApiCall>
       <span className="t-footnote subtle">A shop that says Not this time keeps its {OFFER_HOURS} hours to change its mind. What no shop takes moves to ExpireSoon when the window ends.</span>
@@ -516,49 +541,56 @@
     const started = ["approved", "executing", "dispatched", "settled", "cleared"].includes(h.phase);
     const units = h.orders.reduce((t, o) => t + o.units, 0);
     const lastBid = h.bids[h.bids.length - 1];
-    const ML = id => D.MANGO_PLAN.lines.find(l => l.id === id) || { units: 0 };
+    // the journey's batch and the batch it donates (beside the chips, the Mango Drink; in its own journey, itself)
+    const C = storyOf(s), P = C.plan, KL = C.KL, ES = C.ES, DN = C.donation;
+    const ML = id => (DN ? DN.plan : P).lines.find(l => l.id === id) || { units: 0 };
     // the cards follow the case's own plan (SC-85): a channel the Router left out says why, and its agent stands by
-    const hasLine = id => D.PLAN.lines.some(l => l.id === id && l.units > 0);
-    const esRow = D.PLAN.rows.find(r => r.id === "expiresoon");
-    const req = `POST /v1/listings\n{\n  "seller": "Rakesh Traders, Nagpur",\n  "on_behalf": "one-time permission · inside Munchly floors",\n  "sku": "MF-MC-150",\n  "batch": "MF-2409-117",\n  "units": ${ES.units},\n  "price": 15.00,\n  "reserve": 13.50,\n  "mrp": 30.00,\n  "best_before": "2026-11-18",\n  "hide_from_pincodes": ["440", "441", "442", "411", "412", "452", "453", "500", "501"],\n  "label_photo": "gs://smart-clearance/labels/MF-2409-117.jpg"\n}`;
-    const res = h.listing ? `HTTP/1.1 201 Created\n{\n  "id": "${D.JOURNEY.listing.id}",\n  "status": "${h.listing.status}",\n  "url": "${D.JOURNEY.listing.url}"\n}` : "";
-    return <Screen me={me} title="Execution" sub="MF-2409-117 · day 0 to 14 · four agents" back="Route Room">
+    const hasLine = id => P.lines.some(l => l.id === id && l.units > 0);
+    const esRow = P.rows.find(r => r.id === "expiresoon");
+    const pins = Object.values(D.DISTRIBUTORS).flatMap(d => d.pins.split(/,\s*/)).map(p => `"${p}"`).join(", ");
+    const req = ES ? `POST /v1/listings\n{\n  "seller": "${C.dist.name}, ${C.dist.city}",\n  "on_behalf": "one-time permission · inside Munchly floors",\n  "sku": "${C.sku.code}",\n  "batch": "${C.batch.id}",\n  "units": ${ES.units},\n  "price": ${ES.price.toFixed(2)},\n  "reserve": 13.50,\n  "mrp": ${C.sku.mrp.toFixed(2)},\n  "best_before": "${C.batch.bestBefore}",\n  "hide_from_pincodes": [${pins}],\n  "label_photo": "gs://smart-clearance/labels/${C.batch.id}.jpg"\n}` : "";
+    const res = h.listing ? `HTTP/1.1 201 Created\n{\n  "id": "${C.listing.id}",\n  "status": "${h.listing.status}",\n  "url": "${C.listing.url}"\n}` : "";
+    const agents = [hasLine("expiresoon"), hasLine("kirana"), hasLine("expiresoon"), !!DN].filter(Boolean).length;
+    const kirana = personOf(C, C.accounts.kirana), holder = personOf(C, C.accounts.distributor);
+    return <Screen me={me} title="Execution" sub={`${C.batch.id} · day 0 to 14 · ${AGENTS[agents]}`} back="Route Room">
       {!started ? <Card><Empty icon="sparkles" title="Nothing is executing yet" body="Listing, outreach, negotiation and the food-bank booking start the moment the plan is approved." /></Card> :
       <Columns sideWidth={340}
         main={<div style={{ display: "grid", gap: 20, gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 340px), 1fr))", alignItems: "start" }}>
-          {hasLine("expiresoon") ? <ListerCard h={h} lot={ES} sku={D.SKUS[HERO.sku]} batch={HERO} dist={D.DISTRIBUTORS[HERO.distributor]} buyer={D.BUYER} reserve={h.listing ? h.listing.reserve : 13.5} client={D.WORKSPACE.short} territories={Object.values(D.DISTRIBUTORS)} req={req} res={res} onOpen={() => (onOpenListing ? onOpenListing() : setSheet(true))} /> : <Card className="stack snug">
+          {hasLine("expiresoon") ? <ListerCard h={h} lot={ES} sku={C.sku} batch={C.batch} dist={C.dist} buyer={D.BUYER} reserve={h.listing ? h.listing.reserve : 13.5} client={D.WORKSPACE.short} territories={Object.values(D.DISTRIBUTORS)} req={req} res={res} onOpen={() => (onOpenListing ? onOpenListing() : setSheet(true))} /> : <Card className="stack snug">
             <div className="card-head"><span className="row tight"><span className="icontile gray" style={{ borderRadius: 9 }}><Icon name="shopping-bag" size={17} stroke={2} /></span><span className="card-title">Lister · ExpireSoon</span></span><Badge>not in this plan</Badge></div>
             <span className="t-footnote muted">{esRow && !esRow.eligible ? `ExpireSoon is left out of this plan (${esRow.reason}).` : "The Router gave ExpireSoon nothing: the other exits pay more a unit."} The Lister has nothing to list.</span>
           </Card>}
-          <SchemeCard h={h} line={KL} sku={D.SKUS[HERO.sku]} batch={HERO} dist={D.DISTRIBUTORS[HERO.distributor]} shops={D.OFFERED} kiranas={D.KIRANAS} push={D.PUSH.offer} vanDate={D.JOURNEY.van.date}>
-            {h.offer && !h.orders.some(o => o.id === "k0") && <S.PlayAs who="ganesh" route="offer">Order as Ganesh ji</S.PlayAs>}
-          </SchemeCard>
-          <Card className="stack snug">
-            <div className="card-head"><span className="row tight"><Aura on={!!lastBid && lastBid.status === "placed"} className="icontile gray" style={{ borderRadius: 9 }}><Icon name="messages-square" size={17} stroke={2} /></Aura><span className="card-title">Negotiator</span></span>{h.award ? <Badge tone="green" icon="check">awarded · ₹{D.COUNTER.price.toFixed(2)}</Badge> : <Badge>reserve ₹13.50 · hidden</Badge>}</div>
-            {h.chat.length ? <Chat chat={h.chat} typing={lastBid && lastBid.status === "placed"} /> : <span className="t-footnote muted">Waiting for a bid from outside Munchly's territories. The agent counters anything under the reserve and promises only what Rakesh's calendar can keep.</span>}
+          {hasLine("kirana") && <SchemeCard h={h} line={KL} sku={C.sku} batch={C.batch} dist={C.dist} shops={C.offered} kiranas={C.kiranas} push={C.push.offer} vanDate={C.journey.van.date}>
+            {h.offer && !h.orders.some(o => o.id === C.shop) && <S.PlayAs who={C.accounts.kirana} route="offer">{`Order as ${kirana.short}`}</S.PlayAs>}
+          </SchemeCard>}
+          {hasLine("expiresoon") && <Card className="stack snug">
+            <div className="card-head"><span className="row tight"><Aura on={!!lastBid && lastBid.status === "placed"} className="icontile gray" style={{ borderRadius: 9 }}><Icon name="messages-square" size={17} stroke={2} /></Aura><span className="card-title">Negotiator</span></span>{h.award ? <Badge tone="green" icon="check">awarded · ₹{C.counter.price.toFixed(2)}</Badge> : <Badge>reserve ₹13.50 · hidden</Badge>}</div>
+            {h.chat.length ? <Chat chat={h.chat} typing={lastBid && lastBid.status === "placed"} /> : <span className="t-footnote muted">Waiting for a bid from outside Munchly's territories. The agent counters anything under the reserve and promises only what {holder.short.split(" ")[0]}'s calendar can keep.</span>}
             {h.listing && !h.award && (!lastBid || lastBid.status === "countered") && <S.PlayAs who="agrawal" route="listing">{lastBid ? "Answer the counter as Agrawal ji" : "Bid as Agrawal ji on ExpireSoon"}</S.PlayAs>}
-            {h.award && <List>{[["ExpireSoon, planned", `${ES.units} × ₹15.00`, fmt.inr(D.ACTUAL.esPlanned)], ["ExpireSoon, actual", `${ES.units} × ₹${D.COUNTER.price.toFixed(2)}`, fmt.inr(D.ACTUAL.esActual)], ["Net, planned", "", fmt.inr(D.PLAN.net)], ["Net, actual", `−${fmt.inr(D.ACTUAL.delta)} on the counter`, fmt.inr(D.ACTUAL.net)]].map(([k, sub, val]) => <ListRow key={k} title={k} sub={sub || undefined} value={<span className="tnum strong">{val}</span>} />)}</List>}
-            {h.award && <Badge tone="green" icon="badge-check">Token {fmt.inr(D.AWARD.token)} received · balance {fmt.inr(D.AWARD.balance)} plus IGST in {D.MARKET.balanceHours} h</Badge>}
-            {h.award && all(h) && h.truck.status !== "dispatched" && <S.PlayAs who="rakesh" route="van">Load the buyer's truck as Rakesh bhai</S.PlayAs>}
-          </Card>
-          <Card className="stack snug">
-            <div className="card-head"><span className="row tight"><Aura on={!s.mango.donation} className="icontile red" style={{ borderRadius: 9 }}><Icon name="heart-handshake" size={17} stroke={2} /></Aura><span className="card-title">Donation · Mango Drink</span></span>{s.mango.donation ? <Badge tone="green" icon="check">{s.mango.donation === "collected" ? "collected" : s.mango.donation === "confirmed" ? "pickup confirmed" : "pickup booked"}</Badge> : <Badge>matching partners</Badge>}</div>
-            <div className="row" style={{ gap: 14 }}><Product name="pack-mango" size={72} /><div className="stack tight" style={{ gap: 2 }}><b>MF-2410-118 · 22 days left</b><span className="t-footnote muted">Lakshmi Agencies, Hyderabad: {fmt.num(ML("kirana").units)} packs to her kiranas, {ML("staff").units} to her staff sale, {D.MANGO_FB} left for a food bank. Too few days for ExpireSoon.</span></div></div>
-            <List><ListRow icon="circle-check" title="Feeding India" sub={`15+ days, 50+ units · ${D.SETUP.partners[0].pickup}`} value={<Badge size="sm" tone="green">matches</Badge>} /><ListRow icon="circle-x" iconTone="gray" title="India FoodBanking Network" sub="needs 21+ days and 100+ units" value={<Badge size="sm">{D.MANGO_FB} units</Badge>} /></List>
+            {h.award && <List>{[["ExpireSoon, planned", `${ES.units} × ₹${ES.price.toFixed(2)}`, fmt.inr(C.actual.esPlanned)], ["ExpireSoon, actual", `${ES.units} × ₹${C.counter.price.toFixed(2)}`, fmt.inr(C.actual.esActual)], ["Net, planned", "", fmt.inr(P.net)], ["Net, actual", `−${fmt.inr(C.actual.delta)} on the counter`, fmt.inr(C.actual.net)]].map(([k, sub, val]) => <ListRow key={k} title={k} sub={sub || undefined} value={<span className="tnum strong">{val}</span>} />)}</List>}
+            {h.award && <Badge tone="green" icon="badge-check">Token {fmt.inr(C.award.token)} received · balance {fmt.inr(C.award.balance)} plus IGST in {D.MARKET.balanceHours} h</Badge>}
+            {h.award && all(h, C) && h.truck.status !== "dispatched" && <S.PlayAs who={C.accounts.distributor} route="van">{`Load the buyer's truck as ${holder.short}`}</S.PlayAs>}
+          </Card>}
+          {DN && <Card className="stack snug">
+            <div className="card-head"><span className="row tight"><Aura on={!s.mango.donation} className="icontile red" style={{ borderRadius: 9 }}><Icon name="heart-handshake" size={17} stroke={2} /></Aura><span className="card-title">Donation · {noun(DN.sku)}</span></span>{s.mango.donation ? <Badge tone="green" icon="check">{s.mango.donation === "collected" ? "collected" : s.mango.donation === "confirmed" ? "pickup confirmed" : "pickup booked"}</Badge> : <Badge>matching partners</Badge>}</div>
+            <div className="row" style={{ gap: 14 }}><Product name={DN.sku.img} size={72} /><div className="stack tight" style={{ gap: 2 }}><b>{DN.batch.id} · {DN.batch.daysLeft} days left</b><span className="t-footnote muted">{DN.dist.name}, {DN.dist.city}: {fmt.num(ML("kirana").units)} packs to her kiranas, {ML("staff").units} to her staff sale, {DN.units} left for a food bank. Too few days for ExpireSoon.</span></div></div>
+            <List><ListRow icon="circle-check" title="Feeding India" sub={`15+ days, 50+ units · ${D.SETUP.partners[0].pickup}`} value={<Badge size="sm" tone="green">matches</Badge>} /><ListRow icon="circle-x" iconTone="gray" title="India FoodBanking Network" sub="needs 21+ days and 100+ units" value={<Badge size="sm">{DN.units} units</Badge>} /></List>
             <span className="t-footnote subtle">The GST credit on donated packs is reversed: section 17(5)(h) blocks it on gifts, and since 1 October 2023 section 17(5)(fa) blocks it on CSR donations too.</span>
-            {s.mango.donation === "booked" && <S.PlayAs who="meera" route="pickups">Confirm as Meera</S.PlayAs>}
-          </Card>
-          {hasLine("staff") && <StaffOps staff={h.staff} line={D.PLAN.lines.find(l => l.id === "staff")} dist={D.DISTRIBUTORS[D.BATCHES.find(b => b.hero).distributor]} />}
-          {h.realised && h.realised.godown > 0 && ["dispatched", "settled", "cleared"].includes(h.phase) && <GodownLeft realised={h.realised} plan={D.PLAN} actual={h.realisedNet} dist={D.DISTRIBUTORS[D.BATCHES.find(b => b.hero).distributor]} />}
-          {h.expiry && h.expiry.units > 0 && <ExpirySettlement settle={h.expiry} dist={D.DISTRIBUTORS[D.BATCHES.find(b => b.hero).distributor]} />}
-          {h.destruction && <DestructionCard d={h.destruction} dist={D.DISTRIBUTORS[HERO.distributor]} onReview={() => setDz(true)} />}
+            {s.mango.donation === "booked" && <S.PlayAs who={C.accounts.foodbank} route="pickups">Confirm as Meera</S.PlayAs>}
+            {s.mango.donation === "confirmed" && s.mango.id === h.id && <S.PlayAs who={C.accounts.foodbank} route="pickups">Collect as Meera</S.PlayAs>}
+          </Card>}
+          {hasLine("staff") && <StaffOps staff={h.staff} line={P.lines.find(l => l.id === "staff")} dist={C.dist} />}
+          {h.staff && h.staff.status === "open" && <S.PlayAs who={C.accounts.distributor} route="van">{`Record the staff sale as ${holder.short}`}</S.PlayAs>}
+          {h.realised && h.realised.godown > 0 && ["dispatched", "settled", "cleared"].includes(h.phase) && <GodownLeft realised={h.realised} plan={P} actual={C.actual.net} dist={C.dist} />}
+          {h.expiry && h.expiry.units > 0 && <ExpirySettlement settle={h.expiry} dist={C.dist} />}
+          {h.destruction && <DestructionCard d={h.destruction} dist={C.dist} onReview={() => setDz(true)} />}
         </div>}
-        side={<><SectionTitle>Agent timeline</SectionTitle><Card><AgentFeed events={s.feed.filter(e => ["approve", "execute", "settle", "report"].includes(e.stage))} people={D.PEOPLE} live={hm.agentLive ? s.feed.filter(e => ["approve", "execute", "settle", "report"].includes(e.stage)).length - 1 : -1} /></Card></>} />}
+        side={<><SectionTitle>Agent timeline</SectionTitle><Card><AgentFeed events={s.feed.filter(e => ["approve", "execute", "settle", "report"].includes(e.stage))} people={C.people} live={hm.agentLive ? s.feed.filter(e => ["approve", "execute", "settle", "report"].includes(e.stage)).length - 1 : -1} /></Card></>} />}
       <Sheet open={sheet} onClose={() => setSheet(false)} title="ExpireSoon · as buyers see it">{window.SC3_SCREENS.ListingView ? React.createElement(window.SC3_SCREENS.ListingView, { readOnly: true }) : null}</Sheet>
-      <DestructionSheet open={dz && !!h.destruction} onClose={() => setDz(false)} d={h.destruction} x={h.expiry} dist={D.DISTRIBUTORS[HERO.distributor]} sku={D.SKUS[HERO.sku]} batch={HERO} />
+      <DestructionSheet open={dz && !!h.destruction} onClose={() => setDz(false)} d={h.destruction} x={h.expiry} dist={C.dist} sku={C.sku} batch={C.batch} />
     </Screen>;
   }
-  const all = h => h.orders.length === D.KIRANAS.length;
+  const all = (h, C) => h.orders.length === C.kiranas.length;
 
   /* ---------- a batch's page (SC-112) ---------- */
   // the operator reads the workspace top down: the workspace, then a batch, then the batch's screens. A batch's page
@@ -588,12 +620,12 @@
   // chips once the Watcher has flagged them, and on the live workspace the batches it flagged (screens/live.jsx)
   function journeyItems(s, live) {
     const hm = heroModel(s); const stage = D.STAGES[hm.current];
-    const items = live && S.Live ? S.Live.flaggedItems(s, live) : [{ ref: D.BATCHES[0].id, hero: true, view: hm.view, done: hm.done, current: hm.current, stop: stage ? stage.title : "Cleared", human: !!(stage && stage.human) }];
+    const items = live && S.Live ? S.Live.flaggedItems(s, live) : [{ ref: storyOf(s).batch.id, hero: true, view: hm.view, done: hm.done, current: hm.current, stop: stage ? stage.title : "Cleared", human: !!(stage && stage.human) }];
     return items.filter(it => !it.hero || s.hero.phase !== "watching");
   }
   // any batch's view, as the Command Center shows it
   function viewOf(s, ref, live) {
-    const b = D.BATCHES.find(x => x.id === ref); if (!b) return null;
+    const b = storyOf(s).batches.find(x => x.id === ref); if (!b) return null;
     if (b.hero) return heroModel(s).view;
     const v = D.batchView(b); if (b.second && !live) v.phase = "executing"; return v;
   }
@@ -645,19 +677,19 @@
   function BatchJourney({ me, it, v }) {
     const s = useStore(); const app = useApp(); const { go } = useRoute(); const hm = heroModel(s); const h = s.hero; const phone = app.bp === "phone"; const live = S.useLive();
     if (!it) return <Screen me={me} title="Journey"><Columns sideWidth={340} main={<Card className="stack"><BatchFacts view={v} /></Card>} side={<div className="stack snug"><SectionTitle sub="Every hand-off on this batch, as it happens">Agent activity</SectionTitle><Card><span className="t-footnote muted">The agents report here once the Watcher flags this batch.</span></Card></div>} /></Screen>;
-    const routed = ["approved", "executing", "dispatched", "settled", "cleared"].includes(h.phase); const SHOPS = D.KIRANAS.length;
+    const routed = ["approved", "executing", "dispatched", "settled", "cleared"].includes(h.phase); const C = storyOf(s), SHOPS = C.kiranas.length;
     let card;
     if (it.hero) {
       const primary = h.phase === "planned" ? <Button variant="approve" icon="check" onClick={() => go("route", { ref: it.ref })}>Review and approve</Button> : ["approved", "executing"].includes(h.phase) ? <Button variant="primary" iconRight="arrow-right" onClick={() => go("execution", { ref: it.ref })}>Watch execution</Button> : <Button variant="primary" iconRight="arrow-right" onClick={() => go("route", { ref: it.ref })}>Open Route Room</Button>;
-      const money = h.plan ? <div className="stack tight" style={{ gap: 2 }}><Money value={h.posted ? D.ACTUAL.net : D.PLAN.net} size={phone ? "s" : "m"} roll style={{ color: "var(--primary-text)" }} /><span className="t-footnote subtle">{h.posted ? "recovered, after the negotiation" : routed ? "on plan · settles day 3–7" : "net recovered on the plan"} · swing {fmt.inr(h.posted ? D.ACTUAL.swing : D.PLAN.swing)}</span></div> : undefined;
+      const money = h.plan ? <div className="stack tight" style={{ gap: 2 }}><Money value={h.posted ? C.actual.net : C.plan.net} size={phone ? "s" : "m"} roll style={{ color: "var(--primary-text)" }} /><span className="t-footnote subtle">{h.posted ? (C.ES ? "recovered, after the negotiation" : "recovered, every line done") : routed ? "on plan · settles day 3–7" : "net recovered on the plan"} · swing {fmt.inr(h.posted ? C.actual.swing : C.plan.swing)}</span></div> : undefined;
       card = <TrackerCard view={hm.view} done={hm.done} current={hm.current} eta={hm.eta} etaTone={hm.etaTone} agentLive={hm.agentLive} primary={primary} money={money} />;
     } else card = <S.Live.MangoCard item={it} dim={!!live && S.Live.down(live.conn)} />;
     const cluster = it.hero && <Card pad={false} className="stack" style={{ overflow: "hidden", gap: 0 }}>
-      <div className="card-head" style={{ padding: "14px 16px 10px" }}><span className="card-title">{v.dist.city} cluster</span><Badge size="sm" tone={hm.ordered ? "green" : undefined} dot={!!hm.ordered}>{hm.ordered ? `${hm.ordered} of ${D.OFFERED} kiranas ordered` : h.offer ? `${D.OFFERED} kiranas messaged` : `${D.OFFERED} kiranas`}</Badge></div>
-      <ClusterMap kiranas={D.KIRANAS} orderedCount={hm.ordered} route={routed} vanProgress={h.van.status === "done" ? 1 : hm.ordered / SHOPS * 0.6} height={phone ? 220 : 280} />
+      <div className="card-head" style={{ padding: "14px 16px 10px" }}><span className="card-title">{v.dist.city} cluster</span><Badge size="sm" tone={hm.ordered ? "green" : undefined} dot={!!hm.ordered}>{hm.ordered ? `${hm.ordered} of ${C.offered} kiranas ordered` : h.offer ? `${C.offered} kiranas messaged` : `${C.offered} kiranas`}</Badge></div>
+      <ClusterMap kiranas={C.kiranas} total={C.offered} godown={godownOf(C)} orderedCount={hm.ordered} route={routed} vanProgress={h.van.status === "done" ? 1 : hm.ordered / SHOPS * 0.6} height={phone ? 220 : 280} />
     </Card>;
     const events = it.hero ? s.feed : mangoFeed(v);
-    const feed = <div className="stack snug"><SectionTitle sub="Every hand-off on this batch, as it happens">Agent activity</SectionTitle><Card>{events.length ? <AgentFeed events={events} people={D.PEOPLE} live={it.hero && hm.agentLive ? s.feed.length - 1 : -1} max={phone ? 4 : 8} /> : <span className="t-footnote muted">The agents report here as they work this batch.</span>}</Card></div>;
+    const feed = <div className="stack snug"><SectionTitle sub="Every hand-off on this batch, as it happens">Agent activity</SectionTitle><Card>{events.length ? <AgentFeed events={events} people={C.people} live={it.hero && hm.agentLive ? s.feed.length - 1 : -1} max={phone ? 4 : 8} /> : <span className="t-footnote muted">The agents report here as they work this batch.</span>}</Card></div>;
     return <Screen me={me} title="Journey"><Columns sideWidth={340} main={<>{card}{cluster}</>} side={feed} /></Screen>;
   }
   // the Record of a batch in a journey (SC-142): the story's batch from its feed and audit; the stub keeps no record of
@@ -678,7 +710,7 @@
   /* ---------- Batches ---------- */
   function Batches({ me }) {
     const s = useStore(); const app = useApp(); const { go } = useRoute(); const hm = heroModel(s);
-    const views = D.BATCHES.map(b => { const v = D.batchView(b); if (b.hero) v.phase = hm.view.phase; if (b.second) v.phase = "executing"; return v; });
+    const views = storyOf(s).batches.map(b => { const v = D.batchView(b); if (b.hero) v.phase = hm.view.phase; if (b.second) v.phase = "executing"; return v; });
     // each row opens the batch's page (SC-112): Batches is the operator's (SC-127)
     const live = S.useLive();
     const openRow = v => go(partAt(journeyItems(s, live).find(i => i.ref === v.id)), { ref: v.id });

@@ -50,10 +50,12 @@ export const viewOf = (b: Batch, data: Pick<WorkspaceData, 'skus' | 'distributor
 	dist: data.distributors[b.distributor]
 });
 
-/** which stage is active (0–8), or 9 when the batch is cleared; shops: how many kiranas the scheme waits for */
-export function stageAt(state: State, shops: number) {
+/** which stage is active (0–8), or 9 when the batch is cleared; shops: how many kiranas the scheme waits for. A scheme
+ *  is over once its window has closed, or (one that fills) once they have all ordered; the stub's slow chips' does not
+ *  fill (SC-168) */
+export function stageAt(state: State, shops: number, fills = true) {
 	const h = state.hero;
-	const all = h.orders.length === shops;
+	const all = h.offer?.status === 'closed' || (fills && h.orders.length === shops);
 	if (!state.setup.confirmed || !state.setup.permission) return 0;
 	if (h.phase === 'watching') return 1;
 	if (h.photo.status !== 'verified') return 2;
@@ -71,7 +73,7 @@ export function stageAt(state: State, shops: number) {
 export function heroModel(s: State, data: Pick<WorkspaceData, 'skus' | 'distributors'>, c: CaseData) {
 	const h = s.hero;
 	const view: BatchView = viewOf(c.batch, data);
-	const idx = stageAt(s, c.kiranas.length);
+	const idx = stageAt(s, c.kiranas.length, c.story?.fills ?? true);
 	view.phase = PHASE_STATUS[h.phase];
 	const ordered = h.orders.length;
 	const orderedUnits = h.orders.reduce((t, o) => t + o.units, 0);
