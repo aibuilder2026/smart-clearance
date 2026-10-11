@@ -2197,7 +2197,7 @@
   - **Checks:** the frontend gate passes (core 381, api 83, admin 22, console 2, workspace 105, demo 9). design3 and the port were played along the whole route at 1440 and 390 with no page errors; each beat's sheet (both approvals, the destruction) opened in headless Chromium on design3, the port and the hosted page.
   - **Hosting:** the hosted demo page in demo v3 loads commit `15e0690`, with the console's stylesheet and script; every pinned file was checked on jsDelivr first (one cached 403 purged). smartclearance-demo.web.app follows on the merge to `main`.
 
-- **SC-170** (In Review, branch `SC-170-docs-cleanup`): documentation cleanup, asked for by the maintainer.
+- **SC-170** (PR #152, merged): documentation cleanup, asked for by the maintainer.
   - **PLAN.md removed** (the plan of 2 Oct); its market reasoning (why India, why a router rather than a marketplace,
     GST, BRSR and FSSAI) is folded into PRODUCT.md's Positioning. AGENTS.md's layout and the README no longer name it.
   - **PRODUCT.md** brought up to date in impeccable's layout: the four apps, backend-api and the agents, email and
