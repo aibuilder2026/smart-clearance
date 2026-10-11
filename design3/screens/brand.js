@@ -130,7 +130,7 @@
     const perm = s.setup.permission;
     const money = s.hero.plan ? /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { gap: 2 } }, /* @__PURE__ */ React.createElement(Money, { value: s.hero.posted ? C.actual.net : C.plan.net, size: phone ? "s" : "m", roll: true, style: { color: "var(--primary-text)" } }), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, s.hero.posted ? C.ES ? "recovered, after the negotiation" : "recovered, every line done" : routed ? "on plan · settles day 3–7" : "net recovered on the plan", " · swing ", fmt.inr(s.hero.posted ? C.actual.swing : C.plan.swing))) : void 0;
     const holder = personOf(C, C.accounts.distributor);
-    const placed = C.plan.lines.filter((l) => l.units > 0 && l.id !== "writeoff").map((l) => l.id === "kirana" ? `${l.units} with ${C.kiranas.length} kiranas` : l.id === "expiresoon" ? `${l.units} with a ${D.BUYER.city} wholesaler` : l.id === "staff" ? `${l.units} at the staff sale` : `${l.units} to ${C.donation ? C.donation.partner.name : "a food bank"}`).join(", ");
+    const placed = C.plan.lines.filter((l) => l.units > 0 && l.id !== "writeoff").map((l) => l.id === "kirana" ? `${fmt.num(l.units)} with ${C.kiranas.length} kiranas` : l.id === "expiresoon" ? `${fmt.num(l.units)} with a ${D.BUYER.city} wholesaler` : l.id === "staff" ? `${fmt.num(l.units)} at the staff sale` : `${fmt.num(l.units)} to ${C.donation ? C.donation.partner.name : "a food bank"}`).join(", ");
     const ready = !S.useLive() || s.setup.mapped > 0;
     const tracker = flagged ? /* @__PURE__ */ React.createElement(
       TrackerCard,

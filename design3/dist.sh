@@ -11,7 +11,7 @@ for f in system/icons.js core/money.js core/papers.js core/data.js core/store.js
 for f in screens/common.js screens/live.js screens/brand.js screens/trade.js screens/finance.js screens/admin.js screens/auth.js screens/roles.js; do js "$f" >> dist/sc3-screens.js; echo >> dist/sc3-screens.js; done
 for f in system/tokens.css system/base.css system/components.css screens/screens.css; do css "$f" >> dist/sc3.css; echo >> dist/sc3.css; done
 js system/ds.js > dist/ds.js; css system/docs.css > dist/docs.css
-js demo/director.js > dist/director.js; css demo/demo.css > dist/demo.css
+{ js demo/story.js; echo; js demo/director.js; } > dist/director.js; css demo/demo.css > dist/demo.css
 js app/app.js > dist/app.js; css app/app.css > dist/app.css
 # the platform pages: the console carries its own mock backend; the site is the product's landing page
 { js core/platform.js; echo; js console/console.js; } > dist/console.js; css console/console.css > dist/console.css

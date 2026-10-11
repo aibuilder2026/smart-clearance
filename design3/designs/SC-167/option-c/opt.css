@@ -1,0 +1,116 @@
+/* SC-167 · option C, The show: the title card, a chapter's card, the spotlit stage, the caption, the timeline */
+.sh-shell, .sh-demo { grid-template-rows: auto minmax(0, 1fr) auto; }
+.sh-shell { grid-template-rows: auto minmax(0, 1fr); }
+.sh-top { z-index: 5; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 16px; height: 52px; padding: 0 16px; }
+.sh-home { display: grid; border-radius: 9px; }
+.sh-top-c { display: grid; justify-items: center; line-height: 1.25; min-width: 0; }
+.sh-top-c b { font-size: 14px; font-weight: 700; }
+.sh-top-c span { font-size: 12px; color: var(--fg-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+
+/* the title card */
+.sh-titlewrap { min-height: 0; overflow: auto; }
+.sh-title { min-height: 100%; display: grid; align-content: center; justify-items: center; gap: 44px; padding: 32px 24px 40px; box-sizing: border-box; }
+.sh-title-in { display: grid; justify-items: center; gap: 18px; text-align: center; }
+.sh-h1 { margin: 6px 0 0; font-family: var(--font-display); font-weight: 650; font-size: clamp(40px, 5.2vw, 76px); letter-spacing: -0.04em; line-height: 0.98; font-variation-settings: "opsz" 96; text-wrap: balance; }
+.sh-lede { margin: 0; font-size: 17px; color: var(--fg-2); max-width: 52ch; }
+.sh-play { width: 88px; height: 88px; border-radius: 50%; display: grid; place-items: center; margin-top: 6px; background: var(--primary); color: var(--primary-fg); box-shadow: var(--shadow-2); transition: transform var(--t-fast) var(--ease), background-color var(--t-fast); }
+.sh-play:hover { background: var(--primary-hover); transform: scale(1.04); }
+.sh-play:active { transform: scale(0.97); }
+.sh-play svg { margin-left: 4px; }
+.sh-chapters { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 240px)); gap: 14px; }
+.sh-chap { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 14px 10px 10px; border-radius: 18px; background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); text-align: left; transition: box-shadow var(--t-base); }
+.sh-chap:hover { box-shadow: var(--shadow-2), 0 0 0 1.5px var(--primary); }
+.sh-chap-vis { position: relative; width: 56px; height: 56px; flex: none; border-radius: 14px; display: grid; place-items: center; background: var(--fill-2); color: var(--fg); }
+.sh-chap-vis.sm { width: 44px; height: 44px; border-radius: 12px; }
+.sh-chap-vis img { width: 80%; height: 80%; object-fit: contain; }
+.sh-chap-bin { position: absolute; right: -6px; bottom: -4px; width: 46% !important; height: 46% !important; }
+.sh-chap-t { display: grid; line-height: 1.25; min-width: 0; }
+.sh-chap-t span { font-size: 12px; color: var(--fg-3); }
+.sh-chap-t b { font-size: 15px; font-weight: 700; }
+
+/* a chapter's card */
+.sh-card { position: absolute; inset: 0; z-index: 400; display: grid; place-items: center; padding: 32px; cursor: pointer; background: color-mix(in oklab, var(--bg) 90%, transparent); -webkit-backdrop-filter: blur(30px) saturate(150%); backdrop-filter: blur(30px) saturate(150%); }
+.sh-card-in { width: min(1180px, 100%); display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 48px; align-items: center; cursor: auto; }
+.sh-card-copy { display: grid; justify-items: start; gap: 12px; }
+.sh-eyebrow { font-size: 14px; font-weight: 650; color: var(--primary-text); }
+.sh-card-title { margin: 0; font-family: var(--font-display); font-weight: 650; font-size: clamp(48px, 6vw, 92px); letter-spacing: -0.045em; line-height: 0.92; font-variation-settings: "opsz" 96; }
+.sh-card-sub { margin: 0; font-size: 22px; font-weight: 600; color: var(--fg-2); }
+.sh-card-place { font-size: 15px; color: var(--fg-3); }
+.sh-cast { list-style: none; margin: 14px 0 18px; padding: 0; display: flex; flex-wrap: wrap; gap: 18px 26px; }
+.sh-cast li { display: grid; justify-items: start; gap: 4px; }
+.sh-cast b { font-size: 14px; font-weight: 700; }
+.sh-cast span { font-size: 12px; color: var(--fg-3); }
+.sh-card-vis { position: relative; display: grid; place-items: center; aspect-ratio: 1; border-radius: 40px; background: radial-gradient(60% 60% at 50% 45%, var(--surface), transparent 72%); }
+.sh-card-vis img { width: 72%; height: 72%; object-fit: contain; }
+.sh-card-bin { position: absolute; right: 4%; bottom: 8%; width: 40% !important; height: 40% !important; }
+.sh-card-console { width: 160px; height: 160px; border-radius: 48px; display: grid; place-items: center; background: var(--surface); box-shadow: var(--shadow-2); }
+
+/* the stage: the device in play lit, the other dimmed */
+.sh-stage { position: relative; min-height: 0; overflow: hidden; display: grid; place-items: start center; padding: 6px 22px 0; }
+.sh-stage .devices { align-items: flex-start; }
+.sh-stage .dev { transition: opacity 0.42s var(--ease), transform 0.42s var(--ease), filter 0.42s var(--ease); transform-origin: top center; }
+.sh-stage .devices:has(.dev-ring.on) .dev:not(:has(.dev-ring.on)) { opacity: 0.55; transform: scale(0.965); }
+@media (prefers-reduced-motion: reduce) { .sh-stage .dev { transition: none; } }
+
+/* the caption, a lower third over the stage, with the station's figures beside it */
+.sh-cap-wrap { position: absolute; left: 22px; right: 22px; bottom: 14px; z-index: 4; display: flex; align-items: stretch; justify-content: center; gap: 10px; pointer-events: none; }
+.sh-cap-wrap > * { pointer-events: auto; }
+.sh-cap { flex: 0 1 820px; min-width: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: start; padding: 14px 18px 14px 14px; border-radius: 22px; background: var(--glass-strong, var(--surface)); -webkit-backdrop-filter: blur(22px) saturate(170%); backdrop-filter: blur(22px) saturate(170%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.sh-cap.amber { box-shadow: var(--shadow-2), 0 0 0 2px var(--amber); }
+.sh-agent { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary-text); }
+.sh-agent.working { box-shadow: 0 0 0 2px var(--primary); }
+.sh-cap-body { display: grid; gap: 4px; min-width: 0; }
+.sh-cap-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font-size: 12.5px; color: var(--fg-3); }
+.sh-cap-meta b { font-size: 13px; font-weight: 700; color: var(--fg); }
+.sh-cap-st { padding: 1px 8px; border-radius: 99px; background: var(--fill-2); font-weight: 600; color: var(--fg-2); }
+.sh-cap-text { font-size: 19px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; color: var(--fg); text-wrap: pretty; }
+.sh-cap-move { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 650; color: var(--amber-text); }
+.sh-cap-stub { font-size: 12px; font-weight: 600; color: var(--fg-3); }
+.sh-figs { flex: none; display: flex; gap: 10px; }
+.sh-fig { display: grid; align-content: center; gap: 1px; padding: 10px 16px; border-radius: 22px; min-width: 132px; background: var(--glass-strong, var(--surface)); -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
+.sh-fig > span { font-size: 12px; font-weight: 600; color: var(--fg-3); }
+.sh-fig .num.m { font-size: 26px; }
+@media (max-width: 1280px) { .sh-fig:nth-child(n+2) { display: none; } }
+
+/* the timeline */
+.sh-bar { z-index: 5; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 18px; padding: 10px 16px 12px; background: var(--glass); -webkit-backdrop-filter: blur(22px) saturate(160%); backdrop-filter: blur(22px) saturate(160%); box-shadow: inset 0 var(--hair) 0 var(--line); }
+.sh-pp { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: var(--fg); color: var(--bg); }
+.sh-track { display: flex; gap: 6px; min-width: 0; }
+.sh-seg { display: grid; gap: 6px; min-width: 0; padding: 4px 0; text-align: left; }
+.sh-seg-t { font-size: 12px; font-weight: 600; color: var(--fg-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sh-seg.now .sh-seg-t { color: var(--fg); font-weight: 700; }
+.sh-seg-rail { position: relative; height: 6px; border-radius: 6px; background: var(--fill-3); overflow: hidden; }
+.sh-seg-rail > span { position: absolute; inset: 0; background: var(--primary); transform-origin: left; transition: transform 0.42s var(--ease); }
+.sh-seg-rail > i { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--bg); opacity: 0.8; }
+.sh-seg:hover .sh-seg-rail { background: var(--line-2); }
+.sh-count { font-size: 12.5px; font-weight: 600; color: var(--fg-3); font-variant-numeric: tabular-nums; }
+
+/* the end */
+.sh-ends { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; width: 100%; margin: 10px 0 8px; }
+.sh-endcol { display: grid; justify-items: center; gap: 4px; text-align: center; }
+.sh-endcol img { width: 84px; height: 84px; object-fit: contain; }
+.sh-endname { font-size: 15px; font-weight: 700; }
+.sh-endnum { font-size: clamp(36px, 4.4vw, 60px); letter-spacing: -0.04em; }
+.sh-endline { font-size: 13.5px; color: var(--fg-2); max-width: 28ch; }
+.sh-endline.red { color: var(--red-text); }
+
+/* tablets and phones */
+@media (max-width: 1099px) { .sh-chapters { grid-template-columns: repeat(2, minmax(0, 240px)); } .sh-card-in { grid-template-columns: minmax(0, 1fr); gap: 20px; } .sh-card-vis { display: none; } .sh-figs { display: none; } }
+@media (max-width: 767px) {
+  .sh-chapters { grid-template-columns: minmax(0, 1fr); width: 100%; }
+  .sh-real .sh-stage { padding: 0; }
+  .sh-real .sh-cap-wrap { top: 60px; bottom: auto; left: 8px; right: 8px; }
+  .sh-real .sh-cap { padding: 10px 12px; border-radius: 16px; }
+  .sh-real .sh-figs { display: none; }
+  .sh-real .sh-cap-text { font-size: 15px; }
+  .sh-real .real-app { inset: 0 !important; }
+  .sh-bar { grid-template-columns: auto minmax(0, 1fr); gap: 10px; padding: 8px 10px calc(env(safe-area-inset-bottom, 0px) + 8px); }
+  .sh-bar-r { display: none; }
+  .sh-seg-t { display: none; }
+  .sh-top-c span { display: none; }
+  .sh-card { padding: 20px; } .sh-card-title { font-size: 48px; }
+  .sh-ends { grid-template-columns: minmax(0, 1fr); }
+}
+/* the caption's portrait keeps the avatar's own size inside the caption's grid */
+.sh-cap-who { display: block; width: 48px; height: 48px; }
+.sh-cap-who .avatar img { width: 48px; height: 48px; }

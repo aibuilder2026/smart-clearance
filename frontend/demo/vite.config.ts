@@ -4,7 +4,8 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 
-// design3 stays the source of truth: its images are referenced in place by core and hashed into the build, never copied
+// design3 stays the source of truth: its images are referenced in place by core (and the console's sign-in plate by the
+// demo) and hashed into the build, never copied
 const design3 = fileURLToPath(new URL('../../design3', import.meta.url));
 
 export default defineConfig({
@@ -19,6 +20,7 @@ export default defineConfig({
 				filename.split(/[/\\]/).includes('node_modules') ? undefined : { runes: true }
 		})
 	],
+	resolve: { alias: { $design3: design3 } },
 	server: { port: 5176, strictPort: true, fs: { allow: ['..', design3] } },
 	preview: { port: 4178, strictPort: true }
 });

@@ -1,0 +1,10 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local), edit",
+  "source": "design3/system/img/evidence/MF-2409-117-after.webp (seed 1393)",
+  "prompt": "Change only the chalk date written on the small black slate board, from \"03-10-26\" to \"18-11-26\", in the same white chalk handwriting, same size and position; keep the other two lines \"MF-2409-117\" and \"144 PKTS\" exactly as they are, and keep everything else in the photo identical: the landfill pit, the red chips packets, the yellow JCB, the man and his hand, the light and colours.",
+  "size": 1024,
+  "steps": 40,
+  "seed": 2101,
+  "post": "resized to 1024 wide (Lanczos), cwebp -q 82; picked from seeds 2101 and 2102 (2101 read right first)",
+  "use": "SC-167: the guided demo's slow week, the destruction's after photo on expiry day (18 Nov 2026), so the slate's date matches the story; MF-2409-117-after.webp keeps 03-10-26 for the live leftover journey suites. Illustrative, fictional brand · batch MF-2409-117"
+}

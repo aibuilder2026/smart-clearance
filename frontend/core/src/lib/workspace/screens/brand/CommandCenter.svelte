@@ -14,7 +14,18 @@
 	import Skeleton from '../../../components/Skeleton.svelte';
 	import { useRoute } from '../../context';
 	import { useLive } from '../../live.svelte';
-	import { batchViews, castOf, clusterOf, fmt, heroModel, isRouted, journeysOf, partAt } from '../../model';
+	import {
+		batchViews,
+		castOf,
+		clusterOf,
+		fmt,
+		heroModel,
+		isRouted,
+		journeysOf,
+		partAt,
+		placedOf,
+		recoveredOf
+	} from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { BatchView, User } from '../../types';
 	import PlayAs from '../common/PlayAs.svelte';
@@ -98,11 +109,9 @@
 			roll
 			style="color: var(--primary-text)"
 		/><span class="t-footnote subtle"
-			>{s.hero.posted
-				? 'recovered, after the negotiation'
-				: routed
-					? 'on plan · settles day 3–7'
-					: 'net recovered on the plan'} · swing {fmt.inr(s.hero.posted ? c.actual.swing : c.plan.swing)}</span
+			>{s.hero.posted ? recoveredOf(c) : routed ? 'on plan · settles day 3–7' : 'net recovered on the plan'} · swing {fmt.inr(
+				s.hero.posted ? c.actual.swing : c.plan.swing
+			)}</span
 		>
 	</div>{/snippet}
 {#snippet emptyAction()}{#if !s.setup.confirmed}<Button
@@ -155,7 +164,7 @@
 			line={s.hero.phase === 'cleared'
 				? dz
 					? `${fmt.num(c.plan.units - dz.units)} of ${fmt.num(c.plan.units)} units placed; ${fmt.num(dz.units)} expired and were destroyed at ${c.dist.godown}, on your yes.`
-					: `All ${fmt.num(c.plan.units)} units placed: ${c.lines.kirana.units} with ${c.kiranas.length} kiranas, ${c.lines.expiresoon.units} with a ${c.buyer.city} wholesaler. Nothing went to the bin.`
+					: `All ${fmt.num(c.plan.units)} units placed: ${placedOf(c)}. Nothing went to the bin.`
 				: undefined}
 		/>{:else}<Card
 			><Empty
