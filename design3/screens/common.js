@@ -6,14 +6,41 @@
   const { motion, AnimatePresence, useReducedMotion } = Motion;
   const useStore = () => useSyncExternalStore(Store.subscribe, Store.get);
   function Photo({ src, alt = "", className, style, ...rest }) {
+    const [at, setAt] = useState(src);
     const [st, setSt] = useState("loading");
     const ref = useRef(null);
     useEffect(() => {
-      const i = ref.current;
-      setSt(i && i.complete && i.naturalWidth ? "ready" : "loading");
+      if (src === at) return;
+      if (st !== "ready") {
+        setAt(src);
+        setSt("loading");
+        return;
+      }
+      let on = true;
+      const pre = new Image();
+      pre.onload = () => {
+        if (on) {
+          setAt(src);
+          setSt("ready");
+        }
+      };
+      pre.onerror = () => {
+        if (on) {
+          setAt(src);
+          setSt("failed");
+        }
+      };
+      pre.src = src;
+      return () => {
+        on = false;
+      };
     }, [src]);
+    useEffect(() => {
+      const i = ref.current;
+      if (i && i.complete && i.naturalWidth) setSt("ready");
+    }, [at]);
     const shown = style && style.opacity != null ? style.opacity : 1;
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, st === "loading" && /* @__PURE__ */ React.createElement(Skeleton, { r: 0, style: { position: "absolute", inset: 0, height: "auto", zIndex: 1, borderRadius: "inherit", backgroundColor: "var(--surface-2)" } }), st === "failed" && /* @__PURE__ */ React.createElement("span", { className: "photo-failed" }, /* @__PURE__ */ React.createElement(Icon, { name: "image", size: 20 }), /* @__PURE__ */ React.createElement("span", { className: "t-caption" }, "The photo did not load")), /* @__PURE__ */ React.createElement("img", { ref, src, alt, className, onLoad: () => setSt("ready"), onError: () => setSt("failed"), style: { ...style, opacity: st === "ready" ? shown : 0, transition: "opacity 240ms var(--ease)" }, ...rest }));
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, st === "loading" && /* @__PURE__ */ React.createElement(Skeleton, { r: 0, style: { position: "absolute", inset: 0, height: "auto", zIndex: 1, borderRadius: "inherit", backgroundColor: "var(--surface-2)" } }), st === "failed" && /* @__PURE__ */ React.createElement("span", { className: "photo-failed" }, /* @__PURE__ */ React.createElement(Icon, { name: "image", size: 20 }), /* @__PURE__ */ React.createElement("span", { className: "t-caption" }, "The photo did not load")), /* @__PURE__ */ React.createElement("img", { ref, src: at, alt, className, onLoad: () => setSt("ready"), onError: () => setSt("failed"), style: { ...style, opacity: st === "ready" ? shown : 0, transition: "opacity 240ms var(--ease)" }, ...rest }));
   }
   const RouteCtx = createContext({ route: { name: "command" }, go: () => {
   }, back: () => {

@@ -12,13 +12,24 @@
   // frames are near-black and the shimmer is a translucent tint, so the skeleton sits on the page's own surface, under
   // the photo's tag (SC-146)
   function Photo({ src, alt = "", className, style, ...rest }) {
-    const [st, setSt] = useState("loading"); const ref = useRef(null);
-    useEffect(() => { const i = ref.current; setSt(i && i.complete && i.naturalWidth ? "ready" : "loading"); }, [src]);
+    // the link on screen: once a photo has loaded, a new link to it (a fresh signed link, as every read of the live
+    // workspace brings, SC-180) loads behind it and takes its place when ready, so it never drops back to its skeleton
+    const [at, setAt] = useState(src); const [st, setSt] = useState("loading"); const ref = useRef(null);
+    useEffect(() => {
+      if (src === at) return;
+      if (st !== "ready") { setAt(src); setSt("loading"); return; }
+      let on = true; const pre = new Image();
+      pre.onload = () => { if (on) { setAt(src); setSt("ready"); } };
+      pre.onerror = () => { if (on) { setAt(src); setSt("failed"); } };
+      pre.src = src;
+      return () => { on = false; };
+    }, [src]);
+    useEffect(() => { const i = ref.current; if (i && i.complete && i.naturalWidth) setSt("ready"); }, [at]);
     const shown = style && style.opacity != null ? style.opacity : 1;
     return <>
       {st === "loading" && <Skeleton r={0} style={{ position: "absolute", inset: 0, height: "auto", zIndex: 1, borderRadius: "inherit", backgroundColor: "var(--surface-2)" }} />}
       {st === "failed" && <span className="photo-failed"><Icon name="image" size={20} /><span className="t-caption">The photo did not load</span></span>}
-      <img ref={ref} src={src} alt={alt} className={className} onLoad={() => setSt("ready")} onError={() => setSt("failed")} style={{ ...style, opacity: st === "ready" ? shown : 0, transition: "opacity 240ms var(--ease)" }} {...rest} />
+      <img ref={ref} src={at} alt={alt} className={className} onLoad={() => setSt("ready")} onError={() => setSt("failed")} style={{ ...style, opacity: st === "ready" ? shown : 0, transition: "opacity 240ms var(--ease)" }} {...rest} />
     </>;
   }
 

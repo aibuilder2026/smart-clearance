@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import type { HTMLImgAttributes } from 'svelte/elements';
 	import Skeleton from '../../../components/Skeleton.svelte';
 	import Icon from '../../../icons/Icon.svelte';
@@ -11,9 +12,34 @@
 	let { src, alt = '', opacity = 1, ...rest }: Props = $props();
 	let st = $state<'loading' | 'ready' | 'failed'>('loading');
 	let img: HTMLImageElement | undefined = $state();
+	// the link on screen: once a photo has loaded, a new link to it (a fresh signed link, as every read of the live
+	// workspace brings, SC-180) loads behind it and takes its place when ready, so it never drops back to its skeleton
+	// svelte-ignore state_referenced_locally
+	let at = $state(src);
 	$effect(() => {
-		void src;
-		st = img?.complete && img.naturalWidth ? 'ready' : 'loading';
+		const want = src;
+		if (want === untrack(() => at)) return;
+		if (untrack(() => st) !== 'ready') {
+			at = want;
+			st = 'loading';
+			return;
+		}
+		let on = true;
+		const pre = new Image();
+		pre.onload = () => {
+			if (on) [at, st] = [want, 'ready'];
+		};
+		pre.onerror = () => {
+			if (on) [at, st] = [want, 'failed'];
+		};
+		pre.src = want;
+		return () => {
+			on = false;
+		};
+	});
+	$effect(() => {
+		void at;
+		if (img?.complete && img.naturalWidth) st = 'ready';
 	});
 </script>
 
@@ -26,7 +52,7 @@
 	>{/if}
 <img
 	bind:this={img}
-	{src}
+	src={at}
 	{alt}
 	{...rest}
 	onload={() => (st = 'ready')}
