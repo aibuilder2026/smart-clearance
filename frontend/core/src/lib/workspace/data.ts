@@ -84,6 +84,7 @@ type StoryOwn = Pick<
 	| 'pron'
 	| 'setupDone'
 	| 'stages'
+	| 'times'
 >;
 type StorySeed = StoryOwn &
 	Omit<Story, keyof StoryOwn | 'sku' | 'dist' | 'donation' | 'second' | 'actual'> & {

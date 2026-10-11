@@ -700,6 +700,8 @@ export type Story = {
 	explore: Explore;
 	stages: string[];
 	setupDone: boolean;
+	/** each stop's time on the tracker, where it is not the story's */
+	times: Record<string, string> | null;
 	initial: State;
 	/** once Impact has posted it: its papers and its ledger row */
 	end: { docs: Doc[]; row: LedgerBatch };

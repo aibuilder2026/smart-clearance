@@ -136,7 +136,12 @@ const pushes = (p: Record<string, Push>) =>
 /** the workspace's data on another journey: its batches as that journey flags them */
 const DATA: Partial<Record<StoryKey, WorkspaceData>> = { chips: data };
 const dataOf = (key: StoryKey) =>
-	(DATA[key] ??= Object.freeze({ ...data, batches: storyOf(key).batches }) as WorkspaceData);
+	(DATA[key] ??= Object.freeze({
+		...data,
+		batches: storyOf(key).batches,
+		// each stop's time on the tracker, as the journey has them
+		stages: data.stages.map((st) => ({ ...st, time: storyOf(key).times?.[st.id] ?? st.time }))
+	}) as WorkspaceData);
 const PUBLIC: Partial<Record<StoryKey, WorkspacePublic>> = { chips: publicInfo };
 const publicOf = (key: StoryKey) =>
 	(PUBLIC[key] ??= Object.freeze({

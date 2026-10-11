@@ -291,7 +291,7 @@
             <div className="grow"><div className="row base" style={{ gap: 10 }}><DaysNum days={v.daysLeft} life={sku.lifeDays} size="l" style={{ color: approved ? "var(--fg)" : "var(--red-text)" }} /><span className="stack tight" style={{ gap: 0 }}><b>days left</b><span className="t-footnote subtle">best before {fmt.date(v.bestBefore)}</span></span></div></div>
             <div className="stack tight" style={{ justifyItems: app.bp === "phone" ? "start" : "end" }}><GateChips gates={v.assess.gates} /><span className="t-footnote subtle">{fmt.num(v.assess.atRisk)} of {fmt.num(v.units)} units at risk · sells {v.sellPerDay} a day</span></div>
           </div>
-          <Dim on={dim}>{app.bp === "phone" ? <TrackerCompact done={hm.done} current={hm.current} /> : <Tracker stages={stages} done={hm.done} current={hm.current} times={K.STAGE_TIMES} />}</Dim>
+          <Dim on={dim}>{app.bp === "phone" ? <TrackerCompact done={hm.done} current={hm.current} /> : <Tracker stages={stages} done={hm.done} current={hm.current} times={C.times || K.STAGE_TIMES} />}</Dim>
         </Card>
         <Columns sideWidth={340}
           main={<>

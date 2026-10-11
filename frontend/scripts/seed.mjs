@@ -834,7 +834,8 @@ const storiesSeed = (() => {
 		vanDay: S.vanDay,
 		pron: S.pron,
 		setupDone: S.setupDone,
-		stages: S.stages
+		stages: S.stages,
+		times: S.times
 	});
 	const withAssess = (b) => ({ ...b, assess: D.batchView(b).assess });
 	const out = { chips: own(D.storyOf('chips')) };

@@ -9,6 +9,8 @@
 
   // word joiners keep a range whole and a no-break space keeps the date whole, so a narrow stop wraps only at the first space
   const STAGE_TIMES = { connect: "once", detect: "09:00", verify: "09:20", value: "09:21", decide: "09:22", approve: "09:40", execute: "day 0⁠–⁠14", settle: "day 3⁠–⁠7", report: "after 29 Oct" };
+  // the stops' times on the journey the store holds (SC-168: the Mango Drink's own, the slow chips'), else the story's
+  const timesNow = () => { const d = D(); return (d.story && d.story().times) || STAGE_TIMES; };
   const STATUS = {
     "at-risk": { tone: "red", label: "At risk" }, gated: { tone: "amber", label: "Gated · selling through" }, safe: { tone: "green", label: "Safe" },
     executing: { tone: "green", label: "In motion" }, routed: { tone: "green", label: "Routed" }, settled: { tone: "blue", label: "Settled" }, cleared: { tone: "green", label: "Cleared" },
@@ -19,7 +21,7 @@
   // on a phone the nine stops fold into one row: where the batch is now, and a sheet with every stop and its time
   function TrackerCompact({ done, current, label = "Where the batch is" }) {
     const [open, setOpen] = useState(false); const d = D();
-    const stages = d.STAGES.map(s => ({ id: s.id, title: s.title, human: s.human, time: STAGE_TIMES[s.id], text: s.who }));
+    const times = timesNow(), stages = d.STAGES.map(s => ({ id: s.id, title: s.title, human: s.human, time: times[s.id], text: s.who }));
     const now = current >= 0 ? stages[current] : null;
     return <>
       <button type="button" className={cx("tk-compact", now && now.human && "human")} onClick={() => setOpen(true)} aria-label={`${label}: ${now ? now.title + ", stage " + (current + 1) + " of 9" : "all nine stages done"}. Show every stage`}>
@@ -52,11 +54,11 @@
         <Product name={sku.img} size={phone ? 92 : 168} float alt={sku.name} />
       </div>
       <div className="row wrap" style={{ gap: phone ? 10 : 18, marginTop: phone ? 12 : 16, alignItems: "flex-end" }}>
-        {money || <div className="stack tight" style={{ gap: 2 }}><Money value={-d.PLAN.writeOff.total} size={phone ? "s" : "m"} style={{ color: "var(--red-text)" }} /><span className="t-footnote subtle">if destroyed · {fmt.num(a.atRisk)} units at risk</span></div>}
+        {money || <div className="stack tight" style={{ gap: 2 }}><Money value={-(d.story ? d.story().plan : d.PLAN).writeOff.total} size={phone ? "s" : "m"} style={{ color: "var(--red-text)" }} /><span className="t-footnote subtle">if destroyed · {fmt.num(a.atRisk)} units at risk</span></div>}
         <div className="grow t-subhead muted" style={{ minWidth: 220, maxWidth: 520 }}>{line || `Blocked from Blinkit, Zepto and Instamart. ${fmt.num(a.atRisk)} of ${fmt.num(view.units)} units will not sell by ${fmt.date(view.bestBefore).replace(/ \d{4}$/, "")}.`}</div>
       </div>
       <div style={{ marginTop: phone ? 14 : 22 }}>
-        {phone ? <TrackerCompact done={done} current={current} /> : <Tracker stages={stages} done={done} current={current} times={STAGE_TIMES} onStop={onStop} />}
+        {phone ? <TrackerCompact done={done} current={current} /> : <Tracker stages={stages} done={done} current={current} times={timesNow()} onStop={onStop} />}
       </div>
       <div className="row between wrap" style={{ marginTop: phone ? 16 : 20, gap: 10 }}>
         <div className="row tight wrap">

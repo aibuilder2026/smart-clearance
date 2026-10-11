@@ -510,6 +510,8 @@
     // the day Impact posts it (the return window closed the day before), what it came to, and the van round's day
     cleared: addDays(RETURN_BY, 1), outcome: "sold", vanDay: 4, pron: "his",
     explore: EXPLORE, stages: STAGE_IDS, setupDone: false,
+    // each stop's time on the tracker: the kit's own (product.jsx STAGE_TIMES) for the story
+    times: null,
   };
 
   // the Mango Drink at Lakshmi Agencies, as the hero of its own journey: Setup is confirmed and she gave her permission on
@@ -584,6 +586,8 @@
       { group: "Invited partners", note: "a one-time code or Google", ids: [["lakshmi-owner", "Send the photo, record the staff sale, run the van"], [mangoShopPerson.id, "Order from the Hindi offer"], ["meera", "Confirm and collect the food-bank pickup"]] },
     ], code: EXPLORE.code, accounts: [["priya", PEOPLE.priya.email], ["lakshmi-owner", lakshmiPerson.phone], [mangoShopPerson.id, mangoShopPerson.phone]] },
     stages: STAGE_IDS.filter(id => id !== "connect"), setupDone: true,
+    // word joiners keep a range whole on the tracker, as the kit's own times do
+    times: { connect: "1 Oct", detect: "09:00", verify: "09:17", value: "09:18", decide: "09:19", approve: "09:35", execute: "day 0\u2060–\u20604", settle: "day 4\u2060–\u20605", report: `after ${fmt.day(MANGO_RETURN_BY)}` },
   };
 
   // the chips, slow: the same batch and plan, but 23 of the 31 shops order (444 of 588 packets), Shubham Provision says
@@ -638,6 +642,7 @@
     at: Object.assign({}, CHIPS_STORY.at, { closed: "Sun 4 Oct · 09:41", report: "19 Nov", expiry: "18 Nov", approved: "19 Nov" }),
     // expiry day is the batch's best-before; Priya approves the evidence the next morning, when Impact reports
     expiryDay: hero.bestBefore, cleared: addDays(hero.bestBefore, 1), outcome: "leftover",
+    times: { connect: "once", detect: "09:00", verify: "09:20", value: "09:21", decide: "09:22", approve: "09:40", execute: "day 0\u2060–\u20603", settle: "day 3\u2060–\u20604", report: `on ${fmt.day(hero.bestBefore)}` },
     explore: { groups: EXPLORE.groups.map(g => (g.group === "Invited partners" ? Object.assign({}, g, { ids: g.ids.filter(([id]) => id !== "meera").concat([[slowShopPerson.id, "Say Not this time to the scheme"]]) }) : g)), code: EXPLORE.code, accounts: EXPLORE.accounts },
   });
   const STORIES = { chips: CHIPS_STORY, mango: MANGO_STORY, slow: SLOW_STORY };

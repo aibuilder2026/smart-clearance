@@ -56,7 +56,8 @@
 			"execute",
 			"settle",
 			"report"
-		]
+		],
+		"times": null
 	},
 	"mango": {
 		"key": "mango",
@@ -110,6 +111,17 @@
 			"settle",
 			"report"
 		],
+		"times": {
+			"connect": "1 Oct",
+			"detect": "09:00",
+			"verify": "09:17",
+			"value": "09:18",
+			"decide": "09:19",
+			"approve": "09:35",
+			"execute": "day 0⁠–⁠4",
+			"settle": "day 4⁠–⁠5",
+			"report": "after 4 Oct"
+		},
 		"batch": {
 			"id": "MF-2410-118",
 			"sku": "mango",
@@ -2543,6 +2555,17 @@
 			"settle",
 			"report"
 		],
+		"times": {
+			"connect": "once",
+			"detect": "09:00",
+			"verify": "09:20",
+			"value": "09:21",
+			"decide": "09:22",
+			"approve": "09:40",
+			"execute": "day 0⁠–⁠3",
+			"settle": "day 3⁠–⁠4",
+			"report": "on 18 Nov"
+		},
 		"batch": {
 			"id": "MF-2409-117",
 			"sku": "chips",
