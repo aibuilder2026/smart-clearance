@@ -39,9 +39,7 @@
         ] },
         { id: "new", title: "A new client", date: "Sunday 11 October", desk: { console: "/overview" }, beats: [
           { text: "A demo request from the landing page: Kesari Foods, three distributors around Indore", who: "neha", focus: "desk", time: "09:04", desk: { scrollTo: "Demo requests" }, screen: "Overview · Demo requests" },
-          { text: "Set up: the company, its workspace address, its supply chain, its exits, how much the agents may do, its admin and plan", who: "neha", focus: "desk", time: "09:05", desk: { console: "/new-client", prep: (w) => w.SC3_PLATFORM.update((x) => {
-            x.draft = { name: "Kesari Foods", industry: "Snacks and drinks", emailDomain: "kesari.example", adminName: "Ritu Malhotra", adminEmail: "ritu@kesari.example", plan: "pilot", request: "rq-kesari" };
-          }) }, screen: "New client · seven steps" }
+          { text: "Set up: the company, its workspace address, its supply chain, its exits, how much the agents may do, its admin and plan", who: "neha", focus: "desk", time: "09:05", desk: { console: "/new-client?request=rq-kesari" }, screen: "New client · seven steps" }
         ] },
         { id: "munchly", title: "Munchly's setup", date: "Sunday 11 October", desk: { console: "/clients/munchly/supply" }, beats: [
           { text: "Munchly's first stock export, uploaded by Neha and mapped by the Data agent: 312 rows, 9 batches", agent: "Data", focus: "desk", time: "09:06", screen: "Supply chain · First stock export" },

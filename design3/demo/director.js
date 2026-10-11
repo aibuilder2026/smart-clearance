@@ -119,11 +119,34 @@
     }, [playing, hold, end, complete, done, pos.a, pos.s, pos.b, next, nextStation]);
     return { pos, act, station, beat, complete, end, ran, doneAt, go, next, back, tap, playing, setPlaying, setEnd };
   }
-  function ConsoleScreen({ spec, onSignIn }) {
-    const C = window.SC3_CONSOLE;
-    const route = spec.console || "/overview";
-    if (C && C.Embedded) return /* @__PURE__ */ React.createElement(C.Embedded, { route, signin: !!spec.signin, scrollTo: spec.scrollTo, prep: spec.prep, onSignIn });
-    return /* @__PURE__ */ React.createElement("iframe", { title: "The Smart-Clearance console", src: `../console/Smart-Clearance%20console%20v3.html#${route}`, style: { position: "absolute", inset: 0, width: "100%", height: "100%", border: 0, background: "var(--bg)" } });
+  function ConsoleScreen({ spec }) {
+    const C = window.SC3_CONSOLE, P = window.SC3_PLATFORM;
+    const raw = spec.console || "/overview";
+    const [path, search] = raw.split("?");
+    const key = `${raw}|${spec.scrollTo}|${!!spec.signin}`;
+    const box = useRef(null);
+    const [route, setRoute] = useState(() => C.routeOf("#" + path));
+    useEffect(() => {
+      const rq = new URLSearchParams(search || "").get("request");
+      const r = rq && (P.get().requests || []).find((x) => x.id === rq);
+      if (r) P.update((x) => {
+        x.draft = { name: r.company, industry: r.makes, emailDomain: (r.email.split("@")[1] || "").toLowerCase(), adminName: r.name, adminEmail: r.email, plan: (P.PLANS.find((p) => p.name === r.plan) || P.PLANS[0]).id, request: r.id };
+      });
+      setRoute(C.routeOf("#" + path));
+      const t = setTimeout(() => {
+        const root = box.current;
+        if (!root) return;
+        const el = spec.scrollTo && [...root.querySelectorAll("h1, h2, h3, h4, .section-title, b, strong")].find((x) => x.textContent.trim().startsWith(spec.scrollTo));
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        else {
+          const sc = root.querySelector(".scroll");
+          sc && sc.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }, 700);
+      return () => clearTimeout(t);
+    }, [key]);
+    if (!C) return null;
+    return /* @__PURE__ */ React.createElement("div", { ref: box, className: "console-screen", style: { position: "absolute", inset: 0 } }, /* @__PURE__ */ React.createElement(AppRoot, { embedded: true, style: { position: "absolute", inset: 0 } }, /* @__PURE__ */ React.createElement(NoticeHost, null, /* @__PURE__ */ React.createElement(C.App, { key: spec.signin ? "in" : "app", route, go: (name, id, tab) => setRoute({ name, id, tab }), signIn: !!spec.signin, world: "demo" }))));
   }
   function DevLabel({ who, kind, focus, amber }) {
     const me = user(who);

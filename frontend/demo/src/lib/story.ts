@@ -75,7 +75,7 @@ export const ACTS: StoryAct[] = [
 				desk: { console: '/overview' },
 				beats: [
 					{ text: 'A demo request from the landing page: Kesari Foods, three distributors around Indore', who: 'neha', focus: 'desk', time: '09:04', desk: { scrollTo: 'Demo requests' }, screen: 'Overview · Demo requests' },
-					{ text: 'Set up: the company, its workspace address, its supply chain, its exits, how much the agents may do, its admin and plan', who: 'neha', focus: 'desk', time: '09:05', desk: { console: '/new-client' }, screen: 'New client · seven steps' }
+					{ text: 'Set up: the company, its workspace address, its supply chain, its exits, how much the agents may do, its admin and plan', who: 'neha', focus: 'desk', time: '09:05', desk: { console: '/new-client?request=rq-kesari' }, screen: 'New client · seven steps' }
 				]
 			},
 			{
