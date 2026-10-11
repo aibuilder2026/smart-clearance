@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-173 Papers as evidence</title>
+<meta name="description" content="Three parts, each its own pick: the staff sale's consolidated receipt, the certificate of destruction in full, and a signature on every paper, for past and present batches.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<link rel="stylesheet" href="board.css">
+<style>
+  .part { margin-top: 70px; padding-top: 8px; border-top: 2px solid var(--line-2); }
+  .part > h2 { margin-top: 18px; }
+  .kicker { font: 600 12.5px/1 var(--ui); letter-spacing: 0.08em; text-transform: uppercase; color: var(--green-text); }
+  .wide { display: grid; gap: 12px; }
+  .blocks { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  @media (min-width: 900px) { .blocks { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .sigs { display: grid; gap: 14px; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; }
+  @media (min-width: 900px) { .sigs { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+  .sigs figure img { background: #fffefb; padding: 10px; box-shadow: 0 0 0 1px var(--line); }
+  .pair { display: grid; gap: 12px; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 760px) { .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .pair > :first-child { grid-column: 1 / -1; } }
+  .now { display: grid; gap: 12px; grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr) minmax(0, 1.3fr); align-items: start; }
+  @media (max-width: 900px) { .now { grid-template-columns: minmax(0, 1fr); } }
+</style>
+<body>
+<main class="wrap">
+<h1>Papers as evidence</h1>
+<p class="lede">SC-173 · Munchly's workspace · three parts, <b>each its own pick</b>: the staff sale's <b>consolidated receipt</b>, the <b>certificate of destruction</b> in full, and a <b>signature on every paper</b>. Then the history's twelve batches and the current journey are restated, every PDF is laid out afresh, and production is synced with local.</p>
+<p>The request (11 Oct):</p>
+<blockquote><ul>
+<li><b>“Can we somehow track receipts given to Staff sale, they will be needed for paperwork evidence - Distributor will be needed to upload a separate consolidated receipts for the staff sale (UPI payment IDs will do as part of the demo).”</b></li>
+<li><b>Certificate of Destruction</b>, as an audit trail: a detailed description, batch numbers and exact quantity and total weight; the reason (product expiry, contamination, court-ordered seizure); the approved environmental method (CPCB-compliant incineration or sanitary landfill); the precise date, time and authorised facility location; the signatures of the supervising officer and two independent witnesses. “The signatures of officers and witnesses can be faked.”</li>
+<li><b>“I see none of the GST invoices, credit note and price support note has signatures.”</b></li>
+<li>“Old past batches and current batches to be fixed with above three requirements and then local and production storage and database be synced.”</li>
+</ul></blockquote>
+
+<h2>Today</h2>
+<div class="now">
+<figure><img src="current/staff-sale-1440-light.webp" width="380" height="382" loading="lazy" alt="Today: Lakshmi Agencies' staff sale card, a count of packs sold and Record the sale."><figcaption>The staff sale · a count, nothing behind it</figcaption></figure>
+<figure><img src="current/destruction-1440-light.webp" width="1440" height="1100" loading="lazy" alt="Today: the destruction certificate OCE/DC/26-27/0219 with packs, weight, method, agency, evidence and GST, no reason, facility, officer or witnesses."><figcaption>The certificate · no reason, facility, officer or witnesses</figcaption></figure>
+<figure><img src="current/invoice-1440-light.webp" width="1440" height="1500" loading="lazy" alt="Today: the tax invoice in Tally's layout, its Authorised Signatory block empty."><figcaption>The tax invoice · “Authorised Signatory” over a blank</figcaption></figure>
+</div>
+<div class="shared" style="margin-top:18px">
+<div class="card"><h3 class="sub">The staff sale has no paper</h3><p>Lakshmi Agencies records one number, the packs sold, and that is all the batch keeps. Nothing shows who paid, or how: the UPI code on the card is an illustration. Two of the pilot quarter's batches had a staff sale (the Poha's 150 packs at ₹22, the Oats' 50 at ₹26), and the Mango Drink has one now (150 at ₹8).</p></div>
+<div class="card"><h3 class="sub">The certificate is thin</h3><p>The agency's certificate carries the packs, the kilos, one method line, the site as “the municipal landfill, Nagpur”, one time and the GST. It has no reason, no facility address or location, no start time, no officer and no witnesses, and nobody signs it.</p></div>
+<div class="card"><h3 class="sub">Nothing is signed</h3><p>The tax invoices and credit notes print “for … / Authorised Signatory” over a blank, then “This is a Computer Generated Document”. The certificate, the ITC memo and the FSSAI checklist have no signature block at all.</p></div>
+</div>
+
+<!-- =============================== Part 1 =============================== -->
+<section class="part" id="staff">
+<span class="kicker">Part 1 of 3</span>
+<h2>The staff sale's consolidated receipt</h2>
+<p>The Mango Drink at Lakshmi Agencies: <b>150 packs at ₹8</b>, staff paying by UPI over two days. Every option yields one paper listing every payment by its <b>UPI reference</b> (the 12-digit RRN a payer's UPI app shows). In the mockups, 22 staff members paid ₹1,200 in all. The receipt becomes evidence in three places: the distributor's batch papers, Priya's pack and the batch's Record.</p>
+
+<section class="opt rec" id="staff-a"><header><h3>Option A · With the count</h3><span class="tag">Recommended</span><p>The receipt is attached on the same card as the count. Vision reads it, and the sale records once the payments match.</p></header>
+<ul><li><b>Lakshmi Agencies:</b> under the count, a slot for the consolidated receipt: a photo or PDF, from her books or her UPI app's statement. Vision reads each UPI reference, who paid and how much. “22 UPI payments · ₹1,200 · matches 150 × ₹8” turns Record on.</li>
+<li><b>Short:</b> if the payments come to less, the card says so and offers Send another, or Record 144 sold.</li>
+<li><b>Priya:</b> Execution's staff sale card shows the receipt and Vision's read. The pack gains “Staff sale receipt”: the photo she sent, with the references read from it.</li></ul>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>One step for the distributor, and the evidence can't be forgotten: the sale doesn't record without it.</li><li>The same pattern as the label photo and the destruction's photos.</li><li>A sale is recorded only once its last payment is in.</li></ul></dd></dl>
+<div class="wide"><figure><img src="staff-a/dist-1440-light.webp" width="1440" height="1084" loading="lazy" alt="Option A: the staff sale card in five states: nothing attached, reading, matched, one payment short, recorded."><figcaption>Lakshmi Agencies · the card's five states</figcaption></figure></div>
+<div class="pair" style="margin-top:12px">
+<figure><img src="staff-a/priya-1440-light.webp" width="1440" height="1026" loading="lazy" alt="Option A: Priya's staff sale card with Vision's read, and the pack's Staff sale receipt open beside it, the photo of the printed receipt."><figcaption>Priya · Execution and the pack</figcaption></figure>
+<figure><img src="staff-a/dist-390-light.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone: the receipt read and matched."><figcaption>On a phone</figcaption></figure>
+<figure><img src="staff-a/dist-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone, dark."><figcaption>Dark</figcaption></figure>
+</div>
+</section>
+
+<section class="opt" id="staff-b"><header><h3>Option B · A step of its own</h3><p>The count stays as it is today. The receipt follows as the distributor's next step, and the papers wait for it.</p></header>
+<ul><li><b>Lakshmi Agencies:</b> records the count as today, then her card and her Today ask for the consolidated receipt, with a reminder after a day. Vision reads it once it comes.</li>
+<li><b>Priya:</b> the pack shows “Staff sale receipt · awaiting”, and Mark reviewed waits for it.</li></ul>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The sale is recorded the moment it ends; the receipt can come a day later, once the statement is out.</li><li>One more thing to chase, and the papers' review can stall on it.</li></ul></dd></dl>
+<div class="wide"><figure><img src="staff-b/dist-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option B: the card as today, then recorded with the receipt asked for, the step on Today, and the receipt read."><figcaption>Lakshmi Agencies · the count, then the receipt as a step</figcaption></figure></div>
+<div class="pair" style="margin-top:12px">
+<figure><img src="staff-b/priya-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option B: Priya's pack with the staff sale receipt awaiting and Mark reviewed waiting for it."><figcaption>Priya · the pack waits</figcaption></figure>
+<figure><img src="staff-b/dist-390-light.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone: recorded, the receipt asked for."><figcaption>On a phone</figcaption></figure>
+<figure><img src="staff-b/priya-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option B: Priya's pack in dark."><figcaption>Dark</figcaption></figure>
+</div>
+</section>
+
+<section class="opt" id="staff-c"><header><h3>Option C · The payments are the count</h3><p>She uploads her UPI app's statement. The staff payments in it make the count, and the Paperwork agent lays out the receipt.</p></header>
+<ul><li><b>Lakshmi Agencies:</b> uploads the statement for the sale's days, as the CSV or PDF her UPI app exports. The Data agent lists the payments into her address. Those at ₹8 a pack come ticked; others, such as a shop's ₹1,450, come unticked. The count follows from the ticks.</li>
+<li><b>The paper:</b> a consolidated receipt voucher in Tally's layout, with every UPI reference, signed with her signature on file.</li>
+<li><b>Priya:</b> the voucher in the pack.</li></ul>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>No stepper to get wrong: the count is the money received.</li><li>Depends on a statement export, and on the payments' amounts: two staff paying together, or a part payment, takes a tick by hand.</li><li>The most to build (a statement parser, the voucher's PDF).</li></ul></dd></dl>
+<div class="wide"><figure><img src="staff-c/dist-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option C: the statement asked for, the payments found and ticked, and the voucher laid out."><figcaption>Lakshmi Agencies · the statement, the payments, the voucher</figcaption></figure></div>
+<div class="pair" style="margin-top:12px">
+<figure><img src="staff-c/priya-1440-light.webp" width="1440" height="1316" loading="lazy" alt="Option C: Priya's pack with the receipt voucher open, every UPI reference listed, signed."><figcaption>Priya · the voucher</figcaption></figure>
+<figure><img src="staff-c/dist-390-light.webp" width="780" height="1840" loading="lazy" alt="Option C on a phone: the payments ticked."><figcaption>On a phone</figcaption></figure>
+<figure><img src="staff-c/dist-390-dark.webp" width="780" height="1840" loading="lazy" alt="Option C on a phone, dark."><figcaption>Dark</figcaption></figure>
+</div>
+</section>
+</section>
+
+<!-- =============================== Part 2 =============================== -->
+<section class="part" id="cert">
+<span class="kicker">Part 2 of 3</span>
+<h2>The certificate of destruction</h2>
+<p>MF-2407-111, the Mango Drink at Rakesh Traders: 184 packs destroyed through Orange City Enviro Services, certificate OCE/DC/26-27/0217. Both options carry every mandatory item; they differ in how the paper is laid out.</p>
+<h4>In both</h4>
+<div class="shared">
+<div class="card"><h3 class="sub">What it carries</h3><ul><li><b>The goods:</b> brand, product, HSN, MRP, made and best-before dates, the batch number, exact packs (cartons and loose) and total weight, split into food and packaging.</li><li><b>Reason:</b> product expiry (ticked), contamination or damage, court-ordered seizure.</li><li><b>Method:</b> CPCB-compliant sanitary landfill or incineration, by the agency's own method.</li><li><b>Where and when:</b> the facility's name, address and coordinates, the date, and the time from start to finish.</li><li><b>Signatures:</b> the supervising officer, with the agency's seal, and two independent witnesses with their addresses; who handed the goods over; whose yes approved the evidence.</li></ul></div>
+<div class="card"><h3 class="sub">Where the facts come from</h3><p>The agency's record, kept in the console's Rules, gains its facility, its coordinates, its method and its supervising officer. The distributor's destruction screen gains the time window and the two witnesses (below). The date and the end time come from the after photo's slate and time.</p></div>
+<div class="card"><h3 class="sub">Past and present</h3><p>The pilot quarter's three certificates are restated in full: DGW/DC/26-27/0085, OCE/DC/26-27/0217 and OCE/DC/26-27/0218. So is the slow week's OCE/DC/26-27/0219, along with every one the journey issues from now on. Deccan Green Waste Management, in Hyderabad, incinerates at its common facility; the Nagpur agencies landfill.</p></div>
+</div>
+<div class="pair" style="margin-top:14px">
+<figure><img src="common/destroy-form-1440-light.webp" width="1440" height="900" loading="lazy" alt="In both: Rakesh's destruction screen with the agency, its facility and officer, the certificate number, the time window and two independent witnesses."><figcaption>In both · Rakesh's destruction screen gains the time and the witnesses</figcaption></figure>
+<figure><img src="common/destroy-form-390-dark.webp" width="780" height="2418" loading="lazy" alt="The destruction screen on a phone, dark."><figcaption>On a phone, dark</figcaption></figure>
+<div></div>
+</div>
+
+<section class="opt rec" id="cert-a"><header><h3>Option A · One page, numbered</h3><span class="tag">Recommended</span><p>One A4 page in the agency's letterhead. Each mandatory item is a numbered section, and the three signatures sit at its foot.</p></header>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Each item of the audit trail sits under its own heading: an auditor can check it item by item.</li><li>The two photos stay on the batch's Record, not on the paper.</li></ul></dd></dl>
+<div class="pair">
+<figure><img src="cert-a/paper-1440-light.webp" width="820" height="1123" loading="lazy" alt="Option A: the certificate of destruction on one page, sections 1 to 6, the officer's and two witnesses' signatures and the agency's seal."><figcaption>The certificate</figcaption></figure>
+<figure><img src="cert-a/paper-390-light.webp" width="780" height="3674" loading="lazy" alt="Option A on a phone."><figcaption>On a phone</figcaption></figure>
+<figure><img src="cert-a/paper-1440-dark.webp" width="820" height="1123" loading="lazy" alt="Option A in the dark theme: the paper stays white."><figcaption>Dark: the paper stays white</figcaption></figure>
+</div>
+</section>
+
+<section class="opt" id="cert-b"><header><h3>Option B · The certificate and its log</h3><p>Page 1 is the certificate as a summary, with the signatures. Page 2 is the destruction log: each step's time, from the godown to the cover, with the weighbridge slip, the vehicle's seal and both photos. The three signatories initial every step.</p></header>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The fullest audit trail: the photos and every step are on the paper itself.</li><li>Two pages; the log's steps (loading, weighing, covering) are the agency's to record, so the demo invents their times around the photos' times.</li></ul></dd></dl>
+<div class="pair">
+<figure><img src="cert-b/paper-1440-light.webp" width="820" height="1471" loading="lazy" alt="Option B: the certificate's summary page with the signatures, and the destruction log with times, photos and initials."><figcaption>The certificate and its log</figcaption></figure>
+<figure><img src="cert-b/paper-390-light.webp" width="780" height="4690" loading="lazy" alt="Option B on a phone."><figcaption>On a phone</figcaption></figure>
+<figure><img src="cert-b/paper-1440-dark.webp" width="820" height="1471" loading="lazy" alt="Option B in the dark theme."><figcaption>Dark</figcaption></figure>
+</div>
+</section>
+</section>
+
+<!-- =============================== Part 3 =============================== -->
+<section class="part" id="sign">
+<span class="kicker">Part 3 of 3</span>
+<h2>A signature on every paper</h2>
+<p>Each party gets a specimen signature on file, drawn once (Qwen-Image, keyed to its ink) and used on every paper it signs, in the app and in Paperwork's PDFs alike. Every signatory is fictional:</p>
+<div class="sigs">
+<figure><img src="sign/rakesh.webp" width="516" height="160" loading="lazy" alt="The signature of Rakesh Jaiswal."><figcaption>Rakesh Jaiswal · Proprietor, Rakesh Traders</figcaption></figure>
+<figure><img src="sign/lakshmi.webp" width="434" height="160" loading="lazy" alt="The signature of K. Lakshmi Narayana."><figcaption>K. Lakshmi Narayana · Partner, Lakshmi Agencies</figcaption></figure>
+<figure><img src="sign/munchly.webp" width="580" height="160" loading="lazy" alt="The signature of Vinod Patwardhan."><figcaption>Vinod Patwardhan · Head of Accounts, Munchly Foods</figcaption></figure>
+<figure><img src="sign/officer.webp" width="387" height="160" loading="lazy" alt="The signature of Sachin Bhoyar."><figcaption>Sachin Bhoyar · Site supervisor, Orange City Enviro Services</figcaption></figure>
+<figure><img src="sign/witness1.webp" width="571" height="160" loading="lazy" alt="The signature of Pradeep Meshram."><figcaption>Pradeep Meshram · witness</figcaption></figure>
+<figure><img src="sign/witness2.webp" width="461" height="160" loading="lazy" alt="The signature of Asha Kale."><figcaption>Asha Kale · witness</figcaption></figure>
+</div>
+<div class="tablewrap" style="margin-top:16px"><table class="cmp"><thead><tr><th>Paper</th><th>Signed by</th></tr></thead><tbody>
+<tr><th>Tax invoice (the ExpireSoon lot) · each kirana's tax invoice</th><td>The distributor's proprietor or partner</td></tr>
+<tr><th>Price-support credit note · expiry credit note · GST ITC memo · FSSAI checklist</th><td>Munchly's Head of Accounts</td></tr>
+<tr><th>Staff sale receipt</th><td>The distributor (Part 1)</td></tr>
+<tr><th>Certificate of destruction</th><td>The agency's supervising officer, two independent witnesses, the distributor handing over (Part 2)</td></tr>
+<tr><th>The food bank's receipt</th><td>Unchanged: Feeding India and India FoodBanking Network are named as themselves, so no seal or signature is drawn for them</td></tr>
+</tbody></table></div>
+
+<section class="opt rec" id="sign-a"><header><h3>Option A · Ink and the firm's stamp</h3><span class="tag">Recommended</span><p>The signature in ink over the firm's rubber stamp, the way Indian traders sign and stamp a bill, with the signatory's name and title under “Authorised Signatory”.</p></header>
+<ul><li><b>Distributors:</b> the rectangular “For RAKESH TRADERS · Proprietor” stamp.</li><li><b>Munchly and the agencies:</b> a round seal.</li><li>“This is a Computer Generated Document” goes, since the paper is now signed.</li></ul>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Reads at a glance as a signed paper, on screen and printed.</li><li>One look for every paper, the certificate's signatures included.</li></ul></dd></dl>
+<div class="blocks">
+<figure><img src="sign-a/block-invoice.webp" width="302" height="261" loading="lazy" alt="Option A: the tax invoice signed by Rakesh Jaiswal over Rakesh Traders' stamp."><figcaption>Tax invoice</figcaption></figure>
+<figure><img src="sign-a/block-support.webp" width="302" height="177" loading="lazy" alt="Option A: the price-support credit note signed by Vinod Patwardhan beside Munchly's seal."><figcaption>Price-support credit note</figcaption></figure>
+<figure><img src="sign-a/block-expiry.webp" width="302" height="177" loading="lazy" alt="Option A: the expiry credit note, signed."><figcaption>Expiry credit note</figcaption></figure>
+<figure><img src="sign-a/block-kirana.webp" width="302" height="262" loading="lazy" alt="Option A: a kirana's tax invoice, signed and stamped."><figcaption>A kirana's tax invoice</figcaption></figure>
+</div>
+<div class="pair" style="margin-top:12px">
+<figure><img src="sign-a/papers-1440-light.webp" width="1440" height="2459" loading="lazy" alt="Option A: MF-2407-111's tax invoice, credit notes and a kirana invoice, each signed and stamped."><figcaption>The four papers in full</figcaption></figure>
+<figure><img src="sign-a/invoice-390-light.webp" width="780" height="3632" loading="lazy" alt="Option A: the tax invoice on a phone."><figcaption>On a phone</figcaption></figure>
+<figure><img src="sign-a/papers-1440-dark.webp" width="1440" height="2459" loading="lazy" alt="Option A in dark."><figcaption>Dark</figcaption></figure>
+</div>
+</section>
+
+<section class="opt" id="sign-b"><header><h3>Option B · Digitally signed</h3><p>The GST papers and credit notes carry a digital signature's box, as Tally prints with a Class 3 DSC: who signed, when, why and where. The certificate keeps its ink, since its signatories sign at the site.</p></header>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>How larger distributors actually sign e-invoices.</li><li>Less like a signature at a glance; the validity tick is illustrative, as the e-invoice's QR already is.</li><li>Two looks: boxes on the GST papers, ink on the certificate.</li></ul></dd></dl>
+<div class="blocks">
+<figure><img src="sign-b/block-invoice.webp" width="302" height="261" loading="lazy" alt="Option B: the tax invoice digitally signed by Rakesh Jaiswal."><figcaption>Tax invoice</figcaption></figure>
+<figure><img src="sign-b/block-support.webp" width="302" height="177" loading="lazy" alt="Option B: the price-support credit note digitally signed by Vinod Patwardhan."><figcaption>Price-support credit note</figcaption></figure>
+<figure><img src="sign-b/block-expiry.webp" width="302" height="177" loading="lazy" alt="Option B: the expiry credit note, digitally signed."><figcaption>Expiry credit note</figcaption></figure>
+<figure><img src="sign-b/block-kirana.webp" width="302" height="262" loading="lazy" alt="Option B: a kirana's tax invoice, digitally signed."><figcaption>A kirana's tax invoice</figcaption></figure>
+</div>
+<div class="pair" style="margin-top:12px">
+<figure><img src="sign-b/papers-1440-light.webp" width="1440" height="2459" loading="lazy" alt="Option B: the four papers, each with a digital signature's box."><figcaption>The four papers in full</figcaption></figure>
+<figure><img src="sign-b/invoice-390-light.webp" width="780" height="3604" loading="lazy" alt="Option B: the tax invoice on a phone."><figcaption>On a phone</figcaption></figure>
+<figure><img src="sign-b/papers-1440-dark.webp" width="1440" height="2459" loading="lazy" alt="Option B in dark."><figcaption>Dark</figcaption></figure>
+</div>
+</section>
+</section>
+
+<h2>Past and present batches, then the sync</h2>
+<div class="shared">
+<div class="card"><h3 class="sub">The pilot quarter's twelve</h3><ul><li><b>Receipts:</b> MF-2406-109 (Lakshmi Agencies, 150 packs at ₹22) and MF-2407-114 (Rakesh Traders, 50 at ₹26) get their consolidated receipts, uploaded at their staff step.</li><li><b>Certificates:</b> the three restated in full.</li><li><b>Signatures:</b> every paper signed. Paperwork lays out every PDF afresh: the history's papers and its 214 kirana invoices.</li></ul></div>
+<div class="card"><h3 class="sub">The current journey</h3><p>The chips, the Mango Drink and the slow week, in the live workspace, design3's prototype and the guided demo alike. The Mango's staff sale asks for its receipt, the slow week's certificate is in full, and every paper is signed as it is issued. Reset journey puts it all back to the story's start.</p></div>
+<div class="card"><h3 class="sub">Then production</h3><p>Once the build is merged and CI has deployed it, <code>sync.sh</code> replaces production's database, photos, docs and BigQuery with local's, with a backup first. The operators' sync grant closes on <b>12 Oct at 12:00 UTC</b> (<code>data_sync_until</code>). If the build runs past it, reopening the grant is a Terraform apply that needs your yes.</p></div>
+</div>
+
+<h2>Recommended: 1A, 2A, 3A</h2>
+<div class="rec-box"><p><b>With the count</b> makes the receipt part of recording the sale, so the evidence can't go missing, and it reuses the photo pattern the label and the destruction already use. <b>One page, numbered</b> puts each of your mandatory items under its own heading. <b>Ink and the firm's stamp</b> reads as a signed paper on screen and in print, the same on every paper.</p></div>
+
+<div class="q" style="margin-top:20px"><h3>To decide</h3><ul><li>One option for each part.</li><li>The signatories' names (all fictional): Rakesh Jaiswal, K. Lakshmi Narayana, Vinod Patwardhan, Sachin Bhoyar, Pradeep Meshram and Asha Kale, plus their counterparts for Vidarbha Waste Care and Deccan Green Waste Management.</li></ul></div>
+
+<footer>Smart-Clearance · SC-173 · every company, person, signature, stamp, UPI reference and figure fictional · the figures are core/money.js's · mockups: <code>options/mockup.html?part=…&amp;opt=…</code> (<code>options/sc173.jsx</code>) on the app's own papers and kit</footer>
+</main>
+</body>
+</html>

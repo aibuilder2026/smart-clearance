@@ -1,0 +1,9 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "prompt": "A single handwritten signature of the name \"S. Bhoyar\" written quickly in dark blue ballpoint pen ink on plain white paper, fluent joined cursive strokes leaning slightly right, the first letters large and looping, the rest trailing off, one short underline flourish, a flat even scan of the paper, nothing else on the page, no printed text, no lines, centered, high contrast",
+  "aspect": "16:9",
+  "size": 1024,
+  "seed": 1301,
+  "post": "keyed to its ink (tools/ink.py: the paper made transparent, the ink's own colour with an alpha from its darkness), trimmed to the ink with a 12 px margin, 160 px tall, WebP q90",
+  "use": "SC-173 design round: the specimen signature of Sachin Bhoyar, Site supervisor, Orange City Enviro Services (fictional person and firm) on the papers"
+}
