@@ -2094,7 +2094,7 @@
     - backend-api 568 passed, 1 skipped (only the seed manifest changed);
     - Munchly Chips E2E now checks it;
     - design3 and the local live app read the same.
-- **SC-163** (In Review, branch `SC-163-button-status-words`; bug found by Munchly Chips E2E, SC-161): a button's status line says its own words when they are markup.
+- **SC-163** (PR #143, merged; bug found by Munchly Chips E2E, SC-161): a button's status line says its own words when they are markup.
   - **Found:** the kirana's order button gives its words as Hindi snippets (ऑर्डर हो रहा है…). A screen reader heard "Working" and "Done", because core's Button read its words into the status line only when they were a string.
   - **The fix** (core's `Button.svelte`): the status line renders the button's busy and done words in whatever form, so the Hindi keeps its `lang`. "Working" and "Done" stay for a button given none. design3's kit already did this (`busy || "Working"` renders markup), so design3 needed no change. The order button is the only one with markup words.
   - **Checks:** the frontend gate passes (core 290, with two new Button tests; the Hindi one fails without the fix; api 79, workspace 104, admin 17, console 8, demo 5).
