@@ -1,8 +1,8 @@
 // The console's API as the prototype answers it, in the browser (design3/core/platform.js and console.jsx): the seed,
 // kept per browser, and every change the console makes, each writing its audit line in the signed-in staff member's
-// name, word for word as the prototype writes it. backend-api implements the same contract. On the demo world (SC-169:
-// platform.js's P.seed({ world: 'demo' }), which the guided demo's console opens on) it starts from that world instead,
-// fetched only when it is asked for.
+// name, word for word as the prototype writes it. backend-api implements the same contract. Given another world (SC-169:
+// the demo world, platform.js's P.seed({ world: 'demo' }), which the guided demo's console opens on, from ./demo) it
+// starts from that world instead.
 import seed from '../seed/console.json';
 import { browserStorage, catalog, lookupWorkspaces, waiter, type MockOptions } from '../mock/shared';
 import { ApiError, type Agent, type DemoRequest } from '../types/shared';
@@ -115,9 +115,11 @@ const fresh = (): State => ({
 	requests: structuredClone(REQUESTS),
 	nextAudit: 100
 });
-/** the demo world: design3's own requests come with it (on .example addresses) */
-type WorldSeed = { state: Omit<State, 'v' | 'requests' | 'nextAudit'>; requests: DemoRequest[] };
-const freshFrom = (w: WorldSeed): State => ({
+/** another world's seed: its state, and the demo requests that come with it (design3's own, on .example addresses) */
+export type ConsoleWorldSeed = { state: Omit<State, 'v' | 'requests' | 'nextAudit'>; requests: DemoRequest[] };
+/** a world the mock can start from, by name, fetched when a mock asks for it (the demo world: ./demo's demoWorld) */
+export type ConsoleWorld = { name: 'demo'; load: () => Promise<ConsoleWorldSeed> };
+const freshFrom = (w: ConsoleWorldSeed): State => ({
 	v: VERSION,
 	...structuredClone(w.state),
 	requests: structuredClone(w.requests),
@@ -125,9 +127,10 @@ const freshFrom = (w: WorldSeed): State => ({
 });
 
 export type ConsoleMockOptions = MockOptions & {
-	/** the world it starts from: the console's own seed (Munchly Foods alone), or 'demo' (Munchly Foods and four more
-	 *  clients with 180 days of batches, closed ones with what they kept and destroyed, and two demo requests) */
-	world?: 'demo';
+	/** the world it starts from: the console's own seed (Munchly Foods alone), or another (demoWorld from
+	 *  @smart-clearance/api/console/demo: Munchly Foods and four more clients with 180 days of batches, closed ones with
+	 *  what they kept and destroyed, and two demo requests) */
+	world?: ConsoleWorld;
 	/** a staff member signed in from the start (their id, 'neha'), unless the storage already keeps a session */
 	signedIn?: string;
 };
@@ -157,8 +160,8 @@ export function consoleMock({
 	signedIn
 }: ConsoleMockOptions = {}): ConsoleApi {
 	// a world of its own keeps its state under keys of its own, apart from the console's
-	const STATE_KEY = world ? `${CONSOLE_KEY}-${world}` : CONSOLE_KEY;
-	const SESSION = world ? `${SESSION_KEY}-${world}` : SESSION_KEY;
+	const STATE_KEY = world ? `${CONSOLE_KEY}-${world.name}` : CONSOLE_KEY;
+	const SESSION = world ? `${SESSION_KEY}-${world.name}` : SESSION_KEY;
 	const lag = waiter(latency);
 	const read = <T>(key: string): T | null => {
 		try {
@@ -181,9 +184,8 @@ export function consoleMock({
 
 	const saved = read<State>(STATE_KEY);
 	const kept = saved && saved.v === VERSION ? saved : null;
-	// the console's own seed is in this module; the demo world is its own chunk, fetched when it is asked for
-	const world0: Promise<WorldSeed> | null =
-		world === 'demo' ? import('../seed/console-demo.json').then((m) => m.default as unknown as WorldSeed) : null;
+	// the console's own seed is in this module; another world is fetched when a mock asks for it
+	const world0: Promise<ConsoleWorldSeed> | null = world ? world.load() : null;
 	let state: State = kept ?? (world0 ? (undefined as unknown as State) : fresh());
 	let start: () => State = fresh;
 	const ready: Promise<void> | null = world0
@@ -377,7 +379,7 @@ export function consoleMock({
 	}
 
 	return {
-		world,
+		world: world?.name,
 		async catalog() {
 			await wait();
 			return catalog();

@@ -17,6 +17,10 @@
 			"types": "./src/console/index.ts",
 			"default": "./src/console/index.ts"
 		},
+		"./console/demo": {
+			"types": "./src/console/demo.ts",
+			"default": "./src/console/demo.ts"
+		},
 		"./identity": {
 			"types": "./src/identity.ts",
 			"default": "./src/identity.ts"

@@ -3,6 +3,7 @@
 // days of their batches, two demo requests), kept in memory only, with a staff member already signed in. Nothing is
 // read from or written to the visitor's storage, so each demo starts from the same world.
 import { consoleMock, memoryStorage, type ConsoleApi } from '@smart-clearance/api/console';
+import { demoWorld } from '@smart-clearance/api/console/demo';
 
 export function demoConsoleApi({
 	signedIn = 'neha',
@@ -13,5 +14,5 @@ export function demoConsoleApi({
 	/** milliseconds each call waits, to see the loaders */
 	latency?: number;
 } = {}): ConsoleApi {
-	return consoleMock({ storage: memoryStorage(), world: 'demo', signedIn: signedIn ?? undefined, latency });
+	return consoleMock({ storage: memoryStorage(), world: demoWorld, signedIn: signedIn ?? undefined, latency });
 }

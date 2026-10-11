@@ -10,6 +10,7 @@ import {
 	type ConsoleApi,
 	type NewClientInput
 } from '../src/console/index';
+import { demoWorld } from '../src/console/demo';
 import { memory } from './memory';
 
 // the console's mock: the prototype's seed, the platform's rules, and an audit line for every change in the words
@@ -460,7 +461,7 @@ describe("a client's first stock export, set up by staff (SC-84)", () => {
 });
 
 describe('the demo world (SC-169), as the guided demo shows the console', () => {
-	const demo = () => consoleMock({ storage: memoryStorage(), world: 'demo', signedIn: 'neha' });
+	const demo = () => consoleMock({ storage: memoryStorage(), world: demoWorld, signedIn: 'neha' });
 
 	it('starts signed in, with Munchly Foods and four more clients, all live, and two demo requests', async () => {
 		const d = demo();
@@ -497,7 +498,7 @@ describe('the demo world (SC-169), as the guided demo shows the console', () => 
 
 	it("keeps its changes in memory only, apart from the console's own state, and resets to the demo world", async () => {
 		const store = memoryStorage();
-		const d = consoleMock({ storage: store, world: 'demo', signedIn: 'sameer' });
+		const d = consoleMock({ storage: store, world: demoWorld, signedIn: 'sameer' });
 		expect((await d.me())?.id).toBe('sameer');
 		await d.setPlan('godavari-staples', 'enterprise');
 		expect(store()?.getItem(CONSOLE_KEY)).toBeNull();

@@ -87,10 +87,11 @@ the checks (`skuGatesError`, `overrideError`) and the audit lines, as `platform.
   its requests from the landing page in the same browser, which a console on its own subdomain cannot see). Every change
   writes its audit line in the prototype's words. State is kept in `localStorage` (`sc-console`), the session in
   `sc-console-session`. Inputs are serialised as JSON, as they would be over HTTP, and answers are copies.
-  `consoleMock({ world: 'demo' })` starts from the demo world instead (SC-169, `console-demo.json`, fetched only when it
-  is asked for), under keys of its own (`sc-console-demo`); `signedIn: 'neha'` signs a staff member in from the start,
-  and `storage: memoryStorage()` keeps everything in memory, never in the visitor's storage. The guided demo's console
-  is all three (`@smart-clearance/core/console/demo`).
+  `consoleMock({ world: demoWorld })` (`@smart-clearance/api/console/demo`, SC-169) starts from the demo world instead,
+  its seed (`console-demo.json`) fetched only then, so the console app carries none of it, under keys of its own
+  (`sc-console-demo`); `signedIn: 'neha'` signs a staff member in from the start, and `storage: memoryStorage()` keeps
+  everything in memory, never in the visitor's storage. The guided demo's console is all three
+  (`@smart-clearance/core/console/demo`).
 
 ## The seed
 
