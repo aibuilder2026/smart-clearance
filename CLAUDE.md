@@ -2098,7 +2098,7 @@
   - **Found:** the kirana's order button gives its words as Hindi snippets (ऑर्डर हो रहा है…). A screen reader heard "Working" and "Done", because core's Button read its words into the status line only when they were a string.
   - **The fix** (core's `Button.svelte`): the status line renders the button's busy and done words in whatever form, so the Hindi keeps its `lang`. "Working" and "Done" stay for a button given none. design3's kit already did this (`busy || "Working"` renders markup), so design3 needed no change. The order button is the only one with markup words.
   - **Checks:** the frontend gate passes (core 290, with two new Button tests; the Hindi one fails without the fix; api 79, workspace 104, admin 17, console 8, demo 5).
-- **SC-164** (In Review, branch `SC-164-demo-film`): the demo film plays on the landing page when Watch is pressed, in a theatre over the page, from YouTube.
+- **SC-164** (PR #147, merged): the demo film plays on the landing page when Watch is pressed, in a theatre over the page, from YouTube.
   - **The request:** host SC-158's 1080p demo film so that the landing page plays it on a click, as spoileralert.com does (its video is a Wistia embed in a section of its own), and the options on Google Cloud.
   - **The options given, and the answers (11 Oct):**
     - Firebase Hosting in the build: it serves byte ranges (the live hero film answers 206) and caches at the edge; 360 MB a day free, then $0.15/GB.
@@ -2143,5 +2143,36 @@
     - a build with `PUBLIC_DEMO_FILM=off` links all three Watch buttons to smartclearance-demo.web.app;
     - the keyboard spec gains the theatre, with YouTube stubbed. The browser suites were not run (SC-55).
   - **Hosting:** design3's `dist/` is rebuilt; the hosted landing page on Claude Design stays on its pinned commit.
+- **SC-165** (In Review, branch `SC-165-landing-day-scroll`): the landing page is always in day, its wordmark white over the film, and the bar's links and its brand glide.
+  - **The request** (with a screenshot of the live hero):
+    - remove the light/dark selector, and keep the landing page in day;
+    - the wordmark, barely visible over the film, in white;
+    - the bar's links scrolling smoothly again;
+    - the logo scrolling smoothly to the top.
+
+    The maintainer named each change outright, so there was no design round (as SC-150).
+  - **The causes:**
+    - the page followed the device or a saved choice, through the bar's appearance menu and the footer's Light/Dark/Auto switch;
+    - the kit's `.wordmark` sets its own ink, so it stayed dark green on the clear bar;
+    - `scroll-behavior: smooth` sat on `.site`, the scroller before SC-60. The page now scrolls the window, so the links jumped.
+  - **Always day:**
+    - the kit's and core's `ThemeProvider` take a `fixed` theme, which ignores the device and neither reads nor changes the saved choice the other apps keep;
+    - the landing page fixes day (design3's `Root`; admin's layout on `/` only, so `/ds` keeps both themes);
+    - the loader names day before the first paint;
+    - `hooks.server.ts` turns `app.html`'s pre-paint theme and the browser bar's dark colour to day on `/` (`app.html` stays the file every app shares);
+    - only the day poster is preloaded;
+    - the appearance menu and the footer's switch are gone, and the loader's dusk and dawn no longer play.
+  - **The wordmark** takes the bar's ink: white over the film, the page's ink on the glass (`.nav-brand .wordmark`).
+  - **Gliding:** `html:has(.site) { scroll-behavior: smooth }`, at once under reduced motion. The bar's links, the brand (`#top`) and the footer's links glide.
+  - **Checks:**
+    - the frontend gate passes: core 295 (2 new, the fixed theme), api 79, admin 22, console 8, workspace 105, demo 5;
+    - design3 and the build were checked under a dark device with dark saved:
+      - only day was ever set;
+      - no appearance control;
+      - the wordmark white over the film and the page's ink on the glass;
+      - Agents, Pricing and the brand passed through 7 to 11 positions on the way;
+      - no page errors;
+    - the keyboard and site specs follow: no appearance control, day from the first paint, the links and the brand gliding. The browser suites were not run (SC-55).
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted landing page on Claude Design stays on its pinned commit.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

@@ -16,17 +16,21 @@ const isMode = (v: unknown): v is ThemeMode => v === 'light' || v === 'dark' || 
  *  this only chooses which one <html data-theme> names. */
 export class Theme {
 	mode: ThemeMode = $state('system');
+	/** a page that is always in one theme, whatever the device or the saved choice (the landing page, in day, SC-165);
+	 *  the saved choice is left as it is for the other pages */
+	fixed: ResolvedTheme | null = $state(null);
 	#systemDark = new MediaQuery('(prefers-color-scheme: dark)', false);
-	/** what the reader's choice asks for: the device's theme while the page follows it */
+	/** what the reader's choice asks for: the device's theme while the page follows it, or the page's fixed theme */
 	readonly wanted: ResolvedTheme = $derived(
-		this.mode === 'system' ? (this.#systemDark.current ? 'dark' : 'light') : this.mode
+		this.fixed ?? (this.mode === 'system' ? (this.#systemDark.current ? 'dark' : 'light') : this.mode)
 	);
 	/** the theme the page shows: it follows `wanted` at once, or through the gate when a page has set one */
 	resolved: ResolvedTheme = $state('light');
 	gate: ThemeGate | null = null;
 	#turning = false;
 
-	constructor(initial: ThemeMode = 'system') {
+	constructor(initial: ThemeMode = 'system', fixed: ResolvedTheme | null = null) {
+		this.fixed = fixed;
 		let saved: string | null = null;
 		try {
 			saved = globalThis.localStorage?.getItem(THEME_KEY) ?? null;
@@ -38,6 +42,7 @@ export class Theme {
 	}
 
 	setMode = (mode: ThemeMode) => {
+		if (this.fixed) return;
 		this.mode = mode;
 		try {
 			localStorage.setItem(THEME_KEY, mode);

@@ -189,10 +189,9 @@
 	});
 </script>
 
-<!-- the first screen first (SC-131): the film's poster for the reader's theme, before anything else -->
+<!-- the first screen first (SC-131): the film's poster, before anything else; the page is always in day (SC-165) -->
 <svelte:head>
-	<link rel="preload" as="image" href={PLATES.hero.day} media="(prefers-color-scheme: light)" fetchpriority="high" />
-	<link rel="preload" as="image" href={PLATES.hero.night} media="(prefers-color-scheme: dark)" fetchpriority="high" />
+	<link rel="preload" as="image" href={PLATES.hero.day} fetchpriority="high" />
 </svelte:head>
 
 <section class="hero film" id="top-hero" aria-labelledby="hero-h">

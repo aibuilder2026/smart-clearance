@@ -1,14 +1,8 @@
 <script lang="ts">
-	import { Mark, Segmented, Wordmark, useTheme, type ThemeMode } from '@smart-clearance/core';
+	import { Mark, Wordmark } from '@smart-clearance/core';
 	import { LINKS, SECTIONS, linkProps } from './links';
 
 	let { onfind }: { onfind: () => void } = $props();
-	const theme = useTheme();
-	const modes: { id: ThemeMode; label: string }[] = [
-		{ id: 'light', label: 'Light' },
-		{ id: 'dark', label: 'Dark' },
-		{ id: 'system', label: 'Auto' }
-	];
 </script>
 
 <footer class="foot">
@@ -31,6 +25,5 @@
 	</div>
 	<div class="wrap foot-base">
 		<p>Prototype · every company, person and number is fictional · Google AI Hackathon 2026</p>
-		<Segmented options={modes} value={theme.mode} onchange={theme.setMode} label="Appearance" size="sm" />
 	</div>
 </footer>

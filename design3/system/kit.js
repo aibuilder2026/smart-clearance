@@ -7,7 +7,7 @@
   } });
   const TKEY = "sc3-theme";
   const resolvedOf = (m, dark) => m === "system" ? dark ? "dark" : "light" : m;
-  function ThemeProvider({ children, initial, gate }) {
+  function ThemeProvider({ children, initial, gate, fixed }) {
     const [mode, setModeState] = useState(() => {
       try {
         return localStorage.getItem(TKEY) || initial || "system";
@@ -28,6 +28,7 @@
       });
     };
     const setMode = (m) => {
+      if (live.current.fixed) return;
       try {
         localStorage.setItem(TKEY, m);
       } catch (e) {
@@ -41,12 +42,12 @@
       if (!L.gate || to === resolvedOf(L.mode, L.sysDark)) setModeState(m);
       else through(to, () => setModeState(m));
     };
-    live.current = { mode, sysDark, gate, setMode };
+    live.current = { mode, sysDark, gate, setMode, fixed };
     useEffect(() => {
       if (!mq) return;
       const f = (e) => {
         const L = live.current;
-        if (L.gate && L.mode === "system" && !turning.current) through(e.matches ? "dark" : "light", () => setSysDark(e.matches));
+        if (!L.fixed && L.gate && L.mode === "system" && !turning.current) through(e.matches ? "dark" : "light", () => setSysDark(e.matches));
         else setSysDark(e.matches);
       };
       mq.addEventListener ? mq.addEventListener("change", f) : mq.addListener(f);
@@ -54,13 +55,13 @@
         mq.removeEventListener ? mq.removeEventListener("change", f) : mq.removeListener(f);
       };
     }, []);
-    const resolved = resolvedOf(mode, sysDark);
+    const resolved = fixed || resolvedOf(mode, sysDark);
     useEffect(() => {
       document.documentElement.setAttribute("data-theme", resolved);
       const meta = document.querySelector('meta[name="theme-color"]:not([media])');
       if (meta) meta.setAttribute("content", resolved === "dark" ? "#070b09" : "#f2f6f3");
     }, [resolved]);
-    return /* @__PURE__ */ React.createElement(ThemeCtx.Provider, { value: { mode, resolved, setMode } }, children);
+    return /* @__PURE__ */ React.createElement(ThemeCtx.Provider, { value: { mode: fixed || mode, resolved, setMode } }, children);
   }
   const useTheme = () => useContext(ThemeCtx);
   const AppCtx = createContext({ w: 1440, h: 900, bp: "desktop", el: null });

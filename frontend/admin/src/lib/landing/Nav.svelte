@@ -1,14 +1,5 @@
 <script lang="ts">
-	import {
-		Icon,
-		IconButton,
-		Mark,
-		ModeMenuButton,
-		Sheet,
-		Wordmark,
-		cx,
-		prefersReducedMotion
-	} from '@smart-clearance/core';
+	import { Icon, IconButton, Mark, Sheet, Wordmark, cx, prefersReducedMotion } from '@smart-clearance/core';
 	import { LINKS, SECTIONS, goTo, linkProps } from './links';
 
 	let sheet = $state(false);
@@ -63,7 +54,6 @@
 				>{/each}
 		</nav>
 		<span class="nav-actions">
-			<span class="nav-mode"><ModeMenuButton /></span>
 			<a class="nav-text" {...linkProps(LINKS.console)}>Console</a>
 			<a class="btn btn-primary btn-pill nav-go not-phone" {...linkProps(LINKS.app)}>Workspace</a><IconButton
 				icon="menu"

@@ -9,7 +9,7 @@
   const { useState, useEffect, useLayoutEffect, useRef, useMemo } = React;
   const { useReducedMotion, motion, useScroll, useTransform, useInView, AnimatePresence, animate } = Motion;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, S = window.SC3_SCREENS, P = window.SC3_PLATFORM; const fmt = M.fmt;
-  const { cx, Icon, IconButton, Button, Badge, Sheet, Field, Input, Select, Textarea, Menu, Mark, Wordmark, Money, Roll, GateChips, Product, Segmented, ModeMenuButton, ThemeProvider, AppRoot, NoticeHost, useApp, useTheme, WindowFrame, PhoneFrame, WorkspaceMark } = K;
+  const { cx, Icon, IconButton, Button, Badge, Sheet, Field, Input, Select, Textarea, Menu, Mark, Wordmark, Money, Roll, GateChips, Product, ThemeProvider, AppRoot, NoticeHost, useApp, useTheme, WindowFrame, PhoneFrame, WorkspaceMark } = K;
   const IMG = window.SC3_SITE_IMG || "assets/plates/", MEDIA = window.SC3_SITE_MEDIA || "assets/media/";
   // where the other pages live: relative next to each other here, the claude.ai/design links on the hosted pages
   const LINKS = Object.assign({ demo: "../demo/Smart-Clearance%20demo%20v3.html", app: "../app/Smart-Clearance%20app%20v3.html", console: "../console/Smart-Clearance%20console%20v3.html" }, window.SC3_LINKS || {});
@@ -94,7 +94,6 @@
         <a className="nav-brand" href="#top" aria-label="Smart-Clearance, back to the top"><span className="nav-mark"><Mark size={30} /></span><Wordmark size={16} /></a>
         {desk && <NavLinks active={active} />}
         <span className="nav-actions">
-          <span className="nav-mode"><ModeMenuButton /></span>
           <a className="nav-text" {...linkProps(LINKS.console)}>Console</a>
           {app.bp !== "phone" ? <a className="btn btn-primary btn-pill nav-go" {...linkProps(LINKS.app)}>Workspace</a> : <IconButton icon="menu" label="Menu" onClick={() => setSheet(true)} />}
         </span>
@@ -713,7 +712,6 @@
     </section>;
   }
   function Footer({ onFind }) {
-    const { mode, setMode } = useTheme();
     const cols = [
       ["Product", SECTIONS.map(([id, t]) => <a key={id} href={"#" + id}>{t}</a>)],
       ["Sign in", [<button key="find" type="button" className="foot-link" onClick={onFind}>Find your workspace</button>, <a key="staff" {...linkProps(LINKS.console)}>Staff console</a>]],
@@ -725,7 +723,6 @@
       </div>
       <div className="wrap foot-base">
         <p>Prototype · every company, person and number is fictional · Google AI Hackathon 2026</p>
-        <Segmented options={[{ id: "light", label: "Light" }, { id: "dark", label: "Dark" }, { id: "system", label: "Auto" }]} value={mode} onChange={setMode} label="Appearance" size="sm" />
       </div>
     </footer>;
   }
@@ -793,9 +790,9 @@
       <DemoSheet open={!!demo} plan={demo && demo.plan} onClose={() => setDemo(null)} />
     </div></FilmHold.Provider>;
   }
-  // the loader (loader.js, SC-35) covers each change of theme: the plates swap under dusk or dawn, never in sight. The
-  // page scrolls the window, as the SvelteKit build does, so its sticky bar and scroll-driven motion work the same way
-  const gate = window.SC3_LOADER && window.SC3_LOADER.switchTheme;
-  function Root() { return <ThemeProvider gate={gate}><AppRoot className="site-root" scroll="window"><NoticeHost><Site /></NoticeHost></AppRoot></ThemeProvider>; }
+  // the landing page is always in day (SC-165): no appearance control, whatever the device or a choice saved on the other
+  // pages. The page scrolls the window, as the SvelteKit build does, so its sticky bar and scroll-driven motion work the
+  // same way
+  function Root() { return <ThemeProvider fixed="light"><AppRoot className="site-root" scroll="window"><NoticeHost><Site /></NoticeHost></AppRoot></ThemeProvider>; }
   ReactDOM.createRoot(document.getElementById("root")).render(<Root />);
 })();

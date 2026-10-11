@@ -64,11 +64,11 @@ test('site · the phone menu, Find your workspace and Book a demo', async ({ pag
 });
 
 // the loader (SC-35): while the page loads it says so once, the page under it is busy, and it lifts once the film's
-// poster is in; a change of theme plays under it and focus stays where the visitor left it
-test('site · the loader, on a load and on a change of theme', async ({ page }, testInfo) => {
+// poster is in. The page is always in day (SC-165), so there is no change of theme to cover
+test('site · the loader, on a load', async ({ page }, testInfo) => {
 	test.skip(
 		testInfo.project.name !== 'desktop-light' && testInfo.project.name !== 'phone-dark',
-		'the loader is checked once in each theme'
+		'the loader is checked on a desktop and on a dark phone'
 	);
 	const state = () =>
 		page.evaluate(() => {
@@ -90,18 +90,6 @@ test('site · the loader, on a load and on a change of theme', async ({ page }, 
 	await expect.poll(async () => (await state()).lifted, { timeout: 15_000 }).toBe(true);
 	await expect(page.locator('.loader')).toHaveCount(0);
 	await expect(page.locator('[aria-busy="true"]')).toHaveCount(0);
-
-	// Dark or Light chosen from the keyboard: the page turns under the loader, and focus is back on Appearance
-	const before = await page.evaluate(() => document.documentElement.dataset.theme);
-	const to = before === 'dark' ? 'Light' : 'Dark';
-	await page.getByRole('button', { name: 'Appearance' }).focus();
-	await page.keyboard.press('Enter');
-	await page.getByRole('menuitemradio', { name: to }).focus();
-	await page.keyboard.press('Enter');
-	await expect.poll(async () => (await state()).busy, { timeout: 15_000 }).toBe(false);
-	await expect(page.locator('html')).toHaveAttribute('data-theme', to.toLowerCase());
-	await expect(page.locator('.loader')).toHaveCount(0);
-	await expect(page.getByRole('button', { name: 'Appearance' })).toBeFocused();
-	findings.push(...(await scan(page, 'site · after a change of theme')));
+	await expect(page.locator('html'), 'in day, on every device').toHaveAttribute('data-theme', 'light');
 	await report(testInfo, findings);
 });

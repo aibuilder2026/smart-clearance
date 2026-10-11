@@ -25,12 +25,9 @@
   var themeNow = function () { return H.getAttribute("data-theme") === "dark" ? "dark" : "light"; };
   function el(tag, cls, html) { var e = D.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
 
-  // the reader's appearance before the first paint (sc3-theme, as the kit keeps it), so the loader opens in it
-  (function () {
-    var mode = null; try { mode = W.localStorage.getItem("sc3-theme"); } catch (e) { /* storage blocked */ }
-    var dark = mode === "dark" || (mode !== "light" && !!(W.matchMedia && W.matchMedia("(prefers-color-scheme: dark)").matches));
-    H.setAttribute("data-theme", dark ? "dark" : "light");
-  })();
+  // the landing page is always in day (SC-165), whatever the device or a choice saved on the other pages: set before the
+  // first paint, so the loader and the page open in it
+  H.setAttribute("data-theme", "light");
 
   /* ---------- its own styles: design system v3's inks and faces, written out, so nothing waits for a stylesheet ---------- */
   var DISPLAY = '"Bricolage Grotesque Variable", "Bricolage Grotesque", "Geist Variable", "Geist", system-ui, sans-serif';

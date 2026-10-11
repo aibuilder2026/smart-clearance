@@ -6,8 +6,11 @@
    both. */
 html, body { overflow-x: clip; }
 .app.site-root { position: relative; height: auto; min-height: 100svh; overflow: visible; }
-.site { position: relative; min-height: 100svh; background: var(--bg); scroll-behavior: smooth; }
-@media (prefers-reduced-motion: reduce) { .site { scroll-behavior: auto; } }
+.site { position: relative; min-height: 100svh; background: var(--bg); }
+/* the bar's links, the brand and the footer's links glide to their section (SC-165): the window scrolls, so the
+   smoothness is the root's; at once under reduced motion */
+html:has(.site) { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html:has(.site) { scroll-behavior: auto; } }
 
 /* the bar: the brand, the links centred with a dot under the section the reader is in, the actions. Clear over the
    film, its glass once the page has scrolled, with a progress line along its foot */
@@ -16,6 +19,8 @@ html, body { overflow-x: clip; }
 .site.scrolled .site-nav { color: var(--fg); background: color-mix(in oklab, var(--bg) 78%, transparent); -webkit-backdrop-filter: saturate(170%) blur(18px); backdrop-filter: saturate(170%) blur(18px); box-shadow: 0 var(--hair) 0 var(--line); }
 .nav-in { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; height: 64px; max-width: 1440px; margin: 0 auto; padding: var(--safe-top) 12px 0; }
 .nav-brand { display: inline-flex; align-items: center; gap: 10px; justify-self: start; padding: 2px 4px 2px 2px; color: inherit; text-decoration: none; border-radius: 10px; }
+/* the wordmark takes the bar's ink: white over the film, the page's ink on the glass (SC-165) */
+.nav-brand .wordmark { color: inherit; }
 .nav-mark { display: inline-grid; }
 .nav-links { display: flex; align-items: center; justify-self: center; gap: 30px; }
 .nav-links a { position: relative; padding: 6px 0; font-size: 14.5px; font-weight: 560; letter-spacing: 0.002em; color: inherit; text-decoration: none; border-radius: 6px; opacity: 0.8; transition: opacity 160ms var(--ease); }
@@ -29,7 +34,6 @@ html, body { overflow-x: clip; }
 .nav-text:hover { color: #cfeedd; }
 .site.scrolled .nav-text:hover { color: var(--primary-text); }
 .site-nav .iconbtn { color: inherit; }
-.nav-mode { display: inline-flex; }
 /* the two ways in (SC-150): the staff console, and a client's workspace */
 .nav-go { height: 40px; }
 .nav-progress { display: block; height: 2px; transform-origin: 0 50%; background: var(--primary); opacity: 0; transition: opacity 240ms var(--ease); }
