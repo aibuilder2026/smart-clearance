@@ -1,0 +1,23 @@
+{
+  "name": "k08-kirana-phone",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "plugin": "qwen-image-bf16 0.2.0",
+  "kind": "keyframe",
+  "prompt": "Make one new photograph, not a reference sheet: the person from the reference sheet appears once, with exactly the same face, hair and clothes, in a real place. A medium shot of a small kirana shop in Hyderabad's old city at noon, seen from just outside the counter: the woman in the maroon saree with the mustard blouse stands behind a glass-fronted wooden counter reading her smartphone with a pleased smile, shelves packed with colourful unbranded packets, jars of sweets, hanging sachet strips, a weighing scale on the counter, a ceiling fan, bright sun on the lane outside. Photorealistic documentary photograph, 35 mm lens, natural light, realistic skin and fabric. No text, no logos, no lettering, no signs anywhere; every pack and carton unbranded.",
+  "seed": 158108,
+  "aspect": "16:9",
+  "size": 1024,
+  "steps": 40,
+  "inputs": [
+    {
+      "role": "reference sheet",
+      "file": "cast-kirana.webp",
+      "sha256": "67a68fc8e0fd812c0cdea8e47773e624d755f1bb22ffcafde04ed25faa6f635e"
+    }
+  ],
+  "output": "k08-kirana-phone.png 1376x768",
+  "postprocess": "WebP q82 from k08-kirana-phone.png",
+  "created": "2026-10-11",
+  "use": "SC-158 keyframe: the first frame of one of the demo film's clips, and the still behind its screens",
+  "fictional": "every person is fictional; no brand or lettering"
+}

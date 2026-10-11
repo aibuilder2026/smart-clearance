@@ -1,0 +1,1217 @@
+{
+ "fps": 24,
+ "width": 1920,
+ "height": 1080,
+ "xfade": 0.5,
+ "segments": [
+  {
+   "kind": "clip",
+   "name": "c01-factory-dawn",
+   "key": "k01-factory-dawn",
+   "seconds": 6,
+   "speed": 0.8,
+   "hold": 0,
+   "overlays": [
+    {
+     "id": "title",
+     "at": 0.6,
+     "until": 12.5
+    }
+   ]
+  },
+  {
+   "kind": "clip",
+   "name": "c16-factory-line",
+   "key": "k16-factory-line",
+   "seconds": 5,
+   "speed": 0.85,
+   "hold": 0,
+   "overlays": [
+    {
+     "id": "cap-01",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ]
+  },
+  {
+   "kind": "clip",
+   "name": "c02-godown-lakshmi",
+   "key": "k02-godown-lakshmi",
+   "seconds": 6,
+   "speed": 0.8,
+   "hold": 0,
+   "overlays": [
+    {
+     "id": "cap-02",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-1"
+  },
+  {
+   "kind": "screen",
+   "shot": "detect--priya-command-at-risk",
+   "seconds": 9,
+   "bg": "k03-priya-office",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-03",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-1"
+  },
+  {
+   "kind": "clip",
+   "name": "c04-neha-console",
+   "key": "k04-neha-console",
+   "seconds": 5,
+   "speed": 0.85,
+   "hold": 0,
+   "overlays": [
+    {
+     "id": "cap-04",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-2"
+  },
+  {
+   "kind": "screen",
+   "shot": "console--console-overview",
+   "seconds": 9,
+   "bg": "k04-neha-console",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-05",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-2"
+  },
+  {
+   "kind": "screen",
+   "shot": "console--console-munchly-agents",
+   "seconds": 9,
+   "bg": "k04-neha-console",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-06",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-2"
+  },
+  {
+   "kind": "screen",
+   "shot": "console--console-munchly-rules",
+   "seconds": 7,
+   "bg": "k04-neha-console",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-07",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-2"
+  },
+  {
+   "kind": "clip",
+   "name": "c03-priya-office",
+   "key": "k03-priya-office",
+   "seconds": 5,
+   "speed": 0.85,
+   "hold": 0,
+   "overlays": [
+    {
+     "id": "cap-08",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-3"
+  },
+  {
+   "kind": "clip",
+   "name": "c05-priya-phone",
+   "key": "k05-priya-phone",
+   "seconds": 5,
+   "speed": 0.8,
+   "hold": 0,
+   "overlays": [
+    {
+     "id": "cap-09",
+     "at": 0.4,
+     "until": -0.3
+    },
+    {
+     "id": "push-detect",
+     "at": 0.6,
+     "until": 6.6
+    }
+   ],
+   "chapter": "ch-3"
+  },
+  {
+   "kind": "screen",
+   "shot": "detect--priya-journey-flagged",
+   "seconds": 8,
+   "bg": "k05-priya-phone",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-10",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-3"
+  },
+  {
+   "kind": "clip",
+   "name": "c06-lakshmi-label",
+   "key": "k06-lakshmi-label",
+   "seconds": 5,
+   "speed": 0.8,
+   "hold": 0,
+   "overlays": [
+    {
+     "id": "cap-11",
+     "at": 0.4,
+     "until": -0.3
+    },
+    {
+     "id": "push-verify",
+     "at": 0.5,
+     "until": 6.5
+    }
+   ],
+   "chapter": "ch-4"
+  },
+  {
+   "kind": "screen",
+   "shot": "detect--lakshmi-today-photo-asked-phone",
+   "seconds": 6,
+   "bg": "k06-lakshmi-label",
+   "phone": true,
+   "scroll": false,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-12",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-4"
+  },
+  {
+   "kind": "screen",
+   "shot": "verified--priya-route-vision",
+   "seconds": 9,
+   "bg": "k06-lakshmi-label",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-13",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-4"
+  },
+  {
+   "kind": "screen",
+   "shot": "planned--priya-route-plan",
+   "seconds": 11,
+   "bg": "k03-priya-office",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-14",
+     "at": 0.4,
+     "until": -0.3
+    },
+    {
+     "id": "push-plan",
+     "at": 0.6,
+     "until": 6.6
+    }
+   ],
+   "chapter": "ch-5"
+  },
+  {
+   "kind": "clip",
+   "name": "c07-priya-approve",
+   "key": "k07-priya-approve",
+   "seconds": 5,
+   "speed": 0.8,
+   "hold": 0,
+   "overlays": [
+    {
+     "id": "cap-15",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-5"
+  },
+  {
+   "kind": "screen",
+   "shot": "approved--priya-execution-sent",
+   "seconds": 9,
+   "bg": "k07-priya-approve",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-16",
+     "at": 0.4,
+     "until": -0.3
+    },
+    {
+     "id": "push-approved",
+     "at": 0.6,
+     "until": 6.6
+    }
+   ],
+   "chapter": "ch-5"
+  },
+  {
+   "kind": "clip",
+   "name": "c08-kirana-phone",
+   "key": "k08-kirana-phone",
+   "seconds": 5,
+   "speed": 0.8,
+   "hold": 0,
+   "overlays": [
+    {
+     "id": "cap-17",
+     "at": 0.4,
+     "until": -0.3
+    },
+    {
+     "id": "push-offer",
+     "at": 0.5,
+     "until": 6.5
+    }
+   ],
+   "chapter": "ch-6"
+  },
+  {
+   "kind": "screen",
+   "shot": "approved--kirana-offer-phone",
+   "seconds": 7,
+   "bg": "k08-kirana-phone",
+   "phone": true,
+   "scroll": false,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-18",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-6"
+  },
+  {
+   "kind": "screen",
+   "shot": "ordered--kirana-orders-phone",
+   "seconds": 7,
+   "bg": "k09-kirana-sale",
+   "phone": true,
+   "scroll": false,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-19",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-6"
+  },
+  {
+   "kind": "clip",
+   "name": "c09-kirana-sale",
+   "key": "k09-kirana-sale",
+   "seconds": 5,
+   "speed": 0.85,
+   "hold": 0,
+   "overlays": [
+    {
+     "id": "cap-20",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-6"
+  },
+  {
+   "kind": "screen",
+   "shot": "ordered--priya-execution-ordered",
+   "seconds": 8,
+   "bg": "k08-kirana-phone",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-21",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-6"
+  },
+  {
+   "kind": "clip",
+   "name": "c10-staff-sale",
+   "key": "k10-staff-sale",
+   "seconds": 8,
+   "speed": 0.85,
+   "hold": 0,
+   "overlays": [
+    {
+     "id": "cap-22",
+     "at": 0.4,
+     "until": -0.3
+    },
+    {
+     "id": "push-staff",
+     "at": 0.6,
+     "until": 6.6
+    }
+   ],
+   "chapter": "ch-7"
+  },
+  {
+   "kind": "screen",
+   "shot": "staff--lakshmi-today-staff-recorded-phone",
+   "seconds": 6,
+   "bg": "k10-staff-sale",
+   "phone": true,
+   "scroll": false,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-23",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-7"
+  },
+  {
+   "kind": "screen",
+   "shot": "approved--meera-pickup-request-phone",
+   "seconds": 6,
+   "bg": "k11-foodbank-van",
+   "phone": true,
+   "scroll": false,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-24",
+     "at": 0.4,
+     "until": -0.3
+    },
+    {
+     "id": "push-pickup",
+     "at": 0.5,
+     "until": 6.5
+    }
+   ],
+   "chapter": "ch-8"
+  },
+  {
+   "kind": "clip",
+   "name": "c11-foodbank-van",
+   "key": "k11-foodbank-van",
+   "seconds": 8,
+   "speed": 0.85,
+   "hold": 0,
+   "overlays": [
+    {
+     "id": "cap-25",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-8"
+  },
+  {
+   "kind": "screen",
+   "shot": "collected--meera-pickup-page",
+   "seconds": 8,
+   "bg": "k11-foodbank-van",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-26",
+     "at": 0.4,
+     "until": -0.3
+    },
+    {
+     "id": "push-confirmed",
+     "at": 0.6,
+     "until": 6.6
+    }
+   ],
+   "chapter": "ch-8"
+  },
+  {
+   "kind": "clip",
+   "name": "c12-van-round",
+   "key": "k12-van-round",
+   "seconds": 6,
+   "speed": 0.85,
+   "hold": 0,
+   "overlays": [
+    {
+     "id": "cap-27",
+     "at": 0.4,
+     "until": -0.3
+    },
+    {
+     "id": "push-van",
+     "at": 0.5,
+     "until": 6.5
+    }
+   ],
+   "chapter": "ch-9"
+  },
+  {
+   "kind": "screen",
+   "shot": "papers--lakshmi-deliveries",
+   "seconds": 7,
+   "bg": "k12-van-round",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-28",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-9"
+  },
+  {
+   "kind": "clip",
+   "name": "c13-priya-papers",
+   "key": "k13-priya-papers",
+   "seconds": 5,
+   "speed": 0.8,
+   "hold": 0,
+   "overlays": [
+    {
+     "id": "cap-29",
+     "at": 0.4,
+     "until": -0.3
+    },
+    {
+     "id": "push-papers",
+     "at": 0.5,
+     "until": 6.5
+    }
+   ],
+   "chapter": "ch-9"
+  },
+  {
+   "kind": "screen",
+   "shot": "papers--paper-credit-note",
+   "seconds": 8,
+   "bg": "k13-priya-papers",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-30",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-9"
+  },
+  {
+   "kind": "screen",
+   "shot": "papers--paper-itc-memo",
+   "seconds": 8,
+   "bg": "k13-priya-papers",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-31",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-9"
+  },
+  {
+   "kind": "screen",
+   "shot": "papers--paper-fssai",
+   "seconds": 6,
+   "bg": "k13-priya-papers",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-32",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-9"
+  },
+  {
+   "kind": "screen",
+   "shot": "ledger--priya-execution-cleared",
+   "seconds": 7,
+   "bg": "k14-office-dashboard",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-33",
+     "at": 0.4,
+     "until": -0.3
+    },
+    {
+     "id": "push-closed",
+     "at": 0.6,
+     "until": 6.6
+    }
+   ],
+   "chapter": "ch-10"
+  },
+  {
+   "kind": "clip",
+   "name": "c14-office-dashboard",
+   "key": "k14-office-dashboard",
+   "seconds": 6,
+   "speed": 0.85,
+   "hold": 0,
+   "overlays": [
+    {
+     "id": "cap-34",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-10"
+  },
+  {
+   "kind": "screen",
+   "shot": "ledger--ledger-money",
+   "seconds": 8,
+   "bg": "k14-office-dashboard",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-35",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-10"
+  },
+  {
+   "kind": "screen",
+   "shot": "ledger--ledger-gst",
+   "seconds": 8,
+   "bg": "k14-office-dashboard",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-36",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-10"
+  },
+  {
+   "kind": "screen",
+   "shot": "ledger--ledger-impact",
+   "seconds": 8,
+   "bg": "k14-office-dashboard",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-37",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-10"
+  },
+  {
+   "kind": "screen",
+   "shot": "ledger--batch-impact",
+   "seconds": 7,
+   "bg": "k14-office-dashboard",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.03,
+   "overlays": [
+    {
+     "id": "cap-38",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-10"
+  },
+  {
+   "kind": "screen",
+   "shot": "console--console-overview",
+   "seconds": 6,
+   "bg": "k04-neha-console",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.08,
+   "overlays": [
+    {
+     "id": "cap-39",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-10"
+  },
+  {
+   "kind": "clip",
+   "name": "c09-kirana-sale",
+   "key": "k09-kirana-sale",
+   "seconds": 5,
+   "speed": 0.8,
+   "hold": 0,
+   "overlays": [
+    {
+     "id": "cap-40",
+     "at": 0.4,
+     "until": -0.3
+    }
+   ],
+   "chapter": "ch-11"
+  },
+  {
+   "kind": "clip",
+   "name": "c15-lane-golden",
+   "key": "k15-lane-golden",
+   "seconds": 6,
+   "speed": 0.75,
+   "hold": 8,
+   "overlays": [
+    {
+     "id": "end",
+     "at": 1.2,
+     "until": 15.0
+    }
+   ]
+  }
+ ],
+ "overlays": [
+  {
+   "id": "title",
+   "kind": "title",
+   "title": "Smart-Clearance",
+   "text": "Near-expiry stock, routed by AI agents. One yes from a person.",
+   "sub": "Munchly Foods · the Mango Drink batch · Hyderabad"
+  },
+  {
+   "id": "cap-01",
+   "kind": "caption",
+   "text": "Munchly Foods makes it. By the time a batch reaches a distributor's godown, the clock on its best-before is already running.",
+   "label": null,
+   "amber": false
+  },
+  {
+   "id": "ch-1",
+   "kind": "chapter",
+   "n": "1",
+   "text": "The batch"
+  },
+  {
+   "id": "cap-02",
+   "kind": "caption",
+   "text": "Lakshmi Agencies holds **2,000 packs** of Mango Drink 200 ml, batch MF-2410-118, with **22 days** to best-before.",
+   "label": "Begum Bazaar godown · Hyderabad",
+   "amber": false
+  },
+  {
+   "id": "cap-03",
+   "kind": "caption",
+   "text": "Blinkit, Zepto and Instamart stop taking a pack this close to its date: **three gates, all crossed**. Destroying it would cost **₹23,059**.",
+   "label": "The quick-commerce gates",
+   "amber": true
+  },
+  {
+   "id": "ch-2",
+   "kind": "chapter",
+   "n": "2",
+   "text": "A SaaS, run by agents"
+  },
+  {
+   "id": "cap-04",
+   "kind": "caption",
+   "text": "Smart-Clearance is software as a service: Munchly's workspace is one of many, set up and watched by the platform's staff in the console.",
+   "label": "Smart-Clearance · the staff console",
+   "amber": false
+  },
+  {
+   "id": "cap-05",
+   "kind": "caption",
+   "text": "Every client's batches in flight, the agents at work on each stop, what was recovered, and the food kept out of landfill, day by day.",
+   "label": "The console · Overview",
+   "amber": false
+  },
+  {
+   "id": "cap-06",
+   "kind": "caption",
+   "text": "**Ten agents on Gemini** work a batch: Watcher, Vision, Valuer, Router, Lister, Negotiator, Outreach, Donation, Paperwork and Impact. A person says yes once.",
+   "label": "Munchly Foods · Agents",
+   "amber": false
+  },
+  {
+   "id": "cap-07",
+   "kind": "caption",
+   "text": "Each client's own rules: the quick-commerce gates, the exits and their prices, the kirana scheme, the expiry policy.",
+   "label": "Munchly Foods · Channels & rules",
+   "amber": false
+  },
+  {
+   "id": "ch-3",
+   "kind": "chapter",
+   "n": "3",
+   "text": "Detect"
+  },
+  {
+   "id": "cap-08",
+   "kind": "caption",
+   "text": "Every morning the Watcher checks every batch at every distributor against sell-through and the gates.",
+   "label": "09:00 · Pune",
+   "amber": false
+  },
+  {
+   "id": "cap-09",
+   "kind": "caption",
+   "text": "**1,608 packs** will not sell before 24 Oct. Priya is told on her phone, in the words she reads.",
+   "label": "The Watcher",
+   "amber": false
+  },
+  {
+   "id": "push-detect",
+   "kind": "push",
+   "to": "To Priya · Munchly Foods",
+   "title": "Mango Drink 200 ml · Hyderabad",
+   "body": "Priya ji, Hyderabad godown mein Mango Drink 200ml (batch MF-2410-118) ki 1,580 units 24 Oct se pehle nahi bikengi. Q-commerce block hai. Route dekhne ke liye tap karein."
+  },
+  {
+   "id": "cap-10",
+   "kind": "caption",
+   "text": "The batch has its own page: flagged, at risk, and what each agent does next. Nothing is hidden from the operator.",
+   "label": "The batch's page",
+   "amber": false
+  },
+  {
+   "id": "ch-4",
+   "kind": "chapter",
+   "n": "4",
+   "text": "Verify"
+  },
+  {
+   "id": "cap-11",
+   "kind": "caption",
+   "text": "One photo of the carton's label is all Vision asks of the distributor. Bas ek photo.",
+   "label": "Vision",
+   "amber": false
+  },
+  {
+   "id": "push-verify",
+   "kind": "push",
+   "to": "To Lakshmi Agencies · distributor",
+   "title": "Ek photo chahiye",
+   "body": "Lakshmi Agencies, Mango Drink 200ml ka ek carton ka label photo bhej dein (batch MF-2410-118). Bas ek photo, baaki hum kar lenge."
+  },
+  {
+   "id": "cap-12",
+   "kind": "caption",
+   "text": "Her Today card asks for it: take a photo, or upload one.",
+   "label": "Lakshmi Agencies · Today",
+   "amber": false
+  },
+  {
+   "id": "cap-13",
+   "kind": "caption",
+   "text": "Vision reads the batch, MFG, best-before and MRP from the label and matches them to the DMS export. The batch is real, and it is this one.",
+   "label": "Vision · Gemini",
+   "amber": false
+  },
+  {
+   "id": "ch-5",
+   "kind": "chapter",
+   "n": "5",
+   "text": "Value, decide, approve"
+  },
+  {
+   "id": "cap-14",
+   "kind": "caption",
+   "text": "The Valuer prices five exits. The Router splits the batch: **1,372** to the kiranas, **150** to the staff sale, **86** to Feeding India. Net **₹16,888**, **₹22,258** better than the bin.",
+   "label": "Valuer · Router",
+   "amber": false
+  },
+  {
+   "id": "push-plan",
+   "kind": "push",
+   "to": "To Priya · Munchly Foods",
+   "title": "Plan ready · MF-2410-118",
+   "body": "Plan for MF-2410-118: 1,372 units kirana (₹12), 150 units staff sale (₹8), 86 units food bank (₹0). Net ₹16,888, ₹22,258 better than write-off. GST ITC ₹837 safe. Tap to review and approve."
+  },
+  {
+   "id": "cap-15",
+   "kind": "caption",
+   "text": "Priya says yes once, from her phone. The approval is logged with who, when and device.",
+   "label": "One yes",
+   "amber": true
+  },
+  {
+   "id": "cap-16",
+   "kind": "caption",
+   "text": "The distributor is told the plan, with a Pause. The agents set off: Outreach to the shops, Donation to the food bank, the staff sale opened.",
+   "label": "Execution",
+   "amber": false
+  },
+  {
+   "id": "push-approved",
+   "kind": "push",
+   "to": "To Lakshmi Agencies · distributor",
+   "title": "Plan approved · Mango Drink",
+   "body": "Lakshmi Agencies, Munchly ne MF-2410-118 ka plan approve kiya: 1,372 packets aapke kiranas ko scheme par, 150 godown ki staff sale mein, 86 food bank ko. Kuch rokna ho to app mein Pause dabayein."
+  },
+  {
+   "id": "ch-6",
+   "kind": "chapter",
+   "n": "6",
+   "text": "The kiranas"
+  },
+  {
+   "id": "cap-17",
+   "kind": "caption",
+   "text": "58 shops in the old city get the offer in their own language: **buy 10, get 2 free**, for 48 hours.",
+   "label": "Outreach · in Hindi",
+   "amber": false
+  },
+  {
+   "id": "push-offer",
+   "kind": "push",
+   "to": "To Sri Lakshmi Ganapathi Kirana · Begum Bazaar",
+   "title": "आज का खास ऑफर",
+   "body": "नमस्ते Sri Lakshmi Ganapathi Kirana! Munchly Mango Drink 200ml पर आज खास ऑफर: 10 पैकेट लो, 2 मुफ़्त. Best before 24 Oct 2026. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें — Lakshmi Agencies"
+  },
+  {
+   "id": "cap-18",
+   "kind": "caption",
+   "text": "In her app: the scheme, her cap (what she sells in two weeks, times four) and her margin. She orders in a tap.",
+   "label": "Sri Lakshmi Ganapathi Kirana · the offer",
+   "amber": false
+  },
+  {
+   "id": "cap-19",
+   "kind": "caption",
+   "text": "**₹20 MRP packs at ₹12 effective**: with 2 free in every 12, **₹8 a pack** stays with the shop. Fresh stock at a scheme price, with no haggling.",
+   "label": "What a kirana gains",
+   "amber": false
+  },
+  {
+   "id": "cap-20",
+   "kind": "caption",
+   "text": "A fair price for the shop, a fair price for the customer, and a brand that keeps its shelf.",
+   "label": "The shop",
+   "amber": false
+  },
+  {
+   "id": "cap-21",
+   "kind": "caption",
+   "text": "**52 shops order 1,372 packets** inside the window, each under its cap. Every order is a line in the audit trail.",
+   "label": "Execution",
+   "amber": false
+  },
+  {
+   "id": "ch-7",
+   "kind": "chapter",
+   "n": "7",
+   "text": "The staff sale"
+  },
+  {
+   "id": "cap-22",
+   "kind": "caption",
+   "text": "150 packs for the godown's own staff at ₹8, paid on UPI at the gate, recorded once by the distributor.",
+   "label": "Begum Bazaar godown · dusk",
+   "amber": false
+  },
+  {
+   "id": "push-staff",
+   "kind": "push",
+   "to": "To Lakshmi Agencies · distributor",
+   "title": "Staff sale · Mango Drink",
+   "body": "150 packs of Mango Drink for your staff at ₹8 a pack, at Begum Bazaar godown. Record what sold when the sale is over."
+  },
+  {
+   "id": "cap-23",
+   "kind": "caption",
+   "text": "Recorded: 150 of 150 sold. What sold is what counts; nothing is assumed.",
+   "label": "Lakshmi Agencies · Today",
+   "amber": false
+  },
+  {
+   "id": "ch-8",
+   "kind": "chapter",
+   "n": "8",
+   "text": "The food bank"
+  },
+  {
+   "id": "cap-24",
+   "kind": "caption",
+   "text": "Packs with 15 or more days left go to a food bank, with the FSSAI surplus-food checklist drafted for them.",
+   "label": "Donation",
+   "amber": false
+  },
+  {
+   "id": "push-pickup",
+   "kind": "push",
+   "to": "To Meera · Feeding India",
+   "title": "Pickup request · Mango Drink",
+   "body": "86 packs of Mango Drink, 21 days left, with the FSSAI checklist. Pickup from Begum Bazaar godown?"
+  },
+  {
+   "id": "cap-25",
+   "kind": "caption",
+   "text": "Feeding India collects 86 packs at the godown: **86 meals** served, instead of 86 packs in a landfill.",
+   "label": "Feeding India · Hyderabad",
+   "amber": false
+  },
+  {
+   "id": "cap-26",
+   "kind": "caption",
+   "text": "Feeding India issues its own donation receipt, numbered in its own series, with its PDF. Munchly and the distributor each keep a copy.",
+   "label": "Meera · Pickups",
+   "amber": false
+  },
+  {
+   "id": "push-confirmed",
+   "kind": "push",
+   "to": "To Priya · Munchly Foods",
+   "title": "Feeding India confirmed",
+   "body": "86 packs of Mango Drink, pickup Tuesday 10:00 from Begum Bazaar godown."
+  },
+  {
+   "id": "ch-9",
+   "kind": "chapter",
+   "n": "9",
+   "text": "Delivery and the papers"
+  },
+  {
+   "id": "cap-27",
+   "kind": "caption",
+   "text": "The Saturday round delivers the scheme to every shop that ordered.",
+   "label": "Saturday · the van round",
+   "amber": false
+  },
+  {
+   "id": "push-van",
+   "kind": "push",
+   "to": "To Lakshmi Agencies · distributor",
+   "title": "Van route for Tuesday",
+   "body": "Van route for Tuesday updated: 52 kiranas, 1,372 packets."
+  },
+  {
+   "id": "cap-28",
+   "kind": "caption",
+   "text": "Her deliveries, batch by batch: the round to the shops, the staff sale, the food bank's pickup.",
+   "label": "Lakshmi Agencies · Deliveries",
+   "amber": false
+  },
+  {
+   "id": "cap-29",
+   "kind": "caption",
+   "text": "Paperwork drafts the pack and lays each paper out as a PDF: the credit note, the GST memo, the FSSAI checklist, the receipt.",
+   "label": "Paperwork",
+   "amber": false
+  },
+  {
+   "id": "push-papers",
+   "kind": "push",
+   "to": "To Priya · Munchly Foods",
+   "title": "Document pack ready · MF-2410-118",
+   "body": "Papers ready for MF-2410-118: price-support credit note, GST memo. Nothing to chase."
+  },
+  {
+   "id": "cap-30",
+   "kind": "caption",
+   "text": "The credit note: Munchly's price support to Lakshmi Agencies, so the distributor **ends whole** on the batch. A financial note, with no GST adjustment.",
+   "label": "Price-support credit note",
+   "amber": false
+  },
+  {
+   "id": "cap-31",
+   "kind": "caption",
+   "text": "The GST memo: input credit **kept on every pack sold**, reversed only on the 86 given away. **₹837 of credit stays with Munchly**.",
+   "label": "GST ITC memo · s.17(5)(h)",
+   "amber": false
+  },
+  {
+   "id": "cap-32",
+   "kind": "caption",
+   "text": "The FSSAI checklist for the donation, drafted from the batch's own dates and the food bank's rules.",
+   "label": "FSSAI surplus-food checklist",
+   "amber": false
+  },
+  {
+   "id": "ch-10",
+   "kind": "chapter",
+   "n": "10",
+   "text": "The ledger"
+  },
+  {
+   "id": "cap-33",
+   "kind": "caption",
+   "text": "On expiry day nothing is left at the godown. Impact posts the ledger, and the batch is cleared.",
+   "label": "Expiry day · Impact",
+   "amber": false
+  },
+  {
+   "id": "push-closed",
+   "kind": "push",
+   "to": "To Priya · Munchly Foods",
+   "title": "Batch closed · 0 cartons destroyed",
+   "body": "₹16,888 recovered, ₹837 GST credit kept, 345.7 kg kept out of landfill."
+  },
+  {
+   "id": "cap-34",
+   "kind": "caption",
+   "text": "**₹16,888 recovered** on a batch that was headed for a **₹23,059** write-off.",
+   "label": "Munchly Foods · Pune",
+   "amber": false
+  },
+  {
+   "id": "cap-35",
+   "kind": "caption",
+   "text": "One ledger, three readings. Money: what was recovered against the would-be write-off, every batch a segment, by quarter and by year.",
+   "label": "Ledger · Money",
+   "amber": false
+  },
+  {
+   "id": "cap-36",
+   "kind": "caption",
+   "text": "GST: input credit kept and reversed under s.17(5)(h), the invoices and the credit notes, exported as the CA receives them.",
+   "label": "Ledger · GST",
+   "amber": false
+  },
+  {
+   "id": "cap-37",
+   "kind": "caption",
+   "text": "Impact: **346 kg** of food kept out of landfill, **864 kg** of CO₂e avoided, **86 meals**, and BRSR Principle 6's food-waste row with its evidence.",
+   "label": "Ledger · Impact",
+   "amber": false
+  },
+  {
+   "id": "cap-38",
+   "kind": "caption",
+   "text": "The batch's own BRSR line and its evidence: 52 kirana order logs, CN/0117, the FSSAI checklist, receipt FI/HYD/26-27/0417.",
+   "label": "The batch's BRSR line",
+   "amber": false
+  },
+  {
+   "id": "cap-39",
+   "kind": "caption",
+   "text": "And in the console, across every client: food kept out of landfill by day, and what was destroyed, on one scale.",
+   "label": "The console",
+   "amber": false
+  },
+  {
+   "id": "ch-11",
+   "kind": "chapter",
+   "n": "11",
+   "text": "Everyone ends whole"
+  },
+  {
+   "id": "cap-40",
+   "kind": "caption",
+   "text": "The brand recovers. The distributor ends whole. The kiranas earn. The food bank serves.",
+   "label": "Hyderabad",
+   "amber": false
+  },
+  {
+   "id": "end",
+   "kind": "end",
+   "url": "smartclearance.web.app · munchly-smartclearance.web.app",
+   "built": "Built on Google Cloud: Gemini on Vertex AI · ADK · Cloud Run · Cloud SQL · Pub/Sub · BigQuery · Firebase",
+   "cards": [
+    {
+     "who": "Munchly Foods",
+     "fig": "₹16,888",
+     "what": "recovered, against a ₹23,059 write-off"
+    },
+    {
+     "who": "Lakshmi Agencies",
+     "fig": "ends whole",
+     "what": "the price support makes up the difference"
+    },
+    {
+     "who": "52 kiranas",
+     "fig": "₹8 a pack",
+     "what": "on 1,372 packs, at a scheme price"
+    },
+    {
+     "who": "Feeding India",
+     "fig": "86 meals",
+     "what": "and the receipt that proves it"
+    }
+   ]
+  }
+ ]
+}

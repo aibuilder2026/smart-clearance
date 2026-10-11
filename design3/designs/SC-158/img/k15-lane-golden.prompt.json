@@ -1,0 +1,23 @@
+{
+  "name": "k15-lane-golden",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "plugin": "qwen-image-bf16 0.2.0",
+  "kind": "keyframe",
+  "prompt": "Make one new photograph, not a reference sheet: the person from the reference sheet appears once, with exactly the same face, hair and clothes, in a real place. A wide shot at golden hour of a busy lane in Hyderabad's old city: the woman in the maroon saree with the mustard blouse (the only woman in a maroon saree in the picture) stands at the open door of her kirana shop holding one small upright yellow-orange tetra-pack cartons of mango drink with a ripe mango illustration and no readable words out to her customer, a young man in his twenties in a pale blue checked shirt and jeans with a cloth shopping bag on his shoulder, who reaches for it and smiles; strings of unbranded sachets and jars at the door, scooters, a man carrying a sack, warm low sun flaring down the lane, the dome of an old gateway far behind. Photorealistic documentary photograph, 35 mm lens, natural light, realistic skin and fabric. No text, no logos, no lettering, no signs anywhere; every pack and carton unbranded.",
+  "seed": 158135,
+  "aspect": "16:9",
+  "size": 1024,
+  "steps": 40,
+  "inputs": [
+    {
+      "role": "reference sheet",
+      "file": "cast-kirana.webp",
+      "sha256": "67a68fc8e0fd812c0cdea8e47773e624d755f1bb22ffcafde04ed25faa6f635e"
+    }
+  ],
+  "output": "k15-lane-golden.png 1376x768",
+  "postprocess": "WebP q82 from k15-lane-golden.png",
+  "created": "2026-10-11",
+  "use": "SC-158 keyframe: the first frame of one of the demo film's clips, and the still behind its screens",
+  "fictional": "every person is fictional; no brand or lettering"
+}

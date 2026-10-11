@@ -1,0 +1,17 @@
+{
+  "name": "cast-neha",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "plugin": "qwen-image-bf16 0.2.0",
+  "kind": "sheet",
+  "prompt": "A character reference sheet on a plain neutral grey studio background, soft even light, photographic, realistic skin and fabric: the same person three times side by side, full face front view, three-quarter view and profile, head and shoulders, the same clothes in every view, no text, no labels, no logos. The person: an Indian woman in her late twenties, a software platform's operations lead: straight shoulder-length black hair, a plain white cotton shirt with the sleeves rolled to the elbow, small silver hoop earrings, thin black-framed glasses; a focused, friendly face",
+  "seed": 158003,
+  "aspect": "16:9",
+  "size": 1024,
+  "steps": 40,
+  "inputs": [],
+  "output": "cast-neha.png 1376x768",
+  "postprocess": "WebP q82 from cast-neha.png",
+  "created": "2026-10-11",
+  "use": "SC-158 cast: a fictional person, the reference for every keyframe they are in",
+  "fictional": "every person is fictional; no brand or lettering"
+}

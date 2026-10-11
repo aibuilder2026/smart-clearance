@@ -1,0 +1,24 @@
+{
+  "name": "c12-van-round",
+  "model": "LTX 2.5 Fast (local)",
+  "plugin": "ltx-video 0.2.0",
+  "ltx_desktop": "1.2.7",
+  "kind": "clip",
+  "prompt": "Exactly as in the image: a Saturday morning in a narrow bazaar lane in Hyderabad's old city, a small white delivery van with its side door open, a young delivery worker in a blue shirt carrying two plain kraft cartons with a sage-green band toward a kirana shop's doorway where the shopkeeper waits, old painted shutters, strings of unbranded sachets, a cycle rickshaw, soft morning light. The worker walks the cartons to the doorway and hands them to the shopkeeper, who takes them with a nod; the cycle rickshaw passes behind. Locked-off camera, no movement. Sound: the lane's morning chatter, a bicycle bell, a temple bell far off. No text, no logos, no lettering anywhere. Photorealistic live action, 35 mm, natural skin and fabric.",
+  "seed": 158011,
+  "resolution": "540p",
+  "duration_s": 6,
+  "fps": 24,
+  "camera": "static",
+  "audio": true,
+  "inputs": [
+    {
+      "role": "first frame",
+      "file": "k12-van-round.png",
+      "sha256": "61ef7b8677689aedf5599f67063fb75d21d56c39694ac9dd696dc812c0bc8c8f"
+    }
+  ],
+  "minutes": 9.5,
+  "created": "2026-10-11",
+  "use": "SC-158: one shot of the demo film, image to video from its keyframe"
+}

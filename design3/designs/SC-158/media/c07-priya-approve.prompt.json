@@ -1,0 +1,24 @@
+{
+  "name": "c07-priya-approve",
+  "model": "LTX 2.5 Fast (local)",
+  "plugin": "ltx-video 0.2.0",
+  "ltx_desktop": "1.2.7",
+  "kind": "clip",
+  "prompt": "Exactly as in the image: a close-up over the shoulder of a woman's hands in a navy pinstripe sleeve with a slim steel watch holding a black smartphone at a white desk, a large rounded green button at the bottom of a white app screen with a big green number, a laptop blurred behind, soft morning light. Her thumb presses the green button; the button darkens for a moment and a white tick appears on it, and her hand relaxes. Locked-off camera, no movement. Sound: a soft tap, a gentle confirmation tone, a quiet office. No text, no logos, no lettering anywhere. Photorealistic live action, 35 mm, natural skin and fabric.",
+  "seed": 158006,
+  "resolution": "540p",
+  "duration_s": 5,
+  "fps": 24,
+  "camera": "static",
+  "audio": true,
+  "inputs": [
+    {
+      "role": "first frame",
+      "file": "k07-priya-approve.png",
+      "sha256": "1d7dd277ea554b7bac121e5bc409e462b88076bc3b2b2a3bbe73edff4ed40a38"
+    }
+  ],
+  "minutes": 8.7,
+  "created": "2026-10-11",
+  "use": "SC-158: one shot of the demo film, image to video from its keyframe"
+}

@@ -1,0 +1,24 @@
+{
+  "name": "c06-lakshmi-label",
+  "model": "LTX 2.5 Fast (local)",
+  "plugin": "ltx-video 0.2.0",
+  "ltx_desktop": "1.2.7",
+  "kind": "clip",
+  "prompt": "Exactly as in the image: in the warm godown the woman in the teal saree holds her smartphone up with both hands toward the printed label on the side of the kraft carton on the rack, the camera seeing the back of the phone and its lenses, its screen toward her; racks of cartons behind her, a bare bulb above. She steadies the phone, presses the shutter with her thumb, a small flash lights the label for an instant, then she lowers the phone a little and nods, satisfied. The phone stays turned toward the carton. Locked-off camera, no movement. Sound: a camera shutter click, a fan's hum, a distant scooter. No text, no logos, no lettering anywhere. Photorealistic live action, 35 mm, natural skin and fabric.",
+  "seed": 158005,
+  "resolution": "540p",
+  "duration_s": 5,
+  "fps": 24,
+  "camera": "static",
+  "audio": true,
+  "inputs": [
+    {
+      "role": "first frame",
+      "file": "k06-lakshmi-label.png",
+      "sha256": "389822f3a7fc86db096f472df37b8ca1cd79977e90a6170e8c7b160d45a8a919"
+    }
+  ],
+  "minutes": 8.9,
+  "created": "2026-10-11",
+  "use": "SC-158: one shot of the demo film, image to video from its keyframe"
+}

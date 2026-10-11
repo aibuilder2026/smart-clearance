@@ -1,0 +1,24 @@
+{
+  "name": "c05-priya-phone",
+  "model": "LTX 2.5 Fast (local)",
+  "plugin": "ltx-video 0.2.0",
+  "ltx_desktop": "1.2.7",
+  "kind": "clip",
+  "prompt": "Exactly as in the image: the woman in the navy pinstripe kurta with the lanyard stands by the office window holding a black smartphone in both hands. The phone's screen lights up brighter with a notification; she reads it, her eyebrows rise a little, she exhales and taps the screen once with her thumb, then looks up thoughtfully toward the window. Locked-off camera, no movement. Sound: a soft two-note notification chime, a quiet office, birds outside. No text, no logos, no lettering anywhere. Photorealistic live action, 35 mm, natural skin and fabric.",
+  "seed": 158004,
+  "resolution": "540p",
+  "duration_s": 5,
+  "fps": 24,
+  "camera": "static",
+  "audio": true,
+  "inputs": [
+    {
+      "role": "first frame",
+      "file": "k05-priya-phone.png",
+      "sha256": "5c5510697df4fcd6f6550d723812c93fd17d917b0a8c7317402213a764daa169"
+    }
+  ],
+  "minutes": 9.1,
+  "created": "2026-10-11",
+  "use": "SC-158: one shot of the demo film, image to video from its keyframe"
+}

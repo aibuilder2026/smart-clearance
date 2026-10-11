@@ -69,3 +69,13 @@ infra/**/crash.log
 # written by infra/scripts/deploy.sh from Terraform's outputs
 frontend/.firebaserc
 .claude/settings.local.json
+
+# SC-158: the demo film's pipeline scripts ship; its PNG originals, clips, screens, build and logs stay local
+!design3/designs/SC-158/src/
+design3/designs/SC-158/src/*
+!design3/designs/SC-158/src/*.py
+!design3/designs/SC-158/src/*.mjs
+!design3/designs/SC-158/src/*.sh
+!design3/designs/SC-158/src/film.json
+!design3/designs/SC-158/src/pushes.json
+!design3/designs/SC-158/src/figures.json

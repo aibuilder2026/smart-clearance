@@ -1,0 +1,24 @@
+{
+  "name": "c03-priya-office",
+  "model": "LTX 2.5 Fast (local)",
+  "plugin": "ltx-video 0.2.0",
+  "ltx_desktop": "1.2.7",
+  "kind": "clip",
+  "prompt": "Exactly as in the image: a bright modern office in the morning, the woman in the navy pinstripe kurta with the lanyard at a white desk behind an open silver laptop whose lid faces the camera, a steel tumbler of chai, a potted plant, colleagues blurred behind. She scrolls on the trackpad and reads her screen, which stays turned toward her and out of view, then glances at her watch and back at the screen; her ponytail shifts, the colleague behind turns in his chair. The laptop does not move. Locked-off camera, no movement. Sound: a quiet office hum, keyboard taps nearby, a distant phone ringing once. No text, no logos, no lettering anywhere. Photorealistic live action, 35 mm, natural skin and fabric.",
+  "seed": 158002,
+  "resolution": "540p",
+  "duration_s": 5,
+  "fps": 24,
+  "camera": "static",
+  "audio": true,
+  "inputs": [
+    {
+      "role": "first frame",
+      "file": "k03-priya-office.png",
+      "sha256": "3d7099751ce46e2032d750266866745407553ff2c14129331c079bb784d70a4f"
+    }
+  ],
+  "minutes": 9.2,
+  "created": "2026-10-11",
+  "use": "SC-158: one shot of the demo film, image to video from its keyframe"
+}

@@ -1,0 +1,24 @@
+{
+  "name": "c15-lane-golden",
+  "model": "LTX 2.5 Fast (local)",
+  "plugin": "ltx-video 0.2.0",
+  "ltx_desktop": "1.2.7",
+  "kind": "clip",
+  "prompt": "Exactly as in the image: golden hour in a busy lane in Hyderabad's old city, the woman in the maroon saree with the mustard blouse at the open door of her kirana shop holding a small yellow-orange mango drink tetra pack out to a young man in a pale blue checked shirt with a cloth bag, strings of unbranded sachets and jars at the door, scooters, a man with a sack, the low sun flaring down the lane, an old gateway's dome behind. The young man in the pale blue checked shirt takes the pack from her hand, nods his thanks and turns to walk on down the lane; she smiles after him; a scooter passes; the sun flares across the lens. Locked-off camera, no movement. Sound: an evening lane, a scooter, a distant temple bell, chatter. No text, no logos, no lettering anywhere. Photorealistic live action, 35 mm, natural skin and fabric.",
+  "seed": 158014,
+  "resolution": "540p",
+  "duration_s": 6,
+  "fps": 24,
+  "camera": "static",
+  "audio": true,
+  "inputs": [
+    {
+      "role": "first frame",
+      "file": "k15-lane-golden.png",
+      "sha256": "2d966ecaaa4822376a1112da4a0c4af87b386b5b6ca34a7c0c346f53c53b3e09"
+    }
+  ],
+  "minutes": 9.3,
+  "created": "2026-10-11",
+  "use": "SC-158: one shot of the demo film, image to video from its keyframe"
+}

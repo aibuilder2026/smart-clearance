@@ -1,0 +1,23 @@
+{
+  "name": "k04-neha-console",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "plugin": "qwen-image-bf16 0.2.0",
+  "kind": "keyframe",
+  "prompt": "Make one new photograph, not a reference sheet: the person from the reference sheet appears once, with exactly the same face, hair and clothes, in a real place. A medium shot of a software company's operations room in the evening: the woman in the white shirt and black-framed glasses sits side-on to the camera at a wide desk with a large monitor and a laptop, both showing a pale green operations dashboard with cards, a route of green dots and charts, no readable words; warm desk lamp, a wall of acoustic panels, a monstera plant, city lights blurred in the window. She has one hand on the mouse and looks at the monitor, focused. Photorealistic documentary photograph, 35 mm lens, natural light, realistic skin and fabric. No text, no logos, no lettering, no signs anywhere; every pack and carton unbranded.",
+  "seed": 158104,
+  "aspect": "16:9",
+  "size": 1024,
+  "steps": 40,
+  "inputs": [
+    {
+      "role": "reference sheet",
+      "file": "cast-neha.png",
+      "sha256": "26ab6c05ef3eafe9b74a8dfdeb24b9e75d565f29b49762e429850f8d8b5d843c"
+    }
+  ],
+  "output": "k04-neha-console.png 1376x768",
+  "postprocess": "WebP q82 from k04-neha-console.png",
+  "created": "2026-10-11",
+  "use": "SC-158 keyframe: the first frame of one of the demo film's clips, and the still behind its screens",
+  "fictional": "every person is fictional; no brand or lettering"
+}

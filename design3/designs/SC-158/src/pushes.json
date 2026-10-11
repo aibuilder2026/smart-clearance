@@ -1,0 +1,98 @@
+{
+ "detect": {
+  "to": "priya",
+  "at": "2026-10-02T15:10:52.897225+05:30",
+  "title": "Mango Drink 200 ml · Hyderabad",
+  "body": "Priya ji, Hyderabad godown mein Mango Drink 200ml (batch MF-2410-118) ki 1,580 units 24 Oct se pehle nahi bikengi. Q-commerce block hai. Route dekhne ke liye tap karein.",
+  "hindi": false,
+  "en": null
+ },
+ "verify": {
+  "to": "lakshmi-owner",
+  "at": "2026-10-02T16:30:13.198105+05:30",
+  "title": "Ek photo chahiye",
+  "body": "Lakshmi Agencies, Mango Drink 200ml ka ek carton ka label photo bhej dein (batch MF-2410-118). Bas ek photo, baaki hum kar lenge.",
+  "hindi": false,
+  "en": null
+ },
+ "plan": {
+  "to": "priya",
+  "at": "2026-10-03T09:21:29.609785+05:30",
+  "title": "Plan ready · MF-2410-118",
+  "body": "Plan for MF-2410-118: 1,372 units kirana (₹12), 150 units staff sale (₹8), 86 units food bank (₹0). Net ₹16,888, ₹22,258 better than write-off. GST ITC ₹837 safe. Tap to review and approve.",
+  "hindi": false,
+  "en": null
+ },
+ "approved": {
+  "to": "lakshmi-owner",
+  "at": "2026-10-03T21:09:25.428745+05:30",
+  "title": "Plan approved · Mango Drink",
+  "body": "Lakshmi Agencies, Munchly ne MF-2410-118 ka plan approve kiya: 1,372 packets aapke kiranas ko scheme par, 150 godown ki staff sale mein, 86 food bank ko. Kuch rokna ho to app mein Pause dabayein.",
+  "hindi": false,
+  "en": null
+ },
+ "staff.open": {
+  "to": "lakshmi-owner",
+  "at": "2026-10-03T21:09:29.681785+05:30",
+  "title": "Staff sale · Mango Drink",
+  "body": "150 packs of Mango Drink for your staff at ₹8 a pack, at Begum Bazaar godown. Record what sold when the sale is over.",
+  "hindi": false,
+  "en": null
+ },
+ "pickup": {
+  "to": "meera",
+  "at": "2026-10-03T21:20:01.198825+05:30",
+  "title": "Pickup request · Mango Drink",
+  "body": "86 packs of Mango Drink, 21 days left, with the FSSAI checklist. Pickup from Begum Bazaar godown?",
+  "hindi": false,
+  "en": null
+ },
+ "offer": {
+  "to": "kirana-sri-lakshmi-ganapathi-kirana",
+  "at": "2026-10-03T21:46:37.235785+05:30",
+  "title": "आज का खास ऑफर",
+  "body": "नमस्ते Sri Lakshmi Ganapathi Kirana! Munchly Mango Drink 200ml पर आज खास ऑफर: 10 पैकेट लो, 2 मुफ़्त. Best before 24 Oct 2026. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें — Lakshmi Agencies",
+  "hindi": true,
+  "en": "Today's offer on Munchly Mango Drink 200 ml: buy 10 packets, get 2 free. Best before 24 Oct 2026. 48 hours only. Tap to order. Lakshmi Agencies"
+ },
+ "staff.recorded": {
+  "to": "priya",
+  "at": "2026-10-05T02:09:54.580825+05:30",
+  "title": "Staff sale recorded · Mango Drink",
+  "body": "Lakshmi Agencies sold 150 of 150 packs to staff.",
+  "hindi": false,
+  "en": null
+ },
+ "pickup.confirmed": {
+  "to": "priya",
+  "at": "2026-10-05T06:42:04.070665+05:30",
+  "title": "Feeding India confirmed",
+  "body": "86 packs of Mango Drink, pickup Tuesday 10:00 from Begum Bazaar godown.",
+  "hindi": false,
+  "en": null
+ },
+ "papers": {
+  "to": "priya",
+  "at": "2026-10-05T07:35:35.225305+05:30",
+  "title": "Document pack ready · MF-2410-118",
+  "body": "Papers ready for MF-2410-118: price-support credit note, GST memo. Nothing to chase.",
+  "hindi": false,
+  "en": null
+ },
+ "van": {
+  "to": "lakshmi-owner",
+  "at": "2026-10-05T07:35:37.833865+05:30",
+  "title": "Van route for Tuesday",
+  "body": "Van route for Tuesday updated: 52 kiranas, 1,372 packets.",
+  "hindi": false,
+  "en": null
+ },
+ "closed": {
+  "to": "priya",
+  "at": "2026-10-06T23:36:25.665625+05:30",
+  "title": "Batch closed · 0 cartons destroyed",
+  "body": "₹16,888 recovered, ₹837 GST credit kept, 345.7 kg kept out of landfill.",
+  "hindi": false,
+  "en": null
+ }
+}

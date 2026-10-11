@@ -1,0 +1,24 @@
+{
+  "name": "c13-priya-papers",
+  "model": "LTX 2.5 Fast (local)",
+  "plugin": "ltx-video 0.2.0",
+  "ltx_desktop": "1.2.7",
+  "kind": "clip",
+  "prompt": "Exactly as in the image: the bright office in the afternoon, the woman in the navy pinstripe kurta with the lanyard at her desk reading a document on a tablet held upright in her left hand with its screen toward her, a laptop open beside it with its lid toward the camera, a stapled printout and a pen on the desk. She scrolls the tablet with her right finger, reads, nods once with a small satisfied smile, and lowers the tablet a little. The tablet's screen stays turned toward her. Locked-off camera, no movement. Locked-off camera, no movement. Sound: a quiet office, a soft tap on glass, a page turning. No text, no logos, no lettering anywhere. Photorealistic live action, 35 mm, natural skin and fabric.",
+  "seed": 158012,
+  "resolution": "540p",
+  "duration_s": 5,
+  "fps": 24,
+  "camera": "static",
+  "audio": true,
+  "inputs": [
+    {
+      "role": "first frame",
+      "file": "k13-priya-papers.png",
+      "sha256": "8cd7c555a6a788f6d912cd528e3ec5b0f2117c9a5a0591e3be50208f4cd15d92"
+    }
+  ],
+  "minutes": 8.8,
+  "created": "2026-10-11",
+  "use": "SC-158: one shot of the demo film, image to video from its keyframe"
+}

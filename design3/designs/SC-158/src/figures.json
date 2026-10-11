@@ -1,0 +1,2788 @@
+{
+ "case": {
+  "seq": 1662,
+  "ref": "MF-2410-118",
+  "batch": {
+   "id": "MF-2410-118",
+   "sku": "mango",
+   "distributor": "lakshmi",
+   "units": 2000,
+   "daysLeft": 18,
+   "sellPerDay": 28.0,
+   "bestBefore": "2026-10-24",
+   "mfg": "2026-04-27",
+   "city": "Hyderabad",
+   "staffCap": 150,
+   "shelf": null,
+   "assess": {
+    "life": 180,
+    "gates": [
+     {
+      "id": "blinkit",
+      "app": "Blinkit",
+      "has": 21,
+      "need": 45,
+      "pass": false,
+      "rule": "needs 45+ days"
+     },
+     {
+      "id": "zepto",
+      "app": "Zepto",
+      "has": 21,
+      "need": 90,
+      "pass": false,
+      "rule": "needs 50% of a 180-day life (90 days)"
+     },
+     {
+      "id": "instamart",
+      "app": "Instamart",
+      "has": 21,
+      "need": 90,
+      "pass": false,
+      "rule": "needs 50% of a 180-day life (90 days)"
+     }
+    ],
+    "atRisk": 1608,
+    "status": "at-risk",
+    "blocked": true,
+    "urgency": 0.8833333333333333,
+    "willSell": 392,
+    "atRiskMRP": 32160,
+    "usableDays": 14,
+    "lifeUsedPct": 88
+   },
+   "phase": "cleared"
+  },
+  "sku": {
+   "id": "mango",
+   "code": "MF-MD-200",
+   "brand": "Munchly",
+   "name": "Mango Drink 200 ml",
+   "category": "beverages",
+   "hsn": "2202",
+   "mrp": 20.0,
+   "cost": 11.0,
+   "gst": 0.05,
+   "perCarton": 27,
+   "lifeDays": 180,
+   "kgPerUnit": 0.215,
+   "packKg": 0.002,
+   "img": "pack-mango",
+   "dp": 14.5,
+   "itcPerUnit": null
+  },
+  "distributor": {
+   "id": "lakshmi",
+   "name": "Lakshmi Agencies",
+   "short": "Lakshmi Agencies",
+   "city": "Hyderabad",
+   "state": "Telangana",
+   "godown": "Begum Bazaar godown",
+   "address": null,
+   "gstin": null,
+   "kiranas": 58,
+   "cluster": "Hyderabad old city",
+   "territory": "Hyderabad",
+   "pins": "500, 501",
+   "staffCap": 150,
+   "upi": "lakshmi-agencies@exampleupi",
+   "permission": {
+    "by": null,
+    "at": "2026-07-03T03:00:00+00:00",
+    "paused": false
+   }
+  },
+  "journey": {
+   "id": "MF-2410-118",
+   "phase": "cleared",
+   "photo": {
+    "status": "verified",
+    "at": "2026-10-02T21:31:53.655385+00:00",
+    "confidence": 0.98,
+    "url": "https://storage.googleapis.com/aibuilder-510213-sc-photos-local/munchly/MF-2410-118/ph-mqt0lupqc8?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=sc-api-local%40aibuilder-510213.iam.gserviceaccount.com%2F20261010%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20261010T230244Z&X-Goog-Expires=300&X-Goog-SignedHeaders=host&X-Goog-Signature=9f8f4fb2c5ae3615b38485a6f328f92f48efda68e844cecab254c56916598623c402fbd770c3d99612fd8f0613a6b2cd8df440c222add53cc2319bc3c993b2bc6abac3c842c099873709efb6a6879a5075f6a494965340a8b96b91845fd299d02db1d271e88bb8ab4d543eb809ec60a28a03a4823830c28b0786a910b2d3ed89005317d54ce65b0a2441732a308856034123e7ed35d48844620b7030c1da80d2973c5d75dd84412170f30d1789383db35992dcec60f64a435bb6ba84db89d42771ac85bdc596bf222a3cd0069b11230ad1b7827309e36160691ba5bcd9799473b23e7d8085a39d108363e7a857bd90c73219de8cb1f70779caab700d3a5275a4",
+    "read": {
+     "mfg": "2026-04-27",
+     "mrp": 20.0,
+     "pack": "MUNCHLY MANGO DRINK 200 ml",
+     "batch": "MF-2410-118",
+     "matches": true,
+     "bestBefore": "2026-10-24",
+     "confidence": 0.98,
+     "mismatches": []
+    }
+   },
+   "plan": {
+    "status": "approved",
+    "at": "2026-10-03T15:39:21.701305+00:00",
+    "by": "priya",
+    "device": "phone"
+   },
+   "listing": null,
+   "offer": {
+    "status": "closed",
+    "at": "2026-10-03T16:16:33.896425+00:00",
+    "shops": 58,
+    "closesAt": "2026-10-05T16:16:33.896425+00:00",
+    "declined": {}
+   },
+   "orders": [
+    {
+     "id": "h0",
+     "units": 24,
+     "at": "2026-10-04T11:13:20.198425+05:30",
+     "by": "kirana-sri-lakshmi-ganapathi-kirana"
+    },
+    {
+     "id": "h1",
+     "units": 28,
+     "at": "2026-10-04T11:19:34.694905+05:30",
+     "by": "kirana-al-noor-provision-store"
+    },
+    {
+     "id": "h2",
+     "units": 32,
+     "at": "2026-10-04T11:25:43.275865+05:30",
+     "by": "kirana-deccan-general-stores"
+    },
+    {
+     "id": "h3",
+     "units": 20,
+     "at": "2026-10-04T11:31:39.069625+05:30",
+     "by": "kirana-sai-krishna-kirana"
+    },
+    {
+     "id": "h4",
+     "units": 36,
+     "at": "2026-10-04T11:37:57.921385+05:30",
+     "by": "kirana-hussaini-provision"
+    },
+    {
+     "id": "h5",
+     "units": 24,
+     "at": "2026-10-04T11:43:38.508025+05:30",
+     "by": "kirana-bhavani-kirana"
+    },
+    {
+     "id": "h6",
+     "units": 28,
+     "at": "2026-10-04T11:49:31.500985+05:30",
+     "by": "kirana-golconda-stores"
+    },
+    {
+     "id": "h7",
+     "units": 16,
+     "at": "2026-10-04T11:55:59.265625+05:30",
+     "by": "kirana-moazzam-kirana"
+    },
+    {
+     "id": "h8",
+     "units": 32,
+     "at": "2026-10-04T12:02:18.830905+05:30",
+     "by": "kirana-anjaneya-provision-store"
+    },
+    {
+     "id": "h9",
+     "units": 28,
+     "at": "2026-10-04T12:08:22.761385+05:30",
+     "by": "kirana-shalimar-general-store"
+    },
+    {
+     "id": "h10",
+     "units": 24,
+     "at": "2026-10-04T12:14:37.024585+05:30",
+     "by": "kirana-ravi-teja-kirana"
+    },
+    {
+     "id": "h11",
+     "units": 28,
+     "at": "2026-10-04T12:19:58.436905+05:30",
+     "by": "kirana-madina-provision"
+    },
+    {
+     "id": "h12",
+     "units": 32,
+     "at": "2026-10-04T12:26:22.181065+05:30",
+     "by": "kirana-sri-durga-bhavani-stores"
+    },
+    {
+     "id": "h13",
+     "units": 20,
+     "at": "2026-10-04T12:33:04.133305+05:30",
+     "by": "kirana-hyderabadi-kirana"
+    },
+    {
+     "id": "h14",
+     "units": 36,
+     "at": "2026-10-04T12:39:27.230905+05:30",
+     "by": "kirana-gulzar-house-stores"
+    },
+    {
+     "id": "h15",
+     "units": 24,
+     "at": "2026-10-04T12:45:42.157945+05:30",
+     "by": "kirana-padmavathi-kirana"
+    },
+    {
+     "id": "h16",
+     "units": 28,
+     "at": "2026-10-04T12:52:13.935145+05:30",
+     "by": "kirana-asif-nagar-provisions"
+    },
+    {
+     "id": "h17",
+     "units": 16,
+     "at": "2026-10-04T12:58:17.147065+05:30",
+     "by": "kirana-ramakrishna-general-store"
+    },
+    {
+     "id": "h18",
+     "units": 32,
+     "at": "2026-10-04T13:04:02.791705+05:30",
+     "by": "kirana-taj-kirana"
+    },
+    {
+     "id": "h19",
+     "units": 28,
+     "at": "2026-10-04T13:10:33.357865+05:30",
+     "by": "kirana-sitara-provision-store"
+    },
+    {
+     "id": "h20",
+     "units": 24,
+     "at": "2026-10-04T13:16:39.690985+05:30",
+     "by": "kirana-vinayaka-stores"
+    },
+    {
+     "id": "h21",
+     "units": 28,
+     "at": "2026-10-04T13:23:03.582025+05:30",
+     "by": "kirana-nizam-kirana"
+    },
+    {
+     "id": "h22",
+     "units": 32,
+     "at": "2026-10-04T13:29:28.889305+05:30",
+     "by": "kirana-annapurna-provisions"
+    },
+    {
+     "id": "h23",
+     "units": 20,
+     "at": "2026-10-04T13:35:42.688825+05:30",
+     "by": "kirana-musi-river-stores"
+    },
+    {
+     "id": "h24",
+     "units": 36,
+     "at": "2026-10-04T13:41:49.228585+05:30",
+     "by": "kirana-kothi-kirana"
+    },
+    {
+     "id": "h25",
+     "units": 24,
+     "at": "2026-10-04T13:48:04.008745+05:30",
+     "by": "kirana-siddiq-general-store"
+    },
+    {
+     "id": "h26",
+     "units": 28,
+     "at": "2026-10-04T13:54:28.758025+05:30",
+     "by": "kirana-lalitha-provision"
+    },
+    {
+     "id": "h27",
+     "units": 16,
+     "at": "2026-10-04T14:00:28.012825+05:30",
+     "by": "kirana-mehboob-kirana"
+    },
+    {
+     "id": "h28",
+     "units": 32,
+     "at": "2026-10-04T14:06:51.929065+05:30",
+     "by": "kirana-srinivasa-stores"
+    },
+    {
+     "id": "h29",
+     "units": 28,
+     "at": "2026-10-04T14:12:27.869545+05:30",
+     "by": "kirana-zam-zam-provisions"
+    },
+    {
+     "id": "h30",
+     "units": 24,
+     "at": "2026-10-04T14:18:13.769065+05:30",
+     "by": "kirana-pochamma-kirana"
+    },
+    {
+     "id": "h31",
+     "units": 28,
+     "at": "2026-10-04T14:24:15.620185+05:30",
+     "by": "kirana-rahmat-general-store"
+    },
+    {
+     "id": "h32",
+     "units": 32,
+     "at": "2026-10-04T14:30:16.228585+05:30",
+     "by": "kirana-krishnaveni-provisions"
+    },
+    {
+     "id": "h33",
+     "units": 20,
+     "at": "2026-10-04T14:36:22.697785+05:30",
+     "by": "kirana-shah-ali-kirana"
+    },
+    {
+     "id": "h34",
+     "units": 36,
+     "at": "2026-10-04T14:42:26.235865+05:30",
+     "by": "kirana-mahalakshmi-stores"
+    },
+    {
+     "id": "h35",
+     "units": 24,
+     "at": "2026-10-04T14:48:25.368985+05:30",
+     "by": "kirana-banjara-provision-store"
+    },
+    {
+     "id": "h36",
+     "units": 28,
+     "at": "2026-10-04T14:54:35.173945+05:30",
+     "by": "kirana-ghouse-kirana"
+    },
+    {
+     "id": "h37",
+     "units": 16,
+     "at": "2026-10-04T15:00:52.431625+05:30",
+     "by": "kirana-sri-rama-stores"
+    },
+    {
+     "id": "h38",
+     "units": 32,
+     "at": "2026-10-04T15:06:53.488585+05:30",
+     "by": "kirana-patel-market-kirana"
+    },
+    {
+     "id": "h39",
+     "units": 28,
+     "at": "2026-10-04T15:12:46.919305+05:30",
+     "by": "kirana-yadamma-provisions"
+    },
+    {
+     "id": "h40",
+     "units": 24,
+     "at": "2026-10-04T15:18:58.524265+05:30",
+     "by": "kirana-darussalam-stores"
+    },
+    {
+     "id": "h41",
+     "units": 28,
+     "at": "2026-10-04T15:25:59.632105+05:30",
+     "by": "kirana-gowri-kirana"
+    },
+    {
+     "id": "h42",
+     "units": 32,
+     "at": "2026-10-04T15:32:22.230745+05:30",
+     "by": "kirana-irani-gali-provisions"
+    },
+    {
+     "id": "h43",
+     "units": 20,
+     "at": "2026-10-04T15:37:55.122025+05:30",
+     "by": "kirana-satyanarayana-stores"
+    },
+    {
+     "id": "h44",
+     "units": 36,
+     "at": "2026-10-04T15:44:02.977225+05:30",
+     "by": "kirana-farhan-general-store"
+    },
+    {
+     "id": "h45",
+     "units": 24,
+     "at": "2026-10-04T15:50:04.721065+05:30",
+     "by": "kirana-sunanda-kirana"
+    },
+    {
+     "id": "h46",
+     "units": 28,
+     "at": "2026-10-04T15:56:25.735705+05:30",
+     "by": "kirana-mir-alam-provisions"
+    },
+    {
+     "id": "h47",
+     "units": 16,
+     "at": "2026-10-04T16:02:30.322825+05:30",
+     "by": "kirana-jyothi-stores"
+    },
+    {
+     "id": "h48",
+     "units": 32,
+     "at": "2026-10-04T16:08:44.522665+05:30",
+     "by": "kirana-purani-haveli-kirana"
+    },
+    {
+     "id": "h49",
+     "units": 28,
+     "at": "2026-10-04T16:14:54.807865+05:30",
+     "by": "kirana-narayana-provision-store"
+    },
+    {
+     "id": "h50",
+     "units": 28,
+     "at": "2026-10-04T16:20:50.670025+05:30",
+     "by": "kirana-bilal-stores"
+    },
+    {
+     "id": "h51",
+     "units": 4,
+     "at": "2026-10-04T16:26:30.699385+05:30",
+     "by": "kirana-saraswathi-kirana"
+    }
+   ],
+   "bids": [],
+   "chat": [],
+   "award": null,
+   "van": {
+    "status": "done",
+    "done": 52,
+    "at": "2026-10-06T13:07:19.426585+00:00"
+   },
+   "truck": {
+    "status": "idle",
+    "at": null
+   },
+   "staff": {
+    "status": "recorded",
+    "units": 150,
+    "price": 8,
+    "godown": "Begum Bazaar godown",
+    "at": "2026-10-03T15:39:21.701305+00:00",
+    "sold": 150,
+    "left": 0,
+    "recordedAt": "2026-10-04T20:39:49.157785+00:00"
+   },
+   "docs": [
+    {
+     "id": "support",
+     "status": "generated"
+    },
+    {
+     "id": "itc",
+     "status": "generated"
+    },
+    {
+     "id": "fssai",
+     "status": "generated"
+    },
+    {
+     "id": "receipt",
+     "status": "generated"
+    },
+    {
+     "id": "destruction",
+     "status": "not required"
+    }
+   ],
+   "invoiceIssued": false,
+   "posted": true,
+   "reviewed": true
+  },
+  "feed": [
+   {
+    "id": "225",
+    "key": "watch",
+    "stage": "detect",
+    "agent": "Watcher",
+    "person": null,
+    "icon": "radar",
+    "at": "2026-10-02T15:10:47.153065+05:30",
+    "text": "Checked 9 batches across 4 distributors. MF-2410-118 fails all three quick-commerce gates and will not sell through.",
+    "calls": [
+     [
+      "gates.check",
+      "Blinkit 22/45 · Zepto 22/90 · Instamart 22/90",
+      "bad"
+     ],
+     [
+      "sellthrough.project",
+      "28/day × 15 days = 420 of 2,000",
+      ""
+     ],
+     [
+      "pubsub.publish",
+      "batch.at_risk",
+      "ok"
+     ]
+    ],
+    "human": false
+   },
+   {
+    "id": "226",
+    "key": "ask",
+    "stage": "verify",
+    "agent": "Vision",
+    "person": null,
+    "icon": "scan-line",
+    "at": "2026-10-02T16:30:10.387945+05:30",
+    "text": "Asked Lakshmi Agencies for one label photo before quoting any price.",
+    "calls": [
+     [
+      "fcm.send",
+      "Lakshmi Agencies · Hindi",
+      "ok"
+     ]
+    ],
+    "human": false
+   },
+   {
+    "id": "227",
+    "key": "photo",
+    "stage": "verify",
+    "agent": null,
+    "person": "lakshmi-owner",
+    "icon": null,
+    "at": "2026-10-03T02:00:45.783145+05:30",
+    "text": "Sent one photo of the carton label.",
+    "calls": [],
+    "human": true
+   },
+   {
+    "id": "228",
+    "key": "read",
+    "stage": "verify",
+    "agent": "Vision",
+    "person": null,
+    "icon": "scan-line",
+    "at": "2026-10-03T03:01:51.908665+05:30",
+    "text": "Read the label: batch MF-2410-118, MFG 27 Apr 2026, best before 24 Oct 2026, MRP ₹20.00, confidence 0.98. Matches the DMS record.",
+    "calls": [
+     [
+      "gemini.vision.read_label",
+      "confidence 0.98",
+      "ok"
+     ],
+     [
+      "dms.reconcile",
+      "match",
+      "ok"
+     ]
+    ],
+    "human": false
+   },
+   {
+    "id": "229",
+    "key": "value",
+    "stage": "value",
+    "agent": "Valuer",
+    "person": null,
+    "icon": "scale",
+    "at": "2026-10-03T06:07:41.020825+05:30",
+    "text": "Priced five channels against 21 days left. Destroying costs −₹14.34 a unit, −₹23,059 for the batch.",
+    "calls": [
+     [
+      "bigquery.price_history",
+      "beverages · 21 days",
+      ""
+     ],
+     [
+      "gst.rate",
+      "HSN 2202 → 5%",
+      ""
+     ],
+     [
+      "cost_sheet.input_gst",
+      "₹0.55 a pack",
+      ""
+     ],
+     [
+      "epr.factor",
+      "₹6 / kg",
+      ""
+     ]
+    ],
+    "human": false
+   },
+   {
+    "id": "230",
+    "key": "route",
+    "stage": "decide",
+    "agent": "Router",
+    "person": null,
+    "icon": "split",
+    "at": "2026-10-03T09:21:21.285865+05:30",
+    "text": "We route 1,372 units to the Kirana cluster at ₹12, 150 to Staff sale at ₹8, and 86 to the Food bank at ₹0. ExpireSoon pays ₹10 but is ineligible due to short days left, so we fill available capacity. This gives a swing against writing the batch off of ₹22,258.",
+    "calls": [
+     [
+      "allocate.greedy",
+      "1,608 units → net ₹16,888",
+      "ok"
+     ]
+    ],
+    "human": false
+   },
+   {
+    "id": "231",
+    "key": "notify",
+    "stage": "approve",
+    "agent": "Notifier",
+    "person": null,
+    "icon": "bell",
+    "at": "2026-10-03T09:21:27.633385+05:30",
+    "text": "Sent Priya the plan to review, and Lakshmi Agencies the same plan with a pause button.",
+    "calls": [],
+    "human": false
+   },
+   {
+    "id": "232",
+    "key": "approved",
+    "stage": "approve",
+    "agent": null,
+    "person": "priya",
+    "icon": null,
+    "at": "2026-10-03T21:09:21.715705+05:30",
+    "text": "Approved the plan from the phone.",
+    "calls": [],
+    "human": true
+   },
+   {
+    "id": "233",
+    "key": "donate",
+    "stage": "execute",
+    "agent": "Donation",
+    "person": null,
+    "icon": "heart-handshake",
+    "at": "2026-10-03T21:19:55.885225+05:30",
+    "text": "Mango Drink batch: booked Feeding India for 86 units. India FoodBanking Network needs 21+ days and 100+ units.",
+    "calls": [
+     [
+      "foodbank.match",
+      "Feeding India · 86 units",
+      "ok"
+     ]
+    ],
+    "human": false
+   },
+   {
+    "id": "234",
+    "key": "outreach",
+    "stage": "execute",
+    "agent": "Outreach",
+    "person": null,
+    "icon": "send",
+    "at": "2026-10-03T21:46:35.728825+05:30",
+    "text": "Pushed the Hindi scheme to 58 kiranas in the Hyderabad cluster: buy 10 get 2 for 48 hours, no shop over 4× its own 14-day sales.",
+    "calls": [
+     [
+      "fcm.send",
+      "58 kiranas · Hindi",
+      "ok"
+     ]
+    ],
+    "human": false
+   },
+   {
+    "id": "235",
+    "key": "orders",
+    "stage": "execute",
+    "agent": "Outreach",
+    "person": null,
+    "icon": "store",
+    "at": "2026-10-04T16:26:32.920585+05:30",
+    "text": "52 of 58 kiranas ordered all 1,372 units in about 19 hours, each under its cap.",
+    "calls": [
+     [
+      "orders.sum",
+      "1,372 units · 52 shops",
+      "ok"
+     ]
+    ],
+    "human": false
+   },
+   {
+    "id": "236",
+    "key": "staff",
+    "stage": "execute",
+    "agent": null,
+    "person": "lakshmi-owner",
+    "icon": null,
+    "at": "2026-10-05T02:09:49.325545+05:30",
+    "text": "Recorded the staff sale at Begum Bazaar godown: 150 of 150 packs sold.",
+    "calls": [],
+    "human": true
+   },
+   {
+    "id": "237",
+    "key": "papers",
+    "stage": "settle",
+    "agent": "Paperwork",
+    "person": null,
+    "icon": "file-check",
+    "at": "2026-10-05T07:35:30.926905+05:30",
+    "text": "Issued the price-support credit note CN/0117 and wrote the ITC memo.",
+    "calls": [
+     [
+      "docs.credit_note",
+      "₹6,338",
+      "ok"
+     ],
+     [
+      "itc.memo",
+      "₹837 retained",
+      "ok"
+     ]
+    ],
+    "human": false
+   },
+   {
+    "id": "238",
+    "key": "van",
+    "stage": "settle",
+    "agent": null,
+    "person": "lakshmi-owner",
+    "icon": null,
+    "at": "2026-10-06T18:37:20.689465+05:30",
+    "text": "Ran the Tuesday round: 52 drops, 1,372 packets.",
+    "calls": [],
+    "human": true
+   },
+   {
+    "id": "239",
+    "key": "expired",
+    "stage": "report",
+    "agent": "Impact",
+    "person": null,
+    "icon": "hourglass",
+    "at": "2026-10-06T23:30:30.944665+05:30",
+    "text": "Expiry day: the journey closed as it stood, with every pack gone.",
+    "calls": [],
+    "human": false
+   },
+   {
+    "id": "240",
+    "key": "ledger",
+    "stage": "report",
+    "agent": "Impact",
+    "person": null,
+    "icon": "leaf",
+    "at": "2026-10-06T23:36:21.893545+05:30",
+    "text": "The return window closed on 4 Oct. Posted the ledger: 345.7 kg diverted, 864.3 kg CO₂e avoided (indicative), 86 meals. BRSR row written.",
+    "calls": [
+     [
+      "ledger.post",
+      "₹16,888",
+      "ok"
+     ],
+     [
+      "brsr.rows",
+      "Principle 6",
+      "ok"
+     ]
+    ],
+    "human": false
+   }
+  ],
+  "plan": {
+   "kg": 345.72,
+   "alt": null,
+   "co2": 864.3,
+   "net": 16887.7,
+   "pnl": -800.3,
+   "rows": [
+    {
+     "id": "expiresoon",
+     "itc": "retained",
+     "net": 10,
+     "icon": "shopping-bag",
+     "name": "ExpireSoon listing",
+     "need": "30+ days",
+     "price": 10,
+     "short": "ExpireSoon",
+     "clears": "5–9 days",
+     "reason": "needs 30+ days, has 21",
+     "itcLoss": 0,
+     "minDays": 30,
+     "capacity": null,
+     "eligible": false,
+     "pricePct": 0.5,
+     "packPrice": null,
+     "unlimited": true,
+     "costPerUnit": 0,
+     "pricePctLabel": "50%",
+     "note": "Not eligible because it needs 30+ days, has 21."
+    },
+    {
+     "id": "kirana",
+     "itc": "retained",
+     "net": 11.5,
+     "icon": "store",
+     "name": "Kirana cluster push",
+     "need": "20+ days",
+     "price": 12,
+     "short": "Kirana cluster",
+     "clears": "10–14 days",
+     "reason": "",
+     "itcLoss": 0,
+     "minDays": 20,
+     "capacity": 1372,
+     "eligible": true,
+     "pricePct": 0.6,
+     "packPrice": 14.4,
+     "costPerUnit": 0.5,
+     "pricePctLabel": "60%",
+     "note": "Best paying exit at ₹11.50 net per unit, matching the recent price of ₹12.00, but its capacity of 1372 cannot take the whole batch."
+    },
+    {
+     "id": "staff",
+     "itc": "retained",
+     "net": 8,
+     "icon": "users",
+     "name": "Hyderabad staff sale",
+     "need": "until best-before",
+     "price": 8,
+     "short": "Staff sale",
+     "clears": "2–3 days",
+     "reason": "",
+     "itcLoss": 0,
+     "minDays": 0,
+     "capacity": 150,
+     "eligible": true,
+     "pricePct": 0.4,
+     "packPrice": null,
+     "costPerUnit": 0,
+     "pricePctLabel": "40%",
+     "note": "Clears fast in 2–3 days, but can only take a small capacity of 150 units."
+    },
+    {
+     "id": "foodbank",
+     "itc": "reversed",
+     "net": -1.05,
+     "icon": "heart-handshake",
+     "name": "Food bank donation",
+     "need": "15+ days, food",
+     "price": 0,
+     "short": "Food bank",
+     "clears": "1–2 days",
+     "reason": "",
+     "itcLoss": 0.55,
+     "minDays": 15,
+     "capacity": null,
+     "eligible": true,
+     "foodOnly": true,
+     "pricePct": 0,
+     "packPrice": null,
+     "unlimited": true,
+     "costPerUnit": 0.5,
+     "pricePctLabel": "—",
+     "note": "Better than destroying the stock with a net per unit of −₹1.05, though GST credit is reversed."
+    },
+    {
+     "id": "writeoff",
+     "itc": "reversed",
+     "net": -14.34,
+     "icon": "trash-2",
+     "name": "Write-off (destroy)",
+     "need": "—",
+     "price": 0,
+     "short": "Write-off",
+     "clears": "—",
+     "reason": "",
+     "itcLoss": 0,
+     "minDays": 0,
+     "baseline": true,
+     "capacity": null,
+     "eligible": true,
+     "pricePct": 0,
+     "packPrice": null,
+     "unlimited": true,
+     "costPerUnit": 0,
+     "pricePctLabel": "—",
+     "note": "Destroying the stock costs a net per unit of −₹14.34 and the GST credit is reversed."
+    }
+   ],
+   "batch": "MF-2410-118",
+   "costs": 729,
+   "gross": 17664,
+   "lines": [
+    {
+     "id": "kirana",
+     "net": 15778,
+     "cost": 686,
+     "name": "Kirana cluster push",
+     "gross": 16464,
+     "price": 12,
+     "short": "Kirana cluster",
+     "units": 1372,
+     "cartons": 50.81481481481482,
+     "charged": 1143,
+     "itcLoss": 0,
+     "packPrice": 14.4
+    },
+    {
+     "id": "staff",
+     "net": 1200,
+     "cost": 0,
+     "name": "Hyderabad staff sale",
+     "gross": 1200,
+     "price": 8,
+     "short": "Staff sale",
+     "units": 150,
+     "cartons": 5.555555555555555,
+     "charged": 150,
+     "itcLoss": 0,
+     "packPrice": null
+    },
+    {
+     "id": "foodbank",
+     "net": -90.3,
+     "cost": 43,
+     "name": "Food bank donation",
+     "gross": 0,
+     "price": 0,
+     "short": "Food bank",
+     "units": 86,
+     "cartons": 3.185185185185185,
+     "charged": 86,
+     "itcLoss": 47.3,
+     "packPrice": null
+    }
+   ],
+   "meals": 86,
+   "swing": 22258.42,
+   "units": 1608,
+   "pctMRP": 53,
+   "donated": 86,
+   "itcLoss": 47.3,
+   "bookCost": 17688,
+   "leftover": 0,
+   "writeOff": {
+    "kg": 345.72,
+    "epr": 2074.32,
+    "itc": 884.4,
+    "stock": 17688,
+    "total": 23058.72,
+    "units": 1608,
+    "perUnit": 14.34,
+    "disposal": 2412,
+    "itcPerUnit": 0.55
+   },
+   "soldUnits": 1522,
+   "cashAvoided": 5370.72,
+   "explanation": "We route 1,372 units to the Kirana cluster at ₹12, 150 to Staff sale at ₹8, and 86 to the Food bank at ₹0. ExpireSoon pays ₹10 but is ineligible due to short days left, so we fill available capacity. This gives a swing against writing the batch off of ₹22,258.",
+   "itcRetained": 837.1,
+   "itcReversed": 47.3,
+   "disposalAvoided": 4486.32
+  },
+  "writeOff": {
+   "units": 1608,
+   "stock": 17688,
+   "itc": 884.4,
+   "itcPerUnit": 0.55,
+   "disposal": 2412,
+   "kg": 345.72,
+   "epr": 2074.32,
+   "total": 23058.72,
+   "perUnit": 14.34
+  },
+  "ledger": {
+   "ref": "MF-2410-118",
+   "sku": "mango",
+   "name": "Mango Drink 200 ml",
+   "img": "pack-mango",
+   "distributor": "lakshmi",
+   "distributorName": "Lakshmi Agencies",
+   "city": "Hyderabad",
+   "flagged": "2026-10-02",
+   "cleared": "2026-10-06",
+   "outcome": "donation",
+   "history": false,
+   "figures": {
+    "net": 16887.7,
+    "swing": 22258.42,
+    "pnl": -800.3,
+    "writeOff": 23058.72,
+    "itcKept": 837.1,
+    "itcReversed": 47.3,
+    "kg": 345.72,
+    "co2": 864.3,
+    "meals": 86,
+    "units": 1608,
+    "sold": 1522,
+    "donated": 86,
+    "godown": 0,
+    "destroyed": 0,
+    "resoldKg": 327.23,
+    "donatedKg": 18.49,
+    "destroyedKg": 0,
+    "packResoldKg": 3.04,
+    "packDonatedKg": 0.17,
+    "packDestroyedKg": 0,
+    "credit": 0,
+    "support": 6338
+   },
+   "lines": [
+    {
+     "id": "kirana",
+     "short": "Kirana cluster",
+     "units": 1372,
+     "price": 12,
+     "gross": 16464
+    },
+    {
+     "id": "staff",
+     "short": "Staff sale",
+     "units": 150,
+     "price": 8,
+     "gross": 1200
+    },
+    {
+     "id": "foodbank",
+     "short": "Food bank",
+     "units": 86,
+     "price": 0,
+     "gross": 0
+    }
+   ],
+   "papers": [
+    {
+     "id": "support",
+     "type": "Price-support credit note",
+     "no": "CN/0117",
+     "status": "generated",
+     "date": "2026-10-05",
+     "amount": 6338,
+     "pdf": true
+    },
+    {
+     "id": "itc",
+     "type": "GST ITC memo",
+     "no": "s.17(5)(h)",
+     "status": "generated",
+     "date": "2026-10-05",
+     "amount": 837.1,
+     "pdf": true
+    },
+    {
+     "id": "fssai",
+     "type": "FSSAI surplus-food checklist",
+     "no": "86 units",
+     "status": "generated",
+     "date": "2026-10-05",
+     "amount": 0,
+     "pdf": true
+    },
+    {
+     "id": "receipt",
+     "type": "Donation receipt",
+     "no": "FI/HYD/26-27/0417",
+     "status": "generated",
+     "date": "2026-10-05",
+     "amount": 0,
+     "pdf": true
+    },
+    {
+     "id": "destruction",
+     "type": "Destruction certificate",
+     "no": "0 units left",
+     "status": "not required",
+     "date": "2026-10-05",
+     "amount": 0,
+     "pdf": false
+    }
+   ],
+   "reviewed": {
+    "by": "priya",
+    "at": "2026-10-06T13:05:46.256425+00:00"
+   }
+  },
+  "counter": null,
+  "award": null,
+  "actual": {
+   "net": 16887.7,
+   "delta": 0,
+   "swing": 22258.42,
+   "pnl": -800.3
+  },
+  "support": {
+   "rows": [
+    {
+     "id": "kirana",
+     "short": "Kirana cluster",
+     "units": 1372,
+     "price": 12,
+     "gap": 2.5,
+     "amount": 3430
+    },
+    {
+     "id": "staff",
+     "short": "Staff sale",
+     "units": 150,
+     "price": 8,
+     "gap": 6.5,
+     "amount": 975
+    },
+    {
+     "id": "foodbank",
+     "short": "Food bank",
+     "units": 86,
+     "price": 0,
+     "gap": 14.5,
+     "amount": 1247
+    }
+   ],
+   "gap": 5652,
+   "van": 686,
+   "fee": 0,
+   "total": 6338
+  },
+  "supportPlan": {
+   "rows": [
+    {
+     "id": "kirana",
+     "short": "Kirana cluster",
+     "units": 1372,
+     "price": 12,
+     "gap": 2.5,
+     "amount": 3430
+    },
+    {
+     "id": "staff",
+     "short": "Staff sale",
+     "units": 150,
+     "price": 8,
+     "gap": 6.5,
+     "amount": 975
+    },
+    {
+     "id": "foodbank",
+     "short": "Food bank",
+     "units": 86,
+     "price": 0,
+     "gap": 14.5,
+     "amount": 1247
+    }
+   ],
+   "gap": 5652,
+   "van": 686,
+   "fee": 0,
+   "total": 6338
+  },
+  "realised": {
+   "lines": [
+    {
+     "id": "kirana",
+     "units": 1372
+    },
+    {
+     "id": "staff",
+     "units": 150
+    },
+    {
+     "id": "foodbank",
+     "units": 86
+    }
+   ],
+   "godown": 0
+  },
+  "claim": {
+   "units": 1608,
+   "credit": 23316,
+   "disposal": 2412,
+   "epr": 2074.32,
+   "itc": 884.4,
+   "total": 28686.72
+  },
+  "docs": [
+   {
+    "id": "support",
+    "type": "Price-support credit note",
+    "owner": "Munchly",
+    "no": "CN/0117",
+    "status": "generated",
+    "amount": 6338,
+    "note": "Munchly to Lakshmi Agencies: a financial credit note, no GST adjustment.",
+    "taxable": null,
+    "igst": null,
+    "roundOff": 0,
+    "total": null,
+    "units": null,
+    "price": null,
+    "gstPct": null,
+    "exact": 6338,
+    "date": "2026-10-05",
+    "pdf": true
+   },
+   {
+    "id": "itc",
+    "type": "GST ITC memo",
+    "owner": "Munchly",
+    "no": "s.17(5)(h)",
+    "status": "generated",
+    "amount": 837.1,
+    "note": "Kept on the 1,522 packs sold under tax invoices; reversed under Section 17(5)(h) on the 86 given away or destroyed, in GSTR-3B Table 4(B)(1).",
+    "taxable": null,
+    "igst": null,
+    "roundOff": null,
+    "total": null,
+    "units": 1522,
+    "price": null,
+    "gstPct": null,
+    "exact": null,
+    "date": "2026-10-05",
+    "reversed": 47.3,
+    "away": 86,
+    "atGodown": 0,
+    "pdf": true
+   },
+   {
+    "id": "fssai",
+    "type": "FSSAI surplus-food checklist",
+    "owner": "Munchly",
+    "no": "86 units",
+    "status": "generated",
+    "amount": 0,
+    "note": null,
+    "taxable": null,
+    "igst": null,
+    "roundOff": null,
+    "total": null,
+    "units": null,
+    "price": null,
+    "gstPct": null,
+    "exact": null,
+    "date": "2026-10-05",
+    "pdf": true
+   },
+   {
+    "id": "receipt",
+    "type": "Donation receipt",
+    "owner": "Feeding India",
+    "no": "FI/HYD/26-27/0417",
+    "status": "generated",
+    "amount": 0,
+    "note": "Issued in the app by Feeding India as the packs were collected: the donor's evidence for BRSR Principle 6, not a tax certificate.",
+    "taxable": null,
+    "igst": null,
+    "roundOff": null,
+    "total": null,
+    "units": 86,
+    "price": null,
+    "gstPct": null,
+    "exact": null,
+    "date": "2026-10-05",
+    "paper": "In-app receipt",
+    "stamp": "RECEIVED",
+    "kg": 18.49,
+    "meals": 86,
+    "mealsRule": "a meal for each pack served, indicative",
+    "value": null,
+    "csr": null,
+    "at": "07:07",
+    "by": "Meera",
+    "donor": "Munchly Foods",
+    "fssai": "10019022001234",
+    "via": "Lakshmi Agencies",
+    "from": "Begum Bazaar godown, Hyderabad",
+    "spot": "the Charminar hunger spot",
+    "pdf": true
+   },
+   {
+    "id": "destruction",
+    "type": "Destruction certificate",
+    "owner": "Munchly",
+    "no": "0 units left",
+    "status": "not required",
+    "amount": 0,
+    "note": null,
+    "taxable": null,
+    "igst": null,
+    "roundOff": null,
+    "total": null,
+    "units": 0,
+    "price": null,
+    "gstPct": null,
+    "exact": null,
+    "date": "2026-10-05",
+    "reversed": 0,
+    "pdf": false
+   }
+  ],
+  "expiry": {
+   "at": null,
+   "kg": 0,
+   "epr": 0,
+   "gst": 0,
+   "itc": 0,
+   "total": 0,
+   "units": 0,
+   "amount": 0,
+   "credit": 0,
+   "policy": "godown",
+   "charges": 0,
+   "disposal": 0,
+   "reversal": 0,
+   "destroyedBy": null
+  },
+  "destruction": null,
+  "kiranas": [
+   {
+    "id": "h0",
+    "name": "Sri Lakshmi Ganapathi Kirana",
+    "area": "Begum Bazaar",
+    "cap": 24,
+    "units": 24,
+    "at": "2026-10-04T11:13:20.198425+05:30",
+    "member": "kirana-sri-lakshmi-ganapathi-kirana"
+   },
+   {
+    "id": "h1",
+    "name": "Al-Noor Provision Store",
+    "area": "Charminar",
+    "cap": 28,
+    "units": 28,
+    "at": "2026-10-04T11:19:34.694905+05:30",
+    "member": "kirana-al-noor-provision-store"
+   },
+   {
+    "id": "h2",
+    "name": "Deccan General Stores",
+    "area": "Abids",
+    "cap": 32,
+    "units": 32,
+    "at": "2026-10-04T11:25:43.275865+05:30",
+    "member": "kirana-deccan-general-stores"
+   },
+   {
+    "id": "h3",
+    "name": "Sai Krishna Kirana",
+    "area": "Koti",
+    "cap": 20,
+    "units": 20,
+    "at": "2026-10-04T11:31:39.069625+05:30",
+    "member": "kirana-sai-krishna-kirana"
+   },
+   {
+    "id": "h4",
+    "name": "Hussaini Provision",
+    "area": "Dabeerpura",
+    "cap": 36,
+    "units": 36,
+    "at": "2026-10-04T11:37:57.921385+05:30",
+    "member": "kirana-hussaini-provision"
+   },
+   {
+    "id": "h5",
+    "name": "Bhavani Kirana",
+    "area": "Malakpet",
+    "cap": 24,
+    "units": 24,
+    "at": "2026-10-04T11:43:38.508025+05:30",
+    "member": "kirana-bhavani-kirana"
+   },
+   {
+    "id": "h6",
+    "name": "Golconda Stores",
+    "area": "Afzal Gunj",
+    "cap": 28,
+    "units": 28,
+    "at": "2026-10-04T11:49:31.500985+05:30",
+    "member": "kirana-golconda-stores"
+   },
+   {
+    "id": "h7",
+    "name": "Moazzam Kirana",
+    "area": "Charminar",
+    "cap": 16,
+    "units": 16,
+    "at": "2026-10-04T11:55:59.265625+05:30",
+    "member": "kirana-moazzam-kirana"
+   },
+   {
+    "id": "h8",
+    "name": "Anjaneya Provision Store",
+    "area": "Sultan Bazar",
+    "cap": 32,
+    "units": 32,
+    "at": "2026-10-04T12:02:18.830905+05:30",
+    "member": "kirana-anjaneya-provision-store"
+   },
+   {
+    "id": "h9",
+    "name": "Shalimar General Store",
+    "area": "Nampally",
+    "cap": 28,
+    "units": 28,
+    "at": "2026-10-04T12:08:22.761385+05:30",
+    "member": "kirana-shalimar-general-store"
+   },
+   {
+    "id": "h10",
+    "name": "Ravi Teja Kirana",
+    "area": "Chaderghat",
+    "cap": 24,
+    "units": 24,
+    "at": "2026-10-04T12:14:37.024585+05:30",
+    "member": "kirana-ravi-teja-kirana"
+   },
+   {
+    "id": "h11",
+    "name": "Madina Provision",
+    "area": "Charminar",
+    "cap": 28,
+    "units": 28,
+    "at": "2026-10-04T12:19:58.436905+05:30",
+    "member": "kirana-madina-provision"
+   },
+   {
+    "id": "h12",
+    "name": "Sri Durga Bhavani Stores",
+    "area": "Begum Bazaar",
+    "cap": 32,
+    "units": 32,
+    "at": "2026-10-04T12:26:22.181065+05:30",
+    "member": "kirana-sri-durga-bhavani-stores"
+   },
+   {
+    "id": "h13",
+    "name": "Hyderabadi Kirana",
+    "area": "Abids",
+    "cap": 20,
+    "units": 20,
+    "at": "2026-10-04T12:33:04.133305+05:30",
+    "member": "kirana-hyderabadi-kirana"
+   },
+   {
+    "id": "h14",
+    "name": "Gulzar House Stores",
+    "area": "Charminar",
+    "cap": 36,
+    "units": 36,
+    "at": "2026-10-04T12:39:27.230905+05:30",
+    "member": "kirana-gulzar-house-stores"
+   },
+   {
+    "id": "h15",
+    "name": "Padmavathi Kirana",
+    "area": "Koti",
+    "cap": 24,
+    "units": 24,
+    "at": "2026-10-04T12:45:42.157945+05:30",
+    "member": "kirana-padmavathi-kirana"
+   },
+   {
+    "id": "h16",
+    "name": "Asif Nagar Provisions",
+    "area": "Nampally",
+    "cap": 28,
+    "units": 28,
+    "at": "2026-10-04T12:52:13.935145+05:30",
+    "member": "kirana-asif-nagar-provisions"
+   },
+   {
+    "id": "h17",
+    "name": "Ramakrishna General Store",
+    "area": "Malakpet",
+    "cap": 16,
+    "units": 16,
+    "at": "2026-10-04T12:58:17.147065+05:30",
+    "member": "kirana-ramakrishna-general-store"
+   },
+   {
+    "id": "h18",
+    "name": "Taj Kirana",
+    "area": "Dabeerpura",
+    "cap": 32,
+    "units": 32,
+    "at": "2026-10-04T13:04:02.791705+05:30",
+    "member": "kirana-taj-kirana"
+   },
+   {
+    "id": "h19",
+    "name": "Sitara Provision Store",
+    "area": "Afzal Gunj",
+    "cap": 28,
+    "units": 28,
+    "at": "2026-10-04T13:10:33.357865+05:30",
+    "member": "kirana-sitara-provision-store"
+   },
+   {
+    "id": "h20",
+    "name": "Vinayaka Stores",
+    "area": "Sultan Bazar",
+    "cap": 24,
+    "units": 24,
+    "at": "2026-10-04T13:16:39.690985+05:30",
+    "member": "kirana-vinayaka-stores"
+   },
+   {
+    "id": "h21",
+    "name": "Nizam Kirana",
+    "area": "Charminar",
+    "cap": 28,
+    "units": 28,
+    "at": "2026-10-04T13:23:03.582025+05:30",
+    "member": "kirana-nizam-kirana"
+   },
+   {
+    "id": "h22",
+    "name": "Annapurna Provisions",
+    "area": "Chaderghat",
+    "cap": 32,
+    "units": 32,
+    "at": "2026-10-04T13:29:28.889305+05:30",
+    "member": "kirana-annapurna-provisions"
+   },
+   {
+    "id": "h23",
+    "name": "Musi River Stores",
+    "area": "Afzal Gunj",
+    "cap": 20,
+    "units": 20,
+    "at": "2026-10-04T13:35:42.688825+05:30",
+    "member": "kirana-musi-river-stores"
+   },
+   {
+    "id": "h24",
+    "name": "Kothi Kirana",
+    "area": "Koti",
+    "cap": 36,
+    "units": 36,
+    "at": "2026-10-04T13:41:49.228585+05:30",
+    "member": "kirana-kothi-kirana"
+   },
+   {
+    "id": "h25",
+    "name": "Siddiq General Store",
+    "area": "Dabeerpura",
+    "cap": 24,
+    "units": 24,
+    "at": "2026-10-04T13:48:04.008745+05:30",
+    "member": "kirana-siddiq-general-store"
+   },
+   {
+    "id": "h26",
+    "name": "Lalitha Provision",
+    "area": "Malakpet",
+    "cap": 28,
+    "units": 28,
+    "at": "2026-10-04T13:54:28.758025+05:30",
+    "member": "kirana-lalitha-provision"
+   },
+   {
+    "id": "h27",
+    "name": "Mehboob Kirana",
+    "area": "Begum Bazaar",
+    "cap": 16,
+    "units": 16,
+    "at": "2026-10-04T14:00:28.012825+05:30",
+    "member": "kirana-mehboob-kirana"
+   },
+   {
+    "id": "h28",
+    "name": "Srinivasa Stores",
+    "area": "Abids",
+    "cap": 32,
+    "units": 32,
+    "at": "2026-10-04T14:06:51.929065+05:30",
+    "member": "kirana-srinivasa-stores"
+   },
+   {
+    "id": "h29",
+    "name": "Zam Zam Provisions",
+    "area": "Charminar",
+    "cap": 28,
+    "units": 28,
+    "at": "2026-10-04T14:12:27.869545+05:30",
+    "member": "kirana-zam-zam-provisions"
+   },
+   {
+    "id": "h30",
+    "name": "Pochamma Kirana",
+    "area": "Chaderghat",
+    "cap": 24,
+    "units": 24,
+    "at": "2026-10-04T14:18:13.769065+05:30",
+    "member": "kirana-pochamma-kirana"
+   },
+   {
+    "id": "h31",
+    "name": "Rahmat General Store",
+    "area": "Nampally",
+    "cap": 28,
+    "units": 28,
+    "at": "2026-10-04T14:24:15.620185+05:30",
+    "member": "kirana-rahmat-general-store"
+   },
+   {
+    "id": "h32",
+    "name": "Krishnaveni Provisions",
+    "area": "Sultan Bazar",
+    "cap": 32,
+    "units": 32,
+    "at": "2026-10-04T14:30:16.228585+05:30",
+    "member": "kirana-krishnaveni-provisions"
+   },
+   {
+    "id": "h33",
+    "name": "Shah Ali Kirana",
+    "area": "Dabeerpura",
+    "cap": 20,
+    "units": 20,
+    "at": "2026-10-04T14:36:22.697785+05:30",
+    "member": "kirana-shah-ali-kirana"
+   },
+   {
+    "id": "h34",
+    "name": "Mahalakshmi Stores",
+    "area": "Malakpet",
+    "cap": 36,
+    "units": 36,
+    "at": "2026-10-04T14:42:26.235865+05:30",
+    "member": "kirana-mahalakshmi-stores"
+   },
+   {
+    "id": "h35",
+    "name": "Banjara Provision Store",
+    "area": "Abids",
+    "cap": 24,
+    "units": 24,
+    "at": "2026-10-04T14:48:25.368985+05:30",
+    "member": "kirana-banjara-provision-store"
+   },
+   {
+    "id": "h36",
+    "name": "Ghouse Kirana",
+    "area": "Charminar",
+    "cap": 28,
+    "units": 28,
+    "at": "2026-10-04T14:54:35.173945+05:30",
+    "member": "kirana-ghouse-kirana"
+   },
+   {
+    "id": "h37",
+    "name": "Sri Rama Stores",
+    "area": "Koti",
+    "cap": 16,
+    "units": 16,
+    "at": "2026-10-04T15:00:52.431625+05:30",
+    "member": "kirana-sri-rama-stores"
+   },
+   {
+    "id": "h38",
+    "name": "Patel Market Kirana",
+    "area": "Afzal Gunj",
+    "cap": 32,
+    "units": 32,
+    "at": "2026-10-04T15:06:53.488585+05:30",
+    "member": "kirana-patel-market-kirana"
+   },
+   {
+    "id": "h39",
+    "name": "Yadamma Provisions",
+    "area": "Chaderghat",
+    "cap": 28,
+    "units": 28,
+    "at": "2026-10-04T15:12:46.919305+05:30",
+    "member": "kirana-yadamma-provisions"
+   },
+   {
+    "id": "h40",
+    "name": "Darussalam Stores",
+    "area": "Nampally",
+    "cap": 24,
+    "units": 24,
+    "at": "2026-10-04T15:18:58.524265+05:30",
+    "member": "kirana-darussalam-stores"
+   },
+   {
+    "id": "h41",
+    "name": "Gowri Kirana",
+    "area": "Begum Bazaar",
+    "cap": 28,
+    "units": 28,
+    "at": "2026-10-04T15:25:59.632105+05:30",
+    "member": "kirana-gowri-kirana"
+   },
+   {
+    "id": "h42",
+    "name": "Irani Gali Provisions",
+    "area": "Charminar",
+    "cap": 32,
+    "units": 32,
+    "at": "2026-10-04T15:32:22.230745+05:30",
+    "member": "kirana-irani-gali-provisions"
+   },
+   {
+    "id": "h43",
+    "name": "Satyanarayana Stores",
+    "area": "Sultan Bazar",
+    "cap": 20,
+    "units": 20,
+    "at": "2026-10-04T15:37:55.122025+05:30",
+    "member": "kirana-satyanarayana-stores"
+   },
+   {
+    "id": "h44",
+    "name": "Farhan General Store",
+    "area": "Dabeerpura",
+    "cap": 36,
+    "units": 36,
+    "at": "2026-10-04T15:44:02.977225+05:30",
+    "member": "kirana-farhan-general-store"
+   },
+   {
+    "id": "h45",
+    "name": "Sunanda Kirana",
+    "area": "Malakpet",
+    "cap": 24,
+    "units": 24,
+    "at": "2026-10-04T15:50:04.721065+05:30",
+    "member": "kirana-sunanda-kirana"
+   },
+   {
+    "id": "h46",
+    "name": "Mir Alam Provisions",
+    "area": "Afzal Gunj",
+    "cap": 28,
+    "units": 28,
+    "at": "2026-10-04T15:56:25.735705+05:30",
+    "member": "kirana-mir-alam-provisions"
+   },
+   {
+    "id": "h47",
+    "name": "Jyothi Stores",
+    "area": "Koti",
+    "cap": 16,
+    "units": 16,
+    "at": "2026-10-04T16:02:30.322825+05:30",
+    "member": "kirana-jyothi-stores"
+   },
+   {
+    "id": "h48",
+    "name": "Purani Haveli Kirana",
+    "area": "Charminar",
+    "cap": 32,
+    "units": 32,
+    "at": "2026-10-04T16:08:44.522665+05:30",
+    "member": "kirana-purani-haveli-kirana"
+   },
+   {
+    "id": "h49",
+    "name": "Narayana Provision Store",
+    "area": "Abids",
+    "cap": 28,
+    "units": 28,
+    "at": "2026-10-04T16:14:54.807865+05:30",
+    "member": "kirana-narayana-provision-store"
+   },
+   {
+    "id": "h50",
+    "name": "Bilal Stores",
+    "area": "Nampally",
+    "cap": 28,
+    "units": 28,
+    "at": "2026-10-04T16:20:50.670025+05:30",
+    "member": "kirana-bilal-stores"
+   },
+   {
+    "id": "h51",
+    "name": "Saraswathi Kirana",
+    "area": "Chaderghat",
+    "cap": 28,
+    "units": 4,
+    "at": "2026-10-04T16:26:30.699385+05:30",
+    "member": "kirana-saraswathi-kirana"
+   },
+   {
+    "id": "h52",
+    "name": "Osman Gunj Provisions",
+    "area": "Begum Bazaar",
+    "cap": 28,
+    "units": 0,
+    "at": null,
+    "member": "kirana-osman-gunj-provisions"
+   },
+   {
+    "id": "h53",
+    "name": "Vijaya Stores",
+    "area": "Sultan Bazar",
+    "cap": 28,
+    "units": 0,
+    "at": null,
+    "member": "kirana-vijaya-stores"
+   },
+   {
+    "id": "h54",
+    "name": "Akbar Kirana",
+    "area": "Dabeerpura",
+    "cap": 28,
+    "units": 0,
+    "at": null,
+    "member": "kirana-akbar-kirana"
+   },
+   {
+    "id": "h55",
+    "name": "Manjula Provisions",
+    "area": "Malakpet",
+    "cap": 28,
+    "units": 0,
+    "at": null,
+    "member": "kirana-manjula-provisions"
+   },
+   {
+    "id": "h56",
+    "name": "Laad Bazaar Stores",
+    "area": "Charminar",
+    "cap": 28,
+    "units": 0,
+    "at": null,
+    "member": "kirana-laad-bazaar-stores"
+   },
+   {
+    "id": "h57",
+    "name": "Sri Venu Kirana",
+    "area": "Afzal Gunj",
+    "cap": 32,
+    "units": 0,
+    "at": null,
+    "member": "kirana-sri-venu-kirana"
+   }
+  ],
+  "offered": 58,
+  "donation": {
+   "status": "collected",
+   "partner": "Feeding India",
+   "units": 86,
+   "pickupAt": "2026-10-06T10:00:00+05:30",
+   "slots": [
+    "2026-10-05T10:00:00+05:30",
+    "2026-10-05T16:00:00+05:30",
+    "2026-10-06T11:00:00+05:30"
+   ],
+   "spot": "the Charminar hunger spot",
+   "from": "Begum Bazaar godown",
+   "at": "2026-10-03T15:49:55.555465+00:00",
+   "confirmedAt": "2026-10-05T01:12:02.710585+00:00",
+   "collectedAt": "2026-10-05T01:37:07.623625+00:00",
+   "reply": "Tuesday works. We'll serve them at the Charminar hunger spot this week.",
+   "reason": null,
+   "receipt": {
+    "id": "receipt",
+    "type": "Donation receipt",
+    "owner": "Feeding India",
+    "no": "FI/HYD/26-27/0417",
+    "status": "generated",
+    "amount": 0,
+    "note": "Issued in the app by Feeding India as the packs were collected: the donor's evidence for BRSR Principle 6, not a tax certificate.",
+    "units": 86,
+    "date": "2026-10-05",
+    "paper": "In-app receipt",
+    "stamp": "RECEIVED",
+    "kg": 18.49,
+    "meals": 86,
+    "mealsRule": "a meal for each pack served, indicative",
+    "value": null,
+    "csr": null,
+    "at": "07:07",
+    "by": "Meera",
+    "donor": "Munchly Foods",
+    "fssai": "10019022001234",
+    "via": "Lakshmi Agencies",
+    "from": "Begum Bazaar godown, Hyderabad",
+    "spot": "the Charminar hunger spot",
+    "pdf": true
+   }
+  },
+  "returnBy": "2026-10-04",
+  "push": {
+   "detect": {
+    "to": "priya",
+    "at": "2026-10-02T15:10:52.897225+05:30",
+    "title": "Mango Drink 200 ml · Hyderabad",
+    "body": "Priya ji, Hyderabad godown mein Mango Drink 200ml (batch MF-2410-118) ki 1,580 units 24 Oct se pehle nahi bikengi. Q-commerce block hai. Route dekhne ke liye tap karein.",
+    "hindi": false,
+    "en": null
+   },
+   "verify": {
+    "to": "lakshmi-owner",
+    "at": "2026-10-02T16:30:13.198105+05:30",
+    "title": "Ek photo chahiye",
+    "body": "Lakshmi Agencies, Mango Drink 200ml ka ek carton ka label photo bhej dein (batch MF-2410-118). Bas ek photo, baaki hum kar lenge.",
+    "hindi": false,
+    "en": null
+   },
+   "plan": {
+    "to": "priya",
+    "at": "2026-10-03T09:21:29.609785+05:30",
+    "title": "Plan ready · MF-2410-118",
+    "body": "Plan for MF-2410-118: 1,372 units kirana (₹12), 150 units staff sale (₹8), 86 units food bank (₹0). Net ₹16,888, ₹22,258 better than write-off. GST ITC ₹837 safe. Tap to review and approve.",
+    "hindi": false,
+    "en": null
+   },
+   "approved": {
+    "to": "lakshmi-owner",
+    "at": "2026-10-03T21:09:25.428745+05:30",
+    "title": "Plan approved · Mango Drink",
+    "body": "Lakshmi Agencies, Munchly ne MF-2410-118 ka plan approve kiya: 1,372 packets aapke kiranas ko scheme par, 150 godown ki staff sale mein, 86 food bank ko. Kuch rokna ho to app mein Pause dabayein.",
+    "hindi": false,
+    "en": null
+   },
+   "staff.open": {
+    "to": "lakshmi-owner",
+    "at": "2026-10-03T21:09:29.681785+05:30",
+    "title": "Staff sale · Mango Drink",
+    "body": "150 packs of Mango Drink for your staff at ₹8 a pack, at Begum Bazaar godown. Record what sold when the sale is over.",
+    "hindi": false,
+    "en": null
+   },
+   "pickup": {
+    "to": "meera",
+    "at": "2026-10-03T21:20:01.198825+05:30",
+    "title": "Pickup request · Mango Drink",
+    "body": "86 packs of Mango Drink, 21 days left, with the FSSAI checklist. Pickup from Begum Bazaar godown?",
+    "hindi": false,
+    "en": null
+   },
+   "offer": {
+    "to": "kirana-sri-lakshmi-ganapathi-kirana",
+    "at": "2026-10-03T21:46:37.235785+05:30",
+    "title": "आज का खास ऑफर",
+    "body": "नमस्ते Sri Lakshmi Ganapathi Kirana! Munchly Mango Drink 200ml पर आज खास ऑफर: 10 पैकेट लो, 2 मुफ़्त. Best before 24 Oct 2026. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें — Lakshmi Agencies",
+    "hindi": true,
+    "en": "Today's offer on Munchly Mango Drink 200 ml: buy 10 packets, get 2 free. Best before 24 Oct 2026. 48 hours only. Tap to order. Lakshmi Agencies"
+   },
+   "staff.recorded": {
+    "to": "priya",
+    "at": "2026-10-05T02:09:54.580825+05:30",
+    "title": "Staff sale recorded · Mango Drink",
+    "body": "Lakshmi Agencies sold 150 of 150 packs to staff.",
+    "hindi": false,
+    "en": null
+   },
+   "pickup.confirmed": {
+    "to": "priya",
+    "at": "2026-10-05T06:42:04.070665+05:30",
+    "title": "Feeding India confirmed",
+    "body": "86 packs of Mango Drink, pickup Tuesday 10:00 from Begum Bazaar godown.",
+    "hindi": false,
+    "en": null
+   },
+   "papers": {
+    "to": "priya",
+    "at": "2026-10-05T07:35:35.225305+05:30",
+    "title": "Document pack ready · MF-2410-118",
+    "body": "Papers ready for MF-2410-118: price-support credit note, GST memo. Nothing to chase.",
+    "hindi": false,
+    "en": null
+   },
+   "van": {
+    "to": "lakshmi-owner",
+    "at": "2026-10-05T07:35:37.833865+05:30",
+    "title": "Van route for Tuesday",
+    "body": "Van route for Tuesday updated: 52 kiranas, 1,372 packets.",
+    "hindi": false,
+    "en": null
+   },
+   "closed": {
+    "to": "priya",
+    "at": "2026-10-06T23:36:25.665625+05:30",
+    "title": "Batch closed · 0 cartons destroyed",
+    "body": "₹16,888 recovered, ₹837 GST credit kept, 345.7 kg kept out of landfill.",
+    "hindi": false,
+    "en": null
+   }
+  },
+  "split": [
+   {
+    "id": "kirana",
+    "name": "Kirana cluster push",
+    "short": "Kirana cluster",
+    "units": 1372,
+    "price": 12,
+    "packPrice": 14.4,
+    "charged": 1143,
+    "cartons": 50.81481481481482
+   },
+   {
+    "id": "staff",
+    "name": "Hyderabad staff sale",
+    "short": "Staff sale",
+    "units": 150,
+    "price": 8,
+    "packPrice": null,
+    "charged": 150,
+    "cartons": 5.555555555555555
+   },
+   {
+    "id": "foodbank",
+    "name": "Food bank donation",
+    "short": "Food bank",
+    "units": 86,
+    "price": 0,
+    "packPrice": null,
+    "charged": 86,
+    "cartons": 3.185185185185185
+   }
+  ],
+  "moments": {
+   "day0": "2026-10-02T15:10:45.016825+05:30",
+   "planMinutes": 20,
+   "permissionAskedAt": "2026-10-02T08:10:03.293424+05:30",
+   "listingUrl": null,
+   "van": {
+    "leavesAt": "2026-10-06T07:00:00+05:30",
+    "depot": "Begum Bazaar godown",
+    "doneAt": "2026-10-06T13:07:19.426585+00:00"
+   }
+  }
+ },
+ "ledgerRow": {
+  "ref": "MF-2410-118",
+  "sku": "mango",
+  "name": "Mango Drink 200 ml",
+  "img": "pack-mango",
+  "distributor": "lakshmi",
+  "distributorName": "Lakshmi Agencies",
+  "city": "Hyderabad",
+  "flagged": "2026-10-02",
+  "cleared": "2026-10-06",
+  "outcome": "donation",
+  "history": false,
+  "figures": {
+   "net": 16887.7,
+   "swing": 22258.42,
+   "pnl": -800.3,
+   "writeOff": 23058.72,
+   "itcKept": 837.1,
+   "itcReversed": 47.3,
+   "kg": 345.72,
+   "co2": 864.3,
+   "meals": 86,
+   "units": 1608,
+   "sold": 1522,
+   "donated": 86,
+   "godown": 0,
+   "destroyed": 0,
+   "resoldKg": 327.23,
+   "donatedKg": 18.49,
+   "destroyedKg": 0,
+   "packResoldKg": 3.04,
+   "packDonatedKg": 0.17,
+   "packDestroyedKg": 0,
+   "credit": 0,
+   "support": 6338
+  },
+  "lines": [
+   {
+    "id": "kirana",
+    "short": "Kirana cluster",
+    "units": 1372,
+    "price": 12,
+    "gross": 16464
+   },
+   {
+    "id": "staff",
+    "short": "Staff sale",
+    "units": 150,
+    "price": 8,
+    "gross": 1200
+   },
+   {
+    "id": "foodbank",
+    "short": "Food bank",
+    "units": 86,
+    "price": 0,
+    "gross": 0
+   }
+  ],
+  "papers": [
+   {
+    "id": "support",
+    "type": "Price-support credit note",
+    "no": "CN/0117",
+    "status": "generated",
+    "date": "2026-10-05",
+    "amount": 6338,
+    "pdf": true
+   },
+   {
+    "id": "itc",
+    "type": "GST ITC memo",
+    "no": "s.17(5)(h)",
+    "status": "generated",
+    "date": "2026-10-05",
+    "amount": 837.1,
+    "pdf": true
+   },
+   {
+    "id": "fssai",
+    "type": "FSSAI surplus-food checklist",
+    "no": "86 units",
+    "status": "generated",
+    "date": "2026-10-05",
+    "amount": 0,
+    "pdf": true
+   },
+   {
+    "id": "receipt",
+    "type": "Donation receipt",
+    "no": "FI/HYD/26-27/0417",
+    "status": "generated",
+    "date": "2026-10-05",
+    "amount": 0,
+    "pdf": true
+   },
+   {
+    "id": "destruction",
+    "type": "Destruction certificate",
+    "no": "0 units left",
+    "status": "not required",
+    "date": "2026-10-05",
+    "amount": 0,
+    "pdf": false
+   }
+  ],
+  "reviewed": {
+   "by": "priya",
+   "at": "2026-10-06T13:05:46.256425+00:00"
+  }
+ },
+ "ledger": {
+  "since": "1 Jul 2026",
+  "today": "2026-10-06",
+  "co2PerKg": 2.5,
+  "periods": [
+   {
+    "id": "fy27-q2",
+    "kind": "quarter",
+    "label": "Q2 FY27",
+    "long": "Jul to Sep 2026",
+    "from": "2026-07-01",
+    "to": "2026-09-30",
+    "current": false,
+    "totals": {
+     "net": 220383.58,
+     "swing": 265263.05,
+     "pnl": -39240.5,
+     "writeOff": 304503.55,
+     "itcKept": 16184.29,
+     "itcReversed": 1652.42,
+     "kg": 1959.51,
+     "co2": 4898.77,
+     "meals": 872,
+     "units": 10569,
+     "sold": 9316,
+     "donated": 872,
+     "godown": 381,
+     "destroyed": 381,
+     "resoldKg": 1747.37,
+     "donatedKg": 212.14,
+     "destroyedKg": 68.38,
+     "packResoldKg": 57.92,
+     "packDonatedKg": 4.77,
+     "packDestroyedKg": 1.23,
+     "credit": 9109.58,
+     "support": 122186.0,
+     "batches": 12,
+     "outcomes": {
+      "sold": 7,
+      "leftover": 3,
+      "donation": 2
+     },
+     "invoices": 10,
+     "creditNotes": 15,
+     "receipts": 2,
+     "reviewed": 12
+    },
+    "months": [
+     {
+      "month": "2026-08",
+      "label": "August 2026",
+      "totals": {
+       "net": 71874.56,
+       "swing": 86910.95,
+       "pnl": -18883.32,
+       "writeOff": 105794.27,
+       "itcKept": 4385.31,
+       "itcReversed": 706.44,
+       "kg": 735.37,
+       "co2": 1838.43,
+       "meals": 406,
+       "units": 3799,
+       "sold": 3328,
+       "donated": 406,
+       "godown": 65,
+       "destroyed": 65,
+       "resoldKg": 625.75,
+       "donatedKg": 109.62,
+       "destroyedKg": 14.3,
+       "packResoldKg": 19.16,
+       "packDonatedKg": 2.44,
+       "packDestroyedKg": 0.33,
+       "credit": 3339.38,
+       "support": 43649.0,
+       "batches": 4,
+       "outcomes": {
+        "sold": 2,
+        "leftover": 1,
+        "donation": 1
+       },
+       "invoices": 3,
+       "creditNotes": 5,
+       "receipts": 1,
+       "reviewed": 4
+      }
+     },
+     {
+      "month": "2026-09",
+      "label": "September 2026",
+      "totals": {
+       "net": 148509.02,
+       "swing": 178352.1,
+       "pnl": -20357.18,
+       "writeOff": 198709.28,
+       "itcKept": 11798.98,
+       "itcReversed": 945.98,
+       "kg": 1224.14,
+       "co2": 3060.35,
+       "meals": 466,
+       "units": 6770,
+       "sold": 5988,
+       "donated": 466,
+       "godown": 316,
+       "destroyed": 316,
+       "resoldKg": 1121.62,
+       "donatedKg": 102.52,
+       "destroyedKg": 54.08,
+       "packResoldKg": 38.76,
+       "packDonatedKg": 2.33,
+       "packDestroyedKg": 0.9,
+       "credit": 5770.2,
+       "support": 78537.0,
+       "batches": 8,
+       "outcomes": {
+        "sold": 5,
+        "leftover": 2,
+        "donation": 1
+       },
+       "invoices": 7,
+       "creditNotes": 10,
+       "receipts": 1,
+       "reviewed": 8
+      }
+     }
+    ],
+    "weeks": [
+     [
+      "W1",
+      0.0,
+      0.0
+     ],
+     [
+      "W2",
+      0.0,
+      0.0
+     ],
+     [
+      "W3",
+      0.0,
+      0.0
+     ],
+     [
+      "W4",
+      0.0,
+      0.0
+     ],
+     [
+      "W5",
+      0.0,
+      0.0
+     ],
+     [
+      "W6",
+      0.0,
+      0.0
+     ],
+     [
+      "W7",
+      37902.0,
+      45859.24
+     ],
+     [
+      "W8",
+      33972.56,
+      59935.03
+     ],
+     [
+      "W9",
+      0.0,
+      0.0
+     ],
+     [
+      "W10",
+      19320.8,
+      24097.92
+     ],
+     [
+      "W11",
+      11440.02,
+      33088.5
+     ],
+     [
+      "W12",
+      35980.5,
+      46296.33
+     ],
+     [
+      "W13",
+      81767.7,
+      95226.53
+     ]
+    ],
+    "mix": [
+     [
+      "kirana",
+      46
+     ],
+     [
+      "expiresoon",
+      40
+     ],
+     [
+      "staff",
+      2
+     ],
+     [
+      "foodbank",
+      8
+     ],
+     [
+      "writeoff",
+      4
+     ]
+    ],
+    "mixNames": {
+     "kirana": "Kirana scheme",
+     "expiresoon": "ExpireSoon",
+     "staff": "Staff sale",
+     "foodbank": "Food bank",
+     "writeoff": "Destroyed"
+    },
+    "brsr": [
+     {
+      "cat": "Food waste: packaged food past quick-commerce gates",
+      "diverted": 1959.51,
+      "resold": 1747.37,
+      "donated": 212.14,
+      "disposed": 68.38,
+      "evidence": "10 tax invoices, 10 ExpireSoon listings, kirana order logs for 4,862 packs, 2 food-bank receipts, 3 destruction certificates"
+     },
+     {
+      "cat": "Plastic packaging (EPR)",
+      "diverted": 62.69,
+      "resold": 57.92,
+      "donated": 4.77,
+      "disposed": 1.23,
+      "evidence": "8 SKUs' packaging weights (indicative), on the same papers"
+     }
+    ]
+   },
+   {
+    "id": "fy27-q3",
+    "kind": "quarter",
+    "label": "Q3 FY27",
+    "long": "Oct to Dec 2026 · so far",
+    "from": "2026-10-01",
+    "to": "2026-12-31",
+    "current": true,
+    "totals": {
+     "net": 16887.7,
+     "swing": 22258.42,
+     "pnl": -800.3,
+     "writeOff": 23058.72,
+     "itcKept": 837.1,
+     "itcReversed": 47.3,
+     "kg": 345.72,
+     "co2": 864.3,
+     "meals": 86,
+     "units": 1608,
+     "sold": 1522,
+     "donated": 86,
+     "godown": 0,
+     "destroyed": 0,
+     "resoldKg": 327.23,
+     "donatedKg": 18.49,
+     "destroyedKg": 0.0,
+     "packResoldKg": 3.04,
+     "packDonatedKg": 0.17,
+     "packDestroyedKg": 0.0,
+     "credit": 0.0,
+     "support": 6338.0,
+     "batches": 1,
+     "outcomes": {
+      "sold": 0,
+      "leftover": 0,
+      "donation": 1
+     },
+     "invoices": 0,
+     "creditNotes": 1,
+     "receipts": 1,
+     "reviewed": 1
+    },
+    "months": [
+     {
+      "month": "2026-10",
+      "label": "October 2026",
+      "totals": {
+       "net": 16887.7,
+       "swing": 22258.42,
+       "pnl": -800.3,
+       "writeOff": 23058.72,
+       "itcKept": 837.1,
+       "itcReversed": 47.3,
+       "kg": 345.72,
+       "co2": 864.3,
+       "meals": 86,
+       "units": 1608,
+       "sold": 1522,
+       "donated": 86,
+       "godown": 0,
+       "destroyed": 0,
+       "resoldKg": 327.23,
+       "donatedKg": 18.49,
+       "destroyedKg": 0.0,
+       "packResoldKg": 3.04,
+       "packDonatedKg": 0.17,
+       "packDestroyedKg": 0.0,
+       "credit": 0.0,
+       "support": 6338.0,
+       "batches": 1,
+       "outcomes": {
+        "sold": 0,
+        "leftover": 0,
+        "donation": 1
+       },
+       "invoices": 0,
+       "creditNotes": 1,
+       "receipts": 1,
+       "reviewed": 1
+      }
+     }
+    ],
+    "weeks": [
+     [
+      "W1",
+      16887.7,
+      23058.72
+     ],
+     [
+      "W2",
+      0.0,
+      0.0
+     ],
+     [
+      "W3",
+      0.0,
+      0.0
+     ],
+     [
+      "W4",
+      0.0,
+      0.0
+     ],
+     [
+      "W5",
+      0.0,
+      0.0
+     ],
+     [
+      "W6",
+      0.0,
+      0.0
+     ],
+     [
+      "W7",
+      0.0,
+      0.0
+     ],
+     [
+      "W8",
+      0.0,
+      0.0
+     ],
+     [
+      "W9",
+      0.0,
+      0.0
+     ],
+     [
+      "W10",
+      0.0,
+      0.0
+     ],
+     [
+      "W11",
+      0.0,
+      0.0
+     ],
+     [
+      "W12",
+      0.0,
+      0.0
+     ],
+     [
+      "W13",
+      0.0,
+      0.0
+     ]
+    ],
+    "mix": [
+     [
+      "kirana",
+      85
+     ],
+     [
+      "staff",
+      9
+     ],
+     [
+      "foodbank",
+      6
+     ]
+    ],
+    "mixNames": {
+     "kirana": "Kirana scheme",
+     "expiresoon": "ExpireSoon",
+     "staff": "Staff sale",
+     "foodbank": "Food bank",
+     "writeoff": "Destroyed"
+    },
+    "brsr": [
+     {
+      "cat": "Food waste: packaged food past quick-commerce gates",
+      "diverted": 345.72,
+      "resold": 327.23,
+      "donated": 18.49,
+      "disposed": 0.0,
+      "evidence": "kirana order logs for 1,372 packs, 1 food-bank receipts"
+     },
+     {
+      "cat": "Plastic packaging (EPR)",
+      "diverted": 3.21,
+      "resold": 3.04,
+      "donated": 0.17,
+      "disposed": 0.0,
+      "evidence": "1 SKUs' packaging weights (indicative), on the same papers"
+     }
+    ]
+   },
+   {
+    "id": "fy27",
+    "kind": "year",
+    "label": "This year",
+    "long": "FY 2026-27 so far",
+    "from": "2026-04-01",
+    "to": "2027-03-31",
+    "current": true,
+    "totals": {
+     "net": 237271.28,
+     "swing": 287521.47,
+     "pnl": -40040.8,
+     "writeOff": 327562.27,
+     "itcKept": 17021.39,
+     "itcReversed": 1699.72,
+     "kg": 2305.23,
+     "co2": 5763.08,
+     "meals": 958,
+     "units": 12177,
+     "sold": 10838,
+     "donated": 958,
+     "godown": 381,
+     "destroyed": 381,
+     "resoldKg": 2074.6,
+     "donatedKg": 230.63,
+     "destroyedKg": 68.38,
+     "packResoldKg": 60.96,
+     "packDonatedKg": 4.94,
+     "packDestroyedKg": 1.23,
+     "credit": 9109.58,
+     "support": 128524.0,
+     "batches": 13,
+     "outcomes": {
+      "sold": 7,
+      "leftover": 3,
+      "donation": 3
+     },
+     "invoices": 10,
+     "creditNotes": 16,
+     "receipts": 3,
+     "reviewed": 13
+    },
+    "months": [
+     {
+      "month": "2026-08",
+      "label": "August 2026",
+      "totals": {
+       "net": 71874.56,
+       "swing": 86910.95,
+       "pnl": -18883.32,
+       "writeOff": 105794.27,
+       "itcKept": 4385.31,
+       "itcReversed": 706.44,
+       "kg": 735.37,
+       "co2": 1838.43,
+       "meals": 406,
+       "units": 3799,
+       "sold": 3328,
+       "donated": 406,
+       "godown": 65,
+       "destroyed": 65,
+       "resoldKg": 625.75,
+       "donatedKg": 109.62,
+       "destroyedKg": 14.3,
+       "packResoldKg": 19.16,
+       "packDonatedKg": 2.44,
+       "packDestroyedKg": 0.33,
+       "credit": 3339.38,
+       "support": 43649.0,
+       "batches": 4,
+       "outcomes": {
+        "sold": 2,
+        "leftover": 1,
+        "donation": 1
+       },
+       "invoices": 3,
+       "creditNotes": 5,
+       "receipts": 1,
+       "reviewed": 4
+      }
+     },
+     {
+      "month": "2026-09",
+      "label": "September 2026",
+      "totals": {
+       "net": 148509.02,
+       "swing": 178352.1,
+       "pnl": -20357.18,
+       "writeOff": 198709.28,
+       "itcKept": 11798.98,
+       "itcReversed": 945.98,
+       "kg": 1224.14,
+       "co2": 3060.35,
+       "meals": 466,
+       "units": 6770,
+       "sold": 5988,
+       "donated": 466,
+       "godown": 316,
+       "destroyed": 316,
+       "resoldKg": 1121.62,
+       "donatedKg": 102.52,
+       "destroyedKg": 54.08,
+       "packResoldKg": 38.76,
+       "packDonatedKg": 2.33,
+       "packDestroyedKg": 0.9,
+       "credit": 5770.2,
+       "support": 78537.0,
+       "batches": 8,
+       "outcomes": {
+        "sold": 5,
+        "leftover": 2,
+        "donation": 1
+       },
+       "invoices": 7,
+       "creditNotes": 10,
+       "receipts": 1,
+       "reviewed": 8
+      }
+     },
+     {
+      "month": "2026-10",
+      "label": "October 2026",
+      "totals": {
+       "net": 16887.7,
+       "swing": 22258.42,
+       "pnl": -800.3,
+       "writeOff": 23058.72,
+       "itcKept": 837.1,
+       "itcReversed": 47.3,
+       "kg": 345.72,
+       "co2": 864.3,
+       "meals": 86,
+       "units": 1608,
+       "sold": 1522,
+       "donated": 86,
+       "godown": 0,
+       "destroyed": 0,
+       "resoldKg": 327.23,
+       "donatedKg": 18.49,
+       "destroyedKg": 0.0,
+       "packResoldKg": 3.04,
+       "packDonatedKg": 0.17,
+       "packDestroyedKg": 0.0,
+       "credit": 0.0,
+       "support": 6338.0,
+       "batches": 1,
+       "outcomes": {
+        "sold": 0,
+        "leftover": 0,
+        "donation": 1
+       },
+       "invoices": 0,
+       "creditNotes": 1,
+       "receipts": 1,
+       "reviewed": 1
+      }
+     }
+    ],
+    "weeks": [],
+    "mix": [
+     [
+      "kirana",
+      51
+     ],
+     [
+      "expiresoon",
+      35
+     ],
+     [
+      "staff",
+      3
+     ],
+     [
+      "foodbank",
+      8
+     ],
+     [
+      "writeoff",
+      3
+     ]
+    ],
+    "mixNames": {
+     "kirana": "Kirana scheme",
+     "expiresoon": "ExpireSoon",
+     "staff": "Staff sale",
+     "foodbank": "Food bank",
+     "writeoff": "Destroyed"
+    },
+    "brsr": [
+     {
+      "cat": "Food waste: packaged food past quick-commerce gates",
+      "diverted": 2305.23,
+      "resold": 2074.6,
+      "donated": 230.63,
+      "disposed": 68.38,
+      "evidence": "10 tax invoices, 10 ExpireSoon listings, kirana order logs for 6,234 packs, 3 food-bank receipts, 3 destruction certificates"
+     },
+     {
+      "cat": "Plastic packaging (EPR)",
+      "diverted": 65.9,
+      "resold": 60.96,
+      "donated": 4.94,
+      "disposed": 1.23,
+      "evidence": "8 SKUs' packaging weights (indicative), on the same papers"
+     }
+    ]
+   }
+  ],
+  "inFlight": []
+ }
+}
