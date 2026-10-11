@@ -324,7 +324,11 @@
     const past = HISTORY.filter(c => c.dist.id === distId).sort((a, z) => (a.flagged < z.flagged ? 1 : -1));
     const story = D.BATCHES.filter(b => b.distributor === distId);
     const inJourney = b => (b.hero && state.hero.phase !== "watching") || (b.second && state.mango.phase && state.mango.phase !== "watching");
-    return { journey: story.filter(inJourney), watching: story.filter(b => !inJourney(b)), past };
+    // a story batch whose journey has cleared (Impact posted it) is one of his cleared batches, no longer in a journey
+    // (SC-162): on Batches in its cleared month, in his sums from the story's own figures (storySum)
+    const done = b => b.hero && !!state.hero.posted;
+    return { journey: story.filter(b => inJourney(b) && !done(b)), watching: story.filter(b => !inJourney(b)), past,
+      done: story.filter(done).map(b => ({ ref: b.id, sku: D.SKUS[b.sku], flagged: D.DAY0, cleared: STORY_CLEARED, outcome: "sold", story: true })) };
   }
   // the papers a distributor sees: those he issues (his tax invoice and its e-way bill check) and those issued to him
   // (Munchly's price-support and expiry credit notes); and copies of what concerns his packs (the food bank's receipt,
@@ -394,11 +398,25 @@
     const w = whole(c), r2 = n => Math.round(n * 100) / 100;
     return { ref: c.ref, sold: r2(w.rows.filter(r => !r.paper).reduce((t, r) => t + r.v, 0)), credit: r2(w.rows.filter(r => r.paper).reduce((t, r) => t + r.v, 0)), cost: w.paid };
   }
-  // every batch he cleared, summed: the sales, the credit, the cost, and the credit notes that carried the credit
-  function sumsOf(past) {
-    const xs = past.map(sumOf), t = k => Math.round(xs.reduce((a, x) => a + x[k], 0) * 100) / 100;
-    const notes = past.reduce((n, c) => n + c.docs.filter(d => (d.id === "support" || d.id === "expiry") && d.status !== "not required").length, 0);
-    return { n: past.length, sold: t("sold"), credit: t("credit"), cost: t("cost"), notes, batches: xs };
+  // every batch he cleared, summed: the sales, the credit, the cost, and the credit notes that carried the credit; with
+  // the story's own once its journey has cleared (SC-162: `story`, storySum's, each on its price-support credit note)
+  function sumsOf(past, story) {
+    story = story || [];
+    const xs = past.map(sumOf).concat(story), t = k => Math.round(xs.reduce((a, x) => a + x[k], 0) * 100) / 100;
+    const notes = past.reduce((n, c) => n + c.docs.filter(d => (d.id === "support" || d.id === "expiry") && d.status !== "not required").length, 0) + story.length;
+    return { n: past.length + story.length, sold: t("sold"), credit: t("credit"), cost: t("cost"), notes, batches: xs };
+  }
+  // the story's chips batch once its journey has cleared (SC-162): its sum from its own money, as its page's Money tab
+  // reads it (storyWhole): what he sold, what the client credited him, and what it cost him
+  function storySum(state) {
+    const w = storyWhole(state), r2 = n => Math.round(n * 100) / 100;
+    const credit = w.rows.filter(r => r.k === "Price-support credit note").reduce((t, r) => t + r.v, 0);
+    return { ref: HERO.id, sold: r2(w.recv - credit), credit: r2(credit), cost: w.paid };
+  }
+  // his cleared batches summed, the story's with them once its journey has cleared (SC-162), as Batches and Orders show it
+  function sumsAt(distId, state) {
+    const b = distBatches(distId, state);
+    return sumsOf(b.past, b.done.map(() => storySum(state)));
   }
   // the story's chips batch while in a journey: what has happened so far (the feed), the next three, and the plan's money
   const STORY_MOMENTS = [["permit", "handshake", "You gave the one-time permission"], ["watch", "radar", "The Watcher flagged 1,360 packs at risk"], ["ask", "scan-line", "Vision asked you for a label photo"], ["photo", "camera", "You sent the label photo"], ["read", "scan-line", "Vision read the label"],
@@ -703,7 +721,7 @@
   }
   const record = { recordOf, storyRecord, photosOf, storyPhotos, YES };
 
-  const partners = { distBatches, distPapers, moments, whole, sumOf, sumsOf, storyMoments, storyWhole, scheme, offersFor, pickupsFor, fssaiItems, stepAt, plusHours,
+  const partners = { distBatches, distPapers, moments, whole, sumOf, sumsOf, storySum, sumsAt, storyMoments, storyWhole, scheme, offersFor, pickupsFor, fssaiItems, stepAt, plusHours,
     STOP, distNow, journeyOf, journeys, ordersNow, ordersPast, deliveriesPast, photoOf, shopName, historyFacts, WORLD, storyInvoices, invoicesOf };
 
   /* ---------- the Impact dashboard (SC-157): a period's figures drawn from its rows ---------- */

@@ -582,21 +582,24 @@
     const now = Px.distNow(dist.id, s).map(n => { const j = Px.journeyOf(n); return { ref: n.ref, sku: j.sku, live: true, j, rows: Px.ordersNow(n, Px.shopName) }; });
     const past = Px.distBatches(dist.id, s).past.map(c => ({ ref: c.ref, sku: c.sku, live: false, outcome: c.outcome, cleared: c.cleared, rows: Px.ordersPast(Px.historyFacts(c), Px.shopName) })).filter(b => b.rows.length);
     const book = now.concat(past);
-    // the batches he cleared, summed (SC-145): what they cost him = what he sold + what the client credited him
-    const sums = P().sumsOf(P().distBatches(dist.id, s).past);
+    // the batches he cleared, summed (SC-145): what they cost him = what he sold + what the client credited him; a batch
+    // whose journey has cleared among them (SC-162), so only the sales of one still under way wait to join
+    const sums = Px.sumsAt(dist.id, s);
+    const sumOf = ref => sums.batches.find(x => x.ref === ref);
+    const going = now.filter(b => !sumOf(b.ref));
     const all = book.flatMap(b => b.rows), total = Math.round(all.reduce((t, o) => t + o.amount, 0) * 100) / 100;
     const shops = all.filter(o => o.id === "kirana").reduce((t, o) => t + o.shops.length, 0), lots = all.filter(o => o.id === "expiresoon").length, sales = all.filter(o => o.id === "staff").length;
     const sum = rows => Math.round(rows.reduce((t, o) => t + o.amount, 0) * 100) / 100;
     return <Screen me={me} title="Orders" sub={`${dist.name} · what sold from each of ${D.WORKSPACE.short}'s batches, to whom, on which paper`}>
       <div className="stack" style={{ gap: 16, maxWidth: 960 }}>
         {!all.length ? <Card><Empty img="van" title="No orders yet" body="When a batch's scheme, lot or staff sale sells, each order shows here under its batch." /></Card>
-          : sums.n ? <SumCard t={sums} page="orders" live={Math.round(now.reduce((t, b) => t + sum(b.rows), 0))} liveN={now.filter(b => b.rows.length).length} />
+          : sums.n ? <SumCard t={sums} page="orders" live={Math.round(going.reduce((t, b) => t + sum(b.rows), 0))} liveN={going.filter(b => b.rows.length).length} />
           : <Card className="stack" style={{ gap: 8 }}><div className="lg-fig"><Money value={total} size="l" /><span className="lg-what">sold from {D.WORKSPACE.short}'s batches since {D.WORKSPACE.since}</span></div>
             <p className="lg-working">{book.length} {book.length === 1 ? "batch" : "batches"} · {shops} kiranas' scheme orders · {lots} ExpireSoon {lots === 1 ? "lot" : "lots"} · {sales} staff {sales === 1 ? "sale" : "sales"}. The price support is on each batch's papers.</p></Card>}
         {book.map(b => <Card key={b.ref} className="stack snug">
           <div className="row between wrap" style={{ gap: 12 }}>
             <BatchLine sku={b.sku} id={b.ref} size={44} badge={b.live ? stopBadge(b.j) : <S.OutcomeBadge o={b.outcome} size="sm" />} sub={b.live ? (b.j.phase === "cleared" ? "cleared · every order" : b.rows.length ? "orders so far" : "no orders yet") : `cleared ${day(b.cleared)}`} />
-            <span className="row tight">{b.rows.length > 0 && (!b.live && sums.batches.find(x => x.ref === b.ref) ? <SumLine x={sums.batches.find(x => x.ref === b.ref)} lead="sold" /> : <span className="tnum strong">{fmt.inr(sum(b.rows))}</span>)}<Button variant="ghost" size="sm" iconRight="chevron-right" onClick={() => go("batches", { ref: b.ref })}>Papers</Button></span>
+            <span className="row tight">{b.rows.length > 0 && (sumOf(b.ref) ? <SumLine x={sumOf(b.ref)} lead="sold" /> : <span className="tnum strong">{fmt.inr(sum(b.rows))}</span>)}<Button variant="ghost" size="sm" iconRight="chevron-right" onClick={() => go("batches", { ref: b.ref })}>Papers</Button></span>
           </div>
           {b.rows.length ? <div className="dist-orders">{b.rows.map(o => <OrderRow key={o.id} o={o} onInvoice={no => setInv({ ref: b.ref, no })} />)}</div>
             : <p className="t-footnote muted" style={{ margin: 0 }}>{b.j.waiting || "Its orders show here as they come in."}</p>}
@@ -614,17 +617,18 @@
     const s = useStore(); const { route, go } = useRoute(); const phone = useApp().bp === "phone";
     const dist = distOf(me); const ref = route && route.params && route.params.ref;
     if (ref) return <DistBatch me={me} dist={dist} id={ref} />;
-    const { journey, watching, past } = P().distBatches(dist.id, s);
-    // the batches he cleared, summed (SC-145): what they cost him = what he sold + what the client credited him
-    const sums = P().sumsOf(past);
-    const months = []; past.forEach(c => { const m = c.cleared.slice(0, 7); let g = months.find(x => x.m === m); if (!g) months.push(g = { m, label: monthOf(c.cleared), items: [] }); g.items.push(c); });
+    const { journey, watching, past, done } = P().distBatches(dist.id, s);
+    // the batches he cleared, summed (SC-145): what they cost him = what he sold + what the client credited him; a batch
+    // whose journey has cleared joins them, newest first (SC-162)
+    const sums = P().sumsAt(dist.id, s), cleared = done.concat(past);
+    const months = []; cleared.forEach(c => { const m = c.cleared.slice(0, 7); let g = months.find(x => x.m === m); if (!g) months.push(g = { m, label: monthOf(c.cleared), items: [] }); g.items.push(c); });
     return <Screen me={me} title="Batches" sub={`${dist.name} · every batch of ${D.WORKSPACE.short}'s the Watcher flagged at your godown`}>
       <div className="stack" style={{ gap: 20 }}>
         {journey.length ? <List head="In a journey now">{journey.map(b => { const sku = D.SKUS[b.sku]; const phase = b.hero ? s.hero.phase : s.mango.phase;
           return <ListRow key={b.id} chevron onClick={() => go("batches", { ref: b.id })} leading={<Product name={sku.img} size={40} />}
             title={<span className="row tight" style={{ gap: 8, flexWrap: "wrap" }}><span>{sku.name}</span><Badge size="sm" tone="blue" dot live>{stopOf(phase)}</Badge></span>}
             sub={`${b.id} · flagged ${day(D.DAY0)} · the agents act in your name`} value={phone ? null : `${fmt.num(b.hero ? D.PLAN.units : D.MANGO_PLAN.units)} packs`} />; })}</List> : null}
-        {past.length ? <SumCard t={sums} page="batches" /> : null}
+        {cleared.length ? <SumCard t={sums} page="batches" /> : null}
         {months.map(g => <List key={g.m} head={`Cleared · ${g.label}`}>{g.items.map(c => {
           return <ListRow key={c.ref} chevron onClick={() => go("batches", { ref: c.ref })} leading={<Product name={c.sku.img} size={40} />}
             title={<span className="row tight" style={{ gap: 8, flexWrap: "wrap" }}><span>{c.sku.name}</span>{!phone && <S.OutcomeBadge o={c.outcome} size="sm" />}</span>}
