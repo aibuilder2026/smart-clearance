@@ -2227,7 +2227,7 @@
     changes. `check.sh` passes.
   - **Docs:** `infra/README.md`, the README's project table, and DEMO.md's known limits (the caveat is gone).
 
-- **SC-176** (In Review, branch `SC-176-journey-clock-note`): the journey clock explained. Wherever the live workspace
+- **SC-176** (PR #155, merged): the journey clock explained. Wherever the live workspace
   shows the journey's date and time, a note says it is the prototype's own clock, with how to reset or fast-forward.
   - **The request:** "Wherever on UI we see date and time I want an info note to be added that this was done as part of
     the prototype to be able to run it with defined dataset of SKU with best before dates. And show them steps how
