@@ -1,0 +1,62 @@
+[
+ {
+  "url": "http://localhost:8787/designs/SC-173/current/app.html?scn=mango&stage=6&who=lakshmi-owner#/van/MF-2410-118",
+  "out": "current/staff-sale-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": false,
+  "wait": 2600,
+  "el": ".card:has(.card-title:text-matches('Staff sale'))"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-173/current/app.html?scn=mango&stage=9&who=lakshmi-owner#/van/MF-2410-118",
+  "out": "current/staff-recorded-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": false,
+  "wait": 2600,
+  "el": ".card:has(.card-title:text-matches('Staff sale'))"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-173/current/app.html?scn=mango&stage=6&who=priya#/execution/MF-2410-118",
+  "out": "current/execution-staff-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true,
+  "wait": 2600
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-173/current/app.html?scn=mango&stage=9&who=priya#/paperwork/MF-2410-118",
+  "out": "current/pack-mango-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-173/current/app.html?scn=slow&stage=9&who=priya#/paperwork/MF-2409-117",
+  "out": "current/destruction-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "height": 1100,
+  "js": "[...document.querySelectorAll('button')].find(b => /Destruction certificate/.test(b.textContent)).click()"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-173/current/app.html?stage=9&who=priya#/paperwork/MF-2409-117",
+  "out": "current/invoice-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "height": 1500,
+  "js": "[...document.querySelectorAll('button')].find(b => /Tax invoice/.test(b.textContent)).click()"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-173/current/app.html?stage=9&who=priya#/paperwork/MF-2409-117",
+  "out": "current/credit-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "height": 1300,
+  "js": "[...document.querySelectorAll('button')].find(b => /Price-support credit/.test(b.textContent)).click()"
+ }
+]
