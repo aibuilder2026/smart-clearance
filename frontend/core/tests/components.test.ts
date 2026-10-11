@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Button from '../src/lib/components/Button.svelte';
 import Money from '../src/lib/components/Money.svelte';
 import Icon from '../src/lib/icons/Icon.svelte';
+import Photo from '../src/lib/workspace/screens/common/Photo.svelte';
 import { Wait, WAIT } from '../src/lib/wait.svelte';
 import FieldFixture from './fixtures/FieldFixture.svelte';
 
@@ -192,5 +193,48 @@ describe('a button that waits', () => {
 		expect(w.phase).toBe('busy');
 		await later(200);
 		expect(w.phase).toBe('idle');
+	});
+});
+
+describe('a photo whose link changes (SC-180)', () => {
+	// a fresh signed link to the same photo comes with every read of the live workspace
+	const made: { src: string; onload: (() => void) | null }[] = [];
+	beforeEach(() => {
+		made.length = 0;
+		vi.stubGlobal(
+			'Image',
+			class {
+				onload: (() => void) | null = null;
+				onerror: (() => void) | null = null;
+				set src(v: string) {
+					made.push(this as unknown as { src: string; onload: (() => void) | null });
+					(this as unknown as { _src: string })._src = v;
+				}
+			}
+		);
+	});
+	afterEach(() => vi.unstubAllGlobals());
+
+	it('keeps showing the photo it has while the new link loads, then takes the new one', async () => {
+		const r = render(Photo, { src: 'https://x/a.webp?sig=1', alt: 'The label' });
+		const img = r.container.querySelector('img')!;
+		await fireEvent.load(img);
+		expect(r.container.querySelector('.skeleton')).toBeNull();
+		await r.rerender({ src: 'https://x/a.webp?sig=2', alt: 'The label' });
+		flushSync();
+		// still the first link, still drawn: no skeleton in its place
+		expect(img.getAttribute('src')).toBe('https://x/a.webp?sig=1');
+		expect(r.container.querySelector('.skeleton')).toBeNull();
+		expect(img.style.opacity).toBe('1');
+		made.at(-1)!.onload!();
+		flushSync();
+		expect(img.getAttribute('src')).toBe('https://x/a.webp?sig=2');
+		expect(img.style.opacity).toBe('1');
+	});
+
+	it('loads its first link under its skeleton, as before', () => {
+		const r = render(Photo, { src: 'https://x/b.webp?sig=1' });
+		expect(r.container.querySelector('.skeleton')).not.toBeNull();
+		expect(made).toHaveLength(0);
 	});
 });

@@ -162,16 +162,24 @@ buys, and what is left is destroyed at the godown.
 **The three screens** run in their own headless Chromium, side by side on a stage, a page in a visible Chromium window
 (`E2E_LIVE=0` hides it):
 
-- a laptop (1440 × 900) for Priya, Munchly's supply chain operator;
-- a tablet (820 × 1180) for Rakesh, the distributor;
+- a tablet in landscape (1180 × 820) for Priya, Munchly's supply chain operator;
+- a tablet in landscape (1180 × 820) for Rakesh, the distributor;
 - a phone (390 × 844) for everyone else: each kirana, Agrawal Wholesale on ExpireSoon, and Neha in the console.
 
-Priya and Rakesh sign in once and stay signed in. Their screens move within the app as a link would, and the pushes
-that reach them show as the app's banners. The phone signs each person in as they are needed. Each screen streams its
-frames (CDP screencast) into the stage, which shows each device under its holder's name and address. The screen being
-acted on is lit, and a narrator under the laptop names the step, who acts and what they do, with running counts and the
-last steps. The stage is recorded: its frames are piped into ffmpeg at a steady 25 fps, H.264 at 2560 × 1440, as
-`recording.mp4` in the run's output folder (`E2E_KEEP=<path>` copies it out).
+Priya, Rakesh and Neha sign in before the recording starts, so it opens on three loaded screens. Priya and Rakesh stay
+online to the end: their screens move within the app as a link would, the pushes that reach them show as the app's
+banners, and after the reset each reloads in place. The phone signs each person in as they are needed, its last frame
+held under a "Signing in" chip meanwhile, so no screen ever shows a blank page. A step ends only once every screen's
+photos and placeholders have landed.
+
+**Every click shows:** each screen draws a cursor (an init script) that glides to its target and ripples where it
+presses, and a person reading glides it over what they read: Vision's checks, the certificate's signatures, the Impact
+tiles.
+
+Each screen streams its frames (CDP screencast) into the stage, which shows each device under its holder's name and
+address. The screen being acted on is lit, and a narrator under the tablets names the step, who acts and what they do,
+with running counts and the last steps. The stage is recorded: its frames are piped into ffmpeg at a steady 25 fps,
+H.264 at 2560 × 1440, as `recording.mp4` in the run's output folder (`E2E_KEEP=<path>` copies it out).
 
 **The journey:**
 
@@ -190,9 +198,16 @@ last steps. The stage is recorded: its frames are piped into ffmpeg at a steady 
   panel. Vision checks it on live Gemini, and Priya approves from her Command Center. Impact reports: the Expiry credit
   note (₹13,284: the dealer price, the GST he reverses and the agency's charges) and the two-page certificate of
   destruction.
+- **The validation, on screen:** Rakesh's tablet shows Vision reading the label, and Vision checking the two
+  destruction photos (his photos in view, SC-180); Priya reads Vision's four checks one by one before her yes.
 - **What it reads back:**
-  - Priya's pack, every paper with its signature (SC-174);
-  - Rakesh's batch: what happened, his money, his papers and photos;
+  - the certificate of destruction: its reason, method, facility and window, then each signature (the officer under the
+    agency's seal, the two witnesses, Rakesh for the packs he handed over), then page 2, the log and its initials;
+  - Priya's pack: the Expiry credit note and every other paper with its signature (SC-174), the sales register and a
+    glance at each kirana's tax invoice (SC-153);
+  - the Impact screens: the quarter's tiles, food by week, where the kilos went, by product, the batch's BRSR line, and
+    the Command Center's Impact card;
+  - Rakesh's batch: what happened, his money, his signed papers and his photos;
   - on the phone, Shree Ganesh Kirana's order, and the offer a shop declined;
   - Execution's settlement and the ledger.
 

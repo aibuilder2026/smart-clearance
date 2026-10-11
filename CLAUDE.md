@@ -2321,21 +2321,24 @@
 
 - **SC-179** (In Review, branch `SC-179-chips-sad-path`, stacked on SC-174): Munchly Chips Sad Path E2E, a journey suite on three screens at once, recorded as one video, asked for by the maintainer.
   - **The request:** "Munchly Chip E2E sad path on local wherein only 2 kiranas will buy and rest will decline, resulting in destruction", shown live with "3 browsers open side by side": the supply chain operator on a laptop and the distributor on a tablet, staying signed in throughout, and kiranas and the others signing in on a phone as needed; the whole session recorded "with all three screens open and seen".
+  - **The maintainer's second take:** both tablets in landscape; the clicks shown; the certificate's signing, the photos' validation, the kiranas' invoices and the Impact screens read on screen; every screen fully loaded, Priya and Rakesh always online.
   - **The stage** (`tests/journey/stage.ts`):
-    - three screens in a headless Chromium: Priya's laptop (1440 × 900), Rakesh's tablet (820 × 1180) and a phone (390 × 844);
+    - three screens in a headless Chromium: Priya's and Rakesh's tablets in landscape (1180 × 820) and a phone (390 × 844);
+    - all three sign in before the recording starts; after the reset the tablets reload in place; while the phone signs someone in, its last frame holds under a "Signing in" chip; a step ends once every screen's photos and placeholders have landed;
+    - a cursor on every screen (an init script) glides to each control and ripples on the press, and glides over what a person reads;
     - each streams its frames (CDP screencast) into a page in a visible Chromium window, which lays them out as devices under their holder's name and address, lights the one being acted on, and keeps a narrator (the step, who acts and what they do, running counts, the last steps);
     - the stage is recorded: its frames piped into ffmpeg at 25 fps, H.264 at 2560 × 1440 (`recording.mp4`; `E2E_KEEP` copies it out; `E2E_LIVE=0` hides the window).
 
-    Priya and Rakesh sign in once; their screens move within the app as a link would, and the pushes that reach them show as banners, so the suite reads each screen's `#main`. The phone signs each person in. `record.ts` now watches several pages, takes stills at CSS pixels and lets a subclass draw the caption.
+    Priya and Rakesh stay signed in; their screens move within the app as a link would, and the pushes that reach them show as banners, so the suite reads each screen's `#main`. The phone signs each person in. `record.ts` now watches several pages, takes stills at CSS pixels and lets a subclass draw the caption.
   - **The suite** (`munchly-chips-sad.journey.ts`, `corepack pnpm test:journey:sad`; it resets the journey):
     - of Rakesh's 38 kiranas, the first `E2E_BUYERS` (2) story buyers order 24 packets each, and the 35 others who use the app press Not this time;
     - Shree Sai Kirana's invitation is still open in the story, so it cannot sign in to answer, and the report says so;
     - Agrawal wins the ExpireSoon lot, Neha closes the window from the console, and 540 packets stay at the godown;
     - the truck, the invoice and the van round to the 2 shops; expiry day;
     - Rakesh's evidence, Vision's checks and Priya's second yes;
-    - then the papers read back on each screen, signed (SC-174).
+    - then the papers read back on each screen, signed (SC-174): the certificate (its reason, method, facility and window, each signature, then the log and its initials), the Expiry credit note and the other papers, a glance at each kirana's tax invoice, and the Impact screens (the quarter's tiles, food by week, where the kilos went, by product, the batch's BRSR line, the Command Center's card).
   - **The evidence for 540 packets** (`tests/journey/evidence/`, Qwen-Image, with sidecars): a before photo with five heaped crates, which Vision counted at 500 to 540 in six reads (kept full size at quality 92; a 1024-wide q82 copy read as low as 250), and design3's after photo with its slate edited to 540. Both were held to Vision's own prompt on live Gemini before the run.
-  - **The run of 11 Oct** (`runs/2026-10-11-sad/REPORT.md`; the 7 min 1 s recording, 35.7 MB, stays local): passed in 6 min 58 s, 94 steps, from a reset, with no warning.
+  - **The run of 11 Oct** (`runs/2026-10-11-sad/REPORT.md`; the 9 min 32 s recording, 42.5 MB, stays local): the second take passed in 9 min 45 s, 105 steps, from a reset, with no warning, on SC-180's branch with its fix (the first take passed in 6 min 58 s, 94 steps, on the laptop layout).
     - The plan: ₹21,770.
     - The answers: 2 shops ordered 48 packets; 35 declined; 1 never joined the app.
     - The lot: 772 at ₹14.20.
@@ -2348,5 +2351,19 @@
     - the shop that never joined could not sign in;
     - the case does not expose the scheme's shortfall.
   - **Checks:** the frontend gate passes (core 382, api 83, workspace 109, admin 22, demo 9, console 2). The day is back at 24 hours.
+
+- **SC-180** (In Review, branch `SC-180-evidence-photos-while-checked`, stacked on SC-179; bug found by Munchly Chips Sad Path E2E): the distributor's destruction photos while Vision checks them, and a photo that blinked on every read.
+  - **Found:** on Rakesh's tablet, "Vision is checking your photos" sat over two black frames until the check was done; and every read of a case reloaded a photo already on screen under its placeholder.
+  - **The causes:**
+    - the destruction screen reads the evidence from his partner facts, which the live source read again only on a stream event, so they still held the destruction as asked, with no photos;
+    - each read brings a fresh signed link, and the Photo component dropped the image it had for the new link's load.
+  - **The fix:**
+    - the live source reads a partner's facts again once a step they send has gone through (`source.svelte.ts`);
+    - the destruction screen shows the photos he has just sent until their links arrive (`DestroyScreen.svelte`);
+    - a photo already on screen loads its new link behind it and swaps it in once loaded (design3 `common.jsx` Photo first, then core's `Photo.svelte`); its first load keeps its skeleton.
+  - **Checks:**
+    - the frontend gate passes: core 384 (2 new: the photo keeps its image while a new link loads, and fails without the fix), workspace 110 (1 new: a partner's facts read again after her own step, which fails without the fix), api 83, admin 22, demo 9, console 2;
+    - in the sad path's recording the photos are in view from the send to the yes;
+    - design3's `dist/` is rebuilt.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

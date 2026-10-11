@@ -84,6 +84,9 @@
 
 	type Shot = { url?: string; file?: File; demo?: boolean };
 	let shots = $state<Partial<Record<DzWhich, Shot>>>({});
+	/** the photos he has just sent, shown while their links are on their way (SC-180): his facts are read again after
+	 *  the send, and until then they hold the destruction as it was asked, with no photos */
+	let sent = $state<Partial<Record<DzWhich, string>>>({});
 	let agency = $state('');
 	let cert = $state('');
 	let err = $state<string | null>(null);
@@ -167,6 +170,7 @@
 				},
 				{ feel: live ? 0 : 700, ref: n.ref, inline: true }
 			);
+			sent = { before: shots.before?.url, after: shots.after?.url };
 			shots = {};
 			cert = '';
 		} finally {
@@ -336,7 +340,7 @@
 						</div>
 					</div>
 					<div class="dz-two dz-pair">
-						{#each SLOTS as sl (sl.id)}{@const src = dzPhoto(full, n.ref, sl.id, live)}
+						{#each SLOTS as sl (sl.id)}{@const src = dzPhoto(full, n.ref, sl.id, live) ?? sent[sl.id]}
 							<div class="cam dz-cam">
 								{#if src}<Photo class="cam-feed whole" {src} alt={sl.alt} />{/if}<span class="cam-tag"
 									>{sl.n} · {sl.title}</span
