@@ -1,13 +1,15 @@
 import { expect, test } from '@playwright/test';
-import { isReal, openDemo, stageOf } from './demo';
+import { atOf, isReal, LINE, openDemo } from './demo';
 
-// The guided demo in Firefox and WebKit (desktop, tablet and phone): it opens on a stage without errors, and → moves
-// the story on a beat
-test('smoke · the demo opens on a stage, and → moves it on', async ({ page }) => {
+// The guided demo in Firefox and WebKit (desktop, tablet and phone): the route map opens without errors, the chips'
+// first station opens from the address, and → moves the story on a beat
+test('smoke · the demo opens on the route map and on a station, and → moves it on', async ({ page }) => {
 	const errors: string[] = [];
 	page.on('pageerror', (e) => errors.push(e.message));
 	page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
-	await openDemo(page, 1);
+	await openDemo(page);
+	await expect(page.getByRole('heading', { name: 'Three batches. Three endings.' })).toBeVisible();
+	await openDemo(page, [LINE.chips, 0, 0]);
 	if (isReal(page)) {
 		// the real-phone mode: Priya's sign-in full screen, then her setup once → has signed her in
 		await expect(page.locator('.real-app').getByRole('heading', { name: 'Sign in' })).toBeVisible();
@@ -19,6 +21,6 @@ test('smoke · the demo opens on a stage, and → moves it on', async ({ page })
 		await page.keyboard.press('ArrowRight');
 		await expect(page.locator('.narr .beat.done')).toHaveCount(1);
 	}
-	expect(stageOf(page)).toBe(1);
+	expect(atOf(page)).toEqual([LINE.chips, 0, 1]);
 	expect(errors).toEqual([]);
 });

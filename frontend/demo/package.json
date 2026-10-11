@@ -39,7 +39,7 @@
 		"vitest": "catalog:"
 	},
 	"a11yCoverage": {
-		"why": "The demo's people are the story's: the workspace admin is never one of them and switching person is off, so the admin's screens, and the workspace app's own shell, are never on the demo's screen (SC-65).",
+		"why": "The demo's people are the story's: the workspace admin is never one of them and switching person is off, so the admin's screens, and the workspace app's own shell, are never on the demo's screen (SC-65). On Neha's laptop the console shows its sign-in, Overview, Clients, New client and a client's Agents, Supply chain, Channels & rules and People tabs (SC-167); its Connectors, Plans, Staff and Audit log pages, the account sheet, the client's actions menu and its Integrations and Plan tabs, and the sheets opened from a tab (an SKU's gates, the profile, the journey day, Reset journey) are never visited.",
 		"unreached": [
 			"workspace/WorkspaceApp.svelte",
 			"workspace/screens/admin/WorkspaceSettings.svelte",
@@ -47,7 +47,22 @@
 			"workspace/screens/admin/RowMenu.svelte",
 			"workspace/screens/admin/Rules.svelte",
 			"workspace/screens/admin/Integrations.svelte",
-			"workspace/screens/admin/Audit.svelte"
+			"workspace/screens/admin/Audit.svelte",
+			"console/screens/Connectors.svelte",
+			"console/screens/Plans.svelte",
+			"console/screens/PlanScope.svelte",
+			"console/screens/Staff.svelte",
+			"console/screens/Audit.svelte",
+			"console/screens/AuditList.svelte",
+			"console/screens/AccountSheet.svelte",
+			"console/screens/Failed.svelte",
+			"console/screens/MoreMenu.svelte",
+			"console/screens/client/IntegrationsTab.svelte",
+			"console/screens/client/PlanTab.svelte",
+			"console/screens/client/ResetJourneySheet.svelte",
+			"console/screens/client/JourneyDaySheet.svelte",
+			"console/screens/client/ProfileSheet.svelte",
+			"console/screens/client/SkuSheet.svelte"
 		]
 	}
 }

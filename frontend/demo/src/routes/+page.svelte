@@ -10,6 +10,12 @@
 	// address's hash (#at=act.station.beat; the old #stage=N opens the chips' station N), as in the prototype
 	let start = $state<Pos | null>(startOf(location.hash));
 	let autoplay = $state(false);
+	// an address typed or followed by hand (#at=…) moves the story there; the director's own updates replace the entry
+	// shallowly, without a hashchange
+	const onhashchange = () => {
+		autoplay = false;
+		start = startOf(location.hash);
+	};
 	const play = (s: Pos, auto: boolean) => {
 		autoplay = auto;
 		start = s;
@@ -21,6 +27,8 @@
 		});
 	};
 </script>
+
+<svelte:window {onhashchange} />
 
 {#if start}
 	{#key JSON.stringify(start)}<Director {start} {autoplay} onhome={home} />{/key}

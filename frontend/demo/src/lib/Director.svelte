@@ -55,14 +55,9 @@
 		);
 	});
 
-	// a new line: the map shows the token hopping to it; playing, the stage comes back on its own
-	let prevA = untrack(() => start.a);
+	// the story moves on to a new line: the map shows the token hopping to it; playing, the stage comes back on its own
 	$effect(() => {
-		const a = p.pos.a;
-		if (a !== prevA) {
-			prevA = a;
-			untrack(() => (map = 'hop'));
-		}
+		if (p.hops) untrack(() => (map = 'hop'));
 	});
 	$effect(() => {
 		if (map !== 'hop' || !p.playing) return;
@@ -70,6 +65,7 @@
 		return () => clearTimeout(t);
 	});
 
+	// the keys: → and ← by beats, 1 to 4 to a line's start, M the map, P the phone alone, N the notes
 	function onkeydown(e: KeyboardEvent) {
 		if (map || (e.target as HTMLElement | null)?.closest?.('input, textarea, select, [contenteditable]')) return;
 		if (e.key === 'ArrowRight' || e.key === 'PageDown') {
@@ -79,6 +75,7 @@
 			e.preventDefault();
 			p.back();
 		} else if (e.key === 'm' || e.key === 'M') map = 'map';
+		else if (/^[1-4]$/.test(e.key)) p.go(+e.key - 1, 0, 0);
 		else if (e.key === 'p' || e.key === 'P') phoneOnly = !phoneOnly;
 		else if (e.key === 'n' || e.key === 'N') notes = !notes;
 	}

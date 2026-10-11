@@ -21,6 +21,8 @@ export class Player {
 	end = $state(false);
 	/** something covers the stage (the map), so the timers wait */
 	hold = $state(false);
+	/** the story moved on to the next line by Next (a jump by the map, the keys or Back is not a hop) */
+	hops = $state(0);
 
 	readonly acts: StoryAct[];
 	readonly #h: Hooks;
@@ -66,8 +68,10 @@ export class Player {
 	nextStation = () => {
 		const { a, s } = this.pos;
 		if (s + 1 < this.act.stations.length) this.go(a, s + 1, 0);
-		else if (a + 1 < this.acts.length) this.go(a + 1, 0, 0);
-		else {
+		else if (a + 1 < this.acts.length) {
+			this.go(a + 1, 0, 0);
+			this.hops++;
+		} else {
 			this.playing = false;
 			this.end = true;
 		}
@@ -84,10 +88,13 @@ export class Player {
 		this.ran = { ...this.ran, [this.pos.b]: true };
 		this.advance();
 	};
+	/** Back: the beat before, past any an agent would make again on its own at once; from the first, the station before */
 	back = () => {
 		const { a, s, b } = this.pos;
-		const n = this.station.beats.length;
-		if (b > 0) this.go(a, s, Math.min(b, n) - 1);
+		const beats = this.station.beats;
+		let j = Math.min(b, beats.length) - 1;
+		while (j >= 0 && beats[j].agent && !this.act.console) j--;
+		if (j >= 0) this.go(a, s, j);
 		else if (s > 0) this.go(a, s - 1, 0);
 		else if (a > 0) this.go(a - 1, this.acts[a - 1].stations.length - 1, 0);
 	};

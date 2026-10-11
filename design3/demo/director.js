@@ -37,6 +37,7 @@
     const [ran, setRan] = useState({});
     const [playing, setPlaying] = useState(false);
     const [end, setEnd] = useState(false);
+    const [hops, setHops] = useState(0);
     const act = ACTS[pos.a], station = act.stations[pos.s], n = station.beats.length;
     const complete = pos.b >= n;
     const beat = station.beats[Math.min(pos.b, n - 1)];
@@ -67,8 +68,10 @@
     const advance = useCallback(() => setPos((p) => Object.assign({}, p, { b: p.b + 1 })), []);
     const nextStation = useCallback(() => {
       if (pos.s + 1 < act.stations.length) go(pos.a, pos.s + 1, 0);
-      else if (pos.a + 1 < ACTS.length) go(pos.a + 1, 0, 0);
-      else {
+      else if (pos.a + 1 < ACTS.length) {
+        go(pos.a + 1, 0, 0);
+        setHops((h) => h + 1);
+      } else {
         setPlaying(false);
         setEnd(true);
       }
@@ -90,10 +93,12 @@
       advance();
     }, [complete, pos, advance]);
     const back = useCallback(() => {
-      if (pos.b > 0) go(pos.a, pos.s, Math.min(pos.b, n) - 1);
+      let j = Math.min(pos.b, n) - 1;
+      while (j >= 0 && station.beats[j].agent && !act.console) j--;
+      if (j >= 0) go(pos.a, pos.s, j);
       else if (pos.s > 0) go(pos.a, pos.s - 1, 0);
       else if (pos.a > 0) go(pos.a - 1, ACTS[pos.a - 1].stations.length - 1, 0);
-    }, [pos, n, go]);
+    }, [pos, n, go, station, act]);
     const done = !complete && doneAt(pos.b);
     useEffect(() => {
       if (!done || hold) return;
@@ -118,7 +123,7 @@
       const t = setTimeout(next, act.console ? 2600 : beat.acts && beat.acts.length ? 2400 : 2300);
       return () => clearTimeout(t);
     }, [playing, hold, end, complete, done, pos.a, pos.s, pos.b, next, nextStation]);
-    return { pos, act, station, beat, complete, end, ran, doneAt, go, next, back, tap, playing, setPlaying, setEnd };
+    return { pos, act, station, beat, complete, end, ran, doneAt, go, next, back, tap, playing, setPlaying, setEnd, hops };
   }
   function ConsoleScreen({ spec }) {
     const C = window.SC3_CONSOLE, P = window.SC3_PLATFORM;
@@ -397,13 +402,9 @@
     useEffect(() => {
       if (autoplay) p.setPlaying(true);
     }, []);
-    const prevA = useRef(p.pos.a);
     useEffect(() => {
-      if (p.pos.a !== prevA.current) {
-        prevA.current = p.pos.a;
-        setMap("hop");
-      }
-    }, [p.pos.a]);
+      if (p.hops) setMap("hop");
+    }, [p.hops]);
     useEffect(() => {
       if (map !== "hop" || !p.playing) return;
       const t = setTimeout(() => setMap(null), 2600);
@@ -419,6 +420,7 @@
           e.preventDefault();
           p.back();
         } else if (e.key === "m" || e.key === "M") setMap("map");
+        else if (/^[1-4]$/.test(e.key)) p.go(+e.key - 1, 0, 0);
         else if (e.key === "p" || e.key === "P") setPhoneOnly((v) => !v);
         else if (e.key === "n" || e.key === "N") setNotes((v) => !v);
       };
@@ -455,6 +457,14 @@
   function App() {
     const [start, setStart] = useState(startOf);
     const [auto, setAuto] = useState(false);
+    useEffect(() => {
+      const f = () => {
+        setAuto(false);
+        setStart(startOf());
+      };
+      window.addEventListener("hashchange", f);
+      return () => window.removeEventListener("hashchange", f);
+    }, []);
     if (!start) return /* @__PURE__ */ React.createElement("div", { className: "demo rb-shell" }, /* @__PURE__ */ React.createElement("header", { className: "demo-top rb-top" }, /* @__PURE__ */ React.createElement("span", { className: "row tight demo-brand" }, /* @__PURE__ */ React.createElement(Mark, { size: 30 }), /* @__PURE__ */ React.createElement(Wordmark, { size: 17 }), /* @__PURE__ */ React.createElement("span", { className: "demo-tag" }, "Guided demo")), /* @__PURE__ */ React.createElement("span", null), /* @__PURE__ */ React.createElement("span", { className: "row tight demo-tools" }, /* @__PURE__ */ React.createElement(ModeMenuButton, null))), /* @__PURE__ */ React.createElement("main", { className: "rb-startwrap" }, /* @__PURE__ */ React.createElement(Start, { onPick: (a, s) => {
       setAuto(false);
       setStart({ a, s, b: 0 });

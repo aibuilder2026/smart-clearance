@@ -1,80 +1,77 @@
 import type { Locator, Page } from '@playwright/test';
 
-/** the splash shows once a session unless this is set (Director.svelte) */
-const SPLASH = 'sc3-demo-splash';
+// The guided demo's specs (SC-167): the route map to start, then four lines (the console's, the chips', the Mango
+// Drink's, the slow week's), each a run of stations, each a run of beats. A place in the story is in the address,
+// #at=line.station.beat (0.0.0 the console's sign-in); the map is the page with no hash.
 
-/** How long each stage's agents take, on entering it, before the story waits on a person (core's workspace flow,
- *  Agents' delays): stage 2 the Watcher, 3 Vision's request, 4 the Valuer, 5 the Router, 7 the Lister, Outreach and
- *  Donation one after another, 9 Impact. Used where the notes, and so the beats, are not on screen. */
-const AGENTS_MS = [0, 2400, 1800, 1500, 1600, 0, 4200, 0, 3500];
-/** the longest an agent waits before its next step once a person has moved (Vision reading the photo, Paperwork), and
- *  a margin */
-const STEP_MS = 3000;
+/** the lines, by their place on the map */
+export const LINE = { console: 0, chips: 1, mango: 2, slow: 3 } as const;
+export type Place = [line: number, station: number, beat?: number];
 
 /** below 768 px the demo is the real-phone mode: the person in focus full screen, under a slim bar */
 export const isReal = (page: Page) => (page.viewportSize()?.width ?? 1440) < 768;
 
-/** Opens the demo at a stage (1 to 9) with the splash already seen this session (unless `splash`), and waits for the
- *  devices, or the real phone's bar, and for that stage's agents to finish what they do on entering it. */
-export async function openDemo(page: Page, stage = 1, { splash = false } = {}) {
-	await page.addInitScript(
-		([key, skip]) => {
-			try {
-				if (skip) sessionStorage.setItem(key, '1');
-				else sessionStorage.removeItem(key);
-			} catch {
-				// storage blocked: the splash shows
-			}
-		},
-		[SPLASH, !splash] as const
-	);
-	await page.goto(`/#stage=${stage}`);
-	await page.waitForSelector('.demo .devices .dev-ring, .demo-real .real-bar');
+/** Opens the demo at a place in the story (or the route map, with none), waits for the devices (or the real phone's
+ *  bar, or the map), the fonts, and that station's agents to finish what they do on entering it */
+export async function openDemo(page: Page, place?: Place) {
+	await page.goto(place ? `/#at=${place[0]}.${place[1]}.${place[2] ?? 0}` : '/');
+	await page.waitForSelector(place ? '.demo .devices .dev-ring, .demo-real .real-bar' : '.rb-start');
 	await page.evaluate(() => document.fonts.ready);
-	if (!splash) await settle(page, AGENTS_MS[stage - 1]);
+	if (place) await settle(page);
 }
 
-/** Waits for the agents to finish: with the notes on screen, until the beat in progress is no agent's; otherwise for
- *  `ms`, as long as they take. Then for a device to scroll to the section its beat names (420 ms, then a smooth
- *  scroll). */
-export async function settle(page: Page, ms = STEP_MS) {
+/** Waits for the agents: while the beat in progress is an agent's at work (its aura in the notes), they run on their own
+ *  (1.5 s each) and the notes move on; then for a device to scroll to the section its beat names (420 ms, then a smooth
+ *  scroll). Without the notes on screen, for `ms` */
+export async function settle(page: Page, ms = 2500) {
 	if (await page.locator('.narr .beat').count())
-		await page.waitForFunction(() => !document.querySelector('.narr .beat.now .beat-aura'), null, { timeout: 20_000 });
+		await page.waitForFunction(() => !document.querySelector('.narr .beat.now .beat-aura'), null, { timeout: 30_000 });
 	else await page.waitForTimeout(ms);
 	await page.waitForTimeout(900);
 }
 
-/** the stage in the address (1 to 9) */
-export const stageOf = (page: Page) => Number(/stage=(\d)/.exec(page.url())?.[1] ?? 0);
+/** where the story is, from the address: [line, station, beat] */
+export const atOf = (page: Page): Place => {
+	const m = /at=(\d+)\.(\d+)\.(\d+)/.exec(page.url());
+	return m ? [+m[1], +m[2], +m[3]] : [-1, -1, -1];
+};
+/** the line and station in the address, as "line.station" */
+export const stationOf = (page: Page) => atOf(page).slice(0, 2).join('.');
 
-/** Next (→): the person's move, an agent skipped ahead, or the next stage; then the agents settle */
+/** Next (→): the person's move, an agent skipped ahead, or the next station; then the agents settle. Between lines the
+ *  map comes up with the token hopping to the next one; Escape closes it */
 export async function next(page: Page) {
-	const at = stageOf(page);
 	await page.keyboard.press('ArrowRight');
 	await page.waitForTimeout(50);
-	await settle(page, stageOf(page) !== at ? AGENTS_MS[stageOf(page) - 1] : STEP_MS);
+	if (await page.locator('.rb-over').count()) {
+		await page.keyboard.press('Escape');
+		await page.locator('.rb-over').waitFor({ state: 'detached' });
+	}
+	await settle(page);
 }
 
-/** A device's screen by whose it is ("Priya's laptop", "Rakesh bhai's phone"), or, in the real-phone mode, the one app
- *  on screen */
+/** A device's screen by whose it is ("Priya's laptop", "Rakesh bhai's phone", "Neha's laptop"), or, in the real-phone
+ *  mode, the one app on screen */
 export function device(page: Page, label: string): Locator {
-	if (isReal(page)) return page.locator('.demo-real .real-app');
+	if (isReal(page)) return page.locator('.demo-real .real-app, .demo-real .real-console');
 	return page.locator('.dev', { has: page.locator('.dev-label b', { hasText: label }) }).locator('.dev-ring');
 }
 
 /** Next until a person's device is the one the story is on: their device on the stage, or the real phone's bar naming
- *  them (`short`, as "Agrawal ji") */
+ *  the beat (`short`, words of its text) */
 export async function nextUntil(page: Page, label: string, short: string) {
 	const there = () =>
 		isReal(page)
 			? page.locator('.real-stage', { hasText: short }).count()
-			: page.locator('.dev-label b', { hasText: label }).count();
-	for (let i = 0; i < 12 && !(await there()); i++) await next(page);
+			: page.locator('.dev-label.focus b', { hasText: label }).count();
+	for (let i = 0; i < 14 && !(await there()); i++) await next(page);
 	if (!(await there())) throw new Error(`${label} never came on`);
 }
 
 /** the beats ticked off in the notes */
 export const beatsDone = (page: Page) => page.locator('.narr .beat.done').count();
+/** the end of the route, a dialog */
+export const theEnd = (page: Page) => page.getByRole('dialog', { name: 'The end of the route' });
 
 declare global {
 	interface Window {
@@ -82,10 +79,9 @@ declare global {
 		__release?: () => void;
 	}
 }
-/** Lets a test hold the page's next timer of exactly `ms` until it releases it, so a state that lasts a moment (the
- *  splash, 0.6 s under reduced motion; a button at work, 0.5 s) can be scanned. Every other timer runs as usual (axe's
- *  own among them, which is why the page's clock is not paused instead). `armed`: held from the first load (the splash's
- *  timer starts as the page draws). Call before the page loads. */
+/** Lets a test hold the page's next timer of exactly `ms` until it releases it, so a state that lasts a moment (a button
+ *  at work, 0.5 s) can be scanned. Every other timer runs as usual (axe's own among them, which is why the page's clock
+ *  is not paused instead). `armed`: held from the first load. Call before the page loads. */
 export async function holdable(page: Page, armed?: number) {
 	await page.addInitScript((first) => {
 		const set = window.setTimeout.bind(window);

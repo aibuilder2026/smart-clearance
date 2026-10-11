@@ -45,6 +45,7 @@
     const s = S.useStore();
     const [pos, setPos] = useState(() => Object.assign({ a: 0, s: 0, b: 0 }, start));
     const [ran, setRan] = useState({}); const [playing, setPlaying] = useState(false); const [end, setEnd] = useState(false);
+    const [hops, setHops] = useState(0); // the story moved on to the next line by Next (a jump by the map, the keys or Back is not a hop)
     const act = ACTS[pos.a], station = act.stations[pos.s], n = station.beats.length;
     const complete = pos.b >= n; const beat = station.beats[Math.min(pos.b, n - 1)];
     const doneAt = useCallback(i => { const b = station.beats[i]; if (!b) return true; if (ran[i]) return true; const d = act.console ? null : doneOf(b, s); return d === true; }, [station, ran, s, act]);
@@ -55,7 +56,7 @@
     const advance = useCallback(() => setPos(p => Object.assign({}, p, { b: p.b + 1 })), []);
     const nextStation = useCallback(() => {
       if (pos.s + 1 < act.stations.length) go(pos.a, pos.s + 1, 0);
-      else if (pos.a + 1 < ACTS.length) go(pos.a + 1, 0, 0);
+      else if (pos.a + 1 < ACTS.length) { go(pos.a + 1, 0, 0); setHops(h => h + 1); }
       else { setPlaying(false); setEnd(true); }
     }, [pos, act, go]);
     // Next: make this beat happen (a person's move, or skip ahead to the agent's), then the next beat
@@ -65,7 +66,8 @@
       advance();
     }, [complete, doneAt, pos, beat, act, advance, nextStation]);
     const tap = useCallback(() => { if (complete) return; setRan(r => Object.assign({}, r, { [pos.b]: true })); advance(); }, [complete, pos, advance]);
-    const back = useCallback(() => { if (pos.b > 0) go(pos.a, pos.s, Math.min(pos.b, n) - 1); else if (pos.s > 0) go(pos.a, pos.s - 1, 0); else if (pos.a > 0) go(pos.a - 1, ACTS[pos.a - 1].stations.length - 1, 0); }, [pos, n, go]);
+    // Back: the beat before, past any an agent would make again on its own at once; from the first, the station before
+    const back = useCallback(() => { let j = Math.min(pos.b, n) - 1; while (j >= 0 && station.beats[j].agent && !act.console) j--; if (j >= 0) go(pos.a, pos.s, j); else if (pos.s > 0) go(pos.a, pos.s - 1, 0); else if (pos.a > 0) go(pos.a - 1, ACTS[pos.a - 1].stations.length - 1, 0); }, [pos, n, go, station, act]);
     // a move made in a device: once the store says this beat has happened, the notes move on
     const done = !complete && doneAt(pos.b);
     useEffect(() => { if (!done || hold) return; const t = setTimeout(advance, ran[pos.b] ? 0 : 700); return () => clearTimeout(t); }, [done, pos.a, pos.s, pos.b, hold]);
@@ -79,7 +81,7 @@
       const t = setTimeout(next, act.console ? 2600 : beat.acts && beat.acts.length ? 2400 : 2300);
       return () => clearTimeout(t);
     }, [playing, hold, end, complete, done, pos.a, pos.s, pos.b, next, nextStation]);
-    return { pos, act, station, beat, complete, end, ran, doneAt, go, next, back, tap, playing, setPlaying, setEnd };
+    return { pos, act, station, beat, complete, end, ran, doneAt, go, next, back, tap, playing, setPlaying, setEnd, hops };
   }
 
   /* ---------- the staff console on a laptop: the console's own app, on its demo world ---------- */
@@ -338,11 +340,11 @@
     const p = usePlayer(start, !!map); useBeatEffects(p); const app = useApp();
     const canvas = useRef(null); const size = useSize(canvas); const shell = useRef(null);
     useEffect(() => { if (autoplay) p.setPlaying(true); }, []);
-    // a new line: the map shows the token hopping to it; playing, the stage comes back on its own
-    const prevA = useRef(p.pos.a);
-    useEffect(() => { if (p.pos.a !== prevA.current) { prevA.current = p.pos.a; setMap("hop"); } }, [p.pos.a]);
+    // the story moves on to a new line: the map shows the token hopping to it; playing, the stage comes back on its own
+    useEffect(() => { if (p.hops) setMap("hop"); }, [p.hops]);
     useEffect(() => { if (map !== "hop" || !p.playing) return; const t = setTimeout(() => setMap(null), 2600); return () => clearTimeout(t); }, [map, p.playing]);
-    useEffect(() => { const f = e => { if (map || (e.target.closest && e.target.closest("input, textarea, select, [contenteditable]"))) return; if (e.key === "ArrowRight" || e.key === "PageDown") { e.preventDefault(); p.next(); } else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); p.back(); } else if (e.key === "m" || e.key === "M") setMap("map"); else if (e.key === "p" || e.key === "P") setPhoneOnly(v => !v); else if (e.key === "n" || e.key === "N") setNotes(v => !v); }; window.addEventListener("keydown", f); return () => window.removeEventListener("keydown", f); });
+    // the keys: → and ← by beats, 1 to 4 to a line's start, M the map, P the phone alone, N the notes
+    useEffect(() => { const f = e => { if (map || (e.target.closest && e.target.closest("input, textarea, select, [contenteditable]"))) return; if (e.key === "ArrowRight" || e.key === "PageDown") { e.preventDefault(); p.next(); } else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); p.back(); } else if (e.key === "m" || e.key === "M") setMap("map"); else if (/^[1-4]$/.test(e.key)) p.go(+e.key - 1, 0, 0); else if (e.key === "p" || e.key === "P") setPhoneOnly(v => !v); else if (e.key === "n" || e.key === "N") setNotes(v => !v); }; window.addEventListener("keydown", f); return () => window.removeEventListener("keydown", f); });
     // while a dialog is up, what it covers is inert (WCAG 2.4.3)
     const dialog = !!map || p.end;
     useEffect(() => { const el = shell.current; if (!el || !dialog) return; const behind = [...el.children].filter(c => !c.classList.contains("rb-over") && !c.classList.contains("finale")); behind.forEach(c => c.setAttribute("inert", "")); return () => behind.forEach(c => c.removeAttribute("inert")); }, [dialog]);
@@ -387,6 +389,9 @@
   }
   function App() {
     const [start, setStart] = useState(startOf); const [auto, setAuto] = useState(false);
+    // an address typed or followed by hand (#at=…) moves the story there; the director's own updates replace the entry
+    // without a hashchange
+    useEffect(() => { const f = () => { setAuto(false); setStart(startOf()); }; window.addEventListener("hashchange", f); return () => window.removeEventListener("hashchange", f); }, []);
     if (!start) return <div className="demo rb-shell"><header className="demo-top rb-top"><span className="row tight demo-brand"><Mark size={30} /><Wordmark size={17} /><span className="demo-tag">Guided demo</span></span><span /><span className="row tight demo-tools"><ModeMenuButton /></span></header>
       <main className="rb-startwrap"><Start onPick={(a, s) => { setAuto(false); setStart({ a, s, b: 0 }); }} onAll={() => { setAuto(true); setStart({ a: 0, s: 0, b: 0 }); }} /></main></div>;
     return <Director key={JSON.stringify(start)} start={start} autoplay={auto} onHome={() => { try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {} setStart(null); }} />;
