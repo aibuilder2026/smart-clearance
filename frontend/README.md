@@ -3,15 +3,15 @@
 Smart-Clearance's web frontend, in SvelteKit. It is a pnpm workspace: four apps, each built on its own, over three
 shared packages.
 
-| Package                                                            | What it is                                                                                                                                                                  |
-| ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`admin/`](admin/README.md) (`@smart-clearance/admin`)             | The platform's own site: the smartclearance.web.app landing page, prerendered, and `/ds`.                                                                                   |
-| [`console/`](console/README.md) (`@smart-clearance/console`)       | The staff console, smartclearance-console.web.app: a client-side app behind a staff sign-in, where each manufacturer's workspace is set up and run (SC-37).                 |
-| [`workspace/`](workspace/README.md) (`@smart-clearance/workspace`) | A manufacturer's workspace, Munchly Foods' at munchly-smartclearance.web.app: a thin client-side host for core's workspace app, on the prototype's stub data (SC-62).       |
-| [`demo/`](demo/README.md) (`@smart-clearance/demo`)                | The guided demo: nine stages of one batch on a laptop and a phone running the workspace app's real screens, with the narration, on the same stub data (SC-63).              |
-| [`core/`](core/README.md) (`@smart-clearance/core`)                | Design system v3 in Svelte 5: the tokens, component and screen CSS ported from design3, and the components. Every UI piece the apps share lives here.                       |
-| [`api/`](api/README.md) (`@smart-clearance/api`)                   | The frontend's side of backend-api: the contract, the HTTP transport, and an in-browser mock of each app's calls, seeded from design3. Each app imports only its own entry. |
-| [`testing/`](testing/README.md) (`@smart-clearance/testing`)       | What the apps' Playwright suites share: the a11y suite's axe scan, report and component coverage, and the parity suites' pixel compare and design3 server.                  |
+| Package                                                            | What it is                                                                                                                                                                                                |
+| ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`admin/`](admin/README.md) (`@smart-clearance/admin`)             | The platform's own site: the smartclearance.web.app landing page, prerendered, and `/ds`.                                                                                                                 |
+| [`console/`](console/README.md) (`@smart-clearance/console`)       | The staff console, smartclearance-console.web.app: a client-side app behind a staff sign-in, where each manufacturer's workspace is set up and run (SC-37); a thin host for core's console (SC-169).      |
+| [`workspace/`](workspace/README.md) (`@smart-clearance/workspace`) | A manufacturer's workspace, Munchly Foods' at munchly-smartclearance.web.app: a thin client-side host for core's workspace app, on the prototype's stub data (SC-62).                                     |
+| [`demo/`](demo/README.md) (`@smart-clearance/demo`)                | The guided demo: nine stages of one batch on a laptop and a phone running the workspace app's real screens, with the narration, on the same stub data (SC-63).                                            |
+| [`core/`](core/README.md) (`@smart-clearance/core`)                | Design system v3 in Svelte 5: the tokens, component and screen CSS ported from design3, and the components; the workspace app (SC-62) and the console (SC-169). Every UI piece the apps share lives here. |
+| [`api/`](api/README.md) (`@smart-clearance/api`)                   | The frontend's side of backend-api: the contract, the HTTP transport, and an in-browser mock of each app's calls, seeded from design3. Each app imports only its own entry.                               |
+| [`testing/`](testing/README.md) (`@smart-clearance/testing`)       | What the apps' Playwright suites share: the a11y suite's axe scan, report and component coverage, and the parity suites' pixel compare and design3 server.                                                |
 
 What the two apps share is shared, not copied: components and CSS through `core`, the contract and mocks through `api`,
 test helpers through `testing`. The one file each app must keep for itself, `src/app.html`, is the same file in both,
@@ -121,8 +121,9 @@ the sites, their addresses and the prerequisites.
 6. Tailwind's utilities (`@layer utilities`) and core's `tailwind.css` (the token mapping).
 
 A page's own stylesheet (the landing page's `site.css`) loads after these, unlayered. The console's `app.css` is the same
-cascade with core's `screens.css` after `components.css`, and its own `console.css` loads after it all, as design3/console
-loads them. So the prototype's specificity between `components.css` and `site.css` holds exactly. A Tailwind utility cannot override a design-system class (unlayered beats layered); use `!` (`h-12!`) where one must.
+cascade with core's `screens.css` after `components.css`, and the console's own stylesheet
+(`@smart-clearance/core/console/console.css`) loads after it all, as design3/console loads them; a page that embeds the
+console (the guided demo) loads it last too. So the prototype's specificity between `components.css` and `site.css` holds exactly. A Tailwind utility cannot override a design-system class (unlayered beats layered); use `!` (`h-12!`) where one must.
 
 ## Kept in step with design3
 
@@ -131,7 +132,7 @@ loads them. So the prototype's specificity between `components.css` and `site.cs
 | `core/src/styles/{tokens,base,components}.css`                | equal to `design3/system/*.css` outside marked `/* @port … @port-end */` blocks (`core/tests/drift.test.ts`)                                                                                                        |
 | `core/src/styles/screens.css`                                 | equal to `design3/screens/screens.css` (`core/tests/drift.test.ts`)                                                                                                                                                 |
 | `admin/src/lib/landing/site.css`, `admin/src/lib/ds/docs.css` | equal to `design3/site/site.css` (one marked change) and `design3/system/docs.css` (`admin/tests/unit/drift.test.ts`)                                                                                               |
-| `console/src/lib/console.css`                                 | equal to `design3/console/console.css` (`console/tests/unit/shared.test.ts`)                                                                                                                                        |
+| `core/src/lib/console/console.css`                            | equal to `design3/console/console.css` (`core/tests/drift.test.ts`)                                                                                                                                                 |
 | The console's splash                                          | `design3/console/splash.js`, inlined as it is into the console's page by `console/src/hooks.server.ts` (SC-51), with its own styles, ahead of non-blocking stylesheets (`@smart-clearance/core/firstpaint`, SC-131) |
 | Every figure                                                  | the seed runs `design3/core/money.js`; `seed:check` fails when design3 changes and the seed was not regenerated                                                                                                     |
 | The workspace's journey                                       | `core/src/lib/workspace/flow.ts` leaves the store as `design3/core/flow.js` does at every stage (`core/tests/workspace.test.ts`)                                                                                    |
@@ -147,7 +148,7 @@ Never edit the generated files (`api/src/seed/*`, `admin/src/lib/seed/*`, `core/
 
 `docs/smart-clearance-tech-stack.html` plans the web app as `web/`. Here:
 
-- **`frontend/`, not `web/`,** with the design system as its own package (`core`), the platform site as `admin`, the staff console as `console` and the client workspace as `workspace`, each its own app. The workspace's screens live in `core`, where the guided demo's port can share them.
+- **`frontend/`, not `web/`,** with the design system as its own package (`core`), the platform site as `admin`, the staff console as `console` and the client workspace as `workspace`, each its own app. The workspace's screens and the console's live in `core`, where the guided demo shares them.
 - **`200.html`, not `index.html`, as the fallback.** The prerendered landing page is `index.html`. Firebase Hosting rewrites unknown paths to `/200.html`.
 - **bits-ui directly, without the shadcn-svelte CLI.** Its components are styled by design system v3's CSS, not shadcn's.
 - **TanStack Query** carries the data, so the prerendered page and the client share one cache, and the mock can become HTTP without touching a component.

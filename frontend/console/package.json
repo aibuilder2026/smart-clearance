@@ -19,9 +19,7 @@
 	},
 	"dependencies": {
 		"@smart-clearance/api": "workspace:*",
-		"@smart-clearance/core": "workspace:*",
-		"@tanstack/svelte-query": "^6.3.1",
-		"motion": "catalog:"
+		"@smart-clearance/core": "workspace:*"
 	},
 	"devDependencies": {
 		"@axe-core/playwright": "^4.13.0",

@@ -1,7 +1,8 @@
 /* Smart-Clearance v3 · the platform's mock backend (stands in for the console's own Firestore). Smart-Clearance's staff,
    the agents and connectors it offers, its plans, and every client workspace: supply chain, agents, exits and rules,
-   people, integrations, plan and audit log. Munchly Foods is the only client, seeded from the same data as the app.
-   Persisted per browser; every change notifies subscribers, and changes to a client write an audit line. */
+   people, integrations, plan and audit log. Munchly Foods is the only client, seeded from the same data as the app; the
+   demo world (SC-169) adds four fictional clients and 180 days of their batches. Persisted per browser on the console's
+   own page (usePersistence); every change notifies subscribers, and changes to a client write an audit line. */
 (function () {
   const D = window.SC3_DATA, M = window.SC3_MONEY, AppStore = window.SC3_STORE;
   const R = M.RULES;
@@ -445,7 +446,79 @@
   }
   const exportLine = (c, file) => `Uploaded ${poss(c.name)} stock export ${file}; the Data agent maps and loads it`;
 
-  function seed() {
+  /* ---------- the demo world (SC-169): Munchly Foods and four more clients, with 180 days of batches ---------- */
+  // SC-149's review world, which the guided demo's console opens on: four fictional clients beside Munchly Foods, live
+  // since April, and 180 days of their batches as backend-api's hydrate builds them, so the Overview's 7, 30 and 90 days
+  // (and the range before each) have something to show. A closed batch keeps what it recovered and the packs no channel
+  // took and that were destroyed at the godown (`destroyed`), in kilos by its SKU's (`kg`). Two demo requests wait to be
+  // set up. Deterministic, so every page that builds it shows the same; every company, person and figure is fictional
+  // and illustrative. P.seed({ world: "demo" }) builds it; the console's own seed stays Munchly Foods alone
+  // [id, name, MRP, shelf life in days, kg a pack]; [id, name, city, state]
+  const DEMO_CLIENTS = [
+    { name: "Godavari Staples", city: "Patna", industry: "Staples", colour: "#be123c", plan: "growth", prefix: "GS",
+      skus: [["toor", "Toor Dal 1 kg", 160, 270, 1], ["rice", "Sona Masoori Rice 5 kg", 420, 365, 5], ["besan", "Besan 500 g", 70, 180, 0.5], ["oil", "Sunflower Oil 1 L", 180, 270, 0.92]],
+      dists: [["sharma", "Sharma Traders", "Patna", "Bihar"], ["kumar", "Kumar Agencies", "Patna", "Bihar"], ["yadav", "Yadav & Sons", "Muzaffarpur", "Bihar"]] },
+    { name: "Annapurna Naturals", city: "Pune", industry: "Staples", colour: "#16a34a", plan: "growth", prefix: "AN",
+      skus: [["ragi", "Ragi Flour 1 kg", 90, 180, 1], ["gnut", "Groundnut Oil 1 L", 240, 270, 0.91], ["jaggery", "Jaggery Powder 500 g", 80, 270, 0.5]],
+      dists: [["kulkarni", "Kulkarni Distributors", "Pune", "Maharashtra"], ["joshi", "Joshi & Sons", "Nashik", "Maharashtra"]] },
+    { name: "Vindhya Snacks", city: "Gaya", industry: "Snacks and drinks", colour: "#15803d", plan: "pilot", prefix: "VS",
+      skus: [["bhujia", "Aloo Bhujia 200 g", 50, 180, 0.2], ["thekua", "Thekua 250 g", 60, 120, 0.25], ["makhana", "Makhana Masala 80 g", 90, 180, 0.08]],
+      dists: [["mishra", "Mishra Agencies", "Gaya", "Bihar"], ["sinha", "Sinha Distributors", "Bhagalpur", "Bihar"]] },
+    { name: "Konkan Snacks", city: "Ratnagiri", industry: "Snacks and drinks", colour: "#c2410c", plan: "pilot", prefix: "KS",
+      skus: [["kokum", "Kokum Sherbet 750 ml", 140, 365, 0.8], ["chivda", "Poha Chivda 200 g", 55, 150, 0.2], ["lemon", "Lemon Drink 250 ml", 25, 180, 0.26]],
+      dists: [["mital", "Mital Distributors", "Pune", "Maharashtra"], ["talwar", "Talwar & Sons", "Ratnagiri", "Maharashtra"]] },
+  ];
+  // two companies that booked a demo on the landing page, ready to become clients (New client's ?request=)
+  const DEMO_REQUESTS = [
+    { id: "rq-kesari", at: "4 Oct, 11:20 am", name: "Ritu Malhotra", company: "Kesari Foods", email: "ritu@kesari.example", makes: "Snacks and drinks", plan: "Pilot", note: "Three distributors around Indore; namkeen and biscuits go short-dated every month.", status: "new" },
+    { id: "rq-amrit", at: "5 Oct, 09:05 am", name: "Farhan Siddiqui", company: "Amrit Dairy", email: "farhan@amritdairy.example", makes: "Dairy", plan: "Growth", note: "", status: "new" },
+  ];
+  const DEMO_AGENT_AT = ["data", "watcher", "vision", "valuer", "router", "gate", "lister", "paperwork", "impact"];
+  function seedDemo() {
+    const d = seed(); d.world = "demo";
+    let n = 149; const rnd = () => { n = (n * 1103515245 + 12345) % 2147483648; return n / 2147483648; };
+    const pick = a => a[Math.floor(rnd() * a.length)], int = (lo, hi) => lo + Math.floor(rnd() * (hi - lo + 1));
+    const iso = (day, hour, min) => `${day}T${two(hour)}:${two(min)}:00+05:30`;
+    DEMO_CLIENTS.forEach(x => {
+      const id = slug(x.name);
+      const c = buildClient({ name: x.name, city: x.city, industry: x.industry, emailDomain: id + ".example", colour: x.colour, plan: x.plan, preset: "standard", route: "distributors", owner: "distributor", expiry: "godown", adminName: "Workspace admin", adminEmail: "admin@" + id + ".example", signGoogle: true, signPhone: true });
+      c.status = "live"; c.since = "1 Apr 2026"; c.people[0].status = "active";
+      c.skus = x.skus.map(k => ({ id: k[0], code: x.prefix + "-" + k[0].slice(0, 2).toUpperCase() + "-" + k[2], brand: x.name.split(" ")[0], name: k[1], mrp: k[2], cost: Math.round(k[2] * 0.55 * 100) / 100, gst: 0.05, lifeDays: k[3], kgPerUnit: k[4], gates: {} }));
+      c.distributors = x.dists.map(k => ({ id: k[0], name: k[1], city: k[2], state: k[3], kiranas: int(18, 60), staffCap: null, permission: "given" }));
+      d.clients.push(c);
+      let ref = 100;
+      for (let ago = 180; ago >= 0; ago--) {
+        const day = D.addDays(TODAY, -ago), count = ago ? pick([0, 1, 1, 2, 2]) : pick([1, 2]);
+        for (let i = 0; i < count; i++) {
+          const sku = pick(c.skus), dist = pick(c.distributors), units = int(300, 2400), takes = int(1, 6);
+          const left = Math.max(4, Math.round(sku.lifeDays * (0.08 + rnd() * 0.22)));
+          const b = { client: c.id, ref: x.prefix + "-" + day.slice(2, 4) + day.slice(5, 7) + "-" + (++ref), sku: sku.id, distributor: dist.id, units, kg: sku.kgPerUnit, bestBefore: D.addDays(day, left), openedAt: iso(day, int(8, 11), int(0, 59)), recovered: 0 };
+          if (ago - takes >= 1) {
+            // most batches clear whole; some leave packs no channel took, destroyed at the godown
+            const share = rnd() < 0.42 ? 0.02 + rnd() * 0.23 : 0;
+            b.destroyed = Math.round(units * share);
+            b.done = b.current = 9; b.closedAt = iso(D.addDays(TODAY, -(ago - takes)), int(11, 18), int(0, 59));
+            b.recovered = Math.round((units - b.destroyed) * sku.mrp * (0.38 + rnd() * 0.24)); b.outcome = "cleared";
+          } else { const at = rnd() < 0.25 ? 5 : Math.max(1, Math.min(8, 1 + Math.round(7 * (ago + 0.5) / takes))); b.done = b.current = at; if (at === 8) b.recovered = Math.round(units * sku.mrp * 0.45); }
+          d.batches.push(b);
+        }
+      }
+      // what each client has recovered so far, as Clients shows it
+      c.recovered = d.batches.filter(b => b.client === c.id).reduce((t, b) => t + b.recovered, 0); c.batches = d.batches.filter(b => b.client === c.id).length;
+    });
+    // today's runs on the other clients' batches in flight
+    const more = d.batches.filter(b => !b.closedAt && b.client !== "munchly").slice(0, 14).map((b, i) => {
+      const agent = DEMO_AGENT_AT[Math.max(1, Math.min(8, b.current))];
+      return { at: two(8 + Math.floor(i / 4)) + ":" + two((i * 13) % 60), agent, client: b.client, text: b.ref + (agent === "gate" ? ": waiting for a yes" : ": moved on") };
+    });
+    d.runs = d.runs.concat(more).sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0));
+    d.requests = DEMO_REQUESTS.map(r => Object.assign({}, r));
+    return d;
+  }
+
+  // the console's day (Munchly Foods alone), or another world: { world: "demo" }
+  function seed(opts) {
+    if (opts && opts.world === "demo") return seedDemo();
     return { v: VERSION, journeys: { munchly: seedJourney() }, clients: [seedMunchly()], staff: STAFF.map(s => Object.assign({ status: "active" }, s)), runs: RUNS.slice(), tracks: TRACKS.slice(), batches: BATCHES.map(b => Object.assign({}, b, b.override ? { override: Object.assign({}, b.override) } : {})), audit: AUDIT.slice(), requests: [], seq: 1, nextAudit: 100 };
   }
 
@@ -483,7 +556,8 @@
     // update(fn, audit?): audit = { who, client, text } adds one line
     update(fn, audit) { const draft = clone(state); fn(draft); if (audit) log(draft, audit.who, audit.client, audit.text); draft.seq = (draft.seq || 0) + 1; state = draft; save(); emit(); return state; },
     subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },
-    reset() { state = seed(); save(); emit(); },
+    // reset(opts?): back to the seed of the world it is on, or of the world named ({ world: "demo" })
+    reset(opts) { state = seed(opts || { world: state.world }); save(); emit(); },
     usePersistence() { persist = true; try { const raw = localStorage.getItem(KEY); if (raw) { const d = JSON.parse(raw); if (d && d.v === VERSION) state = d; } } catch (e) {} },
     client: id => state.clients.find(c => c.id === id),
     buildClient, slug, summary, fieldLabel, showValue, money, exitsFor, profileLines, optLabel, agentDefaults, destructionDefaults,

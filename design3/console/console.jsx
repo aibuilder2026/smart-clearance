@@ -8,7 +8,12 @@
   const { cx, Icon, IconButton, Avatar, Badge, Button, Card, List, ListRow, Segmented, Switch, Stepper, Sheet, Alert, Field, Input, Select, Menu, Tabs, Check, DataTable, Empty, Mark, Wordmark, WorkspaceMark, Page, Shell, Tracker, TrackerCompact, Product, ThemeProvider, AppRoot, NoticeHost, useApp, useNotice, ModeMenuButton, Roll, SaveNote, useSaving } = K;
   const { Columns, SectionTitle } = S;
 
-  P.usePersistence();
+  // Embedded (SC-169): a host page that sets window.SC3_CONSOLE_EMBED before this script renders the console itself, from
+  // window.SC3_CONSOLE.App: its route a prop, a staff member already signed in, no splash, and a platform store that is
+  // never saved, so the visitor's own console (sc3-platform, sc3-console-session) is never read or written. On its own
+  // page the console mounts as before
+  const EMBED = !!window.SC3_CONSOLE_EMBED;
+  if (!EMBED) P.usePersistence();
   const usePlatform = () => useSyncExternalStore(P.subscribe, P.get);
   // where the other pages live: relative next to each other here, the claude.ai/design links on the hosted pages
   const LINKS = Object.assign({ site: "../site/Smart-Clearance%20site%20v3.html", app: "../app/Smart-Clearance%20app%20v3.html", demo: "../demo/Smart-Clearance%20demo%20v3.html" }, window.SC3_LINKS || {});
@@ -52,12 +57,21 @@
 
   /* ---------- routes live in the hash ---------- */
   // #/overview · #/clients · #/clients/<id>/<tab> · #/new-client · #/agents · #/connectors · #/plans · #/staff · #/audit
-  const parse = () => { const m = /^#\/([a-z-]+)(?:\/([a-z0-9-]+))?(?:\/([a-z-]+))?/.exec(location.hash || ""); return m ? { name: m[1], id: m[2] || null, tab: m[3] || null } : { name: "overview", id: null, tab: null }; };
+  const parse = (hash = location.hash) => { const m = /^#\/([a-z-]+)(?:\/([a-z0-9-]+))?(?:\/([a-z-]+))?/.exec(hash || ""); return m ? { name: m[1], id: m[2] || null, tab: m[3] || null } : { name: "overview", id: null, tab: null }; };
+  const hashOf = r => "#/" + [r.name, r.id, r.tab].filter(Boolean).join("/");
   function useHashRoute() {
     const [route, setRoute] = useState(parse);
     useEffect(() => { const f = () => setRoute(parse()); window.addEventListener("hashchange", f); window.addEventListener("popstate", f); return () => { window.removeEventListener("hashchange", f); window.removeEventListener("popstate", f); }; }, []);
-    const go = useCallback((name, id, tab, replace) => { const h = "#/" + [name, id, tab].filter(Boolean).join("/"); if (location.hash !== h) { if (replace) history.replaceState(null, "", h); else history.pushState(null, "", h); } setRoute(parse()); }, []);
+    const go = useCallback((name, id, tab, replace) => { const h = hashOf({ name, id, tab }); if (location.hash !== h) { if (replace) history.replaceState(null, "", h); else history.pushState(null, "", h); } setRoute(parse()); }, []);
     return [route, go];
+  }
+  // embedded (SC-169), the route is the host's: a prop ({ name, id, tab }), and go() calls the host's instead of touching
+  // the page's hash. Given no route, the console keeps its own, in memory
+  const routeIn = r => (r && r.name ? { name: r.name, id: r.id || null, tab: r.tab || null } : { name: "overview", id: null, tab: null });
+  function useHostRoute(prop, onGo) {
+    const [own, setOwn] = useState(() => routeIn(prop));
+    const go = useCallback((name, id, tab, replace) => { const r = routeIn({ name, id, tab }); setOwn(r); if (onGo) onGo(r.name, r.id, r.tab, !!replace); }, [onGo]);
+    return [prop ? routeIn(prop) : own, go];
   }
   const SESSION = "sc3-console-session";
   const readSession = () => { try { return JSON.parse(localStorage.getItem(SESSION) || "null"); } catch (e) { return null; } };
@@ -1229,7 +1243,7 @@
         <div className="row" style={{ gap: 14 }}><Avatar person={me} size="lg" /><div className="stack tight" style={{ gap: 2 }}><b className="t-headline">{me.name}</b><span className="t-footnote subtle">{me.role} · {me.team}</span></div></div>
         <List><ListRow title="Email" value={<span className="t-footnote">{me.email}</span>} /><ListRow title="Passkey" value={<span className="t-footnote">{me.passkey}</span>} /></List>
         <div className="row tight wrap"><Button icon="log-out" onClick={onOut}>Sign out</Button><Button variant="ghost" icon="rotate-ccw" onClick={() => setReset(true)}>Reset prototype data</Button></div>
-        <Alert open={reset} onClose={() => setReset(false)} title="Reset the prototype's data?" message="Clients you set up and every change go back to the seed: Munchly Foods as the only client." actions={[{ label: "Cancel" }, { label: "Reset", busy: "Resetting…", danger: true, strong: true, onClick: () => { P.reset(); toast({ text: "Back to the seed data", tone: "ok" }); onClose(); } }]} />
+        <Alert open={reset} onClose={() => setReset(false)} title="Reset the prototype's data?" message={P.get().world === "demo" ? "Clients you set up and every change go back to the demo's five clients." : "Clients you set up and every change go back to the seed: Munchly Foods as the only client."} actions={[{ label: "Cancel" }, { label: "Reset", busy: "Resetting…", danger: true, strong: true, onClick: () => { P.reset(); toast({ text: "Back to the seed data", tone: "ok" }); onClose(); } }]} />
       </div>
     </Sheet>;
   }
@@ -1239,7 +1253,7 @@
   // and marks them as they land (simulated here, as
   // the prototype's data is in the browser: ?boot=, ?enter= and ?leave= set how long each wait takes) and, with the page
   // behind it drawn, asks the splash to open onto it from the page's own mark
-  const SP = window.SC3_SPLASH;
+  const SP = EMBED ? null : window.SC3_SPLASH;
   const WAIT = { boot: Number(Q.get("boot")) || 1300, enter: Number(Q.get("enter")) || 1200, leave: Number(Q.get("leave")) || 800 };
   const SPLASH_READS = { enter: [{ id: "clients", label: "Your clients" }, { id: "dashboard", label: "Today" }, { id: "batches", label: "The batches" }, { id: "runs", label: "The agents" }], leave: [{ id: "session-end", label: "Closing your session" }, { id: "firebase", label: "Signed out" }] };
   // the reads land spread over the wait, the first early and the last at the end, a little unevenly, as real answers do
@@ -1252,12 +1266,18 @@
   }
   const MARK_ANCHOR = { console: ".sidebar .mark, .rail-compact .mark", signin: ".si-ws .mark" };
 
-  function App() {
-    const [session, setSession] = useState(readSession); const [route, go] = useHashRoute(); const s = usePlatform();
+  // the console. On its own page: the hash route, the session kept in this browser, the splash. Embedded (SC-169), from
+  // window.SC3_CONSOLE.App: route { name, id, tab } and go(name, id, tab, replace) from the host; signed in as `staff`
+  // (Neha unless named), or at the sign-in first when signIn is set, the session in memory; `world` names the platform's
+  // seed ("demo", P.seed's demo world); no splash, no page title, nothing saved
+  function App({ route: hostRoute, go: hostGo, staff = "neha", signIn = false, world } = {}) {
+    const [session, setSession] = useState(() => (EMBED ? (signIn ? null : { uid: staff }) : readSession()));
+    const [route, go] = EMBED ? useHostRoute(hostRoute, hostGo) : useHashRoute(); const s = usePlatform();
     const [acct, setAcct] = useState(false); const top = useRef(null);
+    useLayoutEffect(() => { if (EMBED && world && P.get().world !== world) P.reset({ world }); }, [world]);
     const me = session && s.staff.find(x => x.id === session.uid && x.status === "active");
     const client = route.name === "clients" && route.id ? s.clients.find(c => c.id === route.id) : null;
-    useEffect(() => { document.title = me ? `${client ? client.name : TITLES[route.name] || "Overview"} · Smart-Clearance Console` : "Sign in · Smart-Clearance Console"; }, [me && me.id, route.name, client && client.name]);
+    useEffect(() => { if (EMBED) return; document.title = me ? `${client ? client.name : TITLES[route.name] || "Overview"} · Smart-Clearance Console` : "Sign in · Smart-Clearance Console"; }, [me && me.id, route.name, client && client.name]);
     useLayoutEffect(() => { const el = top.current; const sc = el && el.closest(".scroll"); if (sc) sc.scrollTop = 0; }, [route.name, route.id]);
     // the first load: the splash is up from the first paint; the reads land, and it opens onto whatever is behind it
     useEffect(() => {
@@ -1270,7 +1290,7 @@
     // reads land, and the splash opens onto it from the sidebar's mark
     const onIn = uid => {
       const v = { uid, at: Date.now() };
-      const enter = () => { writeSession(v); setSession(v); go(route.name && route.name !== "overview" ? route.name : "overview", route.id, route.tab, true); };
+      const enter = () => { if (!EMBED) writeSession(v); setSession(v); go(route.name && route.name !== "overview" ? route.name : "overview", route.id, route.tab, true); };
       if (!SP) { enter(); return; }
       SP.animate = Motion.animate;
       const who = (s.staff.find(x => x.id === uid) || { name: "" }).name.split(" ")[0];
@@ -1282,28 +1302,32 @@
     // splash opens onto it from the card's mark
     const onOut = () => {
       setAcct(false);
-      const leave = () => { writeSession(null); setSession(null); history.replaceState(null, "", location.pathname + location.search); };
+      const leave = () => { setSession(null); if (!EMBED) { writeSession(null); history.replaceState(null, "", location.pathname + location.search); } };
       if (!SP) { leave(); return; }
       SP.animate = Motion.animate;
       SP.begin("leave", { who: me ? me.name.split(" ")[0] : "", reads: SPLASH_READS.leave });
       simulateReads("leave", SPLASH_READS.leave.map(r => r.id)).then(() => { leave(); SP.open({ anchor: MARK_ANCHOR.signin }); });
     };
-    if (!me) return <SignIn onIn={onIn} />;
+    // .cs-app: the console's root, which console.css scopes its few rules on shared components to
+    if (!me) return <div className="cs-app"><SignIn onIn={onIn} /></div>;
     const name = TITLES[route.name] ? route.name : "overview";
     const screen = name === "clients" && route.id ? <ClientPage id={route.id} tab={route.tab} go={go} me={me} />
       : name === "clients" ? <Clients go={go} /> : name === "new-client" ? <NewClient go={go} me={me} /> : name === "agents" ? <AgentsPage go={go} />
       : name === "connectors" ? <ConnectorsPage go={go} /> : name === "plans" ? <PlansPage go={go} /> : name === "staff" ? <StaffPage me={me} /> : name === "audit" ? <AuditPage /> : <Overview go={go} me={me} />;
     const nav = NAV.map(n => (n.id === "clients" ? { ...n, count: s.clients.length } : n));
-    return <>
+    return <div className="cs-app">
       <Shell nav={nav} current={name === "new-client" ? "clients" : name} onNav={id => go(id)} user={{ name: me.name, role: me.role, org: "Smart-Clearance" }} onUser={() => setAcct(true)}
         brand={<><Mark size={32} /><span className="cs-brand"><Wordmark size={17} /><span className="cs-brand-sub">Console</span></span></>}>
         {/* each screen loads under the route (SC-49); there is no exit animation, so a route change never waits on the old screen */}
         <div ref={top}><Loading k={name + (route.id || "")} shape={client ? "client" : SCREEN_SHAPE[name] || "list"} kind="screen" title={client ? client.name : TITLES[name]}>{screen}</Loading></div>
       </Shell>
       <AccountSheet open={acct} onClose={() => setAcct(false)} me={me} onOut={onOut} />
-    </>;
+    </div>;
   }
 
   function Root() { return <ThemeProvider><AppRoot className="app-root" style={{ position: "fixed", inset: 0 }}><NoticeHost><App /></NoticeHost></AppRoot></ThemeProvider>; }
-  ReactDOM.createRoot(document.getElementById("root")).render(<Root />);
+  // for a host page (SC-169): App, rendered inside the host's AppRoot (embedded) and NoticeHost; the platform's store;
+  // the hash addresses the console's own page keeps; setWorld("demo") puts the store on the demo world before App draws
+  window.SC3_CONSOLE = { App, TITLES, NAV, routeOf: hash => parse(hash), hashOf, setWorld: world => P.reset({ world }), platform: P };
+  if (!EMBED) ReactDOM.createRoot(document.getElementById("root")).render(<Root />);
 })();

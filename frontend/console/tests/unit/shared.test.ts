@@ -3,24 +3,13 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
-// What the console shares with the rest of the frontend stays shared: its stylesheet is design3's, verbatim; its HTML
-// shell is the landing page's, to the byte (the appearance applied before the first paint, by core's theme key); its
-// cascade is the landing page's, with the screens' stylesheet added where design3/console loads it.
+// What the console shares with the rest of the frontend stays shared: its HTML shell is the landing page's, to the byte
+// (the appearance applied before the first paint, by core's theme key); its cascade is the landing page's, with the
+// screens' stylesheet added where design3/console loads it. The console itself is core's (SC-169): its stylesheet,
+// design3's verbatim, is held by core's drift test.
 const here = dirname(fileURLToPath(import.meta.url));
 const read = (p: string) => readFileSync(join(here, '../..', p), 'utf8');
-const norm = (css: string) =>
-	css
-		.split('\n')
-		.map((l) => l.trim())
-		.filter(Boolean)
-		.join('\n');
 const imports = (css: string) => css.split('\n').filter((l) => /^@(layer|import|source)\b/.test(l));
-
-describe('console.css matches design3/console/console.css', () => {
-	it('unchanged', () => {
-		expect(norm(read('src/lib/console.css'))).toBe(norm(read('../../design3/console/console.css')));
-	});
-});
 
 describe("the console shares the landing page's shell", () => {
 	it('app.html is the same file', () => {

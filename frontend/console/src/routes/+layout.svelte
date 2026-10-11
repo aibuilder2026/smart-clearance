@@ -1,12 +1,23 @@
 <script lang="ts">
 	import '../app.css';
-	import '#lib/console.css';
-	import { AppRoot, ICON_SVG, NoticeHost, ThemeProvider } from '@smart-clearance/core';
-	import { QueryClientProvider } from '@tanstack/svelte-query';
-	import { queryClient } from '#lib/api/queries.ts';
-	import App from '#lib/screens/App.svelte';
+	import '@smart-clearance/core/console/console.css';
+	import plate from '$design3/site/assets/plates/scene.webp';
+	import { AppRoot, ICON_SVG, ThemeProvider } from '@smart-clearance/core';
+	import { ConsoleApp, routeOf, routePath, type ConsoleRoute, type GoOptions } from '@smart-clearance/core/console';
+	import { goto } from '$app/navigation';
+	import { navigating, page } from '$app/state';
+	import { data, usingMock } from '#lib/api/client.ts';
+	import { LINKS } from '#lib/links.ts';
 
-	let { data, children } = $props();
+	// The console app is a host (SC-169): the console itself is core's ConsoleApp. Its places are real paths
+	// (/clients/munchly/agents, routeOf and routePath), each route's load function reads the place's code and data
+	// before it draws (data.load), and the place being read shows its loader (navigating). A move in the console is a
+	// goto; an address the console doesn't have is its Not found
+	let { children } = $props();
+	const route = $derived(routeOf(page.url.pathname, page.url.search));
+	const pending = $derived(navigating.to ? routeOf(navigating.to.url.pathname, navigating.to.url.search) : null);
+	const error = $derived(page.error ? { status: page.status, message: page.error.message } : null);
+	const go = (r: ConsoleRoute, o: GoOptions) => goto(routePath(r), { replace: !!o.replace, reset: !o.keep });
 </script>
 
 <svelte:head>
@@ -18,13 +29,11 @@
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
-<!-- the prototype's Root: the theme, a fixed app root the screens scroll inside, and the host for its toasts -->
-<QueryClientProvider client={queryClient}>
-	<ThemeProvider>
-		<AppRoot class="app-root" style="position: fixed; inset: 0">
-			<NoticeHost>
-				<App me={data.me} config={data.config} catalog={data.catalog}>{@render children()}</App>
-			</NoticeHost>
-		</AppRoot>
-	</ThemeProvider>
-</QueryClientProvider>
+<!-- the prototype's Root: the theme, and a fixed app root the screens scroll inside; the console brings its own toasts -->
+<ThemeProvider>
+	<AppRoot class="app-root" style="position: fixed; inset: 0">
+		<ConsoleApp {data} {route} ongo={go} preloaded {pending} {error} links={LINKS} {plate} mock={usingMock} />
+	</AppRoot>
+</ThemeProvider>
+<!-- the route's page draws nothing (the console draws every place); its error page neither: ConsoleApp says Not found -->
+{@render children()}
