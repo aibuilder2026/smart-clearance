@@ -176,7 +176,10 @@ export function caseOf(state: State): CaseData {
 		scheme: D.rules.scheme,
 		risk: S.risk,
 		plan: S.plan,
-		lines: { kirana: S.KL ?? NO_LINE('kirana', 'Kirana cluster push'), expiresoon: S.ES ?? NO_LINE('expiresoon', 'ExpireSoon') },
+		lines: {
+			kirana: S.KL ?? NO_LINE('kirana', 'Kirana cluster push'),
+			expiresoon: S.ES ?? NO_LINE('expiresoon', 'ExpireSoon')
+		},
 		counter: S.counter ?? { action: 'counter', price: 0, below: false },
 		award: S.award ?? { units: 0, price: 0, gross: 0, token: 0, balance: 0 },
 		actual: S.actual,

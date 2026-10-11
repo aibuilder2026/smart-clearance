@@ -481,7 +481,13 @@ export type DestructionDone = Destruction & {
 	approvedBy: string;
 };
 /** the agency's destruction certificate for packs destroyed at a distributor's godown (SC-139) */
-function destructionDoc(xd: DestructionDone, x: ExpirySettlement | null, batch: Batch, sku: Sku, dist: Distributor): Doc {
+function destructionDoc(
+	xd: DestructionDone,
+	x: ExpirySettlement | null,
+	batch: Batch,
+	sku: Sku,
+	dist: Distributor
+): Doc {
 	const units = xd.units,
 		approver = D.people[xd.approvedBy] ?? { name: xd.approvedBy };
 	return {

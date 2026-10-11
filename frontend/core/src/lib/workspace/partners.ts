@@ -306,7 +306,13 @@ export function storySum(c: CaseData, h: StoryHero, short: string): PtSum {
 	// its credit notes: the price support, and on expiry day the expiry credit note (the slow chips, SC-168)
 	const notes = x.rows.filter((r) => r.k === 'Price-support credit note' || /^Expiry credit note/.test(r.k));
 	const credit = r2(notes.reduce((t, r) => t + r.v, 0));
-	return { ref: c.batch.id, sold: r2(x.recv - credit), credit, cost: x.paid, ...(notes.length > 1 ? { notes: notes.length } : {}) };
+	return {
+		ref: c.batch.id,
+		sold: r2(x.recv - credit),
+		credit,
+		cost: x.paid,
+		...(notes.length > 1 ? { notes: notes.length } : {})
+	};
 }
 /** what the story's money reads of the batch's state: the price the buyer took, where it stands, and on expiry day its
  *  settlement once the destruction is approved */
@@ -446,7 +452,8 @@ export function storyWhole(c: CaseData, h: StoryHero, short: string): PtWhole {
 	const sp = c.support ?? c.supportPlan;
 	const rows: PtWhole['rows'] = [];
 	if (kl) rows.push({ k: 'From your kiranas', sub: `${num(kl.units)} packets on the scheme`, v: kl.gross });
-	if (es) rows.push({ k: `From ${c.buyer.name}`, sub: `${num(es.units)} packets`, v: h.award ? c.award.gross : es.gross });
+	if (es)
+		rows.push({ k: `From ${c.buyer.name}`, sub: `${num(es.units)} packets`, v: h.award ? c.award.gross : es.gross });
 	if (st) rows.push({ k: 'Your staff sale', sub: `${num(st.units)} packs`, v: st.gross });
 	if (fb) rows.push({ k: `Given to ${c.donation.partner.name}`, sub: `${num(fb.units)} packs`, v: 0 });
 	rows.push({ k: 'Price-support credit note', sub: `from ${short}`, v: sp.total });

@@ -31,8 +31,7 @@ const setPhase = (s: State, p: State['hero']['phase']) => {
 	if (s.mango && s.mango.id === s.hero.id) s.mango.phase = p;
 };
 /** the scheme is over: closed when its window ended, or filled by every shop that orders in a story whose scheme fills */
-const schemeOver = (s: State, S: Story) =>
-	!!s.hero.offer && (s.hero.offer.status === 'closed' || (S.fills && all(s)));
+const schemeOver = (s: State, S: Story) => !!s.hero.offer && (s.hero.offer.status === 'closed' || (S.fills && all(s)));
 /** whether a plan line has run its course (backend-api domain/journey.py line_done) */
 function lineDone(s: State, S: Story, l: PlanLine) {
 	const h = s.hero;
@@ -372,7 +371,13 @@ export const A = {
 		const S = story(s);
 		if (!S.invoice) return;
 		s.hero.invoiceIssued = true;
-		audit(s, S.accounts.distributor, 'issued the invoice from Tally', S.invoice.no + ' · ' + D.buyer.name, S.at.invoice);
+		audit(
+			s,
+			S.accounts.distributor,
+			'issued the invoice from Tally',
+			S.invoice.no + ' · ' + D.buyer.name,
+			S.at.invoice
+		);
 	},
 	review: (s: State) => {
 		const S = story(s);
@@ -433,10 +438,7 @@ export const A = {
 				[
 					['batch', `Batch ${h.id} read on the carton label`],
 					['count', `About ${Math.round(d.units / 10) * 10} packs in view (${d.units} left)`],
-					[
-						'slate',
-						`The slate reads ${h.id} · ${d.units} packets${S.evidence.slate ? ' · ' + S.evidence.slate : ''}`
-					],
+					['slate', `The slate reads ${h.id} · ${d.units} packets${S.evidence.slate ? ' · ' + S.evidence.slate : ''}`],
 					['when', S.evidence.when]
 				] as const
 			).map(([id, label]) => ({ id, label, ok: true }))
@@ -484,8 +486,7 @@ export const A = {
 		if (!h.offer || h.offer.status === 'closed') return;
 		h.offer.status = 'closed';
 		h.offer.closedAt = S.at.closed || S.at.closes;
-		if (S.realised)
-			h.realised = { lines: S.realised.lines.map((l) => ({ ...l })), godown: S.realised.godown };
+		if (S.realised) h.realised = { lines: S.realised.lines.map((l) => ({ ...l })), godown: S.realised.godown };
 		feedIf(s, 'closeOffer');
 		advance(s);
 	},
@@ -640,9 +641,10 @@ const stagesOf = (script: Script) => {
 	});
 	return out;
 };
-const ACTION_STAGES = Object.fromEntries(
-	Object.entries(SCRIPTS).map(([k, sc]) => [k, stagesOf(sc)])
-) as Record<StoryKey, Partial<Record<ActionName, number>>>;
+const ACTION_STAGES = Object.fromEntries(Object.entries(SCRIPTS).map(([k, sc]) => [k, stagesOf(sc)])) as Record<
+	StoryKey,
+	Partial<Record<ActionName, number>>
+>;
 
 export const Agents = {
 	live: false,
@@ -734,17 +736,12 @@ function nextStep(s: State): Step | null {
 			// the shop that says Not this time (the slow chips), in the app when nobody plays it
 			if (auto && S.decliner && !closed && !h.declined?.[S.decliner] && !ordered(s, S.decliner))
 				return { name: 'decline', arg: S.decliner, delay: 4000, partner: who.decliner ?? undefined };
-			if (S.ES && auto && !h.bids.length) return { name: 'bid', arg: 13, delay: 10000, partner: who.buyer ?? undefined };
+			if (S.ES && auto && !h.bids.length)
+				return { name: 'bid', arg: 13, delay: 10000, partner: who.buyer ?? undefined };
 			if (S.ES && auto && last && last.status === 'countered')
 				return { name: 'accept', delay: 8000, partner: who.buyer ?? undefined };
 			// the window closes on a scheme that does not fill, once the lot has its buyer and the shop has said no
-			if (
-				!S.fills &&
-				!closed &&
-				all(s) &&
-				(!S.ES || h.award) &&
-				(!S.decliner || h.declined?.[S.decliner])
-			)
+			if (!S.fills && !closed && all(s) && (!S.ES || h.award) && (!S.decliner || h.declined?.[S.decliner]))
 				return { name: 'closeOffer', delay: 3000 };
 			// the staff sale, recorded by the distributor (the Mango Drink's own journey)
 			if (auto && h.staff && h.staff.status === 'open')
@@ -760,8 +757,7 @@ function nextStep(s: State): Step | null {
 		case 'dispatched':
 			return { name: 'settle', delay: 1800 };
 		case 'settled':
-			if (h.van.status !== 'done')
-				return auto ? { name: 'vanRound', delay: 9000, partner: who.distributor } : null;
+			if (h.van.status !== 'done') return auto ? { name: 'vanRound', delay: 9000, partner: who.distributor } : null;
 			// expiry day for packs left at the godown (the slow chips), then the evidence and the operator's yes
 			if (S.expiry && !h.expiry) return { name: 'expire', delay: 3000 };
 			if (h.destruction && (h.destruction.status === 'requested' || h.destruction.status === 'asked'))

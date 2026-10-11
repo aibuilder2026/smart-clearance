@@ -874,7 +874,12 @@ const storiesSeed = (() => {
 			journey: S.journey,
 			listing: S.listing,
 			donation: S.donation
-				? { batch: S.donation.batch.id, units: S.donation.units, partner: S.donation.partner.name, receipt: S.donation.receipt }
+				? {
+						batch: S.donation.batch.id,
+						units: S.donation.units,
+						partner: S.donation.partner.name,
+						receipt: S.donation.receipt
+					}
 				: null,
 			agency: S.agency ?? null,
 			certificate: S.certificate ?? null,
