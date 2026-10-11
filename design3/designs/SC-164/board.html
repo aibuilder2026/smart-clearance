@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-164 design review · The demo film on the landing page</title>
+<meta name="description" content="Three ways for the landing page to play the five-minute demo film when Watch is pressed: a theatre over the page, a section of its own, or the hero taken over. The film plays from YouTube, unlisted.">
+<script>
+  (function () { var m = null; try { m = localStorage.getItem("sc3-theme"); } catch (e) {} var dark = m === "dark" || (m !== "light" && matchMedia("(prefers-color-scheme: dark)").matches); document.documentElement.setAttribute("data-theme", dark ? "dark" : "light"); })();
+</script>
+<link rel="icon" href="../../system/img/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../system/tokens.css">
+<link rel="stylesheet" href="../../system/base.css">
+<link rel="stylesheet" href="../../system/components.css">
+<style>
+  html, body { overflow: auto; height: auto; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); }
+  .board { max-width: 1280px; margin: 0 auto; padding: 40px 24px 96px; display: grid; gap: 40px; }
+  .board h1 { margin: 0; font-family: var(--font-display); font-size: 40px; font-weight: 720; letter-spacing: -0.028em; line-height: 1.06; }
+  .board h2 { margin: 0; font-family: var(--font-display); font-size: 28px; font-weight: 680; letter-spacing: -0.02em; }
+  .board h3 { margin: 0; font-size: 18px; font-weight: 650; letter-spacing: -0.01em; }
+  .board p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--fg-2); max-width: 78ch; }
+  .board blockquote { margin: 0; padding: 14px 18px; border-left: 3px solid var(--primary); border-radius: 0 12px 12px 0; background: var(--surface); color: var(--fg); font-size: 15px; line-height: 1.5; white-space: pre-line; }
+  .head { display: grid; gap: 14px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 13px; color: var(--fg-3); }
+  .meta span { padding: 6px 10px; border-radius: 999px; background: var(--fill); }
+  .sec { display: grid; gap: 18px; padding-top: 28px; box-shadow: inset 0 var(--hair) 0 var(--line); }
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .shot { display: grid; gap: 8px; }
+  .shot img, .shot video { width: 100%; height: auto; border-radius: 14px; box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); background: var(--surface); }
+  .shot figcaption { font-size: 13px; color: var(--fg-3); }
+  .pair { display: grid; gap: 14px; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); align-items: start; }
+  .opt { display: grid; gap: 16px; padding: 22px; border-radius: 22px; background: var(--surface); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line); }
+  .opt.rec { box-shadow: var(--shadow-1), 0 0 0 2px var(--primary); }
+  .opt-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 600; background: var(--fill-2); color: var(--fg); }
+  .tag.rec { background: var(--primary-soft); color: var(--primary-text); }
+  .tag.k { background: var(--amber-soft); color: var(--amber-text); }
+  .links { display: flex; flex-wrap: wrap; gap: 8px; }
+  .links a { display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 999px; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--primary-fg); background: var(--primary); }
+  .links a.sec { color: var(--fg); background: var(--fill-2); box-shadow: none; padding: 0 14px; display: inline-flex; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 10px 12px; text-align: left; vertical-align: top; box-shadow: inset 0 calc(-1 * var(--hair)) 0 var(--line); }
+  th { font-weight: 650; color: var(--fg-2); font-size: 13px; }
+  td b { font-weight: 650; }
+  ul.plain { margin: 0; padding-left: 18px; font-size: 15px; line-height: 1.5; color: var(--fg-2); }
+  .note { padding: 14px 18px; border-radius: 14px; background: var(--amber-soft); color: var(--amber-text); font-size: 14px; line-height: 1.5; }
+  .ask { display: grid; gap: 10px; padding: 22px; border-radius: 22px; background: var(--primary-soft); color: var(--fg); }
+  .ask b { color: var(--primary-text); }
+  .opt video { aspect-ratio: 16 / 10; }
+  .shot.phone img { width: auto; max-width: 100%; max-height: 520px; justify-self: start; }
+  code { font-size: 0.92em; }
+  @media (max-width: 760px) { .pair { grid-template-columns: 1fr; } .board h1 { font-size: 32px; } }
+</style>
+</head>
+<body>
+<main class="board">
+  <header class="head">
+    <div class="meta"><span>SC-164</span><span>Landing page · Watch the demo</span><span>11 Oct 2026</span><span>Design review</span></div>
+    <h1>The demo film plays on the landing page when Watch is pressed.</h1>
+    <p>SC-158's film, 4 min 56 s: one batch of Mango Drink from the brand to the ledger, with real-looking people and the app's own screens. Today the page's three "Watch the 6-minute demo" links (the hero, the floating pill, the close) open the guided demo in another tab. Here are three ways for the page to play the film itself, each built on the real landing page. The switcher at the top left of every page swaps the option.</p>
+    <blockquote>I want to host the 1080p demo video in such a way so that I stictch that up in the landing/admin screen so that it plays when clicked... check https://www.spoileralert.com it has such a video too.. tell me my options with my google cloud ecosystem,</blockquote>
+    <div class="links">
+      <a href="option-a/mockup.html">Open option A</a><a href="option-b/mockup.html">Open option B</a><a href="option-c/mockup.html">Open option C</a>
+    </div>
+  </header>
+
+  <section class="sec">
+    <h2>Decided before this round</h2>
+    <table>
+      <tr><th>Question</th><th>The answer (11 Oct)</th></tr>
+      <tr><td><b>Where the film is hosted</b></td><td>YouTube, unlisted. The maintainer uploads the crf-18 master. The other routes offered were Firebase Hosting in the build (it serves byte ranges: the live hero film answers 206), a public Cloud Storage bucket, and the Transcoder API to HLS.</td></tr>
+      <tr><td><b>The client's name</b> (SC-28)</td><td>The film plays only when Watch is pressed, under a poster that names no client; the page's own text names none. The film names Munchly Foods, Lakshmi Agencies and the batch, and AGENTS.md will record it as the one exception.</td></tr>
+      <tr><td><b>The guided demo</b></td><td>The film comes first, and the guided demo is offered when it ends. The links read "Watch the 5-minute demo".</td></tr>
+    </table>
+    <p>Spoiler Alert's own video is a Wistia embed in a section of its own, played in place: that is option B's pattern.</p>
+  </section>
+
+  <section class="sec">
+    <h2>The page as it is</h2>
+    <p>The three ways into the demo today, each opening the guided demo's prototype in another tab.</p>
+    <div class="grid">
+      <figure class="shot"><img src="current/hero-light-1440.webp" alt="The hero today, with Watch the 6-minute demo beside Book a demo" loading="lazy"><figcaption>The hero</figcaption></figure>
+      <figure class="shot"><img src="current/pill-light-1440.webp" alt="The floating demo pill at the bottom right" loading="lazy"><figcaption>The pill, once past the hero</figcaption></figure>
+      <figure class="shot"><img src="current/close-light-1440.webp" alt="The close, with Book a demo and Watch the 6-minute demo" loading="lazy"><figcaption>The close</figcaption></figure>
+      <figure class="shot"><img src="current/hero-dark-1440.webp" alt="The hero today, dark" loading="lazy"><figcaption>The hero, dark</figcaption></figure>
+      <figure class="shot phone"><img src="current/hero-light-390.webp" alt="The hero today on a phone" loading="lazy"><figcaption>A phone</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Shared by all three</h2>
+    <div class="pair">
+      <ul class="plain">
+        <li><b>The player is YouTube's</b>, on its no-cookie host, and nothing of YouTube loads until Watch is pressed: no script, no thumbnail, no cookie. YouTube's IFrame API, loaded then, tells the page the film's time (to mark the chapter) and its end. YouTube streams it at the reader's speed, 144p to 1080p. <b>On this board a 30 s cut of the film stands in</b> (marked on the player), until the upload's id is in.</li>
+        <li><b>The poster</b> is the film's first half-second, the bay at dawn, before the title card that names the client. A square of it is the pill's thumbnail.</li>
+        <li><b>Twelve chapters</b>, worked out from the film's own timeline (<code>transcript.py</code>): a click plays from one. The same list goes in the YouTube description, so YouTube's own player shows them too (<code>youtube-description.txt</code>, to paste on upload).</li>
+        <li><b>The film in words</b>: its sound is music, and its 40 captions say what happens, so "Read the film instead" opens them by chapter (WCAG 1.2). They are read only when asked for, so the page's own text never names the client.</li>
+        <li><b>Where it ends</b>: "One batch, start to finish." with <b>Try the guided demo</b> (to play each part), <b>Book a demo</b> and <b>Watch again</b>. The guided demo will be the live one, smartclearance-demo.web.app, where the page links the Claude Design prototype today.</li>
+        <li><b>The label</b> is "Watch the 5-minute demo" everywhere: the film runs 4:56.</li>
+      </ul>
+      <figure class="shot"><img src="img/film-poster.webp" alt="The poster: the factory's loading bay at dawn, pallets of plain cartons, two workers in high-visibility vests" loading="lazy"><figcaption>The poster, and the pill's square: <img src="img/film-thumb.webp" alt="" width="40" height="40" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;box-shadow:none"></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="sec" id="options">
+    <h2>The three options</h2>
+    <p>What differs is where the film plays, and so what Watch does from each of its three places.</p>
+    <div class="grid" style="grid-template-columns: 1fr;">
+      <article class="opt rec" id="option-a">
+        <div class="opt-head"><h3>A · The theatre</h3><span class="tag rec">Recommended</span><span class="tag">a dialog</span><span class="tag">every Watch the same</span></div>
+        <p>Every Watch, in the hero, the pill or the close, opens the film in a dark room over the page, as large as the window allows (up to 1280 px wide, never taller than the window). The page stays where it was, its own film holds, and Escape, the close button or a click outside put focus back on the Watch that opened it. Under the film: its twelve chapters as chips, the one playing marked, a click to jump; and the film in words. On a phone the room is the whole screen.</p>
+        <div class="grid"><figure class="shot"><img src="option-a/rest-light-1440.webp" alt="Option A at rest, 1440, light" loading="lazy"><figcaption>At rest: the hero with its new label</figcaption></figure><figure class="shot"><img src="option-a/playing-light-1440.webp" alt="Option A playing, 1440, light" loading="lazy"><figcaption>Watch pressed, light</figcaption></figure><figure class="shot"><img src="option-a/playing-dark-1440.webp" alt="Option A playing, 1440, dark" loading="lazy"><figcaption>Playing, dark</figcaption></figure><figure class="shot"><img src="option-a/end-light-1440.webp" alt="Option A at the film's end, 1440" loading="lazy"><figcaption>Where it ends</figcaption></figure><figure class="shot phone"><img src="option-a/playing-light-390.webp" alt="Option A playing on a phone" loading="lazy"><figcaption>A phone, playing</figcaption></figure><figure class="shot phone"><img src="option-a/end-light-390.webp" alt="Option A at the end on a phone" loading="lazy"><figcaption>A phone, at the end</figcaption></figure></div>
+        <figure class="shot"><video src="option-a/motion.mp4" poster="option-a/motion.webp" controls muted playsinline preload="metadata"></video><figcaption>Played through at 1440: Watch pressed, the film playing, a chapter picked, the end</figcaption></figure>
+        <p><b>Why A.</b> It answers all three ways in at once, from anywhere on the page, with no scroll and no change to the page's layout: the reader stays where they were and comes back to it. It is the pattern a visitor expects from "Watch", and the kit's modal rules (focus kept in, returned, Escape) carry over. <b>Trade-off:</b> the film is not seen until someone presses Watch; nothing on the page shows the chapters before then. <b>The build:</b> a <code>DemoFilm</code> dialog in <code>frontend/admin</code> (core's focus trap, counting the player's iframe), the three Watch links turned to buttons, the hero's film held while it is open.</p>
+        <div class="links"><a href="option-a/mockup.html">Open option A</a><a class="sec" href="option-a/mockup.html?theme=dark">Dark</a><a class="sec" href="option-a/mockup.html?state=end">At its end</a></div>
+      </article>
+      <article class="opt" id="option-b">
+        <div class="opt-head"><h3>B · A section of its own</h3><span class="tag">Spoiler Alert's</span><span class="tag">a new section after the statement</span></div>
+        <p>A new section after the statement, "See one batch, start to finish.": the poster large with its play button and running time, the twelve chapters beside it (under it, as chips, on a phone and a tablet), and the film in words. It plays in place. The three Watch links take the reader to it and start it; the pill keeps clear of it, as it does of the workspace section.</p>
+        <div class="grid"><figure class="shot"><img src="option-b/rest-light-1440.webp" alt="Option B at rest, 1440, light" loading="lazy"><figcaption>At rest: the section after the statement</figcaption></figure><figure class="shot"><img src="option-b/playing-light-1440.webp" alt="Option B playing, 1440, light" loading="lazy"><figcaption>Watch pressed, light</figcaption></figure><figure class="shot"><img src="option-b/playing-dark-1440.webp" alt="Option B playing, 1440, dark" loading="lazy"><figcaption>Playing, dark</figcaption></figure><figure class="shot"><img src="option-b/end-light-1440.webp" alt="Option B at the film's end, 1440" loading="lazy"><figcaption>Where it ends</figcaption></figure><figure class="shot phone"><img src="option-b/playing-light-390.webp" alt="Option B playing on a phone" loading="lazy"><figcaption>A phone, playing</figcaption></figure><figure class="shot phone"><img src="option-b/end-light-390.webp" alt="Option B at the end on a phone" loading="lazy"><figcaption>A phone, at the end</figcaption></figure></div>
+        <figure class="shot"><video src="option-b/motion.mp4" poster="option-b/motion.webp" controls muted playsinline preload="metadata"></video><figcaption>Played through at 1440: Watch pressed, the film playing, a chapter picked, the end</figcaption></figure>
+        <p><b>Why B.</b> The film is on the page for everyone who scrolls, not only those who press Watch, and the chapter list tells the product's story even unplayed, as Spoiler Alert's section does. <b>Trade-off:</b> a longer page; Watch from the close or the pill scrolls the reader back up the page to play; playing in place is smaller than A's room. <b>The build:</b> a <code>Film</code> section between <code>Statement</code> and <code>Scene</code>, its CSS in <code>site.css</code>; the Watch links become links to <code>#film</code> that start it.</p>
+        <div class="links"><a href="option-b/mockup.html">Open option B</a><a class="sec" href="option-b/mockup.html?theme=dark">Dark</a><a class="sec" href="option-b/mockup.html?state=end">At its end</a></div>
+      </article>
+      <article class="opt" id="option-c">
+        <div class="opt-head"><h3>C · In the hero</h3><span class="tag">the first screen</span><span class="tag">the hero's own grammar</span></div>
+        <p>Watch makes the first screen the film's: the heading and the strip step aside, the film plays full in the hero's frame under the bar, a line over it names the chapter it is in, and the strip under it becomes the film's twelve chapters, lit as it goes, like the hero strip's four. "Back to the page" or Escape gives the hero back and returns focus. The pill and the close scroll to the top and start it there.</p>
+        <div class="grid"><figure class="shot"><img src="option-c/rest-light-1440.webp" alt="Option C at rest, 1440, light" loading="lazy"><figcaption>At rest: the hero, the same as A</figcaption></figure><figure class="shot"><img src="option-c/playing-light-1440.webp" alt="Option C playing, 1440, light" loading="lazy"><figcaption>Watch pressed, light</figcaption></figure><figure class="shot"><img src="option-c/playing-dark-1440.webp" alt="Option C playing, 1440, dark" loading="lazy"><figcaption>Playing, dark</figcaption></figure><figure class="shot"><img src="option-c/end-light-1440.webp" alt="Option C at the film's end, 1440" loading="lazy"><figcaption>Where it ends</figcaption></figure><figure class="shot phone"><img src="option-c/playing-light-390.webp" alt="Option C playing on a phone" loading="lazy"><figcaption>A phone, playing</figcaption></figure><figure class="shot phone"><img src="option-c/end-light-390.webp" alt="Option C at the end on a phone" loading="lazy"><figcaption>A phone, at the end</figcaption></figure></div>
+        <figure class="shot"><video src="option-c/motion.mp4" poster="option-c/motion.webp" controls muted playsinline preload="metadata"></video><figcaption>Played through at 1440: Watch pressed, the film playing, a chapter picked, the end</figcaption></figure>
+        <p><b>Why C.</b> The most cinematic: the film is where the reader's eyes already are, and the hero's strip grammar carries over to the film's chapters. <b>Trade-off:</b> Watch from the pill or the close jumps the reader to the top; the hero's own film and copy are hidden while it plays; on a phone the first screen is tall and the film is letterboxed in it. <b>The build:</b> the hero gains a playing state (<code>Hero.svelte</code>), the bar takes its glass while it plays, and the chapter strip reads the film's time from YouTube's player.</p>
+        <div class="links"><a href="option-c/mockup.html">Open option C</a><a class="sec" href="option-c/mockup.html?theme=dark">Dark</a><a class="sec" href="option-c/mockup.html?state=end">At its end</a></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Checks made</h2>
+    <ul class="plain">
+      <li>Every option rendered without console errors in Chromium at 1440 × 900 and 390 × 844, light and dark, at rest, playing and at its end (<code>capture.mjs</code>).</li>
+      <li>Every control is a 44 px target with a visible focus ring; white text on the film's dark ground; Escape and focus return in A and C; the end card takes focus only from the player it replaces.</li>
+      <li>The YouTube path is written (the IFrame API on the no-cookie host, loaded on the first click) but unproven until the upload's id is in.</li>
+      <li>No browser suite was run (SC-55).</li>
+    </ul>
+  </section>
+
+  <section class="ask">
+    <h2>The ask</h2>
+    <p>One option: <b>A</b> (recommended), <b>B</b> or <b>C</b>, or none of these and what to change. A mix works too ("A's theatre, with B's chapter list under the hero").</p>
+  </section>
+</main>
+</body>
+</html>

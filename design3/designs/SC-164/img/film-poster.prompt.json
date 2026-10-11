@@ -1,0 +1,12 @@
+{
+  "derived_from": "design3/designs/SC-158/src/build/mango-drink-demo-master.mp4",
+  "film_sidecar": "design3/designs/SC-158/media/mango-drink-demo.prompt.json",
+  "model": "LTX 2.5 Fast (clip c01-factory-dawn) from a Qwen-Image 2.1 keyframe, cut by ffmpeg (SC-158)",
+  "created": "2026-10-11",
+  "designed_in": "design3/designs/SC-164",
+  "name": "film-poster",
+  "at_s": 0.5,
+  "output": "film-poster.webp 1920x1080",
+  "post_process": "ffmpeg frame at 0.5 s of the master (before the title card, which names the client), WebP q80 by Pillow",
+  "use": "the demo film's poster on the landing page: the factory's bay at dawn, no lettering, no client named"
+}
