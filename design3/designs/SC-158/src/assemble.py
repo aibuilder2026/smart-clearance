@@ -5,9 +5,10 @@ segments chained through half-second crossfades; the clips' own ambience under t
 
   uv run --with pillow python assemble.py [--out ../media/mango-drink-demo.mp4] [--only 3,4] [--draft]
 
-Needs: src/clips/<name>.mp4 (a missing clip falls back to its keyframe with a slow push in), src/img/<key>.png,
-src/screens/<shot>.png (and --full.png for a scroll), src/overlays/out/<id>.png (node overlays.mjs), src/music.wav
-(music.py). Intermediates go to src/build/.
+Needs: the clips (src/clips/<name>.mp4, else the tracked media/<name>.mp4; a missing clip falls back to its keyframe
+with a slow push in), the keyframes (src/img/<key>.png, else img/<key>.webp), the app screens (src/screens/<shot>.png
+and --full.png for a scroll, else screens/<shot>.webp), src/overlays/out/<id>.png (node overlays.mjs) and
+src/music.wav (music.py). Intermediates go to src/build/. A fresh clone rebuilds the film from the tracked copies alone.
 """
 
 import argparse
@@ -24,7 +25,18 @@ HERE = Path(__file__).resolve().parent
 FILM = json.loads((HERE / "film.json").read_text())
 FPS, W, H, XF = FILM["fps"], FILM["width"], FILM["height"], FILM["xfade"]
 CLIPS, IMG, SCREENS, OVL, BUILD = HERE / "clips", HERE / "img", HERE / "screens", HERE / "overlays" / "out", HERE / "build"
+# the tracked copies beside src/: the clips in media/, the keyframes as WebP in img/, the app screens as WebP in screens/
+TRACKED = {"clip": HERE.parent / "media", "img": HERE.parent / "img", "screen": HERE.parent / "screens"}
 BUILD.mkdir(exist_ok=True)
+
+
+def find(kind: str, name: str) -> Path | None:
+    """an input by name: the src/ original if it is there, else the tracked copy"""
+    local = {"clip": CLIPS / f"{name}.mp4", "img": IMG / f"{name}.png", "screen": SCREENS / f"{name}.png"}[kind]
+    if local.exists():
+        return local
+    tracked = TRACKED[kind] / (f"{name}.mp4" if kind == "clip" else f"{name}.webp")
+    return tracked if tracked.exists() else None
 FFMPEG = ["ffmpeg", "-hide_banner", "-loglevel", "warning", "-y"]
 ENC = ["-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p", "-r", str(FPS), "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2"]
 
@@ -54,7 +66,7 @@ def probe(path: Path) -> float:
 
 def backdrops(key: str, name: str) -> tuple[Path, Path]:
     """the live scene behind a screen, sharp and then pulled out of focus as the window comes in"""
-    im = Image.open(IMG / f"{key}.png").convert("RGB").resize((W, H), Image.LANCZOS)
+    im = Image.open(find("img", key)).convert("RGB").resize((W, H), Image.LANCZOS)
     sharp = ImageEnhance.Brightness(im.filter(ImageFilter.GaussianBlur(2))).enhance(0.72)
     blur = ImageEnhance.Brightness(im.filter(ImageFilter.GaussianBlur(26))).enhance(0.5)
     a, b = BUILD / f"{name}-bg0.png", BUILD / f"{name}-bg1.png"
@@ -141,13 +153,13 @@ def window_plates(seg: dict, shot: Image.Image, name: str) -> dict:
 
 
 def render_screen(seg: dict, name: str, out: Path) -> None:
-    shot_path = SCREENS / f"{seg['shot']}.png"
-    full_path = SCREENS / f"{seg['shot']}--full.png"
-    if not shot_path.exists():
-        raise SystemExit(f"no screenshot {shot_path.name}")
-    shot = Image.open(shot_path)
-    scroll = seg.get("scroll") and full_path.exists()
-    src = Image.open(full_path) if scroll else shot
+    shot_path = find("screen", seg["shot"])
+    full_path = find("screen", seg["shot"] + "--full")
+    if not shot_path:
+        raise SystemExit(f"no screenshot {seg['shot']} in src/screens/ or screens/")
+    shot = Image.open(shot_path).convert("RGB")
+    scroll = seg.get("scroll") and full_path is not None
+    src = Image.open(full_path).convert("RGB") if scroll else shot
     D = seg["seconds"]
     bg0, bg1 = backdrops(seg["bg"], name)
     p = window_plates(seg, shot, name)
@@ -191,11 +203,11 @@ def render_screen(seg: dict, name: str, out: Path) -> None:
 # ---- the clips ----------------------------------------------------------------------------------------------------
 
 def render_clip(seg: dict, name: str, out: Path) -> None:
-    src = CLIPS / f"{seg['name']}.mp4"
+    src = find("clip", seg["name"])
     speed = seg.get("speed", 1.0)
     hold = seg.get("hold", 0)
     D = duration(seg)
-    if src.exists():
+    if src:
         clip_len = probe(src)
         cmd = FFMPEG + ["-i", str(src)]
         chain = (f"[0:v]scale={W}:{H}:flags=lanczos,unsharp=5:5:0.4:5:5:0.0,setpts=PTS/{speed},fps={FPS}"
@@ -206,7 +218,7 @@ def render_clip(seg: dict, name: str, out: Path) -> None:
         print(f"   clip {seg['name']}: {clip_len:.1f} s at {speed} -> {D:.1f} s")
     else:
         # the keyframe stands in, with a slow push in, while the clip renders
-        key = IMG / f"{seg['key']}.png"
+        key = find("img", seg["key"])
         cmd = FFMPEG + ["-loop", "1", "-framerate", str(FPS), "-t", str(D), "-i", str(key), "-f", "lavfi", "-t", str(D), "-i", "anullsrc=r=48000:cl=stereo"]
         chain = f"[0:v]scale={W*2}:{H*2}:flags=lanczos,zoompan=z='1+0.08*on/({D*FPS})':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d={int(D*FPS)}:s={W}x{H}:fps={FPS}[v0]"
         last, amap = "v0", "1:a"

@@ -9,7 +9,7 @@ import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
-const MAIN = process.env.SC_REPO || "/Users/arundutta/projects/smart-clearance/.claude/worktrees/pensive-taussig-c3747a";
+const MAIN = process.env.SC_REPO || path.resolve(path.dirname(new URL(import.meta.url).pathname), "../../../..");
 const require = createRequire(path.join(MAIN, "frontend/testing/package.json"));
 const { chromium } = require("@playwright/test");
 const args = Object.fromEntries(process.argv.slice(2).map((a, i, all) => (a.startsWith("--") ? [a.slice(2), all[i + 1]] : [])).filter(Boolean));

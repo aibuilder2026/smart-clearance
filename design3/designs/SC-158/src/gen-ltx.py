@@ -80,7 +80,9 @@ def main() -> None:
                 continue
             src = IMG / f"{key}.png"
             if not src.exists():
-                print(f"MISSING keyframe {src.name}; skipping {name}", flush=True)
+                src = HERE.parent / "img" / f"{key}.webp"  # the tracked copy
+            if not src.exists():
+                print(f"MISSING keyframe {key}; skipping {name}", flush=True)
                 continue
             framed = frame_image(src, "16:9", HOME / "frames" / f"sc158-{name}.png", "pad")
             seed = 158000 + CLIPS.index((name, key, seconds, camera, prompt))

@@ -2,7 +2,8 @@
 # SC-158: runs director.py with the walk's own environment (backend-api/scripts/lib.sh), against this checkout's own
 # API on :8001 and its dev servers on :5185 and :5184, so it signs people in as sc-api-local and reaches the local buckets.
 set -euo pipefail
-MAIN=/Users/arundutta/projects/smart-clearance/.claude/worktrees/pensive-taussig-c3747a
+HERE0="$(cd "$(dirname "$0")" && pwd)"
+MAIN="${SC_REPO:-$(cd "$HERE0/../../../.." && pwd)}"
 export PORT="${PORT:-8001}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=/dev/null
