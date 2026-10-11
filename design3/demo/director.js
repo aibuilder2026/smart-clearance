@@ -387,7 +387,7 @@
   function Director({ start, autoplay, onHome }) {
     const [map, setMap] = useState(null);
     const [phoneOnly, setPhoneOnly] = useState(false);
-    const [notes, setNotes] = useState(true);
+    const [notes, setNotes] = useState(() => window.innerWidth >= 768);
     const p = usePlayer(start, !!map);
     useBeatEffects(p);
     const app = useApp();

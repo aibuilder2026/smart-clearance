@@ -29,7 +29,8 @@
 	);
 	let map = $state<'hop' | 'map' | null>(null);
 	let phoneOnly = $state(false);
-	let notes = $state(true);
+	// beside the stage on a laptop; on a real phone the notes wait in their sheet until the station is tapped
+	let notes = $state(window.innerWidth >= 768);
 	$effect(() => {
 		p.hold = !!map;
 	});

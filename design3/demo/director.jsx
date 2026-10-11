@@ -334,7 +334,7 @@
 
   /* ---------- the director ---------- */
   function Director({ start, autoplay, onHome }) {
-    const [map, setMap] = useState(null); const [phoneOnly, setPhoneOnly] = useState(false); const [notes, setNotes] = useState(true);
+    const [map, setMap] = useState(null); const [phoneOnly, setPhoneOnly] = useState(false); const [notes, setNotes] = useState(() => window.innerWidth >= 768); // on a real phone the notes wait in their sheet
     const p = usePlayer(start, !!map); useBeatEffects(p); const app = useApp();
     const canvas = useRef(null); const size = useSize(canvas); const shell = useRef(null);
     useEffect(() => { if (autoplay) p.setPlaying(true); }, []);
