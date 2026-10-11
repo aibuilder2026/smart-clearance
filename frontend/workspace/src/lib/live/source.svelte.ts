@@ -554,7 +554,9 @@ export class LiveSource implements WorkspaceSource {
 			const out = await run();
 			if (out && out.case) this.#put(out.case.ref, out.case);
 			else if (inline) show?.();
-			this.#want({ snapshot: true });
+			// a partner's screens read their own facts (SC-130), so they are read again with what was just sent: the
+			// destruction's photos while Vision checks them, and no stream event need come first (SC-180)
+			this.#want({ snapshot: true, partner: true });
 			this.#stream?.poke();
 		} catch (e) {
 			undo?.();

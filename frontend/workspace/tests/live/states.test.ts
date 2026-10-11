@@ -407,6 +407,21 @@ describe('a step that did not go through', () => {
 	});
 });
 
+describe("a partner's own step reads its facts again (SC-180)", () => {
+	it('once a step Lakshmi Agencies sends has gone through, her facts are read again, so her screens show what she sent', async () => {
+		const m = moment('destruction-asked');
+		const seen = m.members['lakshmi-owner'];
+		const partner = vi.fn(() => Promise.resolve(structuredClone(seen.partner!)));
+		const s = source(fakeApi(m, 'lakshmi-owner', { partner }));
+		await draw(s, 'home');
+		await waitFor(() => expect(partner).toHaveBeenCalled());
+		const before = partner.mock.calls.length;
+		await s.act('permit');
+		// with no event on the stream (stream() says nothing), only her own step can ask for them
+		await waitFor(() => expect(partner.mock.calls.length).toBeGreaterThan(before));
+	});
+});
+
 describe('a button that waits on the network (SC-152)', () => {
 	it('says why a step was refused under its own button, with Try again: no success, and no band', async () => {
 		const m = moment('executing');
