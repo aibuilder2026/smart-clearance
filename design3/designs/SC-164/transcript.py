@@ -4,6 +4,7 @@
 Reads design3/designs/SC-158/src/film.json, works out when each chapter and caption appears the way assemble.py cuts
 the film (each segment's length, less the cross-fade), and writes:
   transcript.json         the chapters with their start, and the captions in each, for the "Read the film" disclosure
+                          (and design3/site/assets/media/demo-film.json, the landing page's copy)
   youtube-description.txt the chapters as YouTube reads them (0:00 first, each at least 10 s), to paste on upload
 
     python3 design3/designs/SC-164/transcript.py
@@ -56,6 +57,8 @@ out = {
     "chapters": chapters,
 }
 (HERE / "transcript.json").write_text(json.dumps(out, ensure_ascii=False, indent=1) + "\n")
+# the landing page's copy, read by the theatre when it first opens (SC-164's pick, A)
+(HERE.parent.parent / "site" / "assets" / "media" / "demo-film.json").write_text(json.dumps(out, ensure_ascii=False, indent=1) + "\n")
 
 # YouTube makes chapters of a description's timestamps when the first is 0:00, there are three or more, and each
 # runs at least 10 s

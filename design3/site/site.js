@@ -108,6 +108,184 @@
       setTimeout(() => goTo(id), 60);
     } }, /* @__PURE__ */ React.createElement("span", { className: "lr-main" }, /* @__PURE__ */ React.createElement("span", { className: "lr-title" }, t)), /* @__PURE__ */ React.createElement(Icon, { name: "chevron-right", size: 18, className: "chev" })))), /* @__PURE__ */ React.createElement("a", { className: "btn btn-primary btn-lg btn-block", ...linkProps(LINKS.app), onClick: () => setSheet(false) }, "Workspace"), /* @__PURE__ */ React.createElement("a", { className: "btn btn-secondary btn-lg btn-block", ...linkProps(LINKS.console), onClick: () => setSheet(false) }, "Console"))));
   }
+  const DEMO_FILM = Object.assign({
+    youtube: null,
+    runtime: "4:56",
+    label: "Watch the 5-minute demo",
+    title: "The 5-minute demo",
+    sub: "One batch, from the brand to the ledger",
+    poster: "film-poster.webp",
+    thumb: "film-thumb.webp",
+    words: "demo-film.json"
+  }, window.SC3_FILM || {});
+  const clock = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
+  let filmWords = null;
+  const readFilmWords = () => filmWords || (filmWords = fetch(MEDIA + DEMO_FILM.words).then((r) => r.json()).catch(() => {
+    filmWords = null;
+    return null;
+  }));
+  let ytApi = null;
+  const loadYT = () => ytApi || (ytApi = new Promise((res) => {
+    if (window.YT && window.YT.Player) return res(window.YT);
+    const prev = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+      if (prev) prev();
+      res(window.YT);
+    };
+    const s = document.createElement("script");
+    s.src = "https://www.youtube.com/iframe_api";
+    s.async = true;
+    document.head.appendChild(s);
+  }));
+  const FilmPlayer = React.forwardRef(function FilmPlayer2({ onTime, onEnd }, handle) {
+    const host = useRef(null);
+    const yt = useRef(null);
+    const cb = useRef({});
+    cb.current = { onTime, onEnd };
+    useEffect(() => {
+      let live = true, poll;
+      loadYT().then((YT) => {
+        if (!live || !host.current) return;
+        yt.current = new YT.Player(host.current, {
+          host: "https://www.youtube-nocookie.com",
+          videoId: DEMO_FILM.youtube,
+          width: "100%",
+          height: "100%",
+          playerVars: { autoplay: 1, rel: 0, playsinline: 1 },
+          events: {
+            onReady: (e) => {
+              e.target.getIframe().title = "Smart-Clearance demo film";
+            },
+            onStateChange: (e) => {
+              if (e.data === 0 && cb.current.onEnd) cb.current.onEnd();
+            }
+          }
+        });
+        poll = setInterval(() => {
+          const p = yt.current;
+          if (p && p.getCurrentTime && cb.current.onTime) cb.current.onTime(p.getCurrentTime());
+        }, 500);
+      });
+      return () => {
+        live = false;
+        clearInterval(poll);
+        if (yt.current && yt.current.destroy) yt.current.destroy();
+        yt.current = null;
+      };
+    }, []);
+    React.useImperativeHandle(handle, () => ({ seek: (t) => {
+      const p = yt.current;
+      if (p && p.seekTo) {
+        p.seekTo(t, true);
+        p.playVideo();
+      }
+    } }));
+    return /* @__PURE__ */ React.createElement("div", { className: "fp-media" }, /* @__PURE__ */ React.createElement("img", { className: "fp-poster", src: IMG + DEMO_FILM.poster, alt: "" }), /* @__PURE__ */ React.createElement("div", { ref: host }));
+  });
+  function FilmEnd({ onReplay, onBook }) {
+    const reduce = useReducedMotion();
+    const box = useRef(null);
+    const go = useRef(null);
+    useEffect(() => {
+      const a = document.activeElement;
+      if (!a || a === document.body || box.current && box.current.parentElement.contains(a)) go.current && go.current.focus({ preventScroll: true });
+    }, []);
+    return /* @__PURE__ */ React.createElement(motion.div, { ref: box, className: "fp-end", role: "group", "aria-labelledby": "fp-end-h", initial: reduce ? false : { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.42, ease: EASE } }, /* @__PURE__ */ React.createElement("img", { className: "fp-end-bg", src: IMG + DEMO_FILM.poster, alt: "" }), /* @__PURE__ */ React.createElement("div", { className: "fp-end-in" }, /* @__PURE__ */ React.createElement("h3", { id: "fp-end-h" }, "One batch, start to finish."), /* @__PURE__ */ React.createElement("p", null, "Now play each part yourself. The guided demo runs the same journey in your browser, a beat at a time."), /* @__PURE__ */ React.createElement("div", { className: "fp-end-ctas" }, /* @__PURE__ */ React.createElement("a", { ref: go, className: "btn btn-lg btn-pill fp-go", ...linkProps(LINKS.demo) }, "Try the guided demo", /* @__PURE__ */ React.createElement(Icon, { name: "arrow-up-right", size: 16, stroke: 2.4 })), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-lg btn-pill film-ghost", onClick: onBook }, "Book a demo"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn fp-again", onClick: onReplay }, /* @__PURE__ */ React.createElement(Icon, { name: "rotate-ccw", size: 16 }), "Watch again"))));
+  }
+  function FilmChapters({ chapters, now, onPick }) {
+    return /* @__PURE__ */ React.createElement("nav", { className: "fp-ch", "aria-label": "Chapters" }, /* @__PURE__ */ React.createElement("ol", null, chapters.map((c, i) => /* @__PURE__ */ React.createElement("li", { key: c.id }, /* @__PURE__ */ React.createElement("button", { type: "button", className: cx(i === now && "now"), "aria-current": i === now ? "true" : void 0, onClick: () => onPick(c.at) }, /* @__PURE__ */ React.createElement("span", { className: "fp-ch-at" }, clock(c.at)), /* @__PURE__ */ React.createElement("span", { className: "fp-ch-t" }, c.title))))));
+  }
+  function FilmWords({ chapters }) {
+    const open1 = (e) => {
+      const el = e.currentTarget;
+      if (el.open) requestAnimationFrame(() => el.scrollIntoView({ block: "nearest", behavior: "smooth" }));
+    };
+    return /* @__PURE__ */ React.createElement("details", { className: "fp-read", onToggle: open1 }, /* @__PURE__ */ React.createElement("summary", null, /* @__PURE__ */ React.createElement(Icon, { name: "scroll-text", size: 16 }), "Read the film instead"), /* @__PURE__ */ React.createElement("div", { className: "fp-read-in" }, chapters.map((c) => /* @__PURE__ */ React.createElement("section", { key: c.id }, /* @__PURE__ */ React.createElement("h4", null, /* @__PURE__ */ React.createElement("span", null, clock(c.at)), c.title), c.lines.map((l) => /* @__PURE__ */ React.createElement("p", { key: l.at }, l.text))))));
+  }
+  const FOCUSABLE_FILM = 'a[href], button:not([disabled]), iframe, summary, [tabindex]:not([tabindex="-1"])';
+  function Theatre({ open: isOpen, onClose, onBook }) {
+    const reduce = useReducedMotion();
+    const panel = useRef(null);
+    const player = useRef(null);
+    const close = useRef(onClose);
+    close.current = onClose;
+    const [ended, setEnded] = useState(false);
+    const [t, setT] = useState(0);
+    const [words, setWords] = useState(null);
+    useEffect(() => {
+      if (!isOpen) return;
+      setEnded(false);
+      setT(0);
+      readFilmWords().then((w) => w && setWords(w.chapters));
+      const opener = document.activeElement;
+      const raf = requestAnimationFrame(() => panel.current && panel.current.focus({ preventScroll: true }));
+      const onKey = (e) => {
+        const el = panel.current;
+        if (!el) return;
+        if (e.key === "Escape") {
+          close.current();
+          return;
+        }
+        if (e.key !== "Tab") return;
+        const items = [...el.querySelectorAll(FOCUSABLE_FILM)].filter((n) => n.getClientRects().length);
+        if (!items.length) return;
+        const first = items[0], last = items[items.length - 1], at2 = document.activeElement;
+        if (!el.contains(at2)) {
+          e.preventDefault();
+          (e.shiftKey ? last : first).focus();
+        } else if (e.shiftKey && (at2 === first || at2 === el)) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && at2 === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      };
+      document.addEventListener("keydown", onKey);
+      return () => {
+        cancelAnimationFrame(raf);
+        document.removeEventListener("keydown", onKey);
+        if (opener && opener.isConnected) opener.focus({ preventScroll: true });
+      };
+    }, [isOpen]);
+    const chapters = words || [];
+    let now = chapters.length - 1;
+    if (!ended) {
+      now = 0;
+      while (now + 1 < chapters.length && t >= chapters[now + 1].at) now++;
+    }
+    const pick = (s) => {
+      if (ended) setEnded(false);
+      setTimeout(() => player.current && player.current.seek(s), ended ? 600 : 0);
+    };
+    const spring = reduce ? { duration: 0.01 } : { type: "spring", stiffness: 420, damping: 40, mass: 0.9 };
+    return /* @__PURE__ */ React.createElement(K.Portal, null, /* @__PURE__ */ React.createElement(AnimatePresence, null, isOpen && /* @__PURE__ */ React.createElement(React.Fragment, { key: "th" }, /* @__PURE__ */ React.createElement(motion.div, { className: "th-scrim", initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: reduce ? 0 : 0.24 }, onClick: onClose }), /* @__PURE__ */ React.createElement(
+      motion.div,
+      {
+        ref: panel,
+        className: "th",
+        role: "dialog",
+        "aria-modal": "true",
+        "aria-labelledby": "th-h",
+        tabIndex: -1,
+        initial: reduce ? false : { opacity: 0, scale: 0.96, y: 12 },
+        animate: { opacity: 1, scale: 1, y: 0 },
+        exit: { opacity: 0, scale: 0.98, y: 8 },
+        transition: spring
+      },
+      /* @__PURE__ */ React.createElement("div", { className: "th-head" }, /* @__PURE__ */ React.createElement("div", { className: "th-t" }, /* @__PURE__ */ React.createElement("h2", { id: "th-h" }, DEMO_FILM.title), /* @__PURE__ */ React.createElement("p", null, DEMO_FILM.sub, " · ", DEMO_FILM.runtime)), /* @__PURE__ */ React.createElement("button", { type: "button", className: "th-x", onClick: onClose, "aria-label": "Close the film" }, /* @__PURE__ */ React.createElement(Icon, { name: "x", size: 20 }))),
+      /* @__PURE__ */ React.createElement("div", { className: "th-frame" }, ended ? /* @__PURE__ */ React.createElement(FilmEnd, { onReplay: () => setEnded(false), onBook: () => {
+        onClose();
+        onBook();
+      } }) : /* @__PURE__ */ React.createElement(FilmPlayer, { ref: player, onTime: setT, onEnd: () => setEnded(true) })),
+      /* @__PURE__ */ React.createElement("div", { className: "th-foot" }, chapters.length > 0 && /* @__PURE__ */ React.createElement(FilmChapters, { chapters, now, onPick: pick }), chapters.length > 0 && /* @__PURE__ */ React.createElement(FilmWords, { chapters }))
+    ))));
+  }
+  const FilmHold = React.createContext(false);
+  function Watch({ onWatch, className, label, children }) {
+    if (!DEMO_FILM.youtube) return /* @__PURE__ */ React.createElement("a", { className, "aria-label": label, ...linkProps(LINKS.demo) }, children);
+    return /* @__PURE__ */ React.createElement("button", { type: "button", className, "aria-label": label, "aria-haspopup": "dialog", onClick: () => onWatch() }, children);
+  }
   const FOODBANK = M.CHANNELS.find((c) => c.id === "foodbank");
   const CHAPTERS = [
     { at: "06:30", who: "The brand and the distributor", t: `${fmt.num(N)} packs flagged; one yes, ${fmt.inr(D.PLAN.net)} on screen`, human: true },
@@ -179,9 +357,10 @@
       return { scale: s, x: tx, y: ty };
     }, [at2, s, ar, reduce, box]);
   }
-  function Hero({ onDemo }) {
+  function Hero({ onDemo, onWatch }) {
     const night = useTheme().resolved === "dark";
     const reduce = useReducedMotion();
+    const hold = React.useContext(FilmHold);
     const poster = IMG + (night ? POSTER.night : POSTER.day);
     useEffect(() => {
       const L = window.SC3_LOADER;
@@ -224,6 +403,13 @@
       if (v && !reduce && go) v.play().catch(() => {
       });
     }, [night, reduce, go]);
+    useEffect(() => {
+      const v = vid.current;
+      if (!v || reduce) return;
+      if (hold) v.pause();
+      else if (playing && go) v.play().catch(() => {
+      });
+    }, [hold]);
     const toggle = () => {
       const v = vid.current;
       if (!v) return;
@@ -237,7 +423,7 @@
     };
     const clk = useClock(vid, playing && !reduce, FILM.bounds);
     const cam = useLean(stage, FILM.at[clk.i], FILM.lean, FILM.ar, reduce);
-    return /* @__PURE__ */ React.createElement("section", { className: "hero film", id: "top-hero", "aria-labelledby": "hero-h" }, /* @__PURE__ */ React.createElement(motion.div, { className: "film-media", "aria-hidden": "true", style: { y: drift.y, scale: drift.scale }, ref: stage }, /* @__PURE__ */ React.createElement(motion.div, { className: "film-lean", animate: cam, transition: { duration: 1.8, ease: EASE } }, /* @__PURE__ */ React.createElement("img", { className: "film-preview", src: IMG + (night ? PREVIEW.night : PREVIEW.day), alt: "" }), reduce ? /* @__PURE__ */ React.createElement("img", { src: poster, alt: "" }) : /* @__PURE__ */ React.createElement("video", { ref: vid, className: "fx front", src: MEDIA + FILM.src, poster, muted: true, playsInline: true, loop: true, preload: go ? "auto" : "none" })), /* @__PURE__ */ React.createElement("div", { className: "film-shade" })), /* @__PURE__ */ React.createElement("div", { className: "film-copy" }, /* @__PURE__ */ React.createElement("h1", { id: "hero-h", className: "film-h" }, "Every near-expiry carton gets a second ", /* @__PURE__ */ React.createElement("span", { className: "film-word" }, /* @__PURE__ */ React.createElement("span", { className: "sr-only" }, "chance"), /* @__PURE__ */ React.createElement(AnimatePresence, { mode: "popLayout", initial: false }, /* @__PURE__ */ React.createElement(motion.span, { key: WORDS[w], "aria-hidden": "true", initial: reduce ? false : { opacity: 0, y: "0.5em" }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: "-0.5em" }, transition: { duration: 0.42, ease: EASE } }, WORDS[w]))), "."), /* @__PURE__ */ React.createElement("p", { className: "film-sub" }, "AI agents find the best exit for short-dated stock, and do the running around. You say yes once."), /* @__PURE__ */ React.createElement("div", { className: "film-ctas" }, /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "lg", pill: true, onClick: () => onDemo() }, "Book a demo"), /* @__PURE__ */ React.createElement("a", { className: "btn btn-lg btn-pill film-ghost", ...linkProps(LINKS.demo) }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Icon, { name: "play", size: 12, stroke: 2.6 })), "Watch the 6-minute demo"))), /* @__PURE__ */ React.createElement(Story, { beats: CHAPTERS, i: reduce ? 3 : clk.i, p: reduce ? 1 : clk.p, label: "The journey, through one day" }), !reduce && /* @__PURE__ */ React.createElement("div", { className: "film-ctl" }, /* @__PURE__ */ React.createElement("button", { type: "button", onClick: toggle, "aria-pressed": !playing }, /* @__PURE__ */ React.createElement(Icon, { name: playing ? "pause" : "play", size: 16 }), playing ? "Pause" : "Play")));
+    return /* @__PURE__ */ React.createElement("section", { className: "hero film", id: "top-hero", "aria-labelledby": "hero-h" }, /* @__PURE__ */ React.createElement(motion.div, { className: "film-media", "aria-hidden": "true", style: { y: drift.y, scale: drift.scale }, ref: stage }, /* @__PURE__ */ React.createElement(motion.div, { className: "film-lean", animate: cam, transition: { duration: 1.8, ease: EASE } }, /* @__PURE__ */ React.createElement("img", { className: "film-preview", src: IMG + (night ? PREVIEW.night : PREVIEW.day), alt: "" }), reduce ? /* @__PURE__ */ React.createElement("img", { src: poster, alt: "" }) : /* @__PURE__ */ React.createElement("video", { ref: vid, className: "fx front", src: MEDIA + FILM.src, poster, muted: true, playsInline: true, loop: true, preload: go ? "auto" : "none" })), /* @__PURE__ */ React.createElement("div", { className: "film-shade" })), /* @__PURE__ */ React.createElement("div", { className: "film-copy" }, /* @__PURE__ */ React.createElement("h1", { id: "hero-h", className: "film-h" }, "Every near-expiry carton gets a second ", /* @__PURE__ */ React.createElement("span", { className: "film-word" }, /* @__PURE__ */ React.createElement("span", { className: "sr-only" }, "chance"), /* @__PURE__ */ React.createElement(AnimatePresence, { mode: "popLayout", initial: false }, /* @__PURE__ */ React.createElement(motion.span, { key: WORDS[w], "aria-hidden": "true", initial: reduce ? false : { opacity: 0, y: "0.5em" }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: "-0.5em" }, transition: { duration: 0.42, ease: EASE } }, WORDS[w]))), "."), /* @__PURE__ */ React.createElement("p", { className: "film-sub" }, "AI agents find the best exit for short-dated stock, and do the running around. You say yes once."), /* @__PURE__ */ React.createElement("div", { className: "film-ctas" }, /* @__PURE__ */ React.createElement(Button, { variant: "primary", size: "lg", pill: true, onClick: () => onDemo() }, "Book a demo"), /* @__PURE__ */ React.createElement(Watch, { onWatch, className: "btn btn-lg btn-pill film-ghost" }, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Icon, { name: "play", size: 12, stroke: 2.6 })), DEMO_FILM.label))), /* @__PURE__ */ React.createElement(Story, { beats: CHAPTERS, i: reduce ? 3 : clk.i, p: reduce ? 1 : clk.p, label: "The journey, through one day" }), !reduce && /* @__PURE__ */ React.createElement("div", { className: "film-ctl" }, /* @__PURE__ */ React.createElement("button", { type: "button", onClick: toggle, "aria-pressed": !playing }, /* @__PURE__ */ React.createElement(Icon, { name: playing ? "pause" : "play", size: 16 }), playing ? "Pause" : "Play")));
   }
   function Word({ p, a, b, text, reduce }) {
     const o = useTransform(p, [a, b], [0, 1]);
@@ -496,8 +682,8 @@
     const lines = LEDGER_LINES(rolled);
     return /* @__PURE__ */ React.createElement("section", { className: "sec-ledger", id: "ledger", "aria-labelledby": "ledger-h" }, /* @__PURE__ */ React.createElement(motion.div, { className: "ledger", role: "group", "aria-labelledby": "ledger-h", ...card }, /* @__PURE__ */ React.createElement(motion.div, { className: "ledger-head", ...rise(0) }, /* @__PURE__ */ React.createElement("b", null, /* @__PURE__ */ React.createElement("i", { "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Icon, { name: "leaf", size: 14, stroke: 2.2 })), /* @__PURE__ */ React.createElement("span", { id: "ledger-h" }, "Impact · the ledger for one batch")), /* @__PURE__ */ React.createElement("span", null, "posted after the return window")), lines.map((l, i) => /* @__PURE__ */ React.createElement(motion.div, { key: l.k, className: cx("ledger-row", l.zero && "zero"), ...rise(i + 1) }, /* @__PURE__ */ React.createElement("span", { className: "k" }, l.k), /* @__PURE__ */ React.createElement("span", { className: "v" }, l.v), /* @__PURE__ */ React.createElement("span", { className: "s" }, l.s))), /* @__PURE__ */ React.createElement(motion.div, { className: "ledger-foot", ...rise(lines.length + 1) }, /* @__PURE__ */ React.createElement("span", null, "BRSR Principle 6 · two rows an auditor can follow back to the batch"), /* @__PURE__ */ React.createElement("span", null, "one illustrative batch"))), /* @__PURE__ */ React.createElement("p", { className: "ledger-note" }, "An illustrative batch. Every figure is worked out from the journey map."));
   }
-  function DemoPill({ hidden }) {
-    return /* @__PURE__ */ React.createElement("a", { className: cx("pill", hidden && "off"), ...linkProps(LINKS.demo), "aria-label": "Watch the 6-minute demo" }, /* @__PURE__ */ React.createElement("span", { className: "thumb", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("img", { src: (window.SC3_IMG || "system/img/").replace(/img\/$/, "media/") + "carton-loop-poster.webp", alt: "" }), /* @__PURE__ */ React.createElement("i", null, /* @__PURE__ */ React.createElement(Icon, { name: "play", size: 12, stroke: 2.6 }))), /* @__PURE__ */ React.createElement("span", null, "Watch the 6-minute demo"));
+  function DemoPill({ hidden, onWatch }) {
+    return /* @__PURE__ */ React.createElement(Watch, { onWatch, className: cx("pill", hidden && "off"), label: DEMO_FILM.label }, /* @__PURE__ */ React.createElement("span", { className: "thumb", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("img", { src: IMG + DEMO_FILM.thumb, alt: "" }), /* @__PURE__ */ React.createElement("i", null, /* @__PURE__ */ React.createElement(Icon, { name: "play", size: 12, stroke: 2.6 }))), /* @__PURE__ */ React.createElement("span", null, DEMO_FILM.label));
   }
   const TEAMS = [
     { id: "supply", icon: "route", t: "Supply chain", route: "route", d: "One tap to approve a plan, with the money on screen." },
@@ -596,8 +782,8 @@
   function Plans({ onDemo }) {
     return /* @__PURE__ */ React.createElement("section", { id: "pricing", className: "sec sec-plans", "aria-labelledby": "plans-h" }, /* @__PURE__ */ React.createElement("div", { className: "wrap" }, /* @__PURE__ */ React.createElement("header", { className: "sec-head" }, /* @__PURE__ */ React.createElement("h2", { id: "plans-h", className: "sec-h plain" }, "Start with one distributor."), /* @__PURE__ */ React.createElement("p", { className: "sec-sub" }, "A pilot runs on one distributor's stock for 90 days. Prices are set with each manufacturer.")), /* @__PURE__ */ React.createElement("ul", { className: "plans" }, P.PLANS.map((p) => /* @__PURE__ */ React.createElement("li", { key: p.id, className: "plan" }, /* @__PURE__ */ React.createElement("b", { className: "plan-name" }, p.name), /* @__PURE__ */ React.createElement("ul", { className: "plan-scope" }, p.scope.map((s) => /* @__PURE__ */ React.createElement("li", { key: s }, s.replace(/^The client's /, "Your ")))), /* @__PURE__ */ React.createElement("span", { className: "plan-foot" }, /* @__PURE__ */ React.createElement("span", null, "Prices on request"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-link", onClick: () => onDemo(p.name) }, "Talk to us", /* @__PURE__ */ React.createElement("span", { className: "sr-only" }, " about ", p.name))))))));
   }
-  function Close({ onDemo, closeRef }) {
-    return /* @__PURE__ */ React.createElement("section", { className: "close", "aria-labelledby": "close-h", ref: closeRef }, /* @__PURE__ */ React.createElement("div", { className: "close-copy" }, /* @__PURE__ */ React.createElement("h2", { id: "close-h", className: "close-h" }, "Give your next batch a second chance."), /* @__PURE__ */ React.createElement("div", { className: "close-ctas" }, /* @__PURE__ */ React.createElement(Button, { variant: "primary", onClick: () => onDemo() }, "Book a demo"), /* @__PURE__ */ React.createElement("a", { className: "btn btn-secondary", ...linkProps(LINKS.demo) }, "Watch the 6-minute demo"))), /* @__PURE__ */ React.createElement("img", { className: "close-plate", src: IMG + "dusk.webp", width: "4128", height: "1024", alt: "", loading: "lazy" }));
+  function Close({ onDemo, onWatch, closeRef }) {
+    return /* @__PURE__ */ React.createElement("section", { className: "close", "aria-labelledby": "close-h", ref: closeRef }, /* @__PURE__ */ React.createElement("div", { className: "close-copy" }, /* @__PURE__ */ React.createElement("h2", { id: "close-h", className: "close-h" }, "Give your next batch a second chance."), /* @__PURE__ */ React.createElement("div", { className: "close-ctas" }, /* @__PURE__ */ React.createElement(Button, { variant: "primary", onClick: () => onDemo() }, "Book a demo"), /* @__PURE__ */ React.createElement(Watch, { onWatch, className: "btn btn-secondary" }, DEMO_FILM.label))), /* @__PURE__ */ React.createElement("img", { className: "close-plate", src: IMG + "dusk.webp", width: "4128", height: "1024", alt: "", loading: "lazy" }));
   }
   function Footer({ onFind }) {
     const { mode, setMode } = useTheme();
@@ -685,10 +871,12 @@
       return () => window.removeEventListener("scroll", f);
     }, []);
     const onDemo = (plan) => setDemo({ plan: typeof plan === "string" ? plan : null });
-    return /* @__PURE__ */ React.createElement("div", { className: cx("site", scrolled && "scrolled"), id: "top" }, /* @__PURE__ */ React.createElement(Nav, null), /* @__PURE__ */ React.createElement("main", null, /* @__PURE__ */ React.createElement(Hero, { onDemo }), /* @__PURE__ */ React.createElement(Statement, { id: "how", text: "Short-dated stock that quick commerce sent back. Priced to every exit, the bin included. Sold in the days it has left." }), /* @__PURE__ */ React.createElement(Table, null), /* @__PURE__ */ React.createElement(Chapters, null), /* @__PURE__ */ React.createElement(Ledger, null), /* @__PURE__ */ React.createElement(Workspace, null), /* @__PURE__ */ React.createElement(Plans, { onDemo }), /* @__PURE__ */ React.createElement(Close, { onDemo, closeRef })), /* @__PURE__ */ React.createElement(Footer, { onFind: () => setFind(true) }), /* @__PURE__ */ React.createElement(DemoPill, { hidden: nearEnd || !pastHero || onTeams }), /* @__PURE__ */ React.createElement(S.FindWorkspace, { open: find, onClose: () => setFind(false), onUse: () => {
+    const [film, setFilm] = useState(false);
+    const onWatch = () => setFilm(true);
+    return /* @__PURE__ */ React.createElement(FilmHold.Provider, { value: film }, /* @__PURE__ */ React.createElement("div", { className: cx("site", scrolled && "scrolled"), id: "top" }, /* @__PURE__ */ React.createElement(Nav, null), /* @__PURE__ */ React.createElement("main", null, /* @__PURE__ */ React.createElement(Hero, { onDemo, onWatch }), /* @__PURE__ */ React.createElement(Statement, { id: "how", text: "Short-dated stock that quick commerce sent back. Priced to every exit, the bin included. Sold in the days it has left." }), /* @__PURE__ */ React.createElement(Table, null), /* @__PURE__ */ React.createElement(Chapters, null), /* @__PURE__ */ React.createElement(Ledger, null), /* @__PURE__ */ React.createElement(Workspace, null), /* @__PURE__ */ React.createElement(Plans, { onDemo }), /* @__PURE__ */ React.createElement(Close, { onDemo, onWatch, closeRef })), /* @__PURE__ */ React.createElement(Footer, { onFind: () => setFind(true) }), /* @__PURE__ */ React.createElement(DemoPill, { hidden: nearEnd || !pastHero || onTeams || film, onWatch }), /* @__PURE__ */ React.createElement(Theatre, { open: film, onClose: () => setFilm(false), onBook: () => onDemo() }), /* @__PURE__ */ React.createElement(S.FindWorkspace, { open: find, onClose: () => setFind(false), onUse: () => {
       setFind(false);
       open(LINKS.app);
-    }, note: "One manufacturer's workspace is set up in this prototype." }), /* @__PURE__ */ React.createElement(DemoSheet, { open: !!demo, plan: demo && demo.plan, onClose: () => setDemo(null) }));
+    }, note: "One manufacturer's workspace is set up in this prototype." }), /* @__PURE__ */ React.createElement(DemoSheet, { open: !!demo, plan: demo && demo.plan, onClose: () => setDemo(null) })));
   }
   const gate = window.SC3_LOADER && window.SC3_LOADER.switchTheme;
   function Root() {

@@ -48,8 +48,10 @@ own, played in place.
   chapters beside it, played in place; the Watch links go there and start it.
 - **C, in the hero**: the film takes over the first screen under the bar, its chapters in the hero's strip.
 
-Board: `board.html`, published to platform v3 as `SC-164 design review.html`.
+Board: `board.html`, published to platform v3 as `SC-164 design review.html` (pinned to `d357eee`).
 
-## The pick
+## The pick (11 Oct 2026)
 
-Waiting for the maintainer.
+**A, the theatre**, as recommended. Built design3 first (`site/site.jsx`, `site/site.css`), then ported to
+`frontend/admin`. Until the film's YouTube id is set, Watch keeps opening the guided demo, as before; once it is set,
+Watch plays the film.

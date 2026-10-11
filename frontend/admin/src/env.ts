@@ -25,8 +25,21 @@ export const variables = defineEnvVars({
 	PUBLIC_DEMO_URL: {
 		public: true,
 		static: true,
-		schema: url('https://claude.ai/design/p/8294ec70-3e6b-4359-8de6-2a3fd056c3b2?file=Smart-Clearance+demo+v3.html'),
-		description: 'The guided demo. Default: the hosted prototype on Claude Design.'
+		schema: url('https://smartclearance-demo.web.app'),
+		description:
+			'The guided demo (smartclearance-demo.web.app), the default; the demo film offers it when it ends (SC-164).'
+	},
+	PUBLIC_DEMO_FILM: {
+		public: true,
+		static: true,
+		schema: (value) => {
+			if (!value) return undefined;
+			if (!/^[\w-]{11}$/.test(value))
+				throw new Error(`PUBLIC_DEMO_FILM is a YouTube video id (11 characters): ${value}`);
+			return value;
+		},
+		description:
+			"The demo film's YouTube video id (unlisted), played in the theatre over the page (SC-164). Unset, Watch opens the guided demo."
 	},
 	PUBLIC_APP_URL: {
 		public: true,

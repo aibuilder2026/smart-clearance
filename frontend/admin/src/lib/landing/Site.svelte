@@ -6,6 +6,7 @@
 	import type { Catalog, Showcase } from '@smart-clearance/api/site';
 	import Chapters from './Chapters.svelte';
 	import Close from './Close.svelte';
+	import DemoFilm from './DemoFilm.svelte';
 	import DemoPill from './DemoPill.svelte';
 	import DemoSheet from './DemoSheet.svelte';
 	import { figures } from './figures';
@@ -24,12 +25,16 @@
 	// SC-78). One day at the miniature business on film under the heading, a statement that fills in as it is read, the
 	// agents at work on the table, one in focus at a time, the product's moments as chapters, Impact's ledger, the
 	// workspace itself on a device, plans and the close. It names no client: the batch it follows is an illustrative
-	// one (SC-28).
+	// one (SC-28). Every Watch plays the demo film in a theatre over the page (SC-164); the film, played on request, may
+	// name its client.
 	let { showcase, catalog }: { showcase: Showcase; catalog: Catalog } = $props();
 	const f = $derived(figures(showcase, catalog));
 
 	let find = $state(false);
 	let demo = $state(false);
+	// the demo film's theatre (SC-164): every Watch opens it
+	let film = $state(false);
+	const onwatch = () => (film = true);
 	let demoPlan: string | null = $state(null);
 	// the bar is clear over the film, and takes its glass once the page has scrolled; the demo pill keeps clear of the
 	// hero, which carries its own way into the demo, of the workspace section, whose cards it would cover, and of the close
@@ -84,7 +89,7 @@
 <div class={cx('site', scrolled && 'scrolled')} id="top">
 	<Nav />
 	<main>
-		<Hero {f} {ondemo} />
+		<Hero {f} {ondemo} {onwatch} hold={film} />
 		<Statement
 			id="how"
 			text="Short-dated stock that quick commerce sent back. Priced to every exit, the bin included. Sold in the days it has left."
@@ -94,10 +99,11 @@
 		<Ledger {f} />
 		<Workspace {f} />
 		<Plans {f} {ondemo} />
-		<Close {ondemo} />
+		<Close {ondemo} {onwatch} />
 	</main>
 	<Footer {onfind} />
-	<DemoPill hidden={nearEnd || onHero || onTeams} />
+	<DemoPill hidden={nearEnd || onHero || onTeams || film} {onwatch} />
+	<DemoFilm bind:open={film} onbook={() => ondemo()} />
 	<FindWorkspace
 		bind:open={find}
 		find={(q) => api.lookupWorkspaces(q)}

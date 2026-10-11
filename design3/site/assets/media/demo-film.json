@@ -1,0 +1,264 @@
+{
+ "film": "SC-158 · the Mango Drink demo film",
+ "duration": 296.5,
+ "runtime": "4:56",
+ "opening": "Near-expiry stock, routed by AI agents. One yes from a person.",
+ "chapters": [
+  {
+   "id": "opening",
+   "n": 0,
+   "title": "Smart-Clearance",
+   "at": 0.0,
+   "lines": [
+    {
+     "at": 7.4,
+     "text": "Munchly Foods makes it. By the time a batch reaches a distributor's godown, the clock on its best-before is already running."
+    }
+   ]
+  },
+  {
+   "id": "ch-1",
+   "n": 1,
+   "title": "The batch",
+   "at": 12.4,
+   "lines": [
+    {
+     "at": 12.8,
+     "text": "Lakshmi Agencies holds 2,000 packs of Mango Drink 200 ml, batch MF-2410-118, with 22 days to best-before."
+    },
+    {
+     "at": 19.8,
+     "text": "Blinkit, Zepto and Instamart stop taking a pack this close to its date: three gates, all crossed. Destroying it would cost ₹23,059."
+    }
+   ]
+  },
+  {
+   "id": "ch-2",
+   "n": 2,
+   "title": "A SaaS, run by agents",
+   "at": 27.9,
+   "lines": [
+    {
+     "at": 28.3,
+     "text": "Smart-Clearance is software as a service: Munchly's workspace is one of many, set up and watched by the platform's staff in the console."
+    },
+    {
+     "at": 33.7,
+     "text": "Every client's batches in flight, the agents at work on each stop, what was recovered, and the food kept out of landfill, day by day."
+    },
+    {
+     "at": 42.2,
+     "text": "Ten agents on Gemini work a batch: Watcher, Vision, Valuer, Router, Lister, Negotiator, Outreach, Donation, Paperwork and Impact. A person says yes once."
+    },
+    {
+     "at": 50.7,
+     "text": "Each client's own rules: the quick-commerce gates, the exits and their prices, the kirana scheme, the expiry policy."
+    }
+   ]
+  },
+  {
+   "id": "ch-3",
+   "n": 3,
+   "title": "Detect",
+   "at": 56.8,
+   "lines": [
+    {
+     "at": 57.2,
+     "text": "Every morning the Watcher checks every batch at every distributor against sell-through and the gates."
+    },
+    {
+     "at": 62.5,
+     "text": "1,608 packs will not sell before 24 Oct. Priya is told on her phone, in the words she reads."
+    },
+    {
+     "at": 68.3,
+     "text": "The batch has its own page: flagged, at risk, and what each agent does next. Nothing is hidden from the operator."
+    }
+   ]
+  },
+  {
+   "id": "ch-4",
+   "n": 4,
+   "title": "Verify",
+   "at": 75.4,
+   "lines": [
+    {
+     "at": 75.8,
+     "text": "One photo of the carton's label is all Vision asks of the distributor. Bas ek photo."
+    },
+    {
+     "at": 81.5,
+     "text": "Her Today card asks for it: take a photo, or upload one."
+    },
+    {
+     "at": 87.0,
+     "text": "Vision reads the batch, MFG, best-before and MRP from the label and matches them to the DMS export. The batch is real, and it is this one."
+    }
+   ]
+  },
+  {
+   "id": "ch-5",
+   "n": 5,
+   "title": "Value, decide, approve",
+   "at": 95.1,
+   "lines": [
+    {
+     "at": 95.5,
+     "text": "The Valuer prices five exits. The Router splits the batch: 1,372 to the kiranas, 150 to the staff sale, 86 to Feeding India. Net ₹16,888, ₹22,258 better than the bin."
+    },
+    {
+     "at": 106.0,
+     "text": "Priya says yes once, from her phone. The approval is logged with who, when and device."
+    },
+    {
+     "at": 111.8,
+     "text": "The distributor is told the plan, with a Pause. The agents set off: Outreach to the shops, Donation to the food bank, the staff sale opened."
+    }
+   ]
+  },
+  {
+   "id": "ch-6",
+   "n": 6,
+   "title": "The kiranas",
+   "at": 119.9,
+   "lines": [
+    {
+     "at": 120.3,
+     "text": "58 shops in the old city get the offer in their own language: buy 10, get 2 free, for 48 hours."
+    },
+    {
+     "at": 126.0,
+     "text": "In her app: the scheme, her cap (what she sells in two weeks, times four) and her margin. She orders in a tap."
+    },
+    {
+     "at": 132.5,
+     "text": "₹20 MRP packs at ₹12 effective: with 2 free in every 12, ₹8 a pack stays with the shop. Fresh stock at a scheme price, with no haggling."
+    },
+    {
+     "at": 139.0,
+     "text": "A fair price for the shop, a fair price for the customer, and a brand that keeps its shelf."
+    },
+    {
+     "at": 144.4,
+     "text": "52 shops order 1,372 packets inside the window, each under its cap. Every order is a line in the audit trail."
+    }
+   ]
+  },
+  {
+   "id": "ch-7",
+   "n": 7,
+   "title": "The staff sale",
+   "at": 151.5,
+   "lines": [
+    {
+     "at": 151.9,
+     "text": "150 packs for the godown's own staff at ₹8, paid on UPI at the gate, recorded once by the distributor."
+    },
+    {
+     "at": 160.8,
+     "text": "Recorded: 150 of 150 sold. What sold is what counts; nothing is assumed."
+    }
+   ]
+  },
+  {
+   "id": "ch-8",
+   "n": 8,
+   "title": "The food bank",
+   "at": 165.9,
+   "lines": [
+    {
+     "at": 166.3,
+     "text": "Packs with 15 or more days left go to a food bank, with the FSSAI surplus-food checklist drafted for them."
+    },
+    {
+     "at": 171.8,
+     "text": "Feeding India collects 86 packs at the godown: 86 meals served, instead of 86 packs in a landfill."
+    },
+    {
+     "at": 180.8,
+     "text": "Feeding India issues its own donation receipt, numbered in its own series, with its PDF. Munchly and the distributor each keep a copy."
+    }
+   ]
+  },
+  {
+   "id": "ch-9",
+   "n": 9,
+   "title": "Delivery and the papers",
+   "at": 187.9,
+   "lines": [
+    {
+     "at": 188.3,
+     "text": "The Saturday round delivers the scheme to every shop that ordered."
+    },
+    {
+     "at": 194.8,
+     "text": "Her deliveries, batch by batch: the round to the shops, the staff sale, the food bank's pickup."
+    },
+    {
+     "at": 201.3,
+     "text": "Paperwork drafts the pack and lays each paper out as a PDF: the credit note, the GST memo, the FSSAI checklist, the receipt."
+    },
+    {
+     "at": 207.1,
+     "text": "The credit note: Munchly's price support to Lakshmi Agencies, so the distributor ends whole on the batch. A financial note, with no GST adjustment."
+    },
+    {
+     "at": 214.6,
+     "text": "The GST memo: input credit kept on every pack sold, reversed only on the 86 given away. ₹837 of credit stays with Munchly."
+    },
+    {
+     "at": 222.1,
+     "text": "The FSSAI checklist for the donation, drafted from the batch's own dates and the food bank's rules."
+    }
+   ]
+  },
+  {
+   "id": "ch-10",
+   "n": 10,
+   "title": "The ledger",
+   "at": 227.2,
+   "lines": [
+    {
+     "at": 227.6,
+     "text": "On expiry day nothing is left at the godown. Impact posts the ledger, and the batch is cleared."
+    },
+    {
+     "at": 234.1,
+     "text": "₹16,888 recovered on a batch that was headed for a ₹23,059 write-off."
+    },
+    {
+     "at": 240.6,
+     "text": "One ledger, three readings. Money: what was recovered against the would-be write-off, every batch a segment, by quarter and by year."
+    },
+    {
+     "at": 248.1,
+     "text": "GST: input credit kept and reversed under s.17(5)(h), the invoices and the credit notes, exported as the CA receives them."
+    },
+    {
+     "at": 255.6,
+     "text": "Impact: 346 kg of food kept out of landfill, 864 kg of CO₂e avoided, 86 meals, and BRSR Principle 6's food-waste row with its evidence."
+    },
+    {
+     "at": 263.1,
+     "text": "The batch's own BRSR line and its evidence: 52 kirana order logs, CN/0117, the FSSAI checklist, receipt FI/HYD/26-27/0417."
+    },
+    {
+     "at": 269.6,
+     "text": "And in the console, across every client: food kept out of landfill by day, and what was destroyed, on one scale."
+    }
+   ]
+  },
+  {
+   "id": "ch-11",
+   "n": 11,
+   "title": "Everyone ends whole",
+   "at": 274.7,
+   "lines": [
+    {
+     "at": 275.1,
+     "text": "The brand recovers. The distributor ends whole. The kiranas earn. The food bank serves."
+    }
+   ]
+  }
+ ]
+}

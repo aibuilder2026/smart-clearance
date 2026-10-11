@@ -1,12 +1,22 @@
+import { PUBLIC_DEMO_FILM } from '$app/env/public';
+
 // The landing page's moving pictures, referenced where design3 keeps them and hashed into the build: the film of one
 // day of the journey with real people under the heading (design3/site/assets/media, SC-154), four chapters that loop
-// through a dissolve, and the demo's poster for the pill that stays at hand (design3/system/media).
+// through a dissolve, and the demo film's poster, thumbnail and words (SC-164).
 const clips = import.meta.glob('$design3/site/assets/media/one-journey.mp4', {
 	query: '?url',
 	import: 'default',
 	eager: true
 }) as Record<string, string>;
-const posters = import.meta.glob('$design3/system/media/carton-loop-poster.webp', {
+const stills = import.meta.glob(
+	['$design3/site/assets/plates/film-poster.webp', '$design3/site/assets/plates/film-thumb.webp'],
+	{
+		query: '?url',
+		import: 'default',
+		eager: true
+	}
+) as Record<string, string>;
+const words = import.meta.glob('$design3/site/assets/media/demo-film.json', {
 	query: '?url',
 	import: 'default',
 	eager: true
@@ -36,5 +46,22 @@ export const FILM = {
 		{ x: 0.5, y: 0.5 }
 	] as Place[]
 };
-/** the 6-minute demo's poster, in the pill */
-export const DEMO_POSTER = url(posters, 'carton-loop-poster.webp');
+/** the demo film (SC-158, SC-164): 4 min 56 s, one batch from the brand to the ledger, played from YouTube (unlisted) in
+ *  a theatre over the page. Its poster is the bay at dawn before the title card, which names the client; the page
+ *  names none (SC-28). Its chapters and captions (`words`) are read when the theatre first opens. Until its id is set
+ *  (PUBLIC_DEMO_FILM), Watch opens the guided demo */
+export const DEMO_FILM = {
+	youtube: PUBLIC_DEMO_FILM ?? null,
+	runtime: '4:56',
+	label: 'Watch the 5-minute demo',
+	title: 'The 5-minute demo',
+	sub: 'One batch, from the brand to the ledger',
+	poster: url(stills, 'film-poster.webp'),
+	thumb: url(stills, 'film-thumb.webp'),
+	words: url(words, 'demo-film.json')
+};
+/** the film's words: its chapters, each with its start and the captions in it */
+export type FilmWords = {
+	duration: number;
+	chapters: { id: string; title: string; at: number; lines: { at: number; text: string }[] }[];
+};
