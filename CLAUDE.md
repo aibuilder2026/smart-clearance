@@ -2197,4 +2197,21 @@
   - **Checks:** the frontend gate passes (core 381, api 83, admin 22, console 2, workspace 105, demo 9). design3 and the port were played along the whole route at 1440 and 390 with no page errors; each beat's sheet (both approvals, the destruction) opened in headless Chromium on design3, the port and the hosted page.
   - **Hosting:** the hosted demo page in demo v3 loads commit `15e0690`, with the console's stylesheet and script; every pinned file was checked on jsDelivr first (one cached 403 purged). smartclearance-demo.web.app follows on the merge to `main`.
 
+- **SC-170** (PR #152, merged): documentation cleanup, asked for by the maintainer.
+  - **PLAN.md removed** (the plan of 2 Oct); its market reasoning (why India, why a router rather than a marketplace,
+    GST, BRSR and FSSAI) is folded into PRODUCT.md's Positioning. AGENTS.md's layout and the README no longer name it.
+  - **PRODUCT.md** brought up to date in impeccable's layout: the four apps, backend-api and the agents, email and
+    password for everyone, the users as they are now (Neha in the console, Priya as the one operator, Lakshmi Agencies,
+    Meera), the three journeys and the pilot quarter, every surface, the destruction's second yes as a principle.
+  - **TESTING.md** (new): the gates and every suite, with the scripts, what each needs first, the four journey suites
+    and their options, which journeys to cover for which change, the agents' evals, how to report, what gets in the way.
+  - **DEMO.md** (new): the guided demo's route map and how to drive it; the live workspace's two batches and three
+    journeys; signing in; the console's controls; what Reset journey puts back and keeps; the clock afterwards; a
+    checklist before a live demo; known limits.
+  - **README.md** as the setup guide and map: the documents with a summary each, prerequisites, setting up from scratch
+    (design3, the frontend, Google sign-in, backend-api, the agents, the frontend on the real API), starting everything
+    from the command line, everyday commands, the gates, and the Google Cloud guide brought up to date (the workspace and
+    agents live, four apps, Pub/Sub, Scheduler, BigQuery, the buckets, the GBP 30 budget, `app-env.sh`).
+  - **Checks:** every relative link and anchor in the five documents resolves.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
