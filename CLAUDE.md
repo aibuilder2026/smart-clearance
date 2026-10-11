@@ -2370,4 +2370,39 @@
     - in the sad path's recording the photos are in view from the send to the yes;
     - design3's `dist/` is rebuilt.
 
+- **SC-181** (PR #163, merged; bug found by the maintainer): Verify shows the label photo the distributor sent.
+  - **Found:** on the live workspace, the Verify card drew the typeset stand-in carton, not his photo. A live build carries none of the story's photos, and the hero's photo dropped the case's link to his.
+  - **The fix** (design3 `brand.jsx` LabelShot and LabelPhoto first, then core): the live projection keeps the photo's signed link (`heroOf`, core's `Hero.photo.url`), and `LabelShot` takes `src`, the photo as sent, whole, under the kit's Photo loader. The stub and the guided demo draw as before.
+  - **Checks:** the frontend gate passes; a live test holds the Verify photo to the case's own link, and fails without the fix.
+- **SC-182** (PR #164, merged; bug found by the maintainer): the batch page's back crumb no longer sits on its tabs.
+  - **The cause:** a batch's page has no large title and draws its own head under the bar (SC-112), and the kit's Page gave the bar its glass only once the whole head had gone.
+  - **The fix** (design3 `kit.jsx` Page and `components.css` first, then core's `Page.svelte`): a page with no large title also watches its top edge, and the bar takes its glass (`.navbar.under`) as soon as anything scrolls under it; its title still waits for the head to go. Pages with a large title are unchanged.
+  - **Checks:** the frontend gate passes, with 2 new component tests (the first fails without the fix); played in design3 and on the guided demo's stub.
+- **SC-183** (In Review, branch `SC-183-live-signatures`): the certificate of destruction signed in place, live.
+  - **The request:** "on Destruction Certificate Signatures are put live, when Evidence is being asked for, Distributor will upload photos and also there should space where witnesses, distrubotor and supervisors will put on a sign, and same sign should be seen by Supply chain operator too."
+  - **Design first:** three options on one board in app v3, `SC-183 design review.html`, each on the app itself at the slow week:
+    - A, on his screen (recommended);
+    - B, on the certificate;
+    - C, on their own phones.
+
+    The maintainer picked **B**, and answered both questions as recommended: the pilot quarter's three certificates keep their specimen signatures, and "Type the name instead" stays. Designs, the traced signatures, the build's stills and the decision are in `design3/designs/SC-183/`.
+  - **Rakesh's destruction screen:** under the witnesses, "Sign the certificate": the agency's certificate laid out from what he entered, stamped TO SIGN, with a numbered Sign here in each signature's own place and "n of 4 signed · next: …".
+    - Each place opens a sheet: who signs, whom to hand the device to, the sentence they sign to, and the pad (`SignPad`). "Type the name instead" is the keyboard's way, and anyone's who cannot draw on glass.
+    - Signed, the place shows the ink with its time and Clear. A witness renamed, or another agency chosen, signs again.
+    - Send waits for all four.
+  - **Priya's review:** "The certificate, as signed at the facility", page 1 stamped SIGNED, each signature drawing itself once as it was signed (1.6 s each, a quarter second apart; at once under reduced motion), and the check "Four signatures on the certificate".
+  - **The certificate and its PDF:** each signer's ink where a specimen was, with "signed 13:22" (or "typed") under it, the agency's seal beside the officer's, and the log initialled with the same ink. Paperwork draws the strokes as inline SVG (`drawn()`). The history's certificates keep their specimens.
+  - **The data:** each signature is its strokes in the pad's 640 × 220 box, or typed, with the time; no image file and no migration (the case's JSON).
+    - design3's `data.js` STROKES (the four specimens traced to pen strokes, `designs/SC-183/tools/strokes.py`) sign for the stub and the guided demo;
+    - backend-api refuses the evidence without all four, under a name the certificate does not print, or with no ink, and reads each device time on the journey's clock (else the moment it came);
+    - the contract's `DestructionInput.signatures`, `WsDestruction.signatures`, `WsInk`; `contracts.sh` re-exported the OpenAPI.
+  - **The port:** the kit's `SignPad` and `InkStrokes` in core (coverage and the a11y suite's `COMPONENTS`); `certificate.ts`, stub-free, so the live workspace lays out the certificate to sign; `SignSheet`, DestroyScreen, DestructionSheet, Certificate, Ink; the live source sends the signatures; the Lucide `signature` icon. The journey suites sign the certificate with the mouse (`signCertificate`), and the guided demo's beats say so.
+  - **Checks:**
+    - backend-api 572 passed, 1 skipped (the destruction test refuses three, a wrong name and no ink, and reads the four on the case and the certificate);
+    - agents 225 passed (2 new: the signed certificate's layout and its PDF);
+    - the frontend gate passes: core 388 (the slow week's certificate to sign held to design3's), api 83, workspace 112 (a live test signs the certificate, the officer drawn and three typed, and Priya's review reads it as signed), admin 22, demo 9, console 2;
+    - the live fixtures were regenerated; design3's `dist/` is rebuilt;
+    - the a11y spec scans the certificate to sign, the sheet drawn and typed, and Priya's review; the browser and journey suites were not run (SC-55).
+  - **Hosting:** the hosted app page stays on its pinned commit.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

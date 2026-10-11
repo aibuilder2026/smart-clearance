@@ -170,6 +170,8 @@ const workspaceSeed = {
 	chat: D.CHAT,
 	events: D.EVENTS,
 	setup: D.SETUP,
+	// each signer's strokes, for the stub to sign the slow chips' certificate as a person would (SC-183)
+	strokes: D.STROKES,
 	risk: D.RISK,
 	plan: D.PLAN,
 	counter: D.COUNTER,

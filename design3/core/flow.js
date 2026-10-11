@@ -35,6 +35,15 @@
     if (["approved", "executing"].includes(s.hero.phase) && S.plan.lines.filter(l => l.units > 0).every(l => lineDone(s, S, l))) setPhase(s, "dispatched");
   }
 
+  // the story's four signatures on the slow chips' certificate (SC-183): the officer's, each witness's and the
+  // distributor's strokes as traced from their specimens (data.js STROKES), a minute apart after the cover; a signer
+  // with no strokes on file signs typed
+  function storySignatures(agency, dist, win) {
+    const at = m => { const [h, mm] = win.to.split(":").map(Number), t = h * 60 + mm + m; return `${String(Math.floor(t / 60)).padStart(2, "0")}:${String(t % 60).padStart(2, "0")}`; };
+    const one = (p, m) => { if (!p) return null; const k = p.sign && D.STROKES[p.sign]; return Object.assign({ name: p.name, at: at(m) }, k ? { box: k.box, strokes: k.strokes } : { typed: true }); };
+    const w = agency.witnesses || [];
+    return { officer: one(agency.officer, 2), w1: one(w[0], 3), w2: one(w[1], 4), handed: one(dist.signatory, 5) };
+  }
   // each action mutates a draft of the store; names follow the journey map
   const A = {
     connect: s => { s.setup.confirmed = true; s.setup.mapped = 8; feed(s, CONNECT_EV); audit(s, "priya", "confirmed DMS mapping and guardrails", "Setup", "Thu 16:41"); },
@@ -124,6 +133,9 @@
         photos: { before: { name: S.evidence.before, at: "11:40" }, after: { name: S.evidence.after, at: "13:20" } }, sentAt: "14:00",
         // the window the agency destroyed them in and its two independent witnesses, as he gave them (SC-174)
         window: (x && x.window) || { from: "12:55", to: "13:20" }, witnesses: ((x && x.witnesses) || agency.witnesses || []).map(w => ({ name: w.name, address: w.address })),
+        // the four signatures as drawn on the certificate at the facility (SC-183): his, or the story's own when nobody
+        // plays him (each signer's strokes, a minute apart after the cover)
+        signatures: (x && x.signatures) || storySignatures(agency, S.dist, (x && x.window) || { from: "12:55", to: "13:20" }),
         checks: [["batch", `Batch ${h.id} read on the carton label`], ["count", `About ${Math.round(d.units / 10) * 10} packs in view (${d.units} left)`], ["slate", `The slate reads ${h.id} · ${d.units} packets${S.evidence.slate ? " · " + S.evidence.slate : ""}`], ["when", S.evidence.when]].map(([id, label]) => ({ id, label, ok: true })) });
       audit(s, S.accounts.distributor, `sent the destruction's evidence: ${d.units} packs, ${d.agency.name}`, `${h.id} · ${d.certificate}`, S.at.expiry);
       feedIf(s, "destroySent"); feedIf(s, "destroyChecked"); if (S.push.evidence) notify(s, "priya", Object.assign({ link: "command" }, S.push.evidence));

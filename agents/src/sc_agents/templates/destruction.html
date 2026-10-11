@@ -46,6 +46,7 @@
   .area { height: 25mm; display: flex; align-items: center; }
   .area.short { height: 19mm; }
   .hand-over { margin-top: 10pt; }
+  .when { display: block; font: 6.8pt "DejaVu Sans Mono", monospace; color: #4b5550; }
   .muted { color: #5d6762; }
   .log-page { page-break-before: always; }
   .log { font-size: 8.8pt; }
@@ -55,6 +56,7 @@
   .log .ph { display: block; width: 62mm; height: 41mm; object-fit: cover; margin-top: 5pt; border-radius: 2pt; }
   .log td.ini { width: 17mm; }
   .log td.ini img { display: block; height: 4.2mm; width: auto; max-width: 16mm; margin: 0 0 1.5mm; }
+  .log td.ini svg { display: block; max-width: 16mm; margin: 0 0 1.5mm; }
   .log td.ini span { display: block; font-size: 8pt; margin: 0 0 1.5mm; }
   .note { margin: 8pt 0 0; font-size: 8.8pt; color: #4b5550; }
   .foot { margin-top: 14pt; font-size: 7.5pt; color: #5d6762; border-top: 0.5pt solid #e1e4df; padding-top: 5pt; }
@@ -89,6 +91,7 @@
     <td>
       <span class="k">{{ label }}</span>
       <div class="area">{% if w %}{{ ink(w, doc.seal if officer else none, "round right", 13) }}{% endif %}</div>
+      {% if w and w.ink %}<span class="when">{{ "typed" if w.ink.typed else "signed" }} {{ (w.ink.at or "")[11:16] }}</span>{% endif %}
       <b>{{ w.name if w else "—" }}</b>
       {% if w and officer %}<span class="l">{{ w.title }}, {{ doc.agency }}</span>{% elif w %}<span class="l">{{ w.address }}</span>{% endif %}
       {% if w and w.proof %}<span class="l mono">{{ w.proof }}</span>{% endif %}
@@ -103,6 +106,7 @@
     <td>
       <span class="k">Goods handed over by</span>
       {% if doc.handedBy %}<div class="area short">{{ ink(doc.handedBy, none, "round", 11) }}</div>{% endif %}
+      {% if doc.handedBy and doc.handedBy.ink %}<span class="when">{{ "typed" if doc.handedBy.ink.typed else "signed" }} {{ (doc.handedBy.ink.at or "")[11:16] }}</span>{% endif %}
       <b>{{ doc.handedBy.name if doc.handedBy else F.name }}</b>
       {% if doc.handedBy %}<span class="l">{{ doc.handedBy.title }}, {{ F.name }}</span>{% endif %}
     </td>
@@ -128,7 +132,7 @@
         <td class="at">{{ (x.at or "")[11:16] }}</td>
         <td><b>{{ x.step }}</b></td>
         <td>{{ x.detail }}{% if x.photo and photos.get(x.photo) %}<img class="ph" src="{{ photos[x.photo] }}" alt="{{ "The packs at the godown, the carton's batch label in view" if x.photo == "before" else "The packs at the landfill, the slate in view" }}">{% endif %}</td>
-        <td class="ini">{% for w in initialled %}{% set hand = mark("signatures", w.sign) %}{% if hand %}<img src="{{ hand }}" alt="Initialled by {{ w.name }}">{% else %}<span>{% for part in w.name.split() %}{{ part[:1] }}{% endfor %}</span>{% endif %}{% endfor %}</td>
+        <td class="ini">{% for w in initialled %}{% set hand = mark("signatures", w.sign) %}{% if w.ink and not w.ink.typed %}{{ drawn(w.ink, w.name, 4.2, "ini") }}{% elif hand %}<img src="{{ hand }}" alt="Initialled by {{ w.name }}">{% else %}<span>{% for part in w.name.split() %}{{ part[:1] }}{% endfor %}</span>{% endif %}{% endfor %}</td>
       </tr>
     {% endfor %}
     </tbody>

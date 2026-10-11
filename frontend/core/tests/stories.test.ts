@@ -1,4 +1,5 @@
 import { afterAll, describe, expect, it } from 'vitest';
+import { draftCertificate } from '../src/lib/workspace/certificate';
 import { D, SHOPS_ALL, storyOf } from '../src/lib/workspace/data';
 import { distNows, journeyOf, ordersNow, type DistWorld } from '../src/lib/workspace/dist';
 import { act, Agents, fastForward, SCRIPTS, useScenario } from '../src/lib/workspace/flow';
@@ -164,6 +165,42 @@ describe('the slow chips', () => {
 		act('report');
 		expect(store.get().hero.phase).toBe('cleared');
 		expect(store.get().notifications[0].title).toBe('Batch closed · 144 packs destroyed at the godown');
+	});
+});
+
+describe("the slow chips' certificate, signed in place (SC-183)", () => {
+	it("carries the story's four signatures, and lays the certificate out to sign as design3 does", () => {
+		journey('slow');
+		both(8);
+		for (const a of ['vanRound', 'expire', 'sendDestruction']) {
+			W.SC3_FLOW.act(a);
+			act(a as Parameters<typeof act>[0]);
+		}
+		const d = store.get().hero.destruction!,
+			theirs = W.SC3_STORE.get(),
+			S = storyOf('slow');
+		expect(plain(d.signatures)).toEqual(plain(theirs.hero.destruction.signatures));
+		expect(Object.keys(d.signatures ?? {})).toEqual(['officer', 'w1', 'w2', 'handed']);
+		expect(d.signatures!.officer).toMatchObject({ name: 'Sachin Bhoyar', at: '13:22', box: [640, 220] });
+		const doc = draftCertificate(
+			{ ...d, agency: d.agency!, certificate: d.certificate! },
+			{
+				batch: S.batch,
+				sku: S.sku,
+				dist: S.dist,
+				expiry: store.get().hero.expiry ?? null,
+				setup: D.setup.destruction,
+				evidence: S.evidence
+			}
+		);
+		expect(plain(doc)).toEqual(plain(L.draftCertificate(theirs.hero.destruction, theirs)));
+		// each signer's ink where a specimen was, with when it was signed
+		expect(doc.officer).toMatchObject({ name: 'Sachin Bhoyar', sign: null, ink: { at: '13:22', typed: false } });
+		expect(doc.witnesses!.map((w) => [w.name, w.sign, w.ink?.at])).toEqual([
+			['Pradeep Meshram', null, '13:23'],
+			['Asha Kale', null, '13:24']
+		]);
+		expect(doc.handedBy).toMatchObject({ name: 'Rakesh Jaiswal', sign: null, ink: { at: '13:25' } });
 	});
 });
 

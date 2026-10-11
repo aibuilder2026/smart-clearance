@@ -570,6 +570,46 @@
   // lead: what sits at the left of the bar when there is no back button (on a phone, the workspace)
   // top: a band under the bar that stays while it lasts; below: a row under the large title; barSub: a second line under
   // the bar's title once the large title has collapsed into it (SC-73, the live workspace)
+  /* ---------- a signature (SC-183): the pad a person signs on with a finger, a stylus or a mouse, and the ink as it was
+     drawn. The pad keeps each stroke in its own 640 × 220 box, so the same ink draws again at any size: on the
+     certificate, its PDF, the operator's review. A signature is ink on a white page, in either theme ---------- */
+  const PAD = [640, 220];
+  const inkPath = s => (s.length === 1 ? `M${s[0][0]} ${s[0][1]}l0.1 0` : s.map((p, i) => (i ? "L" : "M") + p[0] + " " + p[1]).join(""));
+  function SignPad({ name, value, onChange, label }) {
+    const ref = useRef(null), all = useRef([]), drawing = useRef(false);
+    const lines = (value && value.strokes) || []; all.current = lines;
+    const pt = e => { const r = ref.current.getBoundingClientRect(); return [Math.round(((e.clientX - r.left) * PAD[0]) / r.width * 2) / 2, Math.round(((e.clientY - r.top) * PAD[1]) / r.height * 2) / 2]; };
+    const put = strokes => { all.current = strokes; onChange(strokes.length ? { box: PAD, strokes } : null); };
+    const down = e => { if (e.button > 0) return; e.preventDefault(); ref.current.setPointerCapture(e.pointerId); drawing.current = true; put([...all.current, [pt(e)]]); };
+    const move = e => { if (!drawing.current) return; const p = pt(e), s = all.current.slice(), last = s[s.length - 1], q = last[last.length - 1]; if (Math.hypot(p[0] - q[0], p[1] - q[1]) < 1.5) return; s[s.length - 1] = [...last, p]; put(s); };
+    const up = () => { drawing.current = false; };
+    return <div className={cx("signpad", lines.length > 0 && "inked")}>
+      <svg ref={ref} viewBox={`0 0 ${PAD[0]} ${PAD[1]}`} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} role="img" aria-label={label || `Signature pad${name ? ` for ${name}` : ""}: draw with a finger, a stylus or a mouse`}>
+        <line className="signpad-base" x1="28" x2="612" y1="176" y2="176" /><text className="signpad-x" x="30" y="166" aria-hidden="true">×</text>
+        <g className="signpad-ink">{lines.map((st, i) => <path key={i} d={inkPath(st)} />)}</g>
+      </svg>
+      {!lines.length && <span className="signpad-hint" aria-hidden="true">Sign here</span>}
+      {name && <span className="signpad-under" aria-hidden="true">{name}</span>}
+      {lines.length > 0 && <button type="button" className="signpad-clear" onClick={() => put([])}>Clear</button>}
+    </div>;
+  }
+  // a signature as drawn, at a height: fitted to its own strokes, the pen a steady width on screen. `play` draws it once
+  // as it was signed (1.6 s a signature, one pen speed for the whole name), at once under reduced motion. A typed
+  // signature is the name, set in italic
+  function InkStrokes({ ink, name, h = 44, play, delay = 0, className }) {
+    const reduce = useReducedMotion();
+    if (!ink) return null;
+    if (ink.typed || !ink.strokes || !ink.strokes.length) return <span className={cx("ink-typed", className)} style={{ "--h": `${h}px` }} role="img" aria-label={`Typed by ${name}`}>{name}</span>;
+    const pts = ink.strokes.flat(), xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), m = 6;
+    const x0 = Math.min(...xs) - m, y0 = Math.min(...ys) - m, w = Math.max(...xs) - x0 + m, hh = Math.max(...ys) - y0 + m;
+    const px = h >= 90 ? 2.4 : h >= 50 ? 1.9 : h >= 24 ? 1.45 : 1.1, sw = (px * hh) / h;
+    const lens = ink.strokes.map(st => st.reduce((t, p, i) => (i ? t + Math.hypot(p[0] - st[i - 1][0], p[1] - st[i - 1][1]) : 0), 0) || 1), total = lens.reduce((a, b) => a + b, 0); let acc = 0;
+    return <svg className={cx("inkstrokes", className)} viewBox={`${x0} ${y0} ${w} ${hh}`} style={{ height: h, width: (h * w) / hh }} role="img" aria-label={`Signed by ${name}`}>
+      <g strokeWidth={sw}>{ink.strokes.map((st, i) => { const start = acc / total, frac = lens[i] / total; acc += lens[i];
+        return play && !reduce ? <motion.path key={i} d={inkPath(st)} initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }} transition={{ pathLength: { duration: Math.max(0.03, 1.6 * frac), delay: delay + 1.6 * start, ease: "linear" }, opacity: { duration: 0.01, delay: delay + 1.6 * start } }} /> : <path key={i} d={inkPath(st)} />; })}</g>
+    </svg>;
+  }
+
   function Page({ title, sub, back, onBack, actions, lead, children, wide, pad = true, hideLarge, top, below, barSub }) {
     // a page with no large title draws its own head under the bar (a batch's page, SC-112): the bar takes its glass as soon
     // as anything scrolls under it (`under`, SC-182), so the back button never sits on the head's tabs; its title still
@@ -601,6 +641,6 @@
   window.SC3 = Object.assign(window.SC3 || {}, {
     cx, ThemeProvider, useTheme, AppRoot, useApp, Portal, Icon, Spinner, Button, IconButton, Badge, Chip, Kbd, Card, List, ListRow,
     Segmented, Switch, Field, Input, SearchField, Select, Textarea, Stepper, OTP, Tabs, Check, DataTable, Skeleton, Progress, Empty, Avatar, Product,
-    Sheet, Alert, Menu, NoticeHost, SaveNote, useSaving, useNotice, Mark, Wordmark, WorkspaceMark, PoweredBy, Splash, Shell, Page, ModeMenuButton,
+    Sheet, Alert, Menu, NoticeHost, SaveNote, useSaving, useNotice, Mark, Wordmark, WorkspaceMark, PoweredBy, Splash, Shell, Page, ModeMenuButton, SignPad, InkStrokes,
   });
 })();

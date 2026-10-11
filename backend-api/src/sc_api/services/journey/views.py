@@ -1168,6 +1168,8 @@ def destruction_out(ctx: Ctx, dz: dict[str, Any] | None) -> dict[str, Any] | Non
         # the window the agency destroyed them in and its two witnesses, as he gave them (SC-174)
         "window": dz.get("window"),
         "witnesses": dz.get("witnesses"),
+        # the certificate as signed in place at the facility, for the operator's review (SC-183)
+        "signatures": dz.get("signatures"),
     }
 
 

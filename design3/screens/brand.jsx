@@ -420,8 +420,19 @@
       {d.status === "checked" && <Button variant="approve" icon="check" onClick={onReview}>Review and approve</Button>}
     </Card>;
   }
+  // the certificate as signed at the facility (SC-183, option B): page 1 as he sent it, stamped SIGNED before her yes,
+  // each signature drawing itself once as it was signed, a quarter of a second apart
+  const SIGN_ORDER = ["officer", "w1", "w2", "handed"];
+  function SignedCertificate({ d, dist, sku, batch }) {
+    const doc = window.SC3_LEDGER.draftCertificate(d), first = d.signatures && SIGN_ORDER.map(k => d.signatures[k] && d.signatures[k].at).filter(Boolean);
+    const place = (k, w) => (w && w.ink ? <span className="dz-signed"><S.Ink who={w} seal={k === "officer" ? doc.seal : null} h={k === "handed" ? 34 : 40} play delay={0.3 + SIGN_ORDER.indexOf(k) * 0.25} /><span className="cert-when">{w.ink.typed ? "typed" : "signed"} {w.ink.at.length > 5 ? w.ink.at.slice(11, 16) : w.ink.at}</span></span> : <span className="sig-none">not signed</span>);
+    return <div className="stack tight"><b className="t-subhead">The certificate, as signed at the facility</b>
+      <span className="t-footnote muted">Each signed in their own place{first && first.length ? `, ${first[0].slice(-5)} to ${first[first.length - 1].slice(-5)}` : ""} on {fmt.date(D.story().expiryDay)}</span>
+      <div className="dz-signedpaper"><div className="dz-zoom"><S.Certificate d={doc} c={{ dist, sku, batch }} draft={{ stamp: "SIGNED", place }} /></div></div></div>;
+  }
   function DestructionSheet({ open, onClose, d, x, dist, sku, batch }) {
     const [asking, setAsking] = useState(false); const [why, setWhy] = useState("");
+    const signed = !!(d && d.signatures && SIGN_ORDER.every(k => d.signatures[k]));
     const C = D.CLIENT.short, live = S.useLive();
     const close = () => { onClose(); setAsking(false); setWhy(""); };
     const act = (name, arg) => { if (live && live.destruction) live.destruction(name, arg); else Flow.act(name, arg); close(); };
@@ -433,10 +444,12 @@
       {d && <div className="stack" style={{ gap: 14 }}>
         <div className="row" style={{ gap: 12 }}><Product name={sku.img} size={44} alt="" /><div className="grow"><b>{sku.name} · {fmt.num(d.units)} packs</b><div className="t-footnote muted">Batch <span className="mono">{batch.id}</span> · expired at {dist.godown} · sent by {dist.name}</div></div></div>
         <div className="dz-two dz-pair">{["before", "after"].map(w => <div key={w} className="cam dz-cam"><S.Photo className="cam-feed whole" src={evidenceSrc(batch.id, w, d)} alt={w === "before" ? "The packs at the godown, the batch label in view" : "The packs slit open at the landfill, the slate in view"} /><span className="cam-tag">{w === "before" ? "Before" : "After"}{at(w)}</span></div>)}</div>
+        {signed && <SignedCertificate d={d} dist={dist} sku={sku} batch={batch} />}
         {asking ? <K.Field label={`What ${dist.short} should send again`} htmlFor="dz-why"><K.Textarea id="dz-why" rows={3} value={why} onChange={e => setWhy(e.target.value)} placeholder="The batch label is not readable in the before photo" /></K.Field>
           : <div className="stack" style={{ gap: 16 }}>
             <div className="stack tight"><b className="t-subhead">{possessive("Vision")} checks</b>{(d.checks || []).map(ck => <div key={ck.id} className="row tight t-subhead dz-check"><Icon name={ck.ok ? "circle-check" : "circle-alert"} size={16} className={ck.ok ? "dz-ok" : "dz-warn"} />{ck.label}</div>)}
-              {d.agency && <div className="row tight t-subhead dz-check"><Icon name="circle-check" size={16} className="dz-ok" />{d.agency.name} is on {possessive(C)} list (authorisation {d.agency.auth}) · certificate {d.certificate}</div>}</div>
+              {d.agency && <div className="row tight t-subhead dz-check"><Icon name="circle-check" size={16} className="dz-ok" />{d.agency.name} is on {possessive(C)} list (authorisation {d.agency.auth}) · certificate {d.certificate}</div>}
+              {signed && <div className="row tight t-subhead dz-check"><Icon name="circle-check" size={16} className="dz-ok" />Four signatures on the certificate: the officer, both witnesses and {dist.signatory ? dist.signatory.name.split(" ").find(w => w.replace(".", "").length > 1) || dist.signatory.name : dist.short}</div>}</div>
             {x && <div className="stack tight dz-yes"><b className="t-subhead">On your yes</b><List>
               <ListRow title={`Expiry credit note to ${dist.name}`} sub={`${fmt.num(x.units)} × ₹${sku.dp} + ${fmt.inr2(x.gst || 0)} GST he reverses + ${fmt.inr2(x.charges || 0)} destruction`} value={<span className="tnum">{fmt.inr2(x.amount)}</span>} />
               <ListRow title="Destruction certificate" sub={`${d.agency ? d.agency.name : "the agency"}, ${d.certificate || ""}`} value={<span className="tnum">{fmt.num(d.units)} packs</span>} />

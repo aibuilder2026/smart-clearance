@@ -88,6 +88,9 @@ export const COMPONENTS: Record<string, { sel: string; text?: string }> = {
 	PoweredBy: { sel: '.poweredby' },
 	SaveNote: { sel: '.save-note' },
 	Skeleton: { sel: '.skeleton' },
+	// a signature (SC-183): the pad, and the ink as drawn
+	SignPad: { sel: '.signpad' },
+	InkStrokes: { sel: '.inkstrokes, .ink-typed' },
 	Splash: { sel: '.splash' },
 	SplitBar: { sel: '.t-caption .tnum', text: 'units at risk' },
 	StatusBadge: { sel: '.badge[data-status]' },

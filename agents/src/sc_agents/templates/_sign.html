@@ -1,4 +1,5 @@
-{# the signatures (SC-174): each signatory's specimen signature in ink, over the firm's rubber stamp (a distributor's
+{# the signatures (SC-174): each signatory's specimen signature in ink (or, signed in place at the facility, the ink as
+   drawn, SC-183), over the firm's rubber stamp (a distributor's
    rectangle, the signature across its middle) or beside its round seal (a company's, an agency's), as design3's papers
    draw them. The images are the signature maker's (marks/signatures, marks/seals); `mark` gives one only when it is on
    file, and a signatory with none signs on the original, which the paper says. Styles in _sign.css #}
@@ -10,6 +11,7 @@
 {%- set hand = mark("signatures", who.sign) if who else none -%}
 {%- set s = mark("seals", seal) -%}
 {%- if not who -%}
+{%- elif who.ink -%}<span class="ink{% if s %} {{ stamp }}{% endif %}">{% if s %}<img class="seal" src="{{ s }}" alt="">{% endif %}{{ drawn(who.ink, who.name, h) }}</span>
 {%- elif not hand -%}<span class="sig-none">signed on the original</span>
 {%- elif stamp == "rect" and s -%}<span class="ink rect"><img class="seal" src="{{ s }}" alt=""><img class="hand" src="{{ hand }}" alt="Signed by {{ who.name }}" style="height: {{ h }}mm"></span>
 {%- elif s -%}<span class="ink {{ stamp }}"><img class="seal" src="{{ s }}" alt=""><img class="hand" src="{{ hand }}" alt="Signed by {{ who.name }}" style="height: {{ h }}mm"></span>

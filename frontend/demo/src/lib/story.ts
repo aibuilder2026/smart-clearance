@@ -1215,7 +1215,7 @@ export const ACTS: StoryAct[] = [
 						screen: 'Distributor · Today'
 					},
 					{
-						text: `Two photos (at the godown, then at the landfill with a slate), ${SS.agency!.name} and its certificate`,
+						text: `Two photos (at the godown, then at the landfill with a slate), and the certificate from ${SS.agency!.name}, signed in place by its officer, two witnesses and Rakesh bhai`,
 						who: 'rakesh',
 						focus: 'phone',
 						human: true,
@@ -1264,7 +1264,7 @@ export const ACTS: StoryAct[] = [
 						screen: 'Command Center · review'
 					},
 					{
-						text: "Both photos, Vision's checks, the agency on Munchly's list, and what her yes issues: she approves",
+						text: "Both photos, Vision's checks, the certificate as signed, and what her yes issues: she approves",
 						who: 'priya',
 						focus: 'desk',
 						human: true,

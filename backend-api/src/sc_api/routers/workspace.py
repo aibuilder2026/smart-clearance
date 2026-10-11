@@ -80,6 +80,18 @@ class Witness(Shape):
     address: str = Field(min_length=6, max_length=160)
 
 
+class Signature(Shape):
+    """one of the four signatures on the certificate, signed in place at the facility (SC-183): who signed, when (the
+    device's time, which backend-api reads on the journey's clock), and the strokes in the pad's box, or the name
+    typed"""
+
+    name: str = Field(min_length=3, max_length=80)
+    at: str = Field(max_length=40)
+    typed: bool = False
+    box: tuple[int, int] | None = None
+    strokes: list[list[tuple[float, float]]] | None = Field(default=None, max_length=120)
+
+
 class DestructionInput(Shape):
     agency: str = Field(max_length=40)
     certificate: str = Field(max_length=40)
@@ -87,6 +99,8 @@ class DestructionInput(Shape):
     # the certificate in full (SC-174): the window the agency destroyed them in, and its two independent witnesses
     window: DestructionWindow | None = None
     witnesses: list[Witness] | None = Field(default=None, min_length=2, max_length=2)
+    # the certificate signed in place by its officer, both witnesses and the distributor (SC-183)
+    signatures: dict[Literal["officer", "w1", "w2", "handed"], Signature] | None = None
 
 
 class ReasonInput(Shape):
@@ -446,7 +460,9 @@ async def destruction_photo(ws: str, ref: str, data: DestructionPhotoInput, ctx:
     return link
 
 
-@router.post(CASE + "/destruction", summary="The destruction's evidence: the agency, its certificate, two photos")
+@router.post(
+    CASE + "/destruction", summary="The destruction's evidence: the agency, its signed certificate, two photos"
+)
 async def send_destruction(
     ws: str, ref: str, data: DestructionInput, request: Request, ctx: MemberCtx
 ) -> dict[str, Any]:
@@ -457,7 +473,10 @@ async def send_destruction(
     witnesses = (
         [{"name": w.name.strip(), "address": w.address.strip()} for w in data.witnesses] if data.witnesses else None
     )
-    await steps.send_destruction(ctx, ws, ref, data.agency, data.certificate, photos, window, witnesses)
+    signatures = {k: v.model_dump(exclude_none=True) for k, v in data.signatures.items()} if data.signatures else None
+    await steps.send_destruction(
+        ctx, ws, ref, data.agency, data.certificate, photos, window, witnesses, signatures=signatures, signed=True
+    )
     return await _done(ctx, request, ws, ref)
 
 

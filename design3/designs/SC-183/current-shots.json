@@ -1,0 +1,36 @@
+[
+ {
+  "url": "http://localhost:8787/designs/SC-183/current/app.html?scn=slow&stage=8&after=expire&who=rakesh#/destroy/MF-2409-117",
+  "out": "current/destroy-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "full": true,
+  "wait": 2400
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/current/app.html?scn=slow&stage=8&after=expire&who=rakesh#/destroy/MF-2409-117",
+  "out": "current/destroy-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "full": true,
+  "wait": 2400
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/current/app.html?scn=slow&stage=8&after=expire,send&who=priya#/home",
+  "out": "current/review-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "click": [
+   "button:has-text('Review the destruction')"
+  ]
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=9&who=priya&opt=now&view=paper&theme=light#/home",
+  "out": "current/certificate-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "el": ".cert-pages > .paper.cert:first-child"
+ }
+]

@@ -14,9 +14,13 @@
 	import { useRoute } from '../../context';
 	import { castOf } from '../../model';
 	import { useWorkspace } from '../../source';
-	import type { DestructionStatus, User } from '../../types';
+	import { draftCertificate } from '../../certificate';
+	import type { DestructionStatus, Ink as InkT, SignatureRole, Signature, User } from '../../types';
 	import { dzPhoto, type DzWhich } from '../brand/destruction';
 	import Screen from '../common/Screen.svelte';
+	import Certificate from '../finance/Certificate.svelte';
+	import Ink from '../finance/Ink.svelte';
+	import SignSheet, { type Signed, type Signer } from './SignSheet.svelte';
 	import DistBatchLine from './DistBatchLine.svelte';
 	import { distJourneysOf, distOfMe } from './pt';
 
@@ -24,8 +28,9 @@
 	// an authorised agency, with two photos (before, at the godown with the batch label in view; after, at the landfill
 	// with the slate), the agency and its certificate number, and for the certificate in full (SC-174) the window the
 	// agency destroyed them in and two independent witnesses, the agency's own panel to start. Vision checks them, the
-	// client's operator gives the second yes, and the credit note and the certificate follow. A request on another batch
-	// acts on that batch (the address)
+	// client's operator gives the second yes, and the credit note and the certificate follow. The certificate is signed
+	// in place (SC-183, option B): laid out from what he enters, its officer, both witnesses and he each sign in their own
+	// place before it is sent. A request on another batch acts on that batch (the address)
 	let { me }: { me: User } = $props();
 	const ws = useWorkspace();
 	const router = useRoute();
@@ -110,9 +115,30 @@
 			wit = panel(agency);
 		}
 	});
+	// the four signatures, each in its own place on the certificate; sent again after the operator asked, what was
+	// signed before stands until it is cleared. A signature is its signer's: a witness renamed signs again
+	let sigs = $state<Partial<Record<SignatureRole, Signature>>>({});
+	let signing = $state<Signer | null>(null);
+	let kept = false;
+	$effect(() => {
+		if (!kept && full?.signatures) {
+			kept = true;
+			sigs = { ...full.signatures };
+		}
+	});
+	const unsign = (...roles: SignatureRole[]) => {
+		const r = { ...sigs };
+		roles.forEach((k) => delete r[k]);
+		sigs = r;
+	};
 	const setAgency = (id: string) => {
 		agency = id;
 		wit = panel(id);
+		unsign('officer', 'w1', 'w2');
+	};
+	const rename = (i: number, v: string) => {
+		wit[i].name = v;
+		unsign(i === 0 ? 'w1' : 'w2');
 	};
 	const a = $derived(agencies.find((x) => x.id === agency) ?? null);
 	const due = $derived(!!d && (d.status === 'requested' || d.status === 'asked'));
@@ -122,7 +148,123 @@
 	const witnessed = $derived(
 		wit.length === 2 && wit.every((w) => w.name.trim().length >= 3 && w.address.trim().length >= 6)
 	);
-	const ready = $derived(!!shots.before && !!shots.after && !!a && cert.trim().length >= 4 && timed && witnessed);
+	// who signs where, and the sentence each signs to, from what he entered above
+	const batch = $derived(
+		n ? (ws.case?.batch.id === n.ref ? ws.case.batch : (ws.data.batches.find((b) => b.id === n.ref) ?? null)) : null
+	);
+	const no = $derived(cert.trim() || (a ? `${a.series.prefix}…` : ''));
+	const people = $derived.by<Signer[]>(() => {
+		if (!a || !d || !n) return [];
+		const fac = (a.facility?.name ?? a.site ?? 'the facility').toLowerCase(),
+			day = fmt.date(batch?.bestBefore ?? ''),
+			how =
+				a.method === 'incineration' ? 'fed whole to the incinerator' : 'slit open, emptied into the cell and covered',
+			packs = `${fmt.num(d.units)} packs of batch ${n.ref}`,
+			sig = dist.signatory;
+		return [
+			{
+				role: 'officer',
+				n: 1,
+				label: 'Supervising officer',
+				name: a.officer?.name ?? '',
+				sub: `${a.officer?.title ?? ''}, ${a.name}`,
+				decl: [
+					'I supervised the destruction of these ',
+					packs,
+					` at the ${fac}, from ${win.from} to ${win.to} on ${day}: ${how}.`
+				]
+			},
+			...wit.map((w, i) => ({
+				role: (i === 0 ? 'w1' : 'w2') as SignatureRole,
+				n: i + 2,
+				label: `Independent witness ${i + 1}`,
+				name: w.name.trim(),
+				sub: w.address,
+				decl: [
+					'I watched these ',
+					packs,
+					` destroyed at the ${fac}, from ${win.from} to ${win.to} on ${day}. I do not work for ${dist.name} or ${a.name}.`
+				] as [string, string, string]
+			})),
+			{
+				role: 'handed',
+				n: 4,
+				label: 'Goods handed over by',
+				name: sig?.name ?? dist.name,
+				sub: `${sig?.title ?? ''}, ${dist.name}`,
+				decl: [
+					'I handed over ',
+					packs,
+					` from ${dist.godown} to ${a.name}, destroyed as set out on its certificate ${no}.`
+				]
+			}
+		];
+	});
+	const signedOk = (p: Signer) => !!p.name && sigs[p.role]?.name === p.name;
+	const nSigned = $derived(people.filter(signedOk).length);
+	const next = $derived(people.find((p) => !signedOk(p)) ?? null);
+	const plusMin = (t: string, m: number) => {
+		const [h, mm] = t.split(':').map(Number),
+			x = h * 60 + mm + m;
+		return `${String(Math.floor(x / 60) % 24).padStart(2, '0')}:${String(x % 60).padStart(2, '0')}`;
+	};
+	// on the live workspace a signature carries the device's time, which backend-api reads on the journey's clock; on
+	// the stub, a minute apart after the cover
+	const sign = (ink: Signed) => {
+		const p = signing!;
+		const at = live ? new Date().toISOString() : plusMin(win.to, 2 + nSigned);
+		sigs = {
+			...sigs,
+			[p.role]: { name: p.name, at, ...(ink.typed ? { typed: true } : { box: ink.box, strokes: ink.strokes }) }
+		};
+		signing = null;
+	};
+	const shownAt = (t: string) =>
+		t.length <= 5
+			? t
+			: /[zZ]|[+-]\d\d:?\d\d$/.test(t)
+				? new Date(t).toLocaleTimeString('en-IN', {
+						hour: '2-digit',
+						minute: '2-digit',
+						hour12: false,
+						timeZone: 'Asia/Kolkata'
+					})
+				: t.slice(11, 16);
+	const draft = $derived(
+		a && d && batch && sku
+			? draftCertificate(
+					{
+						status: d.status,
+						units: d.units,
+						agency: { id: a.id, name: a.name, auth: a.auth, site: a.site },
+						certificate: no,
+						window: timed ? win : null,
+						witnesses: wit,
+						signatures: sigs
+					},
+					{
+						batch,
+						sku,
+						dist,
+						expiry: ws.state.hero.expiry ?? null,
+						setup: ws.data.setup.destruction,
+						evidence: ws.case?.story?.evidence
+					}
+				)
+			: null
+	);
+	const ready = $derived(
+		!!shots.before && !!shots.after && !!a && cert.trim().length >= 4 && timed && witnessed && nSigned === 4
+	);
+	const need = $derived(
+		[
+			!(shots.before && shots.after) && 'both photos',
+			!(cert.trim().length >= 4) && 'the certificate number',
+			!timed && 'the time',
+			!witnessed && 'both witnesses',
+			nSigned < 4 && `${4 - nSigned} more ${4 - nSigned === 1 ? 'signature' : 'signatures'}`
+		].filter(Boolean)
+	);
 
 	const use = (id: DzWhich, f: File | undefined) => {
 		if (!f) return;
@@ -166,7 +308,8 @@
 					before: shots.before?.file,
 					after: shots.after?.file,
 					window: { ...win },
-					witnesses: wit.map((w) => ({ name: w.name.trim(), address: w.address.trim() }))
+					witnesses: wit.map((w) => ({ name: w.name.trim(), address: w.address.trim() })),
+					signatures: Object.fromEntries(people.map((p) => [p.role, sigs[p.role]!])) as Record<SignatureRole, Signature>
 				},
 				{ feel: live ? 0 : 700, ref: n.ref, inline: true }
 			);
@@ -190,6 +333,22 @@
 	const say = $derived(d ? SAY[d.status] : undefined);
 </script>
 
+{#snippet place(k: string, w: { name: string; sign?: string | null; ink?: InkT | null } | null | undefined)}{@const p =
+		people.find((x) => x.role === k)}{#if p}{#if w?.ink}<span class="dz-signed"
+				><Ink who={w} seal={k === 'officer' ? draft?.seal : null} h={k === 'handed' ? 34 : 40} /><span class="cert-when"
+					>{w.ink.typed ? 'typed' : 'signed'} here {shownAt(w.ink.at)}</span
+				><button
+					type="button"
+					class="dz-unsign"
+					onclick={() => unsign(k as SignatureRole)}
+					aria-label={`Clear ${whose(p.name)} signature`}>Clear</button
+				></span
+			>{:else}<button type="button" class="dz-here" onclick={() => (signing = p)} disabled={!p.name}
+				><span class="dz-here-n" aria-hidden="true">{p.n}</span>Sign here<span class="sr-only"
+					>: {p.name}, {p.label}</span
+				></button
+			>{/if}{/if}{/snippet}
+
 {#snippet badge()}<Badge
 		size="sm"
 		tone={due ? 'amber' : d?.status === 'approved' ? 'green' : 'blue'}
@@ -205,7 +364,7 @@
 			/></Card
 		></Screen
 	>{:else}<Screen {me} title="Destroy expired packs" sub={`Batch ${n.ref} · ${dist.godown}`} back="Today">
-		<div class="stack" style="gap: 16px; max-width: 640px; margin: 0 auto; width: 100%">
+		<div class="stack" style="gap: 16px; max-width: 760px; margin: 0 auto; width: 100%">
 			<DistBatchLine {sku} id={n.ref} {badge} sub={`${fmt.num(d.units)} packs expired at ${dist.godown}`} />
 			{#if d.status === 'asked'}<p class="cam-alert" role="alert">
 					<Icon name="rotate-ccw" size={15} />{op?.short ?? C} asked again: {d.reason}
@@ -213,7 +372,7 @@
 			{#if due}<Card class="stack snug">
 					<span class="t-subhead"
 						>Destroy the {fmt.num(d.units)} packs through an authorised agency, then send the two photos and the agency's
-						certificate number. {op?.short ?? C} at {C} approves, and {C} credits you the dealer price, the GST you reverse
+						certificate, signed. {op?.short ?? C} at {C} approves, and {C} credits you the dealer price, the GST you reverse
 						and the agency's charges.</span
 					>
 					<div class="dz-two">
@@ -305,11 +464,34 @@
 					>
 					{#each wit as w, i (i)}<div class="dz-fields">
 							<Field label={`Witness ${i + 1} · name`} htmlFor={`dz-w${i}`}
-								><Input id={`dz-w${i}`} bind:value={w.name} autocomplete="off" /></Field
+								><Input
+									id={`dz-w${i}`}
+									value={w.name}
+									oninput={(e: Event) => rename(i, (e.currentTarget as HTMLInputElement).value)}
+									autocomplete="off"
+								/></Field
 							><Field label="Address" htmlFor={`dz-w${i}a`}
 								><Input id={`dz-w${i}a`} bind:value={w.address} autocomplete="off" /></Field
 							>
 						</div>{/each}
+					{#if draft && a}<span class="t-headline" style="margin-top: 6px">Sign the certificate</span>
+						<span class="t-footnote muted"
+							>{whose(a.name)} certificate {no}, laid out from what you entered above. Once the cover is done, hand the
+							device to each of them in turn: each signs in their own place, as on paper. {op?.short ?? C} reviews this page
+							as signed.</span
+						>
+						<div class="dz-progress" role="status">
+							<span class="dz-bar" aria-hidden="true"><i style="transform: scaleX({nSigned / 4})"></i></span><b
+								>{nSigned} of 4 signed</b
+							>{#if next}<span class="muted">· next: {next.name || next.label}</span>{/if}
+						</div>
+						<div class="dz-paper">
+							<Certificate
+								d={draft}
+								c={{ dist, sku, batch: batch! }}
+								draft={{ stamp: 'TO SIGN', place, approver: op?.name ?? C }}
+							/>
+						</div>{/if}
 					{#if err}<p class="cam-alert" role="alert"><Icon name="triangle-alert" size={15} />{err}</p>{/if}
 					<Button
 						variant="primary"
@@ -325,7 +507,7 @@
 					<span id="dz-need" class="t-caption subtle"
 						>{ready
 							? `Then reverse ${fmt.inr2(his)} of input GST on these packs in your GSTR-3B (Table 4(B)(1)). ${whose(C)} credit note makes it good.`
-							: `Both photos, the certificate number, the time and both witnesses are needed. ${RULE}.`}</span
+							: `Still needed: ${need.join(', ')}. ${RULE}.`}</span
 					>
 				</Card>{:else if say}<Card class="stack snug">
 					<div class="row" style="gap: 12px">
@@ -356,4 +538,5 @@
 					>
 				</Card>{/if}
 		</div>
+		<SignSheet who={signing} onclose={() => (signing = null)} onsign={sign} />
 	</Screen>{/if}

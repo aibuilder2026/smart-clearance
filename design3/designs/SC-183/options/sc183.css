@@ -1,0 +1,90 @@
+/* SC-183's options: live signatures on the certificate of destruction. The pads are paper in both themes: a signature
+   is ink on a white page, as on the certificate it goes on. Text on the paper keeps its own inks (measured on #fdfcf9) */
+:root { --s183-paper: #fdfcf9; --s183-line: #c4cac5; --s183-ink-2: #3f4743; --s183-go: #14674a; }
+
+/* ---- the ink ---- */
+.s183-ink { display: block; flex: none; max-width: 100%; overflow: visible; }
+
+/* ---- A · four places on his screen ---- */
+.s183-slots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@container app (max-width: 600px) { .s183-slots { grid-template-columns: minmax(0, 1fr); } }
+.s183-slot { display: grid; gap: 8px; align-content: start; padding: 12px; border-radius: 14px; background: var(--fill); }
+.s183-slot-h { display: grid; gap: 1px; min-width: 0; }
+.s183-slot-h .t-footnote { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.s183-pad { position: relative; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 92px; padding: 10px 12px; border: 1.5px dashed var(--s183-line); border-radius: 12px; background: var(--s183-paper); color: var(--s183-go); font: 600 15px/1.2 var(--font-ui); cursor: pointer; transition: border-color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease); }
+button.s183-pad:hover { border-color: var(--s183-go); }
+button.s183-pad:focus-visible { outline: 2px solid var(--focus, var(--primary)); outline-offset: 2px; }
+.s183-pad.on { cursor: default; border-style: solid; border-color: #dfe3df; justify-content: flex-start; padding: 8px 14px 22px; }
+.s183-pad.on::after { content: ""; position: absolute; left: 14px; right: 14px; bottom: 20px; border-bottom: 1px solid #d4d9d4; }
+.s183-pad.mini { min-height: 56px; padding: 6px 10px; }
+.s183-pad.mini::after { display: none; }
+.s183-pad-at { position: absolute; left: 14px; bottom: 3px; display: inline-flex; align-items: center; gap: 4px; font: 600 11.5px/1.2 var(--font-ui); color: var(--s183-go); }
+.s183-clear { position: absolute; right: 6px; top: 4px; min-height: 32px; padding: 0 8px; border: 0; border-radius: 8px; background: transparent; color: var(--s183-ink-2); font: 500 12.5px/1 var(--font-ui); cursor: pointer; }
+.s183-clear:hover { background: rgb(0 0 0 / 0.05); }
+
+/* ---- the sheet's pad ---- */
+.s183-decl { padding: 12px 14px; border-radius: 12px; background: var(--fill); font-size: 14.5px; line-height: 1.45; }
+.s183-pad-big { position: relative; border: 1.5px solid #d4d9d4; border-radius: 14px; background: var(--s183-paper); overflow: hidden; }
+.s183-pad-big svg { display: block; width: 100%; height: auto; aspect-ratio: 640 / 220; touch-action: none; cursor: crosshair; }
+.s183-base { stroke: #b8beb9; stroke-width: 1.2; }
+.s183-x { fill: #8a918c; font: 500 22px var(--font-ui); }
+.s183-under { position: absolute; left: 0; right: 0; bottom: 8px; text-align: center; font: 500 12px var(--font-ui); color: var(--s183-ink-2); }
+.s183-pad-big .s183-clear { top: 6px; right: 8px; }
+.s183-avatar { display: grid; place-items: center; width: 40px; height: 40px; flex: none; border-radius: 99px; background: var(--primary-soft); color: var(--primary-text); font: 700 14px var(--font-ui); }
+
+/* ---- B · signed on the certificate ---- */
+.s183-progress { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; font-size: 13.5px; }
+.s183-bar { position: relative; width: 120px; height: 6px; border-radius: 99px; background: var(--fill-2); overflow: hidden; }
+.s183-bar i { position: absolute; inset: 0; border-radius: inherit; background: var(--primary); transform-origin: left center; transition: transform var(--t-base) var(--ease); }
+.s183-paperframe { padding: 12px; border-radius: 14px; background: var(--fill); }
+.s183-cert .cert-pages { gap: 0; }
+.s183-cert.draft .paper.cert:nth-child(2) { display: none; }
+.s183-here { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px 0 6px; border: 0; border-radius: 99px; background: var(--amber); color: var(--amber-fg); font: 650 13.5px/1 var(--font-ui); cursor: pointer; box-shadow: 0 1px 0 rgb(0 0 0 / 0.08); }
+.s183-here:focus-visible { outline: 2px solid #161a18; outline-offset: 2px; }
+.s183-here-n { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 99px; background: rgb(255 255 255 / 0.55); font-size: 12.5px; }
+.s183-sheetpaper { border-radius: 12px; background: var(--fill); padding: 8px; overflow: hidden; }
+.s183-sheetpaper .s183-cert { zoom: 0.72; }
+.s183-sheetpaper .paper.cert:nth-child(2) { display: none; }
+
+/* ---- C · each on their own phone ---- */
+.s183-rows { display: grid; gap: 8px; }
+.s183-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 14px; background: var(--fill); }
+.s183-row-who { display: grid; gap: 1px; min-width: 0; }
+.s183-row-who .mono { font-size: 11.5px; word-break: break-all; }
+.s183-row-at { display: inline-flex; align-items: center; gap: 4px; font: 600 12.5px/1.3 var(--font-ui); color: var(--primary-text); }
+.s183-row-end { display: flex; align-items: center; }
+.s183-qr { display: block; border-radius: 6px; }
+@container app (max-width: 600px) { .s183-row { grid-template-columns: auto minmax(0, 1fr); } .s183-row-end { grid-column: 2; } }
+body.s183-solo #root { display: none; }
+html:has(body.s183-solo), body.s183-solo { height: auto !important; overflow: auto !important; }
+.s183-phone { position: relative; z-index: 1; max-width: 430px; margin: 0 auto; min-height: 100vh; background: var(--bg); }
+.s183-phone-bar { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 8px; height: 52px; padding: 0 18px; background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 var(--hair) 0 var(--line); }
+.s183-mark { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: var(--primary); color: #fff; font: 800 14px var(--font-display); }
+.s183-facts { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 14px; padding: 12px 14px; border-radius: 12px; background: var(--fill); font-size: 13.5px; }
+.s183-facts span { color: var(--fg-3); }
+.s183-done { display: grid; gap: 8px; justify-items: start; padding: 16px; border-radius: 14px; background: var(--s183-paper); color: #161a18; }
+.s183-done b { display: inline-flex; align-items: center; gap: 6px; color: var(--s183-go); }
+.s183-done .muted { color: var(--s183-ink-2); }
+
+/* ---- Priya's review: the four signatures, replayed once as drawn ---- */
+.s183-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.s183-tile { display: grid; gap: 1px; padding: 10px 12px; border-radius: 12px; background: var(--s183-paper); color: #161a18; border: 1px solid #e3e6e2; }
+.s183-tile .t-caption { color: #4f5853 !important; }
+.s183-tile-ink { display: flex; align-items: center; height: 56px; margin-bottom: 2px; border-bottom: 1px solid #dfe3df; }
+.s183-tile-at { font: 600 11.5px/1.3 var(--font-ui); color: var(--s183-go); margin-top: 2px; }
+
+/* ---- the certificate's places: the paper's own signature hidden, ours in its place ---- */
+.s183-patched > :not(.s183-spot) { display: none !important; }
+.cert-ink.s183-patched { min-height: 66px; }
+.s183-spot { display: inline-flex; }
+.s183-spot-in { display: grid; gap: 2px; justify-items: start; }
+.s183-spot .sig-hand { height: var(--h, 40px); }
+.s183-spot .sig-ink.round .sig-seal { left: auto; right: -78px; width: 80px; height: 80px; margin-top: -46px; }
+.s183-when { font: 500 9.5px/1.2 var(--font-mono); color: #4b5550; }
+.cert-ini.s183-patched { display: table-cell; }
+.cert-ini .s183-spot { margin-right: 6px; vertical-align: middle; }
+
+/* the second root (Priya's sheet, the phone page, the certificate's places) draws over the app, not under it */
+#s183 > .app-window { display: none; }
+body.s183-solo #s183 > .app-window { display: block; }
+.s183-paperpage { position: relative; z-index: 1; display: grid; gap: 10px; max-width: 820px; margin: 0 auto; padding: 28px var(--page-x, 16px) 48px; }

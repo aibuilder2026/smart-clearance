@@ -14,11 +14,13 @@ from tests.test_workspace import (
     HERO,
     INVOKER,
     LAKSHMI,
+    PEN,
     PRIYA,
     RAKESH,
     J,
     agent,
     case,
+    signatures,
     to_plan,
 )
 
@@ -102,11 +104,13 @@ async def test_the_packs_left_wait_for_his_evidence_and_the_operators_yes(api, m
     )
     assert r.status_code == 403 and "holding this batch" in r.json()["message"]
     ids = await photos(api, cloud)
-    send = lambda **b: api.post(  # noqa: E731
-        f"{WS}/cases/{HERO}/destruction",
-        json={"agency": "oce", "certificate": "OCE/DC/26-27/0219", "photos": ids} | b,
-        headers=RAKESH,
-    )
+    named = None  # the witnesses he names, once he has
+
+    def send(**b):
+        sig = signatures("oce", witnesses=b.get("witnesses") or named)
+        body = {"agency": "oce", "certificate": "OCE/DC/26-27/0219", "photos": ids, "signatures": sig}
+        return api.post(f"{WS}/cases/{HERO}/destruction", json=body | b, headers=RAKESH)
+
     r = await send(agency="dgw")
     assert r.status_code == 422 and r.json()["message"] == "Deccan Green Waste Management is not authorised in Nagpur."
     assert (await send(agency="nobody")).status_code == 422
@@ -124,13 +128,49 @@ async def test_the_packs_left_wait_for_his_evidence_and_the_operators_yes(api, m
         {"name": "Pradeep Meshram", "address": "Plot 22, Wathoda Layout, Nagpur 440035"},
         {"name": "Neeta Bhagat", "address": "House 4, Kalamna Basti, Nagpur 440035"},
     ]
-    r = await send(window={"from": "12:55", "to": "13:20"}, witnesses=witnesses)
+    # the certificate signed in place (SC-183): all four, each by the name the certificate prints, drawn or typed
+    r = await send(window={"from": "12:55", "to": "13:20"}, witnesses=witnesses, signatures=None)
+    assert r.status_code == 422 and r.json()["message"] == (
+        "The officer, both witnesses and you sign the certificate before it is sent."
+    )
+    three = signatures("oce", witnesses=witnesses)
+    del three["handed"]
+    assert (
+        await send(window={"from": "12:55", "to": "13:20"}, witnesses=witnesses, signatures=three)
+    ).status_code == 422
+    wrong = signatures(
+        "oce", witnesses=witnesses, w2={"name": "Asha Kale", "at": "2026-10-11T13:24:00+05:30", "typed": True}
+    )
+    r = await send(window={"from": "12:55", "to": "13:20"}, witnesses=witnesses, signatures=wrong)
+    assert r.status_code == 422 and r.json()["message"] == "Asha Kale signed where the certificate names Neeta Bhagat."
+    blank = signatures("oce", witnesses=witnesses, officer={"name": "Sachin Bhoyar", "at": "x", "strokes": []})
+    r = await send(window={"from": "12:55", "to": "13:20"}, witnesses=witnesses, signatures=blank)
+    assert r.status_code == 422 and r.json()["message"] == "Sachin Bhoyar's signature did not come through. Sign again."
+    typed = {"name": "Neeta Bhagat", "at": "not a time", "typed": True}
+    r = await send(
+        window={"from": "12:55", "to": "13:20"},
+        witnesses=witnesses,
+        signatures=signatures("oce", witnesses=witnesses, w2=typed),
+    )
     assert r.status_code == 200, r.text
+    named = witnesses
     sent = (await case(api, PRIYA))["destruction"]
     assert sent["window"] == {"from": "12:55", "to": "13:20"} and [w["name"] for w in sent["witnesses"]] == [
         "Pradeep Meshram",
         "Neeta Bhagat",
     ]
+    # Priya reads the four as signed, each on the journey's clock; a time that is no device's is the moment it came
+    sig = sent["signatures"]
+    assert sorted(sig) == ["handed", "officer", "w1", "w2"]
+    assert (sig["officer"]["name"], sig["officer"]["box"], sig["officer"]["strokes"]) == (
+        "Sachin Bhoyar",
+        [640, 220],
+        PEN,
+    )
+    assert (sig["w2"]["name"], sig["w2"]["typed"], "strokes" in sig["w2"]) == ("Neeta Bhagat", True, False)
+    assert sig["handed"]["name"] == "Rakesh Jaiswal" and all(
+        len(g["at"]) == 16 and g["at"][10] == "T" for g in sig.values()
+    )
     dz = (await case(api, PRIYA))["destruction"]
     assert dz["status"] == "reading" and dz["agency"]["name"] == "Orange City Enviro Services"
     assert dz["photos"]["before"]["url"].startswith("https://storage.test/photos-test/")
@@ -161,7 +201,9 @@ async def test_the_packs_left_wait_for_his_evidence_and_the_operators_yes(api, m
 
     # sent again, it checks, and the yes has Impact report
     ids = await photos(api, cloud)
-    assert (await send(certificate="OCE/DC/26-27/0220")).status_code == 200
+    assert (
+        await send(certificate="OCE/DC/26-27/0220", signatures=signatures("oce", witnesses=named, w2=typed))
+    ).status_code == 200
     await agent(api, f"/cases/{HERO}/destruction/check", "vision-dz-2", "vision", read=read(left))
     dz = (await case(api, PRIYA))["destruction"]
     assert dz["status"] == "checked" and all(x["ok"] for x in dz["checks"]), dz["checks"]
@@ -221,12 +263,19 @@ async def test_the_packs_left_wait_for_his_evidence_and_the_operators_yes(api, m
         {"from": "12:55", "to": "13:20"},
     )
     assert cert["facility"]["name"] == "Municipal sanitary landfill, cell 4" and cert["vehicle"] == "MH-31-ZX-0000"
-    assert (cert["officer"]["name"], cert["officer"]["sign"], cert["seal"]) == ("Sachin Bhoyar", "oce", "oce")
-    assert [(w["name"], w["sign"]) for w in cert["witnesses"]] == [
-        ("Pradeep Meshram", "oce-w1"),
-        ("Neeta Bhagat", None),
+    # signed in place (SC-183): each signer's ink where a specimen was, the seal still the agency's
+    assert (cert["officer"]["name"], cert["officer"]["sign"], cert["seal"]) == ("Sachin Bhoyar", None, "oce")
+    assert cert["officer"]["ink"]["strokes"] == PEN and cert["officer"]["ink"]["typed"] is False
+    assert [(w["name"], w["sign"], w["ink"]["typed"]) for w in cert["witnesses"]] == [
+        ("Pradeep Meshram", None, False),
+        ("Neeta Bhagat", None, True),
     ]
-    assert cert["handedBy"] == {"name": "Rakesh Jaiswal", "title": "Proprietor", "sign": "rakesh"}
+    assert {k: cert["handedBy"][k] for k in ("name", "title", "sign")} == {
+        "name": "Rakesh Jaiswal",
+        "title": "Proprietor",
+        "sign": None,
+    }
+    assert cert["handedBy"]["ink"]["box"] == [640, 220]
     steps_ = [x["step"] for x in cert["log"]]
     assert steps_[0] == "Photographed at the godown" and steps_[-1] == "Packaging sent on" and len(steps_) == 7
     assert [x["at"][11:] for x in cert["log"]][2:6] == ["12:40", "12:55", "13:10", "13:20"]
@@ -276,7 +325,7 @@ async def test_with_visions_check_off_it_goes_straight_to_the_operator(api, munc
     await ctx.session.commit()
     await leftover(api, cloud, neha)
     ids = await photos(api, cloud)
-    body = {"agency": "vwc", "certificate": "VWC/DC/26-27/0041", "photos": ids}
+    body = {"agency": "vwc", "certificate": "VWC/DC/26-27/0041", "photos": ids, "signatures": signatures("vwc")}
     assert (await api.post(f"{WS}/cases/{HERO}/destruction", json=body, headers=RAKESH)).status_code == 200
     dz = (await case(api, PRIYA))["destruction"]
     assert (dz["status"], dz["checks"]) == ("checked", [])

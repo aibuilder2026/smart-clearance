@@ -1,0 +1,275 @@
+[
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=a&sig=part&theme=light#/destroy/MF-2409-117",
+  "out": "option-a/dist-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "js": "document.querySelector('.s183-slots').scrollIntoView({block:'center'})"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=a&sig=part&theme=dark#/destroy/MF-2409-117",
+  "out": "option-a/dist-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2400,
+  "js": "document.querySelector('.s183-slots').scrollIntoView({block:'center'})"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=a&sig=part&theme=light#/destroy/MF-2409-117",
+  "out": "option-a/dist-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "js": "document.querySelector('.s183-slots').scrollIntoView({block:'center'})"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=a&sig=part&theme=dark#/destroy/MF-2409-117",
+  "out": "option-a/dist-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2400,
+  "js": "document.querySelector('.s183-slots').scrollIntoView({block:'center'})"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=a&sig=done&theme=light#/destroy/MF-2409-117",
+  "out": "option-a/done-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "js": "document.querySelector('.s183-slots').scrollIntoView({block:'center'})"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=a&view=sign&theme=light#/destroy/MF-2409-117",
+  "out": "option-a/sign-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=a&view=sign&theme=light#/destroy/MF-2409-117",
+  "out": "option-a/sign-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=a&view=sign&theme=dark#/destroy/MF-2409-117",
+  "out": "option-a/sign-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2600
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire,send&who=priya&opt=a&view=priya&theme=light#/home",
+  "out": "option-a/priya-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 4200
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire,send&who=priya&opt=a&view=priya&theme=dark#/home",
+  "out": "option-a/priya-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 4200
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire,send&who=priya&opt=a&view=priya&theme=light#/home",
+  "out": "option-a/priya-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 4200
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=9&who=priya&opt=a&view=paper&theme=light#/home",
+  "out": "option-a/paper-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "el": ".s183-paperpage"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=b&sig=part&theme=light#/destroy/MF-2409-117",
+  "out": "option-b/dist-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "js": "document.querySelector('.s183-paperframe').scrollIntoView({block:'start'})"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=b&sig=part&theme=dark#/destroy/MF-2409-117",
+  "out": "option-b/dist-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2400,
+  "js": "document.querySelector('.s183-paperframe').scrollIntoView({block:'start'})"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=b&sig=part&theme=light#/destroy/MF-2409-117",
+  "out": "option-b/dist-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "js": "document.querySelector('.s183-paperframe').scrollIntoView({block:'start'})"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=b&sig=part&theme=dark#/destroy/MF-2409-117",
+  "out": "option-b/dist-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2400,
+  "js": "document.querySelector('.s183-paperframe').scrollIntoView({block:'start'})"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=b&sig=done&theme=light#/destroy/MF-2409-117",
+  "out": "option-b/done-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "js": "document.querySelector('.s183-paperframe').scrollIntoView({block:'start'})"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=b&view=sign&theme=light#/destroy/MF-2409-117",
+  "out": "option-b/sign-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=b&view=sign&theme=light#/destroy/MF-2409-117",
+  "out": "option-b/sign-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=b&view=sign&theme=dark#/destroy/MF-2409-117",
+  "out": "option-b/sign-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2600
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire,send&who=priya&opt=b&view=priya&theme=light#/home",
+  "out": "option-b/priya-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 4200
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire,send&who=priya&opt=b&view=priya&theme=dark#/home",
+  "out": "option-b/priya-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 4200
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire,send&who=priya&opt=b&view=priya&theme=light#/home",
+  "out": "option-b/priya-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 4200
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=9&who=priya&opt=b&view=paper&theme=light#/home",
+  "out": "option-b/paper-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "el": ".s183-paperpage"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=c&sig=part&theme=light#/destroy/MF-2409-117",
+  "out": "option-c/dist-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "js": "document.querySelector('.s183-rows').scrollIntoView({block:'center'})"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=c&sig=part&theme=dark#/destroy/MF-2409-117",
+  "out": "option-c/dist-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2400,
+  "js": "document.querySelector('.s183-rows').scrollIntoView({block:'center'})"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=c&sig=part&theme=light#/destroy/MF-2409-117",
+  "out": "option-c/dist-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "js": "document.querySelector('.s183-rows').scrollIntoView({block:'center'})"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=c&sig=part&theme=dark#/destroy/MF-2409-117",
+  "out": "option-c/dist-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2400,
+  "js": "document.querySelector('.s183-rows').scrollIntoView({block:'center'})"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=c&sig=done&theme=light#/destroy/MF-2409-117",
+  "out": "option-c/done-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "js": "document.querySelector('.s183-rows').scrollIntoView({block:'center'})"
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=c&view=phone&theme=light#/home",
+  "out": "option-c/phone-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=c&view=phone&theme=dark#/home",
+  "out": "option-c/phone-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 2400,
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire&who=rakesh&opt=c&view=phone&sig=done&theme=light#/home",
+  "out": "option-c/phone-done-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2400,
+  "full": true
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire,send&who=priya&opt=c&view=priya&theme=light#/home",
+  "out": "option-c/priya-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 4200
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire,send&who=priya&opt=c&view=priya&theme=dark#/home",
+  "out": "option-c/priya-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 4200
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=8&after=expire,send&who=priya&opt=c&view=priya&theme=light#/home",
+  "out": "option-c/priya-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 4200
+ },
+ {
+  "url": "http://localhost:8787/designs/SC-183/options/mockup.html?scn=slow&stage=9&who=priya&opt=c&view=paper&theme=light#/home",
+  "out": "option-c/paper-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2400,
+  "el": ".s183-paperpage"
+ }
+]

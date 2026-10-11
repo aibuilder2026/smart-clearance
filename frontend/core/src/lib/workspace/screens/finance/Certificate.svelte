@@ -1,9 +1,11 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
 	import { imgUrl } from '../../../assets';
+	import InkStrokes from '../../../components/InkStrokes.svelte';
 	import { fmt } from '../../model';
 	import { signUrl } from '../../marks';
 	import { useWorkspace } from '../../source';
-	import type { CaseData, Doc } from '../../types';
+	import type { CaseData, Doc, Ink as InkT } from '../../types';
 	import { evidenceFile } from '../brand/destruction';
 	import Photo from '../common/Photo.svelte';
 	import { recWhen } from '../record/record';
@@ -13,8 +15,19 @@
 	// his godown (SC-139). Page 1, the certificate: the goods, the reason, the agency's method, the facility, the day and
 	// the window, with its supervising officer's and two independent witnesses' signatures and the agency's seal, who
 	// handed the packs over and whose yes approved the evidence; page 2, the destruction log from the godown to the cover,
-	// with the two photos, initialled at every step by all three. Until the evidence is approved it waits
-	let { d, c }: { d: Doc; c: CaseData } = $props();
+	// with the two photos, initialled at every step by all three. Until the evidence is approved it waits. `draft`
+	// (SC-183, option B): the certificate before the operator's yes, page 1 alone, for the four to sign on (`place` puts
+	// a Sign here, or the ink, in each signature's own place) and for her to review as signed (`stamp`)
+	type Signer = {
+		name: string;
+		sign?: string | null;
+		title?: string;
+		address?: string;
+		proof?: string | null;
+		ink?: InkT | null;
+	};
+	type Draft = { stamp: string; place: Snippet<[string, Signer | null | undefined]>; approver: string };
+	let { d, c, draft }: { d: Doc; c: CaseData | Pick<CaseData, 'dist' | 'sku' | 'batch'>; draft?: Draft } = $props();
 	const ws = useWorkspace();
 	const W = $derived(ws.data.workspace);
 	const R = $derived(c.dist);
@@ -39,8 +52,9 @@
 	const fac = $derived(d.facility || { name: d.site ?? '', address: '', gps: '' });
 	const on = $derived(d.destroyedOn || (d.destroyedAt || '').slice(0, 10));
 	const win = $derived(d.window || { from: '', to: hhmm(d.destroyedAt) });
-	// who signs it: the agency's officer, with its seal, and the two witnesses
-	type Signer = { name: string; sign?: string | null; title?: string; address?: string; proof?: string | null };
+	// who signs it: the agency's officer, with its seal, and the two witnesses; signed in place at the facility, when
+	// (SC-183)
+	const inkAt = (t: string) => (t.length > 5 ? t.slice(11, 16) : t);
 	const sigs = $derived<[string, string, Signer | null | undefined][]>([
 		['officer', 'Supervising officer', d.officer],
 		['w1', 'Independent witness 1', (d.witnesses || [])[0]],
@@ -79,7 +93,11 @@
 		><span class={strong ? 'pp-strong' : ''}>{v}</span>
 	</div>{/snippet}
 
-{#if d.status !== 'generated'}<div class="paper pp">
+{#snippet when(w: Signer | null | undefined)}{#if w?.ink}<span class="cert-when"
+			>{w.ink.typed ? 'typed' : 'signed'} {inkAt(w.ink.at)}</span
+		>{/if}{/snippet}
+
+{#if d.status !== 'generated' && !draft}<div class="paper pp">
 		<div class="pp-head">
 			<div>
 				<div class="pp-title">Destruction certificate</div>
@@ -107,7 +125,7 @@
 					<b>{(d.agency || '').toUpperCase()}</b><span>Authorised waste-management agency · authorisation {d.auth}</span
 					>
 				</div>
-				<span class="pp-stamp ok">DESTROYED</span>
+				<span class={draft ? 'pp-stamp' : 'pp-stamp ok'}>{draft ? draft.stamp : 'DESTROYED'}</span>
 			</div>
 			<div class="cert-t">Certificate of Destruction</div>
 			<div class="cert-m">
@@ -122,8 +140,13 @@
 				{#each sigs as [k, label, w] (k)}<div class="cert-sig">
 						<span class="cert-k">{label}</span>
 						<div class="cert-ink">
-							{#if w}<Ink who={w} seal={k === 'officer' ? d.seal : null} h={40} />{/if}
+							{#if draft}{@render draft.place(k, w)}{:else if w}<Ink
+									who={w}
+									seal={k === 'officer' ? d.seal : null}
+									h={40}
+								/>{/if}
 						</div>
+						{#if !draft}{@render when(w)}{/if}
 						<b>{w ? w.name : '—'}</b><span
 							>{k === 'officer' ? (w ? `${w.title}, ${d.agency}` : '') : w ? w.address : ''}</span
 						>{#if w?.proof}<span class="mono">{w.proof}</span>{/if}
@@ -132,21 +155,25 @@
 			<div class="cert-hand">
 				<div>
 					<span class="cert-k">Goods handed over by</span>{#if d.handedBy}<div class="cert-ink">
-							<Ink who={d.handedBy} h={34} />
-						</div>{/if}<b>{d.handedBy ? d.handedBy.name : F.name}</b><span
+							{#if draft}{@render draft.place('handed', d.handedBy)}{:else}<Ink who={d.handedBy} h={34} />{/if}
+						</div>{/if}{#if !draft}{@render when(d.handedBy)}{/if}<b>{d.handedBy ? d.handedBy.name : F.name}</b><span
 						>{d.handedBy ? `${d.handedBy.title}, ${F.name}` : ''}</span
 					>
 				</div>
-				<div>
-					<span class="cert-k">Evidence approved by</span><b>{d.approvedBy}</b><span
-						>for {ws.data.client.name}, {recWhen(d.approvedAt)}</span
-					><span class="muted"
-						>two photos · Vision's checks {d.evidence ? `${d.evidence.checks} of ${d.evidence.of}` : ''}</span
-					>
-				</div>
+				{#if draft}<div>
+						<span class="cert-k">Evidence approved by</span><b>{draft.approver}</b><span
+							>for {ws.data.client.name}, once she has reviewed it</span
+						>
+					</div>{:else}<div>
+						<span class="cert-k">Evidence approved by</span><b>{d.approvedBy}</b><span
+							>for {ws.data.client.name}, {recWhen(d.approvedAt)}</span
+						><span class="muted"
+							>two photos · Vision's checks {d.evidence ? `${d.evidence.checks} of ${d.evidence.of}` : ''}</span
+						>
+					</div>{/if}
 			</div>
 		</div>
-		{#if d.log}<div class="paper cert">
+		{#if d.log && !draft}<div class="paper cert">
 				<div class="cert-m"><span><b>Destruction log</b> · {d.no}</span><span>Page 2 of 2</span></div>
 				<table class="cert-log">
 					<thead><tr><th>Time</th><th>Step</th><th>Detail</th><th>Initials</th></tr></thead>
@@ -163,7 +190,12 @@
 											/></span
 										>{/if}</td
 								><td class="cert-ini"
-									>{#each initials as w (w.name)}{#if w.sign}<img
+									>{#each initials as w (w.name)}{#if w.ink && !w.ink.typed}<InkStrokes
+												class="cert-ini-ink"
+												ink={w.ink}
+												name={w.name}
+												h={15}
+											/>{:else if w.sign && !w.ink}<img
 												src={signUrl(w.sign)}
 												alt="Initialled by {w.name}"
 											/>{:else}<span class="cert-ini-none">{initialsOf(w.name)}</span>{/if}{/each}</td

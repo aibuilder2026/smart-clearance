@@ -39,9 +39,10 @@
 		"vitest": "catalog:"
 	},
 	"a11yCoverage": {
-		"why": "The demo's people are the story's: the workspace admin is never one of them and switching person is off, so the admin's screens, and the workspace app's own shell, are never on the demo's screen (SC-65). On Neha's laptop the console shows its sign-in, Overview, Clients, New client and a client's Agents, Supply chain, Channels & rules and People tabs (SC-167); its Connectors, Plans, Staff and Audit log pages, the account sheet, the client's actions menu and its Integrations and Plan tabs, and the sheets opened from a tab (an SKU's gates, the profile, the journey day, Reset journey) are never visited.",
+		"why": "The demo's people are the story's: the workspace admin is never one of them and switching person is off, so the admin's screens, and the workspace app's own shell, are never on the demo's screen (SC-65). On Neha's laptop the console shows its sign-in, Overview, Clients, New client and a client's Agents, Supply chain, Channels & rules and People tabs (SC-167); its Connectors, Plans, Staff and Audit log pages, the account sheet, the client's actions menu and its Integrations and Plan tabs, and the sheets opened from a tab (an SKU's gates, the profile, the journey day, Reset journey) are never visited. On the slow line the story signs the certificate itself as Next moves on, so the sheet a signature is drawn in is never opened (SC-183).",
 		"unreached": [
 			"workspace/WorkspaceApp.svelte",
+			"workspace/screens/trade/SignSheet.svelte",
 			"workspace/screens/admin/WorkspaceSettings.svelte",
 			"workspace/screens/admin/Users.svelte",
 			"workspace/screens/admin/RowMenu.svelte",

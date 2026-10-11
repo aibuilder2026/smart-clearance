@@ -1,4 +1,5 @@
-import { expect } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { as, caseAs, hero, inr, running, story, until, type Step } from './flow.ts';
 
@@ -11,6 +12,50 @@ import { as, caseAs, hero, inr, running, story, until, type Step } from './flow.
 
 const EVIDENCE = (ref: string, which: 'before' | 'after') =>
 	fileURLToPath(new URL(`../../../../design3/system/img/evidence/${ref}-${which}.webp`, import.meta.url));
+
+// each signer's strokes on file, traced from their specimens (design3 data.js STROKES), and whose they are by name
+// (the agencies' officers and panels, the distributors' signatories): the certificate is signed in place (SC-183)
+const DATA = readFileSync(fileURLToPath(new URL('../../../../design3/core/data.js', import.meta.url)), 'utf8');
+const STROKES = JSON.parse(/const STROKES = (\{.*?\});\n/s.exec(DATA)![1]) as Record<
+	string,
+	{ box: [number, number]; strokes: [number, number][][] }
+>;
+const SIGNS = new Map([...DATA.matchAll(/name: "([^"]+)"[^{}]*?sign: "([a-z0-9-]+)"/g)].map((m) => [m[1], m[2]]));
+
+/** the four sign the certificate in place (SC-183, option B): each Sign here opens the sheet, and the signer draws
+ *  their signature on the pad (their strokes on file, the mouse following the pen), or types their name when there are
+ *  none; `press` is how a person presses a button (the stage's own, on the recorded run) */
+export async function signCertificate(page: Page, scope: Locator, press = (l: Locator) => l.click()) {
+	for (let i = 0; i < 4; i++) {
+		const here = scope.locator('.dz-here').first();
+		if (!(await here.count())) break;
+		const name = /: (.+?),/.exec((await here.locator('.sr-only').textContent()) ?? '')![1];
+		await press(here);
+		const sheet = page.getByRole('dialog');
+		await expect(sheet.getByRole('heading', { name: `${name} signs` })).toBeVisible();
+		const ink = STROKES[SIGNS.get(name) ?? ''];
+		if (ink) {
+			const box = (await sheet.locator('.signpad svg').boundingBox())!;
+			const at = (p: [number, number]) => [
+				box.x + (p[0] * box.width) / ink.box[0],
+				box.y + (p[1] * box.height) / ink.box[1]
+			];
+			for (const st of ink.strokes) {
+				const [x, y] = at(st[0]);
+				await page.mouse.move(x, y);
+				await page.mouse.down();
+				for (const p of st.slice(1)) await page.mouse.move(...(at(p) as [number, number]), { steps: 2 });
+				await page.mouse.up();
+			}
+		} else {
+			await press(sheet.getByRole('button', { name: 'Type the name instead' }));
+			await sheet.getByLabel(`Type your name: ${name}`).fill(name);
+		}
+		await press(sheet.getByRole('button', { name: /^Sign as / }));
+		await expect(sheet).toBeHidden();
+	}
+	await expect(scope.getByText('4 of 4 signed')).toBeVisible();
+}
 
 /** the distributor sends the evidence from his Today; `who` his member, `certificate` the agency's number */
 export function destroyStep(o: { who: string; agency: string; certificate: string }): Step {
@@ -38,8 +83,11 @@ export function destroyStep(o: { who: string; agency: string; certificate: strin
 			await run.done('Destroy expired packs: the photo before, at the godown, and after, at the landfill');
 			await page.getByLabel('Agency', { exact: true }).selectOption({ label: o.agency });
 			await page.getByLabel("Agency's certificate number").fill(o.certificate);
+			await run.done(`${o.agency}, certificate ${o.certificate}`);
+			// the certificate signed in place by its officer, both witnesses and him (SC-183)
+			await signCertificate(page, page.locator('main'));
 			await expect(page.getByText(/reverse ₹[\d,.]+ of input GST on these packs in your GSTR-3B/)).toBeVisible();
-			await run.done(`${o.agency}, certificate ${o.certificate}: the GST he reverses named`);
+			await run.done('The certificate signed in place: the officer, both witnesses and he; the GST he reverses named');
 			await page.getByRole('button', { name: /Send to .* for approval/ }).click();
 			const c = await until("Vision checks the destruction's evidence", 'priya', (c) =>
 				['checked', 'approved'].includes(c.destruction?.status ?? '')

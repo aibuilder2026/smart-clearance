@@ -8,9 +8,12 @@
 	import Sheet from '../../../components/Sheet.svelte';
 	import Textarea from '../../../components/Textarea.svelte';
 	import Icon from '../../../icons/Icon.svelte';
-	import { fmt } from '../../model';
+	import { draftCertificate } from '../../certificate';
+	import { castOf, fmt } from '../../model';
 	import { useWorkspace } from '../../source';
-	import type { Destruction, Distributor, ExpirySettlement, Sku } from '../../types';
+	import type { Destruction, Distributor, ExpirySettlement, Ink as InkT, SignatureRole, Sku } from '../../types';
+	import Certificate from '../finance/Certificate.svelte';
+	import Ink from '../finance/Ink.svelte';
 	import { dzAt, dzPhoto } from './destruction';
 
 	// the operator's second yes on packs destroyed at the distributor's godown (SC-139, option B; screens/brand.jsx
@@ -53,6 +56,41 @@
 		close();
 	};
 	const live = $derived(ws.kind === 'live');
+	// the certificate as signed at the facility (SC-183, option B): page 1 as he sent it, stamped SIGNED before her yes,
+	// each signature drawing itself once as it was signed, a quarter of a second apart
+	const ORDER: SignatureRole[] = ['officer', 'w1', 'w2', 'handed'];
+	const signed = $derived(!!d?.signatures && ORDER.every((k) => d!.signatures![k]));
+	const theBatch = $derived(
+		ws.case?.batch.id === batch ? ws.case.batch : (ws.data.batches.find((b) => b.id === batch) ?? null)
+	);
+	const doc = $derived(
+		signed && d?.agency && d.certificate && theBatch
+			? draftCertificate(
+					{ ...d, agency: d.agency, certificate: d.certificate },
+					{
+						batch: theBatch,
+						sku,
+						dist,
+						expiry: x ?? null,
+						setup: ws.data.setup.destruction,
+						evidence: ws.case?.story?.evidence
+					}
+				)
+			: null
+	);
+	const inkAt = (t: string) => (t.length > 5 ? t.slice(11, 16) : t);
+	// the distributor's signatory by first name, past an initial (K. Lakshmi Narayana is Lakshmi)
+	const signer = $derived(
+		dist.signatory
+			? (dist.signatory.name.split(' ').find((w) => w.replace('.', '').length > 1) ?? dist.signatory.name)
+			: dist.short
+	);
+	const span = $derived.by(() => {
+		const ats = ORDER.map((k) => d?.signatures?.[k]?.at)
+			.filter((t): t is string => !!t)
+			.map(inkAt);
+		return ats.length ? `, ${ats[0]} to ${ats[ats.length - 1]}` : '';
+	});
 	const ALT = {
 		before: 'The packs at the godown, the batch label in view',
 		after: 'The packs slit open at the landfill, the slate in view'
@@ -75,6 +113,19 @@
 				>{/if}
 		</div>{/if}{/snippet}
 
+{#snippet place(
+	k: string,
+	w: { name: string; sign?: string | null; ink?: InkT | null } | null | undefined
+)}{#if w?.ink}<span class="dz-signed"
+			><Ink
+				who={w}
+				seal={k === 'officer' ? doc?.seal : null}
+				h={k === 'handed' ? 34 : 40}
+				play
+				delay={0.3 + ORDER.indexOf(k as SignatureRole) * 0.25}
+			/><span class="cert-when">{w.ink.typed ? 'typed' : 'signed'} {inkAt(w.ink.at)}</span></span
+		>{:else}<span class="sig-none">not signed</span>{/if}{/snippet}
+
 <Sheet bind:open title="Approve the destruction" onclose={close} {footer}>
 	{#if d}<div class="stack" style="gap: 14px">
 			<div class="row" style="gap: 12px">
@@ -94,6 +145,19 @@
 						>
 					</div>{/each}
 			</div>
+			{#if doc && theBatch}<div class="stack tight">
+					<b class="t-subhead">The certificate, as signed at the facility</b>
+					<span class="t-footnote muted">Each signed in their own place{span} on {fmt.date(theBatch.bestBefore)}</span>
+					<div class="dz-signedpaper">
+						<div class="dz-zoom">
+							<Certificate
+								d={doc}
+								c={{ dist, sku, batch: theBatch }}
+								draft={{ stamp: 'SIGNED', place, approver: castOf(ws.state, null).operator?.name ?? client }}
+							/>
+						</div>
+					</div>
+				</div>{/if}
 			{#if asking}<Field label={`What ${dist.short} should send again`} htmlFor="dz-why"
 					><Textarea
 						id="dz-why"
@@ -114,6 +178,10 @@
 						{#if d.agency}<div class="row tight t-subhead dz-check">
 								<Icon name="circle-check" size={16} class="dz-ok" />{d.agency.name} is on {whose(client)} list (authorisation
 								{d.agency.auth}) · certificate {d.certificate}
+							</div>{/if}
+						{#if signed}<div class="row tight t-subhead dz-check">
+								<Icon name="circle-check" size={16} class="dz-ok" />Four signatures on the certificate: the officer,
+								both witnesses and {signer}
 							</div>{/if}
 					</div>
 					{#if x}<div class="stack tight dz-yes">

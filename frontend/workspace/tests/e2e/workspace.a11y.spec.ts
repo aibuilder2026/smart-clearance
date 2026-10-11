@@ -373,6 +373,38 @@ test("the agency's certificate of destruction in full, and its log (SC-174)", as
 	await report(testInfo, await scan(page, "a distributor's batch · the agency's certificate and its log"));
 });
 
+test("the agency's certificate signed in place: the places, a signature drawn, one typed (SC-183)", async ({
+	page
+}, testInfo) => {
+	await openWorkspace(page, '/destroy/MF-2409-117', {
+		as: 'rakesh',
+		scenario: 'slow',
+		stage: 8,
+		after: ['vanRound', 'expire']
+	});
+	await expect(page.getByText('0 of 4 signed')).toBeVisible();
+	const findings: Finding[] = [...(await scan(page, 'the destruction · the certificate to sign'))];
+	await page.locator('.dz-here').first().click();
+	await settled(page);
+	findings.push(...(await scan(page, 'the destruction · a signature being drawn')));
+	await page.getByRole('button', { name: 'Type the name instead' }).click();
+	findings.push(...(await scan(page, 'the destruction · a signature typed')));
+	await report(testInfo, findings);
+});
+
+test("Priya's review of the evidence, the certificate as signed (SC-183)", async ({ page }, testInfo) => {
+	await openWorkspace(page, '/command', {
+		as: 'priya',
+		scenario: 'slow',
+		stage: 8,
+		after: ['vanRound', 'expire', 'sendDestruction']
+	});
+	await page.getByRole('button', { name: 'Review the destruction' }).click();
+	await expect(page.getByText('The certificate, as signed at the facility')).toBeVisible();
+	await page.waitForTimeout(2600); // the four signatures drawn once, as signed
+	await report(testInfo, await scan(page, "Priya's review · the certificate as signed"));
+});
+
 test("a kirana's earlier offer, ordered (SC-130)", async ({ page }, testInfo) => {
 	await openWorkspace(page, '/offer/MF-2407-116', { as: 'ganesh' });
 	await expect(page.locator('.bhead h1')).toHaveText('Peanut Chikki 100 g');

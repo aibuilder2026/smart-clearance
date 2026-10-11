@@ -17,15 +17,17 @@ const cache = new Map<string, string>();
 /** The store at the start of stage n (0–9; 9 is the batch cleared, where no agent has anything left to do), as JSON.
  *  img: where the store's portraits live, `sc3img:/` for the port (core's imgUrl resolves it to the hashed file) and
  *  `system/img/` for the prototype's page. */
-export function storeAt(stage: number, img = 'sc3img:/', after: string[] = []): string {
-	const key = `${stage}:${img}:${after.join(',')}`;
+export function storeAt(stage: number, img = 'sc3img:/', after: string[] = [], scenario = 'chips'): string {
+	const key = `${scenario}:${stage}:${img}:${after.join(',')}`;
 	if (!cache.has(key)) {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- the prototype's modules are untyped browser globals
 		const window: Record<string, any> = { SC3_IMG: img };
 		const sandbox = vm.createContext({ window, console, Date, Intl, Math, JSON, btoa, unescape, encodeURIComponent });
 		for (const p of CORE) vm.runInContext(readFileSync(new URL(p, design3), 'utf8'), sandbox);
+		if (scenario !== 'chips') window.SC3_FLOW.useScenario(scenario);
 		window.SC3_FLOW.fastForward(stage);
 		for (const a of after) window.SC3_FLOW.act(a);
+		if (scenario !== 'chips') window.SC3_FLOW.useScenario('chips');
 		cache.set(key, JSON.stringify(window.SC3_STORE.get()));
 	}
 	return cache.get(key)!;
@@ -37,6 +39,8 @@ export type Open = {
 	/** the journey's stage (storeAt), and the steps of it taken after its start (the scheme sent: list, outreach) */
 	stage?: number;
 	after?: string[];
+	/** the journey: the story's chips, the Mango Drink, or the slow chips (SC-168) */
+	scenario?: 'chips' | 'mango' | 'slow';
 	/** show the splash, as on the first open in a session */
 	splash?: boolean;
 	/** wait for the screen (or the sign-in) to draw; false returns once the page has loaded */
@@ -49,7 +53,7 @@ export type Open = {
  *  (Priya, the operator, by default), the splash skipped. The first load of a test only: later loads keep what the test
  *  did. Waits for the app to mount and the screen's large title, or the sign-in, to draw. */
 export async function openWorkspace(page: Page, path = '/', o: Open = {}) {
-	const { as = 'priya', stage = 9, after = [], splash = false, wait = true, clock = false } = o;
+	const { as = 'priya', stage = 9, after = [], scenario = 'chips', splash = false, wait = true, clock = false } = o;
 	if (clock) {
 		// the page's own timers, kept before the clock replaces them, for axe-core while the clock is held
 		await page.addInitScript(() => {
@@ -72,7 +76,7 @@ export async function openWorkspace(page: Page, path = '/', o: Open = {}) {
 				// storage blocked
 			}
 		},
-		[storeAt(stage, 'sc3img:/', after), as, splash] as const
+		[storeAt(stage, 'sc3img:/', after, scenario), as, splash] as const
 	);
 	await page.goto(path);
 	if (!wait) return;

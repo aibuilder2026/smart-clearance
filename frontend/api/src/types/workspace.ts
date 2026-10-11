@@ -153,7 +153,13 @@ export type WsDistributor = {
 
 /** who signs a party's papers (SC-174): the signatory's name and title, the specimen signature on file
  *  (system/img/signatures/<sign>.webp) and the firm's stamp or seal (system/img/seals/<seal>.webp) */
-export type WsSignatory = { name: string; title: string; sign: string | null; seal?: string | null };
+export type WsSignatory = {
+	name: string;
+	title: string;
+	sign: string | null;
+	seal?: string | null;
+	ink?: WsInk | null;
+};
 
 /** the staff sale's consolidated receipt (SC-174): one photo or PDF listing every staff payment by its UPI reference,
  *  as the distributor sent it, and what Vision read of it; the sale records only once its payments come to what sold */
@@ -787,7 +793,32 @@ export type DestructionDocFields = {
 };
 /** a witness to the destruction: name, address, the ID proof's last four, and a specimen signature where the agency
  *  keeps one */
-export type WsWitness = { name: string; address: string; proof?: string | null; sign?: string | null };
+export type WsWitness = {
+	name: string;
+	address: string;
+	proof?: string | null;
+	sign?: string | null;
+	ink?: WsInk | null;
+};
+/** a signature as signed in place on the certificate at the facility (SC-183): when (the journey's time), and its
+ *  strokes in the pad's 640 x 220 box, or the name typed */
+export type WsInk = {
+	at: string;
+	typed?: boolean;
+	box?: [number, number] | null;
+	strokes?: [number, number][][] | null;
+};
+/** the certificate's four signers (SC-183): the agency's supervising officer, the two witnesses, the distributor */
+export type WsSignatureRole = 'officer' | 'w1' | 'w2' | 'handed';
+/** one of the four, as sent and as kept: the name the certificate prints, when (sent: the device's ISO time; kept:
+ *  the journey's), and the strokes or the name typed */
+export type WsSignature = {
+	name: string;
+	at: string;
+	typed?: boolean;
+	box?: [number, number];
+	strokes?: [number, number][][];
+};
 /** a step of the destruction's log (SC-174), at its time (the client's, 2026-09-15T12:55), with the photo it shows */
 export type WsDestructionStep = { at: string; step: string; detail: string; photo?: 'before' | 'after' };
 
@@ -870,6 +901,8 @@ export type WsDestruction = {
 	/** the window the agency destroyed them in and its two independent witnesses, as he gave them (SC-174) */
 	window?: { from: string; to: string } | null;
 	witnesses?: { name: string; address: string }[] | null;
+	/** the certificate as signed in place at the facility, for the operator's review (SC-183) */
+	signatures?: Record<WsSignatureRole, WsSignature> | null;
 };
 export type WsDestructionPhoto = { name: string; at: string; url: string | null };
 /** how a client has packs destroyed at a distributor's godown (SC-139; the console's Channels and rules) */
@@ -1197,6 +1230,8 @@ export type DestructionInput = {
 	/** the certificate in full (SC-174): the window the agency destroyed them in, and its two independent witnesses */
 	window?: { from: string; to: string };
 	witnesses?: { name: string; address: string }[];
+	/** the certificate signed in place by its officer, both witnesses and the distributor (SC-183); required */
+	signatures?: Record<WsSignatureRole, WsSignature>;
 };
 
 export type WsInviteInput = { name: string; email: string; role: WsRole; org?: string };
