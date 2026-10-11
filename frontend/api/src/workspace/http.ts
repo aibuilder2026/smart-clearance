@@ -170,7 +170,9 @@ export function workspaceHttp(
 		bid: (ref, price) => change('POST', `${c(ref)}/bids`, { price }),
 		message: (ref, text) => change('POST', `${c(ref)}/messages`, { text }),
 		accept: (ref, bid) => change('POST', `${c(ref)}/bids/${enc(bid)}/accept`),
-		staffSale: (ref, sold) => change('POST', `${c(ref)}/staff-sale`, { sold }),
+		staffSale: (ref, sold, receipt) => change('POST', `${c(ref)}/staff-sale`, receipt ? { sold, receipt } : { sold }),
+		staffReceipt: (ref, input) => change<UploadLink>('POST', `${c(ref)}/staff-sale/receipt`, input),
+		staffReceiptSent: (ref, id) => change('POST', `${c(ref)}/staff-sale/receipt/${enc(id)}`),
 		destructionPhoto: (ref, which, input) =>
 			change<UploadLink>('POST', `${c(ref)}/destruction/photos`, { which, ...input }),
 		sendDestruction: (ref, input) => change('POST', `${c(ref)}/destruction`, input),

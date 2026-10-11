@@ -212,7 +212,7 @@ export class LiveSource implements WorkspaceSource {
 		const by = (key: string) => r.steps.find((x) => x.key === key)?.who.name ?? '';
 		const photos = (d ? photosOfCase(d) : []).map((p) => ({
 			...p,
-			by: by(p.id === 'label' ? 'photo.send' : 'destruction.send')
+			by: by(p.id === 'label' ? 'photo.send' : p.id === 'receipt' ? 'staff.record' : 'destruction.send')
 		}));
 		return { ref, steps: r.steps, photos };
 	}
@@ -661,10 +661,13 @@ export class LiveSource implements WorkspaceSource {
 				if (!bid) return;
 				return send(() => api.accept(ref, bid.id));
 			}
+			// the count, with the consolidated receipt Vision read (SC-174), which the API holds the count to
 			case 'recordStaffSale': {
-				const sold = arg as number;
+				const x = arg as ActionArg<'recordStaffSale'>;
+				const sold = typeof x === 'number' ? x : x.sold;
+				const receipt = typeof x === 'number' ? undefined : (x.receipt?.id ?? undefined);
 				return send(
-					() => api.staffSale(ref, sold),
+					() => api.staffSale(ref, sold, receipt),
 					this.#show((c) => {
 						if (c.journey.staff)
 							c.journey.staff = {
@@ -701,10 +704,13 @@ export class LiveSource implements WorkspaceSource {
 						});
 					const before = await photo('before', x.before);
 					const after = await photo('after', x.after);
+					// with the window the agency destroyed them in and its two witnesses, for its certificate in full (SC-174)
 					return api.sendDestruction(ref, {
 						agency: x.agency.id,
 						certificate: x.certificate,
-						photos: { before, after }
+						photos: { before, after },
+						...(x.window ? { window: x.window } : {}),
+						...(x.witnesses ? { witnesses: x.witnesses } : {})
 					});
 				});
 			}
@@ -784,6 +790,22 @@ export class LiveSource implements WorkspaceSource {
 			undefined,
 			o
 		);
+
+	/** the staff sale's consolidated receipt (SC-174): a photo or a PDF to its signed link, its progress in uploads under
+	 *  'receipt:<ref>', then Vision reads its payments into the journey's staff sale, which the stream brings */
+	staffReceipt = (file: Blob, o?: { ref?: string } & SendOptions) => {
+		const ref = o?.ref ?? this.#focus?.ref ?? '';
+		return this.#send(
+			'recordStaffSale',
+			() =>
+				this.#put_(`receipt:${ref}`, file, 'image/jpeg', {
+					link: (input) => this.#api.staffReceipt(ref, input),
+					done: (id) => this.#api.staffReceiptSent(ref, id)
+				}),
+			undefined,
+			o
+		);
+	};
 
 	/** stop a file on its way */
 	cancelUpload = (key: string) => {

@@ -17,6 +17,7 @@ WRITERS: dict[str, type[BaseModel]] = {
     "data_map": data.Mappings,
     "vision_read": vision.LabelRead,
     "vision_destruction": vision.DestructionRead,
+    "vision_staff_receipt": vision.ReceiptRead,
     "valuer_write": valuer.Notes,
     "router_write": router.Explanation,
     "lister_write": lister.Listing,

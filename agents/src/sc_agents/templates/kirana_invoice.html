@@ -2,7 +2,9 @@
 {# the tax invoice the distributor issues from Tally for one kirana's scheme order (SC-153): a B2C supply within the
    state, so CGST and SGST and no IRN; every packet at the pack price, less the scheme's discount, which leaves the
    taxable value the ledger counts (money.py kirana_invoice). The discount, the taxes and the round-off are rows of
-   their own, as Tally prints them. The same paper the workspace draws #}
+   their own, as Tally prints them, signed by his signatory over his stamp (SC-174). The same paper the workspace
+   draws #}
+{% from "_sign.html" import tally %}
 {% set R = case.distributor %}{% set k = doc.shop %}{% set half = doc.gstPct / 2 %}
 {% block body %}
 <div class="title">Tax Invoice</div>
@@ -41,8 +43,8 @@
 <table>
   <tr>
     <td style="width:52%">Company's PAN: <b>{{ R.pan }}</b><span class="k" style="margin-top:6pt">Declaration</span>We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct. Sold under {{ (case.client or {}).get("short") or "the brand" }}'s scheme, within the best-before date.</td>
-    <td><span class="k">Company's Bank Details</span>{% if R.bank %}Bank Name: {{ R.bank.name }}<br>A/c No.: {{ R.bank.account }}<br>Branch &amp; IFS Code: {{ R.bank.ifsc }}{% endif %}<div class="sign">for <b>{{ R.name }}</b></div><div class="n">Authorised Signatory</div></td>
+    <td><span class="k">Company's Bank Details</span>{% if R.bank %}Bank Name: {{ R.bank.name }}<br>A/c No.: {{ R.bank.account }}<br>Branch &amp; IFS Code: {{ R.bank.ifsc }}{% endif %}{{ tally(R.name, R.signatory, (R.signatory or {}).seal, "rect") }}</td>
   </tr>
 </table>
-<div class="foot">SUBJECT TO {{ (R.city or "")|upper }} JURISDICTION · This is a Computer Generated Invoice</div>
+<div class="foot">SUBJECT TO {{ (R.city or "")|upper }} JURISDICTION</div>
 {% endblock %}

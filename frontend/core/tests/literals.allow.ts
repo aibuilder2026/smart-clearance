@@ -18,6 +18,19 @@ export const ALLOW: Allowance[] = [
 	{ file: 'core/src/lib/workspace/screens/finance/Paper.svelte', match: '1 October', reason: LAW_DATE },
 	{ file: 'core/src/lib/workspace/screens/finance/Report.svelte', match: '17', reason: LAW_17 },
 	{ file: 'core/src/lib/workspace/screens/finance/TallyCredit.svelte', match: '34', reason: LAW_34 },
+	{ file: 'core/src/lib/workspace/screens/finance/Certificate.svelte', match: '17', reason: LAW_17 },
+	{
+		file: 'core/src/lib/workspace/screens/trade/DestroyScreen.svelte',
+		match: '12:55',
+		reason:
+			"the destruction window's starting value (design3's DestroyScreen, SC-174), which he sets to the agency's own"
+	},
+	{
+		file: 'core/src/lib/workspace/screens/trade/DestroyScreen.svelte',
+		match: '13:20',
+		reason:
+			"the destruction window's starting value (design3's DestroyScreen, SC-174), which he sets to the agency's own"
+	},
 	{ file: 'core/src/lib/workspace/screens/finance/Report.svelte', match: '1 October', reason: LAW_DATE },
 	{
 		file: 'workspace/src/lib/live/project.ts',

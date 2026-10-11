@@ -115,8 +115,22 @@ async def test_the_packs_left_wait_for_his_evidence_and_the_operators_yes(api, m
     r = await send(photos=late)
     assert r.status_code == 422 and r.json()["message"] == "The before photo has not arrived yet. Send it again."
     assert (await api.post(f"{WS}/cases/{HERO}/destruction/approve", headers=PRIYA)).status_code == 409
-    r = await send()
+    # the certificate in full (SC-174): a window that ends before it starts is refused; two witnesses, never one
+    assert (await send(window={"from": "13:20", "to": "12:55"})).status_code == 422
+    assert (
+        await send(witnesses=[{"name": "Pradeep Meshram", "address": "Plot 22, Wathoda Layout"}])
+    ).status_code == 422
+    witnesses = [
+        {"name": "Pradeep Meshram", "address": "Plot 22, Wathoda Layout, Nagpur 440035"},
+        {"name": "Neeta Bhagat", "address": "House 4, Kalamna Basti, Nagpur 440035"},
+    ]
+    r = await send(window={"from": "12:55", "to": "13:20"}, witnesses=witnesses)
     assert r.status_code == 200, r.text
+    sent = (await case(api, PRIYA))["destruction"]
+    assert sent["window"] == {"from": "12:55", "to": "13:20"} and [w["name"] for w in sent["witnesses"]] == [
+        "Pradeep Meshram",
+        "Neeta Bhagat",
+    ]
     dz = (await case(api, PRIYA))["destruction"]
     assert dz["status"] == "reading" and dz["agency"]["name"] == "Orange City Enviro Services"
     assert dz["photos"]["before"]["url"].startswith("https://storage.test/photos-test/")
@@ -197,6 +211,26 @@ async def test_the_packs_left_wait_for_his_evidence_and_the_operators_yes(api, m
         "Rakesh Traders",
         settle["reversal"],
     )
+    # in full (SC-174): the agency's facility, officer, seal and vehicle, the method, the window, the witnesses (one on
+    # the agency's panel signs with its specimen; the other signs on the original), who handed the packs over, and
+    # the log from the godown to the cover, its photos with their links
+    assert (cert["reason"], cert["methodId"], cert["methodName"], cert["window"]) == (
+        "expiry",
+        "landfill",
+        "Sanitary landfill, CPCB-compliant",
+        {"from": "12:55", "to": "13:20"},
+    )
+    assert cert["facility"]["name"] == "Municipal sanitary landfill, cell 4" and cert["vehicle"] == "MH-31-ZX-0000"
+    assert (cert["officer"]["name"], cert["officer"]["sign"], cert["seal"]) == ("Sachin Bhoyar", "oce", "oce")
+    assert [(w["name"], w["sign"]) for w in cert["witnesses"]] == [
+        ("Pradeep Meshram", "oce-w1"),
+        ("Neeta Bhagat", None),
+    ]
+    assert cert["handedBy"] == {"name": "Rakesh Jaiswal", "title": "Proprietor", "sign": "rakesh"}
+    steps_ = [x["step"] for x in cert["log"]]
+    assert steps_[0] == "Photographed at the godown" and steps_[-1] == "Packaging sent on" and len(steps_) == 7
+    assert [x["at"][11:] for x in cert["log"]][2:6] == ["12:40", "12:55", "13:10", "13:20"]
+    assert cert["photos"]["after"]["url"] and "object" not in cert["photos"]["after"]
     itc = docs["itc"]
     assert itc["atGodown"] == left and itc["reversed"] == 0 and "keeps its own" in itc["note"]
     # the ledger counts them destroyed, and the note's amount as the credit

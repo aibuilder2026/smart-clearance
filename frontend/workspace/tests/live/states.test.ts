@@ -15,7 +15,8 @@ import type {
 	WsAuditRow,
 	WsLedger,
 	WsPartner,
-	WsRecord
+	WsRecord,
+	WsStaffReceipt
 } from '@smart-clearance/api/workspace';
 import { ApiError, NotAMember } from '@smart-clearance/api/workspace';
 import type { PartnerCase } from '@smart-clearance/core/workspace/app';
@@ -42,6 +43,135 @@ const moment = (name: string): Moment => structuredClone(MOMENTS[`./fixtures/${n
 // the two batches the story's journey runs (SC-86): each its own case
 const CHIPS = 'MF-2409-117';
 const MANGO = 'MF-2410-118';
+
+/** the staff sale's consolidated receipt as backend-api sends it (SC-174, views.staff_receipt_out): being read, or read
+ *  with a payment for each number of packs at ₹8 */
+function receipt(status: 'reading' | 'read', packs: number[] = []): WsStaffReceipt {
+	const who = ['Ayesha Sultana', 'D. Ramya', 'Shaik Imran'];
+	const payments = packs.map((units, i) => ({
+		n: i + 1,
+		rrn: `62751657839${i}`,
+		who: who[i],
+		at: `2026-10-0${2 + Math.floor(i / 2)}T1${6 + i}:42`,
+		units,
+		amount: units * 8
+	}));
+	const read = status === 'read';
+	return {
+		id: 'sr-1',
+		status,
+		no: read ? 'LA/SR/26-27/0002' : null,
+		date: read ? '2026-10-03' : null,
+		payments,
+		paid: read ? payments.reduce((t, x) => t + x.amount, 0) : null,
+		units: read ? packs.reduce((t, x) => t + x, 0) : null,
+		from: read ? payments[0].at : null,
+		to: read ? payments[payments.length - 1].at : null,
+		at: '2026-10-03T14:50',
+		readAt: read ? '2026-10-03T14:51' : null,
+		contentType: 'image/jpeg',
+		url: 'http://storage/receipt?get'
+	};
+}
+/** a case whose staff sale carries the receipt she attached; recorded, the count is what the payments make */
+function withReceipt(c: CaseDetail, r: WsStaffReceipt) {
+	c.journey.staff!.receipt = r;
+	return c;
+}
+const RECEIPT_LINK: UploadLink = { id: 'sr-1', url: 'http://storage/sr-1', headers: {}, expiresAt: '' };
+/** who signs Munchly's papers, as the client's record has it (SC-174) */
+const SIGNED = { name: 'Vinod Patwardhan', title: 'Head of Accounts', sign: 'munchly', seal: 'munchly' };
+/** Deccan Green Waste Management's facility, officer and panel of witnesses, as the client's setup has them (SC-174) */
+const DGW = {
+	method: 'landfill' as const,
+	facility: {
+		name: 'Municipal sanitary landfill, cell 7',
+		address: 'Jawaharnagar, Hyderabad 500087, Telangana',
+		gps: '17.5193° N, 78.5862° E'
+	},
+	vehicle: 'TG-09-ZX-0000',
+	officer: { name: 'M. Srinivas Reddy', title: 'Site supervisor', sign: 'dgw' },
+	seal: 'dgw',
+	witnesses: [
+		{
+			name: 'Syed Mujeeb',
+			address: 'House 14, Gandhi Nagar, Hyderabad 500080',
+			proof: 'Voter ID, last four 5831',
+			sign: 'dgw-w1'
+		},
+		{
+			name: 'P. Anitha',
+			address: 'Flat 3, Kavadiguda, Hyderabad 500080',
+			proof: 'Voter ID, last four 3390',
+			sign: 'dgw-w2'
+		}
+	]
+};
+const withPanel = (snap: WorkspaceSnapshot) => {
+	for (const a of snap.setup.destruction?.agencies ?? []) if (a.id === 'dgw') Object.assign(a, DGW);
+};
+/** the agency's certificate as backend-api lays it out (SC-174, ledger.js destructionDetail): destroyed in the 25 minutes
+ *  up to the after photo, before its officer, a witness on its panel and one he named, with the log from the godown to
+ *  the cover */
+function certificateInFull(c: CaseDetail) {
+	const d = c.docs.find((x) => x.id === 'destruction')!;
+	const on = '2026-10-02',
+		at = (t: string) => `${on}T${t}`;
+	Object.assign(d, {
+		reason: 'expiry',
+		methodId: 'landfill',
+		methodName: 'Sanitary landfill, CPCB-compliant',
+		methodHow: 'the packs slit open and emptied into the active cell, covered with 30 cm of soil the same day',
+		facility: DGW.facility,
+		vehicle: DGW.vehicle,
+		officer: DGW.officer,
+		seal: DGW.seal,
+		witnesses: [
+			DGW.witnesses[0],
+			{ name: 'P. Anitha', address: 'Flat 3, Kavadiguda, Hyderabad 500080', proof: null, sign: null }
+		],
+		window: { from: '07:35', to: '08:00' },
+		destroyedOn: on,
+		photos: {
+			before: { name: 'before', at: at('08:00'), url: 'http://storage/before?get' },
+			after: { name: 'after', at: at('08:00'), url: 'http://storage/after?get' }
+		},
+		handedBy: { name: 'K. Lakshmi Narayana', title: 'Partner', sign: 'lakshmi' },
+		goods: 'Munchly Mango Drink 200 ml',
+		mfg: '2026-04-27',
+		mrp: 20,
+		perCarton: 27,
+		log: [
+			{
+				at: at('06:20'),
+				step: 'Photographed at the godown',
+				detail: '1318 packs at Begum Bazaar godown',
+				photo: 'before'
+			},
+			{ at: at('06:40'), step: 'Loaded', detail: 'On the covered vehicle TG-09-ZX-0000, sealed with seal SL-0099' },
+			{ at: at('07:20'), step: 'Received and weighed', detail: '283.37 kg on weighbridge slip WB/26-27/0099' },
+			{ at: at('07:35'), step: 'Slit open and emptied', detail: 'Into the active cell' },
+			{ at: at('07:50'), step: 'Buried and covered', detail: 'Covered with 30 cm of soil' },
+			{ at: at('08:00'), step: 'Photographed with the slate', detail: 'Slate: MF-2410-118', photo: 'after' },
+			{ at: at('08:10'), step: 'Packaging sent on', detail: '2.64 kg of plastic film' }
+		]
+	});
+	return c;
+}
+/** an upload that arrives at once */
+class DoneXhr {
+	upload: { onprogress?: (e: { lengthComputable: boolean; loaded: number; total: number }) => void } = {};
+	status = 200;
+	onload?: () => void;
+	onerror?: () => void;
+	onabort?: () => void;
+	open() {}
+	setRequestHeader() {}
+	send() {
+		setTimeout(() => this.onload?.(), 0);
+	}
+	abort() {}
+}
 
 /** backend-api as one member sees it; any route can be answered otherwise */
 function fakeApi(m: Moment, who: string, over: Partial<Record<keyof WorkspaceApi, unknown>> = {}): WorkspaceApi {
@@ -573,14 +703,20 @@ describe("each batch's screens follow its own plan (SC-85)", () => {
 });
 
 describe('the staff sale and what is left at the godown (SC-87)', () => {
-	it("Lakshmi Agencies' Today asks for the Mango Drink's staff sale, and her Deliveries records it, once (SC-133)", async () => {
+	it("Lakshmi Agencies' Today asks for the Mango Drink's staff sale, and her Deliveries records it with its receipt, once (SC-133, SC-174)", async () => {
 		const home = await draw(source(fakeApi(moment('executing'), 'lakshmi-owner')), 'home');
 		await waitFor(() => expect(text(home)).toContain('Record the staff sale'));
 		expect(text(home)).toContain('150 packs at ₹8.00 · count what sold, once');
 		expect(text(home)).toContain('Staff sale150 packs to your staff at ₹8.00, at Begum Bazaar godown');
 		home.unmount();
+		// the receipt goes to its signed link at once, and comes back read: 147 packs paid for, three did not sell
+		const m = moment('executing');
+		const read = withReceipt(structuredClone(m.members['lakshmi-owner'].cases[MANGO]), receipt('read', [50, 50, 47]));
+		const staffReceipt = vi.fn(() => Promise.resolve(RECEIPT_LINK));
+		const staffReceiptSent = vi.fn(() => Promise.resolve({ seq: 1, case: read }));
 		const staffSale = vi.fn(() => Promise.resolve({ seq: 1, case: null }));
-		const s = source(fakeApi(moment('executing'), 'lakshmi-owner', { staffSale }));
+		vi.stubGlobal('XMLHttpRequest', DoneXhr);
+		const s = source(fakeApi(m, 'lakshmi-owner', { staffSale, staffReceipt, staffReceiptSent }));
 		const r = await draw(s, 'van', MANGO);
 		await waitFor(() => expect(text(r)).toContain('Staff sale · Mango Drink'));
 		const t = text(r);
@@ -588,14 +724,93 @@ describe('the staff sale and what is left at the godown (SC-87)', () => {
 		// her own address, from her distributor's record, beside a code drawn from it that nothing reads out
 		expect(t).toContain('lakshmi-agencies@exampleupi');
 		expect(r.container.querySelector('svg.paycode')?.getAttribute('aria-hidden')).toBe('true');
+		// the sale records only with its consolidated receipt
+		expect(t).toContain('Consolidated receiptOne receipt listing every staff payment by its UPI reference');
+		expect(t).toContain("Attach the consolidated receipt first: it is the sale's evidence for Munchly's papers.");
+		expect(r.getByRole('button', { name: 'Record the sale' })).toHaveProperty('disabled', true);
 		// the count starts at every pack; three did not sell
 		const fewer = r.getByRole('button', { name: 'Fewer packs sold to staff' });
 		for (let i = 0; i < 3; i++) await fireEvent.click(fewer);
+		const upload = r.container.querySelector<HTMLInputElement>('input[type="file"]:not([capture])')!;
+		expect(upload.accept).toBe('image/jpeg,image/png,image/webp,application/pdf');
+		await fireEvent.change(upload, {
+			target: { files: [new File(['receipt'], 'receipt.jpg', { type: 'image/jpeg' })] }
+		});
+		await waitFor(() => expect(staffReceiptSent).toHaveBeenCalledWith(MANGO, 'sr-1'));
+		expect(staffReceipt).toHaveBeenCalledWith(MANGO, { contentType: 'image/jpeg', bytes: 7, fileName: 'receipt.jpg' });
+		await waitFor(() => expect(text(r)).toContain('Vision read LA/SR/26-27/0002'));
+		expect(text(r)).toContain('3 UPI payments · ₹1,176.00');
+		expect(text(r)).toContain('147 packs × ₹8 · matches your count');
+		await fireEvent.click(r.getByRole('button', { name: 'Show the 3 UPI references' }));
+		expect(r.getByRole('list', { name: 'The 3 UPI references' }).getAttribute('tabindex')).toBe('0');
+		expect(text(r)).toContain('627516578390Ayesha Sultana50 × ₹8');
 		await fireEvent.click(r.getByRole('button', { name: 'Record the sale' }));
-		await waitFor(() => expect(staffSale).toHaveBeenCalledWith(MANGO, 147));
+		await waitFor(() => expect(staffSale).toHaveBeenCalledWith(MANGO, 147, 'sr-1'));
 		await waitFor(() => expect(text(r)).toContain('147 of 150 sold to staff at ₹8 a pack'));
-		expect(text(r)).toContain('3 packs stay at Begum Bazaar godown.');
+		expect(text(r)).toContain('Consolidated receiptLA/SR/26-27/0002 · 3 UPI payments · read by Vision₹1,176');
+		expect(text(r)).toContain("3 packs stay at Begum Bazaar godown. The receipt is in your batch's papers");
 		expect(r.queryByRole('button', { name: 'Record the sale' })).toBeNull();
+		vi.unstubAllGlobals();
+	});
+
+	it('while Vision reads the receipt the card says so, and the sale waits for the read (SC-174)', async () => {
+		const m = moment('executing');
+		withReceipt(m.members['lakshmi-owner'].cases[MANGO], receipt('reading'));
+		const r = await draw(source(fakeApi(m, 'lakshmi-owner')), 'van', MANGO);
+		await waitFor(() => expect(text(r)).toContain('Vision is reading the receipt'));
+		expect(r.getAllByRole('status').map((x) => x.textContent)).toContain('Vision is reading the receipt');
+		expect(text(r)).toContain('Each UPI reference, who paid and how much');
+		expect(r.getByRole('button', { name: 'Record the sale' })).toHaveProperty('disabled', true);
+		expect(r.queryByRole('button', { name: 'Take a photo' })).toBeNull();
+	});
+
+	it('a receipt short of the count says so, and offers another receipt or the count its payments make (SC-174)', async () => {
+		const m = moment('executing');
+		withReceipt(m.members['lakshmi-owner'].cases[MANGO], receipt('read', [50, 50, 47]));
+		const staffSale = vi.fn(() => Promise.resolve({ seq: 1, case: null }));
+		const r = await draw(source(fakeApi(m, 'lakshmi-owner', { staffSale })), 'van', MANGO);
+		await waitFor(() => expect(text(r)).toContain('Vision read LA/SR/26-27/0002'));
+		const t = text(r);
+		// the count is every pack, the payments make 147
+		expect(t).toContain('₹1,176.00 is 147 packs at ₹8, not 150');
+		expect(norm(r.getByRole('alert').textContent)).toBe(
+			'The receipt has 3 payments, ₹1,176.00: count again, or send the receipt with every payment.'
+		);
+		expect(r.queryByRole('button', { name: 'Record the sale' })).toBeNull();
+		await fireEvent.click(r.getByRole('button', { name: 'Record 147 sold' }));
+		await waitFor(() => expect(staffSale).toHaveBeenCalledWith(MANGO, 147, 'sr-1'));
+		r.unmount();
+		// Send another sets this one aside, and the slot asks again
+		const m2 = moment('executing');
+		withReceipt(m2.members['lakshmi-owner'].cases[MANGO], receipt('read', [50, 50, 47]));
+		const r2 = await draw(source(fakeApi(m2, 'lakshmi-owner')), 'van', MANGO);
+		await waitFor(() => expect(text(r2)).toContain('Vision read LA/SR/26-27/0002'));
+		await fireEvent.click(r2.getByRole('button', { name: 'Send another' }));
+		await waitFor(() => expect(r2.getByRole('button', { name: 'Take a photo' })).toBeTruthy());
+		expect(text(r2)).not.toContain('Vision read LA/SR/26-27/0002');
+	});
+
+	it("once recorded, Priya's Execution shows what Vision read, and her pack keeps the receipt as a paper (SC-174)", async () => {
+		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1440); // a desktop: the paper open beside the pack
+		const m = moment('cleared');
+		// the receipt as backend-api answers it: read, matching the 120 packs, and a paper of the pack (views.staff_doc)
+		const r = await draw(source(fakeApi(m, 'priya')), 'execution', MANGO);
+		await waitFor(() => expect(text(r)).toContain('Vision read LA/SR/26-27/0002'));
+		expect(text(r)).toContain('12 UPI payments · ₹960.00');
+		expect(text(r)).toContain('120 packs × ₹8 · matches the count');
+		r.unmount();
+		const p = await draw(source(fakeApi(m, 'priya')), 'paperwork', MANGO);
+		await waitFor(() => expect(text(p)).toContain('Staff sale receipt'));
+		await fireEvent.click(p.getAllByRole('button', { name: /Staff sale receipt/ })[0]);
+		await waitFor(() => expect(text(p)).toContain('READ'));
+		const t = text(p);
+		expect(t).toContain('LA/SR/26-27/0002 · Lakshmi Agencies');
+		expect(t).toContain('Packs sold to staff Munchly Mango Drink 200 ml at ₹8.00120');
+		expect(t).toContain('Received by UPI₹960.00');
+		expect(t).toContain('627517000001Staff 1');
+		expect(
+			p.getByRole('img', { name: 'The consolidated receipt LA/SR/26-27/0002, as Lakshmi Agencies sent it' })
+		).toBeTruthy();
 	});
 
 	it("Priya's Execution shows the sale open, and Rakesh Traders' Today has none", async () => {
@@ -696,12 +911,14 @@ describe("expiry day's settlement (SC-94)", () => {
 		expect(t).toContain("Adjusted against Lakshmi Agencies' account");
 	});
 
-	it("the agency's certificate, and the GST ITC memo keeping Munchly's credit on the packs destroyed at his godown", async () => {
+	it("the agency's certificate in full, and the GST ITC memo keeping Munchly's credit on the packs destroyed at his godown (SC-174)", async () => {
 		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1440);
-		const s = source(fakeApi(moment('cleared'), 'priya'));
+		const m = moment('cleared');
+		certificateInFull(m.members.priya.cases[MANGO]);
+		const s = source(fakeApi(m, 'priya'));
 		const r = await draw(s, 'paperwork', MANGO);
 		await waitFor(() => expect(text(r)).toContain('Expiry credit note'));
-		const c = moment('cleared').members.priya.cases[MANGO];
+		const c = m.members.priya.cases[MANGO];
 		const memo = c.docs.find((x) => x.id === 'itc')!;
 		const units = c.expiry!.units;
 		expect(memo.away).toBe(c.donation!.units); // only the food bank's: his stock is his reversal
@@ -716,10 +933,58 @@ describe("expiry day's settlement (SC-94)", () => {
 		await waitFor(() => expect(text(r)).toContain('DESTROYED'));
 		const cert = c.docs.find((x) => x.id === 'destruction')!;
 		const t = text(r);
-		expect(t).toContain(`${cert.no} · Deccan Green Waste Management`);
-		expect(t).toContain('For Lakshmi Agencies');
-		expect(t).toContain(`Evidence two photos · Vision's checks 4 of 4approved by ${c.destruction!.approvedBy}`);
-		expect(t).toContain(`Input GST he reverses section 17(5)(h), GSTR-3B Table 4(B)(1)${inr2(cert.reversed!)}`);
+		// page 1: the certificate, the goods and the reason, the method and the facility, the day and the window
+		expect(t).toContain(
+			'DECCAN GREEN WASTE MANAGEMENTAuthorised waste-management agency · authorisation TSPCB/SWM/HYD/0287'
+		);
+		expect(t).toContain(`Certificate of Destruction No. ${cert.no}Dated 02/10/2026Page 1 of 2`);
+		expect(t).toContain('Goods Munchly Mango Drink 200 ml, HSN 2202, MRP ₹20.00');
+		expect(t).toContain('Batch No. MF-2410-118 (made 27 Apr 2026, best before 24 Oct 2026)');
+		expect(t).toContain(`Quantity ${cert.units!.toLocaleString('en-IN')} packs, 48 cartons of 27 and 22 loose`);
+		expect(t).toContain('Total weight 283.37 kg (280.73 kg food, 2.64 kg packaging), weighed at the facility');
+		expect(t).toContain('Owner Lakshmi Agencies, GSTIN 36AAJFL0000L1ZM');
+		expect(t).toContain('Method Sanitary landfill, CPCB-compliant (Solid Waste Management Rules, 2016)');
+		expect(t).toContain('Facility Municipal sanitary landfill, cell 7, Jawaharnagar, Hyderabad 500087, Telangana');
+		expect(t).toContain('Date and time 2 Oct 2026, 07:35 to 08:00 IST');
+		expect(t).toContain(`GST ${inr2(cert.reversed!)} reversed by Lakshmi Agencies, s.17(5)(h)`);
+		// signed at the facility: the officer by the agency's seal, a witness on its panel, one he named who is not
+		expect(t).toContain('Supervising officer M. Srinivas ReddySite supervisor, Deccan Green Waste Management');
+		expect(t).toContain(
+			'Independent witness 1 Syed MujeebHouse 14, Gandhi Nagar, Hyderabad 500080Voter ID, last four 5831'
+		);
+		expect(t).toContain("Independent witness 2 signed on the agency's original P. Anitha");
+		for (const name of ['M. Srinivas Reddy', 'Syed Mujeeb', 'K. Lakshmi Narayana'])
+			expect(r.getAllByRole('img', { name: `Signed by ${name}` }).length).toBeGreaterThan(0);
+		expect(t).toContain('Goods handed over byK. Lakshmi NarayanaPartner, Lakshmi Agencies');
+		expect(t).toContain(`Evidence approved by${c.destruction!.approvedBy}for Munchly Foods Ltd, 2 Oct, 08:00`);
+		// page 2: the log, its two photos from their links, each step initialled
+		expect(t).toContain(`Destruction log · ${cert.no}Page 2 of 2`);
+		expect(t).toContain('07:20Received and weighed283.37 kg on weighbridge slip WB/26-27/0099');
+		const before = r.getByRole('img', { name: "The packs at the godown, the carton's batch label in view" });
+		expect(before.getAttribute('src')).toBe('http://storage/before?get');
+		expect(r.getAllByRole('img', { name: 'Initialled by Syed Mujeeb' }).length).toBe(7);
+		expect(r.container.querySelectorAll('.cert-ini-none').length).toBe(7); // P. Anitha, as initials
+	});
+
+	it("Munchly's credit note and GST memo are signed for it, and the draft tax invoice is not (SC-174)", async () => {
+		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1440);
+		const m = moment('cleared');
+		m.members.priya.snapshot.client.signatory = SIGNED;
+		const r = await draw(source(fakeApi(m, 'priya')), 'paperwork', MANGO);
+		await waitFor(() => expect(text(r)).toContain('Expiry credit note'));
+		await fireEvent.click(r.getAllByRole('button', { name: /Price-support credit note/ })[0]);
+		await waitFor(() => expect(text(r)).toContain('Credit Note No.'));
+		const paper = r.container.querySelector('.paper.tl')!;
+		expect(paper.querySelector('img.sig-hand')?.getAttribute('alt')).toBe('Signed by Vinod Patwardhan');
+		expect(paper.querySelector('.sig-ink.round.sealed img.sig-seal')).toBeTruthy();
+		expect(norm(paper.textContent)).toContain(
+			'for Munchly Foods Ltd Authorised Signatory Vinod Patwardhan, Head of Accounts'
+		);
+		expect(norm(paper.textContent)).not.toContain('Computer Generated');
+		await fireEvent.click(r.getAllByRole('button', { name: /GST ITC memo/ })[0]);
+		await waitFor(() => expect(text(r)).toContain('ITC PART REVERSED'));
+		const memo = r.container.querySelector('.paper.pp .pp-sign')!;
+		expect(norm(memo.textContent)).toBe('for Munchly Foods LtdVinod Patwardhan, Head of Accounts');
 	});
 
 	it("Lakshmi Agencies' You end whole, on the batch's page, counts what each line took, and the expiry credit", async () => {
@@ -818,8 +1083,9 @@ describe('packs destroyed at the godown, live (SC-139)', () => {
 		await waitFor(() => expect(approveDestruction).toHaveBeenCalledWith(MANGO));
 	});
 
-	it('sends both photos to their links, then the evidence with the agency and its certificate', async () => {
+	it('sends both photos to their links, then the evidence with the agency, its certificate, the window and two witnesses', async () => {
 		const m = moment('destruction-asked');
+		withPanel(m.members['lakshmi-owner'].snapshot);
 		class FakeXhr {
 			upload: { onprogress?: (e: { lengthComputable: boolean; loaded: number; total: number }) => void } = {};
 			status = 200;
@@ -851,13 +1117,23 @@ describe('packs destroyed at the godown, live (SC-139)', () => {
 				target: { files: [new File([which], `${which}.jpg`, { type: 'image/jpeg' })] }
 			});
 		await fireEvent.input(r.getByLabelText("Agency's certificate number"), { target: { value: 'DGW/DC/26-27/0099' } });
+		// the window starts at the agency's usual and the witnesses at its panel; he names the second one himself
+		expect((r.getByLabelText('Destroyed from') as HTMLInputElement).value).toBe('12:55');
+		expect((r.getByLabelText('Witness 1 · name') as HTMLInputElement).value).toBe('Syed Mujeeb');
+		await fireEvent.input(r.getByLabelText('To'), { target: { value: '13:25' } });
+		await fireEvent.input(r.getByLabelText('Witness 2 · name'), { target: { value: 'R. Kavitha' } });
 		await fireEvent.click(r.getByRole('button', { name: 'Send to Munchly for approval' }));
 		await waitFor(() => expect(sendDestruction).toHaveBeenCalled());
 		expect(links).toEqual(['before', 'after']);
 		expect(sendDestruction).toHaveBeenCalledWith(MANGO, {
 			agency: 'dgw',
 			certificate: 'DGW/DC/26-27/0099',
-			photos: { before: 'dz-before', after: 'dz-after' }
+			photos: { before: 'dz-before', after: 'dz-after' },
+			window: { from: '12:55', to: '13:25' },
+			witnesses: [
+				{ name: 'Syed Mujeeb', address: 'House 14, Gandhi Nagar, Hyderabad 500080' },
+				{ name: 'R. Kavitha', address: 'Flat 3, Kavadiguda, Hyderabad 500080' }
+			]
 		});
 		vi.unstubAllGlobals();
 	});
@@ -1707,7 +1983,9 @@ describe("a batch's record (SC-142)", () => {
 		await tab(r, 'Photos');
 		await waitFor(() => expect(text(r)).toContain('Your photos for this batch'));
 		const t = text(r);
-		expect(t).toContain('3 · tap to open');
+		expect(t).toContain('4 · tap to open'); // the label, the two destruction photos and the staff sale's receipt
+		expect(t).toContain('Staff sale receipt');
+		expect(t).toContain('Vision read LA/SR/26-27/0002: 12 UPI payments, ₹960.00');
 		expect(t).toContain('Before, at the godown');
 		expect(t).toContain('After, at the landfill');
 		expect(t).toContain('Batch MF-2410-118 read on the carton label');
@@ -1715,7 +1993,7 @@ describe("a batch's record (SC-142)", () => {
 		expect(t).toContain('Priya Deshmukh');
 		expect(t).toMatch(/Approved the destruction of [\d,]+ packs at /);
 		expect(t).toContain('Munchly credited you on CN/0119 once it approved.');
-		expect(r.container.querySelectorAll('.rec-shot img')).toHaveLength(3);
+		expect(r.container.querySelectorAll('.rec-shot img')).toHaveLength(4);
 		expect(t).not.toMatch(/NaN|undefined|Invalid Date/);
 		r.unmount();
 	});

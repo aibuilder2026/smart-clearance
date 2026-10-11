@@ -1,0 +1,17 @@
+  /* the signatures (SC-174): the hand over the firm's stamp or beside its seal. WeasyPrint has no mix-blend-mode, and
+     the images are transparent, so the stamp sits under the ink at an impression's opacity */
+  .ink { display: inline-block; position: relative; vertical-align: middle; }
+  .ink .hand { position: relative; display: block; width: auto; }
+  .ink .seal { position: absolute; opacity: 0.84; }
+  .ink.rect { width: 38mm; height: 20.3mm; }
+  .ink.rect .seal { left: 0; top: 0; width: 38mm; height: 20.3mm; }
+  .ink.rect .hand { position: absolute; left: 50%; top: 50%; max-width: 36mm; transform: translate(-50%, -50%); }
+  .ink.round { padding: 4mm 0 4mm 14mm; }
+  .ink.round .seal { left: 0; top: 50%; width: 22mm; height: 22mm; margin-top: -11mm; }
+  .ink.round.right { padding: 4mm 12mm 4mm 0; }
+  .ink.round.right .seal { left: auto; right: 0; }
+  .sig-none { font-size: 8pt; font-style: italic; color: #5d6762; }
+  .signed { text-align: right; padding: 1pt 0; }
+  .signer { text-align: right; font-size: 8.5pt; color: #3a423e; }
+  .pp-sign { margin: 14pt 0 0 auto; width: 70mm; text-align: right; font-size: 9pt; color: #3a423e; page-break-inside: avoid; }
+  .pp-sign .signed { padding: 0; }

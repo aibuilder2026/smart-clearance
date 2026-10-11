@@ -117,7 +117,13 @@
 		"distributors": 4,
 		"kiranas": 195,
 		"shortDatedPerQuarter": 1800000,
-		"destroyedToday": 0.7
+		"destroyedToday": 0.7,
+		"signatory": {
+			"name": "Vinod Patwardhan",
+			"title": "Head of Accounts",
+			"sign": "munchly",
+			"seal": "munchly"
+		}
 	},
 	"skus": {
 		"chips": {
@@ -294,6 +300,17 @@
 				"prefix": "RT/26-27/",
 				"next": 1279,
 				"width": 4
+			},
+			"signatory": {
+				"name": "Rakesh Jaiswal",
+				"title": "Proprietor",
+				"sign": "rakesh",
+				"seal": "rakesh"
+			},
+			"receipts": {
+				"prefix": "RT/SR/26-27/",
+				"next": 2,
+				"width": 4
 			}
 		},
 		"patil": {
@@ -322,6 +339,17 @@
 			"series": {
 				"prefix": "PD/26-27/",
 				"next": 512,
+				"width": 4
+			},
+			"signatory": {
+				"name": "Sanjay Patil",
+				"title": "Proprietor",
+				"sign": "patil",
+				"seal": "patil"
+			},
+			"receipts": {
+				"prefix": "PD/SR/26-27/",
+				"next": 1,
 				"width": 4
 			}
 		},
@@ -352,6 +380,17 @@
 				"prefix": "GS/26-27/",
 				"next": 2041,
 				"width": 4
+			},
+			"signatory": {
+				"name": "Ramesh Gupta",
+				"title": "Partner",
+				"sign": "gupta",
+				"seal": "gupta"
+			},
+			"receipts": {
+				"prefix": "GS/SR/26-27/",
+				"next": 1,
+				"width": 4
 			}
 		},
 		"lakshmi": {
@@ -381,6 +420,17 @@
 			"series": {
 				"prefix": "LA/26-27/",
 				"next": 972,
+				"width": 4
+			},
+			"signatory": {
+				"name": "K. Lakshmi Narayana",
+				"title": "Partner",
+				"sign": "lakshmi",
+				"seal": "lakshmi"
+			},
+			"receipts": {
+				"prefix": "LA/SR/26-27/",
+				"next": 2,
 				"width": 4
 			}
 		}
@@ -1849,6 +1899,30 @@
 			"grossUp": true,
 			"chargesPerUnit": 1.5,
 			"method": "Slit open, buried and covered at the authorised municipal landfill",
+			"reasons": [
+				[
+					"expiry",
+					"Product expiry"
+				],
+				[
+					"contamination",
+					"Contamination or damage"
+				],
+				[
+					"seizure",
+					"Court-ordered seizure"
+				]
+			],
+			"methods": {
+				"landfill": {
+					"name": "Sanitary landfill, CPCB-compliant",
+					"how": "the packs slit open and emptied into the active cell, covered with 30 cm of soil the same day; the plastic packaging segregated for an EPR-registered recycler"
+				},
+				"incineration": {
+					"name": "Incineration at a CPCB-compliant common facility",
+					"how": "the packs fed whole to the incinerator at 850 °C or more, the ash to the facility's secured landfill; the plastic packaging set aside first for an EPR-registered recycler"
+				}
+			},
 			"agencies": [
 				{
 					"id": "oce",
@@ -1860,7 +1934,34 @@
 						"next": 219,
 						"width": 4
 					},
-					"site": "the municipal landfill, Nagpur"
+					"site": "the municipal landfill, Nagpur",
+					"method": "landfill",
+					"facility": {
+						"name": "Municipal sanitary landfill, cell 4",
+						"address": "Pardi Road, Bhandewadi, Nagpur 440035, Maharashtra",
+						"gps": "21.1467° N, 79.1563° E"
+					},
+					"vehicle": "MH-31-ZX-0000",
+					"officer": {
+						"name": "Sachin Bhoyar",
+						"title": "Site supervisor",
+						"sign": "oce"
+					},
+					"seal": "oce",
+					"witnesses": [
+						{
+							"name": "Pradeep Meshram",
+							"address": "Plot 22, Wathoda Layout, Nagpur 440035",
+							"proof": "Voter ID, last four 4417",
+							"sign": "oce-w1"
+						},
+						{
+							"name": "Asha Kale",
+							"address": "House 9, Pardi Naka, Nagpur 440035",
+							"proof": "Voter ID, last four 0932",
+							"sign": "oce-w2"
+						}
+					]
 				},
 				{
 					"id": "vwc",
@@ -1872,7 +1973,34 @@
 						"next": 41,
 						"width": 4
 					},
-					"site": "the municipal landfill, Nagpur"
+					"site": "the municipal landfill, Nagpur",
+					"method": "landfill",
+					"facility": {
+						"name": "Municipal sanitary landfill, cell 2",
+						"address": "Pardi Road, Bhandewadi, Nagpur 440035, Maharashtra",
+						"gps": "21.1452° N, 79.1541° E"
+					},
+					"vehicle": "MH-31-ZY-0000",
+					"officer": {
+						"name": "Rahul Dhote",
+						"title": "Site supervisor",
+						"sign": "vwc"
+					},
+					"seal": "vwc",
+					"witnesses": [
+						{
+							"name": "Vijay Thakre",
+							"address": "Plot 5, Bharatwada Road, Nagpur 440035",
+							"proof": "Voter ID, last four 2268",
+							"sign": "vwc-w1"
+						},
+						{
+							"name": "Sunita Wankhede",
+							"address": "House 31, Kalamna Basti, Nagpur 440035",
+							"proof": "Voter ID, last four 7105",
+							"sign": "vwc-w2"
+						}
+					]
 				},
 				{
 					"id": "dgw",
@@ -1884,7 +2012,34 @@
 						"next": 86,
 						"width": 4
 					},
-					"site": "the municipal landfill, Hyderabad"
+					"site": "the municipal landfill, Hyderabad",
+					"method": "landfill",
+					"facility": {
+						"name": "Municipal sanitary landfill, cell 7",
+						"address": "Jawaharnagar, Hyderabad 500087, Telangana",
+						"gps": "17.5193° N, 78.5862° E"
+					},
+					"vehicle": "TG-09-ZX-0000",
+					"officer": {
+						"name": "M. Srinivas Reddy",
+						"title": "Site supervisor",
+						"sign": "dgw"
+					},
+					"seal": "dgw",
+					"witnesses": [
+						{
+							"name": "Syed Mujeeb",
+							"address": "House 14, Gandhi Nagar, Hyderabad 500080",
+							"proof": "Voter ID, last four 5831",
+							"sign": "dgw-w1"
+						},
+						{
+							"name": "P. Anitha",
+							"address": "Flat 3, Kavadiguda, Hyderabad 500080",
+							"proof": "Voter ID, last four 3390",
+							"sign": "dgw-w2"
+						}
+					]
 				}
 			]
 		},
@@ -2230,6 +2385,17 @@
 				"series": {
 					"prefix": "RT/26-27/",
 					"next": 1279,
+					"width": 4
+				},
+				"signatory": {
+					"name": "Rakesh Jaiswal",
+					"title": "Proprietor",
+					"sign": "rakesh",
+					"seal": "rakesh"
+				},
+				"receipts": {
+					"prefix": "RT/SR/26-27/",
+					"next": 2,
 					"width": 4
 				}
 			},

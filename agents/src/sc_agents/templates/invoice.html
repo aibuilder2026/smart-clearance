@@ -1,6 +1,8 @@
 {% extends "tally.html" %}
 {# the tax invoice the distributor issues from Tally for the ExpireSoon lot: inter-state, so IGST; once issued, its
-   e-invoice block (the IRN, acknowledgement and signed QR worked out by tools/papers.py) #}
+   e-invoice block (the IRN, acknowledgement and signed QR worked out by tools/papers.py), signed by his signatory over
+   his stamp (SC-174). A draft is not signed: he signs it as he issues it #}
+{% from "_sign.html" import tally %}
 {% set R = case.distributor %}{% set B = case.buyer or doc.to %}{% set inter = R.stateCode != B.stateCode %}
 {% set lot = (case.listing or {}).get("id", "") %}{% set token = (case.award or {}).get("token") %}
 {% set gst = doc.igst or 0 %}
@@ -45,9 +47,9 @@
 <table>
   <tr>
     <td style="width:52%">Company's PAN: <b>{{ R.pan }}</b><span class="k" style="margin-top:6pt">Declaration</span>We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct. Goods sold within their best-before date, under the brand's one-time permission.</td>
-    <td><span class="k">Company's Bank Details</span>{% if R.bank %}Bank Name: {{ R.bank.name }}<br>A/c No.: {{ R.bank.account }}<br>Branch &amp; IFS Code: {{ R.bank.ifsc }}{% endif %}<div class="sign">for <b>{{ R.name }}</b></div><div class="n">Authorised Signatory</div></td>
+    <td><span class="k">Company's Bank Details</span>{% if R.bank %}Bank Name: {{ R.bank.name }}<br>A/c No.: {{ R.bank.account }}<br>Branch &amp; IFS Code: {{ R.bank.ifsc }}{% endif %}{{ tally(R.name, R.signatory if e else none, (R.signatory or {}).seal, "rect") }}</td>
   </tr>
 </table>
-<div class="foot">SUBJECT TO {{ (R.city or "")|upper }} JURISDICTION · This is a Computer Generated Invoice</div>
+<div class="foot">SUBJECT TO {{ (R.city or "")|upper }} JURISDICTION{% if not e %} · A draft: {{ R.short or R.name }} signs it as it is issued{% endif %}</div>
 {% if not e %}<div class="foot">Drafted by Smart-Clearance's Paperwork agent from the batch's record for {{ R.short or R.name }} to issue from Tally.{% if note %} {{ note }}{% endif %}</div>{% endif %}
 {% endblock %}

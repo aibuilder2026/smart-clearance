@@ -7,7 +7,8 @@ import type { RecordPhoto } from '../../types';
 export const PHOTO: Record<RecordPhoto['id'], [string, string]> = {
 	label: ['Label photo', 'Label'],
 	before: ['Before, at the godown', '1 · Before'],
-	after: ['After, at the landfill', '2 · After']
+	after: ['After, at the landfill', '2 · After'],
+	receipt: ['Staff sale receipt', 'Receipt']
 };
 /** a time as the record keeps it: an ISO day and time on the live workspace and in the history, the stub's own (09:19,
  *  Mon 5 Oct) for the story's batch */

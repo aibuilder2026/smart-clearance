@@ -2271,5 +2271,52 @@
   - **The document,** 21 sections: the system; the surfaces; every Google Cloud service with what it does and why (and why not Firestore); versions from the lockfiles; the core loop and a batch's journey stop by stop, the case's phases and the destruction at the godown (Mermaid); the agents (modules, events to pipelines, the two Gemini tiers, the guardrails, the evals); backend-api's routers, contexts and journey services; the outbox, the tick, the timers, SSE and FCM; the data (two ERDs, migrations 0001 to 0015, BigQuery, the buckets); the frontend's seven packages and its stub and live sources; design3; identity and the roles; the cloud runtime and Terraform's files; delivery; local development; testing; one trace from the browser to Gemini; accessibility; decisions; known gaps; and the diagrams' sources with how to refresh them. Mermaid draws only what Lucid does not.
   - **Found on the way, listed in its known gaps:** `monitoring.tf` describes the model timeout as 20 s where the code gives 30 s; the agents' `sc-agents-harvest` entry point names a module that does not exist; the Data eval summary predates the shelf cases' removal.
   - **Checks:** the ten Mermaid diagrams parse and render with Mermaid 11.4; every relative link and anchor resolves; all twelve images are used. README's and AGENTS.md's pointers follow.
+- **SC-172** (epic): papers as evidence. The staff sale's consolidated receipt, the certificate of destruction in full, and a signature on every paper, for past and current batches, then production synced.
+  - **The request (11 Oct):**
+    - "Can we somehow track receipts given to Staff sale, they will be needed for paperwork evidence": the distributor uploads one consolidated receipt for the staff sale, with UPI payment ids;
+    - the certificate of destruction to carry the description, batch numbers, the exact quantity and weight, the reason, the approved method, the date, time and authorised facility, and the signatures of the supervising officer and two independent witnesses ("can be faked");
+    - "none of the GST invoices, credit note and price support note has signatures";
+    - "old past batches and current batches to be fixed … and then local and production storage and database be synced".
+  - **The stories:** SC-173 (the design round), SC-174 (the build), SC-175 (production's sync), stacked in that order.
+- **SC-173** (In Review, branch `SC-173-papers-evidence-design`): the design round, on one board in app v3, `SC-173 design review.html`, each option drawn on the real screens and papers:
+  - the staff sale's receipt: A, with the count (recommended); B, a step of its own; C, the payments are the count;
+  - the certificate: A, one page, numbered (recommended); B, the certificate and its log;
+  - the signatures: A, ink and the firm's stamp (recommended); B, digitally signed.
+
+  The maintainer picked **A**, **B** and **A**, and kept the signatories' names. Designs, the trial signatures, stills and the decision are in `design3/designs/SC-173/`.
+- **SC-174** (In Review, branch `SC-174-papers-evidence`, stacked on SC-173): the build, design3 first, then backend-api, the agents and the frontend.
+  - **The staff sale's receipt (A, with the count):**
+    - the distributor's Staff sale card takes one consolidated receipt beside the count, a photo or a PDF under 8 MB (Take a photo, Upload): every staff payment by its UPI reference, from his books or his UPI app's statement;
+    - Vision reads it on Gemini (`vision_staff_receipt.txt`): its number and date, each payment's reference, payer, time and amount, the total;
+    - **Record the sale** is offered only once the payments come to the count × the price (within 50 paise). Short, the card says what the receipt comes to, and offers another receipt or the count its payments make; unreadable, it asks for another;
+    - recorded, the receipt is a paper of the pack (`staff`, after the price-support note): Priya reads it on Execution's Staff sale card and in the pack, the distributor on his batch's papers, each opening the photo he sent with what Vision read. The feed says so.
+  - **The certificate of destruction (B, the certificate and its log):**
+    - page 1, the certificate: the goods (description, batch, made and best before, MRP, packs, cartons, kilos, plastic packaging), the reason (expiry), the method (sanitary landfill, CPCB's rules), the date, the window and the authorised facility with its address and coordinates, who handed the packs over, the evidence, Priya's yes, and the three signatures: the agency's supervising officer and two independent witnesses, each with an address and proof of identity;
+    - page 2, the destruction log, step by step with its time (`papers.js` `destructionLog`, `domain/papers.py`): photographed at the godown, loaded on the agency's sealed vehicle, received and weighed on the weighbridge slip, slit open and emptied, buried and covered, photographed with the slate, the packaging sent on, initialled by the three;
+    - the destruction screen gains the window and the two witnesses (the agency's panel by default); each agency gains its facility, vehicle, officer, seal and witnesses (`data.js` `SETUP.destruction`).
+  - **A signature on every paper (A, ink and the firm's stamp):** the tax invoice, the kirana invoices, Munchly's credit notes (price support and expiry), the ITC memo, the FSSAI checklist, the staff sale's receipt and the certificate, each with its signatory's specimen signature over the firm's stamp: a rectangular rubber stamp for the distributors, a round seal for Munchly and the agencies. A food bank's receipt stays unsigned, since it names a real organisation.
+  - **The makers:**
+    - the signature maker, `design3/system/signatures/`: 14 Qwen-Image scans of each name in ballpoint, keyed to their ink (`ink.py`) into `system/img/signatures/`, with sidecars; the 8 stamps and seals drawn (`seals.mjs`) into `system/img/seals/`;
+    - the receipt maker, `design3/system/receipts/make.mjs`: each staff sale's receipt printed from the batch's own payments (`papers.js` `staffPayments`, `staffReceipt`) onto a Qwen-Image photo of a sheet on a desk, by the label maker's compositor: the history's MF-2406-109 (LA/SR/26-27/0001, 24 payments, ₹3,300) and MF-2407-114 (RT/SR/26-27/0001, 8 payments, ₹1,300), and the Mango Drink's (LA/SR/26-27/0002, 18 payments, ₹1,200);
+    - `seed.mjs` copies the receipts into backend-api's reference and the signatures and seals into the agents' templates (`templates/marks/`).
+  - **backend-api:**
+    - `POST …/cases/{ref}/staff-sale/receipt` (a signed link), `…/receipt/{id}` (it has arrived), and the agents' `…/staff/receipt/read`; `POST …/staff-sale` takes the receipt and refuses a sale its payments do not cover;
+    - the staff sale's receipt and the certificate in full on the case, the pack and the partner facts, the receipt's photo on the Record and on the distributor's Photos; each distributor's, the client's and each agency's signatory (`identity.py`), set by hydrate and topped up by Reset journey;
+    - the history issues the two receipts and the three certificates in full, each with its window, witnesses and log, held to design3's (`journey.json`);
+    - no migration: everything lives in the case's and the workspace's JSON.
+  - **agents:** Vision's staff receipt read; Paperwork's signatures (`_sign.html`), the certificate's two pages (`destruction.html`), and the tax invoice kept to one page.
+  - **The frontend:** core's screens follow design3 (`Ink`, `TallySign`, `PpSign`, `Certificate`, `ReceiptRead`, `StaffReceiptPaper`, a rewritten `StaffSale`; `papers.ts` `destructionLog`, held to papers.js; the signatures and seals in `marks.ts`, kept in a live build), and the stub records the sale with its receipt. The live workspace uploads the receipt to its signed link, records the sale with it, sends the window and witnesses, and projects the receipt and the certificate in full. The guided demo's staff-sale beat takes a photo, then records.
+    - **Beyond design3**, live only: a receipt Vision could not read asks for a clearer photo or the PDF from his UPI app; Priya's Execution shows Vision's read once the sale is recorded; an agency with no witness panel offers two blank witness rows.
+    - **Found by the port:** a history batch's tax invoice read as a draft in the port, which never carried `invoiceIssuedAt`; it reads issued, with its e-invoice and signature.
+  - **Not done as the board drew it:** Deccan Green Waste Management stays a sanitary landfill (its evidence photo shows one), though the board named incineration.
+  - **Checks:**
+    - backend-api 572 passed, 1 skipped (`test_staff_receipt.py`, 4 new: a receipt that matches, one Vision cannot read, the receipt as a paper with its link, its printed date as a day; the Mango's tests record the sale on a receipt);
+    - agents 223 passed;
+    - the frontend gate passes: api 83, core 382, admin 22, console 2, demo 9, workspace 109 (4 new live tests: the receipt being read, matched and recorded, one short of the count, Priya's read and paper, the certificate's two pages, the signed credit note and ITC memo); 12 goldens follow the signatures, the certificate, the receipt and the window and witnesses. A live workspace build passes `no-seed.mjs`. The port was shot beside design3 at 1440 light (within 0.2%) and 390 dark;
+    - the live fixtures were regenerated, which found a receipt's printed date (03/10/2026) kept as printed on its paper: it is read as an ISO day (`papers.iso_day`), as every other paper's;
+    - the browser suites were not run (SC-55).
+  - **Locally:** rebuilt with `hydrate.sh --reset`, then `--papers munchly --again`: Paperwork laid out every history paper afresh with its signature, the three certificates on two pages, and the 214 kirana invoices. Both history receipts read and matched; every paper has its PDF. The day is 24 hours.
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
+- **SC-175** (To Do): production's data replaced with local's after SC-174 (the database, the photos and docs buckets, BigQuery), once SC-174 is merged and deployed, while infra's `data_sync_until` (12 Oct, 12:00 UTC) allows.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

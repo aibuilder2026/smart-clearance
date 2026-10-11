@@ -9,7 +9,15 @@ import { run } from './design3';
 // The stub's ledger (SC-121) is design3/core/ledger.js: the history's rows and the story's come from the seed it writes,
 // and adding them up into quarters and years, the months, the weeks, the mix and BRSR's row gives what ledger.js gives,
 // before the story's batch is posted and after. Each batch of the history has its own page, cleared and reviewed.
-const W = run('core/money.js', 'core/data.js', 'core/store.js', 'core/flow.js', 'core/world.js', 'core/ledger.js');
+const W = run(
+	'core/money.js',
+	'core/papers.js',
+	'core/data.js',
+	'core/store.js',
+	'core/flow.js',
+	'core/world.js',
+	'core/ledger.js'
+);
 const plain = (o: unknown) => JSON.parse(JSON.stringify(o));
 
 describe("the ledger is ledger.js's", () => {

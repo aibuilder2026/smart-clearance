@@ -2,6 +2,7 @@
 // store.js). The seed (./seed/workspace.json) is written from design3 by frontend/scripts/seed.mjs; a quantity without a
 // limit (Infinity in money.js) is null here.
 import type { IconName } from '../icons/registry';
+import type { DestructionStep } from './papers';
 
 export type RoleId = 'operator' | 'distributor' | 'retailer' | 'buyer' | 'foodbank' | 'admin';
 
@@ -72,6 +73,48 @@ export type Distributor = {
 	upi?: string | null;
 	/** his own sales series, for the tax invoice he issues each kirana's scheme order (SC-153) */
 	series?: { prefix: string; next: number; width: number } | null;
+	/** who signs his papers, with his specimen signature and his firm's stamp (SC-174) */
+	signatory?: Signatory | null;
+	/** his staff sales' consolidated receipts' own series (SC-174) */
+	receipts?: { prefix: string; next: number; width: number } | null;
+};
+
+/** who signs a party's papers (SC-174): the signatory's name and title, the specimen signature on file
+ *  (system/img/signatures/<sign>.webp) and the firm's stamp or seal (system/img/seals/<seal>.webp) */
+export type Signatory = { name: string; title: string; sign: string | null; seal?: string | null };
+/** a witness to a destruction (SC-174): name, address, the ID proof's last four, and a specimen signature where the
+ *  agency keeps one */
+export type Witness = { name: string; address: string; proof?: string | null; sign?: string | null };
+
+/** one staff member's UPI payment, as a staff sale's consolidated receipt lists it (SC-174, papers.js staffPayments):
+ *  its UPI reference (the 12-digit RRN), who paid, when, the packs it paid for and the amount */
+export type ReceiptPayment = {
+	n: number;
+	who: string;
+	vpa?: string;
+	at: string;
+	rrn: string | null;
+	units: number;
+	amount: number;
+};
+/** a staff sale's consolidated receipt (SC-174, papers.js staffReceipt): its number in the distributor's own series,
+ *  every payment, what they came to and when; the photo or PDF he sent (`file` under design3's system/img/ in the stub,
+ *  `url` its link on the live workspace), and whether Vision has read it */
+export type StaffReceipt = {
+	no: string;
+	date: string;
+	payments: ReceiptPayment[];
+	units: number;
+	paid: number;
+	from: string;
+	to: string;
+	file?: string;
+	url?: string | null;
+	read?: boolean;
+	/** the live workspace's: its id, while Vision reads it, and when he sent it */
+	id?: string;
+	status?: 'reading' | 'read' | 'unreadable';
+	at?: string | null;
 };
 
 export type Buyer = {
@@ -379,6 +422,32 @@ export type Doc = {
 	evidence?: { photos: number; checks: number; of: number };
 	approvedBy?: string;
 	approvedAt?: string;
+	/** the certificate in full (SC-174, ledger.js destructionDetail): the reason, the agency's method, its facility and
+	 *  vehicle, its supervising officer and seal, the two independent witnesses, the window on the day, the two photos,
+	 *  who handed the packs over, the goods, and the log from the godown to the cover */
+	reason?: string;
+	methodId?: string;
+	methodName?: string;
+	methodHow?: string;
+	facility?: { name: string; address: string; gps: string } | null;
+	vehicle?: string | null;
+	officer?: Signatory | null;
+	seal?: string | null;
+	witnesses?: Witness[];
+	window?: { from: string; to: string };
+	destroyedOn?: string;
+	photos?: {
+		before: { name: string; at: string; url?: string | null };
+		after: { name: string; at: string; url?: string | null };
+	};
+	handedBy?: Signatory | null;
+	goods?: string;
+	mfg?: string | null;
+	mrp?: number;
+	perCarton?: number;
+	log?: DestructionStep[];
+	/** the staff sale's receipt as a paper of the pack (SC-174): how many UPI payments it lists */
+	payments?: number;
 };
 
 /** what becomes of the packs left at a distributor's godown on expiry day (SC-94): destroyed there through an
@@ -412,6 +481,13 @@ export type DestructionAgency = {
 	auth: string;
 	series: { prefix: string; next: number; width: number };
 	site: string;
+	/** its own method, facility, covered vehicle, supervising officer, seal and panel of independent witnesses (SC-174) */
+	method?: string;
+	facility?: { name: string; address: string; gps: string };
+	vehicle?: string;
+	officer?: Signatory;
+	seal?: string;
+	witnesses?: Witness[];
 };
 /** how the client has packs destroyed at a distributor's godown (SC-139, the console's Channels and rules): the evidence
  *  asked for, Vision's check, who approves, the reminder, the GST gross-up and the agency's charge a pack */
@@ -424,6 +500,9 @@ export type DestructionSettings = {
 	chargesPerUnit: number;
 	method: string;
 	agencies: DestructionAgency[];
+	/** the certificate's reasons and methods (SC-174) */
+	reasons?: [string, string][];
+	methods?: Record<string, { name: string; how: string }>;
 };
 /** packs destroyed at a distributor's godown on expiry day (SC-139, option B): he is asked for the evidence (two
  *  photos and the agency's certificate number), Vision checks it, and the client's operator gives the second yes, on
@@ -445,6 +524,9 @@ export type Destruction = {
 	approvedAt?: string | null;
 	approvedBy?: string | null;
 	method?: string;
+	/** the window the agency destroyed them in and its two independent witnesses, as he gave them (SC-174) */
+	window?: { from: string; to: string } | null;
+	witnesses?: { name: string; address: string }[] | null;
 };
 
 export type Rules = {
@@ -560,6 +642,10 @@ export type StaffSale = {
 	at: string;
 	sold: number | null;
 	left: number | null;
+	/** the consolidated receipt sent with the count (SC-174) */
+	receipt?: StaffReceipt | null;
+	/** when it was recorded, where the source knows it (the live workspace) */
+	recordedAt?: string | null;
 };
 
 export type UserStatus = 'active' | 'invited' | 'deactivated';
@@ -618,7 +704,14 @@ export type State = {
 		phase: string;
 		donation: null | 'booked' | 'confirmed' | 'collected' | 'declined';
 		/** the stub's staff sale for the second batch, once recorded (SC-133) */
-		staff?: { status: 'open' | 'recorded'; units: number; sold: number | null; left: number | null } | null;
+		staff?: {
+			status: 'open' | 'recorded';
+			units: number;
+			sold: number | null;
+			left: number | null;
+			/** the consolidated receipt sent with it (SC-174) */
+			receipt?: StaffReceipt | null;
+		} | null;
 	};
 	feed: FeedEvent[];
 	notifications: Notification[];
@@ -674,6 +767,8 @@ export type Story = {
 	docs: Doc[];
 	invoice: Doc | null;
 	returnBy: string;
+	/** the staff sale's consolidated receipt the stub records with the sale (SC-174): the Mango Drink's */
+	staffReceipt?: StaffReceipt | null;
 	realised: { lines: { id: string; units: number }[]; godown: number } | null;
 	expiry: ExpirySettlement | null;
 	push: Record<string, Push>;
@@ -726,6 +821,8 @@ export type WorkspaceSeed = {
 		state?: string;
 		stateCode?: string;
 		email?: string;
+		/** who signs its papers: its credit notes, its GST memo and its FSSAI checklist (SC-174) */
+		signatory?: Signatory | null;
 		revenue: string;
 		skus: number;
 		distributors: number;
@@ -961,6 +1058,8 @@ export type CaseData = {
 	expiry?: ExpirySettlement | null;
 	/** the packs destroyed at his godown, while the evidence is asked for, checked and approved (SC-139) */
 	destruction?: Destruction | null;
+	/** the staff sale's consolidated receipt, once the sale is recorded with it (SC-174): a paper of the pack */
+	staffReceipt?: StaffReceipt | null;
 	/** the stub's journey (SC-168): whether its scheme fills, how many packs left at the godown expire there, the van
 	 *  round's day after day 0, and whether it begins with the distributor's permission; the live workspace has none */
 	story?: {
@@ -1053,6 +1152,8 @@ export type PartnerCase = {
 			matches?: boolean;
 		} | null;
 	} | null;
+	/** the staff sale's consolidated receipt he sent (SC-174), his own */
+	staffReceipt?: StaffReceipt | null;
 	docs: Doc[];
 };
 /** what a partner reads of its own history with the client: the batches it took part in, the buyer they name, and a
@@ -1262,7 +1363,7 @@ export type BatchRecord = { ref: string; steps: RecordStep[]; photos: RecordPhot
 /** a photo sent for a batch (SC-142): its label photo with what Vision read, or the destruction's before or after with
  *  Vision's checks. `src` is its link on the live workspace; `img` its file under design3's system/img/ in the stub */
 export type RecordPhoto = {
-	id: 'label' | 'before' | 'after';
+	id: 'label' | 'before' | 'after' | 'receipt';
 	src?: string | null;
 	img?: string;
 	at: string;
@@ -1276,6 +1377,17 @@ export type RecordPhoto = {
 		matches?: boolean;
 	} | null;
 	checks?: { id: string; label: string; ok: boolean }[];
+	/** the staff sale's consolidated receipt (SC-174): what Vision read from it, and whether it matches the count */
+	receipt?: {
+		no: string;
+		payments: number;
+		paid: number;
+		units: number;
+		from: string;
+		to: string;
+		matches?: boolean;
+		list?: ReceiptPayment[];
+	} | null;
 };
 
 /** the people a visitor can step into in the stub, by where they stand */
@@ -1301,8 +1413,8 @@ export type ActionArgs = {
 	/** the bid, a packet */
 	bid: number;
 	accept: undefined;
-	/** the staff sale recorded: how many of its packs sold (SC-87) */
-	recordStaffSale: number;
+	/** the staff sale recorded: how many of its packs sold (SC-87), with the consolidated receipt Vision read (SC-174) */
+	recordStaffSale: number | { sold: number; receipt?: StaffReceipt | null };
 	confirmPickup: undefined;
 	collect: undefined;
 	dispatch: undefined;
@@ -1310,7 +1422,15 @@ export type ActionArgs = {
 	review: undefined;
 	vanRound: undefined;
 	/** packs destroyed at his godown (SC-139): the agency and its certificate, and on the live workspace the two photos */
-	sendDestruction: { agency: DestructionAgency; certificate: string; before?: Blob; after?: Blob };
+	sendDestruction: {
+		agency: DestructionAgency;
+		certificate: string;
+		before?: Blob;
+		after?: Blob;
+		/** the window the agency destroyed them in, and its two independent witnesses (SC-174) */
+		window?: { from: string; to: string };
+		witnesses?: { name: string; address: string }[];
+	};
 	approveDestruction: undefined;
 	/** what the operator asks him to send again */
 	askDestructionAgain: string;

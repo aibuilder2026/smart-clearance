@@ -241,6 +241,10 @@ test("demo · inside the devices: the Mango Drink's staff sale and Meera's recei
 	const findings: Finding[] = [];
 	await nextUntil(page, "Lakshmi Agencies' phone", 'staff');
 	const lakshmi = device(page, "Lakshmi Agencies' phone");
+	// the consolidated receipt first (SC-174): the stand-in photo, read a moment later, matches every pack
+	await lakshmi.getByRole('button', { name: 'Take a photo' }).click();
+	await expect(lakshmi.getByText(/matches your count/)).toBeVisible();
+	findings.push(...(await check(page, "Execute · Lakshmi Agencies' consolidated receipt read")));
 	await lakshmi.getByRole('button', { name: /Record the sale/ }).click();
 	await expect(page.locator('.narr .beat.done', { hasText: 'Lakshmi Agencies sells' })).toHaveCount(1);
 	await page.waitForTimeout(500);

@@ -3,14 +3,18 @@
 	import { cartons, fmt, productName } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { CaseData } from '../../types';
+	import Certificate from './Certificate.svelte';
 	import { issuedWhen, possessive } from './ledger';
+	import PpSign from './PpSign.svelte';
 	import Receipt from './Receipt.svelte';
+	import StaffReceiptPaper from './StaffReceiptPaper.svelte';
 	import TallyCredit from './TallyCredit.svelte';
 	import TallyInvoice from './TallyInvoice.svelte';
 
 	// a document of the pack, set on paper (screens/finance.jsx Paper): the invoice Rakesh Traders issues, the e-way bill
-	// check, Munchly's price-support credit note, the ITC memo, the FSSAI checklist, the food bank's receipt (SC-110) and
-	// the destruction certificate
+	// check, Munchly's price-support credit note, the ITC memo, the FSSAI checklist, the food bank's receipt (SC-110), the
+	// staff sale's consolidated receipt and the destruction certificate (SC-174, the agency's in full); the client's own
+	// papers signed for it
 	// a batch's paper: the batch in focus's, or the batch named (`c`, a batch's page in the ledger, SC-121)
 	let { id, c: given }: { id: string; c?: CaseData } = $props();
 	const ws = useWorkspace();
@@ -39,10 +43,9 @@
 		c.sku.itcPerUnit == null ? 'estimated from the cost and the GST rate' : 'from the cost sheet'
 	);
 	const destroyed = $derived(d?.units ?? c.plan.leftover ?? 0);
-	// a time on a paper: 15 Sept, 13:20 for a date and time, else as it is
-	const stamp = (t?: string) => (!t ? '' : t.length > 5 ? `${fmt.day(t.slice(0, 10))}, ${t.slice(11, 16)}` : t);
-	const lower = (t: string) => t.charAt(0).toLowerCase() + t.slice(1);
 	const W = $derived(ws.data.workspace);
+	// who signs the client's papers, with its seal (SC-174)
+	const C = $derived(ws.data.client);
 	const kl = $derived(c.lines.kirana);
 	// issued from Tally: its e-invoice comes with it (SC-148); the hero is the batch in focus's
 	const issuedAt = $derived(issuedWhen(c, inv, !given || given.batch.id === ws.case?.batch.id ? ws.state.hero : null));
@@ -161,6 +164,7 @@
 				The {fmt.num(memo.atGodown)} packs destroyed at {possessive(R.name)} godown were his stock, bought under tax invoice:
 				he reverses their input credit, and {ws.data.client.short} keeps its own.{/if}
 		</p>
+		<PpSign firm={C.name} who={C.signatory} seal={C.signatory?.seal} />
 	</div>
 {:else if id === 'expiry' && d}
 	{@const C = ws.data.client.short}
@@ -252,6 +256,7 @@
 				The batch's own checklist for the surplus food: {c.donation.units} packs from {c.donation.from || c.dist.godown}
 				to {c.donation.partner.name}, inside their best-before, with the label photo attached.
 			</p>
+			<PpSign firm={C.name} who={C.signatory} seal={C.signatory?.seal} />
 		{:else}{@render head('FSSAI surplus-food checklist', c.batch.id, 'NOT REQUIRED')}
 			<!-- another batch's donation is pointed at only when there is one: on the live workspace a batch with no
 			donation of its own has nothing to point at (SC-98) -->
@@ -263,45 +268,17 @@
 			</p>{/if}
 	</div>
 {:else if d && d.at === 'godown'}
-	<!-- destroyed at his godown (SC-139): the authorised agency's certificate, for him, once the evidence is approved: the
-	batch, the packs and kilos, the method, the agency and its authorisation, the evidence and who approved it, and the
-	input GST he reverses; until then it waits -->
-	{@const done = d.status === 'generated'}
-	<div class="paper pp">
-		{@render head(
-			'Destruction certificate',
-			done ? `${d.no} · ${d.agency}` : `${c.batch.id} · ${R.name}`,
-			done ? 'DESTROYED' : 'AWAITING',
-			done
-		)}
-		<div class="pp-sub">For {R.name}, {R.address} · GSTIN {R.gstin}</div>
-		{@render line(
-			`${c.sku.brand} ${c.sku.name}`,
-			`${fmt.num(d.units ?? 0)} packs`,
-			true,
-			`HSN ${c.sku.hsn} · batch ${c.batch.id} · best before ${fmt.date(c.batch.bestBefore)}`
-		)}
-		{#if done}{@render line('Weight', fmt.kg(d.kg ?? 0), false, 'food and packaging')}
-			{@render line('Method', stamp(d.destroyedAt), false, lower(d.method ?? ''))}
-			{@render line('Agency', d.agency ?? '', false, `authorisation ${d.auth}`)}
-			{@render line(
-				'Evidence',
-				`approved by ${d.approvedBy}`,
-				false,
-				`two photos · Vision's checks ${d.evidence?.checks ?? 0} of ${d.evidence?.of ?? 0}`
-			)}
-			{@render line(
-				'Input GST he reverses',
-				fmt.inr2(d.reversed ?? 0),
-				false,
-				'section 17(5)(h), GSTR-3B Table 4(B)(1)'
-			)}{:else}{@render line('Input GST he will reverse', fmt.inr2(d.reversed ?? 0), false, 'section 17(5)(h)')}{/if}
-		<p class="pp-note">
-			{done
-				? d.note
-				: `Issued by the authorised agency once ${W.short} approves the destruction's evidence: two photos and the agency's certificate number.`}
-		</p>
-	</div>
+	<!-- destroyed at his godown (SC-139): the authorised agency's certificate, for him, once the evidence is approved; in
+	full (SC-174, option B), the certificate and its log -->
+	<Certificate {d} {c} />
+{:else if id === 'staff'}
+	<!-- the staff sale's consolidated receipt (SC-174): the photo he sent with the sale, and what Vision read from it -->
+	{#if c.staffReceipt}<StaffReceiptPaper
+			r={c.staffReceipt}
+			dist={c.dist}
+			sku={c.sku}
+			price={c.staffReceipt.paid / c.staffReceipt.units}
+		/>{/if}
 {:else}
 	<div class="paper pp">
 		{@render head(

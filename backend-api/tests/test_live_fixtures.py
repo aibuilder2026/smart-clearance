@@ -29,6 +29,7 @@ from tests.test_workspace import (
     detect,
     put_photo,
     setup,
+    staff_sold,
     token,
 )
 
@@ -148,7 +149,7 @@ async def test_write_the_live_fixtures(api, munchly, cloud):
         )
         assert r.status_code == 200, r.text
     await agent(api, f"/cases/{MANGO}/offer/close", "close-m", "outreach")
-    r = await api.post(f"{WS}/cases/{MANGO}/staff-sale", json={"sold": 120}, headers=LAKSHMI)
+    r = await staff_sold(api, cloud, MANGO, LAKSHMI, 120)
     assert r.status_code == 200, r.text
     await agent(api, f"/cases/{MANGO}/documents", "paperwork-m", "paperwork")
     assert (await api.post(f"{WS}/cases/{MANGO}/dispatches", json={"kind": "van"}, headers=LAKSHMI)).status_code == 200

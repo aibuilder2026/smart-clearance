@@ -3,6 +3,7 @@
 	import { einvoice, qr, qrPath, words } from '../../papers';
 	import { useWorkspace } from '../../source';
 	import type { CaseData, Doc } from '../../types';
+	import TallySign from './TallySign.svelte';
 
 	// the tax invoice the distributor issues from Tally for the ExpireSoon lot (SC-148, option B; screens/finance.jsx
 	// TallyInvoice): inter-state, so IGST; once issued, its e-invoice block, the IRN, acknowledgement and signed QR code
@@ -158,11 +159,13 @@
 		<div class="tl-cell">
 			<em>Company's Bank Details</em>{#if R.bank}Bank Name: {R.bank.name}<br />A/c No.: {R.bank.account}<br />Branch
 				&amp; IFS Code: {R.bank.ifsc}{/if}
-			<div class="tl-sign">for <b>{R.name}</b></div>
-			<div class="tl-num">Authorised Signatory</div>
+			<!-- signed only once issued, by its distributor over his stamp (SC-174) -->
+			<TallySign firm={R.name} who={e ? R.signatory : null} seal={R.signatory?.seal} stamp="rect" />
 		</div>
 	</div>
 	<div class="tl-foot">
-		SUBJECT TO {(R.city || '').toUpperCase()} JURISDICTION · This is a Computer Generated Invoice
+		SUBJECT TO {(R.city || '').toUpperCase()} JURISDICTION{e
+			? ''
+			: ` · A draft: ${R.short || R.name} signs it as it is issued`}
 	</div>
 </div>

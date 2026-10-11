@@ -55,6 +55,23 @@
     </div>;
   }
 
+  /* ---------- the signatures (SC-174, option A): each signatory's specimen signature in ink, over the firm's rubber
+     stamp (a distributor's rectangle, the signature between its lines) or beside its round seal (a company's, an
+     agency's); from the signature maker (system/img/signatures, system/img/seals). A name with no specimen on file (a
+     witness he named who is not on the agency's panel) signs on the agency's original, and the paper says so ---------- */
+  const SIGN_SRC = id => `${window.SC3_IMG}signatures/${id}.webp`, SEAL_SRC = id => `${window.SC3_IMG}seals/${id}.webp`;
+  function Ink({ who, seal, stamp = "round", h = 46 }) {
+    if (!who) return null;
+    if (!who.sign) return <span className="sig-none">signed on the agency's original</span>;
+    return <span className={cx("sig-ink", seal && "sealed", stamp)} style={{ "--h": `${h}px` }}>
+      {seal && <img className="sig-seal" src={SEAL_SRC(seal)} alt="" aria-hidden="true" />}<img className="sig-hand" src={SIGN_SRC(who.sign)} alt={`Signed by ${who.name}`} /></span>;
+  }
+  // the Tally papers' signatory block: for the firm, the signature and stamp, "Authorised Signatory", who signed
+  const TallySign = ({ firm, who, seal, stamp }) => <><div className="tl-sign">for <b>{firm}</b></div>{who && <div className="tl-signed"><Ink who={who} seal={seal} stamp={stamp} /></div>}<div className="tl-num">Authorised Signatory</div>{who && <div className="tl-signer">{who.name}, {who.title}</div>}</>;
+  // the app's own papers (the GST memo, the FSSAI checklist): signed at their foot for the client
+  const PpSign = ({ firm, who, seal }) => (who ? <div className="pp-sign"><span className="pp-sign-for">for <b>{firm}</b></span><Ink who={who} seal={seal} /><span className="pp-sign-who">{who.name}, {who.title}</span></div> : null);
+  const sealOf = p => (p && p.signatory ? p.signatory.seal : null);
+
   /* ---------- the GST papers in Tally's layout (SC-148, option B): the tax invoice with its e-invoice, the credit notes.
      Bordered blocks side by side where there is room, stacked on a phone; the PDF is the same paper on A4. The IRN,
      acknowledgement and signed QR are worked out from the issued invoice and its parties (core/papers.js) ---------- */
@@ -106,9 +123,9 @@
       </tbody></table>
       <div className="tl-grid tl-two">
         <Cell>Company's PAN: <b>{R.pan}</b><em style={{ marginTop: 8 }}>Declaration</em>We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct. Goods sold within their best-before date, under the brand's one-time permission.</Cell>
-        <Cell k="Company's Bank Details">{R.bank ? <>Bank Name: {R.bank.name}<br />A/c No.: {R.bank.account}<br />Branch &amp; IFS Code: {R.bank.ifsc}</> : null}<div className="tl-sign">for <b>{R.name}</b></div><div className="tl-num">Authorised Signatory</div></Cell>
+        <Cell k="Company's Bank Details">{R.bank ? <>Bank Name: {R.bank.name}<br />A/c No.: {R.bank.account}<br />Branch &amp; IFS Code: {R.bank.ifsc}</> : null}<TallySign firm={R.name} who={e ? R.signatory : null} seal={sealOf(R)} stamp="rect" /></Cell>
       </div>
-      <div className="tl-foot">SUBJECT TO {(R.city || "").toUpperCase()} JURISDICTION · This is a Computer Generated Invoice</div>
+      <div className="tl-foot">SUBJECT TO {(R.city || "").toUpperCase()} JURISDICTION{e ? "" : ` · A draft: ${R.short || R.name} signs it as it is issued`}</div>
     </div>;
   }
   // the tax invoice the distributor issues from Tally for one shop's scheme order (SC-153): a B2C supply within the
@@ -145,9 +162,9 @@
       </tbody></table>
       <div className="tl-grid tl-two">
         <Cell>Company's PAN: <b>{R.pan}</b><em style={{ marginTop: 8 }}>Declaration</em>We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct. Sold under {W.short}'s scheme, within the best-before date.</Cell>
-        <Cell k="Company's Bank Details">{R.bank ? <>Bank Name: {R.bank.name}<br />A/c No.: {R.bank.account}<br />Branch &amp; IFS Code: {R.bank.ifsc}</> : null}<div className="tl-sign">for <b>{R.name}</b></div><div className="tl-num">Authorised Signatory</div></Cell>
+        <Cell k="Company's Bank Details">{R.bank ? <>Bank Name: {R.bank.name}<br />A/c No.: {R.bank.account}<br />Branch &amp; IFS Code: {R.bank.ifsc}</> : null}<TallySign firm={R.name} who={R.signatory} seal={sealOf(R)} stamp="rect" /></Cell>
       </div>
-      <div className="tl-foot">SUBJECT TO {(R.city || "").toUpperCase()} JURISDICTION · This is a Computer Generated Invoice</div>
+      <div className="tl-foot">SUBJECT TO {(R.city || "").toUpperCase()} JURISDICTION</div>
     </div>;
   }
   // a batch's invoices to its shops as Tally's sales register: a row each, its number opening the invoice, and the
@@ -186,10 +203,97 @@
       </tbody></table>
       <div className="tl-grid tl-two">
         <Cell className="tl-small">Financial credit note: not a GST credit note under section 34 of the CGST Act, so no tax is adjusted and it is not reported to the IRP. The output tax on the original sale stands.{note ? <><br /><br />{note}</> : null}<br /><br />Company's PAN: <b>{C.pan}</b></Cell>
-        <Cell><div className="tl-sign">for <b>{C.name}</b></div><div className="tl-num">Authorised Signatory</div></Cell>
+        <Cell><TallySign firm={C.name} who={C.signatory} seal={sealOf(C)} /></Cell>
       </div>
       {after}
-      <div className="tl-foot">Adjusted against {possessive(R.name)} account · This is a Computer Generated Document</div>
+      <div className="tl-foot">Adjusted against {possessive(R.name)} account</div>
+    </div>;
+  }
+
+  /* ---------- the certificate of destruction in full (SC-174, option B) ---------- */
+  // page 1, the certificate: the goods, the reason, the agency's method, the facility, the day and the window, with its
+  // supervising officer's and two independent witnesses' signatures and the agency's seal, who handed the packs over and
+  // whose yes approved the evidence; page 2, the destruction log from the godown to the cover, with the two photos,
+  // initialled at every step by all three
+  const hhmm = t => (t || "").slice(11, 16), kg2 = n => `${(Math.round((n || 0) * 100) / 100).toFixed(2)} kg`;
+  const cartonsOf = (u, per) => { const n = Math.floor(u / per), r = u % per; return !per ? "" : r ? `${n} cartons of ${per} and ${r} loose` : `${n} cartons of ${per}`; };
+  const certPhoto = (c, d, w) => { const p = d.photos && d.photos[w]; if (!p) return null; if (p.url) return p.url; return `${window.SC3_IMG}evidence/${LG().record.evidenceFile(c.batch.id, w, p)}`; };
+  function Certificate({ d, c }) {
+    const R = c.dist, F = d.for || { name: R.name, gstin: R.gstin, address: R.address };
+    if (d.status !== "generated") return <div className="paper pp">
+      <div className="pp-head"><div><div className="pp-title">Destruction certificate</div><div className="pp-no">{c.batch.id} · {R.name}</div></div><span className="pp-stamp">AWAITING</span></div>
+      <div className="pp-sub">For {R.name}, {R.address} · GSTIN {R.gstin}</div>
+      <Line k={`${c.sku.brand} ${c.sku.name}`} sub={`HSN ${c.sku.hsn} · batch ${c.batch.id} · best before ${fmt.date(c.batch.bestBefore)}`} v={`${fmt.num(d.units)} packs`} strong />
+      <Line k="Input GST he will reverse" sub="section 17(5)(h)" v={fmt.inr2(d.reversed)} />
+      <p className="pp-note">Issued by the authorised agency once {W.short} approves the destruction's evidence: two photos, the agency's certificate number, the time and its two witnesses.</p></div>;
+    const food = r2((d.kg || 0) - (d.packKg || 0)), fac = d.facility || { name: d.site, address: "", gps: "" }, on = d.destroyedOn || (d.destroyedAt || "").slice(0, 10);
+    const win = d.window || { from: "", to: hhmm(d.destroyedAt) }, sigs = [["officer", "Supervising officer", d.officer], ["w1", "Independent witness 1", (d.witnesses || [])[0]], ["w2", "Independent witness 2", (d.witnesses || [])[1]]];
+    const kv = [["Goods", `${d.goods || `${c.sku.brand} ${c.sku.name}`}, HSN ${d.hsn || c.sku.hsn}, MRP ₹${Number(d.mrp || c.sku.mrp).toFixed(2)}`],
+      ["Batch No.", `${d.batch || c.batch.id} (made ${fmt.date(d.mfg || c.batch.mfg)}, best before ${fmt.date(d.bestBefore || c.batch.bestBefore)})`, true],
+      ["Quantity", `${fmt.num(d.units)} packs${d.perCarton ? `, ${cartonsOf(d.units, d.perCarton)}` : ""}`],
+      ["Total weight", `${kg2(d.kg)} (${kg2(food)} food, ${kg2(d.packKg || 0)} packaging), weighed at the facility`],
+      ["Owner", `${F.name}, GSTIN ${F.gstin}`],
+      ["Reason", "Product expiry: unsold on the best-before"],
+      ["Method", `${d.methodName || d.method} (Solid Waste Management Rules, 2016)`],
+      ["Facility", [fac.name, fac.address].filter(Boolean).join(", ") + (fac.gps ? ` · ${fac.gps}` : "")],
+      ["Date and time", `${fmt.date(on)}, ${win.from} to ${win.to} IST`],
+      ["GST", `${fmt.inr2(d.reversed)} reversed by ${F.name}, s.17(5)(h)`]];
+    const initials = [d.officer, ...(d.witnesses || [])].filter(Boolean);
+    return <div className="cert-pages">
+      <div className="paper cert">
+        <div className="cert-lh"><div><b>{(d.agency || "").toUpperCase()}</b><span>Authorised waste-management agency · authorisation {d.auth}</span></div><span className="pp-stamp ok">DESTROYED</span></div>
+        <div className="cert-t">Certificate of Destruction</div>
+        <div className="cert-m"><span>No. <b>{d.no}</b></span><span>Dated <b>{dmy(on)}</b></span><span>Page 1 of 2</span></div>
+        <dl className="cert-kv">{kv.map(([k, v, mono]) => <Fragment key={k}><dt>{k}</dt><dd className={mono ? "mono" : ""}>{v}</dd></Fragment>)}</dl>
+        <div className="cert-sec">Signed at the facility, as set out in the log overleaf</div>
+        <div className="cert-sigs">{sigs.map(([k, label, w]) => <div key={k} className="cert-sig"><span className="cert-k">{label}</span><div className="cert-ink">{w ? <Ink who={w} seal={k === "officer" ? d.seal : null} h={40} /> : null}</div><b>{w ? w.name : "—"}</b><span>{k === "officer" ? (w ? `${w.title}, ${d.agency}` : "") : w ? w.address : ""}</span>{w && w.proof && <span className="mono">{w.proof}</span>}</div>)}</div>
+        <div className="cert-hand">
+          <div><span className="cert-k">Goods handed over by</span>{d.handedBy && <div className="cert-ink"><Ink who={d.handedBy} h={34} /></div>}<b>{d.handedBy ? d.handedBy.name : F.name}</b><span>{d.handedBy ? `${d.handedBy.title}, ${F.name}` : ""}</span></div>
+          <div><span className="cert-k">Evidence approved by</span><b>{d.approvedBy}</b><span>for {D.CLIENT.name}, {recWhen(d.approvedAt)}</span><span className="muted">two photos · Vision's checks {d.evidence ? `${d.evidence.checks} of ${d.evidence.of}` : ""}</span></div>
+        </div>
+      </div>
+      {d.log && <div className="paper cert">
+        <div className="cert-m"><span><b>Destruction log</b> · {d.no}</span><span>Page 2 of 2</span></div>
+        <table className="cert-log"><thead><tr><th>Time</th><th>Step</th><th>Detail</th><th>Initials</th></tr></thead><tbody>
+          {d.log.map(x => <tr key={x.step}><td className="mono">{hhmm(x.at)}</td><td><b>{x.step}</b></td><td>{x.detail}{x.photo && certPhoto(c, d, x.photo) && <span className="cert-ph"><S.Photo src={certPhoto(c, d, x.photo)} alt={x.photo === "before" ? "The packs at the godown, the carton's batch label in view" : "The packs at the landfill, the slate in view"} loading="lazy" /></span>}</td>
+            <td className="cert-ini">{initials.map(w => (w.sign ? <img key={w.name} src={SIGN_SRC(w.sign)} alt={`Initialled by ${w.name}`} /> : <span key={w.name} className="cert-ini-none">{w.name.split(" ").map(x => x[0]).join("")}</span>))}</td></tr>)}</tbody></table>
+        <p className="cert-note">Initialled at each step by the supervising officer and the two independent witnesses, who watched it from receipt to cover.</p>
+      </div>}
+    </div>;
+  }
+
+  /* ---------- the staff sale's consolidated receipt (SC-174, option A) ---------- */
+  // what Vision read of it: the payments, their total and span, and whether it is what was counted; the UPI references
+  // on request. `whose`: "your" for the distributor, else the count is the distributor's
+  function ReceiptRead({ r, count, price, src, whose }) {
+    const [open, setOpen] = useState(false); const ok = Math.abs(r.paid - count * price) < 0.5;
+    return <div className={cx("rcpt-read", ok ? "ok" : "bad")}>
+      <div className="row" style={{ gap: 12, alignItems: "flex-start" }}>
+        {src && <span className="rcpt-thumb"><S.Photo src={src} alt={`The consolidated receipt ${r.no}`} /></span>}
+        <div className="stack tight grow" style={{ gap: 4, minWidth: 0 }}>
+          <span className="t-caption subtle">Vision read {r.no}</span>
+          <b>{r.payments.length} UPI payments · {fmt.inr2(r.paid)}</b>
+          <span className="t-footnote muted">{recWhen(r.from)} to {recWhen(r.to)}</span>
+          {ok ? <span className="rcpt-tick"><Icon name="check" size={14} stroke={2.4} />{fmt.num(count)} packs × ₹{price} · matches {whose === "your" ? "your" : "the"} count</span>
+            : <span className="rcpt-tick bad"><Icon name="triangle-alert" size={14} stroke={2.2} />{fmt.inr2(r.paid)} is {fmt.num(Math.floor(r.paid / price + 1e-9))} packs at ₹{price}, not {fmt.num(count)}</span>}
+        </div></div>
+      <button type="button" className="pt-link t-footnote" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? "Hide" : "Show"} the {r.payments.length} UPI references</button>
+      {open && <ol className="rcpt-refs" tabIndex={0} aria-label={`The ${r.payments.length} UPI references`}>{r.payments.map(x => <li key={x.rrn}><span className="mono">{x.rrn}</span><span>{x.who}</span><span className="tnum">{x.units} × ₹{price}</span></li>)}</ol>}
+    </div>;
+  }
+  // the receipt as a paper of the pack: the photo he sent, and its payments as Vision read them
+  function StaffReceiptPaper({ r, dist, sku, price }) {
+    const src = r.url || (r.file ? window.SC3_IMG + r.file : null);
+    return <div className="paper pp">
+      <div className="pp-head"><div><div className="pp-title">Staff sale receipt</div><div className="pp-no">{r.no} · {dist.name}</div></div><span className="pp-stamp ok">READ</span></div>
+      <div className="pp-sub">The consolidated receipt {dist.short} sent with the staff sale, and what Vision read from it</div>
+      {src && <div className="rcpt-photo"><S.Photo src={src} alt={`The consolidated receipt ${r.no}, as ${dist.short} sent it`} /></div>}
+      <Line k="UPI payments" sub={`${recWhen(r.from)} to ${recWhen(r.to)}`} v={fmt.num(r.payments.length)} />
+      <Line k="Packs sold to staff" sub={`${sku.brand} ${sku.name} at ₹${price.toFixed(2)}`} v={fmt.num(r.units)} />
+      <Line k="Received by UPI" v={fmt.inr2(r.paid)} strong />
+      <table className="pp-table rcpt-table"><thead><tr><th>UPI Ref. No.</th><th>Paid by</th><th>When</th><th>Packs</th><th>₹</th></tr></thead>
+        <tbody>{r.payments.map(x => <tr key={x.rrn}><td className="pp-mono">{x.rrn}</td><td>{x.who}</td><td>{recWhen(x.at)}</td><td>{x.units}</td><td>{fmt.inr2(x.amount)}</td></tr>)}</tbody></table>
+      <p className="pp-note">Each payment's UPI reference is its receipt to the staff member who paid. {dist.short} signed the receipt; it is the staff sale's evidence among {possessive(W.short)} papers.</p>
     </div>;
   }
 
@@ -217,7 +321,7 @@
     if (id === "itc") { const away = d.away != null ? d.away : (c.plan.donated || 0) + (c.plan.leftover || 0), sold = d.units != null ? d.units : c.plan.soldUnits, rev = d.reversed != null ? d.reversed : away ? c.plan.itcReversed : 0;
       const from = c.sku.itcPerUnit == null ? "estimated from the cost and the GST rate" : "from the cost sheet";
       return <div className="paper pp">{head("GST ITC memo", `Section 17(5)(h) · ${D.CLIENT.short} · GSTIN ${D.CLIENT.gstin}`, away ? "ITC PART REVERSED" : "ITC KEPT", !away)}<Line k="Packets sold under tax invoices" v={fmt.num(sold)} /><Line k="Destroyed, gifted or lost" v={fmt.num(away)} />{d.atGodown ? <Line k={`Destroyed at ${possessive(c.dist.name)} godown`} sub="his stock: he reverses their credit" v={fmt.num(d.atGodown)} /> : null}<Line k="Input GST kept" sub={`₹${c.plan.writeOff.itcPerUnit.toFixed(2)} a pack, ${from}`} v={fmt.inr2(d.amount)} strong /><Line k="Reversal in GSTR-3B, Table 4(B)(1)" v={rev ? fmt.inr2(rev) : "none"} />
-        <p className="pp-note">{rev ? `Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. The ${fmt.num(away)} packs of this batch given away or destroyed have their credit reversed; the ${fmt.num(sold)} sold under tax invoices keep theirs. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.` : `Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. These packs were sold under tax invoices, so it does not apply. The credit would be reversed only if the stock came back under the expiry claim and ${W.short} destroyed it. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.`}{d.atGodown ? ` The ${fmt.num(d.atGodown)} packs destroyed at ${possessive(c.dist.name)} godown were his stock, bought under tax invoice: he reverses their input credit, and ${D.CLIENT.short} keeps its own.` : ""}</p></div>; }
+        <p className="pp-note">{rev ? `Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. The ${fmt.num(away)} packs of this batch given away or destroyed have their credit reversed; the ${fmt.num(sold)} sold under tax invoices keep theirs. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.` : `Section 17(5)(h) blocks credit on goods written off, destroyed, lost or given away free. These packs were sold under tax invoices, so it does not apply. The credit would be reversed only if the stock came back under the expiry claim and ${W.short} destroyed it. Credit on donated units is reversed: 17(5)(h) blocks it on gifts and, since 1 October 2023, 17(5)(fa) on CSR donations.`}{d.atGodown ? ` The ${fmt.num(d.atGodown)} packs destroyed at ${possessive(c.dist.name)} godown were his stock, bought under tax invoice: he reverses their input credit, and ${D.CLIENT.short} keeps its own.` : ""}</p><PpSign firm={D.CLIENT.name} who={D.CLIENT.signatory} seal={sealOf(D.CLIENT)} /></div>; }
     if (id === "expiry" && d) { const C = D.CLIENT.short, x = d;
       if (x.policy === "none") return <div className="paper pp">{head("Expiry notice", `${c.batch.id} · ${R.name}`, "NO RETURNS")}<Line k="Packs expired at the godown" v={fmt.num(x.units)} strong /><Line k={`Credit from ${C}`} v="none" /><p className="pp-note">{x.note}</p></div>;
       // destroyed at his godown (SC-139): a financial note, against the agency's certificate: the dealer price, the input
@@ -233,22 +337,13 @@
         after={x.policy === "full-credit" ? <div className="tl-grid"><Cell className="tl-small">{possessive(C)} own costs on destroying them, not on this note: disposal ₹{n2(x.disposal)}, EPR on the packaging ₹{n2(x.epr)}, input GST reversed under section 17(5)(h) ₹{n2(x.itc)}; the expiry, all in, ₹{n2((x.amount || 0) + x.disposal + x.epr + x.itc)}.</Cell></div> : null} />; }
     if (id === "receipt" && d) return <Receipt doc={d} batch={c.batch} sku={c.sku} dist={c.dist} />;
     if (id === "fssai") { const own = d && d.status === "generated" && c.donation; const other = !own && c.donation && c.donation.batch && c.donation.batch.id !== c.batch.id && c.donation.units > 0 ? c.donation : null;
-      return <div className="paper pp">{own ? <>{head("FSSAI surplus-food checklist", `${c.batch.id} · FSSAI Lic. No. ${D.CLIENT.fssai}`, "GENERATED", true)}<Line k="Packs donated" v={fmt.num(c.plan.donated)} /><Line k="Food bank" v={c.donation.partner.name} /><p className="pp-note">The batch's own checklist for the surplus food: {c.donation.units} packs from {c.donation.from || c.dist.godown} to {c.donation.partner.name}, inside their best-before, with the label photo attached.</p></>
+      return <div className="paper pp">{own ? <>{head("FSSAI surplus-food checklist", `${c.batch.id} · FSSAI Lic. No. ${D.CLIENT.fssai}`, "GENERATED", true)}<Line k="Packs donated" v={fmt.num(c.plan.donated)} /><Line k="Food bank" v={c.donation.partner.name} /><p className="pp-note">The batch's own checklist for the surplus food: {c.donation.units} packs from {c.donation.from || c.dist.godown} to {c.donation.partner.name}, inside their best-before, with the label photo attached.</p><PpSign firm={D.CLIENT.name} who={D.CLIENT.signatory} seal={sealOf(D.CLIENT)} /></>
         : <>{head("FSSAI surplus-food checklist", c.batch.id, "NOT REQUIRED")}<p className="pp-note">Nothing from this batch was donated.{other ? ` The ${S.shortName(other.sku)} batch ${other.batch.id} has its own checklist: ${other.units} packs to ${other.partner.name}, ${other.dist.city}.` : ""}</p></>}</div>; }
-    // destroyed at his godown (SC-139): the authorised agency's certificate, for him, once the evidence is approved: the
-    // batch, the packs and kilos, the method, the agency and its authorisation, the evidence and who approved it, and the
-    // input GST he reverses; until then it waits
-    if (d && d.at === "godown") { const done = d.status === "generated";
-      return <div className="paper pp">{head("Destruction certificate", done ? `${d.no} · ${d.agency}` : `${c.batch.id} · ${R.name}`, done ? "DESTROYED" : "AWAITING", done)}
-        <div className="pp-sub">For {R.name}, {R.address} · GSTIN {R.gstin}</div>
-        <Line k={`${c.sku.brand} ${c.sku.name}`} sub={`HSN ${c.sku.hsn} · batch ${c.batch.id} · best before ${fmt.date(c.batch.bestBefore)}`} v={`${fmt.num(d.units)} packs`} strong />
-        {done ? <><Line k="Weight" sub="food and packaging" v={fmt.kg(d.kg)} />
-          <Line k="Method" sub={`${d.method.charAt(0).toLowerCase()}${d.method.slice(1)}`} v={stamp(d.destroyedAt)} />
-          <Line k="Agency" sub={`authorisation ${d.auth}`} v={d.agency} />
-          <Line k="Evidence" sub={`two photos · Vision's checks ${d.evidence.checks} of ${d.evidence.of}`} v={`approved by ${d.approvedBy}`} />
-          <Line k="Input GST he reverses" sub="section 17(5)(h), GSTR-3B Table 4(B)(1)" v={fmt.inr2(d.reversed)} /></>
-          : <Line k="Input GST he will reverse" sub="section 17(5)(h)" v={fmt.inr2(d.reversed)} />}
-        <p className="pp-note">{done ? d.note : `Issued by the authorised agency once ${W.short} approves the destruction's evidence: two photos and the agency's certificate number.`}</p></div>; }
+    // destroyed at his godown (SC-139): the authorised agency's certificate, for him, once the evidence is approved; in
+    // full (SC-174, option B), the certificate and its log
+    if (d && d.at === "godown") return <Certificate d={d} c={c} />;
+    // the staff sale's consolidated receipt (SC-174): the photo he sent with the sale, and what Vision read from it
+    if (id === "staff") return c.staffReceipt ? <StaffReceiptPaper r={c.staffReceipt} dist={c.dist} sku={c.sku} price={c.staffReceipt.paid / c.staffReceipt.units} /> : null;
     // the packs the client destroys (SC-122: those that came back for full credit included), with their credit reversed
     const n = (d && d.units) || 0;
     return <div className="paper pp">{head("Destruction certificate", c.batch.id, n ? "GENERATED" : "NOT REQUIRED", !!n)}<Line k={n ? "Units destroyed" : "Units left to destroy"} v={fmt.num(n)} strong />{n ? <Line k="Input GST reversed" sub="section 17(5)(h), GSTR-3B Table 4(B)(1)" v={fmt.inr2(d && d.reversed != null ? d.reversed : n * c.plan.writeOff.itcPerUnit)} /> : null}<p className="pp-note">Issued only when units remain, with the ITC reversal entry pre-filled so finance is never surprised.</p></div>;
@@ -671,7 +766,7 @@
   // the photos: the label photo the distributor sent, with what Vision read of it, and, destroyed at his godown, the
   // destruction's before and after, with Vision's checks. A photo's src is its signed link on the live workspace, else
   // its file in the design system's img/
-  const PHOTO = { label: ["Label photo", "Label"], before: ["Before, at the godown", "1 · Before"], after: ["After, at the landfill", "2 · After"] };
+  const PHOTO = { label: ["Label photo", "Label"], before: ["Before, at the godown", "1 · Before"], after: ["After, at the landfill", "2 · After"], receipt: ["Staff sale receipt", "Receipt"] };
   const asDay = iso => new Date(iso.slice(0, 10) + "T00:00:00+05:30");
   // a time as the record keeps it: an ISO day and time on the live workspace and in the history, the stub's own (09:19,
   // Mon 5 Oct) for the story's batch
@@ -692,6 +787,7 @@
       <span className="t-footnote muted">Sent by {p.by} · {recWhen(p.at)}</span>
       {r && <><RecCheck ok>Vision read batch {r.batch}, made {fmt.date(r.mfg)}, best before {fmt.date(r.bestBefore)}, MRP ₹{Number(r.mrp).toFixed(2)}{r.at ? ` · ${recWhen(r.at)}` : ""}</RecCheck><RecCheck ok={r.matches !== false}>{r.matches !== false ? "Matches the export" : "Does not match the export"}</RecCheck></>}
       {(p.checks || []).map(x => <RecCheck key={x.id} ok={x.ok}>{x.label}</RecCheck>)}
+      {p.receipt && <><RecCheck ok>Vision read {p.receipt.no}: {p.receipt.payments} UPI payments, {fmt.inr2(p.receipt.paid)}</RecCheck><RecCheck ok={p.receipt.matches !== false}>{p.receipt.matches !== false ? `Matches the ${fmt.num(p.receipt.units)} packs recorded` : "Does not match the count"}</RecCheck></>}
     </div>;
   }
   function PhotoSheet({ p, onClose }) {
@@ -779,5 +875,5 @@
     return ref && LG().caseOf(ref) ? <BatchPage key={ref} me={me} at={ref} tab={(at && at.tab) || p.tab} /> : <Ledger me={me} />;
   }
 
-  Object.assign(window.SC3_SCREENS, { RecordTab, RecordPhotos, PhotoSheet, PhotoFacts, Paperwork, PaperPack, Report, Ledger, BatchPage, Paper, Receipt, KiranaInvoice, KiranaRegister, KeepsWhat, OutcomeBadge, printPage, download, csv });
+  Object.assign(window.SC3_SCREENS, { Ink, Certificate, ReceiptRead, StaffReceiptPaper, RecordTab, RecordPhotos, PhotoSheet, PhotoFacts, Paperwork, PaperPack, Report, Ledger, BatchPage, Paper, Receipt, KiranaInvoice, KiranaRegister, KeepsWhat, OutcomeBadge, printPage, download, csv });
 })();

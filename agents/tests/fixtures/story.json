@@ -174,6 +174,12 @@
     "prefix": "RT/26-27/",
     "next": 1279,
     "width": 4
+   },
+   "signatory": {
+    "name": "Rakesh Jaiswal",
+    "title": "Proprietor",
+    "sign": "rakesh",
+    "seal": "rakesh"
    }
   },
   "patil": {
@@ -203,6 +209,12 @@
     "prefix": "PD/26-27/",
     "next": 512,
     "width": 4
+   },
+   "signatory": {
+    "name": "Sanjay Patil",
+    "title": "Proprietor",
+    "sign": "patil",
+    "seal": "patil"
    }
   },
   "gupta": {
@@ -232,6 +244,12 @@
     "prefix": "GS/26-27/",
     "next": 2041,
     "width": 4
+   },
+   "signatory": {
+    "name": "Ramesh Gupta",
+    "title": "Partner",
+    "sign": "gupta",
+    "seal": "gupta"
    }
   },
   "lakshmi": {
@@ -262,6 +280,12 @@
     "prefix": "LA/26-27/",
     "next": 972,
     "width": 4
+   },
+   "signatory": {
+    "name": "K. Lakshmi Narayana",
+    "title": "Partner",
+    "sign": "lakshmi",
+    "seal": "lakshmi"
    }
   }
  },
@@ -1735,7 +1759,13 @@
   "address": "Plot B-14, MIDC Chakan Phase II, Pune 410501, Maharashtra",
   "state": "Maharashtra",
   "stateCode": "27",
-  "email": "accounts@munchly.example"
+  "email": "accounts@munchly.example",
+  "signatory": {
+   "name": "Vinod Patwardhan",
+   "title": "Head of Accounts",
+   "sign": "munchly",
+   "seal": "munchly"
+  }
  },
  "buyer": {
   "id": "agrawal",

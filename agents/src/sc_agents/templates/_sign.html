@@ -1,0 +1,30 @@
+{# the signatures (SC-174): each signatory's specimen signature in ink, over the firm's rubber stamp (a distributor's
+   rectangle, the signature across its middle) or beside its round seal (a company's, an agency's), as design3's papers
+   draw them. The images are the signature maker's (marks/signatures, marks/seals); `mark` gives one only when it is on
+   file, and a signatory with none signs on the original, which the paper says. Styles in _sign.css #}
+
+{# the signature over its stamp: `stamp` is "rect" (a distributor's) or "round" (beside it; "round right" puts the seal
+   on the signature's right), `h` the signature's height in mm #}
+{% macro ink(who, seal=none, stamp="round", h=none) %}
+{%- set h = h or (10 if stamp == "rect" else 13) -%}
+{%- set hand = mark("signatures", who.sign) if who else none -%}
+{%- set s = mark("seals", seal) -%}
+{%- if not who -%}
+{%- elif not hand -%}<span class="sig-none">signed on the original</span>
+{%- elif stamp == "rect" and s -%}<span class="ink rect"><img class="seal" src="{{ s }}" alt=""><img class="hand" src="{{ hand }}" alt="Signed by {{ who.name }}" style="height: {{ h }}mm"></span>
+{%- elif s -%}<span class="ink {{ stamp }}"><img class="seal" src="{{ s }}" alt=""><img class="hand" src="{{ hand }}" alt="Signed by {{ who.name }}" style="height: {{ h }}mm"></span>
+{%- else -%}<span class="ink"><img class="hand" src="{{ hand }}" alt="Signed by {{ who.name }}" style="height: {{ h }}mm"></span>
+{%- endif -%}
+{% endmacro %}
+
+{# the Tally papers' signatory block: for the firm, the signature and stamp, "Authorised Signatory", who signed. With no
+   signatory (a draft, or a paper laid out before SC-174) the space is left for a hand #}
+{% macro tally(firm, who, seal=none, stamp="round") %}
+{% if who %}<div class="sign by">for <b>{{ firm }}</b></div><div class="signed">{{ ink(who, seal, stamp) }}</div><div class="n">Authorised Signatory</div><div class="signer">{{ who.name }}, {{ who.title }}</div>
+{% else %}<div class="sign">for <b>{{ firm }}</b></div><div class="n">Authorised Signatory</div>{% endif %}
+{% endmacro %}
+
+{# the app's own papers (the GST ITC memo, the FSSAI checklist): signed at their foot for the client #}
+{% macro foot(firm, who, seal=none) %}
+{% if who %}<div class="pp-sign"><div>for <b>{{ firm }}</b></div><div class="signed">{{ ink(who, seal) }}</div><div>Authorised Signatory</div><div class="signer">{{ who.name }}, {{ who.title }}</div></div>{% endif %}
+{% endmacro %}

@@ -63,7 +63,7 @@
       {d && <div ref={ref} className="stack snug">{inv ? <S.KiranaInvoice c={c} inv={inv} /> : register ? <S.KiranaRegister c={c} list={register} onOpen={setOne} /> : receipt ? <S.Receipt doc={receipt} batch={receipt.batch || (c && c.batch)} sku={receipt.sku || (c && c.sku)} dist={receipt.dist || (c && c.dist)} /> : <S.Paper id={id} c={c} />}</div>}
     </Sheet>;
   }
-  const PAPER_ICON = { invoice: "receipt", eway: "truck", support: "hand-coins", expiry: "warehouse", receipt: "heart-handshake", destruction: "trash-2", kiranas: "receipt" };
+  const PAPER_ICON = { invoice: "receipt", eway: "truck", support: "hand-coins", staff: "users", expiry: "warehouse", receipt: "heart-handshake", destruction: "trash-2", kiranas: "receipt" };
   // the invoices of a batch's scheme as one row: how many, the first number to the last, the total (SC-153)
   const lastNo = no => no.split("/").pop();
   function RegisterRow({ list, onOpen, who }) {
@@ -73,7 +73,7 @@
       <span className="tnum strong">{fmt.inr(list.reduce((t, x) => t + x.total, 0))}</span><Icon name="chevron-right" size={16} className="subtle" />
     </button>;
   }
-  const issuedBy = (c, d) => (d.id === "invoice" || d.id === "eway" ? "You issue it" : d.id === "receipt" ? `${c.partner ? c.partner.name : "The food bank"} issued it to ${D.WORKSPACE.short} · a copy for you` : d.id === "destruction" ? (d.at === "godown" ? `${d.agency || "The agency"} destroyed them for you` : `${D.WORKSPACE.short} destroyed the packs · a copy for you`) : `${D.WORKSPACE.short} issued it to you`);
+  const issuedBy = (c, d) => (d.id === "staff" ? "You sent it with the staff sale" : d.id === "invoice" || d.id === "eway" ? "You issue it" : d.id === "receipt" ? `${c.partner ? c.partner.name : "The food bank"} issued it to ${D.WORKSPACE.short} · a copy for you` : d.id === "destruction" ? (d.at === "godown" ? `${d.agency || "The agency"} destroyed them for you` : `${D.WORKSPACE.short} destroyed the packs · a copy for you`) : `${D.WORKSPACE.short} issued it to you`);
   // one paper as a row: its icon, type, number, who issued it, its amount
   function PaperRow({ c, d, onOpen }) {
     const amount = d.status === "not required" || d.id === "receipt" ? null : d.id === "invoice" ? d.total || d.amount : d.amount;
@@ -123,23 +123,54 @@
     const cells = useMemo(() => payCells(upi), [upi]);
     return <svg className="paycode" width={size} height={size} viewBox="-1 -1 23 23" aria-hidden="true">{cells.map(([x, y]) => <rect key={x + "-" + y} x={x} y={y} width="1" height="1" />)}</svg>;
   }
-  function StaffSale({ staff, dist, product, clears }) {
-    const [n, setN] = useState(staff.units); const [busy, setBusy] = useState(false); const { toast } = useNotice();
-    const record = () => { setBusy(true); setTimeout(() => { setBusy(false); Flow.act("recordStaffSale", n); toast({ text: `Recorded · ${fmt.num(n)} of ${fmt.num(staff.units)} packs sold`, tone: "ok" }); }, 400); };
-    const open = staff.status === "open";
-    return <Card className="stack snug">
-      <div className="card-head"><span className="row tight"><span className="icontile"><Icon name="users" size={17} stroke={2} /></span><span className="card-title">Staff sale · {product}</span></span>{open ? <Badge tone="blue" dot>open</Badge> : <Badge tone="green" icon="check">recorded</Badge>}</div>
-      {open ? <>
-        <span className="t-subhead">{fmt.num(staff.units)} packs for your staff at <b>₹{staff.price}</b> a pack, at {staff.godown}. Staff pay you by UPI.</span>
-        {dist.upi && <div className="row" style={{ gap: 14 }}><PayCode upi={dist.upi} /><div className="stack tight" style={{ gap: 2, minWidth: 0 }}><b className="mono t-footnote" style={{ overflowWrap: "anywhere" }}>{dist.upi}</b><span className="t-footnote muted">Your own UPI: staff pay you at the godown{clears ? `, over ${clears}` : ""}.</span></div></div>}
-        <div className="row wrap" style={{ gap: 12 }}><Stepper value={n} onChange={setN} min={0} max={staff.units} label="packs sold to staff" /><span className="t-subhead muted">of {fmt.num(staff.units)} packs sold</span></div>
-        <Button variant="primary" size="lg" block icon="check" loading={busy} busy="Recording…" done="Recorded" onClick={record}>Record the sale</Button>
-        <span className="t-caption subtle">Record once, when the sale is over. What does not sell stays at the godown.</span>
-      </> : <>
-        <span className="t-subhead"><b>{fmt.num(staff.sold)} of {fmt.num(staff.units)}</b> sold to staff at ₹{staff.price} a pack</span>
-        <K.Progress value={staff.sold / staff.units} label="Staff packs sold" />
-        <span className="t-footnote muted">{staff.left ? `${fmt.num(staff.left)} ${staff.left === 1 ? "pack stays" : "packs stay"} at ${staff.godown}.` : "Every pack sold."}</span>
-      </>}
+  // With the count, the consolidated receipt (SC-174, option A): one receipt listing every staff payment by its UPI
+  // reference, from his books or his UPI app's statement, a photo or a PDF. Vision reads it, and the sale records once the
+  // payments match the count; short, it says so, and offers another receipt or the count the payments make. In the
+  // prototype the receipt read is the batch's own (data.js), as a stub stands in for Gemini vision
+  const RECEIPT_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"], RECEIPT_MAX_MB = 8;
+  const receiptFor = ref => { const st = Object.values(D.STORIES).find(x => x.batch.id === ref && x.staffReceipt); return st ? st.staffReceipt : null; };
+  const receiptSrc = (ref, r) => (r && r.url) || `${IMG()}receipts/${ref}.webp`;
+  function StaffSale({ staff, dist, product, clears, batch, sku }) {
+    const [n, setN] = useState(staff.units); const [shot, setShot] = useState(null); const [reading, setReading] = useState(false); const [busy, setBusy] = useState(false); const [err, setErr] = useState(null); const [sheet, setSheet] = useState(false);
+    const { toast } = useNotice(); const cam = useRef(null), pick = useRef(null), timer = useRef(null), live = S.useLive();
+    useEffect(() => () => clearTimeout(timer.current), []);
+    const expected = receiptFor(batch), price = staff.price;
+    const read = shot && !reading ? Object.assign({}, expected, shot.url ? { url: shot.url } : {}) : null;
+    const matched = !!read && Math.abs(read.paid - n * price) < 0.5, made = read ? Math.floor(read.paid / price + 1e-9) : 0;
+    // a photo or a PDF, as the label photo takes one (SC-80); Vision reads it a moment later
+    const use = (f, how) => {
+      if (f && !RECEIPT_TYPES.includes(f.type)) { setErr("That file is not a receipt Vision can read. Send a photo (JPEG, PNG or WebP) or a PDF."); return; }
+      if (f && f.size >= RECEIPT_MAX_MB * 1048576) { setErr(`That file is ${(f.size / 1048576).toFixed(1)}\u00a0MB. Send one under ${RECEIPT_MAX_MB}\u00a0MB.`); return; }
+      setErr(null); setShot(f && f.type !== "application/pdf" ? { url: URL.createObjectURL(f), file: f, how } : { file: f, how }); setReading(true);
+      clearTimeout(timer.current); timer.current = setTimeout(() => setReading(false), 1200);
+    };
+    const picked = how => e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if (f) use(f, how); };
+    const take = () => { if (live && cam.current) cam.current.click(); else use(null, "camera"); };
+    const record = sold => { setBusy(true); setTimeout(() => { setBusy(false); Flow.act("recordStaffSale", { sold, receipt: read }); toast({ text: `Recorded · ${fmt.num(sold)} of ${fmt.num(staff.units)} packs sold`, tone: "ok" }); }, 400); };
+    const open = staff.status === "open", rec = staff.receipt;
+    const head = <div className="card-head"><span className="row tight"><span className="icontile"><Icon name="users" size={17} stroke={2} /></span><span className="card-title">Staff sale · {product}</span></span>{open ? <Badge tone="blue" dot>open</Badge> : <Badge tone="green" icon="check">recorded</Badge>}</div>;
+    if (!open) return <Card className="stack snug">{head}
+      <span className="t-subhead"><b>{fmt.num(staff.sold)} of {fmt.num(staff.units)}</b> sold to staff at ₹{price} a pack</span>
+      <K.Progress value={staff.sold / staff.units} label="Staff packs sold" />
+      {rec && <div className="pt-papers"><button type="button" className="pt-paper" onClick={() => setSheet(true)}><span className="icontile"><Icon name="receipt" size={17} stroke={2} /></span><span className="grow"><b>Consolidated receipt</b><span className="t-footnote muted"><span className="mono">{rec.no}</span> · {rec.payments.length} UPI payments · read by Vision</span></span><span className="tnum strong">{fmt.inr(rec.paid)}</span><Icon name="chevron-right" size={16} className="subtle" /></button></div>}
+      <span className="t-footnote muted">{staff.left ? `${fmt.num(staff.left)} ${staff.left === 1 ? "pack stays" : "packs stay"} at ${staff.godown}.` : "Every pack sold."}{rec ? ` The receipt is in your batch's papers and ${possessive(D.WORKSPACE.short)} pack.` : ""}</span>
+      {rec && <Sheet open={sheet} onClose={() => setSheet(false)} title="Staff sale receipt"><S.StaffReceiptPaper r={Object.assign({ file: `receipts/${batch}.webp` }, rec)} dist={dist} sku={sku} price={price} /></Sheet>}
+    </Card>;
+    return <Card className="stack snug">{head}
+      {!read && !reading && <><span className="t-subhead">{fmt.num(staff.units)} packs for your staff at <b>₹{price}</b> a pack, at {staff.godown}. Staff pay you by UPI.</span>
+        {dist.upi && <div className="row" style={{ gap: 14 }}><PayCode upi={dist.upi} /><div className="stack tight" style={{ gap: 2, minWidth: 0 }}><b className="mono t-footnote" style={{ overflowWrap: "anywhere" }}>{dist.upi}</b><span className="t-footnote muted">Your own UPI: staff pay you at the godown{clears ? `, over ${clears}` : ""}.</span></div></div>}</>}
+      <div className="row wrap" style={{ gap: 12 }}><Stepper value={n} onChange={setN} min={0} max={staff.units} label="packs sold to staff" /><span className="t-subhead muted">of {fmt.num(staff.units)} packs sold</span></div>
+      {reading ? <div className="rcpt-read"><div className="row" style={{ gap: 12 }}><Aura on className="icontile" style={{ borderRadius: 12, width: 40, height: 40 }}><Icon name="scan-line" size={19} /></Aura><div className="grow"><b>Vision is reading the receipt</b><div className="t-footnote muted">Each UPI reference, who paid and how much</div></div></div><span className="sr-only" role="status">Vision is reading the receipt</span></div>
+        : read ? <S.ReceiptRead r={read} count={n} price={price} src={read.url || receiptSrc(batch)} whose="your" />
+        : <div className="rcpt-slot"><span className="icontile"><Icon name="receipt" size={18} stroke={2} /></span><span className="grow"><b>Consolidated receipt</b><span className="t-footnote muted">One receipt listing every staff payment by its UPI reference: from your books, or your UPI app's statement. A photo or a PDF.</span></span>
+          <span className="cam-two rcpt-btns"><Button size="sm" variant="secondary" icon="camera" onClick={take}>Take a photo</Button><Button size="sm" variant="ghost" icon="upload" onClick={() => pick.current && pick.current.click()}>Upload</Button></span></div>}
+      <input ref={cam} type="file" accept={RECEIPT_TYPES.slice(0, 3).join(",")} capture="environment" onChange={picked("camera")} className="sr-only" tabIndex={-1} aria-hidden="true" />
+      <input ref={pick} type="file" accept={RECEIPT_TYPES.join(",")} onChange={picked("upload")} className="sr-only" tabIndex={-1} aria-hidden="true" />
+      {err && <p className="cam-alert" role="alert"><Icon name="triangle-alert" size={15} />{err}</p>}
+      {read && !matched ? <><p className="cam-alert" role="alert"><Icon name="triangle-alert" size={15} />The receipt has {read.payments.length} payments, {fmt.inr2(read.paid)}: count again, or send the receipt with every payment.</p>
+        <div className="cam-two"><Button variant="secondary" icon="upload" onClick={() => { setShot(null); setErr(null); }}>Send another</Button><Button variant="ghost" loading={busy} busy="Recording…" disabled={!made || made > staff.units} onClick={() => record(made)}>Record {fmt.num(made)} sold</Button></div></>
+        : <><Button variant="primary" size="lg" block icon="check" loading={busy} busy="Recording…" done="Recorded" disabled={!matched} aria-describedby="staff-need" onClick={() => record(n)}>Record the sale</Button>
+          <span id="staff-need" className="t-caption subtle">{read ? "Record once, when the sale is over. What does not sell stays at the godown." : `Attach the consolidated receipt first: it is the sale's evidence for ${possessive(D.WORKSPACE.short)} papers.`}</span></>}
     </Card>;
   }
 
@@ -312,7 +343,7 @@
     </Screen>;
     const has = id => j.lines.some(l => l.id === id);
     const head = <PtHead sku={j.sku} id={j.ref} where={`${dist.godown}, ${dist.city}`} badge={stopBadge(j)} line="What leaves your godown for this batch, line by line"><Switcher js={js} value={j.ref} onChange={r => go("van", { ref: r })} /></PtHead>;
-    const staff = has("staff") && n.staff ? <StaffSale staff={Object.assign({}, n.staff, { godown: dist.godown, left: n.staff.sold == null ? 0 : n.staff.units - n.staff.sold })} dist={dist} product={shortName(j.sku)} clears={(M.CHANNELS.find(x => x.id === "staff") || {}).clears} /> : null;
+    const staff = has("staff") && n.staff ? <StaffSale key={n.ref} staff={Object.assign({}, n.staff, { godown: dist.godown, left: n.staff.sold == null ? 0 : n.staff.units - n.staff.sold })} dist={dist} product={shortName(j.sku)} clears={(M.CHANNELS.find(x => x.id === "staff") || {}).clears} batch={n.ref} sku={j.sku} /> : null;
     const side = [has("expiresoon") && <TruckCard key="truck" j={j} n={n} />, staff && <Fragment key="staff">{staff}</Fragment>, has("foodbank") && <PickupCard key="pickup" j={j} n={n} />].filter(Boolean);
     const main = has("kirana") ? <><VanCard j={j} n={n} /><Stops n={n} /></> : null;
     return <Screen me={me} title="Deliveries" hideLarge below={head}>
@@ -480,6 +511,11 @@
     const n = ns.find(x => x.destruction && x.ref === ref) || ns.find(x => x.destruction);
     const agencies = D.SETUP.destruction.agencies.filter(a => a.city === dist.city);
     const [shots, setShots] = useState({}); const [agency, setAgency] = useState(agencies[0] ? agencies[0].id : ""); const [cert, setCert] = useState(""); const [err, setErr] = useState(null); const [sending, setSending] = useState(false);
+    // the certificate in full (SC-174): the window the agency destroyed them in, and the two independent witnesses who
+    // watched, the agency's own panel to start
+    const panel = id => ((agencies.find(x => x.id === id) || {}).witnesses || []).map(w => ({ name: w.name, address: w.address }));
+    const [win, setWin] = useState({ from: "12:55", to: "13:20" }); const [wit, setWit] = useState(() => panel(agencies[0] ? agencies[0].id : ""));
+    const setW = (i, k) => e => { const v = e.target.value; setWit(ws => ws.map((w, j) => (j === i ? Object.assign({}, w, { [k]: v }) : w))); };
     const cam = useRef({}), pick = useRef({});
     const C = D.CLIENT.short, op = D.PEOPLE.priya;
     if (!n) return <Screen me={me} title="Destroy expired packs" sub="Requests from the client" back="Today"><Card style={{ maxWidth: 560, margin: "0 auto", width: "100%" }}><Empty img="godown" title="No destruction asked for now" body={`When packs expire at your godown and no channel took them, ${C} asks here for the evidence of their destruction.`} /></Card></Screen>;
@@ -496,10 +532,12 @@
     // in the prototype a stand-in photo is the batch's own evidence; on the live workspace the phone's camera
     const take = id => { setErr(null); if (live && cam.current[id]) cam.current[id].click(); else setShots(x => Object.assign({}, x, { [id]: { demo: true, how: "camera" } })); };
     const upload = id => { setErr(null); if (pick.current[id]) pick.current[id].click(); };
-    const ready = shots.before && shots.after && a && cert.trim().length >= 4;
+    const hhmm = /^([01]\d|2[0-3]):[0-5]\d$/;
+    const timed = hhmm.test(win.from) && hhmm.test(win.to) && win.from < win.to, witnessed = wit.length === 2 && wit.every(w => w.name.trim().length >= 3 && w.address.trim().length >= 6);
+    const ready = shots.before && shots.after && a && cert.trim().length >= 4 && timed && witnessed;
     const send = () => {
       if (!ready) return;
-      const x = { agency: a, certificate: cert.trim(), before: shots.before.file, after: shots.after.file };
+      const x = { agency: a, certificate: cert.trim(), before: shots.before.file, after: shots.after.file, window: win, witnesses: wit.map(w => ({ name: w.name.trim(), address: w.address.trim() })) };
       if (live && live.destruction) { live.destruction("send", x); return; }
       setSending(true); setTimeout(() => { setSending(false); setShots({}); setCert(""); Flow.act("sendDestruction", x); }, 700);
     };
@@ -513,12 +551,19 @@
           <div className="dz-two">{DZ_SLOTS.map(sl => <DzSlot key={sl.id} slot={sl} ref_={n.ref} shot={shots[sl.id]} busy={sending} onTake={() => take(sl.id)} onUpload={() => upload(sl.id)} />)}</div>
           {DZ_SLOTS.map(sl => <Fragment key={sl.id}><input ref={el => (cam.current[sl.id] = el)} type="file" accept={PHOTO_TYPES.join(",")} capture="environment" onChange={picked(sl.id)} className="sr-only" tabIndex={-1} aria-hidden="true" /><input ref={el => (pick.current[sl.id] = el)} type="file" accept={PHOTO_TYPES.join(",")} onChange={picked(sl.id)} className="sr-only" tabIndex={-1} aria-hidden="true" /></Fragment>)}
           <div className="dz-fields">
-            <K.Field label="Agency" htmlFor="dz-agency" help={a ? `Authorisation ${a.auth}` : undefined}><K.Select id="dz-agency" value={agency} onChange={e => setAgency(e.target.value)}>{agencies.map(x => <option key={x.id} value={x.id}>{x.name}</option>)}</K.Select></K.Field>
+            <K.Field label="Agency" htmlFor="dz-agency" help={a ? `Authorisation ${a.auth}${a.facility ? ` · ${a.facility.name}` : ""}${a.officer ? ` · supervising officer ${a.officer.name}` : ""}` : undefined}><K.Select id="dz-agency" value={agency} onChange={e => { setAgency(e.target.value); setWit(panel(e.target.value)); }}>{agencies.map(x => <option key={x.id} value={x.id}>{x.name}</option>)}</K.Select></K.Field>
             <K.Field label="Agency's certificate number" htmlFor="dz-cert"><K.Input id="dz-cert" value={cert} onChange={e => setCert(e.target.value)} placeholder={a ? `${a.series.prefix}0000` : ""} spellCheck={false} autoCapitalize="characters" /></K.Field>
           </div>
+          <div className="dz-fields">
+            <K.Field label="Destroyed from" htmlFor="dz-from" help="The time the agency began, as its certificate says"><K.Input id="dz-from" type="time" value={win.from} onChange={e => setWin(w => Object.assign({}, w, { from: e.target.value }))} /></K.Field>
+            <K.Field label="To" htmlFor="dz-to" help="When the cover was done: the after photo's time"><K.Input id="dz-to" type="time" value={win.to} onChange={e => setWin(w => Object.assign({}, w, { to: e.target.value }))} /></K.Field>
+          </div>
+          <span className="t-headline" style={{ marginTop: 6 }}>Two independent witnesses</span>
+          <span className="t-footnote muted">People who watched the destruction and are not your staff: a neighbouring trader, a resident. They sign the agency's certificate with its officer.</span>
+          {wit.map((w, i) => <div key={i} className="dz-fields"><K.Field label={`Witness ${i + 1} · name`} htmlFor={`dz-w${i}`}><K.Input id={`dz-w${i}`} value={w.name} onChange={setW(i, "name")} autoComplete="off" /></K.Field><K.Field label="Address" htmlFor={`dz-w${i}a`}><K.Input id={`dz-w${i}a`} value={w.address} onChange={setW(i, "address")} autoComplete="off" /></K.Field></div>)}
           {err && <p className="cam-alert" role="alert"><Icon name="triangle-alert" size={15} />{err}</p>}
           <Button variant="primary" size="lg" block icon="send" loading={sending} busy="Sending the evidence…" done="Sent for approval" disabled={!ready} aria-describedby="dz-need" onClick={send}>Send to {C} for approval</Button>
-          <span id="dz-need" className="t-caption subtle">{ready ? `Then reverse ${fmt.inr2(his)} of input GST on these packs in your GSTR-3B (Table 4(B)(1)). ${possessive(C)} credit note makes it good.` : `Both photos and the certificate number are needed. ${PHOTO_RULE}.`}</span>
+          <span id="dz-need" className="t-caption subtle">{ready ? `Then reverse ${fmt.inr2(his)} of input GST on these packs in your GSTR-3B (Table 4(B)(1)). ${possessive(C)} credit note makes it good.` : `Both photos, the certificate number, the time and both witnesses are needed. ${PHOTO_RULE}.`}</span>
         </Card>
           : <Card className="stack snug">
             <div className="row" style={{ gap: 12 }}><Aura on={d.status === "reading"} className="icontile" style={{ borderRadius: 12, width: 40, height: 40 }}><Icon name={say[0]} size={19} /></Aura><div className="grow"><b>{say[1]}</b><div className="t-footnote muted">{d.status === "checked" ? `${op.short} at ${C} ${say[2]}` : say[2]}</div></div></div>

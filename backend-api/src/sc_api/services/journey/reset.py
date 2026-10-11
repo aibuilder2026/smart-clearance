@@ -188,6 +188,16 @@ async def _story(ctx: Ctx, c: m.Client, j: dict[str, Any], day0: date) -> None:
     if "destruction" not in setup and j["setup"].get("destruction"):
         setup.update({"expiry": j["setup"]["expiry"], "destruction": j["setup"]["destruction"]})
         c.workspace_doc = {**doc, "setup": setup}  # a new dict, so the change is written
+    elif setup.get("destruction") and j["setup"].get("destruction"):
+        # the certificate in full (SC-174): the agencies gain their facility, officer, vehicle, method and witnesses,
+        # and the setup its methods and reasons; whatever the workspace set itself stays
+        story, own = j["setup"]["destruction"], setup["destruction"]
+        by = {a["id"]: a for a in story.get("agencies") or []}
+        merged = {**{k: story[k] for k in ("methods", "reasons") if k in story}, **own}
+        merged["agencies"] = [{**by.get(a["id"], {}), **a} for a in own.get("agencies") or []]
+        if merged != own:
+            setup["destruction"] = merged
+            c.workspace_doc = {**doc, "setup": setup}
     fx = next((x.get("firstExport") for x in load("console.json")["state"]["clients"] if x["id"] == c.id), None)
     if fx:  # the story's own stock export, mapped (SC-84)
         exports.restore(c, fx, datetime.combine(day0 - timedelta(days=1), time(16, 40), IST))

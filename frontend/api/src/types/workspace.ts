@@ -145,6 +145,44 @@ export type WsDistributor = {
 	/** where its staff pay at a staff sale (SC-87), or null */
 	upi: string | null;
 	permission: Permission | null;
+	/** who signs his papers, with his specimen signature and his firm's stamp (SC-174) */
+	signatory?: WsSignatory | null;
+	/** his staff sales' consolidated receipts' own series (SC-174) */
+	receipts?: { prefix: string; next: number; width: number } | null;
+};
+
+/** who signs a party's papers (SC-174): the signatory's name and title, the specimen signature on file
+ *  (system/img/signatures/<sign>.webp) and the firm's stamp or seal (system/img/seals/<seal>.webp) */
+export type WsSignatory = { name: string; title: string; sign: string | null; seal?: string | null };
+
+/** the staff sale's consolidated receipt (SC-174): one photo or PDF listing every staff payment by its UPI reference,
+ *  as the distributor sent it, and what Vision read of it; the sale records only once its payments come to what sold */
+export type WsStaffReceipt = {
+	id: string;
+	status: 'reading' | 'read' | 'unreadable';
+	no: string | null;
+	date: string | null;
+	payments: WsReceiptPayment[];
+	paid: number | null;
+	units: number | null;
+	from: string | null;
+	to: string | null;
+	/** when he sent it, in the client's time */
+	at: string | null;
+	readAt: string | null;
+	contentType: string | null;
+	/** a short-lived link to the photo or PDF */
+	url: string | null;
+};
+/** one staff member's UPI payment, as the receipt lists it: its UPI reference (the 12-digit RRN), who paid, when (as
+ *  printed), the packs it paid for at the staff price, and the amount */
+export type WsReceiptPayment = {
+	n: number;
+	rrn: string | null;
+	who: string;
+	at: string;
+	units: number;
+	amount: number;
 };
 
 export type WsBuyer = {
@@ -354,6 +392,8 @@ export type WsClient = {
 	state: string | null;
 	stateCode: string | null;
 	email: string | null;
+	/** who signs its papers: its credit notes, its GST memo and its FSSAI checklist (SC-174) */
+	signatory?: WsSignatory | null;
 	listed: string;
 	revenue: string;
 	/** packs that go short-dated a quarter, and the share destroyed today */
@@ -543,6 +583,8 @@ export type Journey = {
 		sold: number | null;
 		left: number | null;
 		recordedAt: string | null;
+		/** the consolidated receipt he attached (SC-174) */
+		receipt?: WsStaffReceipt | null;
 	};
 	docs: null | { id: string; status: string }[];
 	invoiceIssued: boolean;
@@ -716,7 +758,38 @@ export type DestructionDocFields = {
 	/** the member who approved it, by name, and when */
 	approvedBy: string;
 	approvedAt: string;
+	/** the certificate in full (SC-174, ledger.js destructionDetail): the reason, the agency's method, its facility and
+	 *  vehicle, its supervising officer and seal, the two independent witnesses (a witness on the agency's panel signs
+	 *  with its specimen), the window on the day, the two photos, who handed the packs over, the goods, and the log
+	 *  from the godown to the cover */
+	reason?: string;
+	methodId?: 'landfill' | 'incineration';
+	methodName?: string;
+	methodHow?: string;
+	facility?: { name: string; address: string; gps: string } | null;
+	vehicle?: string | null;
+	officer?: WsSignatory | null;
+	seal?: string | null;
+	witnesses?: WsWitness[];
+	window?: { from: string; to: string };
+	destroyedOn?: string;
+	photos?: {
+		before: { name: string; at: string; url?: string | null };
+		after: { name: string; at: string; url?: string | null };
+	};
+	handedBy?: WsSignatory | null;
+	goods?: string;
+	mfg?: string | null;
+	mrp?: number;
+	perCarton?: number;
+	kg?: number;
+	log?: WsDestructionStep[];
 };
+/** a witness to the destruction: name, address, the ID proof's last four, and a specimen signature where the agency
+ *  keeps one */
+export type WsWitness = { name: string; address: string; proof?: string | null; sign?: string | null };
+/** a step of the destruction's log (SC-174), at its time (the client's, 2026-09-15T12:55), with the photo it shows */
+export type WsDestructionStep = { at: string; step: string; detail: string; photo?: 'before' | 'after' };
 
 /** the food bank's receipt for the packs it collected (SC-110, money.js receipt): issued in its name as it collects,
  *  numbered in its own series, in its own form (Feeding India's in-app receipt, India FoodBanking Network's
@@ -794,6 +867,9 @@ export type WsDestruction = {
 	/** when the distributor is reminded, while the evidence is still asked for */
 	remindAt: string | null;
 	method: string;
+	/** the window the agency destroyed them in and its two independent witnesses, as he gave them (SC-174) */
+	window?: { from: string; to: string } | null;
+	witnesses?: { name: string; address: string }[] | null;
 };
 export type WsDestructionPhoto = { name: string; at: string; url: string | null };
 /** how a client has packs destroyed at a distributor's godown (SC-139; the console's Channels and rules) */
@@ -804,6 +880,13 @@ export type WsDestructionAgency = {
 	auth: string;
 	series: { prefix: string; next: number; width: number };
 	site: string;
+	/** its own method, facility, vehicle, supervising officer, seal and panel of independent witnesses (SC-174) */
+	method?: 'landfill' | 'incineration';
+	facility?: { name: string; address: string; gps: string };
+	vehicle?: string;
+	officer?: WsSignatory;
+	seal?: string;
+	witnesses?: WsWitness[];
 };
 export type WsDestructionSettings = {
 	evidence: [string, string][];
@@ -814,6 +897,9 @@ export type WsDestructionSettings = {
 	chargesPerUnit: number;
 	method: string;
 	agencies: WsDestructionAgency[];
+	/** the certificate's methods and reasons (SC-174) */
+	methods?: Record<string, { name: string; how: string }>;
+	reasons?: [string, string][];
 };
 
 /** a shop the scheme was offered to, with its cap and what it ordered */
@@ -1104,7 +1190,14 @@ export type ActionResult = { seq: number; case: CaseDetail | null };
 export type UploadLink = { id: string; url: string; headers: Record<string, string>; expiresAt: string };
 export type UploadRequest = { contentType: string; bytes: number; fileName?: string };
 /** the destruction's evidence (SC-139): the agency by id, its certificate number, and the two photos uploaded */
-export type DestructionInput = { agency: string; certificate: string; photos: { before: string; after: string } };
+export type DestructionInput = {
+	agency: string;
+	certificate: string;
+	photos: { before: string; after: string };
+	/** the certificate in full (SC-174): the window the agency destroyed them in, and its two independent witnesses */
+	window?: { from: string; to: string };
+	witnesses?: { name: string; address: string }[];
+};
 
 export type WsInviteInput = { name: string; email: string; role: WsRole; org?: string };
 export type MemberPatch = { status?: MemberStatus; role?: WsRole };
@@ -1184,6 +1277,8 @@ export type WsPartnerCase = {
 	destruction?: WsDestruction | null;
 	/** the label photo he sent (SC-142): a short-lived link to it, when he sent it, and what Vision read of it */
 	photo?: WsLabelPhoto | null;
+	/** the staff sale's consolidated receipt he sent (SC-174), his own */
+	staffReceipt?: WsStaffReceipt | null;
 	docs: WsDoc[];
 };
 /** a label photo as it was sent (SC-142) */
@@ -1269,7 +1364,12 @@ export interface WorkspaceApi {
 	accept(ref: string, bid: string): Promise<ActionResult>;
 	/** POST /cases/{ref}/donation/confirm and /donation/collect: the food bank's steps */
 	/** POST /cases/{ref}/staff-sale {sold}: the distributor records the staff sale once, how many of its packs sold */
-	staffSale(ref: string, sold: number): Promise<ActionResult>;
+	/** the staff sale, recorded with its consolidated receipt once Vision has read it (SC-174) */
+	staffSale(ref: string, sold: number, receipt?: string): Promise<ActionResult>;
+	/** a signed link for the staff sale's consolidated receipt, a photo or a PDF; then it has arrived, and Vision reads
+	 *  its payments (SC-174) */
+	staffReceipt(ref: string, input: UploadRequest): Promise<UploadLink>;
+	staffReceiptSent(ref: string, receipt: string): Promise<ActionResult>;
 	confirmPickup(ref: string): Promise<ActionResult>;
 	collect(ref: string): Promise<ActionResult>;
 	/** POST /cases/{ref}/dispatches {kind}: the buyer's truck loaded, or the van round run */

@@ -23,6 +23,7 @@
   ul.checks li { padding: 4pt 0 4pt 18pt; border-bottom: 1px solid #eeebe2; position: relative; }
   ul.checks li::before { content: "☐"; position: absolute; left: 0; }
   footer { margin-top: 18pt; font-size: 8.5pt; color: #5a5a55; border-top: 1px solid #e3e0d6; padding-top: 6pt; }
+{% include "_sign.css" %}
 </style>
 </head>
 <body>
@@ -39,7 +40,7 @@
 {% block body %}{% endblock %}
 <footer>
   Batch {{ case.ref }} · {{ case.sku.brand }} {{ case.sku.name }} · best before {{ case.batch.bestBefore|date }}.
-  {% block issued %}Drafted by Smart-Clearance's Paperwork agent from the figures on the batch's record; a person issues and signs it.{% endblock %}
+  {% block issued %}Laid out by Smart-Clearance's Paperwork agent from the figures on the batch's record, and signed by its signatory.{% endblock %}
   {% if note %}<div style="margin-top: 4pt">{{ note }}</div>{% endif %}
 </footer>
 </body>

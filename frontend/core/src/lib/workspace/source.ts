@@ -19,6 +19,7 @@ import type {
 	RoleId,
 	Rules,
 	SourceStatus,
+	StaffReceipt,
 	State,
 	User,
 	UserStatus,
@@ -86,6 +87,13 @@ export interface WorkspaceSource {
 	uploadExport?(file: Blob, o?: SendOptions): Promise<void>;
 	/** the live source only: stop a file on its way (its key in uploads) */
 	cancelUpload?(key: string): void;
+	/** the live source only: the staff sale's consolidated receipt, a photo or a PDF, to its signed link (its progress in
+	 *  uploads under 'receipt:<ref>'), then Vision reads its payments into the journey's staff sale (SC-174). Of the
+	 *  batch in focus, or the one named */
+	staffReceipt?(file: Blob, o?: { ref?: string } & SendOptions): Promise<void>;
+	/** the stub only: what Vision reads from a batch's consolidated receipt, the batch's own (SC-174), as the prototype
+	 *  stands in for Gemini vision; null for a batch with none */
+	staffReceiptOf?(ref: string): StaffReceipt | null;
 	/** the stub only: the people a visitor can step into */
 	readonly explore?: ExploreGroup[];
 	/** the stub only: whether this browser session has yet to see the splash, and the end of it */

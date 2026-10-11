@@ -1,9 +1,13 @@
 // The photos the prototype's story and its history show as sent (never copied): the destruction's evidence (SC-139),
-// before at the godown and after at the landfill, and the label photos the distributors sent (SC-142). Each is named
-// for its batch. A live build reads every photo from backend-api's short-lived links, so the workspace app's live build
+// before at the godown and after at the landfill, the label photos the distributors sent (SC-142), and the staff sales'
+// consolidated receipts (SC-174). Each is named for its batch. A live build reads every photo from backend-api's short-lived links, so the workspace app's live build
 // replaces this module with an empty one (frontend/workspace/vite.config.ts), and none of the story's batches is in it.
 const files = import.meta.glob(
-	['../../../../design3/system/img/evidence/*.webp', '../../../../design3/system/img/labels/*.webp'],
+	[
+		'../../../../design3/system/img/evidence/*.webp',
+		'../../../../design3/system/img/labels/*.webp',
+		'../../../../design3/system/img/receipts/*.webp'
+	],
 	{ query: '?url', import: 'default', eager: true }
 ) as Record<string, string>;
 

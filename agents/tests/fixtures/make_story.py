@@ -28,10 +28,23 @@ def main() -> None:
         "mango": {"batch": mango["batch"], "sku": mango["sku"], "plan": mango["plan"]},
         "docs": docs,
         "counter": m["counter"],
-        # the GST papers' parties (SC-148): the client as its own papers name it, the buyer as his invoice does
+        # the GST papers' parties (SC-148): the client as its own papers name it, with who signs them (SC-174), the
+        # buyer as his invoice does
         "client": {
             k: j["client"].get(k)
-            for k in ("name", "short", "gstin", "fssai", "pan", "cin", "address", "state", "stateCode", "email")
+            for k in (
+                "name",
+                "short",
+                "gstin",
+                "fssai",
+                "pan",
+                "cin",
+                "address",
+                "state",
+                "stateCode",
+                "email",
+                "signatory",
+            )
         },
         "buyer": j["buyer"],
         "balanceHours": j["market"]["balanceHours"],

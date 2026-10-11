@@ -37,9 +37,30 @@
   // and their kilos, the method and the site, the agency and its authorisation, the evidence and who approved it, and
   // the input GST he reverses on them
   const possessive = n => n + (/s$/.test(n) ? "'" : "'s");
+  const P = () => window.SC3_PAPERS;
+  // the certificate in full (SC-174, option B): the goods, the reason, the agency's method and facility, the day and the
+  // window they were destroyed in, its supervising officer and the two independent witnesses (a witness on the agency's
+  // panel signs with the specimen it keeps), who handed the packs over, and the log from the godown to the cover
+  function destructionDetail(xd, batch, sku, dist) {
+    const ag = D.SETUP.destruction.agencies.find(a => a.id === xd.agency.id) || {}, how = D.SETUP.destruction.methods[ag.method || "landfill"];
+    const after = xd.photos.after.at, on = after.slice(0, 10);
+    // the window the agency destroyed them in, as he gave it; else the 25 minutes up to the after photo
+    const win = xd.window || { from: new Date(Date.parse(after + ":00Z") - 25 * 60e3).toISOString().slice(11, 16), to: after.slice(11, 16) };
+    const panel = ag.witnesses || [];
+    const witnesses = (xd.witnesses && xd.witnesses.length ? xd.witnesses : panel).map(w => { const p = panel.find(x => x.name === w.name); return { name: w.name, address: w.address || (p && p.address) || "", proof: w.proof || (p && p.proof) || null, sign: p ? p.sign : null }; });
+    const units = xd.units, kg = r2(units * sku.kgPerUnit), packKg = r2(units * (sku.packKg || 0));
+    const photos = { before: { name: xd.photos.before.name, at: xd.photos.before.at }, after: { name: xd.photos.after.name, at: after } };
+    return {
+      reason: "expiry", methodId: ag.method || "landfill", methodName: how.name, methodHow: how.how, facility: ag.facility || null, vehicle: ag.vehicle || null,
+      officer: ag.officer || null, seal: ag.seal || null, witnesses, window: win, destroyedOn: on, photos,
+      handedBy: dist.signatory ? { name: dist.signatory.name, title: dist.signatory.title, sign: dist.signatory.sign } : null,
+      goods: `${sku.brand} ${sku.name}`, mfg: batch.mfg, mrp: sku.mrp, perCarton: sku.perCarton,
+      log: P().destructionLog({ units, kg, packKg, batch: batch.id, no: xd.certificate, from: dist.godown, destroyedOn: on, window: win, photos, agency: xd.agency.name, vehicle: ag.vehicle, facility: ag.facility, method: ag.method }),
+    };
+  }
   function destructionDoc(xd, x, batch, sku, dist) {
     const units = xd.units, approver = D.PEOPLE[xd.approvedBy] || { name: xd.approvedBy };
-    return {
+    return Object.assign({
       id: "destruction", type: "Destruction certificate", owner: xd.agency.name, no: xd.certificate, status: "generated", amount: 0, units,
       kg: r2(units * sku.kgPerUnit), packKg: r2(units * (sku.packKg || 0)), at: "godown", method: xd.method, site: xd.agency.site,
       agency: xd.agency.name, auth: xd.agency.auth, for: { name: dist.name, address: dist.address, gstin: dist.gstin }, from: dist.godown,
@@ -47,8 +68,12 @@
       evidence: { photos: 2, checks: xd.checks.filter(c => c.ok).length, of: xd.checks.length }, approvedBy: approver.name, approvedAt: xd.approvedAt,
       reversed: x && x.reversal != null ? x.reversal : r2(units * (sku.dp || 0) * sku.gst), date: xd.approvedAt.slice(0, 10),
       note: `Destroyed at ${xd.agency.site} on expiry day, from ${dist.godown || dist.city}. ${dist.name} reverses the input GST on these packs in GSTR-3B Table 4(B)(1) under section 17(5)(h).`,
-    };
+    }, destructionDetail(xd, batch, sku, dist));
   }
+  // the staff sale's consolidated receipt as a paper of the pack (SC-174): the photo the distributor sent with the sale,
+  // his own, and what Vision read from it
+  const staffDoc = (r, dist) => ({ id: "staff", type: "Staff sale receipt", owner: dist.short, no: r.no, status: "generated", amount: r.paid, units: r.units, payments: r.payments.length, date: r.date });
+  const withStaff = (docs, r, dist) => { if (!r) return docs; const out = docs.slice(), i = out.findIndex(d => d.id === "support"); out.splice(i < 0 ? out.length : i + 1, 0, staffDoc(r, dist)); return out; };
   // on expiry day the packs left at the godown settle by the client's policy, on a credit note of their own (SC-94); and
   // destroyed at his godown, the agency's certificate replaces the paper that waited for it, once Priya approved the
   // evidence (SC-139). A history batch's, or the slow chips' once its destruction is approved (SC-168)
@@ -95,6 +120,8 @@
       return o;
     });
     expiryPapers(docs, h.expiry, h.destruction, batch, sku, dist, n.expiry);
+    const sr = h.staffReceipt ? Object.assign({}, h.staffReceipt, { file: `receipts/${h.ref}.webp`, read: true }) : null;
+    const pack = withStaff(docs, sr, dist);
     const orders = kl ? ordersOf(h.distributor, h.kirana.ordered) : [];
     return {
       ref: h.ref, history: true, outcome: h.outcome, flagged: h.flagged, cleared: day("report") || h.bestBefore, numbers: n, steps: h.steps, destruction: h.destruction || null,
@@ -104,7 +131,7 @@
       support: h.support, supportPlan: M.priceSupport(h.plan, sku), claim: M.expiryClaim(h.plan.units, sku),
       // issued from Tally on its invoice step: the e-invoice's IRN and signed QR are worked out from it (SC-148)
       invoiceIssuedAt: es ? when("invoice") : null,
-      docs, invoice: docs.find(d => d.id === "invoice") || null, receipt,
+      docs: pack, invoice: pack.find(d => d.id === "invoice") || null, receipt, staffReceipt: sr,
       returnBy: D.addDays(h.bestBefore, -M.RULES.returnWindowDays), expiry: h.expiry,
       listing: n.listing ? { id: n.listing, units: es ? es.units : 0 } : null,
       kiranas: orders, offered: kl ? W.KIRANAS.filter(k => k.distributor === h.distributor).length : 0, scheme: M.RULES.scheme,
@@ -174,7 +201,8 @@
         credit: c.expiry && c.expiry.policy !== "none" ? (c.expiry.amount != null ? c.expiry.amount : c.expiry.credit) || 0 : 0, support: support ? support.amount : 0,
       },
       lines: lines.filter(l => l.units).map(l => ({ id: l.id, short: l.short, units: l.units, price: priceOf(l), gross: l.id === "expiresoon" && c.award ? r2(l.units * c.award.price) : l.gross })),
-      papers: c.docs.map(d => ({ id: d.id, type: d.type, no: d.no, status: d.status, date: d.date || null, amount: d.total != null ? d.total : d.amount != null ? d.amount : null, pdf: !!d.pdf })),
+      // the papers Paperwork laid out (the staff sale's receipt, the distributor's own evidence, is not one of them)
+      papers: c.docs.filter(d => d.id !== "staff").map(d => ({ id: d.id, type: d.type, no: d.no, status: d.status, date: d.date || null, amount: d.total != null ? d.total : d.amount != null ? d.amount : null, pdf: !!d.pdf })),
       reviewed: c.reviewed ? { by: c.reviewed.by, at: c.reviewed.at || null } : null,
     };
   }
@@ -292,14 +320,15 @@
     const hd = S.expiry && h.expiry && h.destruction ? h.destruction : null, approved = hd && hd.status === "approved";
     const xd = approved ? Object.assign({}, hd, { method: D.SETUP.destruction.method, approvedAt: `${S.cleared}T${hd.approvedAt || "11:00"}`,
       photos: Object.fromEntries(Object.entries(hd.photos || {}).map(([w, p]) => [w, Object.assign({}, p, { at: `${S.expiryDay}T${p.at}` })])) }) : hd;
-    const docs = approved ? expiryPapers(S.docs.slice(), h.expiry, xd, S.batch, sku, dist, S.expiryNo) : S.docs;
+    const sr = h.staff && h.staff.receipt && h.staff.receipt.no ? Object.assign({}, h.staff.receipt, { file: h.staff.receipt.file || `receipts/${S.batch.id}.webp` }) : null;
+    const docs = withStaff(approved ? expiryPapers(S.docs.slice(), h.expiry, xd, S.batch, sku, dist, S.expiryNo) : S.docs, sr, dist);
     const kl = S.KL, took = id => (realised.lines.find(l => l.id === id && l.units > 0) || { units: 0 }).units;
     return Object.assign({
       ref: S.batch.id, history: false, outcome: S.outcome, flagged: D.DAY0, cleared: S.cleared,
       numbers: Object.assign({}, S.invoice ? { invoice: S.invoice.no } : {}, { support: "CN/0117" }, S.listing ? { listing: S.listing.id } : {}, own ? { receipt: own.receipt.no } : {}, approved ? { expiry: S.expiryNo } : {}),
       batch: S.batch, sku, dist, buyer: D.BUYER, plan: S.plan, realised, actual: S.actual,
       lines: { kirana: kl || NONE("kirana"), expiresoon: S.ES || NONE("expiresoon") },
-      award: S.award, support: S.support, supportPlan: S.supportPlan, claim: S.claim, docs, invoice: S.invoice, receipt: own ? own.receipt : null, returnBy: S.returnBy, expiry: approved ? h.expiry : null,
+      award: S.award, support: S.support, supportPlan: S.supportPlan, claim: S.claim, docs, invoice: S.invoice, receipt: own ? own.receipt : null, staffReceipt: sr, returnBy: S.returnBy, expiry: approved ? h.expiry : null,
       listing: S.listing, kiranas: S.kiranas, offered: S.offered, scheme: M.RULES.scheme,
       kirana: S.key === "chips" ? null : kl ? { planned: kl.units, ordered: took("kirana") } : null, staff: S.key === "chips" ? null : took("staff") || null, partner: own ? own.partner : null,
       // the batch the same agents donate, which the FSSAI checklist points to: the Mango Drink beside the chips, or the
@@ -359,7 +388,7 @@
     const doc = id => c.docs.find(d => d.id === id);
     // packs destroyed at his own godown (SC-139): the agency's certificate is issued for him, so it is his paper
     const his = d => d && d.id === "destruction" && d.at === "godown";
-    return { mine: ["invoice", "eway", "support", "expiry", "destruction"].map(doc).filter(d => d && (d.id === "destruction" ? his(d) && has(d) : has(d) || d.id === "eway")), copies: ["receipt", "destruction"].map(doc).filter(d => has(d) && !his(d)) };
+    return { mine: ["invoice", "eway", "support", "staff", "expiry", "destruction"].map(doc).filter(d => d && (d.id === "destruction" ? his(d) && has(d) : has(d) || d.id === "eway")), copies: ["receipt", "destruction"].map(doc).filter(d => has(d) && !his(d)) };
   }
   // what happened to a cleared batch, from where he stands: each moment with its day and time
   function moments(c) {
@@ -549,7 +578,7 @@
       listing: h.listing ? { id: S.listing.id } : null, award: h.award ? { price: S.counter.price, token: S.award.token } : null, awardAt: h.award && h.award.at ? `${D.DAY0}T${h.award.at}` : null,
       truck: h.truck.status === "dispatched", van: h.van.status === "done", papers: !!h.docs,
       invoice: h.docs && S.invoice ? { no: S.invoice.no, total: S.invoice.total, issued: !!h.invoiceIssued } : null,
-      staff: h.staff ? { status: h.staff.status, units: h.staff.units, price: h.staff.price, sold: h.staff.sold == null ? null : h.staff.sold } : null,
+      staff: h.staff ? { status: h.staff.status, units: h.staff.units, price: h.staff.price, sold: h.staff.sold == null ? null : h.staff.sold, receipt: h.staff.receipt || null } : null,
       // the packs left at his godown on expiry day, destroyed there against evidence the client approves (SC-139)
       destruction: h.destruction ? { status: h.destruction.status, units: h.destruction.units, reason: h.destruction.reason || null } : null,
       donation: own && m.id === h.id && m.donation ? { status: m.donation, partner: DN.partner, units: own.units, date: DN.date, time: DN.time } : null, round: { day: S.journey.van.day, date: S.journey.van.date, leaves: S.journey.van.leaves } };
@@ -562,7 +591,7 @@
       photo: "verified", approved: ROUTED.includes(m.phase), lines: linesOf(D.MANGO_PLAN),
       offer: { open: true, offered: W.KIRANAS.filter(k => k.distributor === SECOND.distributor).length, shops: 0, units: 0 }, shops: [],
       listing: null, award: null, awardAt: null, truck: false, van: false, papers: false, invoice: null,
-      staff: st ? (m.staff ? { status: m.staff.status, units: m.staff.units, price: st.price, sold: m.staff.sold } : { status: "open", units: st.units, price: st.price, sold: null }) : null,
+      staff: st ? (m.staff ? { status: m.staff.status, units: m.staff.units, price: st.price, sold: m.staff.sold, receipt: m.staff.receipt || null } : { status: "open", units: st.units, price: st.price, sold: null }) : null,
       donation: m.donation ? { status: m.donation, partner: DN.partner, units: D.MANGO_FB, date: DN.date, time: DN.time } : null, round: null, destruction: null };
   }
   // his batches in a journey now, as the stub has them: the journey's batch, and the story's second beside the chips
@@ -765,8 +794,12 @@
       read: { at: stepAt(c, "read"), batch: c.ref, mfg, bestBefore: c.batch.bestBefore, mrp: c.sku.mrp, matches: true } });
     if (xd && xd.photos) ["before", "after"].forEach(w => xd.photos[w] && out.push({ id: w, img: `evidence/${xd.photos[w].name}`, at: xd.photos[w].at, by: dp.name,
       checks: xd.checks.filter(x => (w === "before" ? ["batch", "count"] : ["slate", "when"]).includes(x.id)) }));
+    // the staff sale's consolidated receipt (SC-174), sent with the sale, and what Vision read from it
+    if (c.staffReceipt) out.push(receiptPhoto(c.staffReceipt, c.sku, stepAt(c, "staff"), dp.name));
     return out;
   }
+  const receiptPhoto = (r, sku, at, by) => ({ id: "receipt", img: r.file, at: at || r.to, by,
+    receipt: { no: r.no, payments: r.payments.length, paid: r.paid, units: r.units, from: r.from, to: r.to, matches: true, list: r.payments } });
   // the story's batch: its label photo once Rakesh has sent it, and the destruction's two once he has sent them
   function storyPhotos(s) {
     const S = D.story(s), hero = S.batch, sku = S.sku, h = s.hero, out = [], at = t => (/^\d\d:\d\d$/.test(t || "") ? `${D.DAY0}T${t}` : D.DAY0);
@@ -776,6 +809,8 @@
     const xd = h.destruction;
     if (xd && xd.photos) ["before", "after"].forEach(w => xd.photos[w] && out.push({ id: w, img: `evidence/${evidenceFile(hero.id, w, xd.photos[w])}`, at: at(xd.photos[w].at), by,
       checks: (xd.checks || []).filter(x => (w === "before" ? ["batch", "count"] : ["slate", "when"]).includes(x.id)) }));
+    const sr = h.staff && h.staff.receipt && h.staff.receipt.no ? h.staff.receipt : null;
+    if (sr) out.push(receiptPhoto(Object.assign({}, sr, { file: sr.file || `receipts/${hero.id}.webp` }), sku, h.staff.recordedAt ? at(h.staff.recordedAt) : sr.to, by));
     return out;
   }
   // a destruction photo's file under img/evidence: the one it was sent as (the slow chips' expiry-day landfill photo,

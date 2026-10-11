@@ -57,6 +57,8 @@ class DispatchInput(Shape):
 
 class StaffSaleInput(Shape):
     sold: int = Field(ge=0, le=100000)
+    # the consolidated receipt he attached, as Vision read it (SC-174)
+    receipt: str | None = Field(default=None, max_length=40)
 
 
 class DestructionPhotoInput(UploadInput):
@@ -68,10 +70,23 @@ class DestructionPhotos(Shape):
     after: str = Field(max_length=40)
 
 
+class DestructionWindow(Shape):
+    from_: str = Field(alias="from", pattern=r"^([01]\d|2[0-3]):[0-5]\d$")
+    to: str = Field(pattern=r"^([01]\d|2[0-3]):[0-5]\d$")
+
+
+class Witness(Shape):
+    name: str = Field(min_length=3, max_length=80)
+    address: str = Field(min_length=6, max_length=160)
+
+
 class DestructionInput(Shape):
     agency: str = Field(max_length=40)
     certificate: str = Field(max_length=40)
     photos: DestructionPhotos
+    # the certificate in full (SC-174): the window the agency destroyed them in, and its two independent witnesses
+    window: DestructionWindow | None = None
+    witnesses: list[Witness] | None = Field(default=None, min_length=2, max_length=2)
 
 
 class ReasonInput(Shape):
@@ -235,6 +250,11 @@ async def document(ws: str, ref: str, doc: str, request: Request, ctx: MemberCtx
         ready = any(d["id"] == doc and d["pdf"] for d in detail["docs"]) or (doc == "receipt" and rcpt.get("pdf"))
     if not ready:
         raise ApiError(404, "That paper has no PDF yet.")
+    if doc == "staff":  # the staff sale's receipt is the photo or PDF he sent (SC-174), kept with the photos
+        r = ((detail["journey"].get("staff") or {}).get("receipt")) or {}
+        if not r.get("url"):
+            raise ApiError(404, "That paper has no PDF yet.")
+        return {"url": r["url"], "expiresAt": (ctx.clock.now() + timedelta(minutes=5)).isoformat()}
     name = await views.document_object(ctx, ws, ref, doc)
     assert ctx.cloud is not None and ctx.settings.docs_bucket and name
     url = ctx.cloud.storage.signed_get(ctx.settings.docs_bucket, name)
@@ -397,7 +417,22 @@ async def decline_donation(ws: str, ref: str, request: Request, ctx: MemberCtx) 
 async def staff_sale(ws: str, ref: str, data: StaffSaleInput, request: Request, ctx: MemberCtx) -> dict[str, Any]:
     if (replay := await _replay(ctx, request, ws, ref)) is not None:
         return replay
-    await steps.staff_sale(ctx, ws, ref, data.sold)
+    await steps.staff_sale(ctx, ws, ref, data.sold, data.receipt)
+    return await _done(ctx, request, ws, ref)
+
+
+@router.post(CASE + "/staff-sale/receipt", summary="A signed link for the staff sale's consolidated receipt")
+async def staff_receipt_link(ws: str, ref: str, data: UploadInput, ctx: MemberCtx) -> dict[str, Any]:
+    link = await steps.staff_receipt_link(ctx, ws, ref, data.content_type, data.bytes)
+    await ctx.session.commit()
+    return link
+
+
+@router.post(CASE + "/staff-sale/receipt/{receipt}", summary="The receipt has arrived: Vision reads its payments")
+async def staff_receipt_sent(ws: str, ref: str, receipt: str, request: Request, ctx: MemberCtx) -> dict[str, Any]:
+    if (replay := await _replay(ctx, request, ws, ref)) is not None:
+        return replay
+    await steps.staff_receipt_sent(ctx, ws, ref, receipt)
     return await _done(ctx, request, ws, ref)
 
 
@@ -418,7 +453,11 @@ async def send_destruction(
     if (replay := await _replay(ctx, request, ws, ref)) is not None:
         return replay
     photos = {"before": data.photos.before, "after": data.photos.after}
-    await steps.send_destruction(ctx, ws, ref, data.agency, data.certificate, photos)
+    window = {"from": data.window.from_, "to": data.window.to} if data.window else None
+    witnesses = (
+        [{"name": w.name.strip(), "address": w.address.strip()} for w in data.witnesses] if data.witnesses else None
+    )
+    await steps.send_destruction(ctx, ws, ref, data.agency, data.certificate, photos, window, witnesses)
     return await _done(ctx, request, ws, ref)
 
 

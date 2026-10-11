@@ -101,6 +101,9 @@ test("flows · the Mango Drink: Lakshmi Agencies' staff sale and Meera's pickup,
 	await openDemo(page, [LINE.mango, 3, 0]);
 	await nextUntil(page, "Lakshmi Agencies' phone", 'staff');
 	const lakshmi = device(page, "Lakshmi Agencies' phone");
+	// the consolidated receipt first (SC-174): the stand-in photo, read a moment later, matches every pack
+	await lakshmi.getByRole('button', { name: 'Take a photo' }).click();
+	await expect(lakshmi.getByText(/matches your count/)).toBeVisible();
 	await lakshmi.getByRole('button', { name: /Record the sale/ }).click();
 	await expect(page.locator('.narr .beat.done', { hasText: 'Lakshmi Agencies sells' })).toHaveCount(1);
 	const meera = device(page, "Meera's phone");

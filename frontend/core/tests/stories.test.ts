@@ -15,7 +15,15 @@ import { run } from './design3';
 // whose scheme closes short and whose packs left at the godown are destroyed there on expiry day. Their money is
 // money.js's to the paisa, their papers are numbered as the live journey numbers them, and every view of them (the case,
 // the ledger, the record, a partner's moments and money, his batches in a journey, a shop's offer) is design3's.
-const W = run('core/money.js', 'core/data.js', 'core/store.js', 'core/flow.js', 'core/world.js', 'core/ledger.js');
+const W = run(
+	'core/money.js',
+	'core/papers.js',
+	'core/data.js',
+	'core/store.js',
+	'core/flow.js',
+	'core/world.js',
+	'core/ledger.js'
+);
 const L = W.SC3_LEDGER,
 	P = L.partners;
 const plain = (o: unknown) => JSON.parse(JSON.stringify(o));

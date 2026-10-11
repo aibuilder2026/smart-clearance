@@ -2,7 +2,8 @@
 // acknowledgement and signed QR code, the amount in words, the financial year, and the invoice Munchly billed a batch to
 // its distributor on, which a credit note is against. Worked out from a paper and its two parties wherever it is drawn,
 // so nothing is kept; tests/papers.test.ts holds every function to papers.js. Every GSTIN, IRN and number is fictional:
-// an IRN is the portal's own recipe, and the signed QR's signature says it is illustrative.
+// an IRN is the portal's own recipe, and the signed QR's signature says it is illustrative. SC-174 adds the certificate
+// of destruction's log (the stub's slow week draws its certificate in core; the staff sale's receipts come from the seed).
 
 /* ---------- SHA-256, of a string's UTF-8 bytes ---------- */
 const K = [
@@ -439,4 +440,88 @@ export function dispatchOf(batch: { id: string; mfg: string }): { no: string; da
 	d.setUTCDate(d.getUTCDate() + 3);
 	const date = d.toISOString().slice(0, 10);
 	return { no: `MFL/${fy(date, true)}/${String(2300 + +batch.id.slice(-3)).padStart(5, '0')}`, date };
+}
+
+/* ---------- the certificate of destruction's log (SC-174, option B) ---------- */
+const pad2 = (n: number) => String(n).padStart(2, '0');
+const istMs = (iso: string) => Date.parse(`${iso}:00+05:30`);
+const istIso = (ms: number) => {
+	const t = new Date(ms + 330 * 60000);
+	return `${t.getUTCFullYear()}-${pad2(t.getUTCMonth() + 1)}-${pad2(t.getUTCDate())}T${pad2(t.getUTCHours())}:${pad2(t.getUTCMinutes())}`;
+};
+const plus = (iso: string, min: number) => istIso(istMs(iso) + min * 60000);
+
+/** a step of the destruction's log, at its time (IST, "YYYY-MM-DDTHH:MM"), with the photo it shows */
+export type DestructionStep = { at: string; step: string; detail: string; photo?: 'before' | 'after' };
+/** the destruction step by step, from the godown to the cover: worked out from the two photos' times, the window the
+ *  agency destroyed them in, the agency's facility, vehicle and method, and the packs */
+export function destructionLog(d: {
+	units: number;
+	kg: number;
+	packKg: number;
+	batch: string;
+	no: string;
+	/** the godown */
+	from: string;
+	/** the ISO day */
+	destroyedOn: string;
+	/** "HH:MM" */
+	window: { from: string; to: string };
+	photos?: { before?: { at?: string } | null } | null;
+	agency: string;
+	vehicle?: string | null;
+	facility?: { name: string } | null;
+	method?: string | null;
+}): DestructionStep[] {
+	const on = d.destroyedOn,
+		start = `${on}T${d.window.from}`,
+		end = `${on}T${d.window.to}`;
+	// the before photo's time, where it leaves room to load and drive before the window opens
+	const shot = d.photos && d.photos.before && d.photos.before.at;
+	const before = shot && istMs(shot) <= istMs(start) - 35 * 60000 ? shot : plus(start, -75);
+	const seq = String(d.no).split('/').pop(),
+		kg = (n: number) => `${(Math.round(n * 100) / 100).toFixed(2)} kg`;
+	const burnt = d.method === 'incineration',
+		mid = plus(start, Math.max(5, Math.min(15, Math.round((istMs(end) - istMs(start)) / 60000) - 5)));
+	return [
+		{
+			at: before,
+			step: 'Photographed at the godown',
+			detail: `${d.units} packs at ${d.from}, the carton's batch label in view`,
+			photo: 'before'
+		},
+		{
+			at: plus(before, 20),
+			step: 'Loaded',
+			detail: `On ${/s$/.test(d.agency) ? d.agency + "'" : d.agency + "'s"} covered vehicle ${d.vehicle}, sealed with seal SL-${seq}`
+		},
+		{
+			at: plus(start, -15),
+			step: 'Received and weighed',
+			detail: `${kg(d.kg)} on weighbridge slip WB/${fy(on, true)}/${seq}, at the facility's gate`
+		},
+		{
+			at: start,
+			step: burnt ? 'Fed to the incinerator' : 'Slit open and emptied',
+			detail: burnt
+				? 'Whole, at 850 °C or more; the plastic packaging set aside first'
+				: 'Into the active cell, the plastic packaging set aside'
+		},
+		{
+			at: mid,
+			step: burnt ? 'Burnt' : 'Buried and covered',
+			detail: burnt ? "The ash to the facility's secured landfill" : 'Covered with 30 cm of soil'
+		},
+		{
+			at: end,
+			step: 'Photographed with the slate',
+			detail: `Slate: ${d.batch} · ${d.units} packs · ${ddmmyyyy(on)}`,
+			photo: 'after'
+		},
+		{
+			at: plus(end, 10),
+			step: 'Packaging sent on',
+			detail: `${kg(d.packKg)} of plastic film to an EPR-registered recycler`
+		}
+	];
 }

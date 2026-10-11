@@ -51,7 +51,8 @@
 			godown: dist.godown,
 			at: '',
 			sold: st.sold,
-			left: st.sold == null ? null : st.units - st.sold
+			left: st.sold == null ? null : st.units - st.sold,
+			receipt: st.receipt ?? null
 		};
 	});
 	const clears = $derived(ws.case?.plan.rows.find((r) => r.id === 'staff')?.clears);
@@ -115,12 +116,14 @@
 						body="Once {w.short} says yes to the plan for this batch, its van round, the buyer's truck, the staff sale and the pickup show here, each as its plan has it."
 					/></Card
 				>{:else}
-				{#snippet sideCards()}{#if has('expiresoon')}<TruckCard {j} {n} {w} />{/if}{#if staff}<StaffSale
-							{staff}
-							dist={j.dist}
-							product={productName(j.sku)}
-							{clears}
-						/>{/if}{#if has('foodbank')}<PickupCard {j} {n} />{/if}{/snippet}
+				{#snippet sideCards()}{#if has('expiresoon')}<TruckCard {j} {n} {w} />{/if}{#if staff}{#key n.ref}<StaffSale
+								{staff}
+								dist={j.dist}
+								product={productName(j.sku)}
+								{clears}
+								batch={n.ref}
+								sku={j.sku}
+							/>{/key}{/if}{#if has('foodbank')}<PickupCard {j} {n} />{/if}{/snippet}
 				{#snippet mainCards()}<VanCard {j} {n} /><DistStops {n} />{/snippet}
 				{#if has('kirana') && side}<Columns sideWidth={380} main={mainCards} side={sideCards} />{:else}<div
 						class="stack"

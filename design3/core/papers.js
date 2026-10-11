@@ -4,7 +4,9 @@
    drawn (the prototype, core's port in frontend/core/src/lib/workspace/papers.ts, the agents' PDFs), so nothing is kept.
    Every GSTIN, IRN and number is fictional: an IRN is the portal's own recipe (SHA-256 of the supplier's GSTIN, the year,
    the type and the number), and the signed QR's signature says it is illustrative.
-   window.SC3_PAPERS: { sha256, qr, words, fy, einvoice, dispatchOf } */
+   window.SC3_PAPERS: { sha256, qr, words, fy, einvoice, dispatchOf, staffPayments, staffReceipt, destructionLog }.
+   SC-174 adds the staff sale's consolidated receipt (its payments, each by its UPI reference) and the certificate of
+   destruction's log */
 (function () {
   "use strict";
 
@@ -213,7 +215,75 @@
     return { no: `MFL/${fy(date, true)}/${String(2300 + +batch.id.slice(-3)).padStart(5, "0")}`, date };
   }
 
-  const api = { sha256, qr, qrPath, words, fy, einvoice, dispatchOf };
+  /* ---------- the staff sale's consolidated receipt (SC-174) ---------- */
+  // a seeded stream from a batch's id, so a batch always gets the same payments
+  function seeded(s) {
+    let h = 2166136261;
+    for (const ch of String(s)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; }
+    return () => (h = (Math.imul(h, 1103515245) + 12345) >>> 0) / 4294967296;
+  }
+  const pad2 = n => String(n).padStart(2, "0");
+  const istMs = iso => Date.parse(`${iso}:00+05:30`);
+  const istIso = ms => { const t = new Date(ms + 330 * 60000); return `${t.getUTCFullYear()}-${pad2(t.getUTCMonth() + 1)}-${pad2(t.getUTCDate())}T${pad2(t.getUTCHours())}:${pad2(t.getUTCMinutes())}`; };
+  /** every staff member's UPI payment into the distributor's own address for a staff sale: packs of 2 to 12 each, from
+   *  the staff list in a seeded order, spread over the sale's working hours (09:00 to 19:30) between `opens` and
+   *  `closes` (IST, "YYYY-MM-DDTHH:MM"). Each carries its UPI reference, the 12-digit RRN a payer's app shows: the
+   *  year's last digit, the day of the year and the hour, then six digits. Fictional: no real payment or person */
+  function staffPayments({ ref, units, price, staff, opens, closes }) {
+    const rnd = seeded(ref), sizes = [];
+    for (let left = units; left > 0;) { const n = Math.min(left, 2 + Math.floor(rnd() * 11)); sizes.push(n); left -= n; }
+    const names = staff.slice();
+    for (let i = names.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [names[i], names[j]] = [names[j], names[i]]; }
+    while (sizes.length > names.length) sizes[sizes.length - 2] += sizes.pop();
+    // the sale's working minutes, day by day
+    const spans = [];
+    for (let day = istMs(opens.slice(0, 10) + "T00:00"); day <= istMs(closes); day += 864e5) {
+      const a = Math.max(day + 9 * 36e5, istMs(opens)), z = Math.min(day + 19.5 * 36e5, istMs(closes));
+      if (z > a) spans.push([a, z]);
+    }
+    const total = spans.reduce((t, [a, z]) => t + (z - a), 0);
+    const at = f => { let m = f * total; for (const [a, z] of spans) { if (m <= z - a) return a + m; m -= z - a; } return spans[spans.length - 1][1]; };
+    let last = 0;
+    return sizes.map((n, i) => {
+      const ms = Math.max(last + 60000, Math.floor(at((i + 0.15 + rnd() * 0.7) / sizes.length) / 60000) * 60000); last = ms;
+      const when = istIso(ms), doy = Math.round((Date.parse(when.slice(0, 10)) - Date.parse(when.slice(0, 4) + "-01-01")) / 864e5) + 1;
+      const who = names[i], vpa = who.toLowerCase().replace(/[^a-z]/g, "").slice(0, 5) + "••••@exampleupi";
+      const rrn = `${when.slice(3, 4)}${String(doy).padStart(3, "0")}${when.slice(11, 13)}${String(Math.floor(rnd() * 1e6)).padStart(6, "0")}`;
+      return { n: i + 1, who, vpa, at: when, rrn, units: n, amount: Math.round(n * price * 100) / 100 };
+    });
+  }
+  /** the consolidated receipt a distributor issues for a staff sale, from its payments: its number in his own receipt
+   *  series, dated the last payment's day */
+  function staffReceipt({ no, payments }) {
+    const paid = Math.round(payments.reduce((t, p) => t + p.amount, 0) * 100) / 100, units = payments.reduce((t, p) => t + p.units, 0);
+    return { no, date: payments[payments.length - 1].at.slice(0, 10), payments, units, paid, from: payments[0].at, to: payments[payments.length - 1].at };
+  }
+
+  /* ---------- the certificate of destruction's log (SC-174, option B) ---------- */
+  const plus = (iso, min) => istIso(istMs(iso) + min * 60000);
+  /** the destruction step by step, from the godown to the cover: worked out from the two photos' times, the window the
+   *  agency destroyed them in, the agency's facility, vehicle and method, and the packs. `d`: the certificate's fields
+   *  ({ units, kg, packKg, batch, no, from (the godown), destroyedOn (ISO day), window: { from, to } ("HH:MM"),
+   *  photos: { before: { at } }, agency, vehicle, facility: { name }, method: "landfill" | "incineration" }) */
+  function destructionLog(d) {
+    const on = d.destroyedOn, start = `${on}T${d.window.from}`, end = `${on}T${d.window.to}`;
+    // the before photo's time, where it leaves room to load and drive before the window opens
+    const shot = d.photos && d.photos.before && d.photos.before.at;
+    const before = shot && istMs(shot) <= istMs(start) - 35 * 60000 ? shot : plus(start, -75);
+    const seq = String(d.no).split("/").pop(), kg = n => `${(Math.round(n * 100) / 100).toFixed(2)} kg`;
+    const burnt = d.method === "incineration", mid = plus(start, Math.max(5, Math.min(15, Math.round((istMs(end) - istMs(start)) / 60000) - 5)));
+    return [
+      { at: before, step: "Photographed at the godown", detail: `${d.units} packs at ${d.from}, the carton's batch label in view`, photo: "before" },
+      { at: plus(before, 20), step: "Loaded", detail: `On ${/s$/.test(d.agency) ? d.agency + "'" : d.agency + "'s"} covered vehicle ${d.vehicle}, sealed with seal SL-${seq}` },
+      { at: plus(start, -15), step: "Received and weighed", detail: `${kg(d.kg)} on weighbridge slip WB/${fy(on, true)}/${seq}, at the facility's gate` },
+      { at: start, step: burnt ? "Fed to the incinerator" : "Slit open and emptied", detail: burnt ? "Whole, at 850 °C or more; the plastic packaging set aside first" : "Into the active cell, the plastic packaging set aside" },
+      { at: mid, step: burnt ? "Burnt" : "Buried and covered", detail: burnt ? "The ash to the facility's secured landfill" : "Covered with 30 cm of soil" },
+      { at: end, step: "Photographed with the slate", detail: `Slate: ${d.batch} · ${d.units} packs · ${ddmmyyyy(on)}`, photo: "after" },
+      { at: plus(end, 10), step: "Packaging sent on", detail: `${kg(d.packKg)} of plastic film to an EPR-registered recycler` },
+    ];
+  }
+
+  const api = { sha256, qr, qrPath, words, fy, einvoice, dispatchOf, staffPayments, staffReceipt, destructionLog };
   if (typeof window !== "undefined") window.SC3_PAPERS = api;
   if (typeof module !== "undefined") module.exports = api;
 })();

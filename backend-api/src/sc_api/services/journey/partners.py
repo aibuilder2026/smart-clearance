@@ -8,6 +8,7 @@ see. A distributor reads every batch of his: the plan, what each line took, the 
 the food bank's receipt and the destruction certificate; a kirana, every scheme that came to its shop, with its own
 order or Not this time; a food bank, every donation to it, with its receipt."""
 
+from collections.abc import Callable
 from datetime import date, datetime
 from typing import Any
 
@@ -107,6 +108,8 @@ def facts(
     van_time: str = "07:00",
     destruction: dict[str, Any] | None = None,
     photo: dict[str, Any] | None = None,
+    staff_receipt: dict[str, Any] | None = None,
+    links: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """a batch as the partner's pages read it, cut to its part; a distributor's, with the packs destroyed at his
     godown and their evidence (SC-139, `destruction` as views.destruction_out reads it)"""
@@ -127,7 +130,11 @@ def facts(
     docs = []
     for x in case.docs or []:
         if (dist and x["id"] in DIST_DOCS) or (role == "foodbank" and x["id"] == "receipt"):
-            docs.append(views.doc_out(views.with_reversed(case, x)))
+            paper = views.doc_out(views.with_reversed(case, x))
+            docs.append(links(paper) if links else paper)
+            # his staff sale's consolidated receipt, his own paper (SC-174)
+            if dist and x["id"] == "support" and (sd := views.staff_doc(case, "")):
+                docs.append(sd)
     receipt = views.receipt_out((d or {}).get("receipt")) if role in ("distributor", "foodbank") else None
     bb = batch.best_before
     flagged = _day(case.opened_at)
@@ -207,6 +214,8 @@ def facts(
             "destruction": destruction if dist else None,
             # the label photo he sent (SC-142), as views.label_out reads it
             "photo": photo if dist else None,
+            # the staff sale's consolidated receipt he sent (SC-174), as views.staff_receipt_out reads it
+            "staffReceipt": staff_receipt if dist else None,
             "docs": docs,
         }
     )
@@ -266,6 +275,21 @@ async def partner(ctx: Ctx, client_id: str, cm: m.ClientMember) -> dict[str, Any
             support = views.support_of(case, c, skus[case.sku_id], orders[case.id], rules)
         dz = views.destruction_out(ctx, case.destruction) if role == "distributor" else None
         ph = views.label_out(ctx, case) if role == "distributor" else None
-        out["cases"].append(facts(case, batch, orders[case.id], feed[case.id], cm, support, world.van_time(c), dz, ph))
+        sr = views.staff_receipt_out(ctx, (case.staff or {}).get("receipt")) if role == "distributor" else None
+        out["cases"].append(
+            facts(
+                case,
+                batch,
+                orders[case.id],
+                feed[case.id],
+                cm,
+                support,
+                world.van_time(c),
+                dz,
+                ph,
+                sr,
+                lambda paper: views.doc_links(ctx, paper),
+            )
+        )
     out["cases"].sort(key=lambda x: (x["flagged"], x["ref"]), reverse=True)
     return out

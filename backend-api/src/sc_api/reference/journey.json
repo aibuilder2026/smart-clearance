@@ -22,7 +22,13 @@
 		"distributors": 4,
 		"kiranas": 195,
 		"shortDatedPerQuarter": 1800000,
-		"destroyedToday": 0.7
+		"destroyedToday": 0.7,
+		"signatory": {
+			"name": "Vinod Patwardhan",
+			"title": "Head of Accounts",
+			"sign": "munchly",
+			"seal": "munchly"
+		}
 	},
 	"workspace": {
 		"id": "munchly",
@@ -284,6 +290,17 @@
 				"prefix": "RT/26-27/",
 				"next": 1279,
 				"width": 4
+			},
+			"signatory": {
+				"name": "Rakesh Jaiswal",
+				"title": "Proprietor",
+				"sign": "rakesh",
+				"seal": "rakesh"
+			},
+			"receipts": {
+				"prefix": "RT/SR/26-27/",
+				"next": 2,
+				"width": 4
 			}
 		},
 		"patil": {
@@ -312,6 +329,17 @@
 			"series": {
 				"prefix": "PD/26-27/",
 				"next": 512,
+				"width": 4
+			},
+			"signatory": {
+				"name": "Sanjay Patil",
+				"title": "Proprietor",
+				"sign": "patil",
+				"seal": "patil"
+			},
+			"receipts": {
+				"prefix": "PD/SR/26-27/",
+				"next": 1,
 				"width": 4
 			}
 		},
@@ -342,6 +370,17 @@
 				"prefix": "GS/26-27/",
 				"next": 2041,
 				"width": 4
+			},
+			"signatory": {
+				"name": "Ramesh Gupta",
+				"title": "Partner",
+				"sign": "gupta",
+				"seal": "gupta"
+			},
+			"receipts": {
+				"prefix": "GS/SR/26-27/",
+				"next": 1,
+				"width": 4
 			}
 		},
 		"lakshmi": {
@@ -371,6 +410,17 @@
 			"series": {
 				"prefix": "LA/26-27/",
 				"next": 972,
+				"width": 4
+			},
+			"signatory": {
+				"name": "K. Lakshmi Narayana",
+				"title": "Partner",
+				"sign": "lakshmi",
+				"seal": "lakshmi"
+			},
+			"receipts": {
+				"prefix": "LA/SR/26-27/",
+				"next": 2,
 				"width": 4
 			}
 		}
@@ -3666,6 +3716,30 @@
 			"grossUp": true,
 			"chargesPerUnit": 1.5,
 			"method": "Slit open, buried and covered at the authorised municipal landfill",
+			"reasons": [
+				[
+					"expiry",
+					"Product expiry"
+				],
+				[
+					"contamination",
+					"Contamination or damage"
+				],
+				[
+					"seizure",
+					"Court-ordered seizure"
+				]
+			],
+			"methods": {
+				"landfill": {
+					"name": "Sanitary landfill, CPCB-compliant",
+					"how": "the packs slit open and emptied into the active cell, covered with 30 cm of soil the same day; the plastic packaging segregated for an EPR-registered recycler"
+				},
+				"incineration": {
+					"name": "Incineration at a CPCB-compliant common facility",
+					"how": "the packs fed whole to the incinerator at 850 °C or more, the ash to the facility's secured landfill; the plastic packaging set aside first for an EPR-registered recycler"
+				}
+			},
 			"agencies": [
 				{
 					"id": "oce",
@@ -3677,7 +3751,34 @@
 						"next": 219,
 						"width": 4
 					},
-					"site": "the municipal landfill, Nagpur"
+					"site": "the municipal landfill, Nagpur",
+					"method": "landfill",
+					"facility": {
+						"name": "Municipal sanitary landfill, cell 4",
+						"address": "Pardi Road, Bhandewadi, Nagpur 440035, Maharashtra",
+						"gps": "21.1467° N, 79.1563° E"
+					},
+					"vehicle": "MH-31-ZX-0000",
+					"officer": {
+						"name": "Sachin Bhoyar",
+						"title": "Site supervisor",
+						"sign": "oce"
+					},
+					"seal": "oce",
+					"witnesses": [
+						{
+							"name": "Pradeep Meshram",
+							"address": "Plot 22, Wathoda Layout, Nagpur 440035",
+							"proof": "Voter ID, last four 4417",
+							"sign": "oce-w1"
+						},
+						{
+							"name": "Asha Kale",
+							"address": "House 9, Pardi Naka, Nagpur 440035",
+							"proof": "Voter ID, last four 0932",
+							"sign": "oce-w2"
+						}
+					]
 				},
 				{
 					"id": "vwc",
@@ -3689,7 +3790,34 @@
 						"next": 41,
 						"width": 4
 					},
-					"site": "the municipal landfill, Nagpur"
+					"site": "the municipal landfill, Nagpur",
+					"method": "landfill",
+					"facility": {
+						"name": "Municipal sanitary landfill, cell 2",
+						"address": "Pardi Road, Bhandewadi, Nagpur 440035, Maharashtra",
+						"gps": "21.1452° N, 79.1541° E"
+					},
+					"vehicle": "MH-31-ZY-0000",
+					"officer": {
+						"name": "Rahul Dhote",
+						"title": "Site supervisor",
+						"sign": "vwc"
+					},
+					"seal": "vwc",
+					"witnesses": [
+						{
+							"name": "Vijay Thakre",
+							"address": "Plot 5, Bharatwada Road, Nagpur 440035",
+							"proof": "Voter ID, last four 2268",
+							"sign": "vwc-w1"
+						},
+						{
+							"name": "Sunita Wankhede",
+							"address": "House 31, Kalamna Basti, Nagpur 440035",
+							"proof": "Voter ID, last four 7105",
+							"sign": "vwc-w2"
+						}
+					]
 				},
 				{
 					"id": "dgw",
@@ -3701,7 +3829,34 @@
 						"next": 86,
 						"width": 4
 					},
-					"site": "the municipal landfill, Hyderabad"
+					"site": "the municipal landfill, Hyderabad",
+					"method": "landfill",
+					"facility": {
+						"name": "Municipal sanitary landfill, cell 7",
+						"address": "Jawaharnagar, Hyderabad 500087, Telangana",
+						"gps": "17.5193° N, 78.5862° E"
+					},
+					"vehicle": "TG-09-ZX-0000",
+					"officer": {
+						"name": "M. Srinivas Reddy",
+						"title": "Site supervisor",
+						"sign": "dgw"
+					},
+					"seal": "dgw",
+					"witnesses": [
+						{
+							"name": "Syed Mujeeb",
+							"address": "House 14, Gandhi Nagar, Hyderabad 500080",
+							"proof": "Voter ID, last four 5831",
+							"sign": "dgw-w1"
+						},
+						{
+							"name": "P. Anitha",
+							"address": "Flat 3, Kavadiguda, Hyderabad 500080",
+							"proof": "Voter ID, last four 3390",
+							"sign": "dgw-w2"
+						}
+					]
 				}
 			]
 		},
@@ -4652,6 +4807,7 @@
 					"ordered": 490
 				},
 				"staff": null,
+				"staffReceipt": null,
 				"steps": [
 					{
 						"step": "open",
@@ -4772,6 +4928,7 @@
 					"ordered": 686
 				},
 				"staff": null,
+				"staffReceipt": null,
 				"steps": [
 					{
 						"step": "open",
@@ -4892,6 +5049,7 @@
 					"ordered": 180
 				},
 				"staff": null,
+				"staffReceipt": null,
 				"steps": [
 					{
 						"step": "open",
@@ -4999,7 +5157,60 @@
 						"before": "2026-08-23T11:40",
 						"after": "2026-08-23T13:20"
 					},
-					"slate": "23-08-26"
+					"slate": "23-08-26",
+					"window": {
+						"from": "12:55",
+						"to": "13:20"
+					},
+					"witnesses": [
+						{
+							"name": "Syed Mujeeb",
+							"address": "House 14, Gandhi Nagar, Hyderabad 500080"
+						},
+						{
+							"name": "P. Anitha",
+							"address": "Flat 3, Kavadiguda, Hyderabad 500080"
+						}
+					],
+					"log": [
+						{
+							"at": "2026-08-23T11:40",
+							"step": "Photographed at the godown",
+							"detail": "65 packs at Begum Bazaar godown, the carton's batch label in view",
+							"photo": "before"
+						},
+						{
+							"at": "2026-08-23T12:00",
+							"step": "Loaded",
+							"detail": "On Deccan Green Waste Management's covered vehicle TG-09-ZX-0000, sealed with seal SL-0085"
+						},
+						{
+							"at": "2026-08-23T12:40",
+							"step": "Received and weighed",
+							"detail": "14.30 kg on weighbridge slip WB/26-27/0085, at the facility's gate"
+						},
+						{
+							"at": "2026-08-23T12:55",
+							"step": "Slit open and emptied",
+							"detail": "Into the active cell, the plastic packaging set aside"
+						},
+						{
+							"at": "2026-08-23T13:10",
+							"step": "Buried and covered",
+							"detail": "Covered with 30 cm of soil"
+						},
+						{
+							"at": "2026-08-23T13:20",
+							"step": "Photographed with the slate",
+							"detail": "Slate: MF-2406-107 · 65 packs · 23/08/2026",
+							"photo": "after"
+						},
+						{
+							"at": "2026-08-23T13:30",
+							"step": "Packaging sent on",
+							"detail": "0.33 kg of plastic film to an EPR-registered recycler"
+						}
+					]
 				},
 				"expect": {
 					"net": 18842,
@@ -5037,6 +5248,7 @@
 					"ordered": 294
 				},
 				"staff": null,
+				"staffReceipt": null,
 				"steps": [
 					{
 						"step": "open",
@@ -5157,6 +5369,232 @@
 					"ordered": 392
 				},
 				"staff": 150,
+				"staffReceipt": {
+					"no": "LA/SR/26-27/0001",
+					"date": "2026-07-30",
+					"payments": [
+						{
+							"n": 1,
+							"who": "M. Anil",
+							"vpa": "manil••••@exampleupi",
+							"at": "2026-07-28T12:30",
+							"rrn": "620912270932",
+							"units": 8,
+							"amount": 176
+						},
+						{
+							"n": 2,
+							"who": "B. Lavanya",
+							"vpa": "blava••••@exampleupi",
+							"at": "2026-07-28T13:17",
+							"rrn": "620913656741",
+							"units": 5,
+							"amount": 110
+						},
+						{
+							"n": 3,
+							"who": "Mohd Irfan",
+							"vpa": "mohdi••••@exampleupi",
+							"at": "2026-07-28T14:26",
+							"rrn": "620914987921",
+							"units": 10,
+							"amount": 220
+						},
+						{
+							"n": 4,
+							"who": "J. Suresh",
+							"vpa": "jsure••••@exampleupi",
+							"at": "2026-07-28T15:47",
+							"rrn": "620915746192",
+							"units": 3,
+							"amount": 66
+						},
+						{
+							"n": 5,
+							"who": "Shaik Imran",
+							"vpa": "shaik••••@exampleupi",
+							"at": "2026-07-28T16:52",
+							"rrn": "620916441344",
+							"units": 8,
+							"amount": 176
+						},
+						{
+							"n": 6,
+							"who": "Syed Ameer",
+							"vpa": "syeda••••@exampleupi",
+							"at": "2026-07-28T17:51",
+							"rrn": "620917726603",
+							"units": 3,
+							"amount": 66
+						},
+						{
+							"n": 7,
+							"who": "Md Saleem",
+							"vpa": "mdsal••••@exampleupi",
+							"at": "2026-07-28T19:13",
+							"rrn": "620919601332",
+							"units": 8,
+							"amount": 176
+						},
+						{
+							"n": 8,
+							"who": "B. Yadagiri",
+							"vpa": "byada••••@exampleupi",
+							"at": "2026-07-29T09:28",
+							"rrn": "621009525149",
+							"units": 4,
+							"amount": 88
+						},
+						{
+							"n": 9,
+							"who": "S. Haritha",
+							"vpa": "shari••••@exampleupi",
+							"at": "2026-07-29T10:35",
+							"rrn": "621010161114",
+							"units": 3,
+							"amount": 66
+						},
+						{
+							"n": 10,
+							"who": "P. Swathi",
+							"vpa": "pswat••••@exampleupi",
+							"at": "2026-07-29T12:09",
+							"rrn": "621012788896",
+							"units": 7,
+							"amount": 154
+						},
+						{
+							"n": 11,
+							"who": "G. Srinivas",
+							"vpa": "gsrin••••@exampleupi",
+							"at": "2026-07-29T12:52",
+							"rrn": "621012869223",
+							"units": 5,
+							"amount": 110
+						},
+						{
+							"n": 12,
+							"who": "K. Naresh",
+							"vpa": "knare••••@exampleupi",
+							"at": "2026-07-29T13:36",
+							"rrn": "621013986061",
+							"units": 10,
+							"amount": 220
+						},
+						{
+							"n": 13,
+							"who": "V. Sravani",
+							"vpa": "vsrav••••@exampleupi",
+							"at": "2026-07-29T14:43",
+							"rrn": "621014130275",
+							"units": 7,
+							"amount": 154
+						},
+						{
+							"n": 14,
+							"who": "P. Nagaraju",
+							"vpa": "pnaga••••@exampleupi",
+							"at": "2026-07-29T16:16",
+							"rrn": "621016205504",
+							"units": 2,
+							"amount": 44
+						},
+						{
+							"n": 15,
+							"who": "S. Ravi Kumar",
+							"vpa": "sravi••••@exampleupi",
+							"at": "2026-07-29T16:59",
+							"rrn": "621016421161",
+							"units": 2,
+							"amount": 44
+						},
+						{
+							"n": 16,
+							"who": "N. Mahesh",
+							"vpa": "nmahe••••@exampleupi",
+							"at": "2026-07-29T18:30",
+							"rrn": "621018076353",
+							"units": 7,
+							"amount": 154
+						},
+						{
+							"n": 17,
+							"who": "R. Kavya",
+							"vpa": "rkavy••••@exampleupi",
+							"at": "2026-07-29T19:17",
+							"rrn": "621019819553",
+							"units": 3,
+							"amount": 66
+						},
+						{
+							"n": 18,
+							"who": "Fatima Begum",
+							"vpa": "fatim••••@exampleupi",
+							"at": "2026-07-30T09:57",
+							"rrn": "621109979606",
+							"units": 5,
+							"amount": 110
+						},
+						{
+							"n": 19,
+							"who": "T. Rajesh",
+							"vpa": "traje••••@exampleupi",
+							"at": "2026-07-30T11:23",
+							"rrn": "621111691585",
+							"units": 6,
+							"amount": 132
+						},
+						{
+							"n": 20,
+							"who": "A. Prakash",
+							"vpa": "aprak••••@exampleupi",
+							"at": "2026-07-30T11:45",
+							"rrn": "621111473613",
+							"units": 9,
+							"amount": 198
+						},
+						{
+							"n": 21,
+							"who": "Ayesha Sultana",
+							"vpa": "ayesh••••@exampleupi",
+							"at": "2026-07-30T13:09",
+							"rrn": "621113335596",
+							"units": 7,
+							"amount": 154
+						},
+						{
+							"n": 22,
+							"who": "Ch. Venkatesh",
+							"vpa": "chven••••@exampleupi",
+							"at": "2026-07-30T14:32",
+							"rrn": "621114605288",
+							"units": 9,
+							"amount": 198
+						},
+						{
+							"n": 23,
+							"who": "K. Divya",
+							"vpa": "kdivy••••@exampleupi",
+							"at": "2026-07-30T15:34",
+							"rrn": "621115128789",
+							"units": 6,
+							"amount": 132
+						},
+						{
+							"n": 24,
+							"who": "D. Ramya",
+							"vpa": "dramy••••@exampleupi",
+							"at": "2026-07-30T16:22",
+							"rrn": "621116528950",
+							"units": 13,
+							"amount": 286
+						}
+					],
+					"units": 150,
+					"paid": 3300,
+					"from": "2026-07-28T12:30",
+					"to": "2026-07-30T16:22"
+				},
 				"steps": [
 					{
 						"step": "open",
@@ -5268,6 +5706,7 @@
 					"ordered": 147
 				},
 				"staff": null,
+				"staffReceipt": null,
 				"steps": [
 					{
 						"step": "open",
@@ -5388,6 +5827,7 @@
 					"ordered": 600
 				},
 				"staff": null,
+				"staffReceipt": null,
 				"steps": [
 					{
 						"step": "open",
@@ -5495,7 +5935,60 @@
 						"before": "2026-09-15T11:40",
 						"after": "2026-09-15T13:20"
 					},
-					"slate": "15-09-26"
+					"slate": "15-09-26",
+					"window": {
+						"from": "12:55",
+						"to": "13:20"
+					},
+					"witnesses": [
+						{
+							"name": "Pradeep Meshram",
+							"address": "Plot 22, Wathoda Layout, Nagpur 440035"
+						},
+						{
+							"name": "Asha Kale",
+							"address": "House 9, Pardi Naka, Nagpur 440035"
+						}
+					],
+					"log": [
+						{
+							"at": "2026-09-15T11:40",
+							"step": "Photographed at the godown",
+							"detail": "184 packs at Kalamna Market godown, the carton's batch label in view",
+							"photo": "before"
+						},
+						{
+							"at": "2026-09-15T12:00",
+							"step": "Loaded",
+							"detail": "On Orange City Enviro Services' covered vehicle MH-31-ZX-0000, sealed with seal SL-0217"
+						},
+						{
+							"at": "2026-09-15T12:40",
+							"step": "Received and weighed",
+							"detail": "39.56 kg on weighbridge slip WB/26-27/0217, at the facility's gate"
+						},
+						{
+							"at": "2026-09-15T12:55",
+							"step": "Slit open and emptied",
+							"detail": "Into the active cell, the plastic packaging set aside"
+						},
+						{
+							"at": "2026-09-15T13:10",
+							"step": "Buried and covered",
+							"detail": "Covered with 30 cm of soil"
+						},
+						{
+							"at": "2026-09-15T13:20",
+							"step": "Photographed with the slate",
+							"detail": "Slate: MF-2407-111 · 184 packs · 15/09/2026",
+							"photo": "after"
+						},
+						{
+							"at": "2026-09-15T13:30",
+							"step": "Packaging sent on",
+							"detail": "0.37 kg of plastic film to an EPR-registered recycler"
+						}
+					]
 				},
 				"expect": {
 					"net": 11320,
@@ -5533,6 +6026,7 @@
 					"ordered": 147
 				},
 				"staff": null,
+				"staffReceipt": null,
 				"steps": [
 					{
 						"step": "open",
@@ -5653,6 +6147,7 @@
 					"ordered": 637
 				},
 				"staff": null,
+				"staffReceipt": null,
 				"steps": [
 					{
 						"step": "open",
@@ -5773,6 +6268,88 @@
 					"ordered": 294
 				},
 				"staff": 50,
+				"staffReceipt": {
+					"no": "RT/SR/26-27/0001",
+					"date": "2026-08-26",
+					"payments": [
+						{
+							"n": 1,
+							"who": "Komal Gedam",
+							"vpa": "komal••••@exampleupi",
+							"at": "2026-08-24T13:11",
+							"rrn": "623613515697",
+							"units": 6,
+							"amount": 156
+						},
+						{
+							"n": 2,
+							"who": "Vaishali Pande",
+							"vpa": "vaish••••@exampleupi",
+							"at": "2026-08-24T17:43",
+							"rrn": "623617695196",
+							"units": 3,
+							"amount": 78
+						},
+						{
+							"n": 3,
+							"who": "Ganesh Barde",
+							"vpa": "ganes••••@exampleupi",
+							"at": "2026-08-25T09:32",
+							"rrn": "623709686558",
+							"units": 11,
+							"amount": 286
+						},
+						{
+							"n": 4,
+							"who": "Ravi Meshram",
+							"vpa": "ravim••••@exampleupi",
+							"at": "2026-08-25T13:03",
+							"rrn": "623713093684",
+							"units": 8,
+							"amount": 208
+						},
+						{
+							"n": 5,
+							"who": "Sneha Bawane",
+							"vpa": "sneha••••@exampleupi",
+							"at": "2026-08-25T15:52",
+							"rrn": "623715291292",
+							"units": 4,
+							"amount": 104
+						},
+						{
+							"n": 6,
+							"who": "Dinesh Kale",
+							"vpa": "dines••••@exampleupi",
+							"at": "2026-08-25T18:25",
+							"rrn": "623718044323",
+							"units": 9,
+							"amount": 234
+						},
+						{
+							"n": 7,
+							"who": "Priti Ingle",
+							"vpa": "priti••••@exampleupi",
+							"at": "2026-08-26T12:52",
+							"rrn": "623812446103",
+							"units": 5,
+							"amount": 130
+						},
+						{
+							"n": 8,
+							"who": "Prakash Lanjewar",
+							"vpa": "praka••••@exampleupi",
+							"at": "2026-08-26T15:45",
+							"rrn": "623815569701",
+							"units": 4,
+							"amount": 104
+						}
+					],
+					"units": 50,
+					"paid": 1300,
+					"from": "2026-08-24T13:11",
+					"to": "2026-08-26T15:45"
+				},
 				"steps": [
 					{
 						"step": "open",
@@ -5884,6 +6461,7 @@
 					"ordered": 539
 				},
 				"staff": null,
+				"staffReceipt": null,
 				"steps": [
 					{
 						"step": "open",
@@ -6004,6 +6582,7 @@
 					"ordered": 456
 				},
 				"staff": null,
+				"staffReceipt": null,
 				"steps": [
 					{
 						"step": "open",
@@ -6111,7 +6690,60 @@
 						"before": "2026-09-27T11:40",
 						"after": "2026-09-27T13:20"
 					},
-					"slate": "27-09-26"
+					"slate": "27-09-26",
+					"window": {
+						"from": "12:55",
+						"to": "13:20"
+					},
+					"witnesses": [
+						{
+							"name": "Pradeep Meshram",
+							"address": "Plot 22, Wathoda Layout, Nagpur 440035"
+						},
+						{
+							"name": "Asha Kale",
+							"address": "House 9, Pardi Naka, Nagpur 440035"
+						}
+					],
+					"log": [
+						{
+							"at": "2026-09-27T11:40",
+							"step": "Photographed at the godown",
+							"detail": "132 packs at Kalamna Market godown, the carton's batch label in view",
+							"photo": "before"
+						},
+						{
+							"at": "2026-09-27T12:00",
+							"step": "Loaded",
+							"detail": "On Orange City Enviro Services' covered vehicle MH-31-ZX-0000, sealed with seal SL-0218"
+						},
+						{
+							"at": "2026-09-27T12:40",
+							"step": "Received and weighed",
+							"detail": "14.52 kg on weighbridge slip WB/26-27/0218, at the facility's gate"
+						},
+						{
+							"at": "2026-09-27T12:55",
+							"step": "Slit open and emptied",
+							"detail": "Into the active cell, the plastic packaging set aside"
+						},
+						{
+							"at": "2026-09-27T13:10",
+							"step": "Buried and covered",
+							"detail": "Covered with 30 cm of soil"
+						},
+						{
+							"at": "2026-09-27T13:20",
+							"step": "Photographed with the slate",
+							"detail": "Slate: MF-2407-116 · 132 packs · 27/09/2026",
+							"photo": "after"
+						},
+						{
+							"at": "2026-09-27T13:30",
+							"step": "Packaging sent on",
+							"detail": "0.53 kg of plastic film to an EPR-registered recycler"
+						}
+					]
 				},
 				"expect": {
 					"net": 14312,
@@ -11617,6 +12249,12 @@
 						"amount": 21880
 					},
 					{
+						"id": "staff",
+						"no": "LA/SR/26-27/0001",
+						"status": "generated",
+						"amount": 3300
+					},
+					{
 						"id": "itc",
 						"no": "s.17(5)(h)",
 						"status": "generated",
@@ -15127,6 +15765,12 @@
 						"no": "CN/0112",
 						"status": "generated",
 						"amount": 25856
+					},
+					{
+						"id": "staff",
+						"no": "RT/SR/26-27/0001",
+						"status": "generated",
+						"amount": 1300
 					},
 					{
 						"id": "itc",

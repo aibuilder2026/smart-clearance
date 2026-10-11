@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{# the client's GST ITC memo, signed at its foot by the client's signatory beside its round seal (SC-174) #}
+{% from "_sign.html" import foot %}
 {% block body %}
 <p>
   <span class="label">Input tax credit kept</span><br>
@@ -12,4 +14,5 @@
   </tbody>
 </table>
 {% if doc.note %}<div class="note">{{ doc.note }}</div>{% endif %}
+{% set C = case.client or {} %}{{ foot(C.name or doc.owner, C.signatory, (C.signatory or {}).seal) }}
 {% endblock %}

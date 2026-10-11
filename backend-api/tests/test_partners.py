@@ -85,7 +85,7 @@ async def test_a_distributor_reads_every_batch_of_his_as_design3_has_it(api, wit
             # his papers, then copies of the food bank's receipt and the destruction certificate; the client's GST memo
             # and FSSAI checklist stay its own
             docs = {d["id"]: d for d in c["docs"]}
-            assert set(docs) <= {"invoice", "eway", "support", "expiry", "receipt", "destruction"}
+            assert set(docs) <= {"invoice", "eway", "support", "staff", "expiry", "receipt", "destruction"}
             for d in x["docs"]:
                 if d["id"] in docs:
                     assert (docs[d["id"]]["no"], docs[d["id"]]["status"]) == (d["no"], d["status"]), (ref, d["id"])

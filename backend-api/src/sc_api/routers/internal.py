@@ -305,6 +305,18 @@ async def destruction_check(
     return await _step(ctx, request, steps.destruction_checked, client_id, ref, read, _run(data))
 
 
+@router.post(CASE + "/staff/receipt/read")
+async def staff_receipt_read(
+    client_id: str, ref: str, data: Report, request: Request, ctx: InternalCtx
+) -> dict[str, Any]:
+    """Vision's read of the staff sale's consolidated receipt (SC-174): its payments, which the sale is held to"""
+    extra = data.extra()
+    rid, read = extra.get("id"), extra.get("read")
+    if not isinstance(rid, str) or not isinstance(read, dict):
+        raise ApiError(422, "The receipt's id and its read.")
+    return await _step(ctx, request, steps.staff_receipt_read, client_id, ref, rid, read, _run(data))
+
+
 @router.post(CASE + "/report")
 async def report(client_id: str, ref: str, data: Report, request: Request, ctx: InternalCtx) -> dict[str, Any]:
     return await _step(ctx, request, steps.report, client_id, ref, _run(data))

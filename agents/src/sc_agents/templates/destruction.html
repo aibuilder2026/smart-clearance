@@ -1,41 +1,141 @@
-{% extends "base.html" %}
-{# the authorised agency's destruction certificate for packs destroyed at a distributor's godown on expiry day
-   (SC-139, route B), laid out from what the case records of it: issued by the agency, for the distributor #}
-{% block body %}
-<div class="parties">
-  <div>
-    <div class="label">Issued by</div>
-    <strong>{{ doc.agency }}</strong><br>
-    Authorisation {{ doc.auth }}
-  </div>
-  <div>
-    <div class="label">For</div>
-    <strong>{{ (doc.for or {}).name or case.distributor.name }}</strong><br>
-    {{ (doc.for or {}).address or case.distributor.city }}{% if (doc.for or {}).gstin %}<br>GSTIN {{ doc.for.gstin }}{% endif %}
-  </div>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Certificate of Destruction · {{ doc.no }}</title>
+{# the authorised agency's certificate of destruction for packs destroyed at a distributor's godown (SC-139, route B),
+   in full (SC-174, option B), laid out from what the case records of it, for the distributor. Page 1 is the
+   certificate: the goods, the reason, the agency's method, the facility, the day and the window, signed by its
+   supervising officer (with the agency's seal) and two independent witnesses, who handed the packs over and whose yes
+   approved the evidence. Page 2 is the destruction log from the godown to the cover, with the before and after photos
+   (`photos`, data: URIs Paperwork read from the photos bucket), each step initialled by all three. A certificate laid
+   out before SC-174 has no log, officer or witnesses, and is one page #}
+{% from "_sign.html" import ink %}
+{% set F = doc.for or {"name": case.distributor.name, "gstin": case.distributor.gstin, "address": case.distributor.address} %}
+{% set sku = case.sku %}{% set batch = case.batch %}
+{% set on = doc.destroyedOn or (doc.destroyedAt or "")[:10] %}
+{% set win = doc.window or {"from": "", "to": (doc.destroyedAt or "")[11:16]} %}
+{% set fac = doc.facility or {"name": doc.site, "address": "", "gps": ""} %}
+{% set per = doc.perCarton or sku.perCarton %}
+{% set kg = doc.kg or 0 %}{% set pack = doc.packKg or 0 %}
+{% set log = doc.log or [] %}{% set pages = 2 if log else 1 %}
+{% set ws = (doc.witnesses or []) + [none, none] %}
+{% set signers = [("Supervising officer", doc.officer, true), ("Independent witness 1", ws[0], false), ("Independent witness 2", ws[1], false)] %}
+{% set initialled = ([doc.officer] + (doc.witnesses or []))|select|list %}
+<style>
+  @page { size: A4; margin: 14mm 15mm 16mm; @bottom-left { content: "{{ doc.no }} · Certificate of Destruction · batch {{ doc.batch or case.ref }}"; font: 7.5pt sans-serif; color: #6b6b6b; } }
+  body { font-family: Arial, Helvetica, "DejaVu Sans", "Noto Sans Devanagari", sans-serif; font-size: 9.5pt; color: #161a18; line-height: 1.42; margin: 0; }
+  .lh { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #161a18; padding-bottom: 7pt; }
+  .lh b { display: block; font-size: 13.5pt; letter-spacing: 0.06em; }
+  .lh span { font-size: 8.5pt; color: #4b5550; }
+  .stamp { border: 2px solid #1f6b45; color: #1f6b45; border-radius: 3pt; padding: 3pt 9pt; font-weight: 700; font-size: 10.5pt; letter-spacing: 0.14em; transform: rotate(-5deg); margin: 4pt 4pt 0 12pt; }
+  .t { text-align: center; font-weight: 700; font-size: 19pt; letter-spacing: -0.01em; margin: 13pt 0 3pt; }
+  .m { display: flex; justify-content: space-between; font-size: 9.5pt; margin: 0 0 10pt; }
+  table { width: 100%; border-collapse: collapse; }
+  .kv th { width: 30mm; text-align: left; font-weight: 400; color: #5d6762; padding: 3.2pt 8pt 3.2pt 0; vertical-align: top; }
+  .kv td { font-weight: 700; padding: 3.2pt 0; vertical-align: top; }
+  .kv tr + tr th, .kv tr + tr td { border-top: 0.5pt solid #e1e4df; }
+  .mono { font-family: "DejaVu Sans Mono", Menlo, monospace; font-size: 8.6pt; }
+  .cols td span.mono { font-size: 7.8pt; margin-top: 1pt; }
+  .sec { font-weight: 700; margin: 13pt 0 6pt; }
+  .k { display: block; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.07em; color: #5d6762; }
+  .cols { table-layout: fixed; }
+  .cols td { vertical-align: top; border-top: 0.75pt solid #9aa39d; padding: 5pt 10pt 0 0; font-size: 8.8pt; }
+  .cols td b { display: block; font-size: 9.5pt; }
+  .cols td span.l { display: block; color: #3a423e; }
+  .area { height: 25mm; display: flex; align-items: center; }
+  .area.short { height: 19mm; }
+  .hand-over { margin-top: 10pt; }
+  .muted { color: #5d6762; }
+  .log-page { page-break-before: always; }
+  .log { font-size: 8.8pt; }
+  .log th, .log td { border: 0.75pt solid #b9c0bb; padding: 4pt 6pt; text-align: left; vertical-align: top; }
+  .log th { background: #f0f2ee; font-size: 8pt; }
+  .log td.at { white-space: nowrap; font-family: "DejaVu Sans Mono", Menlo, monospace; }
+  .log .ph { display: block; width: 62mm; height: 41mm; object-fit: cover; margin-top: 5pt; border-radius: 2pt; }
+  .log td.ini { width: 17mm; }
+  .log td.ini img { display: block; height: 4.2mm; width: auto; max-width: 16mm; margin: 0 0 1.5mm; }
+  .log td.ini span { display: block; font-size: 8pt; margin: 0 0 1.5mm; }
+  .note { margin: 8pt 0 0; font-size: 8.8pt; color: #4b5550; }
+  .foot { margin-top: 14pt; font-size: 7.5pt; color: #5d6762; border-top: 0.5pt solid #e1e4df; padding-top: 5pt; }
+{% include "_sign.css" %}
+</style>
+</head>
+<body>
+<div class="lh">
+  <div><b>{{ (doc.agency or "")|upper }}</b><span>Authorised waste-management agency · authorisation {{ doc.auth }}</span></div>
+  <div class="stamp">DESTROYED</div>
 </div>
-<table>
-  <thead>
-    <tr><th>Destroyed</th><th class="n">Packs</th><th class="n">Weight</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>{{ case.sku.brand }} {{ case.sku.name }}<br><span class="muted">HSN {{ doc.hsn or case.sku.hsn }} · batch {{ doc.batch or case.ref }} · best before {{ (doc.bestBefore or case.batch.bestBefore)|date }}</span></td>
-      <td class="n">{{ doc.units|num }}</td>
-      <td class="n">{{ "%.2f"|format(doc.kg or 0) }} kg</td>
-    </tr>
-  </tbody>
+<div class="t">Certificate of Destruction</div>
+<div class="m"><span>No. <b>{{ doc.no }}</b></span><span>Dated <b>{{ on|dmy }}</b></span><span>Page 1 of {{ pages }}</span></div>
+<table class="kv">
+  <tr><th>Goods</th><td>{{ doc.goods or (sku.brand ~ " " ~ sku.name) }}, HSN {{ doc.hsn or sku.hsn }}, MRP ₹{{ "%.2f"|format(doc.mrp or sku.mrp or 0) }}</td></tr>
+  <tr><th>Batch No.</th><td><span class="mono">{{ doc.batch or case.ref }}</span> (made {{ (doc.mfg or batch.mfg)|date }}, best before {{ (doc.bestBefore or batch.bestBefore)|date }})</td></tr>
+  <tr><th>Quantity</th><td>{{ doc.units|num }} packs{% if per %}, {{ doc.units // per }} cartons of {{ per }}{% if doc.units % per %} and {{ doc.units % per }} loose{% endif %}{% endif %}</td></tr>
+  <tr><th>Total weight</th><td>{{ "%.2f"|format(kg) }} kg ({{ "%.2f"|format(kg - pack) }} kg food, {{ "%.2f"|format(pack) }} kg packaging), weighed at the facility</td></tr>
+  <tr><th>Owner</th><td>{{ F.name }}, GSTIN {{ F.gstin }}</td></tr>
+  <tr><th>Reason</th><td>Product expiry: unsold on the best-before</td></tr>
+  <tr><th>Method</th><td>{{ doc.methodName or doc.method }} (Solid Waste Management Rules, 2016){% if doc.methodHow %}<br><span class="muted" style="font-weight: 400">{{ doc.methodHow[:1]|upper }}{{ doc.methodHow[1:] }}</span>{% endif %}</td></tr>
+  <tr><th>Facility</th><td>{{ [fac.name, fac.address]|select|join(", ") }}{% if fac.gps %} · {{ fac.gps }}{% endif %}{% if doc.vehicle %}<br><span class="muted" style="font-weight: 400">Carried from {{ doc.from or case.distributor.godown }} in the agency's covered vehicle {{ doc.vehicle }}</span>{% endif %}</td></tr>
+  <tr><th>Date and time</th><td>{{ on|date }}{% if win.from %}, {{ win.from }} to {{ win.to }} IST{% elif win.to %}, {{ win.to }} IST{% endif %}</td></tr>
+  <tr><th>GST</th><td>{{ (doc.reversed or 0)|inr(true) }} input GST reversed by {{ F.name }}, s.17(5)(h), GSTR-3B Table 4(B)(1)</td></tr>
 </table>
-<table>
-  <tbody>
-    <tr><th>From</th><td>{{ doc.from or case.distributor.godown or case.distributor.city }}</td></tr>
-    <tr><th>Method</th><td>{{ doc.method }}</td></tr>
-    <tr><th>Site</th><td>{{ doc.site }}</td></tr>
-    <tr><th>Destroyed</th><td>{{ (doc.destroyedAt or "")[:10]|date }}{% if doc.destroyedAt and doc.destroyedAt|length > 10 %}, {{ doc.destroyedAt[11:16] }}{% endif %}</td></tr>
-    <tr><th>Evidence</th><td>Two photos, before at the godown and after at the site; {{ (doc.evidence or {}).checks or 0 }} of {{ (doc.evidence or {}).of or 0 }} checks passed{% if doc.approvedBy %}; approved by {{ doc.approvedBy }}{% endif %}</td></tr>
-    <tr><th>Input GST reversed</th><td>{{ doc.reversed|inr(true) }} by {{ (doc.for or {}).name or case.distributor.name }}, section 17(5)(h), GSTR-3B Table 4(B)(1)</td></tr>
-  </tbody>
+
+{% if doc.officer or doc.witnesses %}
+<div class="sec">Signed at the facility{% if log %}, as set out in the log overleaf{% endif %}</div>
+<table class="cols">
+  <tr>
+  {% for label, w, officer in signers %}
+    <td>
+      <span class="k">{{ label }}</span>
+      <div class="area">{% if w %}{{ ink(w, doc.seal if officer else none, "round right", 13) }}{% endif %}</div>
+      <b>{{ w.name if w else "—" }}</b>
+      {% if w and officer %}<span class="l">{{ w.title }}, {{ doc.agency }}</span>{% elif w %}<span class="l">{{ w.address }}</span>{% endif %}
+      {% if w and w.proof %}<span class="l mono">{{ w.proof }}</span>{% endif %}
+    </td>
+  {% endfor %}
+  </tr>
 </table>
-{% if doc.note %}<div class="note">{{ doc.note }}</div>{% endif %}
-{% endblock %}
-{% block issued %}Laid out by Smart-Clearance's Paperwork agent from the agency's certificate and the evidence on the batch's record.{% endblock %}
+{% endif %}
+
+<table class="cols hand-over">
+  <tr>
+    <td>
+      <span class="k">Goods handed over by</span>
+      {% if doc.handedBy %}<div class="area short">{{ ink(doc.handedBy, none, "round", 11) }}</div>{% endif %}
+      <b>{{ doc.handedBy.name if doc.handedBy else F.name }}</b>
+      {% if doc.handedBy %}<span class="l">{{ doc.handedBy.title }}, {{ F.name }}</span>{% endif %}
+    </td>
+    <td>
+      <span class="k">Evidence approved by</span>
+      {% if doc.handedBy %}<div class="area short"></div>{% endif %}
+      <b>{{ doc.approvedBy or "—" }}</b>
+      <span class="l">for {{ (case.client or {}).name or "the client" }}{% if doc.approvedAt %}, {{ doc.approvedAt[:10]|date }}{% if doc.approvedAt|length > 10 %}, {{ doc.approvedAt[11:16] }}{% endif %}{% endif %}</span>
+      <span class="l muted">two photos · Vision's checks {{ (doc.evidence or {}).checks or 0 }} of {{ (doc.evidence or {}).of or 0 }}</span>
+    </td>
+  </tr>
+</table>
+{% if not log %}<div class="foot">Laid out by Smart-Clearance's Paperwork agent from the agency's certificate and the evidence on the batch's record.</div>{% endif %}
+
+{% if log %}
+<div class="log-page">
+  <div class="m"><span><b>Destruction log</b> · {{ doc.no }}</span><span>Page 2 of 2</span></div>
+  <table class="log">
+    <thead><tr><th>Time</th><th>Step</th><th>Detail</th><th>Initials</th></tr></thead>
+    <tbody>
+    {% for x in log %}
+      <tr>
+        <td class="at">{{ (x.at or "")[11:16] }}</td>
+        <td><b>{{ x.step }}</b></td>
+        <td>{{ x.detail }}{% if x.photo and photos.get(x.photo) %}<img class="ph" src="{{ photos[x.photo] }}" alt="{{ "The packs at the godown, the carton's batch label in view" if x.photo == "before" else "The packs at the landfill, the slate in view" }}">{% endif %}</td>
+        <td class="ini">{% for w in initialled %}{% set hand = mark("signatures", w.sign) %}{% if hand %}<img src="{{ hand }}" alt="Initialled by {{ w.name }}">{% else %}<span>{% for part in w.name.split() %}{{ part[:1] }}{% endfor %}</span>{% endif %}{% endfor %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p class="note">Initialled at each step by the supervising officer and the two independent witnesses, who watched it from receipt to cover.</p>
+  <div class="foot">Laid out by Smart-Clearance's Paperwork agent from the agency's certificate and the evidence on the batch's record.</div>
+</div>
+{% endif %}
+</body>
+</html>

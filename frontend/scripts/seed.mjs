@@ -5,7 +5,7 @@
 //   node scripts/seed.mjs           write the seed files
 //   node scripts/seed.mjs --check   fail if a seed file is out of date with design3 (run by `pnpm test`)
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
@@ -14,6 +14,7 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const design3 = join(root, '../design3');
 const SOURCES = [
 	'core/money.js',
+	'core/papers.js',
 	'core/data.js',
 	'core/store.js',
 	'core/platform.js',
@@ -41,7 +42,7 @@ const localStorage = {
 	removeItem: (k) => store.delete(k)
 };
 const sandbox = vm.createContext({ window, localStorage, console, Date, Intl, Math, JSON, structuredClone });
-for (const p of SOURCES.slice(0, 4)) vm.runInContext(read(p), sandbox, { filename: p });
+for (const p of SOURCES.slice(0, 5)) vm.runInContext(read(p), sandbox, { filename: p });
 const D = window.SC3_DATA,
 	Store = window.SC3_STORE,
 	P = window.SC3_PLATFORM;
@@ -467,6 +468,8 @@ const journey = {
 			partner: b.partner,
 			kirana: b.kirana,
 			staff: b.staff,
+			// the staff sale's consolidated receipt (SC-174): its number and every payment, as Vision reads them
+			staffReceipt: b.staffReceipt || null,
 			steps: b.steps,
 			numbers: b.numbers,
 			// destroyed at the godown on expiry day (SC-139): the agency, its certificate, when each photo was taken, and
@@ -476,7 +479,12 @@ const journey = {
 						agency: b.destruction.agency.id,
 						certificate: b.destruction.certificate,
 						photos: { before: b.destruction.photos.before.at, after: b.destruction.photos.after.at },
-						slate: `${b.bestBefore.slice(8, 10)}-${b.bestBefore.slice(5, 7)}-${b.bestBefore.slice(2, 4)}`
+						slate: `${b.bestBefore.slice(8, 10)}-${b.bestBefore.slice(5, 7)}-${b.bestBefore.slice(2, 4)}`,
+						// the window the agency destroyed them in and its two witnesses (SC-174), and the certificate's log
+						// as ledger.js lays it out, for the build's certificate to be held to
+						window: b.destruction.window,
+						witnesses: b.destruction.witnesses.map(({ name, address }) => ({ name, address })),
+						log: L.HISTORY.find((c) => c.ref === b.ref).docs.find((d) => d.id === 'destruction').log
 					}
 				: null,
 			expect: {
@@ -874,6 +882,8 @@ const storiesSeed = (() => {
 			docs: S.docs,
 			invoice: S.invoice,
 			returnBy: S.returnBy,
+			// the staff sale's consolidated receipt the stub records with the sale (SC-174): the Mango Drink's
+			staffReceipt: S.staffReceipt ?? null,
 			realised: S.godownLeft,
 			expiry: S.expiry,
 			push: S.push,
@@ -959,8 +969,29 @@ const outputs = {
 					readFileSync(join(design3, `system/img/evidence/${c.ref}-${w}.webp`))
 				])
 			)
+		),
+		// each staff sale's consolidated receipt as its distributor sent it (SC-174): the history's, which its build puts
+		// in the photos bucket, and the stories' (the Mango Drink's), which a walk sends
+		...Object.fromEntries(
+			[
+				...D.HISTORY.batches.filter((b) => b.staffReceipt).map((b) => b.ref),
+				...Object.values(D.STORIES)
+					.filter((S) => S.staffReceipt)
+					.map((S) => S.batch.id)
+			]
+				.filter((ref, i, all) => all.indexOf(ref) === i)
+				.map((ref) => [`receipts/${ref}.webp`, readFileSync(join(design3, `system/img/receipts/${ref}.webp`))])
 		)
-	}
+	},
+	// every signatory's specimen signature and every firm's stamp or seal (SC-174), for the Paperwork agent's PDFs
+	'../agents/src/sc_agents/templates/marks': Object.fromEntries(
+		['signatures', 'seals'].flatMap((dir) =>
+			readdirSync(join(design3, `system/img/${dir}`))
+				.filter((f) => f.endsWith('.webp'))
+				.sort()
+				.map((f) => [`${dir}/${f}`, readFileSync(join(design3, `system/img/${dir}/${f}`))])
+		)
+	)
 };
 for (const [dir, files] of Object.entries(outputs))
 	files['manifest.json'] = json({

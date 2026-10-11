@@ -27,6 +27,7 @@ import type {
 	Push,
 	Sku,
 	Stage,
+	StaffReceipt,
 	State,
 	StoryPerson,
 	Support,
@@ -51,6 +52,7 @@ import type {
 	WsPlanLine,
 	WsSplitLine,
 	WsSku,
+	WsStaffReceipt,
 	WsSupport,
 	WsWorkspace
 } from '@smart-clearance/api/workspace';
@@ -306,6 +308,26 @@ const lineOf = (lines: WsPlanLine[], split: WsSplitLine[], id: string, name: str
 		cartons: 0
 	};
 
+/** the staff sale's consolidated receipt (SC-174): where it stands, what Vision read of its payments, and a link to the
+ *  photo it was sent as (a PDF has no photo to show) */
+export const receiptOf = (r: WsStaffReceipt | null | undefined): StaffReceipt | null =>
+	r
+		? {
+				id: r.id,
+				status: r.status,
+				no: r.no ?? '',
+				date: r.date ?? '',
+				payments: r.payments.map((x) => ({ ...x })),
+				units: r.units ?? 0,
+				paid: r.paid ?? 0,
+				from: r.from ?? '',
+				to: r.to ?? '',
+				at: r.at,
+				url: r.contentType === 'application/pdf' ? null : r.url,
+				read: r.status === 'read'
+			}
+		: null;
+
 const EMPTY_SUPPORT: Support = { rows: [], gap: 0, van: 0, fee: 0, total: 0 };
 const supportOf = (s: WsSupport | null): Support => (s ? { ...s } : { ...EMPTY_SUPPORT, rows: [] });
 
@@ -361,7 +383,27 @@ function docOf(d: WsDoc): Doc {
 					packKg: opt(d.packKg),
 					evidence: opt(d.evidence),
 					approvedBy: opt(d.approvedBy),
-					approvedAt: opt(d.approvedAt)
+					approvedAt: opt(d.approvedAt),
+					// the certificate in full (SC-174): its method and facility, its officer and witnesses, the window, the two
+					// photos with their links, who handed the packs over, and the log
+					reason: opt(d.reason),
+					methodId: opt(d.methodId),
+					methodName: opt(d.methodName),
+					methodHow: opt(d.methodHow),
+					facility: d.facility ?? null,
+					vehicle: d.vehicle ?? null,
+					officer: d.officer ?? null,
+					seal: d.seal ?? null,
+					witnesses: opt(d.witnesses),
+					window: opt(d.window),
+					destroyedOn: opt(d.destroyedOn),
+					photos: opt(d.photos),
+					handedBy: d.handedBy ?? null,
+					goods: opt(d.goods),
+					mfg: d.mfg ?? null,
+					mrp: opt(d.mrp),
+					perCarton: opt(d.perCarton),
+					log: opt(d.log)
 				}
 			: {}),
 		// the food bank's receipt (SC-110)
@@ -500,6 +542,9 @@ export function caseOf(
 		expiry: detail.expiry ?? null,
 		// packs destroyed at his godown (SC-139): the evidence, Vision's checks and the operator's yes
 		destruction: detail.destruction ?? null,
+		// the staff sale's consolidated receipt, once the sale is recorded with it (SC-174): a paper of the pack
+		staffReceipt:
+			j.staff?.status === 'recorded' && j.staff.receipt?.status === 'read' ? receiptOf(j.staff.receipt) : null,
 		returnBy,
 		push: pushesOf(detail, today),
 		today: dayLabel(day0),
@@ -624,7 +669,9 @@ function heroOf(detail: CaseDetail | null, today: string): Hero {
 					godown: j.staff.godown,
 					at: at(j.staff.at),
 					sold: j.staff.sold,
-					left: j.staff.left
+					left: j.staff.left,
+					// the consolidated receipt he attached, while Vision reads it and once read (SC-174)
+					receipt: receiptOf(j.staff.receipt)
 				}
 			: null
 	};
@@ -802,13 +849,16 @@ export function partnerOf(p: WsPartner): PartnerView {
 			...c,
 			kiranas: c.kiranas.map((k) => ({ ...k, invoice: k.invoice ? invoiceOf(k.invoice) : null })),
 			docs: c.docs.map(docOf),
-			receipt: c.receipt ? docOf(c.receipt) : null
+			receipt: c.receipt ? docOf(c.receipt) : null,
+			// the staff sale's consolidated receipt he sent (SC-174), his own
+			staffReceipt: receiptOf(c.staffReceipt)
 		}))
 	};
 }
 
-/** the photos sent for a batch (SC-142), from its case: its label photo with what Vision read, and the destruction's
- *  two with Vision's checks, each with its short-lived link; who sent each comes from the batch's record */
+/** the photos sent for a batch (SC-142), from its case: its label photo with what Vision read, the destruction's two
+ *  with Vision's checks, and the staff sale's consolidated receipt with its payments (SC-174), each with its short-lived
+ *  link; who sent each comes from the batch's record */
 export function photosOfCase(d: CaseDetail): RecordPhoto[] {
 	const out: RecordPhoto[] = [];
 	const min = localMinute;
@@ -845,5 +895,23 @@ export function photosOfCase(d: CaseDetail): RecordPhoto[] {
 					)
 				});
 		}
+	const sr = d.journey.staff?.status === 'recorded' ? receiptOf(d.journey.staff.receipt) : null;
+	if (sr?.read && sr.url && sr.payments.length)
+		out.push({
+			id: 'receipt',
+			src: sr.url,
+			at: min(sr.at || sr.to),
+			by: '',
+			receipt: {
+				no: sr.no,
+				payments: sr.payments.length,
+				paid: sr.paid,
+				units: sr.units,
+				from: sr.from,
+				to: sr.to,
+				matches: true,
+				list: sr.payments
+			}
+		});
 	return out;
 }

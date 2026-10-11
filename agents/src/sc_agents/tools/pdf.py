@@ -1,7 +1,14 @@
 """The Paperwork agent's PDFs: one HTML page per document (templates/, Jinja2), rendered by WeasyPrint. The figures
 are backend-api's (`docsFull`, money.py's documents); the templates only lay them out. WeasyPrint needs Pango, Cairo
-and HarfBuzz from the system (the Dockerfile installs them); it is imported only when a PDF is made."""
+and HarfBuzz from the system (the Dockerfile installs them); it is imported only when a PDF is made.
 
+Each paper is signed (SC-174): its signatory's specimen signature and the firm's stamp or seal are images in
+templates/marks/ (signatures/<id>.webp, seals/<id>.webp, written there from design3 by the frontend's seed), which the
+page references relative to the templates, as WeasyPrint's base_url."""
+
+import base64
+import io
+import re
 from pathlib import Path
 from typing import Any
 
@@ -11,6 +18,7 @@ from sc_agents import fmt
 from sc_agents.tools import papers
 
 TEMPLATES = Path(__file__).resolve().parent.parent / "templates"
+MARKS = ("signatures", "seals")
 # what gets a PDF: the invoice draft, the price-support credit note, the ITC memo, the FSSAI checklist, the food
 # bank's receipt (SC-110), the expiry credit note for the packs left at the godown (SC-121), and the authorised
 # agency's certificate for packs destroyed at his godown (SC-139); the e-way bill check and the client's own
@@ -40,6 +48,36 @@ _env.filters.update(
 )
 
 
+def mark(kind: str, ident: Any) -> str | None:
+    """a signature's or a seal's image as the page references it (marks/signatures/rakesh.webp), when it is on file;
+    None for a signatory with no specimen, whose paper says it is signed on the original"""
+    if kind not in MARKS or not ident or not re.fullmatch(r"[a-z0-9-]{1,40}", str(ident)):
+        return None
+    rel = f"marks/{kind}/{ident}.webp"
+    return rel if (TEMPLATES / rel).is_file() else None
+
+
+_env.globals["mark"] = mark
+
+
+# the log's photos print about 62 mm wide: 900 px is ample at 300 dpi, and keeps the PDF small
+PHOTO_PX = 900
+
+
+def photo_uri(data: bytes) -> str:
+    """a photo from the photos bucket as a data: URI for the page (the destruction certificate's log, SC-174),
+    re-encoded as a JPEG no larger than the print needs, with Pillow (which WeasyPrint draws images with). Raises on
+    bytes that are not a whole image: WeasyPrint would otherwise fail the whole PDF on it"""
+    from PIL import Image
+
+    with Image.open(io.BytesIO(data)) as im:
+        rgb = im.convert("RGB")
+    rgb.thumbnail((PHOTO_PX, PHOTO_PX))
+    buf = io.BytesIO()
+    rgb.save(buf, "JPEG", quality=80, optimize=True)
+    return f"data:image/jpeg;base64,{base64.b64encode(buf.getvalue()).decode()}"
+
+
 def needs_pdf(doc: dict[str, Any]) -> bool:
     """a paper to lay out: one with a template, issued (not awaiting another's, SC-139), and without its PDF yet; the
     destruction certificate only as the agency's, for packs destroyed at his godown"""
@@ -48,9 +86,17 @@ def needs_pdf(doc: dict[str, Any]) -> bool:
     return doc.get("id") in PAPERS and doc.get("status") not in ("not required", "awaiting") and not doc.get("pdf")
 
 
-def html(doc: dict[str, Any], case: dict[str, Any], *, note: str | None = None, today: str = "") -> str:
+def html(
+    doc: dict[str, Any],
+    case: dict[str, Any],
+    *,
+    note: str | None = None,
+    today: str = "",
+    photos: dict[str, str] | None = None,
+) -> str:
     """a document's page. The GST papers (SC-148) also take the amount in words, the invoice the client billed the batch
-    on, and an issued invoice's e-invoice with its signed QR code, from tools/papers.py"""
+    on, and an issued invoice's e-invoice with its signed QR code, from tools/papers.py; the destruction certificate
+    (SC-174) its before and after photos, as data: URIs (`photos`, by which), where Paperwork could read them"""
     batch = case.get("batch") or {}
     extra: dict[str, Any] = {
         "words": papers.words,
@@ -66,6 +112,7 @@ def html(doc: dict[str, Any], case: dict[str, Any], *, note: str | None = None, 
     # a kirana order's tax invoice (SC-153): its own paper, by the shop it was issued to
     template = KIRANA if str(doc["id"]).startswith("kirana.") else PAPERS[doc["id"]]
     extra["scheme"] = case.get("scheme")
+    extra["photos"] = photos or {}
     return _env.get_template(template).render(doc=doc, case=case, note=note, today=today, **extra)
 
 

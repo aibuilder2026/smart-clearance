@@ -1,5 +1,7 @@
 {# the client's credit notes to the distributor in Tally's layout (SC-148): financial, so no GST is adjusted and
-   nothing goes to the IRP; against the invoice it billed the batch on (tools/papers.py dispatch_of) #}
+   nothing goes to the IRP; against the invoice it billed the batch on (tools/papers.py dispatch_of); signed by the
+   client's signatory beside its round seal (SC-174) #}
+{% from "_sign.html" import tally %}
 {% macro credit(case, doc, title, sub, reason, rows, note, dispatch, words, today) %}
 {% set C = case.client or {} %}{% set R = case.distributor %}
 <div class="title">{{ title }}</div>
@@ -25,9 +27,9 @@
 <table>
   <tr>
     <td class="small" style="width:52%">Financial credit note: not a GST credit note under section 34 of the CGST Act, so no tax is adjusted and it is not reported to the IRP. The output tax on the original sale stands.{% if note %}<br><br>{{ note }}{% endif %}<br><br>Company's PAN: <b>{{ C.pan }}</b></td>
-    <td><div class="sign">for <b>{{ C.name or doc.owner }}</b></div><div class="n">Authorised Signatory</div></td>
+    <td>{{ tally(C.name or doc.owner, C.signatory, (C.signatory or {}).seal) }}</td>
   </tr>
 </table>
 {% if caller is defined %}{{ caller() }}{% endif %}
-<div class="foot">Adjusted against {{ R.name }}{{ "'" if R.name.endswith("s") else "'s" }} account · This is a Computer Generated Document</div>
+<div class="foot">Adjusted against {{ R.name }}{{ "'" if R.name.endswith("s") else "'s" }} account</div>
 {% endmacro %}

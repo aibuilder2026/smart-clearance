@@ -639,8 +639,24 @@ def push_staff_open(*, sku_name: str, units: int, price_: float, godown: str) ->
     }
 
 
-def staff_event(*, sold: int, units: int, godown: str) -> str:
-    return f"Recorded the staff sale at {godown}: {fmt.num(sold)} of {fmt.num(units)} packs sold."
+def staff_event(*, sold: int, units: int, godown: str, receipt: str | None = None, payments: int = 0) -> str:
+    said = f"Recorded the staff sale at {godown}: {fmt.num(sold)} of {fmt.num(units)} packs sold"
+    # with the consolidated receipt of the staff's UPI payments (SC-174)
+    return (
+        f"{said}, with the consolidated receipt {receipt} for {fmt.num(payments)} UPI payments."
+        if receipt
+        else f"{said}."
+    )
+
+
+def receipt_read_event(*, no: str | None, payments: int, paid: float) -> str:
+    """Vision's read of the staff sale's consolidated receipt (SC-174)"""
+    what = f"the consolidated receipt {no}" if no else "the staff sale's consolidated receipt"
+    return f"Read {what}: {fmt.num(payments)} UPI payments, {fmt.inr2(paid)}."
+
+
+def receipt_unread_event() -> str:
+    return "Could not read the staff sale's receipt: no UPI payment on it could be made out. Asked for a clearer photo."
 
 
 def push_staff_recorded(*, distributor: str, sku_name: str, sold: int, units: int) -> dict[str, Any]:

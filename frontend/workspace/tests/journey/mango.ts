@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { expect } from '@playwright/test';
 import type { WsLedgerTotals as LedgerTotals, WsPartner } from '@smart-clearance/api/workspace';
 import { api } from './auth.ts';
@@ -33,6 +34,9 @@ import {
 // under ExpireSoon's 30): the kiranas' scheme, the staff sale at the godown, and the food-bank donation.
 
 export const HERO = 'MF-2410-118';
+/** the staff sale's consolidated receipt as Lakshmi Agencies sends it (SC-174): design3's for the batch */
+const RECEIPT = (ref: string) =>
+	fileURLToPath(new URL(`../../../../design3/system/img/receipts/${ref}.webp`, import.meta.url));
 export const DIST = 'lakshmi-owner';
 export const KIRANAS = kiranasOf('lakshmi');
 /** the people a Mango flow signs in */
@@ -270,13 +274,22 @@ export const MANGO: Step[] = [
 			await running().done('Today: the staff sale asked for on the batch');
 			await card.getByRole('button', { name: 'Record what sold', exact: true }).click();
 			await expect(page).toHaveURL(new RegExp(`/van/${HERO}`));
-			const record = page.getByRole('button', { name: 'Record the sale' });
+			const sale = page.locator('.card', { hasText: 'Staff sale ·' });
+			const record = sale.getByRole('button', { name: 'Record the sale' });
 			await record.scrollIntoViewIfNeeded();
 			await running().done('The staff sale card, every pack to start');
+			// the consolidated receipt first (SC-174): design3's for the batch, read by Vision on live Gemini, which must
+			// come to every pack at the staff price before the sale records
+			await expect(record).toBeDisabled();
+			await sale.locator('input[type="file"]:not([capture])').setInputFiles(RECEIPT(HERO));
+			await expect(sale.getByText('Vision is reading the receipt')).toBeVisible();
+			await expect(sale.getByText(/matches your count/)).toBeVisible({ timeout: AGENT_WAIT });
+			await running().done('Vision read the consolidated receipt: its UPI payments match the count');
 			await record.click();
 			const r = await until('the staff sale is recorded', DIST, (c) => c.journey.staff?.status === 'recorded', 60_000);
 			story('Staff sale', r.journey.staff?.sold ?? undefined, 150);
-			await running().done('Staff sale recorded');
+			story('Staff sale receipt', r.journey.staff?.receipt?.status ?? undefined, 'read');
+			await running().done('Staff sale recorded, with its receipt');
 		}
 	},
 	{
