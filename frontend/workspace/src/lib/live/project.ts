@@ -613,7 +613,13 @@ function heroOf(detail: CaseDetail | null, today: string): Hero {
 	return {
 		id: j.id,
 		phase: j.phase,
-		photo: { status: j.photo.status, at: opt(at(j.photo.at) || null), confidence: opt(j.photo.confidence) },
+		photo: {
+			status: j.photo.status,
+			at: opt(at(j.photo.at) || null),
+			confidence: opt(j.photo.confidence),
+			// the photo as he sent it, which Verify shows (SC-181)
+			url: opt(j.photo.url)
+		},
 		plan: j.plan ? { status: j.plan.status, at: at(j.plan.at), by: opt(j.plan.by), device: opt(j.plan.device) } : null,
 		listing: j.listing
 			? {

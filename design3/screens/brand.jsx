@@ -198,9 +198,11 @@
   // FSSAI licence (system/img/labels, made by system/labels); the carton on shelf B4 with its label set in type where a
   // batch has no photo
   const LABEL_PHOTOS = ["MF-2406-105", "MF-2406-106", "MF-2406-107", "MF-2406-108", "MF-2406-109", "MF-2407-110", "MF-2407-111", "MF-2407-112", "MF-2407-113", "MF-2407-114", "MF-2407-115", "MF-2407-116", "MF-2409-117", "MF-2410-118"];
-  function LabelShot({ cover, dim, batch = "MF-2409-117", children }) {
+  // `src`: the photo the distributor sent, whole as he took it (the live workspace's link to it, SC-181), never a stand-in
+  function LabelShot({ cover, dim, batch = "MF-2409-117", src, children }) {
     const img = window.SC3_IMG || "system/img/";
     const photo = LABEL_PHOTOS.includes(batch);
+    if (src) return <div className={cx("lshot", cover && "cover")} style={dim ? { filter: "saturate(0.85) brightness(0.94)" } : undefined}><S.Photo className="as-sent" src={src} alt="" />{children}</div>;
     return <div className={cx("lshot", cover && "cover")} style={dim ? { filter: "saturate(0.85) brightness(0.94)" } : undefined}>
       <img src={photo ? img + "labels/" + batch + ".webp" : img + "label-shot.webp"} alt="" />
       {!photo && <div className="lshot-label" aria-hidden="true"><b>MUNCHLY</b><span className="ls-prod">Masala Chips 150 g</span><span>BATCH&nbsp; MF-2409-117</span><span>MFG&nbsp; 18 MAY 2026</span><span>BEST BEFORE&nbsp; 18 NOV 2026</span><span>MRP ₹30.00 incl. of all taxes</span><span>24 × 150 g</span></div>}
@@ -208,10 +210,10 @@
     </div>;
   }
   function LabelPhoto({ status }) {
-    const reduce = useReducedMotion(); const C = storyOf(useStore()), b = C.batch, holder = personOf(C, C.accounts.distributor);
+    const s = useStore(); const reduce = useReducedMotion(); const C = storyOf(s), b = C.batch, holder = personOf(C, C.accounts.distributor);
     const shelf = b.shelf ? ` on shelf ${b.shelf}` : "";
     return <div role="img" aria-label={status === "verified" ? `Carton label${shelf}: batch ${b.id}, MFG ${fmt.date(b.mfg)}, best before ${fmt.date(b.bestBefore)}, MRP ${fmt.rate(C.sku.mrp)}` : "Carton label, not yet photographed"} style={{ position: "relative", width: "100%", borderRadius: 16, overflow: "hidden", background: "var(--surface-sunken)" }}>
-      <LabelShot dim={status !== "verified"} batch={b.id} />
+      <LabelShot dim={status !== "verified"} batch={b.id} src={s.hero.photo && s.hero.photo.url} />
       {status === "reading" && !reduce && <motion.div aria-hidden="true" initial={{ top: "18%" }} animate={{ top: ["18%", "78%", "18%"] }} transition={{ duration: 1.6, repeat: 2, ease: "easeInOut" }} style={{ position: "absolute", left: "10%", right: "10%", height: 3, borderRadius: 3, background: "var(--glow)", boxShadow: "0 0 18px var(--glow)" }} />}
       {status === "verified" && <span style={{ position: "absolute", left: 10, bottom: 10 }}><Badge solid tone="green" icon="check">Verified · Gemini vision · 0.97</Badge></span>}
       {(status === "requested" || status === "none") && <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", background: "color-mix(in oklab, var(--bg) 55%, transparent)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)" }}><div className="stack tight" style={{ justifyItems: "center", textAlign: "center", padding: 16 }}><Avatar person={holder} size="lg" /><b>{status === "requested" ? `Waiting for ${possessive(holder.short)} photo` : "No label photo yet"}</b><span className="t-footnote muted">{status === "requested" ? `Asked at ${C.at.ask} · one carton${shelf}` : "Vision asks the godown before quoting any price"}</span>{status === "requested" && <S.PlayAs who={C.accounts.distributor} route="photo">{`Take the photo as ${holder.short}`}</S.PlayAs>}</div></div>}

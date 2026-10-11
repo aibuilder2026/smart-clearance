@@ -33,7 +33,7 @@
 		: 'Carton label, not yet photographed'}
 	style="position: relative; width: 100%; border-radius: 16px; overflow: hidden; background: var(--surface-sunken)"
 >
-	<LabelShot dim={status !== 'verified'} />
+	<LabelShot dim={status !== 'verified'} src={ws.state.hero.photo.url} />
 	{#if status === 'reading' && !prefersReducedMotion.current}<div
 			aria-hidden="true"
 			{@attach scan}

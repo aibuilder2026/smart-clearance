@@ -451,6 +451,18 @@ describe("a partner's own step reads its facts again (SC-180)", () => {
 	});
 });
 
+describe('Verify shows the photo the distributor sent (SC-181)', () => {
+	it("the label photo in Priya's Route Room is Rakesh's own, from its link, whole and never the typeset stand-in", async () => {
+		const m = moment('planned');
+		const url = m.members.priya.cases[CHIPS].journey.photo.url!;
+		const r = await draw(source(fakeApi(m, 'priya')), 'route', CHIPS);
+		await waitFor(() => expect(r.container.querySelector('.lshot img.as-sent')).toBeTruthy());
+		expect(r.container.querySelector('.lshot img.as-sent')!.getAttribute('src')).toBe(url);
+		expect(r.container.querySelector('.lshot-label')).toBeNull();
+		expect(text(r)).toContain('Verified · Gemini vision');
+	});
+});
+
 describe('a button that waits on the network (SC-152)', () => {
 	it('says why a step was refused under its own button, with Try again: no success, and no band', async () => {
 		const m = moment('executing');

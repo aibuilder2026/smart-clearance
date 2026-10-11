@@ -593,7 +593,8 @@ export type Bid = {
 export type Hero = {
 	id: string;
 	phase: Phase;
-	photo: { status: 'none' | 'requested' | 'reading' | 'verified'; at?: string; confidence?: number };
+	/** `url`: the photo as the distributor sent it, on the live workspace (SC-181) */
+	photo: { status: 'none' | 'requested' | 'reading' | 'verified'; at?: string; confidence?: number; url?: string };
 	plan: null | { status: 'proposed' | 'approved'; at: string; by?: string; device?: string };
 	listing: null | {
 		id: string;
