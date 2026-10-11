@@ -471,21 +471,24 @@
   // Outreach's scheme to the kiranas (SC-156, option A): the scheme as the shops see it, the figures, the offer window
   // as one line, four stops with their times, the cluster map and the latest orders as before, and the one push every
   // shop got behind a button. The window is the client's 48 hours; what no shop takes moves to ExpireSoon when it ends
+  // while the lot is still live, and otherwise stays at the distributor's godown (SC-185)
   const OFFER_HOURS = 48;
   const hhmm = t => { const m = /(\d{1,2}):(\d{2})$/.exec(t || ""); return m ? +m[1] + m[2] / 60 : null; };
   // the share of the window gone, from two same-day times (the stub has no clock); the live source sends its own
   const windowShare = (from, to) => { const a = hhmm(from), b = hhmm(to); return a != null && b != null && b >= a ? Math.min(1, (b - a) / OFFER_HOURS) : null; };
-  function SchemeCard({ h, line, sku, batch, dist, shops, kiranas, push, vanDate, children }) {
+  function SchemeCard({ h, line, lot = 0, sku, batch, dist, shops, kiranas, push, vanDate, children }) {
     const sent = !!h.offer, ordered = h.orders.length, units = h.orders.reduce((t, o) => t + o.units, 0);
     const filled = sent && units >= line.units, closed = sent && (h.offer.status === "closed" || filled);
     const last = h.orders[h.orders.length - 1];
     const closedAt = closed ? h.offer.closedAt || (filled && last ? last.at : h.offer.closesAt) : null;
     const left = line.units - units, delivered = h.van.status === "done";
+    // the lot grew past what the plan gave it: the window's shortfall moved onto it (backend-api's close)
+    const moved = !!h.listing && h.listing.units > lot;
     const elapsed = !sent ? 0 : h.offer.elapsed != null ? h.offer.elapsed : closed ? (filled ? windowShare(h.offer.at, closedAt) || 0 : 1) : 0; // open: the stub has no clock; the live source sends elapsed
     const badge = !sent ? <Badge>queued</Badge> : delivered ? <Badge tone="green" icon="check">delivered</Badge> : filled ? <Badge tone="green" dot>filled</Badge> : closed ? <Badge icon="hourglass">window over</Badge> : <Badge tone="blue" dot live>open</Badge>;
     const result = !closed ? null : delivered ? `Delivered on ${possessive(dist.name.split(" ")[0])} van round, ${vanDate}: ${fmt.num(units)} packets to ${ordered} shops.`
       : filled ? `Filled at ${closedAt}: ${ordered} of ${shops} shops took every packet, before the window closed.`
-      : `The window ended ${closedAt} with ${ordered} of ${shops} shops ordering ${fmt.num(units)}; the ${fmt.num(left)} left moved to ExpireSoon.`;
+      : `The window ended ${closedAt} with ${ordered} of ${shops} shops ordering ${fmt.num(units)}; the ${fmt.num(left)} left ${moved ? "moved to ExpireSoon" : `stayed at ${possessive(dist.name)} godown`}.`;
     const steps = [["Sent", sent && h.offer.at], ["First order", h.orders[0] && h.orders[0].at], ["Closed", closedAt], ["Van round", delivered && vanDate]];
     const done = !sent ? 0 : delivered ? 4 : closed ? 3 : ordered ? 2 : 1;
     const nowAt = !sent || delivered ? -1 : done;
@@ -579,7 +582,7 @@
             <div className="card-head"><span className="row tight"><span className="icontile gray" style={{ borderRadius: 9 }}><Icon name="shopping-bag" size={17} stroke={2} /></span><span className="card-title">Lister · ExpireSoon</span></span><Badge>not in this plan</Badge></div>
             <span className="t-footnote muted">{esRow && !esRow.eligible ? `ExpireSoon is left out of this plan (${esRow.reason}).` : "The Router gave ExpireSoon nothing: the other exits pay more a unit."} The Lister has nothing to list.</span>
           </Card>}
-          {hasLine("kirana") && <SchemeCard h={h} line={KL} sku={C.sku} batch={C.batch} dist={C.dist} shops={C.offered} kiranas={C.kiranas} push={C.push.offer} vanDate={C.journey.van.date}>
+          {hasLine("kirana") && <SchemeCard h={h} line={KL} lot={ML("expiresoon").units} sku={C.sku} batch={C.batch} dist={C.dist} shops={C.offered} kiranas={C.kiranas} push={C.push.offer} vanDate={C.journey.van.date}>
             {h.offer && !h.orders.some(o => o.id === C.shop) && <S.PlayAs who={C.accounts.kirana} route="offer">{`Order as ${kirana.short}`}</S.PlayAs>}
           </SchemeCard>}
           {hasLine("expiresoon") && <Card className="stack snug">
