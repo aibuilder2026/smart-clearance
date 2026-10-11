@@ -11,7 +11,8 @@ export const LABEL: Record<string, string> = {
 	meera: "Meera's",
 	'lakshmi-owner': "Lakshmi Agencies'",
 	neha: "Neha's",
-	shubham: "Shubham Provision's"
+	'kirana-shubham-provision': "Shubham Provision's",
+	'kirana-sri-lakshmi-ganapathi-kirana': "Sri Lakshmi Ganapathi Kirana's"
 };
 export const PLACE: Record<string, string> = {
 	priya: 'Munchly Foods, Pune',
@@ -21,10 +22,17 @@ export const PLACE: Record<string, string> = {
 	meera: 'Feeding India, Hyderabad',
 	'lakshmi-owner': 'Begum Bazaar godown, Hyderabad',
 	neha: 'Smart-Clearance, Bengaluru',
-	shubham: 'Dharampeth, Nagpur'
+	'kirana-shubham-provision': 'Dharampeth, Nagpur',
+	'kirana-sri-lakshmi-ganapathi-kirana': 'Begum Bazaar, Hyderabad'
 };
 /** the console's staff member, who is no one in the workspace */
-const NEHA = { id: 'neha', name: 'Neha Kulkarni', short: 'Neha', org: 'Smart-Clearance', role: 'Super admin' } as unknown as User;
+const NEHA = {
+	id: 'neha',
+	name: 'Neha Kulkarni',
+	short: 'Neha',
+	org: 'Smart-Clearance',
+	role: 'Super admin'
+} as unknown as User;
 /** who signs in with what, in the chips' first stage */
 export const PREFILL: Record<string, string> = {
 	priya: D.people.priya.email!,

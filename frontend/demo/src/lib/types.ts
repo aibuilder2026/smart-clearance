@@ -47,8 +47,10 @@ export type Station = {
 	title: string;
 	date: string;
 	/** the journey this station plays (the stub's scenario) and the stage it starts from */
-	scenario?: string;
+	scenario?: 'chips' | 'mango' | 'slow';
 	ff?: number;
+	/** actions run after the stage's start, before the station's first beat (the slow week's evidence, its yes) */
+	prep?: Act[];
 	amber?: boolean;
 	desk: DeviceSpec;
 	phone?: DeviceSpec | null;

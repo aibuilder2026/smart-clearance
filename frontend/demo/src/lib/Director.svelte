@@ -22,7 +22,11 @@
 	provideAccount({}); // the demo has no account controls: no switching person, no sign-out, no install
 
 	const app = useApp();
-	const p = new Player(ACTS, { scene: sceneAt, run: runAt, done: doneAt }, untrack(() => start));
+	const p = new Player(
+		ACTS,
+		{ scene: sceneAt, run: runAt, done: doneAt },
+		untrack(() => start)
+	);
 	let map = $state<'hop' | 'map' | null>(null);
 	let phoneOnly = $state(false);
 	let notes = $state(true);
@@ -134,9 +138,12 @@
 {#if real}
 	<div class="demo-real rb-real" bind:this={shell}>
 		<div class="real-bar">
-			<button type="button" class="iconbtn" aria-label="Back" onclick={p.back}><Icon name="chevron-left" size={22} /></button
+			<button type="button" class="iconbtn" aria-label="Back" onclick={p.back}
+				><Icon name="chevron-left" size={22} /></button
 			><button type="button" class="real-stage" onclick={() => (notes = !notes)} aria-label="Station notes"
-				><span class={cx('rb-card-n sm', toneOf(p.station))}>{p.pos.s + 1}</span><span class="stack tight" style="gap: 0"
+				><span class={cx('rb-card-n sm', toneOf(p.station))}>{p.pos.s + 1}</span><span
+					class="stack tight"
+					style="gap: 0"
 					><b>{lineName(p.act)} · {p.station.title}</b><span>{p.complete ? 'Station done' : p.beat.text}</span></span
 				></button
 			><button
@@ -148,7 +155,8 @@
 		</div>
 		<Stage {p} w={0} h={0} real />
 		<Sheet open={notes} onclose={() => (notes = false)} title="{lineName(p.act)} · {p.station.title}" detent="medium"
-			><Notes {p} compact /><div class="row" style="gap: 8px; margin-top: 12px">
+			><Notes {p} compact />
+			<div class="row" style="gap: 8px; margin-top: 12px">
 				<Button
 					variant="secondary"
 					icon="map"
@@ -165,7 +173,8 @@
 	<div class={cx('demo rb-demo', !notes && 'no-notes')} bind:this={shell}>
 		<header class="demo-top rb-top">
 			<span class="row tight demo-brand"
-				><button type="button" class="rb-home" onclick={onhome} aria-label="Back to the route map"><Mark size={30} /></button
+				><button type="button" class="rb-home" onclick={onhome} aria-label="Back to the route map"
+					><Mark size={30} /></button
 				><Wordmark size={17} /><span class="demo-tag">Guided demo</span></span
 			>
 			<Strip {p} onmap={() => (map = 'map')} />

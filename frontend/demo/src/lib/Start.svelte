@@ -7,7 +7,12 @@
 
 	// the start (director.jsx Start): the headline, Play the whole route, the legend, and the map, with a card naming what
 	// a line shows while the visitor points at it; on a phone, the lines as a list
-	type Props = { acts: StoryAct[]; outs: Record<Line, string>; onpick: (a: number, s: number) => void; onall: () => void };
+	type Props = {
+		acts: StoryAct[];
+		outs: Record<Line, string>;
+		onpick: (a: number, s: number) => void;
+		onall: () => void;
+	};
 	let { acts, outs, onpick, onall }: Props = $props();
 	const app = useApp();
 	const total = $derived(acts.reduce((t, a) => t + a.minutes, 0));
@@ -28,8 +33,8 @@
 		</div>
 		<div class="rb-intro-r">
 			<p class="rb-lede">
-				The platform sets Munchly Foods up. Then a batch of chips sells out, a batch of Mango Drink feeds Hyderabad, and a
-				slow week ends at the bin, on a second yes. Every screen is the real app, on sample data.
+				The platform sets Munchly Foods up. Then a batch of chips sells out, a batch of Mango Drink feeds Hyderabad, and
+				a slow week ends at the bin, on a second yes. Every screen is the real app, on sample data.
 			</p>
 			<div class="row wrap" style="gap: 18px; align-items: center">
 				<Button variant="primary" size="lg" icon="play" onclick={onall}>Play the whole route</Button>

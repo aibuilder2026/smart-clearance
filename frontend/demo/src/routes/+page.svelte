@@ -27,11 +27,17 @@
 {:else}
 	<div class="demo rb-shell">
 		<header class="demo-top rb-top">
-			<span class="row tight demo-brand"><Mark size={30} /><Wordmark size={17} /><span class="demo-tag">Guided demo</span></span
+			<span class="row tight demo-brand"
+				><Mark size={30} /><Wordmark size={17} /><span class="demo-tag">Guided demo</span></span
 			><span></span><span class="row tight demo-tools"><ModeMenuButton /></span>
 		</header>
 		<main class="rb-startwrap">
-			<Start acts={ACTS} outs={OUTS} onpick={(a, s) => play({ a, s, b: 0 }, false)} onall={() => play({ a: 0, s: 0, b: 0 }, true)} />
+			<Start
+				acts={ACTS}
+				outs={OUTS}
+				onpick={(a, s) => play({ a, s, b: 0 }, false)}
+				onall={() => play({ a: 0, s: 0, b: 0 }, true)}
+			/>
 		</main>
 	</div>
 {/if}

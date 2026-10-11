@@ -22,9 +22,14 @@
 		>{#if a.console}<span class="rb-badge-ic sm"><Icon name="layout-dashboard" size={14} /></span>{:else}<img
 				src={img(a.img ?? '')}
 				alt=""
-			/>{/if}<span class="rb-strip-t"><b>{lineName(a)}</b><span>{p.station.title} · {p.pos.s + 1} of {n}</span></span></span
+			/>{/if}<span class="rb-strip-t"><b>{lineName(a)}</b><span>{p.station.title} · {p.pos.s + 1} of {n}</span></span
+		></span
 	>
-	<ol class="rb-stops" style="grid-template-columns: repeat({n}, minmax(0, 1fr)); --n: {n}" aria-label="Stations on this line">
+	<ol
+		class="rb-stops"
+		style="grid-template-columns: repeat({n}, minmax(0, 1fr)); --n: {n}"
+		aria-label="Stations on this line"
+	>
 		<span class="rb-track" aria-hidden="true"
 			><span style="transform: scaleX({n > 1 ? along / (n - 1) : 1})"></span></span
 		>
@@ -37,7 +42,9 @@
 					onclick={() => p.go(p.pos.a, i, 0)}
 					aria-current={s === 'now' ? 'step' : undefined}
 					aria-label="{st.title}{s === 'done' ? ', done' : ''}"
-					><span class="rb-dot">{#if s === 'done'}<Icon name="check" size={11} stroke={3} />{/if}</span></button
+					><span class="rb-dot"
+						>{#if s === 'done'}<Icon name="check" size={11} stroke={3} />{/if}</span
+					></button
 				>
 			</li>
 		{/each}

@@ -12,7 +12,13 @@
 </script>
 
 <!-- a dialog over the stage, which is inert behind it while it shows (Director.svelte) -->
-<div class="finale rb-end" role="dialog" aria-modal="true" aria-labelledby="rb-end-title" transition:rise|global={{ y: 0, duration: 240 }}>
+<div
+	class="finale rb-end"
+	role="dialog"
+	aria-modal="true"
+	aria-labelledby="rb-end-title"
+	transition:rise|global={{ y: 0, duration: 240 }}
+>
 	<div class="finale-in">
 		<Mark size={56} play={!reduce} />
 		<span class="finale-ws"><WorkspaceMark ws={WS} size={22} /><span>{WS.name} · {WS.domain}</span></span>

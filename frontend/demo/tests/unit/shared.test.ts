@@ -26,7 +26,16 @@ function prototype(): any[] {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const window: Record<string, any> = { SC3_IMG: 'sc3img:/' };
 	const sandbox = vm.createContext({ window, console, Date, Intl, Math, JSON, btoa, unescape, encodeURIComponent });
-	for (const p of ['core/money.js', 'core/papers.js', 'core/data.js', 'core/store.js', 'core/flow.js', 'core/world.js', 'core/ledger.js', 'demo/story.js'])
+	for (const p of [
+		'core/money.js',
+		'core/papers.js',
+		'core/data.js',
+		'core/store.js',
+		'core/flow.js',
+		'core/world.js',
+		'core/ledger.js',
+		'demo/story.js'
+	])
 		vm.runInContext(readFileSync(design3(p), 'utf8'), sandbox, { filename: design3(p) });
 	return window.SC3_STORY.ACTS;
 }
@@ -37,7 +46,10 @@ const device = (d?: DeviceSpec | null) =>
 		? d
 		: {
 				...d,
-				lock: d.lock === undefined ? undefined : d.lock && { who: d.lock.who, push: d.lock.push && { title: d.lock.push.title, body: d.lock.push.body } }
+				lock:
+					d.lock === undefined
+						? undefined
+						: d.lock && { who: d.lock.who, push: d.lock.push && { title: d.lock.push.title, body: d.lock.push.body } }
 			};
 const beat = (b: Beat) => ({
 	text: b.text,
@@ -67,11 +79,19 @@ const act = (a: StoryAct) => ({
 		id: st.id,
 		title: st.title,
 		date: st.date,
+		scenario: st.scenario,
 		ff: st.ff,
+		prep: (st.prep ?? []).map((a) => [...a]),
 		amber: !!st.amber,
 		desk: device(st.desk),
 		phone: device(st.phone),
-		figures: (st.figures ?? []).map((f) => ({ label: f.label, value: f.value, decimals: !!f.decimals, tone: f.tone, count: !!f.count })),
+		figures: (st.figures ?? []).map((f) => ({
+			label: f.label,
+			value: f.value,
+			decimals: !!f.decimals,
+			tone: f.tone,
+			count: !!f.count
+		})),
 		beats: st.beats.map(beat)
 	}))
 });

@@ -18,7 +18,7 @@
 	// the staff console inside the demo (director.jsx ConsoleScreen, SC-169): the console's own app, embedded, on its
 	// demo world (Munchly Foods and four fictional clients), at the beat's route; the visitor can wander off in it, and a
 	// new beat points it back. A beat can name a heading to scroll to, by its words
-	let { spec }: { spec: DeviceSpec; onsignin?: () => void } = $props();
+	let { spec }: { spec: DeviceSpec } = $props();
 
 	const signin = $derived(!!spec.signin);
 	const beatRoute = (): ConsoleRoute => {

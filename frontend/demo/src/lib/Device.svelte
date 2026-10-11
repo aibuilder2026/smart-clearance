@@ -62,7 +62,11 @@
 		spec.signin
 			? 'sign-in'
 			: [route.name || HOME[me.role], route.params?.ref].filter(Boolean).join('/') +
-					(route.params?.tab ? '?tab=' + route.params.tab : route.params?.reading ? '?reading=' + route.params.reading : '')
+					(route.params?.tab
+						? '?tab=' + route.params.tab
+						: route.params?.reading
+							? '?reading=' + route.params.reading
+							: '')
 	);
 	const url = $derived(me.role === 'buyer' ? 'https://expiresoon.example/l/ES-24117' : `https://${WS.domain}/${path}`);
 </script>
@@ -99,7 +103,10 @@
 			class={cx('dev-ring', focus && 'on', amber && 'amber')}
 			style="width: {414 * scale}px; height: {868 * scale}px; border-radius: {60 * scale}px"
 		>
-			<div bind:this={screen} style="width: 414px; height: 868px; transform: scale({scale}); transform-origin: top left">
+			<div
+				bind:this={screen}
+				style="width: 414px; height: 868px; transform: scale({scale}); transform-origin: top left"
+			>
 				<PhoneFrame {time} dark={!!spec.lock}>{@render app()}</PhoneFrame>
 			</div>
 		</div>

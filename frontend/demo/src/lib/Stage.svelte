@@ -28,7 +28,7 @@
 </script>
 
 {#if real}
-	{#if p.act.console}<div class="real-console"><ConsoleScreen spec={sp.desk} onsignin={p.tap} /></div>{:else}<Device
+	{#if p.act.console}<div class="real-console"><ConsoleScreen spec={sp.desk} /></div>{:else}<Device
 			kind="bare"
 			spec={solo}
 			{time}
@@ -38,7 +38,7 @@
 {:else if w > 0 && h > 0}
 	<div class="devices">
 		{#if p.act.console}
-			<ConsoleDevice spec={sp.desk} width={fit.winW} height={fit.winH} scale={fit.sw} onsignin={p.tap} />
+			<ConsoleDevice spec={sp.desk} width={fit.winW} height={fit.winH} scale={fit.sw} />
 		{:else if phoneOnly}
 			<Device
 				kind="phone"

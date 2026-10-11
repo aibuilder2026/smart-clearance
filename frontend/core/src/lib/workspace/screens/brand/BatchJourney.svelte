@@ -12,7 +12,7 @@
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
 	import { useRoute } from '../../context';
 	import { useLive } from '../../live.svelte';
-	import { castOf, clusterOf, fmt, heroModel, isRouted, type JourneyItem } from '../../model';
+	import { castOf, clusterOf, fmt, heroModel, isRouted, placedOf, recoveredOf, type JourneyItem } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { BatchView, User } from '../../types';
 	import Screen from '../common/Screen.svelte';
@@ -57,11 +57,9 @@
 				roll
 				style="color: var(--primary-text)"
 			/><span class="t-footnote subtle"
-				>{s.hero.posted
-					? 'recovered, after the negotiation'
-					: routed
-						? 'on plan · settles day 3–7'
-						: 'net recovered on the plan'} · swing {fmt.inr(s.hero.posted ? c.actual.swing : c.plan.swing)}</span
+				>{s.hero.posted ? recoveredOf(c) : routed ? 'on plan · settles day 3–7' : 'net recovered on the plan'} · swing {fmt.inr(
+					s.hero.posted ? c.actual.swing : c.plan.swing
+				)}</span
 			>
 		</div>{/if}{/snippet}
 {#snippet card()}{#if c && hm && cast}<div class={dim ? 'lv-dim' : undefined}>
@@ -83,7 +81,7 @@
 				{primary}
 				money={s.hero.plan ? money : undefined}
 				line={s.hero.phase === 'cleared'
-					? `All ${fmt.num(c.plan.units)} units placed: ${c.lines.kirana.units} with ${c.kiranas.length} kiranas, ${c.lines.expiresoon.units} with a ${c.buyer.city} wholesaler. Nothing went to the bin.`
+					? `All ${fmt.num(c.plan.units)} units placed: ${placedOf(c)}. Nothing went to the bin.`
 					: undefined}
 			/>
 		</div>{:else}<div class="bezel">

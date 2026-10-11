@@ -6,7 +6,7 @@
   const HERO = D.BATCHES.find((b) => b.hero), CHIPS = D.SKUS[HERO.sku];
   const INVITE = { app: "Messages", icon: "message-circle", title: "Munchly Foods", body: `Munchly Foods has added Rakesh Traders to its Smart-Clearance workspace. Sign in at ${D.WORKSPACE.domain} with this number.` };
   const MS = D.storyOf("mango"), SS = D.storyOf("slow"), MJ = MS.journey, SJ = SS.journey, CJ = D.JOURNEY;
-  MS.shopName = (window.SC3_WORLD.KIRANAS.find((k) => k.id === MS.shop) || { name: "A Hyderabad kirana" }).name;
+  const SHOP = (MS.kiranas.find((k) => k.id === MS.shop) || { name: "A Hyderabad kirana" }).name;
   const SLOW = { left: SS.expiry.units, ordered: SS.kiranas.reduce((t, k) => t + k.units, 0) };
   const DAYS = { Mon: "Monday", Tue: "Tuesday", Wed: "Wednesday", Thu: "Thursday", Fri: "Friday", Sat: "Saturday", Sun: "Sunday" }, MONTHS = { Oct: "October", Nov: "November" };
   const long = (d) => {
@@ -138,7 +138,7 @@
           { text: `09:00 · the Watcher flags ${MS.batch.id} at Lakshmi Agencies: ${MS.batch.daysLeft} days left, every quick-commerce gate failed`, agent: "Watcher", focus: "desk", time: "09:00", acts: [["detect"]], screen: "Command Center" },
           { text: "The push lands on Priya's phone", who: "priya", focus: "phone", time: "09:00", phone: { lock: { who: "priya", push: MS.push.detect } }, screen: "Lock screen" }
         ] },
-        { id: "verify", title: "Verify", date: "Friday 2 October", scenario: "mango", ff: 2, desk: { who: "priya", route: "route", anchor: "label" }, phone: { who: "lakshmi-owner", route: "photo" }, figures: [{ label: "MRP, confirmed from the pack", value: MS.sku.mrp, decimals: true }], beats: [
+        { id: "verify", title: "Verify", date: "Friday 2 October", scenario: "mango", ff: 2, desk: { who: "priya", route: "route", anchor: "label" }, phone: { who: "lakshmi-owner", route: "photo" }, figures: [{ label: "MRP, confirmed from the pack", value: D.SKUS[MS.batch.sku].mrp, decimals: true }], beats: [
           { text: "Vision asks Lakshmi Agencies for one label photo", agent: "Vision", focus: "desk", time: MS.at.ask, acts: [["requestPhoto"]], phone: { lock: { who: "lakshmi-owner", push: null } }, screen: "Route Room · label" },
           { text: "The push lands at the Begum Bazaar godown", who: "lakshmi-owner", focus: "phone", time: MS.at.ask, phone: { lock: { who: "lakshmi-owner", push: MS.push.verify } }, screen: "Lock screen" },
           { text: "Lakshmi Agencies takes a photo of one carton's label, its barcode and QR code in view", who: "lakshmi-owner", focus: "phone", time: MS.at.photo, acts: [["sendPhoto"]], screen: "Label photo · take or upload" },
@@ -154,7 +154,7 @@
         { id: "execute", title: "Execute", date: "Friday 2 October", scenario: "mango", ff: 6, desk: { who: "priya", route: "execution" }, phone: { who: MS.accounts.kirana, route: "offer" }, figures: [{ label: `To ${MS.kiranas.length} kiranas`, value: ML("kirana").units, count: true }, { label: "Staff sale", value: ML("staff").units, count: true }, { label: "Feeding India", value: ML("foodbank").units, count: true, tone: "green" }], beats: [
           { text: `Outreach pushes the Hindi scheme to ${MS.offered} kiranas around Begum Bazaar`, agent: "Outreach", focus: "desk", time: MS.at.offer, acts: [["outreach"]], phone: { lock: { who: MS.accounts.kirana, push: MS.push.offer } }, screen: "Execution · the scheme" },
           { text: `Donation books Feeding India for ${ML("foodbank").units} packs, with the FSSAI checklist`, agent: "Donation", focus: "desk", time: MS.at.offer, acts: [["donate"]], phone: { lock: { who: MS.accounts.kirana, push: MS.push.offer } }, screen: "Execution · the food bank" },
-          { text: `${MS.shopName} takes its share in one tap, and its tax invoice comes with it`, who: MS.accounts.kirana, focus: "phone", time: "09:52", acts: [["order", MS.shop]], screen: "Offer · one tap" },
+          { text: `${SHOP} takes its share in one tap, and its tax invoice comes with it`, who: MS.accounts.kirana, focus: "phone", time: "09:52", acts: [["order", MS.shop]], screen: "Offer · one tap" },
           { text: `${MS.kiranas.length - 1} more kiranas order the rest of the ${fmt.num(ML("kirana").units)} packets`, agent: "Outreach", focus: "desk", time: "11:36", acts: [["allOrders"]], screen: "Execution · the scheme filled" },
           { text: `Lakshmi Agencies sells ${ML("staff").units} packs to her staff at ₹8, against her UPI code, and records it once`, who: "lakshmi-owner", focus: "phone", human: true, date: "Saturday 3 October", time: "17:30", acts: [["recordStaffSale", ML("staff").units]], phone: { who: "lakshmi-owner", route: "van" }, screen: "Deliveries · the staff sale" },
           { text: `Meera at Feeding India confirms ${MJ.donation.day}'s pickup`, who: "meera", focus: "phone", date: "Saturday 3 October", time: "12:30", acts: [["confirmPickup"]], phone: { who: "meera", route: "pickups" }, screen: "Food bank · pickups" },

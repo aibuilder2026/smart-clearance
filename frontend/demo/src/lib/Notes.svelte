@@ -87,8 +87,11 @@
 			onclick={p.back}
 			disabled={p.pos.a === 0 && p.pos.s === 0 && p.pos.b === 0}
 			aria-label="Back">Back</Button
-		><Button variant={!p.complete && p.beat.human ? 'approve' : 'primary'} iconRight="arrow-right" block onclick={p.next}
-			>{nextLabel}</Button
+		><Button
+			variant={!p.complete && p.beat.human ? 'approve' : 'primary'}
+			iconRight="arrow-right"
+			block
+			onclick={p.next}>{nextLabel}</Button
 		>
 	</div>
 </aside>

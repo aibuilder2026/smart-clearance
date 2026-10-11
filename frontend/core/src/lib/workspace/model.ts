@@ -42,6 +42,23 @@ export const PHASE_STATUS: Record<Phase, string> = {
 /** the phases from the approval on, and from the papers on */
 export const ROUTED: Phase[] = ['approved', 'executing', 'dispatched', 'settled', 'cleared'];
 export const isRouted = (p: Phase) => ROUTED.includes(p);
+/** the batch placed, line by line, once it has cleared (brand.jsx CommandCenter's placed): what each exit took */
+export const placedOf = (c: CaseData) =>
+	c.plan.lines
+		.filter((l) => l.units > 0 && l.id !== 'writeoff')
+		.map((l) =>
+			l.id === 'kirana'
+				? `${fmt.num(l.units)} with ${c.kiranas.length} kiranas`
+				: l.id === 'expiresoon'
+					? `${fmt.num(l.units)} with a ${c.buyer.city} wholesaler`
+					: l.id === 'staff'
+						? `${fmt.num(l.units)} at the staff sale`
+						: `${fmt.num(l.units)} to ${c.donation ? c.donation.partner.name : 'a food bank'}`
+		)
+		.join(', ');
+/** what the recovered figure says once the ledger posts: after the negotiation, or with every line done (no lot) */
+export const recoveredOf = (c: CaseData) =>
+	c.lines.expiresoon.units > 0 ? 'recovered, after the negotiation' : 'recovered, every line done';
 
 /** a batch with its SKU and distributor */
 export const viewOf = (b: Batch, data: Pick<WorkspaceData, 'skus' | 'distributors'>): BatchView => ({

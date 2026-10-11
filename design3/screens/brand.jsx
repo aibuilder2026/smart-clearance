@@ -153,7 +153,7 @@
     const money = s.hero.plan ? <div className="stack tight" style={{ gap: 2 }}><Money value={s.hero.posted ? C.actual.net : C.plan.net} size={phone ? "s" : "m"} roll style={{ color: "var(--primary-text)" }} /><span className="t-footnote subtle">{s.hero.posted ? (C.ES ? "recovered, after the negotiation" : "recovered, every line done") : routed ? "on plan · settles day 3–7" : "net recovered on the plan"} · swing {fmt.inr(s.hero.posted ? C.actual.swing : C.plan.swing)}</span></div> : undefined;
     const holder = personOf(C, C.accounts.distributor);
     // the batch placed, line by line (or what was destroyed at the godown, on the operator's yes)
-    const placed = C.plan.lines.filter(l => l.units > 0 && l.id !== "writeoff").map(l => l.id === "kirana" ? `${l.units} with ${C.kiranas.length} kiranas` : l.id === "expiresoon" ? `${l.units} with a ${D.BUYER.city} wholesaler` : l.id === "staff" ? `${l.units} at the staff sale` : `${l.units} to ${C.donation ? C.donation.partner.name : "a food bank"}`).join(", ");
+    const placed = C.plan.lines.filter(l => l.units > 0 && l.id !== "writeoff").map(l => l.id === "kirana" ? `${fmt.num(l.units)} with ${C.kiranas.length} kiranas` : l.id === "expiresoon" ? `${fmt.num(l.units)} with a ${D.BUYER.city} wholesaler` : l.id === "staff" ? `${fmt.num(l.units)} at the staff sale` : `${fmt.num(l.units)} to ${C.donation ? C.donation.partner.name : "a food bank"}`).join(", ");
     // the stock export mapped (on the live workspace once the console or Setup has an export mapped; SC-84): what is
     // left before the Watcher starts is the operator's yes to the guardrails
     const ready = !S.useLive() || s.setup.mapped > 0;

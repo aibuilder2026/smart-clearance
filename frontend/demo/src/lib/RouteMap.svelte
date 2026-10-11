@@ -1,5 +1,14 @@
 <script lang="ts">
-	import { cx, fmt, Icon, imgUrl, prefersReducedMotion, SPRINGS, springCurve, WorkspaceMark } from '@smart-clearance/core';
+	import {
+		cx,
+		fmt,
+		Icon,
+		imgUrl,
+		prefersReducedMotion,
+		SPRINGS,
+		springCurve,
+		WorkspaceMark
+	} from '@smart-clearance/core';
 	import { WS } from '@smart-clearance/core/workspace';
 	import { BADGE, BADGE_AT, BLOCKS, DRAW_ORDER, GEO, HUB, lineName, RIVER, SHARED, short, toneOf } from './map.ts';
 	import type { Line, Pos, StoryAct } from './types.ts';
@@ -47,7 +56,9 @@
 >
 	<g class="rb-plate" aria-hidden="true">
 		<defs>
-			<pattern id="{uid}d" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.3" class="rb-dot" /></pattern>
+			<pattern id="{uid}d" width="22" height="22" patternUnits="userSpaceOnUse"
+				><circle cx="2" cy="2" r="1.3" class="rb-dot" /></pattern
+			>
 			<clipPath id="{uid}c"><rect x="44" y="40" width="1372" height="632" rx="36" /></clipPath>
 		</defs>
 		<rect x="44" y="40" width="1372" height="632" rx="36" class="rb-ground" />
@@ -106,7 +117,8 @@
 		<foreignObject x={HUB[0] - 14} y={HUB[1] - 14} width="28" height="28"
 			><div class="rb-hub-mark"><WorkspaceMark ws={WS} size={28} /></div></foreignObject
 		>
-		{#if !compact}<text x={HUB[0] - 34} y={HUB[1] + 5} text-anchor="end" class="rb-lbl strong">Munchly's workspace</text>{/if}
+		{#if !compact}<text x={HUB[0] - 34} y={HUB[1] + 5} text-anchor="end" class="rb-lbl strong">Munchly's workspace</text
+			>{/if}
 	</g>
 	{#if !compact}
 		{#each ['chips', 'slow', 'mango'] as const as id, k (id)}
