@@ -40,6 +40,8 @@ export type Sku = {
 	perCarton: number;
 	lifeDays: number;
 	kgPerUnit: number;
+	/** the plastic packaging on a pack, in kg (SC-125) */
+	packKg?: number;
 	img: string;
 	/** the product's own tax history, as its invoice states it */
 	gstNote?: string;
@@ -541,9 +543,13 @@ export type Hero = {
 	 *  story's stub opens none */
 	staff?: StaffSale | null;
 	/** the packs left at his godown on expiry day and their settlement, destroyed there against evidence (SC-139); the
-	 *  story clears every pack, so the stub has these only when they are put in its store */
+	 *  story clears every pack, so the stub has these only when they are put in its store, or on the slow chips' expiry
+	 *  day (SC-168) */
 	expiry?: ExpirySettlement | null;
 	destruction?: Destruction | null;
+	/** what each line took once the scheme's window closed short, and the packs left at the godown (the stub's slow
+	 *  chips, SC-168) */
+	realised?: { lines: { id: string; units: number }[]; godown: number } | null;
 };
 
 export type StaffSale = {
@@ -621,6 +627,82 @@ export type State = {
 	rules: Rules;
 	integrations: Integration[];
 	seq: number;
+	/** the stub's journey (SC-168): the Mango Drink's own or the slow chips'; none for the story's chips */
+	scenario?: StoryKey;
+};
+
+/** the stub's three journeys (SC-168, design3/core/data.js STORIES): the story's chips, the Mango Drink's own journey
+ *  at Lakshmi Agencies, and the slow chips, whose packs left at the godown are destroyed there on expiry day */
+export type StoryKey = 'chips' | 'mango' | 'slow';
+/** a journey of the stub: its batch and people, the plan and its money, the papers, the pushes, the timeline and the
+ *  moments its steps carry, as design3's data.js works them out */
+export type Story = {
+	key: StoryKey;
+	title: string;
+	batch: Batch;
+	batches: Batch[];
+	sku: Sku;
+	dist: Distributor;
+	/** who acts: the distributor's account, the shop a person plays, the food bank, the buyer and the shop that declines */
+	accounts: {
+		distributor: string;
+		kirana: string;
+		foodbank: string | null;
+		buyer: string | null;
+		decliner: string | null;
+	};
+	people: Record<string, StoryPerson>;
+	/** the shops that order, and how many the scheme goes to */
+	kiranas: Kirana[];
+	offered: number;
+	/** the shop a person plays, and the one that says Not this time */
+	shop: string;
+	decliner: string | null;
+	/** whether its scheme fills, or its window closes short */
+	fills: boolean;
+	scheme: string;
+	risk: Assess;
+	plan: Plan;
+	KL: PlanLine | null;
+	ES: PlanLine | null;
+	counter: WorkspaceSeed['counter'] | null;
+	award: Award | null;
+	actual: Actual;
+	support: Support;
+	supportPlan: Support;
+	claim: WorkspaceSeed['claim'];
+	docs: Doc[];
+	invoice: Doc | null;
+	returnBy: string;
+	realised: { lines: { id: string; units: number }[]; godown: number } | null;
+	expiry: ExpirySettlement | null;
+	push: Record<string, Push>;
+	chat: ChatMessage[];
+	events: FeedEvent[];
+	journey: Omit<Journey, 'listing'>;
+	listing: Journey['listing'] | null;
+	/** the batch the same agents donate: the Mango Drink beside the chips, or the Mango Drink's own */
+	donation: { batch: Batch; plan: Plan; units: number; partner: Partner; receipt: Doc } | null;
+	/** the second batch in motion beside the story's chips */
+	second: Batch | null;
+	evidence: { before: string; after: string; slate: string | null; when: string };
+	agency: DestructionAgency | null;
+	certificate: string | null;
+	expiryNo: string | null;
+	expiryDay: string | null;
+	/** when each person's step happens */
+	at: Record<string, string>;
+	cleared: string;
+	outcome: LedgerOutcome;
+	/** the van round's day after day 0 */
+	vanDay: number;
+	pron: string;
+	explore: Explore;
+	stages: string[];
+	setupDone: boolean;
+	initial: State;
+	/** once Impact has posted it: its papers and its ledger row */
+	end: { docs: Doc[]; row: LedgerBatch };
 };
 
 /** everything the seed carries */
@@ -877,6 +959,9 @@ export type CaseData = {
 	expiry?: ExpirySettlement | null;
 	/** the packs destroyed at his godown, while the evidence is asked for, checked and approved (SC-139) */
 	destruction?: Destruction | null;
+	/** the stub's journey (SC-168): whether its scheme fills, how many packs left at the godown expire there, the van
+	 *  round's day after day 0, and whether it begins with the distributor's permission; the live workspace has none */
+	story?: { key: StoryKey; fills: boolean; expires: number; vanDay: number; permits: boolean };
 	/** the batch the same agents donate: how many packs go to the food bank, which partner takes them, and when */
 	donation: { batch: Batch; sku: Sku; dist: Distributor; plan: Plan; units: number; partner: Partner } & Omit<
 		Journey['donation'],
@@ -978,7 +1063,9 @@ export type PtWhole = {
 };
 /** a cleared batch's sum, as his Batches and Orders show it (SC-145): what he sold from it, what the client credited him,
  *  and what it cost him; the sold and the credited make the cost */
-export type PtSum = { ref: string; sold: number; credit: number; cost: number };
+/** notes: how many credit notes carried the credit, where more than one (the slow chips' price support and expiry
+ *  credit note, SC-168) */
+export type PtSum = { ref: string; sold: number; credit: number; cost: number; notes?: number };
 /** every batch he cleared, summed, with the credit notes that carried the credit */
 export type PtSums = { n: number; sold: number; credit: number; cost: number; notes: number; batches: PtSum[] };
 /** an offer a kirana was sent, and what came of it */

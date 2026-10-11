@@ -296,16 +296,21 @@ export function sumsOf(past: PartnerCase[], w: PartnerWorld, story: PtSum[] = []
 			(n, c) =>
 				n + c.docs.filter((d) => (d.id === 'support' || d.id === 'expiry') && d.status !== 'not required').length,
 			0
-		) + story.length;
+		) + story.reduce((n, x) => n + (x.notes ?? 1), 0);
 	return { n: past.length + story.length, sold: t('sold'), credit: t('credit'), cost: t('cost'), notes, batches };
 }
 /** the story's batch once its journey has cleared (SC-162; ledger.js storySum): its sum from its own money, as its
  *  page's Money tab reads it (storyWhole): what he sold, what the client credited him, and what it cost him */
-export function storySum(c: CaseData, h: Pick<Hero, 'award' | 'phase'>, short: string): PtSum {
+export function storySum(c: CaseData, h: StoryHero, short: string): PtSum {
 	const x = storyWhole(c, h, short);
-	const credit = r2(x.rows.filter((r) => r.k === 'Price-support credit note').reduce((t, r) => t + r.v, 0));
-	return { ref: c.batch.id, sold: r2(x.recv - credit), credit, cost: x.paid };
+	// its credit notes: the price support, and on expiry day the expiry credit note (the slow chips, SC-168)
+	const notes = x.rows.filter((r) => r.k === 'Price-support credit note' || /^Expiry credit note/.test(r.k));
+	const credit = r2(notes.reduce((t, r) => t + r.v, 0));
+	return { ref: c.batch.id, sold: r2(x.recv - credit), credit, cost: x.paid, ...(notes.length > 1 ? { notes: notes.length } : {}) };
 }
+/** what the story's money reads of the batch's state: the price the buyer took, where it stands, and on expiry day its
+ *  settlement once the destruction is approved */
+type StoryHero = Pick<Hero, 'award' | 'phase'> & Partial<Pick<Hero, 'expiry' | 'destruction'>>;
 
 /** the batch in a journey: what has happened so far, by the journey's moments, then the next three still to come. The
  *  stub reads them off the journey's feed; a partner on the live workspace, who is not sent the feed, off the steps
@@ -337,8 +342,15 @@ export function storyMoments(
 	const ordered = h.orders.reduce((t, o) => t + o.units, 0);
 	// the packs the Watcher flagged: the plan's, or (a partner is not sent the plan) the batch's own at risk
 	const flagged = c.plan.lines.length ? c.plan.units : c.risk.atRisk || c.plan.units;
-	const MOMENTS: [string, string, string][] = [
-		...(permit ? ([['permit', 'handshake', 'You gave the one-time permission']] as [string, string, string][]) : []),
+	// the stub's journeys (SC-168): its shops' own orders, its donation and staff sale, a window that closes short, and
+	// the packs destroyed at his godown on expiry day
+	const st = c.story,
+		own = !!st && c.donation.units > 0 && c.donation.batch.id === c.batch.id;
+	const staff = st ? c.plan.lines.find((l) => l.id === 'staff' && l.units > 0) : undefined;
+	const shopsOrder = st ? c.kiranas.reduce((t, k) => t + k.units, 0) : 0;
+	type M = [string, string, string, string?];
+	const MOMENTS: M[] = [
+		...(permit && (!st || st.permits) ? ([['permit', 'handshake', 'You gave the one-time permission']] as M[]) : []),
 		['watch', 'radar', `The Watcher flagged ${num(flagged)} packs at risk`],
 		['ask', 'scan-line', 'Vision asked you for a label photo'],
 		['photo', 'camera', 'You sent the label photo'],
@@ -354,6 +366,9 @@ export function storyMoments(
 		...(c.lines.kirana.units
 			? ([['outreach', 'send', `The scheme went to ${c.offered} of your kiranas`]] as [string, string, string][])
 			: []),
+		...(own
+			? ([['donate', 'heart-handshake', `${c.donation.partner.name} booked for ${num(c.donation.units)} packs`]] as M[])
+			: []),
 		...(c.lines.expiresoon.units
 			? ([['accepted', 'handshake', `${w.buyer.name} took the counter at ${rate(c.award.price)}`]] as [
 					string,
@@ -366,9 +381,23 @@ export function storyMoments(
 					[
 						'orders',
 						'store',
-						`${h.orders.length || c.kiranas.length} kiranas ordered ${num(ordered || c.lines.kirana.units)} packets`
+						`${h.orders.length || c.kiranas.length} kiranas ordered ${num(ordered || shopsOrder || c.lines.kirana.units)} packets`
 					]
 				] as [string, string, string][])
+			: []),
+		...(c.lines.kirana.units && st && !st.fills
+			? ([
+					[
+						'closeOffer',
+						'clock',
+						'The scheme closed after 48 hours',
+						`${num(c.lines.kirana.units - shopsOrder)} packets were not ordered`
+					]
+				] as M[])
+			: []),
+		...(staff ? ([['staff', 'users', `Your staff sale sold ${num(staff.units)} packs`]] as M[]) : []),
+		...(own
+			? ([['collect', 'package-check', `${c.donation.partner.name} collected ${num(c.donation.units)} packs`]] as M[])
 			: []),
 		...(c.lines.expiresoon.units
 			? ([['dispatch', 'truck', `You loaded ${w.buyer.name}'s truck`]] as [string, string, string][])
@@ -377,13 +406,20 @@ export function storyMoments(
 		...(c.lines.kirana.units
 			? ([['van', 'route', `Your ${c.van.day} van round delivered the scheme`]] as [string, string, string][])
 			: []),
+		...(st?.expires
+			? ([
+					['destroyAsk', 'warehouse', `Asked to destroy ${num(st.expires)} expired packs at your godown`],
+					['destroySent', 'camera', "You sent the destruction's evidence"],
+					['destroyApproved', 'badge-check', `${w.people?.priya?.short ?? 'Priya'} approved the destruction`]
+				] as M[])
+			: []),
 		['ledger', 'badge-check', 'Settled: you ended whole']
 	];
 	const items: PtMoment[] = [];
 	let next = 0;
-	for (const [k, icon, title] of MOMENTS) {
+	for (const [k, icon, title, sub] of MOMENTS) {
 		const e = feed.find((x) => x.key === k);
-		if (e) items.push({ k, icon, title, at: e.at });
+		if (e) items.push({ k, icon, title, at: e.at, ...(sub ? { sub } : {}) });
 		else if (next < 3 && feed.length) {
 			items.push({ k, icon, title, ahead: true });
 			next++;
@@ -394,18 +430,32 @@ export function storyMoments(
 /** the batch in a journey's money, on the plan: the kiranas, the buyer (the price he took once he has) and the price
  *  support make up what he paid. A partner is not sent the client's plan (the live workspace, SC-94): his lines are the
  *  credit note's rows, on the plan until it settles, then what each line took, with the expiry credit on expiry day */
-export function storyWhole(c: CaseData, h: Pick<Hero, 'award' | 'phase'>, short: string): PtWhole {
+export function storyWhole(c: CaseData, h: StoryHero, short: string): PtWhole {
 	if (!c.plan.lines.length) return rowsWhole(c, h, short);
-	const KL = c.lines.kirana,
-		ES = c.lines.expiresoon;
+	// each line as it came to: the plan's, or what the stub's journey says it took (the slow chips' scheme, SC-168)
+	const took = (id: string) => {
+		const l = c.plan.lines.find((x) => x.id === id && x.units > 0);
+		if (!l) return null;
+		const units = c.story ? (c.realised?.lines.find((x) => x.id === id)?.units ?? l.units) : l.units;
+		return { units, gross: units === l.units ? l.gross : r2(units * l.price) };
+	};
+	const kl = took('kirana'),
+		es = took('expiresoon'),
+		st = took('staff'),
+		fb = took('foodbank');
 	const sp = c.support ?? c.supportPlan;
 	const rows: PtWhole['rows'] = [];
-	if (KL.units) rows.push({ k: 'From your kiranas', sub: `${num(KL.units)} packets on the scheme`, v: KL.gross });
-	if (ES.units)
-		rows.push({ k: `From ${c.buyer.name}`, sub: `${num(ES.units)} packets`, v: h.award ? c.award.gross : ES.gross });
+	if (kl) rows.push({ k: 'From your kiranas', sub: `${num(kl.units)} packets on the scheme`, v: kl.gross });
+	if (es) rows.push({ k: `From ${c.buyer.name}`, sub: `${num(es.units)} packets`, v: h.award ? c.award.gross : es.gross });
+	if (st) rows.push({ k: 'Your staff sale', sub: `${num(st.units)} packs`, v: st.gross });
+	if (fb) rows.push({ k: `Given to ${c.donation.partner.name}`, sub: `${num(fb.units)} packs`, v: 0 });
 	rows.push({ k: 'Price-support credit note', sub: `from ${short}`, v: sp.total });
+	// destroyed at his godown on expiry day (SC-139): the expiry credit note once the destruction is approved, making
+	// good the GST he reverses and the agency's charges
+	const x = h.expiry && h.destruction?.status === 'approved' ? h.expiry : null;
+	if (x) rows.push({ k: `Expiry credit note for ${num(x.units)} packs`, sub: `from ${short}`, v: x.amount ?? 0 });
 	const recv = rows.reduce((t, r) => t + r.v, 0),
-		paid = c.plan.units * c.sku.dp! + sp.van + sp.fee;
+		paid = c.plan.units * c.sku.dp! + sp.van + sp.fee + (x ? (x.reversal ?? 0) + (x.charges ?? 0) : 0);
 	return { rows, recv, paid, gain: Math.round(recv - paid), dp: c.sku.dp!, units: c.plan.units };
 }
 function rowsWhole(c: CaseData, h: Pick<Hero, 'phase'>, short: string): PtWhole {
@@ -500,14 +550,16 @@ export function offersFor(
 		sku = c.sku;
 	const o = h.orders.find((x) => x.id === shop.id),
 		dec = h.declined?.[shop.id];
-	const filled = h.orders.reduce((t, x) => t + x.units, 0) >= KL.units;
+	// the scheme filled before the shop ordered, or its 48 hours ended (the slow chips' window, SC-168)
+	const filled = h.orders.reduce((t, x) => t + x.units, 0) >= KL.units,
+		over = filled || h.offer!.status === 'closed';
 	const sent = `${day0}T${h.offer!.at}`;
-	const status = o ? 'ordered' : dec ? 'declined' : filled ? 'expired' : 'open';
+	const status = o ? 'ordered' : dec ? 'declined' : over ? 'expired' : 'open';
 	const last = h.orders.reduce((t, x) => (x.at > t ? x.at : t), '00:00');
 	const mine: PtOffer = {
 		ref: c.batch.id,
 		story: true,
-		open: !filled,
+		open: !over,
 		sku,
 		dist: c.dist,
 		sent,
@@ -517,11 +569,11 @@ export function offersFor(
 		mrp: sku.mrp,
 		bestBefore: c.batch.bestBefore!,
 		status,
-		why: status === 'expired' ? 'filled' : null,
+		why: status === 'expired' ? (filled ? 'filled' : 'time') : null,
 		declinedAt: dec ? `${day0}T${dec.at}` : null,
 		units: o ? o.units : 0,
 		orderedAt: o ? `${day0}T${o.at}` : null,
-		van: o && h.van.status === 'done' ? addDaysIso(day0, 4) + 'T09:00' : null,
+		van: o && h.van.status === 'done' ? addDaysIso(day0, c.story?.vanDay ?? 4) + 'T09:00' : null,
 		m: o ? scheme(o.units, KL, sku, c.scheme) : null,
 		invoice: o ? (journeyInvoices(c, h.orders, day0, shops ?? [shop]).find((x) => x.kirana === shop.id) ?? null) : null
 	};

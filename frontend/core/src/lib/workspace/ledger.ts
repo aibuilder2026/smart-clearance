@@ -4,7 +4,7 @@
 // does (core/tests/ledger.test.ts holds the two together). The history's batches each have their page: their case,
 // as the papers read it, from the seed.
 import history from './seed/history.json';
-import { D } from './data';
+import { D, storyOf } from './data';
 import { stageOf } from './flow';
 import type {
 	Assess,
@@ -12,7 +12,10 @@ import type {
 	BrsrRow,
 	Batch,
 	CaseData,
+	Destruction,
+	Distributor,
 	Doc,
+	ExpirySettlement,
 	Hero,
 	Ledger,
 	LedgerBatch,
@@ -23,6 +26,7 @@ import type {
 	Partner,
 	Plan,
 	PlanLine,
+	Sku,
 	State,
 	WorkspaceData
 } from './types';
@@ -325,15 +329,14 @@ const H = history as unknown as {
 	story: { row: LedgerBatch; cleared: string };
 };
 export const HISTORY_ROWS = H.rows;
-const HERO = D.batches.find((b) => b.hero)!;
-const SECOND = D.batches.find((b) => b.second)!;
 
-/** the stub's ledger, from the journey's state: the history, the chips batch once Impact has posted it, and the story's
- *  batches still out (ledger.js ledger) */
+/** the stub's ledger, from the journey's state: the history, the journey's batch once Impact has posted it, and the
+ *  story's batches still out (ledger.js ledger) */
 export function stubLedger(state: State): Ledger {
-	const h = state.hero;
-	const rows = h.posted ? [...H.rows, H.story.row] : H.rows;
-	const today = h.posted ? H.story.cleared : D.day0;
+	const h = state.hero,
+		S = storyOf(state.scenario);
+	const rows = h.posted ? [...H.rows, storyRow(state)] : H.rows;
+	const today = h.posted ? S.cleared : D.day0;
 	const open = (b: Batch): Omit<LedgerOpen, 'phase' | 'stage'> => ({
 		ref: b.id,
 		sku: b.sku,
@@ -346,8 +349,8 @@ export function stubLedger(state: State): Ledger {
 	});
 	const inFlight: LedgerOpen[] = [];
 	if (!h.posted && h.phase !== 'watching')
-		inFlight.push({ ...open(HERO), phase: h.phase, stage: D.stages[stageOf(state)].id });
-	inFlight.push({ ...open(SECOND), phase: state.mango.phase, stage: 'execute' });
+		inFlight.push({ ...open(S.batch), phase: h.phase, stage: D.stages[stageOf(state)].id });
+	if (S.second) inFlight.push({ ...open(S.second), phase: state.mango.phase, stage: 'execute' });
 	return {
 		since: D.workspace.since,
 		today,
@@ -443,13 +446,112 @@ function caseOf(x: HistoryCase, data: WorkspaceData): CaseData {
 	};
 }
 
-/** a batch's page in the stub's ledger: a batch of the history, or the story's chips batch (`kase`, its state) */
+/** a batch's page in the stub's ledger: a batch of the history, or the journey's batch (`kase`, its state) */
 export function stubPage(ref: string, data: WorkspaceData, kase: CaseData, state: State): LedgerPage | null {
 	const x = H.cases.find((c) => c.ref === ref);
 	if (x) {
 		const c = caseOf(x, data);
 		return { c, h: clearedHero(c), row: H.rows.find((r) => r.ref === ref) ?? null };
 	}
-	if (ref !== HERO.id) return null;
-	return { c: kase, h: state.hero, row: state.hero.posted ? H.story.row : null };
+	if (ref !== storyOf(state.scenario).batch.id) return null;
+	return { c: kase, h: state.hero, row: state.hero.posted ? storyRow(state) : null };
+}
+
+/** the journey's batch as the ledger posts it (design3's ledger.js rowOf, in the seed): its papers as the state has
+ *  them, the agency's certificate under the number he sent */
+function storyRow(state: State): LedgerBatch {
+	const S = storyOf(state.scenario),
+		row = S.end.row,
+		d = state.hero.destruction;
+	if (!d?.certificate) return row;
+	return { ...row, papers: row.papers.map((p) => (p.id === 'destruction' ? { ...p, no: d.certificate! } : p)) };
+}
+
+/* ---------- expiry day's papers (ledger.js expiryPapers) ---------- */
+
+const possessive = (n: string) => n + (/s$/.test(n) ? "'" : "'s");
+/** the destruction as its papers read it: its agency, certificate, method, the photos' times and Priya's yes */
+export type DestructionDone = Destruction & {
+	agency: NonNullable<Destruction['agency']>;
+	certificate: string;
+	method: string;
+	photos: NonNullable<Destruction['photos']>;
+	checks: NonNullable<Destruction['checks']>;
+	approvedAt: string;
+	approvedBy: string;
+};
+/** the agency's destruction certificate for packs destroyed at a distributor's godown (SC-139) */
+function destructionDoc(xd: DestructionDone, x: ExpirySettlement | null, batch: Batch, sku: Sku, dist: Distributor): Doc {
+	const units = xd.units,
+		approver = D.people[xd.approvedBy] ?? { name: xd.approvedBy };
+	return {
+		id: 'destruction',
+		type: 'Destruction certificate',
+		owner: xd.agency.name,
+		no: xd.certificate,
+		status: 'generated',
+		amount: 0,
+		units,
+		kg: r2(units * sku.kgPerUnit),
+		packKg: r2(units * (sku.packKg ?? 0)),
+		at: 'godown',
+		method: xd.method,
+		site: xd.agency.site,
+		agency: xd.agency.name,
+		auth: xd.agency.auth,
+		for: { name: dist.name, address: dist.address, gstin: dist.gstin },
+		from: dist.godown,
+		batch: batch.id,
+		bestBefore: batch.bestBefore,
+		hsn: sku.hsn,
+		destroyedAt: xd.photos.after.at,
+		evidence: { photos: 2, checks: xd.checks.filter((c) => c.ok).length, of: xd.checks.length },
+		approvedBy: approver.name,
+		approvedAt: xd.approvedAt,
+		reversed: x && x.reversal != null ? x.reversal : r2(units * (sku.dp || 0) * sku.gst),
+		date: xd.approvedAt.slice(0, 10),
+		note: `Destroyed at ${xd.agency.site} on expiry day, from ${dist.godown || dist.city}. ${dist.name} reverses the input GST on these packs in GSTR-3B Table 4(B)(1) under section 17(5)(h).`
+	};
+}
+/** on expiry day the packs left at the godown settle, destroyed there, on an expiry credit note against the agency's
+ *  certificate, which replaces the paper that waited for it once Priya approved the evidence (SC-139; the stub's slow
+ *  chips, SC-168) */
+export function expiryPapers(
+	docs: Doc[],
+	x: ExpirySettlement,
+	xd: DestructionDone,
+	batch: Batch,
+	sku: Sku,
+	dist: Distributor,
+	no: string
+): Doc[] {
+	const C = D.workspace.short;
+	if (x.units && x.policy === 'godown')
+		docs.push({
+			id: 'expiry',
+			type: 'Expiry credit note',
+			owner: D.client.short,
+			no,
+			status: 'generated',
+			amount: x.amount ?? 0,
+			units: x.units,
+			policy: x.policy,
+			destroyedBy: x.destroyedBy,
+			credit: x.credit,
+			gst: x.gst,
+			charges: x.charges,
+			reversal: x.reversal,
+			dp: sku.dp,
+			gstPct: Math.round(sku.gst * 100),
+			certificate: xd.certificate,
+			agency: xd.agency.name,
+			disposal: 0,
+			epr: 0,
+			itc: 0,
+			date: xd.approvedAt.slice(0, 10),
+			note: `A financial credit note: no GST is charged or adjusted on it, and ${possessive(C)} output tax on the original sale stands. Issued against destruction certificate ${xd.certificate}; adjusted against ${possessive(dist.name)} account.`
+		});
+	const i = docs.findIndex((d) => d.id === 'destruction');
+	docs[i] = destructionDoc(xd, x, batch, sku, dist);
+	return docs;
 }

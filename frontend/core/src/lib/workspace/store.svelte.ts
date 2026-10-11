@@ -2,15 +2,17 @@
 // Munchly's workspace, persisted per browser. Every change is made on a copy and replaces the state whole, so anything
 // that reads `store.state` updates, and the agents' reconciler (flow.ts) hears each change. backend-api replaces this
 // later; the screens only read `store.state` and change it through flow.ts's actions or `store.update`.
-import { D } from './data';
-import type { State } from './types';
+import { D, storyOf } from './data';
+import type { State, StoryKey } from './types';
 
 const KEY = 'sc3-store';
 const VERSION = 5;
 const clone = <T>(o: T): T => structuredClone(o);
 
-/** the state the workspace starts in, before the journey */
-export const seedState = (): State => clone(D.initial);
+/** the state the workspace starts in, before the journey: the story's chips, or another of the stub's journeys (SC-168,
+ *  store.js seed), whose state carries its key */
+export const seedState = (scenario?: StoryKey): State =>
+	clone(!scenario || scenario === 'chips' ? D.initial : storyOf(scenario).initial);
 
 class WorkspaceStore {
 	state: State = $state.raw(seedState());
@@ -31,8 +33,9 @@ class WorkspaceStore {
 		this.#listeners.add(fn);
 		return () => void this.#listeners.delete(fn);
 	};
-	reset = () => {
-		this.state = seedState();
+	/** the journey back to its start: the same one, or the one named (flow.ts useScenario) */
+	reset = (scenario?: StoryKey) => {
+		this.state = seedState(scenario ?? this.state.scenario);
 		this.#save();
 		this.#emit();
 	};
