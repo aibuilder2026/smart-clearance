@@ -38,7 +38,7 @@ Every company, person and figure in the product is fictional. Munchly Foods is t
 | [PRODUCT.md](PRODUCT.md) | The product: who uses it and for what, the story's batches and their figures, every surface, the principles and positioning. |
 | [DEMO.md](DEMO.md) | How the prototype is demoed: the guided demo's route map, the live workspace's three journeys (chips sold through, Mango Drink sold through, food left at the godown), the console's controls, and how Reset journey makes a live demo repeatable. |
 | [TESTING.md](TESTING.md) | How every test is run: the gates, the a11y, e2e and parity suites, the live tests, the journey suites and the agents' evals, with the scripts, what each needs first, and which journeys to cover. |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | How it is built: every technology by layer, with diagrams of the system, the frontend, the API, the data, sign-in, the cloud, the pipeline and the agents' nine stops. |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | How it is built: the system on Google Cloud, every service and technology with its version, a batch's journey request by request, the agents and their Gemini models, backend-api, events and the live stream, the data, identity, the cloud, delivery, testing, decisions and known gaps. Its pictures are the Lucidchart diagrams (`docs/architecture/`), with Mermaid for the code's own structure. |
 | [DESIGN.md](DESIGN.md) | Design system v3: tokens, type, colour, components, motion and imagery. |
 | [AGENTS.md](AGENTS.md) | The repository's layout, commands, rules and tooling, for people and coding agents. |
 | [CLAUDE.md](CLAUDE.md) | Claude Code specifics, and the record of every change by issue. |
