@@ -564,6 +564,7 @@
           <div className="stack tight grow" style={{ gap: 6, minWidth: 0 }}>
             <span className="si-url" style={{ justifySelf: "start" }}><Icon name="lock" size={12} stroke={2.2} />{c.domain}</span>
             <span className="row tight wrap">{statusBadge(c)}<Badge size="sm">{planName(c.plan)}</Badge><Badge size="sm" icon="map-pin">{c.city}{c.region && c.region !== "India" ? " · " + c.region : ""}</Badge><Badge size="sm" icon="bot">{agentsOn(c)} of {P.AGENTS.length - 1} agents on</Badge><JourneyBadge c={c} onOpen={() => setClock(true)} /></span>
+            {P.journey(s, c.id).live && <S.ClockNote client={c.name} here />}
           </div>
         </div>
         <div className="cs-tabs"><Tabs id="client-tabs" tabs={TABS} value={t} onChange={v => go("clients", c.id, v, true)} /></div>

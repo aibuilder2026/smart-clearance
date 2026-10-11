@@ -316,6 +316,35 @@ describe('live, and the journey clock', () => {
 		expect(line.closest('[aria-live], [role="status"], [role="alert"]')).toBeNull();
 	});
 
+	it("says under the clock that it is the prototype's, and its guide says how to reset or fast-forward (SC-176)", async () => {
+		const m = moment('planned');
+		Object.assign(m.members.priya.snapshot.clock, { dayMinutes: 5, compressed: true });
+		const s = source(fakeApi(m, 'priya'));
+		const r = await draw(s, 'command');
+		await waitFor(() => expect(r.container.querySelector('.lv-clock .jc-note')).not.toBeNull());
+		const note = r.container.querySelector('.lv-clock .jc-note')!;
+		expect(norm(note.textContent)).toContain(
+			"Prototype time: the story's own calendar, so its batches' best-before dates hold."
+		);
+		await fireEvent.click(within(note as HTMLElement).getByRole('button', { name: 'How to reset or fast-forward' }));
+		const guide = await r.findByRole('dialog', { name: 'Prototype time' });
+		const g = norm(guide.textContent);
+		// the journey time now, from the same clock, and the steps in the console
+		expect(g).toContain('Journey time now');
+		expect(g).toContain('1 day = 5 min');
+		expect(g).toContain(`${m.members.priya.snapshot.workspace.name}' workspace runs on a fixed dataset`);
+		for (const step of [
+			'Start the journey again',
+			'Reset journey…',
+			'Move it forward',
+			'Run now',
+			'Close now',
+			'Report now'
+		])
+			expect(g).toContain(step);
+		expect(within(guide).getByRole('button', { name: 'Open the console' })).toBeTruthy();
+	});
+
 	it('shows a band while the stream is down, and approving waits for a connection', async () => {
 		const m = moment('planned');
 		const st = stream();

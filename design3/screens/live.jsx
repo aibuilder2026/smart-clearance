@@ -42,13 +42,14 @@
     return <span className="lv-cue" title={cueLong(perDay)}><Icon name="fast-forward" size={13} stroke={2.2} />{short ? <span className="sr-only">{c}</span> : <span>{c}</span>}</span>;
   }
   // under every large title: live or not, the journey's date and time, and the pace. The time steps a quarter hour at
-  // a time and is never announced (WCAG 2.2.2: the journey clock is essential, so it has no pause)
+  // a time and is never announced (WCAG 2.2.2: the journey clock is essential, so it has no pause). Under it, the note
+  // that it is the prototype's clock, with how to reset or fast-forward the journey (SC-176)
   function Line() {
     const live = useLive(); const c = live.clock;
-    return <span className={cx("lv-line", live.conn !== "live" && "off")}><ConnMark conn={live.conn} /><span className="lv-st">{stateWord(live.conn)}</span><span className="lv-sep" aria-hidden="true" /><span className="lv-time"><span className="lv-date">{c.date}</span><span className="tnum">{c.time}</span></span><Cue perDay={c.perDay} /></span>;
+    return <span className="lv-clock"><span className={cx("lv-line", live.conn !== "live" && "off")}><ConnMark conn={live.conn} /><span className="lv-st">{stateWord(live.conn)}</span><span className="lv-sep" aria-hidden="true" /><span className="lv-time"><span className="lv-date">{c.date}</span><span className="tnum">{c.time}</span></span><Cue perDay={c.perDay} /></span><S.ClockNote client={WS.name} clock={c} /></span>;
   }
-  // once the large title has collapsed into the bar, the same line, shorter, under the bar's title
-  function BarSub() { const live = useLive(); return <span className="lv-barsub"><ConnMark conn={live.conn} size={6} /><span className="tnum">{live.clock.time}</span><Cue perDay={live.clock.perDay} short /></span>; }
+  // once the large title has collapsed into the bar, the same line, shorter, under the bar's title; the note is its icon
+  function BarSub() { const live = useLive(); return <span className="lv-barsub"><ConnMark conn={live.conn} size={6} /><span className="tnum">{live.clock.time}</span><Cue perDay={live.clock.perDay} short /><S.ClockInfo client={WS.name} clock={live.clock} /></span>; }
   // a dropped stream is a band across the page, under the bar, that stays while it lasts
   function Band() {
     const live = useLive(); const f = live.failed && live.failed.action !== "approve" ? live.failed : null;

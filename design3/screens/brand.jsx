@@ -230,7 +230,9 @@
       ["smartphone", `${holder.short} gets the same plan in ${C.pron} app and can pause it.`], ["shield-check", "Nothing is listed, messaged or shipped before this tap. The approval is logged with who, when and device."]].filter(Boolean);
     const doing = [ES && `the Lister is posting on ExpireSoon in ${whose} name`, KL && `Outreach is messaging ${C.offered} kiranas`, fb && "Donation is booking a food bank"].filter(Boolean);
     const now = doing.length > 1 ? doing.slice(0, -1).join(", ") + " and " + doing[doing.length - 1] : doing[0] || "the agents start";
-    useEffect(() => { if (open) setPlaced(approvedNow); }, [open]);
+    // Reject is shown but not built yet (SC-177): it looks disabled, and a press says so instead of acting
+    const [soon, setSoon] = useState(false);
+    useEffect(() => { if (open) { setPlaced(approvedNow); setSoon(false); } }, [open]);
     useEffect(() => { if (open && approvedNow) setPlaced(true); }, [approvedNow]);
     // live (SC-73): the approval goes to the workspace's backend, which may not answer; the sheet says so and offers Retry.
     // Offline, approving waits for a connection
@@ -242,7 +244,7 @@
     };
     const yes = offline ? <><Button variant="approve" size="lg" block icon="check" aria-disabled="true" aria-describedby="lv-sheet-net" className="lv-blocked">Approve · release the agents</Button><span style={{ justifySelf: "center" }}><S.Live.NeedsNet id="lv-sheet-net" /></span></>
       : <Button variant="approve" size="lg" block icon={failed ? "refresh-cw" : "check"} loading={busy} busy="Approving the plan…" onClick={approve}>{failed ? "Retry · release the agents" : "Approve · release the agents"}</Button>;
-    return <Sheet open={open} onClose={onClose} title={placed ? "Plan placed" : "Approve the plan"} footer={placed ? <Button variant="primary" size="lg" block iconRight="arrow-right" onClick={() => { onClose(); go("execution", { ref: hero.id }); }}>Watch execution</Button> : <>{failed && !busy && <S.Live.ApproveFailed message={failed.message} />}{yes}<Button variant="ghost" block onClick={onClose}>Not now</Button></>}>
+    return <Sheet open={open} onClose={onClose} title={placed ? "Plan placed" : "Approve the plan"} footer={placed ? <Button variant="primary" size="lg" block iconRight="arrow-right" onClick={() => { onClose(); go("execution", { ref: hero.id }); }}>Watch execution</Button> : <>{failed && !busy && <S.Live.ApproveFailed message={failed.message} />}{yes}<div style={{ display: "grid", gap: soon ? 6 : 0 }}><Button variant="secondary" size="lg" block icon="x" aria-disabled="true" aria-describedby="as-reject-soon" className="lv-blocked" onClick={() => setSoon(true)}>Reject the plan</Button><span id="as-reject-soon" role="status" className="t-footnote lv-needs" style={{ justifySelf: "center" }}>{soon && <><Icon name="clock" size={14} />Coming Soon</>}</span></div><Button variant="ghost" block onClick={onClose}>Not now</Button></>}>
       {placed ? <div className="stack" style={{ justifyItems: "center", textAlign: "center", padding: "12px 0 8px" }}>
         <svg width="96" height="96" viewBox="0 0 96 96" aria-hidden="true"><motion.circle cx="48" cy="48" r="42" fill="none" stroke="var(--primary)" strokeWidth="6" initial={reduce ? false : { pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.6, ease: [0.65, 0, 0.35, 1] }} /><motion.path d="M30 49 L43 62 L67 36" fill="none" stroke="var(--primary)" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" initial={reduce ? false : { pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.45, duration: 0.4 }} /></svg>
         <div className="t-title2">Approved · {C.at.approve}</div>
