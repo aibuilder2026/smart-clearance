@@ -23,54 +23,45 @@ const focusedName = (page: Page) =>
 	});
 const inDialog = (page: Page) => page.evaluate(() => !!document.activeElement?.closest('[role="dialog"]'));
 
-test('keyboard · the appearance menu opens on its button, moves with the arrows, and gives focus back', async ({
+test('keyboard · the bar has no appearance control, and its links and its brand glide to their place (SC-165)', async ({
 	page
-}, testInfo) => {
-	const trigger = page.locator('.site-nav').getByRole('button', { name: 'Appearance' });
-	await expect(trigger).toHaveAttribute('aria-haspopup', 'menu');
-	await expect(trigger).toHaveAttribute('aria-expanded', 'false');
-	const menu = page.getByRole('menu', { name: 'Appearance' });
-	const item = (name: string) => menu.getByRole('menuitemradio', { name });
-
-	await trigger.focus();
-	await page.keyboard.press('Enter');
-	await expect(menu).toBeVisible();
-	await expect(trigger).toHaveAttribute('aria-expanded', 'true');
-	await expect(menu.locator('[aria-checked="true"]'), 'focus lands on the checked choice').toBeFocused();
-	await page.keyboard.press('Home');
-	await expect(item('Light')).toBeFocused();
-	await page.keyboard.press('ArrowDown');
-	await expect(item('Dark')).toBeFocused();
-	await page.keyboard.press('End');
-	await expect(item('Match device')).toBeFocused();
-	await page.keyboard.press('ArrowDown');
-	await expect(item('Light'), 'ArrowDown wraps to the first item').toBeFocused();
-	await page.keyboard.press('ArrowUp');
-	await expect(item('Match device'), 'ArrowUp wraps to the last item').toBeFocused();
-	const findings: Finding[] = await scan(page, 'appearance menu open');
-
-	await page.keyboard.press('Escape');
-	await expect(menu, 'Escape closes the menu').toHaveCount(0);
-	await expect(trigger, 'focus returns to the menu button').toBeFocused();
-	await expect(trigger).toHaveAttribute('aria-expanded', 'false');
-
-	await page.keyboard.press('Enter');
-	await expect(menu.locator('[aria-checked="true"]')).toBeFocused();
-	await page.keyboard.press('Home');
-	await page.keyboard.press('ArrowDown');
-	await expect(item('Dark')).toBeFocused();
-	await page.keyboard.press('Enter');
-	await expect(menu, 'choosing an item closes the menu').toHaveCount(0);
-	await expect(trigger).toBeFocused();
-	await expect(page.locator('html'), 'the choice is applied').toHaveAttribute('data-theme', 'dark');
-	expect(await page.evaluate(() => localStorage.getItem('sc3-theme')), 'and remembered').toBe('dark');
-
-	await page.keyboard.press('Enter');
-	await expect(menu).toBeVisible();
-	await page.keyboard.press('Tab');
-	await expect(menu, 'Tab closes the menu and moves on').toHaveCount(0);
-	expect(await focusedName(page), 'to the control after the menu button').toBe('Console');
-	await report(testInfo, findings);
+}) => {
+	await expect(page.getByRole('button', { name: 'Appearance' }), 'no appearance menu in the bar').toHaveCount(0);
+	await expect(page.getByRole('radiogroup', { name: 'Appearance' }), 'nor a switch in the footer').toHaveCount(0);
+	await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+	const brand = page.locator('.site-nav .nav-brand');
+	expect(
+		await brand.locator('.wordmark').evaluate((e) => getComputedStyle(e).color),
+		'the wordmark is white over the film'
+	).toBe('rgb(255, 255, 255)');
+	if (isPhone(page)) return; // the sections are in the phone's menu, which already glides to them
+	// a link glides: the window passes through the page on its way to the section, and lands with it under the bar
+	const glide = async (click: () => Promise<void>) => {
+		const from = await page.evaluate(() => scrollY);
+		await click();
+		const seen = new Set<number>();
+		for (let i = 0; i < 10; i += 1) {
+			seen.add(await page.evaluate(() => Math.round(scrollY)));
+			await page.waitForTimeout(60);
+		}
+		await page.waitForTimeout(1200);
+		const to = await page.evaluate(() => Math.round(scrollY));
+		seen.delete(from);
+		seen.delete(to);
+		return { from, to, between: seen.size };
+	};
+	const agents = await glide(() => page.locator('.site-nav').getByRole('link', { name: 'Agents' }).click());
+	expect(agents.between, 'Agents glides there').toBeGreaterThan(1);
+	expect(
+		await page.evaluate(() => Math.abs(document.getElementById('agents')!.getBoundingClientRect().top))
+	).toBeLessThan(80);
+	expect(
+		await brand.locator('.wordmark').evaluate((e) => getComputedStyle(e).color),
+		'on the glass, the page ink'
+	).not.toBe('rgb(255, 255, 255)');
+	const top = await glide(() => brand.click());
+	expect(top.between, 'the brand glides back to the top').toBeGreaterThan(1);
+	expect(top.to).toBe(0);
 });
 
 test('keyboard · the two ways in on the bar: Console and Workspace open another tab, in that order (SC-150)', async ({
@@ -182,8 +173,10 @@ test('keyboard · links: back to the top, and other sites in a new tab', async (
 	}
 });
 
-test('keyboard · a saved appearance applies before the first paint', async ({ browser }) => {
-	const context = await browser.newContext({ colorScheme: 'light' });
+test('keyboard · the landing page is in day from the first paint, on a dark device with dark saved (SC-165)', async ({
+	browser
+}) => {
+	const context = await browser.newContext({ colorScheme: 'dark' });
 	const page = await context.newPage();
 	await page.addInitScript(() => {
 		localStorage.setItem('sc3-theme', 'dark');
@@ -199,8 +192,12 @@ test('keyboard · a saved appearance applies before the first paint', async ({ b
 	await page.goto('/');
 	await page.waitForSelector('.app[data-mounted]');
 	const themes = await page.evaluate(() => (window as unknown as { __themes: string[] }).__themes);
-	expect(themes[0], 'the first theme set is the saved one').toBe('dark');
-	expect(themes, 'and it never flips to light on the way').not.toContain('light');
+	expect(themes[0], 'the first theme set is day').toBe('light');
+	expect(themes, 'and it is never night').not.toContain('dark');
+	expect(
+		await page.evaluate(() => localStorage.getItem('sc3-theme')),
+		'the saved choice is left for the other apps'
+	).toBe('dark');
 	await context.close();
 });
 
