@@ -402,6 +402,38 @@
 .lv-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--fg-4); }
 .lv-barsub { display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
 .lv-barsub .lv-cue { height: auto; padding: 0; background: none; }
+/* the journey clock explained (SC-176, option B): the line and, under it, the note that it is the prototype's clock */
+.lv-clock { display: grid; justify-items: start; gap: 6px; margin-top: 8px; }
+.lv-clock .lv-line { margin-top: 0; }
+.lv-subtext:empty + .lv-clock { margin-top: 2px; }
+.jc-note { display: flex; align-items: flex-start; gap: 6px; max-width: 64ch; font-size: 13px; line-height: 1.45; color: var(--fg-2); }
+.jc-note > .ic { flex: none; margin-top: 2px; color: var(--blue-text); }
+.jc-note b { font-weight: 650; color: var(--fg); }
+.jc-link { display: inline; padding: 0; border: 0; background: none; font: inherit; font-weight: 650; color: var(--blue-text); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.jc-info { position: relative; display: inline-grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 99px; background: none; color: var(--blue-text); cursor: pointer; }
+.jc-info::before { content: ""; position: absolute; inset: -12px; }
+.jc-link:focus-visible, .jc-info:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 4px; }
+/* its guide */
+.jc-body { display: grid; gap: 18px; padding-bottom: 8px; }
+.jc-lede { margin: 0; font-size: 15px; line-height: 1.55; color: var(--fg); }
+.jc-now { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; background: var(--blue-soft); color: var(--fg); }
+.jc-now > .ic { flex: none; color: var(--blue-text); }
+.jc-now-t { display: grid; gap: 1px; min-width: 0; flex: 1; }
+.jc-now-k { font-size: 12px; font-weight: 600; color: var(--fg-2); }
+.jc-now-v { font-size: 15px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.jc-now-p { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: var(--fg-2); white-space: nowrap; }
+.jc-now-p .ic { color: var(--blue-text); }
+.jc-sec { display: grid; gap: 10px; padding-top: 16px; border-top: var(--hair) solid var(--line); }
+.jc-h { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 16px; font-weight: 700; }
+.jc-h .ic { color: var(--primary-text); }
+.jc-where { margin: 0; font-size: 14px; color: var(--fg-2); }
+.jc-url { font-weight: 600; color: var(--fg); overflow-wrap: anywhere; }
+.jc-steps { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.jc-step { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 10px; font-size: 14.5px; line-height: 1.5; }
+.jc-n { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 99px; background: var(--primary-soft); color: var(--primary-text); font-size: 12.5px; font-weight: 700; }
+.jc-ui { padding: 0 4px; border-radius: 6px; background: var(--fill-2); font-weight: 650; color: var(--fg); white-space: nowrap; }
+.jc-key { display: inline-grid; place-items: center; min-width: 22px; height: 20px; border-radius: 6px; background: var(--fill-2); font-weight: 700; }
+.jc-foot { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--fg-2); }
 /* while the stream is down, a band across the page under the bar; a step that failed takes the same place */
 .lv-band { position: sticky; top: calc(var(--navbar-h) + var(--safe-top)); z-index: calc(var(--z-bar) - 1); display: flex; align-items: center; gap: 10px; margin: 0 16px 10px; padding: 10px 12px 10px 14px; border-radius: 14px; background: var(--glass-strong); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line-2); font-size: 14px; line-height: 1.4; color: var(--fg-2); }
 .lv-band-t { flex: 1; min-width: 0; }
@@ -495,7 +527,7 @@
 .bhead h1 { font-family: var(--font-display); font-weight: 750; font-size: 34px; line-height: 1.06; letter-spacing: -0.028em; font-variation-settings: "opsz" 72; }
 .bh-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-top: 7px; font-size: 14px; color: var(--fg-3); }
 .bh-meta .mono { font-size: 13px; color: var(--fg-2); }
-.bh-meta .lv-line { margin: 0; }
+.bh-meta .lv-line, .bh-meta .lv-clock { margin: 0; }
 .bh-tabs { display: flex; gap: 2px; width: max-content; max-width: 100%; margin-top: 20px; padding: 4px; border-radius: 15px; background: var(--fill-2); overflow-x: auto; scrollbar-width: none; }
 .bh-tabs::-webkit-scrollbar { display: none; }
 .bh-tab { position: relative; isolation: isolate; flex: 0 0 auto; display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 16px; border-radius: 11px; font-size: 14.5px; font-weight: 550; color: var(--fg-2); white-space: nowrap; transition: color var(--t-fast); }
