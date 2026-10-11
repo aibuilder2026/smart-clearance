@@ -46,6 +46,36 @@
 .rb-badge-t b { font-size: 14px; font-weight: 700; }
 .rb-badge-t span { font-size: 12px; color: var(--fg-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+/* the plate and the roads: drawn in light only, transparent in dark, which keeps its own ground */
+.rb-plate .rb-ground { fill: transparent; }
+.rb-plate .rb-block, .rb-plate .rb-water { fill: none; stroke: none; }
+.rb-plate .rb-dots { opacity: 0; }
+.rb-plate .rb-dot { fill: transparent; }
+.rb-line-road { fill: none; stroke: transparent; stroke-width: 13; stroke-linecap: round; stroke-linejoin: round; }
+[data-theme="light"] .rb-plate .rb-ground { fill: var(--map-ground); stroke: color-mix(in oklab, var(--map-ink) 14%, transparent); stroke-width: 1; }
+[data-theme="light"] .rb-plate .rb-dots { opacity: 1; }
+[data-theme="light"] .rb-plate .rb-dot { fill: color-mix(in oklab, var(--map-ink) 22%, transparent); }
+[data-theme="light"] .rb-plate .rb-block { fill: var(--map-block); stroke: color-mix(in oklab, var(--map-ink) 10%, transparent); stroke-width: 1; }
+[data-theme="light"] .rb-plate .rb-water { fill: none; stroke: var(--map-water); stroke-width: 30; stroke-linecap: round; opacity: 0.75; }
+/* each route on its white road, the line in the map's ink until it lights */
+[data-theme="light"] .rb-line-road { stroke: var(--map-road); filter: drop-shadow(0 1px 1.5px rgb(11 21 16 / 0.14)); }
+[data-theme="light"] .rb-line-road.on { stroke: color-mix(in oklab, var(--primary) 16%, var(--map-road)); }
+[data-theme="light"] .rb-line-shadow { display: none; }
+[data-theme="light"] .rb-line { stroke: color-mix(in oklab, var(--map-ink) 52%, var(--map-ground)); }
+[data-theme="light"] .rb-line.on { stroke: var(--primary); }
+[data-theme="light"] .rb-st circle { stroke: color-mix(in oklab, var(--map-ink) 62%, var(--map-ground)); filter: drop-shadow(0 1px 1px rgb(11 21 16 / 0.16)); }
+[data-theme="light"] .rb-st.on circle { stroke: var(--primary); }
+[data-theme="light"] .rb-st.amber circle { stroke: var(--amber); }
+[data-theme="light"] .rb-st.red circle { stroke: var(--red); }
+[data-theme="light"] .rb-st.done circle { fill: var(--primary); stroke: var(--primary); }
+[data-theme="light"] .rb-lbl { fill: var(--fg); paint-order: stroke; stroke: var(--map-ground); stroke-width: 5px; stroke-linejoin: round; }
+[data-theme="light"] .rb-st:not(.on) .rb-lbl { fill: var(--fg-2); }
+[data-theme="light"] .rb-lbl.strong { fill: var(--fg); }
+[data-theme="light"] .rb-out, [data-theme="light"] .rb-out-sub { paint-order: stroke; stroke: var(--map-ground); stroke-width: 6px; stroke-linejoin: round; }
+[data-theme="light"] .rb-end .rb-pin { filter: drop-shadow(0 2px 3px rgb(11 21 16 / 0.22)); }
+[data-theme="light"] .rb-hub circle { filter: drop-shadow(0 2px 4px rgb(11 21 16 / 0.18)); }
+[data-theme="light"] .rb-badge { box-shadow: 0 6px 16px rgb(11 21 16 / 0.08), 0 1px 2px rgb(11 21 16 / 0.08), 0 0 0 var(--hair) var(--line); }
+
 /* the start */
 .rb-shell { grid-template-rows: auto minmax(0, 1fr); }
 .rb-startwrap { min-height: 0; overflow: auto; }
@@ -62,6 +92,7 @@
 .rb-legend i.lg-amber { box-shadow: inset 0 0 0 3px var(--amber); }
 .rb-legend i.lg-red { box-shadow: inset 0 0 0 3px var(--red); }
 .rb-mapwrap { position: relative; min-width: 0; align-self: center; }
+.rb-mapwrap .rb-map { max-height: calc(100dvh - 300px); }
 .rb-peek { position: absolute; left: 0; bottom: 4%; max-width: 320px; display: grid; gap: 3px; padding: 12px 14px; border-radius: 16px; background: var(--surface); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); font-size: 13px; color: var(--fg-3); pointer-events: none; }
 .rb-peek b { font-size: 15px; color: var(--fg); }
 .rb-peek-screens { color: var(--fg-2); line-height: 1.45; }

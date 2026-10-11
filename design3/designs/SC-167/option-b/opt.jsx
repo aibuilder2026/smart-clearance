@@ -27,21 +27,35 @@
   const short = t => SHORT[t] || t;
   // what each line's badge says under its name
   const BADGE = { console: "Smart-Clearance's console", chips: "every pack sold", slow: "destroyed at the godown, on a second yes", mango: "kiranas, a staff sale, a food bank" };
+  // the plate's city blocks: small clusters, in the map's gaps
+  const BLOCKS = [[752,66],[814,66],[876,66],[752,112],[814,112],[876,112],[1148,64],[1210,64],[1272,64],[1334,64],[1148,110],[1210,110],[1272,110],[1334,110],[70,446],[132,446],[70,492],[132,492],[70,570],[132,570],[194,570],[640,300],[702,300],[764,300],[640,346],[702,346],[764,346],[1206,560],[1268,560],[1330,560],[1206,606],[1268,606],[1330,606]];
   const toneOf = st => (st.id === "expiry" ? "red" : st.amber ? "amber" : null);
 
   function RouteMap({ active, hot, setHot, pos, onPick, draw, compact }) {
-    const reduce = useReducedMotion(); const animate = draw && !reduce;
+    const reduce = useReducedMotion(); const animate = draw && !reduce; const dots = "rb-dots-" + React.useId().replace(/:/g, "");
     const lit = id => id === active || id === hot || (id === "chips" && (active === "slow" || hot === "slow") ? "shared" : false);
     const stateOf = (ai, si) => (pos ? (ai < pos.a || (ai === pos.a && si < pos.s) ? "done" : ai === pos.a && si === pos.s ? "now" : null) : null);
     const lineOrder = ["console", "mango", "chips", "slow"];
     return <svg className={cx("rb-map", compact && "compact")} viewBox="40 36 1380 640" role="group" aria-label="The demo's route map">
+      {/* the plate the routes are drawn on: the cluster map's ground, blocks, river and roads (light only; dark keeps its ground) */}
+      <g className="rb-plate" aria-hidden="true">
+        <defs><pattern id={dots} width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.3" className="rb-dot" /></pattern>
+          <clipPath id={dots + "-clip"}><rect x="44" y="40" width="1372" height="632" rx="36" /></clipPath></defs>
+        <rect x="44" y="40" width="1372" height="632" rx="36" className="rb-ground" />
+        <g clipPath={`url(#${dots}-clip)`}>
+          <rect x="44" y="40" width="1372" height="632" fill={`url(#${dots})`} className="rb-dots" />
+          {BLOCKS.map(([x, y], i) => <rect key={i} x={x} y={y} width="54" height="38" rx="9" className="rb-block" />)}
+          <path d="M20 612 C 300 548, 520 694, 772 604 S 1180 492, 1440 528" className="rb-water" />
+        </g>
+      </g>
       {/* the lines, resting under the lit one */}
       {lineOrder.map((id, k) => { const on = lit(id) === true; return <g key={id} onMouseEnter={() => setHot && setHot(id)} onMouseLeave={() => setHot && setHot(null)}>
+        <motion.path d={GEO[id].d} className={cx("rb-line-road", on && "on")} initial={animate ? { pathLength: 0 } : false} animate={{ pathLength: 1 }} transition={{ duration: 0.9, delay: 0.12 * k, ease: [0.22, 1, 0.36, 1] }} />
         <motion.path d={GEO[id].d} className={cx("rb-line-shadow", on && "on")} initial={animate ? { pathLength: 0 } : false} animate={{ pathLength: 1 }} transition={{ duration: 0.9, delay: 0.12 * k, ease: [0.22, 1, 0.36, 1] }} />
         <motion.path d={GEO[id].d} className={cx("rb-line", on && "on")} initial={animate ? { pathLength: 0 } : false} animate={{ pathLength: 1 }} transition={{ duration: 0.9, delay: 0.12 * k, ease: [0.22, 1, 0.36, 1] }} />
       </g>; })}
       {/* the chips' track lit under the slow week, where they share it */}
-      {lit("chips") === "shared" && <path d="M450 380 L570 260 H900" className="rb-line on shared" />}
+      {lit("chips") === "shared" && <><path d="M450 380 L570 260 H900" className="rb-line-road on" /><path d="M450 380 L570 260 H900" className="rb-line on shared" /></>}
       {/* stations */}
       {["console", "chips", "slow", "mango"].map(id => { const a = ACTS[AI[id]]; const g = GEO[id]; return a.stations.map((st, si) => {
         const [x, y] = g.st[si]; const side = Array.isArray(g.side) ? g.side[si] : g.side; const s = stateOf(AI[id], si); const tone = toneOf(st);
