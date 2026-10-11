@@ -2254,5 +2254,9 @@
     test of the note and its guide that fails without it); design3's workspace, batch page and console, and the port's
     console on its mock, played in the browser with no console errors. The browser suites were not run (SC-55).
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app and console pages stay on their pinned commits.
+- **SC-177** (PR, merged): Reject beside Approve on the plan, not built yet.
+  - **The request:** "where there is approve button for supply chain to get things moving, I want to add a reject button but it will be disabled, clicking that will say a note saying \"Coming Soon\"". The maintainer named the change outright, so no design round.
+  - **The button:** **Reject the plan** sits between Approve · release the agents and Not now on the plan's approval sheet (design3 `brand.jsx` ApproveSheet first, then core's `ApproveSheet.svelte`). It is drawn disabled (`aria-disabled`, the offline approve's `lv-blocked`) but can be pressed: a press shows "Coming Soon" in the status line it is described by, sends nothing, and leaves the plan waiting. The guided demo shows it too, on the same sheet.
+  - **Checks:** the frontend gate passes (core 382 with 1 new, api 83, admin 22, console 2, workspace 105, demo 9); the approval golden gains only the button; played on the workspace's stub as Priya. The browser suites were not run (SC-55).
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
