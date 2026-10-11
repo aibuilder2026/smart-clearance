@@ -68,7 +68,8 @@ than the bin; 1,372 packs to 52 of 58 kiranas at ₹12 effective (buy 10 get 2 f
 ## The film (11 Oct 2026)
 
 `media/mango-drink-demo.mp4`: 4 min 56 s, 1920 × 1080, 24 fps, H.264 (crf 24, 68 MB; the crf-18 master, 134 MB, stays
-local in `src/build/`), AAC stereo normalised to −16 LUFS. 42 segments: 17 live-action clips and 25 app screens, 64
+local in `src/build/`), AAC stereo normalised to −16 LUFS. `media/mango-drink-demo-720p.mp4` is the same cut at
+1280 × 720 (crf 27, 25 MB), for phones and messaging. 42 segments: 17 live-action clips and 25 app screens, 64
 overlays (11 pop-ups, 40 captions, 11 chapter labels, the title and the end card), under the generated score.
 
 - **The run it tells:** the Mango Drink's journey walked on this checkout's own stack (API on :8001, the apps on :5185
