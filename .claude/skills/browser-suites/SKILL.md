@@ -49,6 +49,13 @@ stands and **never resets**: it is the one to run when the maintainer asks to co
 `E2E_LEFTOVER` (8) of the ordering kiranas place no order and closes the batch with the console's Report now: the one to
 run when the maintainer asks to see food left at the godown and how it settles.
 
+**Munchly Chips Sad Path E2E** (SC-179), `corepack pnpm test:journey:sad`, resets too: `E2E_BUYERS` (2) kiranas order,
+every other shop that has joined says Not this time, and the 540 packets left are destroyed at the godown on Rakesh's
+evidence and Priya's second yes. It runs on three screens at once, Priya's laptop and Rakesh's tablet staying signed in,
+a phone for everyone else, side by side in a visible window (`E2E_LIVE=0` hides it) recorded as one video
+(`recording.mp4`, 2560 × 1440; `E2E_KEEP=<path>` copies it out). About 20 minutes. It is the one to run when the
+maintainer asks to watch the people of a journey side by side, or for a recording of all of them at once.
+
 ## Before running
 
 - **A build:** `test:a11y`, `test:e2e` and `test:parity` each build their app first, and serve the build on a preview

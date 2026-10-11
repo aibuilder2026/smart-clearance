@@ -23,7 +23,7 @@ Commands are from the repository root unless a line starts with `cd`. Setting th
 | Parity suite | `cd frontend && PUBLIC_API_BASE= corepack pnpm test:parity` | each app's build against design3 | ~40 s an app | nothing |
 | Live e2e | `backend-api/scripts/e2e.sh` | the local API and Firebase Auth | a few minutes | nothing (adds a client locally) |
 | Journey walk | `backend-api/scripts/walk.sh` | the local API and agents, over HTTP | minutes, by the day length | live Gemini, ~GBP 0.05–0.10 |
-| Journey suites | `cd frontend && corepack pnpm test:journey` (and `:mango`, `:leftover`, `:mango-leftover`) | the live stack, in a real browser | 6–10 min each | live Gemini, ~GBP 0.05–0.10 a run |
+| Journey suites | `cd frontend && corepack pnpm test:journey` (and `:mango`, `:leftover`, `:mango-leftover`, `:sad`) | the live stack, in a real browser | 6–10 min each | live Gemini, ~GBP 0.05–0.10 a run |
 | Agents' evals | `agents/scripts/eval.sh` | live Gemini | the longest: one case a second, over 200 cases | ~GBP 1–2 a full run |
 
 ## The gates
@@ -178,7 +178,7 @@ story's figures as it goes, softly, so the run reaches the end and reports every
 
 People sign in with Firebase custom tokens (`backend-api/scripts/sessions.sh`); no password is typed or printed.
 
-### The four suites
+### The five suites
 
 ```bash
 cd frontend
@@ -186,6 +186,7 @@ corepack pnpm test:journey                     # Munchly Chips E2E
 corepack pnpm test:journey:mango               # Munchly Mango E2E
 corepack pnpm test:journey:leftover            # Munchly Chips Leftover E2E
 corepack pnpm test:journey:mango-leftover      # Munchly Mango Leftover E2E
+corepack pnpm test:journey:sad                 # Munchly Chips Sad Path E2E: three screens, one recording
 ```
 
 | Suite | Resets? | The journey | What it proves |
@@ -194,6 +195,7 @@ corepack pnpm test:journey:mango-leftover      # Munchly Mango Leftover E2E
 | **Munchly Mango E2E** (SC-104) | **never**: each step reads the case and is skipped when done | The Mango Drink, sold through: Lakshmi Agencies' photo, the plan, 52 Hyderabad kiranas, her staff sale, Feeding India's pickup and receipt (FI/HYD/26-27/0417), CN/0117, the ITC memo, the FSSAI checklist, the van round, the report (₹16,917.10) | a three-line plan with no ExpireSoon lot; the food bank and its receipt; continuing a journey exactly where it stands, or after a failure |
 | **Munchly Chips Leftover E2E** (SC-116) | yes | The chips, with `E2E_LEFTOVER` (8) kiranas not ordering: 144 packs left; Neha fires Report now; Rakesh sends two evidence photos and the agency's certificate number; Vision checks them; Priya's second yes | the destruction at the godown (route B): the Expiry credit note, the agency's certificate, Left at the godown and the Expiry settlement |
 | **Munchly Mango Leftover E2E** (SC-135) | yes | The Mango, with `E2E_LEFTOVER` (10) kiranas not buying, `E2E_DECLINE` (2) of them pressing Not this time; Neha closes the offer window early; expiry day; the destruction on Lakshmi Agencies' evidence | every paper read back from its PDF; a kirana for each outcome (ordered, declined, expired); the ITC memo part reversed; her portal and copies |
+| **Munchly Chips Sad Path E2E** (SC-179) | yes | The chips on three screens at once: Priya on a laptop and Rakesh on a tablet, both signed in throughout, and a phone that signs in each kirana, Agrawal and Neha. Two kiranas order 48 packets, 35 press Not this time (Shree Sai Kirana never joined), the lot is won, Neha closes the window, 540 packets are left; expiry day; Rakesh's evidence for 540 packs; Priya's second yes | the destruction of nearly a whole scheme; every paper signed (SC-174), the certificate's two pages; the screens following each other live; one recording of all three (2560 × 1440) |
 
 ### Options
 

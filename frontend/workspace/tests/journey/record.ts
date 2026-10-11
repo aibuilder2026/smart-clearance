@@ -22,13 +22,15 @@ export class Run {
 	readonly started = Date.now();
 	private last = Date.now();
 	private dir: string;
-	private caption = { who: '', role: '', did: '' };
+	protected caption = { who: '', role: '', did: '' };
 	/** the journey step under way, as the caption names it ("7/15") */
 	stage = '';
+	/** a step's still at the page's own pixels, or its CSS pixels (a stage of several screens, SC-179) */
+	protected shotScale: 'device' | 'css' = 'device';
 
 	constructor(
-		private page: Page,
-		private info: TestInfo,
+		protected page: Page,
+		protected info: TestInfo,
 		readonly about: About = {
 			flow: 'Munchly Chips E2E',
 			batch: 'MF-2409-117, Masala Chips 150 g, Rakesh Traders, Nagpur'
@@ -36,7 +38,14 @@ export class Run {
 	) {
 		this.dir = info.outputPath('steps');
 		mkdirSync(this.dir, { recursive: true });
-		// what goes wrong on the page is a finding, wherever the run is
+		this.watch(page);
+		// the caption is drawn again on every load, from the last one set
+		page.on('load', () => void this.draw().catch(() => {}));
+	}
+
+	/** what goes wrong on a page is a finding, wherever the run is: its page errors, console errors and failed API calls
+	 *  (a run with several screens, SC-179, watches each) */
+	watch(page: Page) {
 		page.on('pageerror', (e) => this.find('error', page.url(), `page error: ${e.message.split('\n')[0]}`));
 		page.on('console', (m) => {
 			if (m.type() === 'error' && !/favicon|Download the Svelte|net::ERR_ABORTED/.test(m.text()))
@@ -47,8 +56,11 @@ export class Run {
 			if (r.status() >= 500 || (r.status() >= 400 && /\/v1\//.test(u) && r.status() !== 401))
 				this.find(r.status() >= 500 ? 'error' : 'warning', u, `${r.request().method()} answered ${r.status()}`);
 		});
-		// the caption is drawn again on every load, from the last one set
-		page.on('load', () => void this.draw().catch(() => {}));
+	}
+
+	/** the pages a step's end reads for text that should never reach a person: the run's own, or each screen's */
+	protected screens(): Page[] {
+		return [this.page];
 	}
 
 	find(severity: Finding['severity'], where: string, what: string) {
@@ -73,7 +85,7 @@ export class Run {
 		await this.draw().catch(() => {});
 	}
 
-	private async draw() {
+	protected async draw() {
 		const { who, role, did } = this.caption;
 		if (!who) return;
 		await this.page.evaluate(
@@ -97,19 +109,21 @@ export class Run {
 
 	/** a step done: timed, with a still of the page as it ended (once its figures have rolled into place), and the screen
 	 *  read for text that should never reach a person: NaN, undefined, [object Object], Invalid Date */
-	async done(did: string) {
+	async done(did: string, settle = SETTLE) {
 		const n = this.steps.length + 1;
-		await this.page.waitForTimeout(SETTLE);
-		const odd = await this.page
-			.evaluate(() => {
-				const text = (document.getElementById('main') ?? document.body).innerText;
-				const hits = text.match(/.{0,40}(?:NaN|\bundefined\b|\[object Object\]|Invalid Date).{0,40}/g) ?? [];
-				return [...new Set(hits.map((h) => h.replace(/\s+/g, ' ').trim()))].slice(0, 4);
-			})
-			.catch(() => [] as string[]);
-		for (const o of odd) this.find('error', this.page.url(), `"${o}" on screen at step ${n} (${did})`);
+		await this.page.waitForTimeout(settle);
+		for (const screen of this.screens()) {
+			const odd = await screen
+				.evaluate(() => {
+					const text = (document.getElementById('main') ?? document.body).innerText;
+					const hits = text.match(/.{0,40}(?:NaN|\bundefined\b|\[object Object\]|Invalid Date).{0,40}/g) ?? [];
+					return [...new Set(hits.map((h) => h.replace(/\s+/g, ' ').trim()))].slice(0, 4);
+				})
+				.catch(() => [] as string[]);
+			for (const o of odd) this.find('error', screen.url(), `"${o}" on screen at step ${n} (${did})`);
+		}
 		const shot = join(this.dir, `${String(n).padStart(2, '0')}-${did.replace(/[^a-z0-9]+/gi, '-').slice(0, 48)}.png`);
-		await this.page.screenshot({ path: shot }).catch(() => {});
+		await this.page.screenshot({ path: shot, scale: this.shotScale }).catch(() => {});
 		const now = Date.now();
 		this.steps.push({
 			n,

@@ -43,6 +43,7 @@
 		"test:journey:mango": "corepack pnpm --filter @smart-clearance/workspace test:journey:mango",
 		"test:journey:leftover": "corepack pnpm --filter @smart-clearance/workspace test:journey:leftover",
 		"test:journey:mango-leftover": "corepack pnpm --filter @smart-clearance/workspace test:journey:mango-leftover",
+		"test:journey:sad": "corepack pnpm --filter @smart-clearance/workspace test:journey:sad",
 		"seed": "node scripts/seed.mjs",
 		"seed:check": "node scripts/seed.mjs --check",
 		"icons": "node scripts/icons.mjs",

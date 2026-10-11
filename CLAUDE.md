@@ -2319,4 +2319,34 @@
   - **Hosting:** design3's `dist/` is rebuilt. The hosted app page stays on its pinned commit.
 - **SC-175** (To Do): production's data replaced with local's after SC-174 (the database, the photos and docs buckets, BigQuery), once SC-174 is merged and deployed, while infra's `data_sync_until` (12 Oct, 12:00 UTC) allows.
 
+- **SC-179** (In Review, branch `SC-179-chips-sad-path`, stacked on SC-174): Munchly Chips Sad Path E2E, a journey suite on three screens at once, recorded as one video, asked for by the maintainer.
+  - **The request:** "Munchly Chip E2E sad path on local wherein only 2 kiranas will buy and rest will decline, resulting in destruction", shown live with "3 browsers open side by side": the supply chain operator on a laptop and the distributor on a tablet, staying signed in throughout, and kiranas and the others signing in on a phone as needed; the whole session recorded "with all three screens open and seen".
+  - **The stage** (`tests/journey/stage.ts`):
+    - three screens in a headless Chromium: Priya's laptop (1440 × 900), Rakesh's tablet (820 × 1180) and a phone (390 × 844);
+    - each streams its frames (CDP screencast) into a page in a visible Chromium window, which lays them out as devices under their holder's name and address, lights the one being acted on, and keeps a narrator (the step, who acts and what they do, running counts, the last steps);
+    - the stage is recorded: its frames piped into ffmpeg at 25 fps, H.264 at 2560 × 1440 (`recording.mp4`; `E2E_KEEP` copies it out; `E2E_LIVE=0` hides the window).
+
+    Priya and Rakesh sign in once; their screens move within the app as a link would, and the pushes that reach them show as banners, so the suite reads each screen's `#main`. The phone signs each person in. `record.ts` now watches several pages, takes stills at CSS pixels and lets a subclass draw the caption.
+  - **The suite** (`munchly-chips-sad.journey.ts`, `corepack pnpm test:journey:sad`; it resets the journey):
+    - of Rakesh's 38 kiranas, the first `E2E_BUYERS` (2) story buyers order 24 packets each, and the 35 others who use the app press Not this time;
+    - Shree Sai Kirana's invitation is still open in the story, so it cannot sign in to answer, and the report says so;
+    - Agrawal wins the ExpireSoon lot, Neha closes the window from the console, and 540 packets stay at the godown;
+    - the truck, the invoice and the van round to the 2 shops; expiry day;
+    - Rakesh's evidence, Vision's checks and Priya's second yes;
+    - then the papers read back on each screen, signed (SC-174).
+  - **The evidence for 540 packets** (`tests/journey/evidence/`, Qwen-Image, with sidecars): a before photo with five heaped crates, which Vision counted at 500 to 540 in six reads (kept full size at quality 92; a 1024-wide q82 copy read as low as 250), and design3's after photo with its slate edited to 540. Both were held to Vision's own prompt on live Gemini before the run.
+  - **The run of 11 Oct** (`runs/2026-10-11-sad/REPORT.md`; the 7 min 1 s recording, 35.7 MB, stays local): passed in 6 min 58 s, 94 steps, from a reset, with no warning.
+    - The plan: ₹21,770.
+    - The answers: 2 shops ordered 48 packets; 35 declined; 1 never joined the app.
+    - The lot: 772 at ₹14.20.
+    - Left at the godown: 540.
+    - Vision's checks: 4 of 4 ("About 540 packs in view (540 left)", the slate's 540).
+    - On the yes: CN/0118 for ₹13,284 (dealer price, the GST he reverses and the agency's charges), and certificate OCE/DC/26-27/0219 for 540 packs, signed four times.
+    - Actual net: ₹11,702.40.
+  - **Found by the trials, all fixed in the suite:**
+    - a push banner on a screen that stays signed in also matched "Review and approve";
+    - the shop that never joined could not sign in;
+    - the case does not expose the scheme's shortfall.
+  - **Checks:** the frontend gate passes (core 382, api 83, workspace 109, admin 22, demo 9, console 2). The day is back at 24 hours.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

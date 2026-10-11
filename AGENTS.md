@@ -63,6 +63,7 @@ corepack pnpm test:parity                 # every app's build against design3, p
 corepack pnpm test:journey                # Munchly Chips E2E: the chips' live journey, every person in the real UI, recorded (SC-95; the live stack)
 corepack pnpm test:journey:mango          # Munchly Mango E2E: the Mango Drink's journey from where it stands, never resetting (SC-104)
 corepack pnpm test:journey:leftover       # Munchly Chips Leftover E2E: kiranas that do not order, the batch closed by Report now (SC-116)
+corepack pnpm test:journey:sad            # Munchly Chips Sad Path E2E: 2 kiranas buy, the rest decline, destroyed at the godown; three screens live, one recording (SC-179)
 corepack pnpm seed && corepack pnpm icons # regenerate from design3 after it changes
 ```
 

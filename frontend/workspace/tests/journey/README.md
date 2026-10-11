@@ -154,6 +154,61 @@ It resets Munchly's journey first, as the chips suites do.
 
 Its run of 10 Oct is in `runs/2026-10-10-mango-leftover/`.
 
+## Munchly Chips Sad Path E2E
+
+The chips' sad path, on three screens at once (SC-179), `munchly-chips-sad.journey.ts` with `stage.ts`. Almost no shop
+buys, and what is left is destroyed at the godown.
+
+**The three screens** run in their own headless Chromium, side by side on a stage, a page in a visible Chromium window
+(`E2E_LIVE=0` hides it):
+
+- a laptop (1440 × 900) for Priya, Munchly's supply chain operator;
+- a tablet (820 × 1180) for Rakesh, the distributor;
+- a phone (390 × 844) for everyone else: each kirana, Agrawal Wholesale on ExpireSoon, and Neha in the console.
+
+Priya and Rakesh sign in once and stay signed in. Their screens move within the app as a link would, and the pushes
+that reach them show as the app's banners. The phone signs each person in as they are needed. Each screen streams its
+frames (CDP screencast) into the stage, which shows each device under its holder's name and address. The screen being
+acted on is lit, and a narrator under the laptop names the step, who acts and what they do, with running counts and the
+last steps. The stage is recorded: its frames are piped into ffmpeg at a steady 25 fps, H.264 at 2560 × 1440, as
+`recording.mp4` in the run's output folder (`E2E_KEEP=<path>` copies it out).
+
+**The journey:**
+
+- Neha resets the journey from the console. Priya confirms Setup, Rakesh gives his permission, and Neha runs the Watcher.
+- Rakesh sends the label photo, and Priya approves the plan (₹21,770).
+- Of Rakesh's 38 kiranas, only the first `E2E_BUYERS` (2) of those that order in the story order their 24 packets each.
+  Every other shop that has joined the app signs in on the phone and presses Not this time (35). Shree Sai Kirana's
+  invitation is still open, so it cannot sign in to answer; the report says so.
+- Agrawal Wholesale wins the ExpireSoon lot (₹13 bid, ₹14.20 counter). While the scheme is still open, Rakesh's
+  Deliveries reads "Load once the scheme closes".
+- Neha closes the offer window from the console. The lot was already won, so the 540 packets no shop took stay at the
+  godown rather than moving onto it.
+- Rakesh loads the truck, issues his invoice from Tally, and runs his van round to the two shops.
+- Neha fires expiry day. Rakesh sends the destruction's evidence: the photos for 540 packets (`evidence/`, Qwen-Image,
+  with sidecars), Orange City Enviro Services, its certificate number, and the window and two witnesses from the agency's
+  panel. Vision checks it on live Gemini, and Priya approves from her Command Center. Impact reports: the Expiry credit
+  note (₹13,284: the dealer price, the GST he reverses and the agency's charges) and the two-page certificate of
+  destruction.
+- **What it reads back:**
+  - Priya's pack, every paper with its signature (SC-174);
+  - Rakesh's batch: what happened, his money, his papers and photos;
+  - on the phone, Shree Ganesh Kirana's order, and the offer a shop declined;
+  - Execution's settlement and the ledger.
+
+**The evidence photos** were made for 540 packets, the count left when 2 shops order. Vision counted 500 to 540 packs in
+the before photo and read its slate as `MF-2409-117 · 540 PKTS`. Another `E2E_BUYERS` leaves another count, and falls
+back to design3's photos for 144 packets, whose count and slate checks will then not pass.
+
+```sh
+corepack pnpm test:journey:sad                                   # the stage on screen, recorded
+E2E_KEEP=$PWD/workspace/tests/journey/runs/<date>-sad/recording.mp4 corepack pnpm test:journey:sad
+E2E_FROM=deal E2E_UNTIL=window corepack pnpm test:journey:sad     # part of it, on the journey as it stands
+```
+
+It resets Munchly's journey first. Each person's custom token is minted again after 40 minutes, since one is good for an
+hour.
+
 ## Before a run
 
 - backend-api on :8000 (`backend-api/scripts/dev.sh`), on a world with Munchly's live workspace (`hydrate.sh --reset`,
