@@ -37,6 +37,16 @@ time window and two independent witnesses.
 - A · Ink and the firm's stamp (recommended): the specimen signature in ink over the firm's rubber stamp.
 - B · Digitally signed: a DSC box on the GST papers and credit notes; ink on the certificate.
 
-## The pick
+## The pick (11 Oct 2026, in the request that asked for the board)
 
-(to be recorded)
+- **Part 1 · A, with the count.** The receipt is attached on the staff sale card, Vision reads its UPI references, and
+  the sale records once the payments match the count.
+- **Part 2 · B, the certificate and its log.** Page 1 is the certificate with the signatures; page 2 is the destruction
+  log, step by step with the times, the weighbridge slip, the vehicle's seal and both photos, initialled by the officer
+  and the two witnesses.
+- **Part 3 · A, ink and the firm's stamp.** Each signatory's specimen signature in ink over the firm's rubber stamp
+  (rectangular for the distributors, a round seal for Munchly and the agencies), on every paper it signs.
+- **The names:** kept. Rakesh Jaiswal (Proprietor, Rakesh Traders), K. Lakshmi Narayana (Partner, Lakshmi Agencies),
+  Vinod Patwardhan (Head of Accounts, Munchly Foods), Sachin Bhoyar (Site supervisor, Orange City Enviro Services),
+  Pradeep Meshram and Asha Kale (independent witnesses, Nagpur), with similar fictional names for Vidarbha Waste Care,
+  Deccan Green Waste Management and the Hyderabad witnesses.
