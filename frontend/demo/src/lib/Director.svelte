@@ -114,13 +114,26 @@
 		void p.pos.b;
 		const b = untrack(() => (p.complete || p.act.console ? null : p.beat));
 		if (!b || (!b.event && !b.click)) return;
-		const t = setTimeout(() => {
-			if (b.event) window.dispatchEvent(new Event(b.event));
-			if (b.click)
-				[...document.querySelectorAll<HTMLButtonElement>('.device-window button')]
-					.find((x) => x.textContent?.trim() === b.click)
-					?.click();
-		}, 900);
+		// the device's screen may still be drawing (a slow line): the press waits for its button, and the event is sent
+		// again until the sheet it opens shows, for up to 5 s
+		let t = 0;
+		let tries = 0;
+		const run = () => {
+			let more = false;
+			if (b.event && !document.querySelector('.dev-ring [role=dialog], .real-app [role=dialog]')) {
+				window.dispatchEvent(new Event(b.event));
+				more = true;
+			}
+			if (b.click) {
+				const el = [...document.querySelectorAll<HTMLButtonElement>('.device-window button')].find(
+					(x) => x.textContent?.trim() === b.click
+				);
+				if (el) el.click();
+				else more = true;
+			}
+			if (more && ++tries < 15) t = window.setTimeout(run, 300);
+		};
+		t = window.setTimeout(run, 900);
 		return () => clearTimeout(t);
 	});
 	const real = $derived(app.bp === 'phone');

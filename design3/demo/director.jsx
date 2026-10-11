@@ -145,10 +145,16 @@
     useEffect(() => {
       if (p.act.console || p.complete) return;
       const b = p.beat; if (!b.event && !b.click) return;
-      const t = setTimeout(() => {
-        if (b.event) window.dispatchEvent(new Event(b.event));
-        if (b.click) { const el = [...document.querySelectorAll(".device-window button")].find(x => x.textContent.trim() === b.click); el && el.click(); }
-      }, 900);
+      // the device's screen may still be drawing (a slow line, the hosted page): the press waits for its button, and the
+      // event is sent again until the sheet it opens shows, for up to 5 s
+      let t = 0, tries = 0;
+      const run = () => {
+        let more = false;
+        if (b.event && !document.querySelector(".dev-ring [role=dialog], .real-app [role=dialog]")) { window.dispatchEvent(new Event(b.event)); more = true; }
+        if (b.click) { const el = [...document.querySelectorAll(".device-window button")].find(x => x.textContent.trim() === b.click); if (el) el.click(); else more = true; }
+        if (more && ++tries < 15) t = setTimeout(run, 300);
+      };
+      t = setTimeout(run, 900);
       return () => clearTimeout(t);
     }, [p.pos.a, p.pos.s, p.pos.b]);
   }
