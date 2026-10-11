@@ -16,17 +16,19 @@
   const AI = Object.fromEntries(ACTS.map((a, i) => [a.id, i]));
 
   /* ---------- the people on the devices ---------- */
-  const LABEL = { priya: "Priya's", rakesh: "Rakesh bhai's", ganesh: "Ganesh ji's", agrawal: "Agrawal ji's", meera: "Meera's", "lakshmi-owner": "Lakshmi Agencies'", neha: "Neha's", shubham: "Shubham Provision's" };
-  const PLACE = { priya: "Munchly Foods, Pune", rakesh: "Kalamna godown, Nagpur", ganesh: "Shree Ganesh Kirana, Itwari", agrawal: "Agrawal Wholesale, Raipur", meera: "Feeding India, Hyderabad", "lakshmi-owner": "Begum Bazaar godown, Hyderabad", neha: "Smart-Clearance, Bengaluru", shubham: "Dharampeth, Nagpur" };
+  const LABEL = { priya: "Priya's", rakesh: "Rakesh bhai's", ganesh: "Ganesh ji's", agrawal: "Agrawal ji's", meera: "Meera's", "lakshmi-owner": "Lakshmi Agencies'", neha: "Neha's", "kirana-shubham-provision": "Shubham Provision's", "kirana-sri-lakshmi-ganapathi-kirana": "Sri Lakshmi Ganapathi Kirana's" };
+  const PLACE = { priya: "Munchly Foods, Pune", rakesh: "Kalamna godown, Nagpur", ganesh: "Shree Ganesh Kirana, Itwari", agrawal: "Agrawal Wholesale, Raipur", meera: "Feeding India, Hyderabad", "lakshmi-owner": "Begum Bazaar godown, Hyderabad", neha: "Smart-Clearance, Bengaluru", "kirana-shubham-provision": "Dharampeth, Nagpur", "kirana-sri-lakshmi-ganapathi-kirana": "Begum Bazaar, Hyderabad" };
   const NEHA = { id: "neha", name: "Neha Kulkarni", short: "Neha", org: "Smart-Clearance", role: "Super admin" };
-  const EXTRA = { shubham: { id: "shubham", name: "Shubham Provision", short: "Shubham Provision", org: "Shubham Provision", role: "retailer", kind: "partner", status: "active", provider: "phone" } };
   const PREFILL = { priya: D.PEOPLE.priya.email, rakesh: D.PEOPLE.rakesh.phone.replace("+91 ", "") };
-  const user = id => (id === "neha" ? NEHA : Store.get().users.find(u => u.id === id) || EXTRA[id] || D.PEOPLE[id] || { id, name: id, short: id });
+  // someone in the journey's store (with their role and sign-in), or in the story
+  const user = id => (id === "neha" ? NEHA : Store.get().users.find(u => u.id === id) || D.PEOPLE[id] || { id, name: id, short: id });
 
   /* ---------- the store for a beat: where its station starts, and what the beats before it did ---------- */
   const runActs = acts => (acts || []).forEach(a => (typeof a === "function" ? Store.update(a) : Flow.run(a[0], a[1])));
   function sceneOf(station, j) {
     Flow.Agents.setLive(false);
+    // the journey this station plays (SC-168: the chips, the Mango Drink, the slow week), then the stage it starts from
+    const key = station.scenario || "chips"; if (Flow.scenario() !== key) Flow.useScenario(key);
     Flow.fastForward(station.ff || 0);
     runActs(station.prep);
     station.beats.slice(0, j).forEach(b => runActs(b.acts));
