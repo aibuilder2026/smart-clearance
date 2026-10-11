@@ -115,7 +115,7 @@
     const go = r => setRoute({ name: r.name, params: r.params || {} });
     const app = spec.lock ? <S.LockScreen who={spec.lock.who} push={spec.lock.push} time={time} date={date} onOpen={onTap} />
       : spec.signin ? <NoticeHost resetKey={"in-" + spec.who}><S.SignIn guided key={spec.signin} prefill={PREFILL[spec.signin]} onSignIn={onTap} /></NoticeHost>
-      : <NoticeHost resetKey={spec.who}><S.RoleApp key={me.id} me={me} route={route} onGo={go} onBack={() => go({ name: S.HOME[me.role] })} /></NoticeHost>;
+      : <NoticeHost resetKey={spec.who}><S.RoleApp key={key} me={me} route={route} onGo={go} onBack={() => go({ name: S.HOME[me.role] })} /></NoticeHost>;
     if (kind === "bare") return <AppRoot embedded className="real-app" style={{ "--safe-top": "calc(env(safe-area-inset-top, 0px) + 60px)" }}><div ref={ref} style={{ position: "absolute", inset: 0 }}>{app}</div></AppRoot>;
     const lbl = <DevLabel who={spec.who} kind={kind === "phone" ? "phone" : "laptop"} focus={focus} amber={amber} />;
     if (kind === "phone") return <div className="dev" style={{ width: 414 * scale }}>{lbl}<div className={cx("dev-ring", focus && "on", amber && "amber")} style={{ width: 414 * scale, height: 868 * scale, borderRadius: 60 * scale }}><div ref={ref} style={{ width: 414, height: 868, transform: `scale(${scale})`, transformOrigin: "top left" }}><PhoneFrame time={time} dark={!!spec.lock}>{app}</PhoneFrame></div></div></div>;

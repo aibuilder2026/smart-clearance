@@ -1,78 +1,54 @@
 <script lang="ts">
 	import { AppRoot, Avatar, cx, NoticeHost, PhoneFrame, WindowFrame } from '@smart-clearance/core';
-	import {
-		D,
-		HOME,
-		LockScreen,
-		RoleApp,
-		SignIn,
-		store,
-		WS,
-		type Route,
-		type User
-	} from '@smart-clearance/core/workspace';
-	import { DEVICE, PLACE, PREFILL, type DeviceSpec } from './stages.ts';
+	import { HOME, LockScreen, RoleApp, SignIn, store, WS, type Route } from '@smart-clearance/core/workspace';
+	import { untrack } from 'svelte';
+	import { LABEL, PLACE, PREFILL, user } from './people.ts';
+	import type { DeviceSpec } from './types.ts';
 
-	// a device on the demo's stage (director.jsx Device): the person's app at a screen, their sign-in, or their lock
-	// screen, in a laptop's browser window or a phone, scaled to fit. Its label says whose it is, and "their move" when
-	// the beat is theirs
+	// a person's device on the demo's stage (director.jsx Device): their app at a screen (with its batch and tab), their
+	// sign-in, or their lock screen with a push, in a laptop's browser window or a phone, scaled to fit; bare, the app
+	// fills a real phone's screen. Its label says whose it is, and "their move" when the beat is theirs. The visitor can
+	// wander off in it; a new beat points it back at the beat's screen
 	type Props = {
-		kind: 'desk' | 'phone';
+		kind: 'desk' | 'phone' | 'bare';
 		spec: DeviceSpec;
-		lockOpen?: boolean;
-		onlockopen?: () => void;
-		onsignedin: (uid: string) => void;
 		time: string;
 		date: string;
-		scale: number;
+		scale?: number;
 		focus?: boolean;
 		amber?: boolean;
-		route: Route | null;
-		onroute: (r: Route) => void;
+		/** the push opened, or the sign-in made */
+		ontap: () => void;
 		/** the laptop's window, before scaling */
 		width?: number;
 		height?: number;
 	};
-	let {
-		kind,
-		spec,
-		lockOpen,
-		onlockopen,
-		onsignedin,
-		time,
-		date,
-		scale,
-		focus,
-		amber,
-		route,
-		onroute,
-		width = 1280,
-		height = 800
-	}: Props = $props();
+	let { kind, spec, time, date, scale = 1, focus, amber, ontap, width = 1280, height = 800 }: Props = $props();
 
-	// someone in the store (with their role and sign-in), or in the story
-	const me = $derived((store.state.users.find((u) => u.id === spec.who) || D.people[spec.who ?? '']) as User);
-	const lock = $derived(spec.lock && !lockOpen ? spec.lock : null);
+	const me = $derived(user(spec.who ?? ''));
+	// the beat's screen, by its values (a new beat is a new object even when it says the same); a beat that points the
+	// device at a new screen draws it afresh, since the ledger reads its reading and a batch page its tab as they open
+	const key = $derived(`${spec.who}|${spec.route}|${JSON.stringify(spec.params ?? {})}`);
+	const beatRoute = (): Route => ({ name: spec.route ?? '', params: { ...(spec.params ?? {}) } });
+	let route = $state<Route>(untrack(beatRoute));
+	$effect(() => {
+		void key;
+		route = untrack(beatRoute);
+	});
+	const go = (r: Route) => (route = { name: r.name, params: r.params });
+
+	// scroll to the section the beat is about, once the screen has drawn (the device is scaled: measure in its pixels)
 	let screen: HTMLDivElement | undefined = $state();
-	// the spec is a new object each time the beat moves on, even when it says the same; what follows from it is keyed on
-	// its values, as the prototype's effects are (React compares them), so a new beat neither clears the device's
-	// banners (NoticeHost's resetKey) nor scrolls it to its anchor again (SC-65's parity suite found both)
-	const who = $derived(spec.who);
-	const anchorTo = $derived(spec.anchor);
-	const locked = $derived(!!lock);
-
-	// scroll to an anchor when the director asks for one, once the screen has drawn
-	const anchorKey = $derived(`${anchorTo}|${who}|${route?.name}|${locked}|${store.state.hero.phase}`);
+	const anchorKey = $derived(`${spec.anchor}|${key}|${!!spec.lock}|${store.state.hero.phase}`);
 	$effect(() => {
 		void anchorKey;
-		const anchor = anchorTo;
-		if (!anchor || locked) return;
+		const anchor = spec.anchor;
+		if (!anchor || spec.lock) return;
 		const t = setTimeout(() => {
 			const root = screen;
 			const el = root?.querySelector(`[data-anchor="${anchor}"]`);
 			const sc = root?.querySelector('.scroll');
 			if (!el || !sc) return;
-			// the device is scaled: measure in its own pixels
 			const k = sc.getBoundingClientRect().height / (sc.clientHeight || 1) || 1;
 			sc.scrollTo({
 				top: Math.max(0, (el.getBoundingClientRect().top - sc.getBoundingClientRect().top) / k + sc.scrollTop - 64),
@@ -82,25 +58,22 @@
 		return () => clearTimeout(t);
 	});
 
-	const url = $derived(
-		me.role === 'buyer'
-			? 'https://expiresoon.example/l/ES-24117'
-			: `https://${WS.domain}/${spec.signin ? 'sign-in' : route?.name || HOME[me.role]}`
+	const path = $derived(
+		spec.signin
+			? 'sign-in'
+			: [route.name || HOME[me.role], route.params?.ref].filter(Boolean).join('/') +
+					(route.params?.tab ? '?tab=' + route.params.tab : route.params?.reading ? '?reading=' + route.params.reading : '')
 	);
+	const url = $derived(me.role === 'buyer' ? 'https://expiresoon.example/l/ES-24117' : `https://${WS.domain}/${path}`);
 </script>
 
 {#snippet app()}
-	{#if lock}<LockScreen who={lock.who} push={lock.push} {time} {date} onopen={onlockopen} />
-	{:else if spec.signin}<NoticeHost resetKey={'in-' + who}
-			>{#key spec.signin}<SignIn guided prefill={PREFILL[spec.signin]} onsignin={onsignedin} />{/key}</NoticeHost
+	{#if spec.lock}<LockScreen who={spec.lock.who} push={spec.lock.push} {time} {date} onopen={ontap} />
+	{:else if spec.signin}<NoticeHost resetKey={'in-' + spec.who}
+			>{#key spec.signin}<SignIn guided prefill={PREFILL[String(spec.signin)]} onsignin={ontap} />{/key}</NoticeHost
 		>
-	{:else}<NoticeHost resetKey={who}
-			>{#key me.id}<RoleApp
-					{me}
-					{route}
-					ongo={(r) => onroute({ name: r.name, params: r.params })}
-					onback={() => onroute({ name: HOME[me.role] })}
-				/>{/key}</NoticeHost
+	{:else}<NoticeHost resetKey={spec.who}
+			>{#key key}<RoleApp {me} {route} ongo={go} onback={() => go({ name: HOME[me.role] })} />{/key}</NoticeHost
 		>
 	{/if}
 {/snippet}
@@ -108,25 +81,26 @@
 {#snippet label()}
 	<div class={cx('dev-label', focus && 'focus', focus && amber && 'amber')}>
 		<Avatar person={me} size="sm" /><span
-			><b>{DEVICE[spec.who ?? ''] || me.short} {kind === 'phone' ? 'phone' : 'laptop'}</b><span
+			><b>{LABEL[spec.who ?? ''] || me.short} {kind === 'phone' ? 'phone' : 'laptop'}</b><span
 				>{PLACE[spec.who ?? ''] || me.org}</span
 			></span
 		>
 	</div>
 {/snippet}
 
-{#if kind === 'phone'}
+{#if kind === 'bare'}
+	<AppRoot embedded class="real-app" style="--safe-top: calc(env(safe-area-inset-top, 0px) + 60px)"
+		><div bind:this={screen} style="position: absolute; inset: 0">{@render app()}</div></AppRoot
+	>
+{:else if kind === 'phone'}
 	<div class="dev" style="width: {414 * scale}px">
 		{@render label()}
 		<div
 			class={cx('dev-ring', focus && 'on', amber && 'amber')}
 			style="width: {414 * scale}px; height: {868 * scale}px; border-radius: {60 * scale}px"
 		>
-			<div
-				bind:this={screen}
-				style="width: 414px; height: 868px; transform: scale({scale}); transform-origin: top left"
-			>
-				<PhoneFrame {time} dark={!!lock}>{@render app()}</PhoneFrame>
+			<div bind:this={screen} style="width: 414px; height: 868px; transform: scale({scale}); transform-origin: top left">
+				<PhoneFrame {time} dark={!!spec.lock}>{@render app()}</PhoneFrame>
 			</div>
 		</div>
 	</div>
