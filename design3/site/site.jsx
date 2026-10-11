@@ -114,8 +114,9 @@
   // SC-158's film, 4 min 56 s: one batch from the brand to the ledger. Every Watch (the hero, the pill, the close) opens
   // it in a dark room over the page, which stays where it was. It plays from YouTube, unlisted, on the no-cookie host:
   // nothing of YouTube loads before Watch. Its poster is the bay at dawn before the title card, which names the client;
-  // the page names none (SC-28), and the film, played on request, may. Until its id is set, Watch opens the guided demo
-  const DEMO_FILM = Object.assign({ youtube: null, runtime: "4:56", label: "Watch the 5-minute demo", title: "The 5-minute demo", sub: "One batch, from the brand to the ledger",
+  // the page names none (SC-28), and the film, played on request, may. Without an id, Watch opens the guided demo.
+  // The film is youtu.be/EWFLqM3oHYU, unlisted, on the maintainer's channel (@arundutta3411)
+  const DEMO_FILM = Object.assign({ youtube: "EWFLqM3oHYU", runtime: "4:56", label: "Watch the 5-minute demo", title: "The 5-minute demo", sub: "One batch, from the brand to the ledger",
     poster: "film-poster.webp", thumb: "film-thumb.webp", words: "demo-film.json" }, window.SC3_FILM || {});
   const clock = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
   // the film's chapters and captions (design3/designs/SC-164/transcript.py, from the film's own timeline), read once,

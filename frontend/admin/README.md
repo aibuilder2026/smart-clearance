@@ -121,14 +121,14 @@ The UI reads one typed API, the landing page's entry of the shared [`@smart-clea
 
 Declared in `src/env.ts` (SvelteKit 3's `defineEnvVars`), public and inlined at build time. Copy `.env.example` to `.env`.
 
-| Variable                               | Default                                                                                                             |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `PUBLIC_API_BASE`                      | unset: the in-browser mock                                                                                          |
-| `PUBLIC_MOCK_LATENCY_MS`               | 0                                                                                                                   |
-| `PUBLIC_DEMO_URL`                      | the live guided demo, smartclearance-demo.web.app                                                                   |
-| `PUBLIC_DEMO_FILM`                     | unset: Watch opens the guided demo; set to the film's YouTube id (unlisted), Watch plays it in the theatre (SC-164) |
-| `PUBLIC_APP_URL`, `PUBLIC_CONSOLE_URL` | the live workspace and console on web.app                                                                           |
-| `PUBLIC_DEV_ROUTES`                    | off: `/ds` answers 404 in a production build                                                                        |
+| Variable                               | Default                                                                                                                     |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `PUBLIC_API_BASE`                      | unset: the in-browser mock                                                                                                  |
+| `PUBLIC_MOCK_LATENCY_MS`               | 0                                                                                                                           |
+| `PUBLIC_DEMO_URL`                      | the live guided demo, smartclearance-demo.web.app                                                                           |
+| `PUBLIC_DEMO_FILM`                     | the film's YouTube id, `EWFLqM3oHYU` (unlisted): Watch plays it in the theatre (SC-164); `off`: Watch opens the guided demo |
+| `PUBLIC_APP_URL`, `PUBLIC_CONSOLE_URL` | the live workspace and console on web.app                                                                                   |
+| `PUBLIC_DEV_ROUTES`                    | off: `/ds` answers 404 in a production build                                                                                |
 
 ## Tests
 

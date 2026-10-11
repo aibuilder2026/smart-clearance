@@ -55,3 +55,17 @@ Board: `board.html`, published to platform v3 as `SC-164 design review.html` (pi
 **A, the theatre**, as recommended. Built design3 first (`site/site.jsx`, `site/site.css`), then ported to
 `frontend/admin`. Until the film's YouTube id is set, Watch keeps opening the guided demo, as before; once it is set,
 Watch plays the film.
+
+## The film on YouTube (11 Oct 2026)
+
+https://youtu.be/EWFLqM3oHYU, unlisted, on the maintainer's channel (@arundutta3411). The maintainer dragged in the
+crf-18 master (134 MB; Claude in Chrome's file upload takes at most 10 MB). In Studio:
+
+- the title "Smart-Clearance: the 5-minute demo";
+- `youtube-description.txt` as the description (YouTube shows its 12 chapters);
+- not made for kids;
+- AI use disclosed (realistic people generated with Qwen-Image and LTX);
+- embedding allowed;
+- Unlisted.
+
+The id is the default of `PUBLIC_DEMO_FILM` (`frontend/admin/src/env.ts`) and design3's `DEMO_FILM.youtube`.

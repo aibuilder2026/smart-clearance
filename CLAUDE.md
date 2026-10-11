@@ -2119,15 +2119,29 @@
     - Escape, Close or the scrim return focus to the Watch that opened it, and the page never scrolls behind it;
     - the hero's own film holds while the theatre is open;
     - where the film ends: "One batch, start to finish." with Try the guided demo, Book a demo and Watch again.
-  - **YouTube:** the player is made on `youtube-nocookie.com` through the IFrame API, which loads only after the first Watch (`youtube.ts`). Until the film's id is set (`PUBLIC_DEMO_FILM`; design3's `DEMO_FILM.youtube`), every Watch opens the guided demo, as before.
+  - **YouTube:** the film is [youtu.be/EWFLqM3oHYU](https://youtu.be/EWFLqM3oHYU), unlisted, on the maintainer's channel (@arundutta3411).
+    - The maintainer dragged the crf-18 master into YouTube Studio, since Claude in Chrome uploads at most 10 MB. The rest was set in Studio:
+      - the title "Smart-Clearance: the 5-minute demo";
+      - `youtube-description.txt`, whose 12 chapters YouTube shows;
+      - not made for kids, AI use disclosed, embedding allowed, Unlisted.
+    - Its oEmbed answers 200.
+    - The player is made on `youtube-nocookie.com` through the IFrame API, which loads only after the first Watch (`youtube.ts`).
+    - The id is the default of `PUBLIC_DEMO_FILM` and design3's `DEMO_FILM.youtube`. `PUBLIC_DEMO_FILM=off` makes every Watch open the guided demo, as before.
   - **The poster** is the master's frame at 0.5 s, before the title card, which names the client. A square of it is the pill's thumbnail (`site/assets/plates/film-*`, with sidecars).
   - **The chapters and captions** (`site/assets/media/demo-film.json`) and the YouTube description's chapter list come from SC-158's own timeline (`designs/SC-164/transcript.py`). They are read only when the theatre opens. AGENTS.md records the film as the one exception to SC-28.
   - **The guided demo's link** (`PUBLIC_DEMO_URL`) defaults to the live smartclearance-demo.web.app, where it was the Claude Design prototype.
   - **Checks:**
     - the frontend gate passes: core 293, api 79, admin 22 (5 new: the chapters, the YouTube loader and player), console 8, workspace 105, demo 5;
-    - design3 and the port's build were played through with YouTube's own IFrame API sample video in place of the film (a local check only). Nothing of YouTube loaded before Watch. Enter opened the theatre on the no-cookie host, with its title; a chapter jumped and was marked; the words opened; the film's end showed the end card; Escape gave focus back with the page where it was. From the pill and the close too, at 1440 and 390, light and dark;
-    - a build without the id links all three Watch buttons to smartclearance-demo.web.app;
+    - design3 and the port's build were played through on the uploaded film:
+      - nothing of YouTube loaded before Watch;
+      - Enter opened the theatre on the no-cookie host, with its title;
+      - the Detect chapter jumped to 0:56, where its caption is, and was marked;
+      - the words opened;
+      - the film's last seconds ended on the end card;
+      - Escape gave focus back with the page where it was;
+    - the same was played from the pill and the close, at 1440 and 390, light and dark, with YouTube's own sample video before the upload;
+    - a build with `PUBLIC_DEMO_FILM=off` links all three Watch buttons to smartclearance-demo.web.app;
     - the keyboard spec gains the theatre, with YouTube stubbed. The browser suites were not run (SC-55).
-  - **Waiting for:** the maintainer's unlisted upload of `design3/designs/SC-158/src/build/mango-drink-demo-master.mp4` (with `youtube-description.txt` as its description). Its id then goes into `PUBLIC_DEMO_FILM`'s default and design3's `DEMO_FILM`.
+  - **Hosting:** design3's `dist/` is rebuilt; the hosted landing page on Claude Design stays on its pinned commit.
 
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
