@@ -1,0 +1,24 @@
+{
+  "name": "c10-staff-sale",
+  "model": "LTX 2.5 Fast (local)",
+  "plugin": "ltx-video 0.2.0",
+  "ltx_desktop": "1.2.7",
+  "kind": "clip",
+  "prompt": "Exactly as in the image: violet dusk at a godown's gate, a folding table under a sodium lamp stacked with small yellow-orange mango drink tetra packs, the woman in the teal saree behind it, a short queue of godown workers in shirts and lungis, a small black-and-white square code card on the table, scooters along the wall, the sky amber at the horizon and violet above. The first worker takes a handful of packs from her and taps his phone on the code card, then steps aside as the next worker steps up; she smiles and hands the next packs across; the sodium lamp flickers once. Locked-off camera, no movement. Sound: friendly chatter, a scooter starting, a short payment chime, crickets. No text, no logos, no lettering anywhere. Photorealistic live action, 35 mm, natural skin and fabric.",
+  "seed": 158009,
+  "resolution": "540p",
+  "duration_s": 8,
+  "fps": 24,
+  "camera": "static",
+  "audio": true,
+  "inputs": [
+    {
+      "role": "first frame",
+      "file": "k10-staff-sale.png",
+      "sha256": "08d571a3b0b302ff36ca4c95344bddbc16304673c379bcf6d602ea120dcfcd6d"
+    }
+  ],
+  "minutes": 10.0,
+  "created": "2026-10-11",
+  "use": "SC-158: one shot of the demo film, image to video from its keyframe"
+}

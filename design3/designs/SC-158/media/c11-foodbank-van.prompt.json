@@ -1,0 +1,24 @@
+{
+  "name": "c11-foodbank-van",
+  "model": "LTX 2.5 Fast (local)",
+  "plugin": "ltx-video 0.2.0",
+  "ltx_desktop": "1.2.7",
+  "kind": "clip",
+  "prompt": "Exactly as in the image: late morning at the godown's loading door, a plain white delivery van with its rear doors open, the woman in the green T-shirt with the lanyard and the bun passing a kraft carton with a sage-green band into the van to a young volunteer in an orange vest, the woman in the teal saree holding a clipboard by the door, three more cartons on a hand truck, a tamarind tree and a blue-washed wall. The carton goes in, the volunteer sets it down and reaches out, the woman in green lifts the next carton from the hand truck and passes it, the woman in the teal saree ticks her clipboard and smiles. A slow, gentle slide to the right. Sound: cardboard sliding, a van door, mynah birds, a distant auto-rickshaw. No text, no logos, no lettering anywhere. Photorealistic live action, 35 mm, natural skin and fabric.",
+  "seed": 158010,
+  "resolution": "540p",
+  "duration_s": 8,
+  "fps": 24,
+  "camera": "dolly_right",
+  "audio": true,
+  "inputs": [
+    {
+      "role": "first frame",
+      "file": "k11-foodbank-van.png",
+      "sha256": "dc9137b5736e7f4557eb18cc1b272959e44b2bbad3ac155c66d6147e608f3c06"
+    }
+  ],
+  "minutes": 10.0,
+  "created": "2026-10-11",
+  "use": "SC-158: one shot of the demo film, image to video from its keyframe"
+}

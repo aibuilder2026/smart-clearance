@@ -1,0 +1,17 @@
+{
+  "name": "k16-factory-line",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "plugin": "qwen-image-bf16 0.2.0",
+  "kind": "keyframe",
+  "prompt": "A medium-wide shot inside a clean beverage packaging hall: a stainless-steel filling line carrying rows of small upright yellow-orange tetra-pack cartons of mango drink with a ripe mango illustration and no readable words along a conveyor, a woman supervisor in a white coat, hairnet and safety glasses checking a pack with a tablet in her hand, soft white industrial light, stacked plain kraft cardboard cartons with a sage-green band on a pallet at the end of the line. Photorealistic documentary photograph, 35 mm lens, natural light, realistic skin and fabric. No text, no logos, no lettering, no signs anywhere; every pack and carton unbranded.",
+  "seed": 158116,
+  "aspect": "16:9",
+  "size": 1024,
+  "steps": 40,
+  "inputs": [],
+  "output": "k16-factory-line.png 1376x768",
+  "postprocess": "WebP q82 from k16-factory-line.png",
+  "created": "2026-10-11",
+  "use": "SC-158 keyframe: the first frame of one of the demo film's clips, and the still behind its screens",
+  "fictional": "every person is fictional; no brand or lettering"
+}

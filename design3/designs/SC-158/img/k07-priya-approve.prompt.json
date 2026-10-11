@@ -1,0 +1,17 @@
+{
+  "name": "k07-priya-approve",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "plugin": "qwen-image-bf16 0.2.0",
+  "kind": "keyframe",
+  "prompt": "A close-up over the shoulder of an Indian woman's hands in a navy pinstripe kurta sleeve with a slim steel watch, holding a black smartphone at a white office desk, her right thumb about to tap a large rounded green button at the bottom of a white app screen that has a few pale grey lines and a big green number, no readable words; soft morning light from a window, a laptop blurred behind. Photorealistic documentary photograph, 35 mm lens, natural light, realistic skin and fabric. No text, no logos, no lettering, no signs anywhere; every pack and carton unbranded.",
+  "seed": 158107,
+  "aspect": "16:9",
+  "size": 1024,
+  "steps": 40,
+  "inputs": [],
+  "output": "k07-priya-approve.png 1376x768",
+  "postprocess": "WebP q82 from k07-priya-approve.png",
+  "created": "2026-10-11",
+  "use": "SC-158 keyframe: the first frame of one of the demo film's clips, and the still behind its screens",
+  "fictional": "every person is fictional; no brand or lettering"
+}

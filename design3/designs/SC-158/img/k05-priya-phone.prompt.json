@@ -1,0 +1,23 @@
+{
+  "name": "k05-priya-phone",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "plugin": "qwen-image-bf16 0.2.0",
+  "kind": "keyframe",
+  "prompt": "Make one new photograph, not a reference sheet: the person from the reference sheet appears once, with exactly the same face, hair and clothes, in a real place. A medium close-up in the same bright Pune office in the morning: the woman in the navy pinstripe kurta with the lanyard stands by the window holding a black smartphone in both hands at chest height, reading its screen with slightly raised eyebrows, the phone's screen a soft white glow with no readable words, a laptop and a chai tumbler on the desk behind her out of focus. Photorealistic documentary photograph, 35 mm lens, natural light, realistic skin and fabric. No text, no logos, no lettering, no signs anywhere; every pack and carton unbranded.",
+  "seed": 158105,
+  "aspect": "16:9",
+  "size": 1024,
+  "steps": 40,
+  "inputs": [
+    {
+      "role": "reference sheet",
+      "file": "cast-planner.webp",
+      "sha256": "f3b9921a0e38c3fc4b36d81dc77d793ba3cdb247a160387a8290c7768f68e301"
+    }
+  ],
+  "output": "k05-priya-phone.png 1376x768",
+  "postprocess": "WebP q82 from k05-priya-phone.png",
+  "created": "2026-10-11",
+  "use": "SC-158 keyframe: the first frame of one of the demo film's clips, and the still behind its screens",
+  "fictional": "every person is fictional; no brand or lettering"
+}

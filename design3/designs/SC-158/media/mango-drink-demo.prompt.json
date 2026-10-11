@@ -1,0 +1,34 @@
+{
+  "name": "mango-drink-demo",
+  "kind": "film",
+  "created": "2026-10-11",
+  "made_with": [
+    "Qwen-Image-2.1 bf16 (local) for the cast and keyframes",
+    "LTX 2.5 Fast (local) for the clips, image to video",
+    "the workspace and console apps on the live stack for the screens (capture.mjs)",
+    "numpy for the music (music.py)",
+    "ffmpeg for the cut (assemble.py)"
+  ],
+  "segments": 42,
+  "clips": [
+    "c01-factory-dawn",
+    "c02-godown-lakshmi",
+    "c03-priya-office",
+    "c04-neha-console",
+    "c05-priya-phone",
+    "c06-lakshmi-label",
+    "c07-priya-approve",
+    "c08-kirana-phone",
+    "c09-kirana-sale",
+    "c10-staff-sale",
+    "c11-foodbank-van",
+    "c12-van-round",
+    "c13-priya-papers",
+    "c14-office-dashboard",
+    "c15-lane-golden",
+    "c16-factory-line"
+  ],
+  "music": "music.py, seed 158, D major at 76 bpm",
+  "postprocess": "libx264 crf 18, aac 192k, loudnorm I=-16",
+  "fictional": "every person, company and figure is fictional; the figures are the journey's own"
+}

@@ -1,0 +1,24 @@
+{
+  "name": "c04-neha-console",
+  "model": "LTX 2.5 Fast (local)",
+  "plugin": "ltx-video 0.2.0",
+  "ltx_desktop": "1.2.7",
+  "kind": "clip",
+  "prompt": "Exactly as in the image: an operations room in the evening, the woman in the white shirt and black-framed glasses side-on at a wide desk, a large monitor and a laptop showing a pale green dashboard with cards and a route of green dots, a warm desk lamp, city lights in the window. She moves the mouse, the green dots on the monitor's route light up one after another, and she nods slightly and types a few keys. Locked-off camera, no movement. Sound: soft keyboard clicks, an air-conditioner's hum, faint traffic far below. No text, no logos, no lettering anywhere. Photorealistic live action, 35 mm, natural skin and fabric.",
+  "seed": 158003,
+  "resolution": "540p",
+  "duration_s": 5,
+  "fps": 24,
+  "camera": "static",
+  "audio": true,
+  "inputs": [
+    {
+      "role": "first frame",
+      "file": "k04-neha-console.png",
+      "sha256": "1bae335d3d886ceb7979fb3f504733eeb9111a42ab4356f63d26530ddf9d4650"
+    }
+  ],
+  "minutes": 9.5,
+  "created": "2026-10-11",
+  "use": "SC-158: one shot of the demo film, image to video from its keyframe"
+}

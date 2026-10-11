@@ -1,0 +1,24 @@
+{
+  "name": "c08-kirana-phone",
+  "model": "LTX 2.5 Fast (local)",
+  "plugin": "ltx-video 0.2.0",
+  "ltx_desktop": "1.2.7",
+  "kind": "clip",
+  "prompt": "Exactly as in the image: a small kirana shop in Hyderabad's old city at noon, the woman in the maroon saree with the mustard blouse behind the glass-fronted wooden counter reading her smartphone, shelves of colourful unbranded packets, jars of sweets, hanging sachet strips, a weighing scale, a ceiling fan, bright sun on the lane. She reads, her smile widens, she nods to herself and taps the screen with her thumb, then looks up at her shelves; the fan turns, a shopper passes outside. Locked-off camera, no movement. Sound: a turning fan, street chatter, a scooter passing, a soft phone tap. No text, no logos, no lettering anywhere. Photorealistic live action, 35 mm, natural skin and fabric.",
+  "seed": 158007,
+  "resolution": "540p",
+  "duration_s": 5,
+  "fps": 24,
+  "camera": "static",
+  "audio": true,
+  "inputs": [
+    {
+      "role": "first frame",
+      "file": "k08-kirana-phone.png",
+      "sha256": "17afab946e612716a1907984bf0671e11c8a159d2c72c36485ce21f53d08d9b0"
+    }
+  ],
+  "minutes": 9.1,
+  "created": "2026-10-11",
+  "use": "SC-158: one shot of the demo film, image to video from its keyframe"
+}

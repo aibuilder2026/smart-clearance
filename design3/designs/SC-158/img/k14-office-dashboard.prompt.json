@@ -1,0 +1,23 @@
+{
+  "name": "k14-office-dashboard",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "plugin": "qwen-image-bf16 0.2.0",
+  "kind": "keyframe",
+  "prompt": "Make one new photograph, not a reference sheet: the person from the reference sheet appears once, with exactly the same face, hair and clothes, in a real place. A medium shot in the Pune office at golden hour: the woman in the navy pinstripe kurta with the lanyard sits beside a slim Indian man in his mid-thirties in a charcoal polo shirt, both looking at a large monitor that shows a pale green dashboard with a rising line chart, stacked bars and a few cards, no readable words; she points at the chart with a pen, he nods, warm low light from the window across the desk. Photorealistic documentary photograph, 35 mm lens, natural light, realistic skin and fabric. No text, no logos, no lettering, no signs anywhere; every pack and carton unbranded.",
+  "seed": 158114,
+  "aspect": "16:9",
+  "size": 1024,
+  "steps": 40,
+  "inputs": [
+    {
+      "role": "reference sheet",
+      "file": "cast-planner.webp",
+      "sha256": "f3b9921a0e38c3fc4b36d81dc77d793ba3cdb247a160387a8290c7768f68e301"
+    }
+  ],
+  "output": "k14-office-dashboard.png 1376x768",
+  "postprocess": "WebP q82 from k14-office-dashboard.png",
+  "created": "2026-10-11",
+  "use": "SC-158 keyframe: the first frame of one of the demo film's clips, and the still behind its screens",
+  "fictional": "every person is fictional; no brand or lettering"
+}

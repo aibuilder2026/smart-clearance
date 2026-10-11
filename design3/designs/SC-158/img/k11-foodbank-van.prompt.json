@@ -1,0 +1,28 @@
+{
+  "name": "k11-foodbank-van",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "plugin": "qwen-image-bf16 0.2.0",
+  "kind": "keyframe",
+  "prompt": "Make one new photograph, not a reference sheet: the person from the reference sheet appears once, with exactly the same face, hair and clothes, in a real place. Two people from the reference sheets in one new photograph: a wide shot at the godown's loading door in late morning: a plain white delivery van with its rear doors open, the woman in the green T-shirt with the lanyard and bun passing a plain kraft cardboard cartons with a sage-green band into it to a young volunteer in an orange vest inside the van, while the woman in the teal saree stands by the door holding a clipboard and watching with a warm smile; three more cartons on a hand truck beside them, a tamarind tree and a blue-washed wall. Photorealistic documentary photograph, 35 mm lens, natural light, realistic skin and fabric. No text, no logos, no lettering, no signs anywhere; every pack and carton unbranded.",
+  "seed": 158111,
+  "aspect": "16:9",
+  "size": 1024,
+  "steps": 40,
+  "inputs": [
+    {
+      "role": "reference sheet",
+      "file": "cast-meera.png",
+      "sha256": "4da3d8fb54e082a73340db1334c0522c432f29f4471043a1e88d3b1d67b14ed9"
+    },
+    {
+      "role": "reference sheet",
+      "file": "cast-lakshmi.png",
+      "sha256": "e9f31992341681d001bbf76bd8865b5cc8c221c521d3972ee1255535135b4f15"
+    }
+  ],
+  "output": "k11-foodbank-van.png 1376x768",
+  "postprocess": "WebP q82 from k11-foodbank-van.png",
+  "created": "2026-10-11",
+  "use": "SC-158 keyframe: the first frame of one of the demo film's clips, and the still behind its screens",
+  "fictional": "every person is fictional; no brand or lettering"
+}

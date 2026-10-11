@@ -1,0 +1,23 @@
+{
+  "name": "k03-priya-office",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "plugin": "qwen-image-bf16 0.2.0",
+  "kind": "keyframe",
+  "prompt": "Make one new photograph, not a reference sheet: the person from the reference sheet appears once, with exactly the same face, hair and clothes, in a real place. A medium shot of a bright modern office in Pune at 9 in the morning, the camera facing her across the desk: the woman in the navy pinstripe kurta with the lanyard sits at a white desk behind an open silver laptop whose plain silver lid faces the camera, so its screen is turned toward her and cannot be seen; her face is lit softly by the screen, one hand rests on the trackpad, a steel tumbler of chai beside the laptop, a potted money plant, large windows with soft morning light, blurred colleagues far behind. She looks at her screen, calm and attentive. Photorealistic documentary photograph, 35 mm lens, natural light, realistic skin and fabric. No text, no logos, no lettering, no signs anywhere; every pack and carton unbranded.",
+  "seed": 158123,
+  "aspect": "16:9",
+  "size": 1024,
+  "steps": 40,
+  "inputs": [
+    {
+      "role": "reference sheet",
+      "file": "cast-planner.webp",
+      "sha256": "f3b9921a0e38c3fc4b36d81dc77d793ba3cdb247a160387a8290c7768f68e301"
+    }
+  ],
+  "output": "k03-priya-office.png 1376x768",
+  "postprocess": "WebP q82 from k03-priya-office.png",
+  "created": "2026-10-11",
+  "use": "SC-158 keyframe: the first frame of one of the demo film's clips, and the still behind its screens",
+  "fictional": "every person is fictional; no brand or lettering"
+}

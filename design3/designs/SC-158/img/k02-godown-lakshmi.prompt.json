@@ -1,0 +1,23 @@
+{
+  "name": "k02-godown-lakshmi",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "plugin": "qwen-image-bf16 0.2.0",
+  "kind": "keyframe",
+  "prompt": "Make one new photograph, not a reference sheet: the person from the reference sheet appears once, with exactly the same face, hair and clothes, in a real place. A medium-wide shot inside a distributor's godown in Hyderabad's Begum Bazaar at mid-morning: tall wooden racks of plain kraft cardboard cartons with a sage-green band on both sides, a shaft of sun from a high barred window, dust in the light. The woman in the teal saree stands in the aisle holding one open carton of small upright yellow-orange tetra-pack cartons of mango drink with a ripe mango illustration and no readable words at chest height, reading glasses on, looking down at the date printed on its side with a worried, thoughtful expression. A hand truck behind her. Photorealistic documentary photograph, 35 mm lens, natural light, realistic skin and fabric. No text, no logos, no lettering, no signs anywhere; every pack and carton unbranded.",
+  "seed": 158102,
+  "aspect": "16:9",
+  "size": 1024,
+  "steps": 40,
+  "inputs": [
+    {
+      "role": "reference sheet",
+      "file": "cast-lakshmi.png",
+      "sha256": "e9f31992341681d001bbf76bd8865b5cc8c221c521d3972ee1255535135b4f15"
+    }
+  ],
+  "output": "k02-godown-lakshmi.png 1376x768",
+  "postprocess": "WebP q82 from k02-godown-lakshmi.png",
+  "created": "2026-10-11",
+  "use": "SC-158 keyframe: the first frame of one of the demo film's clips, and the still behind its screens",
+  "fictional": "every person is fictional; no brand or lettering"
+}

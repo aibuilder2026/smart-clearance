@@ -1,0 +1,17 @@
+{
+  "name": "k01-factory-dawn",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "plugin": "qwen-image-bf16 0.2.0",
+  "kind": "keyframe",
+  "prompt": "A wide establishing shot at dawn of an Indian beverage factory's loading bay: a long concrete dock under a corrugated roof, pallets of plain kraft cardboard cartons with a sage-green band, two blue trucks backed up to the dock, a supervisor in a yellow hi-vis vest with a clipboard, a worker pushing a pallet jack, mist and low warm sunlight raking across the yard from the right, a water tank on the roof, a tamarind tree beyond the wall. Photorealistic documentary photograph, 35 mm lens, natural light, realistic skin and fabric. No text, no logos, no lettering, no signs anywhere; every pack and carton unbranded.",
+  "seed": 158101,
+  "aspect": "16:9",
+  "size": 1024,
+  "steps": 40,
+  "inputs": [],
+  "output": "k01-factory-dawn.png 1376x768",
+  "postprocess": "WebP q82 from k01-factory-dawn.png",
+  "created": "2026-10-11",
+  "use": "SC-158 keyframe: the first frame of one of the demo film's clips, and the still behind its screens",
+  "fictional": "every person is fictional; no brand or lettering"
+}

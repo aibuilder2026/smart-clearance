@@ -1,0 +1,24 @@
+{
+  "name": "c02-godown-lakshmi",
+  "model": "LTX 2.5 Fast (local)",
+  "plugin": "ltx-video 0.2.0",
+  "ltx_desktop": "1.2.7",
+  "kind": "clip",
+  "prompt": "Exactly as in the image: inside a distributor's godown, tall racks of plain kraft cartons with a sage-green band on both sides, a shaft of sun from the barred window, dust in the light. The woman in the deep teal saree with the long grey-streaked plait and the glasses on a cord holds an open carton of small yellow-orange mango drink tetra packs. She lifts the glasses onto her nose, turns the carton a little to read the date on its side, frowns, then lowers it and looks up the aisle with quiet concern, breathing out. A slow push in on her. Sound: a ceiling fan's hum, cardboard creaking, distant traffic and a bicycle bell from the lane. No text, no logos, no lettering anywhere. Photorealistic live action, 35 mm, natural skin and fabric.",
+  "seed": 158001,
+  "resolution": "540p",
+  "duration_s": 6,
+  "fps": 24,
+  "camera": "dolly_in",
+  "audio": true,
+  "inputs": [
+    {
+      "role": "first frame",
+      "file": "k02-godown-lakshmi.png",
+      "sha256": "aee3c45219c44a1cca043822679c7f1626df0a2ce9b100b75a117a448e75144c"
+    }
+  ],
+  "minutes": 9.4,
+  "created": "2026-10-11",
+  "use": "SC-158: one shot of the demo film, image to video from its keyframe"
+}

@@ -1,0 +1,24 @@
+{
+  "name": "c09-kirana-sale",
+  "model": "LTX 2.5 Fast (local)",
+  "plugin": "ltx-video 0.2.0",
+  "ltx_desktop": "1.2.7",
+  "kind": "clip",
+  "prompt": "Exactly as in the image: the same kirana counter in the afternoon, the woman in the maroon saree with the mustard blouse handing a small yellow-orange mango drink tetra pack across the counter to a young man in a grey shirt who holds out a coin, a crate of the same packs by the scale, shelves of colourful unbranded packets behind. He takes the pack and puts the coin in her palm, both smile and nod, she turns to the crate and lifts out another pack. Locked-off camera, no movement. Sound: a coin on the counter, a cheerful 'shukriya', the street outside. No text, no logos, no lettering anywhere. Photorealistic live action, 35 mm, natural skin and fabric.",
+  "seed": 158008,
+  "resolution": "540p",
+  "duration_s": 5,
+  "fps": 24,
+  "camera": "static",
+  "audio": true,
+  "inputs": [
+    {
+      "role": "first frame",
+      "file": "k09-kirana-sale.png",
+      "sha256": "6f9a9d47ba47389b3d029ae2b4aea54a432168f8690edb8793dcfca7d921bb59"
+    }
+  ],
+  "minutes": 8.9,
+  "created": "2026-10-11",
+  "use": "SC-158: one shot of the demo film, image to video from its keyframe"
+}

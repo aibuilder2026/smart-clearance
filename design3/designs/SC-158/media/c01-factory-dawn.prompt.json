@@ -1,0 +1,24 @@
+{
+  "name": "c01-factory-dawn",
+  "model": "LTX 2.5 Fast (local)",
+  "plugin": "ltx-video 0.2.0",
+  "ltx_desktop": "1.2.7",
+  "kind": "clip",
+  "prompt": "Exactly as in the image: dawn at a beverage factory's loading bay, two blue trucks backed up to the dock under the corrugated roof, pallets of plain kraft cartons with a sage-green band in the yard, mist and low warm sun from the right. The worker in the yellow vest pushes the pallet jack slowly toward the dock while the supervisor in the yellow vest lowers his clipboard and looks up at the trucks; thin mist drifts through the sunlight, a crow crosses the sky. A slow, smooth dolly in toward the dock, no handheld shake. The light holds. Sound: a diesel engine idling, sparrows, a distant horn, the pallet jack's wheels on concrete. No text, no logos, no lettering anywhere. Photorealistic live action, 35 mm, natural skin and fabric.",
+  "seed": 158000,
+  "resolution": "540p",
+  "duration_s": 6,
+  "fps": 24,
+  "camera": "dolly_in",
+  "audio": true,
+  "inputs": [
+    {
+      "role": "first frame",
+      "file": "k01-factory-dawn.png",
+      "sha256": "b150267e732931728caeea3b1de6115be74ec3bb69696e1c10dd99fcf6161e67"
+    }
+  ],
+  "minutes": 9.5,
+  "created": "2026-10-11",
+  "use": "SC-158: one shot of the demo film, image to video from its keyframe"
+}
