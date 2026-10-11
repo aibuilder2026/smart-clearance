@@ -189,6 +189,21 @@ describe('the parts a tap opens', () => {
 		}
 		expect(out).toMatchSnapshot();
 	});
+	it('Reject on the approval is not built yet: a press says Coming Soon and leaves the plan waiting (SC-177)', async () => {
+		fastForward(5);
+		const r = show(part('brand/ApproveSheet'), { open: true, me: user('priya') });
+		const reject = [...r.container.ownerDocument.querySelectorAll('button')].find((b) =>
+			b.textContent?.includes('Reject the plan')
+		)!;
+		expect(reject.getAttribute('aria-disabled')).toBe('true');
+		const note = r.container.ownerDocument.getElementById(reject.getAttribute('aria-describedby')!)!;
+		expect(note.getAttribute('role')).toBe('status');
+		expect(note.textContent).toBe('');
+		await fireEvent.click(reject);
+		expect(note.textContent).toBe('Coming Soon');
+		expect(text(r.container)).toContain('Approve the plan');
+		r.unmount();
+	});
 	it('every document of the pack', () => {
 		fastForward(9);
 		const out: Record<string, string> = {};
