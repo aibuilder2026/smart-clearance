@@ -2253,7 +2253,12 @@
   - **Checks:** the frontend gate passes (api 83, core 381, admin 22, console 2, demo 9, workspace 106, with a new live
     test of the note and its guide that fails without it); design3's workspace, batch page and console, and the port's
     console on its mock, played in the browser with no console errors. The browser suites were not run (SC-55).
-  - **Hosting:** design3's `dist/` is rebuilt. The hosted app and console pages stay on their pinned commits.
+  - **Hosting:** re-pinned after the merge, on the maintainer's yes. The hosted app and console pages load commit `9e28e31`; every pinned file was checked on jsDelivr and GitHub raw first, and both pages render.
+    - The app page leaves `58c6874` (5 Oct), so it carries everything since: SC-25 to SC-177.
+    - It gains live mode's splash: its configuration, inline with the workspace's brand, then `dist/console-splash.js`, first in `<body>`.
+    - Its `sw.js` is at `sc3-hosted-9e28e31`.
+    - The note shows on the app page in live mode (`?live` or `?state=live`), and in the console on Munchly's page.
+
 - **SC-177** (PR, merged): Reject beside Approve on the plan, not built yet.
   - **The request:** "where there is approve button for supply chain to get things moving, I want to add a reject button but it will be disabled, clicking that will say a note saying \"Coming Soon\"". The maintainer named the change outright, so no design round.
   - **The button:** **Reject the plan** sits between Approve · release the agents and Not now on the plan's approval sheet (design3 `brand.jsx` ApproveSheet first, then core's `ApproveSheet.svelte`). It is drawn disabled (`aria-disabled`, the offline approve's `lv-blocked`) but can be pressed: a press shows "Coming Soon" in the status line it is described by, sends nothing, and leaves the plan waiting. The guided demo shows it too, on the same sheet.
