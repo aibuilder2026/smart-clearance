@@ -3,7 +3,7 @@
 // the audit log, and what the setup flow and the invitations accept. The mock applies them as the server would; the
 // console uses the same functions to preview a choice before it is saved. A test runs platform.js and checks these give
 // the same answers.
-import { isEmail } from '@smart-clearance/core/identity';
+import { isEmail } from '../identity';
 import type { Agent } from '../types/shared';
 import type {
 	Journey,

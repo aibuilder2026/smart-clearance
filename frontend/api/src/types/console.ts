@@ -486,4 +486,7 @@ export interface ConsoleApi {
 	inviteStaff(input: StaffInviteInput): Promise<Staff>;
 	/** the prototype's "Reset prototype data": back to the seed. Only the mock has it */
 	reset?(): Promise<void>;
+	/** the mock's world, when it is not the console's own seed: 'demo', Munchly Foods and four more clients with 180
+	 *  days of batches (SC-169). Only the mock has it */
+	readonly world?: 'demo';
 }

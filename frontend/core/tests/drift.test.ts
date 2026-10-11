@@ -31,3 +31,9 @@ describe("the screens' shared stylesheet matches design3/screens", () => {
 		expect(norm(strip(port('screens.css')))).toBe(norm(read('screens/screens.css')));
 	});
 });
+
+describe("the console's stylesheet matches design3/console", () => {
+	it('console.css is unchanged (SC-169: it moved into core with the console)', () => {
+		expect(norm(strip(own('src/lib/console/console.css')))).toBe(norm(read('console/console.css')));
+	});
+});

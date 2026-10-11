@@ -27,11 +27,13 @@ function files(dir: string): string[] {
 const used = new Map<string, string>();
 const use = (name: string, path: string) => known.has(name) && !used.has(name) && used.set(name, path);
 let workspace = false;
+let console_ = false;
 for (const path of files('src')) {
 	for (const m of readFileSync(path, 'utf8').matchAll(
 		/import\s*\{([^}]*)\}\s*from\s*'@smart-clearance\/core([^']*)'/g
 	)) {
 		if (m[2] === '/workspace') workspace = true;
+		if (m[2] === '/console') console_ = true;
 		for (const name of m[1].split(',').map((n) => n.replace(/^\s*type\s+/, '').trim())) use(name, path);
 	}
 }
@@ -41,13 +43,18 @@ for (const path of files('src')) {
 // under core/src/lib): the guided demo has no workspace admin, so the admin's screens are never on its screen
 const pkg = JSON.parse(readFileSync('package.json', 'utf8')) as { a11yCoverage?: { unreached?: string[] } };
 const unreached = new Set((pkg.a11yCoverage?.unreached ?? []).map((p) => join(core, p)));
-if (workspace)
-	for (const path of files(join(core, 'workspace')).filter((p) => !unreached.has(p))) {
+// an app on the console (SC-169: the console app, and the guided demo's laptop) uses every core component the console's
+// screens do: they live in core too (src/lib/console)
+const inCore = (dir: string) => {
+	for (const path of files(join(core, dir)).filter((p) => !unreached.has(p))) {
 		const text = readFileSync(path, 'utf8');
 		for (const m of text.matchAll(/from\s*'(?:\.\.\/)+(?:components|patterns)\/(\w+)\.svelte'/g)) use(m[1], path);
 		for (const m of text.matchAll(/import\s*\{([^}]*)\}\s*from\s*'(?:\.\.\/)+index'/g))
 			for (const name of m[1].split(',').map((n) => n.replace(/^\s*type\s+/, '').trim())) use(name, path);
 	}
+};
+if (workspace) inCore('workspace');
+if (console_) inCore('console');
 
 // what the scans saw, and the findings they made
 const results = 'test-results/a11y';

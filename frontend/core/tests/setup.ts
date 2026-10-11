@@ -1,4 +1,5 @@
-// jsdom has no matchMedia or ResizeObserver; the components ask for both (the theme, reduced motion, measuring)
+// jsdom has no matchMedia, ResizeObserver or IntersectionObserver; the components ask for them (the theme, reduced
+// motion, measuring, a Page's bar taking its glass on scroll)
 if (!window.matchMedia) {
 	window.matchMedia = (query: string) =>
 		({
@@ -17,5 +18,15 @@ if (!('ResizeObserver' in window)) {
 		observe() {}
 		unobserve() {}
 		disconnect() {}
+	};
+}
+if (!('IntersectionObserver' in window)) {
+	(window as unknown as { IntersectionObserver: unknown }).IntersectionObserver = class {
+		observe() {}
+		unobserve() {}
+		disconnect() {}
+		takeRecords() {
+			return [];
+		}
 	};
 }

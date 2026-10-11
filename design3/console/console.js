@@ -5,7 +5,8 @@
   const fmt = M.fmt;
   const { cx, Icon, IconButton, Avatar, Badge, Button, Card, List, ListRow, Segmented, Switch, Stepper, Sheet, Alert, Field, Input, Select, Menu, Tabs, Check, DataTable, Empty, Mark, Wordmark, WorkspaceMark, Page, Shell, Tracker, TrackerCompact, Product, ThemeProvider, AppRoot, NoticeHost, useApp, useNotice, ModeMenuButton, Roll, SaveNote, useSaving } = K;
   const { Columns, SectionTitle } = S;
-  P.usePersistence();
+  const EMBED = !!window.SC3_CONSOLE_EMBED;
+  if (!EMBED) P.usePersistence();
   const usePlatform = () => useSyncExternalStore(P.subscribe, P.get);
   const LINKS = Object.assign({ site: "../site/Smart-Clearance%20site%20v3.html", app: "../app/Smart-Clearance%20app%20v3.html", demo: "../demo/Smart-Clearance%20demo%20v3.html" }, window.SC3_LINKS || {});
   const PLATE = (window.SC3_SITE_IMG || "../site/assets/plates/") + "scene.webp";
@@ -45,10 +46,11 @@
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Segmented, { className, label: `${a.name}: autonomy`, options: P.AUTONOMY.map((x) => ({ id: x.id, label: x.label })), value, onChange: (v) => v !== value && sv.change(v, value, () => {
     }) }), /* @__PURE__ */ React.createElement(SaveLine, { phase: sv.phase, error: sv.error }));
   }
-  const parse = () => {
-    const m = /^#\/([a-z-]+)(?:\/([a-z0-9-]+))?(?:\/([a-z-]+))?/.exec(location.hash || "");
+  const parse = (hash = location.hash) => {
+    const m = /^#\/([a-z-]+)(?:\/([a-z0-9-]+))?(?:\/([a-z-]+))?/.exec(hash || "");
     return m ? { name: m[1], id: m[2] || null, tab: m[3] || null } : { name: "overview", id: null, tab: null };
   };
+  const hashOf = (r) => "#/" + [r.name, r.id, r.tab].filter(Boolean).join("/");
   function useHashRoute() {
     const [route, setRoute] = useState(parse);
     useEffect(() => {
@@ -61,7 +63,7 @@
       };
     }, []);
     const go = useCallback((name, id, tab, replace) => {
-      const h = "#/" + [name, id, tab].filter(Boolean).join("/");
+      const h = hashOf({ name, id, tab });
       if (location.hash !== h) {
         if (replace) history.replaceState(null, "", h);
         else history.pushState(null, "", h);
@@ -69,6 +71,16 @@
       setRoute(parse());
     }, []);
     return [route, go];
+  }
+  const routeIn = (r) => r && r.name ? { name: r.name, id: r.id || null, tab: r.tab || null } : { name: "overview", id: null, tab: null };
+  function useHostRoute(prop, onGo) {
+    const [own, setOwn] = useState(() => routeIn(prop));
+    const go = useCallback((name, id, tab, replace) => {
+      const r = routeIn({ name, id, tab });
+      setOwn(r);
+      if (onGo) onGo(r.name, r.id, r.tab, !!replace);
+    }, [onGo]);
+    return [prop ? routeIn(prop) : own, go];
   }
   const SESSION = "sc3-console-session";
   const readSession = () => {
@@ -1305,14 +1317,14 @@
     const app = useApp();
     const { toast } = useNotice();
     const [reset, setReset] = useState(false);
-    return /* @__PURE__ */ React.createElement(Sheet, { open, onClose, title: "Account", side: app.bp === "phone" ? "bottom" : "center", detent: "medium" }, /* @__PURE__ */ React.createElement("div", { className: "stack" }, /* @__PURE__ */ React.createElement("div", { className: "row", style: { gap: 14 } }, /* @__PURE__ */ React.createElement(Avatar, { person: me, size: "lg" }), /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { gap: 2 } }, /* @__PURE__ */ React.createElement("b", { className: "t-headline" }, me.name), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, me.role, " · ", me.team))), /* @__PURE__ */ React.createElement(List, null, /* @__PURE__ */ React.createElement(ListRow, { title: "Email", value: /* @__PURE__ */ React.createElement("span", { className: "t-footnote" }, me.email) }), /* @__PURE__ */ React.createElement(ListRow, { title: "Passkey", value: /* @__PURE__ */ React.createElement("span", { className: "t-footnote" }, me.passkey) })), /* @__PURE__ */ React.createElement("div", { className: "row tight wrap" }, /* @__PURE__ */ React.createElement(Button, { icon: "log-out", onClick: onOut }, "Sign out"), /* @__PURE__ */ React.createElement(Button, { variant: "ghost", icon: "rotate-ccw", onClick: () => setReset(true) }, "Reset prototype data")), /* @__PURE__ */ React.createElement(Alert, { open: reset, onClose: () => setReset(false), title: "Reset the prototype's data?", message: "Clients you set up and every change go back to the seed: Munchly Foods as the only client.", actions: [{ label: "Cancel" }, { label: "Reset", busy: "Resetting…", danger: true, strong: true, onClick: () => {
+    return /* @__PURE__ */ React.createElement(Sheet, { open, onClose, title: "Account", side: app.bp === "phone" ? "bottom" : "center", detent: "medium" }, /* @__PURE__ */ React.createElement("div", { className: "stack" }, /* @__PURE__ */ React.createElement("div", { className: "row", style: { gap: 14 } }, /* @__PURE__ */ React.createElement(Avatar, { person: me, size: "lg" }), /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { gap: 2 } }, /* @__PURE__ */ React.createElement("b", { className: "t-headline" }, me.name), /* @__PURE__ */ React.createElement("span", { className: "t-footnote subtle" }, me.role, " · ", me.team))), /* @__PURE__ */ React.createElement(List, null, /* @__PURE__ */ React.createElement(ListRow, { title: "Email", value: /* @__PURE__ */ React.createElement("span", { className: "t-footnote" }, me.email) }), /* @__PURE__ */ React.createElement(ListRow, { title: "Passkey", value: /* @__PURE__ */ React.createElement("span", { className: "t-footnote" }, me.passkey) })), /* @__PURE__ */ React.createElement("div", { className: "row tight wrap" }, /* @__PURE__ */ React.createElement(Button, { icon: "log-out", onClick: onOut }, "Sign out"), /* @__PURE__ */ React.createElement(Button, { variant: "ghost", icon: "rotate-ccw", onClick: () => setReset(true) }, "Reset prototype data")), /* @__PURE__ */ React.createElement(Alert, { open: reset, onClose: () => setReset(false), title: "Reset the prototype's data?", message: P.get().world === "demo" ? "Clients you set up and every change go back to the demo's five clients." : "Clients you set up and every change go back to the seed: Munchly Foods as the only client.", actions: [{ label: "Cancel" }, { label: "Reset", busy: "Resetting…", danger: true, strong: true, onClick: () => {
       P.reset();
       toast({ text: "Back to the seed data", tone: "ok" });
       onClose();
     } }] })));
   }
   const TITLES = { overview: "Overview", clients: "Clients", "new-client": "New client", agents: "Agents", connectors: "Connectors", plans: "Plans", staff: "Staff", audit: "Audit log" };
-  const SP = window.SC3_SPLASH;
+  const SP = EMBED ? null : window.SC3_SPLASH;
   const WAIT = { boot: Number(Q.get("boot")) || 1300, enter: Number(Q.get("enter")) || 1200, leave: Number(Q.get("leave")) || 800 };
   const SPLASH_READS = { enter: [{ id: "clients", label: "Your clients" }, { id: "dashboard", label: "Today" }, { id: "batches", label: "The batches" }, { id: "runs", label: "The agents" }], leave: [{ id: "session-end", label: "Closing your session" }, { id: "firebase", label: "Signed out" }] };
   function simulateReads(kind, ids) {
@@ -1326,15 +1338,19 @@
     })));
   }
   const MARK_ANCHOR = { console: ".sidebar .mark, .rail-compact .mark", signin: ".si-ws .mark" };
-  function App() {
-    const [session, setSession] = useState(readSession);
-    const [route, go] = useHashRoute();
+  function App({ route: hostRoute, go: hostGo, staff = "neha", signIn = false, world } = {}) {
+    const [session, setSession] = useState(() => EMBED ? signIn ? null : { uid: staff } : readSession());
+    const [route, go] = EMBED ? useHostRoute(hostRoute, hostGo) : useHashRoute();
     const s = usePlatform();
     const [acct, setAcct] = useState(false);
     const top = useRef(null);
+    useLayoutEffect(() => {
+      if (EMBED && world && P.get().world !== world) P.reset({ world });
+    }, [world]);
     const me = session && s.staff.find((x) => x.id === session.uid && x.status === "active");
     const client = route.name === "clients" && route.id ? s.clients.find((c) => c.id === route.id) : null;
     useEffect(() => {
+      if (EMBED) return;
       document.title = me ? `${client ? client.name : TITLES[route.name] || "Overview"} · Smart-Clearance Console` : "Sign in · Smart-Clearance Console";
     }, [me && me.id, route.name, client && client.name]);
     useLayoutEffect(() => {
@@ -1351,7 +1367,7 @@
     const onIn = (uid) => {
       const v = { uid, at: Date.now() };
       const enter = () => {
-        writeSession(v);
+        if (!EMBED) writeSession(v);
         setSession(v);
         go(route.name && route.name !== "overview" ? route.name : "overview", route.id, route.tab, true);
       };
@@ -1368,9 +1384,11 @@
     const onOut = () => {
       setAcct(false);
       const leave = () => {
-        writeSession(null);
         setSession(null);
-        history.replaceState(null, "", location.pathname + location.search);
+        if (!EMBED) {
+          writeSession(null);
+          history.replaceState(null, "", location.pathname + location.search);
+        }
       };
       if (!SP) {
         leave();
@@ -1383,11 +1401,11 @@
         SP.open({ anchor: MARK_ANCHOR.signin });
       });
     };
-    if (!me) return /* @__PURE__ */ React.createElement(SignIn, { onIn });
+    if (!me) return /* @__PURE__ */ React.createElement("div", { className: "cs-app" }, /* @__PURE__ */ React.createElement(SignIn, { onIn }));
     const name = TITLES[route.name] ? route.name : "overview";
     const screen = name === "clients" && route.id ? /* @__PURE__ */ React.createElement(ClientPage, { id: route.id, tab: route.tab, go, me }) : name === "clients" ? /* @__PURE__ */ React.createElement(Clients, { go }) : name === "new-client" ? /* @__PURE__ */ React.createElement(NewClient, { go, me }) : name === "agents" ? /* @__PURE__ */ React.createElement(AgentsPage, { go }) : name === "connectors" ? /* @__PURE__ */ React.createElement(ConnectorsPage, { go }) : name === "plans" ? /* @__PURE__ */ React.createElement(PlansPage, { go }) : name === "staff" ? /* @__PURE__ */ React.createElement(StaffPage, { me }) : name === "audit" ? /* @__PURE__ */ React.createElement(AuditPage, null) : /* @__PURE__ */ React.createElement(Overview, { go, me });
     const nav = NAV.map((n) => n.id === "clients" ? { ...n, count: s.clients.length } : n);
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(
+    return /* @__PURE__ */ React.createElement("div", { className: "cs-app" }, /* @__PURE__ */ React.createElement(
       Shell,
       {
         nav,
@@ -1403,5 +1421,6 @@
   function Root() {
     return /* @__PURE__ */ React.createElement(ThemeProvider, null, /* @__PURE__ */ React.createElement(AppRoot, { className: "app-root", style: { position: "fixed", inset: 0 } }, /* @__PURE__ */ React.createElement(NoticeHost, null, /* @__PURE__ */ React.createElement(App, null))));
   }
-  ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(Root, null));
+  window.SC3_CONSOLE = { App, TITLES, NAV, routeOf: (hash) => parse(hash), hashOf, setWorld: (world) => P.reset({ world }), platform: P };
+  if (!EMBED) ReactDOM.createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(Root, null));
 })();
