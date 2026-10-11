@@ -83,7 +83,8 @@ describe('ConsoleApp, embedded on the demo world', () => {
 	it('opens signed in on the Overview, with its five clients live', async () => {
 		const r = render(ConsoleHost, { props: { api: demoConsoleApi(), embedded: true } });
 		await waitFor(() => expect(heading(r.container)).toBe('Overview'), { timeout: 5000 });
-		expect(r.container.textContent).toContain('5 clients live');
+		// the heading comes with the page; the figures once its reads are in (a slower machine shows the placeholder first)
+		await waitFor(() => expect(r.container.textContent).toContain('5 clients live'), { timeout: 5000 });
 		// the shell's places are the prototype's hash addresses, never the page's own paths
 		const clients = r.container.querySelector<HTMLAnchorElement>('nav[aria-label="Main"] a[href="#/clients"]');
 		expect(clients).not.toBeNull();
@@ -97,7 +98,7 @@ describe('ConsoleApp, embedded on the demo world', () => {
 		await fireEvent.click(link);
 		await waitFor(() => expect(heading(r.container)).toBe('Clients'), { timeout: 5000 });
 		expect(ongo).toHaveBeenCalledWith(expect.objectContaining({ screen: 'clients' }), {});
-		expect(r.container.textContent).toContain('Godavari Staples');
+		await waitFor(() => expect(r.container.textContent).toContain('Godavari Staples'), { timeout: 5000 });
 		expect(location.hash).toBe('');
 	});
 
