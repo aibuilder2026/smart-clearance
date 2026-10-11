@@ -1,27 +1,29 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { mint } from './auth.ts';
 import { HERO } from './chips.ts';
-import { listerCard, schemeCard } from './features.ts';
 import { AGENT_WAIT, begin, caseAs, inr, running, story, STORY, until, type Case } from './flow.ts';
 import { Stage } from './stage.ts';
 
 // Munchly Chips Sad Path E2E (SC-179): the Masala Chips batch (MF-2409-117, Rakesh Traders, Nagpur) from a fresh
-// journey, on three screens at once (stage.ts): Priya, Munchly's supply chain operator, on a laptop; Rakesh, the
-// distributor, on a tablet; and a phone for everyone else. Priya and Rakesh sign in once and stay signed in, their
-// screens moving with the journey; the phone signs in each kirana, Agrawal Wholesale on ExpireSoon, and Neha in the
-// Smart-Clearance console, as each is needed. The stage is recorded as one video.
+// journey, on three screens at once (stage.ts): Priya, Munchly's supply chain operator, and Rakesh, the distributor,
+// each on a tablet in landscape, signed in before the recording starts and online to the end; and a phone for everyone
+// else, signing in each kirana, Agrawal Wholesale on ExpireSoon, and Neha in the Smart-Clearance console as each is
+// needed. Every click shows: the cursor glides to it and ripples where it lands. The stage is recorded as one video.
 //
-// The sad path: of Rakesh's 38 kiranas offered the scheme, only E2E_BUYERS (2) order their share; every other shop
-// says Not this time. Agrawal Wholesale still wins the ExpireSoon lot, so its packs leave; Neha closes the scheme's
+// The sad path: of Rakesh's 38 kiranas offered the scheme, only E2E_BUYERS (2) order their share; every other shop that
+// has joined the app says Not this time. Agrawal Wholesale still wins the ExpireSoon lot; Neha closes the scheme's
 // window from the console, short of its packets, and they stay at the godown. Rakesh loads the buyer's truck, issues his
 // invoice and runs his van round to the shops that ordered. Neha fires expiry day: Munchly's policy destroys what is
-// left at Rakesh's godown (SC-139, route B), so he sends the evidence (the photos before and after, made for the packs
-// left, the agency, its certificate number, the window and the witnesses, SC-174), Vision checks it on live Gemini, and
-// Priya gives her second yes. Impact reports: the Expiry credit note and the agency's certificate of destruction. Then
-// the papers are read back on each screen, signed (SC-174).
+// left at Rakesh's godown (SC-139, route B). Rakesh sends the evidence (the photos before and after, made for the packs
+// left, the agency, its certificate number, the window the agency destroyed them in and the two witnesses who sign
+// with its officer, SC-174), and Vision checks the photos on live Gemini while his tablet shows it working. Priya reads
+// Vision's checks one by one and gives her second yes; Impact reports, and the agency's certificate of destruction is
+// issued, signed by its officer and the two witnesses, with Rakesh's signature for the packs he handed over. Then Priya
+// reads the certificate and its log, the Expiry credit note, glances at the kiranas' tax invoices, and reads the Impact
+// screens; Rakesh reads his batch and his signed certificate; the phone reads a shop's order and a declined offer.
 //
 // E2E_BUYERS (2): how many of the ordering kiranas order, the first in the story's order; every other kirana declines.
 // E2E_DAY_MINUTES (60, Rehearsal): the journey day the reset starts.
@@ -63,9 +65,15 @@ const plannedOf = (c: Case | null) => c?.plan?.lines.find((l) => l.id === 'kiran
 /** what the scheme's offer carries beyond the shared type: the shops that said not this time */
 type Offer = { status: string; declined?: Record<string, unknown> };
 const offerOf = (c: Case) => c.journey.offer as unknown as Offer | null;
-const signatures = async (page: Page) => page.locator('#main img[alt^="Signed by"]').count();
 /** a screen's own content: the app's banners (a push arriving on a screen that stays signed in) sit outside it */
 const main = (page: Page) => page.locator('#main');
+const sigs = (scope: Locator) => scope.locator('img[alt^="Signed by"]');
+/** the cursor reads down a list of things on screen, resting on each */
+async function readEach(s: Stage, items: Locator, most = 8, rest = 450) {
+	const n = Math.min(await items.count(), most);
+	for (let i = 0; i < n; i++) await s.point(items.nth(i), rest);
+	return n;
+}
 
 const STEPS: Step[] = [
 	{
@@ -77,41 +85,35 @@ const STEPS: Step[] = [
 				'/clients/munchly/agents',
 				`resets Munchly's journey, at ${DAY_MINUTES} min a journey day`
 			);
-			await page.getByRole('button', { name: 'Actions for Munchly Foods' }).click();
-			await page.getByRole('menuitem', { name: /Reset journey/ }).click();
+			await s.click(page.getByRole('button', { name: 'Actions for Munchly Foods' }));
+			await s.click(page.getByRole('menuitem', { name: /Reset journey/ }));
 			const sheet = page.getByRole('dialog', { name: /journey again/ });
-			await sheet.getByRole('radio', { name: PRESETS[DAY_MINUTES] ?? /Rehearsal/ }).check();
+			await s.click(sheet.getByRole('radio', { name: PRESETS[DAY_MINUTES] ?? /Rehearsal/ }));
 			await running().done('Reset journey: the day length');
-			await sheet.getByRole('button', { name: 'Reset journey' }).click();
+			await s.click(sheet.getByRole('button', { name: 'Reset journey' }));
 			await expect(sheet).toBeHidden();
 			await expect(page.getByRole('group', { name: 'Watcher: scheduled runs and timers' })).toContainText(
 				'After Setup is confirmed'
 			);
 			await running().done('Journey reset to day 0, 08:00');
-		}
-	},
-	{
-		id: 'signin',
-		title: 'Priya signs in on her laptop and Rakesh on his tablet: both stay signed in to the end',
-		async run(s) {
-			await s.open('priya', '/command', 'signs in to Munchly’s workspace on her laptop');
-			await running().done('Priya signed in: the Command Center');
-			await s.open('rakesh', '/home', 'signs in to Munchly’s workspace on his tablet');
-			await running().done('Rakesh signed in: his Today');
+			// Priya's and Rakesh's tablets stay signed in, and catch up with the fresh journey
+			await s.refresh('priya');
+			await s.refresh('rakesh');
+			await running().done("Priya's and Rakesh's tablets on the fresh journey");
 		}
 	},
 	{
 		id: 'setup',
 		title: "Priya confirms Setup: the stock export's mapping and the guardrails",
 		async run(s) {
-			const page = await s.open('priya', '/setup', 'opens Setup and confirms the mapping and the guardrails');
+			const page = await s.open('priya', '/command', 'opens Setup from her sidebar');
+			await s.click(page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Setup', exact: true }));
 			await expect(main(page).getByText('Mapped · confirm below')).toBeVisible({ timeout: AGENT_WAIT });
 			await running().done('Setup: the export mapped');
-			const confirm = main(page).getByRole('button', { name: 'Confirm and start watching' });
-			await confirm.scrollIntoViewIfNeeded();
-			await confirm.click();
+			await s.click(main(page).getByRole('button', { name: 'Confirm and start watching' }));
 			await expect(main(page).getByRole('button', { name: 'Open Command Center' })).toBeVisible();
 			await running().done('Setup confirmed: the Watcher starts at 09:00');
+			await s.click(main(page).getByRole('button', { name: 'Open Command Center' }));
 		}
 	},
 	{
@@ -120,7 +122,7 @@ const STEPS: Step[] = [
 		async run(s) {
 			const page = await s.open('rakesh', '/home', 'allows the agents to act for Rakesh Traders');
 			await expect(main(page).getByText('Let Smart-Clearance act for Rakesh Traders')).toBeVisible();
-			await main(page).getByRole('button', { name: 'Allow', exact: true }).click();
+			await s.click(main(page).getByRole('button', { name: 'Allow', exact: true }));
 			await expect(main(page).getByText('Smart-Clearance acts for you')).toBeVisible();
 			await running().done('Permission given');
 		}
@@ -133,7 +135,7 @@ const STEPS: Step[] = [
 				const page = await s.open('neha', '/clients/munchly/agents', "runs the Watcher's daily check now");
 				const go = page.getByRole('button', { name: 'Run now: Watcher, daily check' });
 				await expect(go).toBeEnabled();
-				await go.click();
+				await s.click(go);
 				await running().done('Watcher run from the console');
 			}
 			const c = await until('the Watcher flags MF-2409-117 and Vision asks for its label photo', 'priya', (c) =>
@@ -143,20 +145,30 @@ const STEPS: Step[] = [
 			const page = await s.open('priya', `/command/${HERO}`, 'sees the chips flagged on the Command Center');
 			await expect(main(page).getByText('Masala Chips 150 g').first()).toBeVisible();
 			story('Write-off at Detect', c.writeOff?.total, 26329.6);
-			await running().done('Command Center: the chips at risk, Vision waiting for the label photo');
+			await s.point(
+				main(page)
+					.getByText(/if destroyed/)
+					.first()
+			);
+			await running().done('Command Center: the chips at risk, −₹26,330 if destroyed');
 		}
 	},
 	{
 		id: 'photo',
-		title: "Rakesh sends the chips' label photo from his tablet",
+		title: "Rakesh sends the chips' label photo, and Vision validates it",
 		async run(s) {
 			const page = await s.open('rakesh', `/photo/${HERO}`, 'uploads the label photo from the godown');
-			await expect(main(page).getByRole('button', { name: 'Upload a photo' })).toBeVisible();
-			await page.locator('input[type=file]:not([capture])').setInputFiles(LABEL);
+			await s.upload(main(page).getByRole('button', { name: 'Upload a photo', exact: true }), LABEL);
 			await running().done('The label photo chosen');
-			await main(page).getByRole('button', { name: 'Send photo' }).click();
+			await s.click(main(page).getByRole('button', { name: 'Send photo', exact: true }), 150);
+			await running().done('Vision is reading the label', 200);
 			await expect(main(page).getByText(/Dhanyavaad/)).toBeVisible({ timeout: AGENT_WAIT });
-			await running().done('Vision read the label');
+			await s.point(
+				main(page)
+					.getByText(/Verified|matches your records/)
+					.first()
+			);
+			await running().done('Vision validated the label: the batch, its dates and MRP match the export');
 		}
 	},
 	{
@@ -171,18 +183,18 @@ const STEPS: Step[] = [
 			story('Plan net', c.plan?.net, 21770);
 			for (const l of c.plan?.lines ?? []) running().figure(`Plan line ${l.id}`, `${l.units} packs`);
 			const page = await s.open('priya', `/route/${HERO}`, 'reviews the plan in the Route Room and approves it');
-			const review = main(page).getByRole('button', { name: 'Review and approve' });
+			const review = main(page).getByRole('button', { name: 'Review and approve', exact: true });
 			await expect(review).toBeVisible();
 			await running().done('Route Room: the plan, waiting for a yes');
-			await review.click();
+			await s.click(review);
 			const sheet = page.getByRole('dialog', { name: 'Approve the plan' });
 			await expect(sheet).toBeVisible();
 			await running().done('The approve sheet');
-			await sheet.getByRole('button', { name: 'Approve · release the agents' }).click();
+			await s.click(sheet.getByRole('button', { name: 'Approve · release the agents' }));
 			const placed = page.getByRole('dialog', { name: 'Plan placed' });
 			await expect(placed.getByRole('button', { name: 'Watch execution' })).toBeVisible();
 			await running().done('Plan placed');
-			await placed.getByRole('button', { name: 'Watch execution' }).click();
+			await s.click(placed.getByRole('button', { name: 'Watch execution' }));
 			await expect(page).toHaveURL(new RegExp(`/execution/${HERO}`));
 		}
 	},
@@ -200,7 +212,7 @@ const STEPS: Step[] = [
 			await s.open('priya', `/execution/${HERO}`, 'watches the agents carry out the plan');
 			await running().done('Execution: the lot listed, the scheme sent');
 			const page = await s.open('rakesh', `/orders/${HERO}`, 'watches his kiranas answer the scheme on Orders');
-			await expect(page.locator('#main')).toContainText(/scheme/i);
+			await expect(main(page)).toContainText(/scheme/i);
 			await running().done("Rakesh's Orders: the scheme sent to his 38 kiranas");
 		}
 	},
@@ -219,7 +231,7 @@ const STEPS: Step[] = [
 					.first();
 				await expect(order.or(placed)).toBeVisible();
 				if (await order.isVisible()) {
-					await order.click();
+					await s.click(order);
 					await expect(placed).toBeVisible();
 				} else running().find('note', `/offer/${HERO}`, `${k.name} had already ordered`);
 				await s.stat('ordered', 'shops ordered', String(i + 1));
@@ -231,11 +243,11 @@ const STEPS: Step[] = [
 					'/home',
 					`reads the scheme and says Not this time (${BUY.length + i + 1} of ${all})`
 				);
-				const no = main(page).getByRole('button', { name: 'Not this time' });
+				const no = main(page).getByRole('button', { name: 'Not this time', exact: true });
 				const said = main(page).getByText('You said not this time');
 				await expect(no.or(said)).toBeVisible();
 				if (await no.isVisible()) {
-					await no.click();
+					await s.click(no, 150);
 					await expect(said).toBeVisible();
 				}
 				await s.stat('declined', 'said not this time', String(i + 1));
@@ -267,7 +279,12 @@ const STEPS: Step[] = [
 			story('Scheme after the answers', c.journey.offer?.status, 'sent');
 			running().figure('Packets no shop took', left());
 			const page = await s.open('priya', `/execution/${HERO}`, 'reads the scheme: two orders, the rest declined');
-			await schemeCard(page, c, 'open');
+			await s.point(
+				main(page)
+					.getByText(/kiranas ordered/)
+					.first()
+			);
+			await running().done(`Execution: ${BUY.length} of 38 shops ordered ${ORDERED} of ${planned} packets`);
 		}
 	},
 	{
@@ -275,21 +292,21 @@ const STEPS: Step[] = [
 		title: 'Agrawal Wholesale bids on ExpireSoon, the Negotiator counters, Agrawal takes it',
 		async run(s) {
 			const van = await s.open('rakesh', `/van/${HERO}`, "waits on Deliveries: the buyer's truck, once the lot is won");
-			await expect(van.locator('#main')).toContainText(/truck/i);
+			await expect(main(van)).toContainText(/truck/i);
 			await running().done('Rakesh on Deliveries');
 			const page = await s.open('agrawal', '/market', 'finds the chips lot on ExpireSoon and bids ₹13');
-			await main(page).getByRole('button', { name: 'View lot' }).first().click();
+			await s.click(main(page).getByRole('button', { name: 'View lot' }).first());
 			await expect(page).toHaveURL(/\/listing/);
 			const bid = main(page).getByRole('button', { name: /^Bid ₹13\.00 for 772/ });
 			await expect(bid).toBeVisible();
 			await running().done('The lot on ExpireSoon');
-			await bid.click();
+			await s.click(bid);
 			await running().done('Bid ₹13 a packet');
 			const accept = main(page).getByRole('button', { name: /^Accept ₹/ });
 			await expect(accept).toBeVisible({ timeout: AGENT_WAIT });
 			running().figure('Counter', (await accept.innerText()).replace(/\s+/g, ' '));
 			await running().done('The Negotiator countered');
-			await accept.click();
+			await s.click(accept);
 			const c = await until('the lot is awarded', 'priya', (c) => Boolean(c.journey.award));
 			story(
 				'Award',
@@ -304,8 +321,8 @@ const STEPS: Step[] = [
 			await running().done('Agrawal took the counter and paid the token');
 			// the truck waits for the scheme, still open to the shops that said not this time (SC-118)
 			await expect(main(van).getByText('Load once the scheme closes')).toBeVisible({ timeout: 30_000 });
+			await s.point(main(van).getByText('Load once the scheme closes'));
 			await running().done("Rakesh's Deliveries: the truck loads once the scheme closes");
-			await listerCard(s.pane('laptop'), c, 'awarded');
 		}
 	},
 	{
@@ -320,11 +337,11 @@ const STEPS: Step[] = [
 			);
 			const close = page.getByRole('button', { name: `Close now: Outreach, offer window closes, ${HERO}` });
 			await expect(close).toBeEnabled();
-			await close.click();
+			await s.click(close);
 			const alert = page.getByRole('alertdialog', { name: /Close the offer window now/ });
 			await expect(alert).toBeVisible();
 			await running().done('Close the offer window now?');
-			await alert.getByRole('button', { name: 'Close now' }).click();
+			await s.click(alert.getByRole('button', { name: 'Close now' }));
 			await expect(alert).toBeHidden();
 			const c = await until('the scheme closes', 'priya', (c) => c.journey.offer?.status === 'closed', 60_000);
 			story(
@@ -344,9 +361,9 @@ const STEPS: Step[] = [
 		title: "Rakesh loads the buyer's truck",
 		async run(s) {
 			const page = await s.open('rakesh', `/van/${HERO}`, "loads Agrawal Wholesale's truck at the godown");
-			const load = main(page).getByRole('button', { name: "Load the buyer's truck" });
+			const load = main(page).getByRole('button', { name: "Load the buyer's truck", exact: true });
 			await expect(load).toBeEnabled({ timeout: 30_000 });
-			await load.click();
+			await s.click(load);
 			await until('the truck is dispatched', 'rakesh', (c) => c.journey.truck.status === 'dispatched', 60_000);
 			await running().done('The truck loaded: 772 packs to Raipur');
 		}
@@ -363,14 +380,14 @@ const STEPS: Step[] = [
 			for (const d of c.docs) running().figure(`Paper: ${d.type}`, `${d.no || '—'} (${d.status})`);
 			const invoiceNo = c.docs.find((d) => d.id === 'invoice')?.no ?? '';
 			const page = await s.open('rakesh', `/orders/${HERO}`, 'issues his invoice from Tally');
-			const sold = page.locator('.dist-order').filter({ hasText: invoiceNo });
-			await sold.getByRole('button', { name: 'Issue from Tally' }).click();
+			const sold = main(page).locator('.dist-order').filter({ hasText: invoiceNo });
+			await s.click(sold.getByRole('button', { name: 'Issue from Tally' }));
 			await expect(sold.getByText('issued from Tally', { exact: true })).toBeVisible();
 			await running().done(`Invoice ${invoiceNo} issued from Tally`);
 			const van = await s.open('rakesh', `/van/${HERO}`, `runs his van round to the ${BUY.length} shops that ordered`);
-			const round = main(van).getByRole('button', { name: 'Start the round' });
+			const round = main(van).getByRole('button', { name: 'Start the round', exact: true });
 			await expect(round).toBeEnabled();
-			await round.click();
+			await s.click(round);
 			await until('the van round is done', 'priya', (c) => c.journey.van.status === 'done', 60_000);
 			await running().done(`The van round: ${BUY.length} shops delivered`);
 		}
@@ -384,11 +401,11 @@ const STEPS: Step[] = [
 			const page = await s.open('neha', '/clients/munchly/agents', "fires expiry day's report for the chips");
 			const fire = page.getByRole('button', { name: `Report now: Impact, expiry day · report, ${HERO}` });
 			await expect(fire).toBeEnabled();
-			await fire.click();
+			await s.click(fire);
 			const alert = page.getByRole('alertdialog', { name: /Expire it and report now/ });
 			await expect(alert).toBeVisible();
 			await running().done('Report now: Expire it and report now?');
-			await alert.getByRole('button', { name: 'Report now' }).click();
+			await s.click(alert.getByRole('button', { name: 'Report now' }));
 			await expect(alert).toBeHidden();
 			const c = await until('the destruction is asked for', 'priya', (c) => !!c.destruction);
 			story('Ledger posted before the yes', String(c.journey.posted), 'false');
@@ -406,30 +423,36 @@ const STEPS: Step[] = [
 	},
 	{
 		id: 'destroy',
-		title: 'Rakesh destroys the packs left through the agency, and sends the evidence from his tablet',
+		title:
+			'Rakesh destroys the packs through the agency, names who signs its certificate, sends the evidence; Vision validates the photos',
 		async run(s) {
 			const asked = await until('the destruction is asked for', 'priya', (c) => !!c.destruction, 120_000);
 			const units = asked.destruction!.units;
 			const page = await s.open('rakesh', '/home', `opens the destruction of ${units} expired packs on Today`);
-			const step = main(page).getByRole('button', { name: 'Send the evidence' }).first();
+			const step = main(page).getByRole('button', { name: 'Send the evidence', exact: true }).first();
 			await expect(step).toBeVisible();
 			await running().done(`Today: destroy ${units} expired packs at your godown`);
-			await step.click();
+			await s.click(step);
 			await expect(page).toHaveURL(new RegExp(`/destroy/${HERO}`));
-			await s.address('tablet');
-			await expect(main(page).getByRole('button', { name: /Send to .* for approval/ })).toBeDisabled();
-			const uploads = page.locator('input[type="file"]:not([capture])');
-			await uploads.nth(0).setInputFiles(EVIDENCE('before', units));
-			await uploads.nth(1).setInputFiles(EVIDENCE('after', units));
-			await expect(page.locator('.dz-slot .cam-tag', { hasText: '1 · Before' })).toBeVisible();
-			await running().done('The photo before, at the godown, and after, at the landfill');
-			await main(page).getByLabel('Agency', { exact: true }).selectOption({ label: 'Orange City Enviro Services' });
-			await main(page).getByLabel("Agency's certificate number").fill('OCE/DC/26-27/0219');
-			await main(page).getByText('Two independent witnesses').scrollIntoViewIfNeeded();
-			await running().done('The agency, its certificate, the window and the two witnesses');
-			await main(page)
-				.getByRole('button', { name: /Send to .* for approval/ })
-				.click();
+			await s.address('distributor');
+			const body = main(page);
+			await expect(body.getByRole('button', { name: /Send to .* for approval/ })).toBeDisabled();
+			await s.upload(body.getByRole('button', { name: 'Upload the before photo' }), EVIDENCE('before', units));
+			await s.upload(body.getByRole('button', { name: 'Upload the after photo' }), EVIDENCE('after', units));
+			await expect(body.locator('.dz-slot .cam-tag', { hasText: '1 · Before' })).toBeVisible();
+			await running().done('The photo before, at the godown, and after, at the landfill with the slate');
+			await s.select(body.getByLabel('Agency', { exact: true }), 'Orange City Enviro Services');
+			await s.type(body.getByLabel("Agency's certificate number"), 'OCE/DC/26-27/0219');
+			await running().done('Orange City Enviro Services, its certificate OCE/DC/26-27/0219');
+			// who signs the certificate: the window it destroyed them in, and the agency's two independent witnesses
+			await s.point(body.getByLabel('Destroyed from'), 500);
+			await s.point(body.getByLabel('To', { exact: true }), 500);
+			await s.point(body.getByLabel('Witness 1 · name'), 600);
+			await s.point(body.getByLabel('Witness 2 · name'), 600);
+			await running().done('The window and the two witnesses who sign the certificate with the agency’s officer');
+			await s.click(body.getByRole('button', { name: /Send to .* for approval/ }), 150);
+			await expect(body.getByText(/Vision is checking/).first()).toBeVisible({ timeout: 15_000 });
+			await running().done('Vision is checking the two photos: the label, the count, the slate, the landfill', 200);
 			const c = await until("Vision checks the destruction's evidence", 'priya', (c) =>
 				['checked', 'approved'].includes(c.destruction?.status ?? '')
 			);
@@ -437,25 +460,29 @@ const STEPS: Step[] = [
 				running().figure(`Vision: ${x.id}`, `${x.ok ? 'ok' : 'not ok'} · ${x.label}`);
 			const ok = c.destruction!.checks.filter((x) => x.ok).length;
 			story("Vision's checks passed", `${ok} of ${c.destruction!.checks.length}`, '4 of 4');
-			await expect(main(page).getByText('Sent for approval')).toBeVisible({ timeout: 30_000 });
-			await running().done(`Sent for approval: Vision's checks ${ok} of ${c.destruction!.checks.length}`);
+			await expect(body.getByText('Sent for approval')).toBeVisible({ timeout: 30_000 });
+			await running().done(`Validated: Vision's checks ${ok} of ${c.destruction!.checks.length}, sent for approval`);
 		}
 	},
 	{
 		id: 'destroyed',
-		title: "Priya reviews the destruction's evidence on her laptop and gives her second yes; Impact reports",
+		title: "Priya reads Vision's checks on the evidence one by one and gives her second yes; Impact reports",
 		async run(s) {
 			const before = (await caseAs('priya'))!;
 			const page = await s.open('priya', '/command', "reviews the destruction's evidence");
-			const review = main(page).getByRole('button', { name: 'Review the destruction' });
+			const review = main(page).getByRole('button', { name: 'Review the destruction', exact: true });
 			await expect(review).toBeVisible({ timeout: 30_000 });
 			await running().done('Command Center: the destruction waits for her yes');
-			await review.click();
+			await s.click(review);
 			const sheet = page.getByRole('dialog', { name: 'Approve the destruction' });
 			await expect(sheet).toBeVisible();
 			await expect(sheet.locator('img.cam-feed')).toHaveCount(2);
-			await running().done('The review: both photos, Vision’s checks, what the yes issues');
-			await sheet.getByRole('button', { name: 'Approve · issue the papers' }).click();
+			await readEach(s, sheet.locator('img.cam-feed'), 2, 700);
+			for (const x of before.destruction?.checks ?? []) await s.point(sheet.getByText(x.label).first(), 500);
+			await running().done('The review: both photos, and Vision’s four checks read one by one');
+			await s.point(sheet.getByText(/Expiry credit note to/).first(), 700);
+			await running().done('What her yes issues: the Expiry credit note and the agency’s certificate');
+			await s.click(sheet.getByRole('button', { name: 'Approve · issue the papers' }));
 			const c = await until('Impact posts the ledger', 'priya', (c) => c.journey.posted);
 			story('Destruction', c.destruction?.status, 'approved');
 			const paper = c.docs.find((d) => d.id === 'expiry');
@@ -468,61 +495,129 @@ const STEPS: Step[] = [
 				main(page)
 					.getByText(/Cleared · [\d,]+ packs destroyed at the godown/)
 					.first()
-			).toBeVisible({
-				timeout: 30_000
-			});
+			).toBeVisible({ timeout: 30_000 });
 			await running().done(`Impact reported: ${paper?.no}, certificate ${cert?.no}; the chips cleared`);
 		}
 	},
 	{
-		id: 'pack',
-		title: "Priya reads the pack on her laptop: the Expiry credit note, the agency's certificate, every paper signed",
+		id: 'certificate',
+		title: 'Priya reads the certificate of destruction: what was destroyed, where and when, and who signed it',
 		async run(s) {
-			const page = await s.open('priya', `/paperwork/${HERO}`, 'reads the pack, the expiry credit note first');
-			await expect(page.locator('#main')).toContainText(/packs destroyed at the godown/i);
+			const page = await s.open('priya', `/paperwork/${HERO}`, 'opens the certificate of destruction in the pack');
+			const body = main(page);
+			await s.click(body.getByRole('button', { name: /Destruction certificate/ }).first(), 600);
+			await expect(body.getByText('Destruction log').first()).toBeVisible();
+			await running().done('The certificate of destruction, page 1');
+			// the goods, the reason, the method and the facility, read down the page
+			for (const what of [/Reason/, /Method/, /Facility|facility/, /Date and time/])
+				await s.point(body.getByText(what).first(), 450);
+			await running().done('The certificate: the reason, the method, the facility, the date and time');
+			// signed: the agency's supervising officer and the two witnesses, and Rakesh for the packs he handed over
+			const signed = await readEach(s, sigs(body), 6, 800);
+			story('Certificate: signatures (officer, two witnesses, handed over)', signed >= 4 ? 'signed' : signed, 'signed');
+			await running().done(`The certificate signed: ${signed} signatures, the officer’s under the agency’s seal`);
+			await s.point(body.getByText('Destruction log').first(), 500);
+			await readEach(s, body.locator('img[alt^="Initialled by"]'), 3, 500);
+			await running().done(
+				'Page 2, the destruction log: each step’s time, initialled by the officer and the witnesses'
+			);
+		}
+	},
+	{
+		id: 'pack',
+		title: "Priya reads the Expiry credit note, glances at the kiranas' tax invoices, and marks the pack reviewed",
+		async run(s) {
+			const page = await s.open('priya', `/paperwork/${HERO}`, 'reads the Expiry credit note');
+			const body = main(page);
 			const c = (await caseAs('priya'))!;
-			for (const d of c.docs) {
-				const card = main(page)
-					.getByRole('button', { name: new RegExp(d.type) })
-					.first();
-				if (!(await card.count())) continue;
-				await card.click();
-				await page.waitForTimeout(700);
-				const signed = await signatures(page);
-				running().figure(`Signed: ${d.type}`, signed);
-				if (d.id === 'destruction') {
-					await expect(main(page).getByText('Destruction log').first()).toBeVisible();
-					story(
-						'Certificate: signatures (officer, two witnesses, handed over)',
-						signed >= 4 ? 'signed' : signed,
-						'signed'
-					);
-					await main(page).getByText('Destruction log').first().scrollIntoViewIfNeeded();
-					await running().done(`Paper: the certificate ${d.no}, page 2, the destruction log`);
-					await page.locator('#main').evaluate((m) => m.scrollTo({ top: 0 }));
-				}
-				await running().done(`Paper: ${d.type}${d.no ? ` ${d.no}` : ''}`);
+			await s.click(body.getByRole('button', { name: /Expiry credit note/ }).first(), 600);
+			await s.point(sigs(body).first(), 700);
+			await running().done(`The Expiry credit note ${c.docs.find((d) => d.id === 'expiry')?.no}, signed for Munchly`);
+			for (const id of ['invoice', 'support', 'itc'] as const) {
+				const d = c.docs.find((x) => x.id === id);
+				if (!d) continue;
+				await s.click(body.getByRole('button', { name: new RegExp(d.type) }).first(), 500);
+				await s.point(sigs(body).first(), 400);
+				await running().done(`Paper: ${d.type}${d.no ? ` ${d.no}` : ''}, signed`, 600);
 			}
-			const mark = main(page).getByRole('button', { name: 'Mark reviewed' });
+			// the kiranas' tax invoices, one for each order (SC-153): the register, then each invoice at a glance
+			const register = body.getByRole('button', { name: /Tax invoices to kiranas/ }).first();
+			if (await register.count()) {
+				await s.click(register, 600);
+				await expect(body).toContainText('Sales Register');
+				await running().done(`The sales register: ${BUY.length} tax invoices to the kiranas`);
+				const numbers = (c.journey.orders ?? [])
+					.map((o) => o.invoice?.no)
+					.filter((x): x is string => !!x)
+					.sort();
+				for (const no of numbers) {
+					// an invoice opens in the register's place: the register is opened again for the next
+					if (!(await body.getByText('Sales Register').count())) await s.click(register, 500);
+					const link = body.getByRole('button', { name: new RegExp(no.replace(/\//g, '\\/')) }).first();
+					if (!(await link.count())) {
+						running().find('warning', `/paperwork/${HERO}`, `no link to ${no} in the sales register`);
+						continue;
+					}
+					await s.click(link, 900);
+					await s.point(body.getByText(/Shree|Kirana|Stores/).first(), 500);
+					await running().done(`A glance at ${no}`, 500);
+				}
+			} else running().find('warning', `/paperwork/${HERO}`, 'no card for the kiranas’ tax invoices in the pack');
+			const mark = body.getByRole('button', { name: 'Mark reviewed', exact: true });
 			if (await mark.isVisible().catch(() => false)) {
-				await mark.click();
+				await s.click(mark);
 				await until('the review is recorded', 'priya', (c) => c.journey.reviewed, 30_000);
 				await running().done('Pack reviewed');
 			}
 		}
 	},
 	{
+		id: 'esg',
+		title:
+			"Priya reads the Impact screens: the quarter's food and CO₂e, where the kilos went, and the batch's BRSR line",
+		async run(s) {
+			const page = await s.open('priya', '/report?reading=impact', 'reads the Impact dashboard for the quarter');
+			const body = main(page);
+			await expect(body).toContainText('Food, by week');
+			await readEach(s, body.getByText(/Kept out of landfill|Destroyed|CO₂e avoided/), 3, 600);
+			await running().done('Impact: kept out of landfill, destroyed, CO₂e avoided');
+			await s.point(body.getByText('Food, by week').first(), 600);
+			await s.scroll(page, 0.55);
+			await running().done('Impact: food, by week');
+			await s.point(body.getByText('Where the kilos went').first(), 700);
+			await s.scroll(page, 0.55);
+			await running().done('Impact: where the kilos went, by distributor');
+			const product = body.getByRole('group', { name: 'Group by' }).getByRole('button', { name: 'Product' });
+			if (await product.count()) {
+				await s.click(product, 600);
+				await running().done('Impact: by product');
+			}
+			await s.open('priya', `/report/${HERO}`, "reads the batch's own impact: its BRSR line and evidence");
+			await s.click(page.locator('.bh-tabs').getByRole('button', { name: 'Impact' }), 700);
+			await expect(body).toContainText(/BRSR/);
+			await s.point(body.getByText(/BRSR/).first(), 800);
+			await running().done("The batch's Impact: its BRSR line, the kilos destroyed, the evidence");
+			const cc = await s.open('priya', '/command', "reads the Command Center's Impact card");
+			const card = cc.locator('.imc');
+			if (await card.count()) {
+				await s.point(card, 900);
+				await running().done("Command Center: the quarter's Impact card");
+			}
+		}
+	},
+	{
 		id: 'his',
-		title: 'Rakesh reads his batch on his tablet: his money, his papers and the photos he sent',
+		title: 'Rakesh reads his batch on his tablet: his money, his signed certificate and the photos he sent',
 		async run(s) {
 			const page = await s.open('rakesh', `/batches/${HERO}`, 'reads the chips: what happened, his money and papers');
 			const body = main(page);
 			await expect(body).toContainText('You sent the label photo');
 			await running().done('His batch: what happened');
-			await page.locator('.bh-tabs').getByRole('button', { name: 'Money' }).click();
+			await s.click(page.locator('.bh-tabs').getByRole('button', { name: 'Money' }));
 			await expect(body).toContainText('You end whole');
+			await s.point(body.getByText('You end whole').first(), 600);
 			await running().done('His batch: he ends whole');
-			await page.locator('.bh-tabs').getByRole('button', { name: 'Papers' }).click();
+			await s.click(page.locator('.bh-tabs').getByRole('button', { name: 'Papers' }));
 			await expect(body).toContainText('Your papers');
 			for (const name of [/Expiry credit note/, /Certificate of destruction|Destruction certificate/]) {
 				const card = body.getByRole('button', { name }).first();
@@ -530,14 +625,15 @@ const STEPS: Step[] = [
 					running().find('warning', `/batches/${HERO}`, `no ${name.source} in his papers`);
 					continue;
 				}
-				await card.click();
+				await s.click(card, 700);
 				await expect(page.getByRole('button', { name: 'Download PDF' })).toBeVisible();
-				await running().done(`His papers: ${name.source.split('|')[0]}`);
+				await readEach(s, sigs(page.getByRole('dialog').last()), 5, 500);
+				await running().done(`His papers: ${name.source.split('|')[0]}, signed`);
 				await page.keyboard.press('Escape');
 			}
-			await page.locator('.bh-tabs').getByRole('button', { name: 'Photos' }).click();
+			await s.click(page.locator('.bh-tabs').getByRole('button', { name: 'Photos' }));
 			await expect(body).toContainText('Vision read');
-			await running().done('His batch: the photos he sent, the label and the destruction');
+			await running().done('His batch: the photos he sent, and what Vision read from each');
 		}
 	},
 	{
@@ -554,7 +650,7 @@ const STEPS: Step[] = [
 			await running().done(`${buyer.name}: its order`);
 			const no = DECLINE[0]!;
 			const p2 = await s.open(no.member, '/home', 'reads the offer it said not this time to');
-			await expect(p2.locator('#main')).toContainText(/not this time|Declined/i);
+			await expect(main(p2)).toContainText(/not this time|Declined/i);
 			await running().done(`${no.name}: the offer it declined`);
 		}
 	},
@@ -564,9 +660,7 @@ const STEPS: Step[] = [
 		async run(s) {
 			planned ||= plannedOf(await caseAs('priya'));
 			const page = await s.open('priya', `/execution/${HERO}`, 'reads what was left at the godown and how it settled');
-			const settle = main(page).getByText('Expiry settlement', { exact: true });
-			await settle.scrollIntoViewIfNeeded();
-			await expect(settle).toBeVisible();
+			await s.point(main(page).getByText('Expiry settlement', { exact: true }), 800);
 			await running().done(`Execution: ${left()} packs left at the godown, destroyed there`);
 			await s.open('priya', `/report/${HERO}`, "reads the batch's money in the ledger");
 			await running().done("The ledger: the batch's money");
@@ -592,10 +686,17 @@ test('Munchly Chips Sad Path E2E: two kiranas buy, the rest decline, the packs d
 	// a custom token is good for an hour: minted again before a step once 40 minutes have gone
 	let minted = Date.now();
 	mint(PEOPLE);
-	const from = process.env.E2E_FROM ? STEPS.findIndex((x) => x.id === process.env.E2E_FROM) : 0;
-	const to = process.env.E2E_UNTIL ? STEPS.findIndex((x) => x.id === process.env.E2E_UNTIL) : STEPS.length - 1;
 	let error: string | undefined;
 	try {
+		// the two tablets and the phone signed in and fully drawn before anything is recorded
+		await s.ready([
+			{ who: 'priya', path: '/command' },
+			{ who: 'rakesh', path: '/home' },
+			{ who: 'neha', path: '/clients/munchly/agents' }
+		]);
+		await s.record();
+		const from = process.env.E2E_FROM ? STEPS.findIndex((x) => x.id === process.env.E2E_FROM) : 0;
+		const to = process.env.E2E_UNTIL ? STEPS.findIndex((x) => x.id === process.env.E2E_UNTIL) : STEPS.length - 1;
 		for (const step of STEPS.slice(from, to + 1)) {
 			if (Date.now() - minted > 40 * 60_000) {
 				mint(PEOPLE);
@@ -614,7 +715,7 @@ test('Munchly Chips Sad Path E2E: two kiranas buy, the rest decline, the packs d
 		await s.close();
 		// the recording kept beside the run's report, where the runs/ folder keeps each run's record (it is git-ignored)
 		const keep = process.env.E2E_KEEP;
-		if (keep) {
+		if (keep && existsSync(video)) {
 			mkdirSync(dirname(keep), { recursive: true });
 			copyFileSync(video, keep);
 		}
