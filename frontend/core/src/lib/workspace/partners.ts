@@ -285,15 +285,26 @@ export function sumOf(c: PartnerCase, w: PartnerWorld): PtSum {
 		cost: x.paid
 	};
 }
-/** every batch he cleared, summed: the sales, the credit, the cost, and the credit notes that carried the credit */
-export function sumsOf(past: PartnerCase[], w: PartnerWorld): PtSums {
-	const batches = past.map((c) => sumOf(c, w));
+/** every batch he cleared, summed: the sales, the credit, the cost, and the credit notes that carried the credit; with
+ *  the story's own once its journey has cleared where no partner facts carry it (SC-162: `story`, storySum's, each on
+ *  its price-support credit note) */
+export function sumsOf(past: PartnerCase[], w: PartnerWorld, story: PtSum[] = []): PtSums {
+	const batches = past.map((c) => sumOf(c, w)).concat(story);
 	const t = (k: 'sold' | 'credit' | 'cost') => r2(batches.reduce((a, x) => a + x[k], 0));
-	const notes = past.reduce(
-		(n, c) => n + c.docs.filter((d) => (d.id === 'support' || d.id === 'expiry') && d.status !== 'not required').length,
-		0
-	);
-	return { n: past.length, sold: t('sold'), credit: t('credit'), cost: t('cost'), notes, batches };
+	const notes =
+		past.reduce(
+			(n, c) =>
+				n + c.docs.filter((d) => (d.id === 'support' || d.id === 'expiry') && d.status !== 'not required').length,
+			0
+		) + story.length;
+	return { n: past.length + story.length, sold: t('sold'), credit: t('credit'), cost: t('cost'), notes, batches };
+}
+/** the story's batch once its journey has cleared (SC-162; ledger.js storySum): its sum from its own money, as its
+ *  page's Money tab reads it (storyWhole): what he sold, what the client credited him, and what it cost him */
+export function storySum(c: CaseData, h: Pick<Hero, 'award' | 'phase'>, short: string): PtSum {
+	const x = storyWhole(c, h, short);
+	const credit = r2(x.rows.filter((r) => r.k === 'Price-support credit note').reduce((t, r) => t + r.v, 0));
+	return { ref: c.batch.id, sold: r2(x.recv - credit), credit, cost: x.paid };
 }
 
 /** the batch in a journey: what has happened so far, by the journey's moments, then the next three still to come. The
