@@ -27,6 +27,8 @@
 	const router = useRoute();
 	let busy = $state(false);
 	let placed = $state(false);
+	// Reject is shown but not built yet (SC-177): it looks disabled, and a press says so instead of acting
+	let soon = $state(false);
 	const approvedNow = $derived(!!(ws.state.hero.plan && ws.state.hero.plan.status === 'approved'));
 	const cast = $derived(castOf(ws.state, c));
 	const es = $derived(c.lines.expiresoon);
@@ -35,7 +37,10 @@
 	// opening shows the plan as it stands; an approval made elsewhere while it is open places it (not this sheet's own
 	// while it is on its way: the live workspace shows it at once, and puts it back if it is refused)
 	$effect(() => {
-		if (open) placed = untrack(() => approvedNow);
+		if (open) {
+			placed = untrack(() => approvedNow);
+			soon = false;
+		}
 	});
 	$effect(() => {
 		if (approvedNow && untrack(() => open && !busy)) placed = true;
@@ -137,7 +142,22 @@
 				loading={busy}
 				busy="Approving the plan…"
 				onclick={approve}>Approve · release the agents</Button
-			>{/if}<Button variant="ghost" block onclick={close}>Not now</Button>{/if}{/snippet}
+			>{/if}
+		<div style="display: grid; gap: {soon ? 6 : 0}px">
+			<Button
+				variant="secondary"
+				size="lg"
+				block
+				icon="x"
+				aria-disabled="true"
+				aria-describedby="as-reject-soon"
+				class="lv-blocked"
+				onclick={() => (soon = true)}>Reject the plan</Button
+			><span id="as-reject-soon" role="status" class="t-footnote lv-needs" style="justify-self: center"
+				>{#if soon}<Icon name="clock" size={14} />Coming Soon{/if}</span
+			>
+		</div>
+		<Button variant="ghost" block onclick={close}>Not now</Button>{/if}{/snippet}
 
 <Sheet bind:open {onclose} title={placed ? 'Plan placed' : 'Approve the plan'} {footer}>
 	{#if placed}

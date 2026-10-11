@@ -148,7 +148,57 @@
     </div>;
   }
 
+  /* ---------- the journey clock explained (SC-176, option B) ---------- */
+  // A synthetic workspace replays the story's own calendar, so its batches keep their best-before dates and every figure
+  // holds. Wherever the journey's date and time show (the clock under every title, a batch's head, the console's client
+  // head), a note under them says so, and "How to reset or fast-forward" opens one guide: why, the journey time now, and
+  // how Smart-Clearance staff start the journey again or move it forward in the console. Shown to everyone: a judge may
+  // sign in as anyone.
+  const CONSOLE_URL = "https://smartclearance-console.web.app";
+  const dayPace = m => (m >= 1440 ? "real time" : m >= 60 ? `1 day = ${Math.round(m / 6) / 10} h` : `1 day = ${m} min`);
+  const ClockStep = ({ n, children }) => <li className="jc-step"><span className="jc-n" aria-hidden="true">{n}</span><span>{children}</span></li>;
+  const Ui = ({ children }) => <b className="jc-ui">{children}</b>;
+  // client: the workspace's name; clock: the journey's { date, long, time, perDay }, when there is one; here: opened in
+  // the console, which needs no way to the console
+  function ClockGuide({ open, onClose, client, clock, here }) {
+    return <K.Sheet open={open} onClose={onClose} title="Prototype time" detent="large"
+      footer={here ? <Button variant="secondary" size="lg" block onClick={onClose}>Close</Button> : <><Button variant="primary" size="lg" block icon="external-link" onClick={() => window.open(CONSOLE_URL, "_blank", "noopener")}>Open the console</Button><Button variant="ghost" block onClick={onClose}>Close</Button></>}>
+      <div className="jc-body">
+        <p className="jc-lede">This is a prototype. {client}' workspace runs on a <b>fixed dataset</b>: its SKUs and their batches, each batch with its own best-before date. So that the gates, the sell-through and every figure come out as the story has them, the workspace keeps <b>its own journey clock</b>. It starts on the story's day 0, not on today's date, and a journey day can be shorter than a real one.</p>
+        {clock && <div className="jc-now"><Icon name="calendar-clock" size={18} /><span className="jc-now-t"><span className="jc-now-k">Journey time now</span><span className="jc-now-v tnum">{clock.long || clock.date}, {clock.time}</span></span><span className="jc-now-p"><Icon name={clock.perDay >= 1440 ? "clock" : "fast-forward"} size={13} stroke={2.2} />{dayPace(clock.perDay)}</span></div>}
+        <section className="jc-sec" aria-labelledby="jc-reset">
+          <h3 id="jc-reset" className="jc-h"><Icon name="rotate-ccw" size={16} />Start the journey again</h3>
+          <p className="jc-where">{here ? "Here in the console:" : <>In the staff console (<span className="jc-url">smartclearance-console.web.app</span>), signed in as Smart-Clearance staff:</>}</p>
+          <ol className="jc-steps">
+            <ClockStep n="1"><Ui>Clients</Ui>, then <Ui>{client}</Ui>.</ClockStep>
+            <ClockStep n="2">The client's actions menu <span className="jc-key" aria-hidden="true">⋯</span><span className="sr-only">(More)</span>, then <Ui>Reset journey…</Ui></ClockStep>
+            <ClockStep n="3">Pick how long a journey day lasts, such as <Ui>Demo</Ui> (five minutes a day), then <Ui>Reset journey</Ui>.</ClockStep>
+          </ol>
+          <p className="jc-foot">Back to day 0 with the story's batches. The client's setup stays: gates, overrides, guardrails, agents and people.</p>
+        </section>
+        <section className="jc-sec" aria-labelledby="jc-ff">
+          <h3 id="jc-ff" className="jc-h"><Icon name="fast-forward" size={16} />Move it forward</h3>
+          <ol className="jc-steps">
+            <ClockStep n="1"><b>Shorter days.</b> The badge in the client's head (<Ui>Real time</Ui>), then <Ui>Rehearsal</Ui> (an hour a day), <Ui>Demo</Ui> (five minutes) or <Ui>Fast</Ui> (a minute).</ClockStep>
+            <ClockStep n="2"><b>What falls due, now.</b> The <Ui>Agents</Ui> tab lists each agent's scheduled runs and timers with their journey time: <Ui>Run now</Ui> for the daily load and the Watcher's check, <Ui>Close now</Ui> for a kirana offer or an unsold lot, <Ui>Report now</Ui> for expiry day.</ClockStep>
+          </ol>
+          <p className="jc-foot">Afterwards, set the badge back to <Ui>Real time</Ui>, so the journey waits for the next demo.</p>
+        </section>
+      </div>
+    </K.Sheet>;
+  }
+  // the note under the clock, and its guide
+  function ClockNote({ client, clock, here }) {
+    const [open, setOpen] = useState(false);
+    return <><span className="jc-note"><Icon name="info" size={14} stroke={2.2} /><span><b>Prototype time:</b> the story's own calendar, so its batches' best-before dates hold. <button type="button" className="jc-link" onClick={() => setOpen(true)} aria-haspopup="dialog">How to reset or fast-forward</button></span></span><ClockGuide open={open} onClose={() => setOpen(false)} client={client} clock={clock} here={here} /></>;
+  }
+  // under the bar's collapsed title the note is its icon, opening the same guide
+  function ClockInfo({ client, clock }) {
+    const [open, setOpen] = useState(false);
+    return <><button type="button" className="jc-info" onClick={() => setOpen(true)} aria-haspopup="dialog" aria-label="Prototype time: why this date, and how to reset or fast-forward the journey"><Icon name="info" size={14} stroke={2.2} /></button><ClockGuide open={open} onClose={() => setOpen(false)} client={client} clock={clock} /></>;
+  }
+
   const PEOPLE_BY_ID = id => D.PEOPLE[id] || (Store.get().users.find(u => u.id === id) || { name: id });
 
-  window.SC3_SCREENS = Object.assign(window.SC3_SCREENS || {}, { LockScreen, AccountCtx, WorkspaceCtx, LiveCtx, BatchCtx, useLive, PlayAs, Photo, PushBanners, useStore, useStory, Router, useRoute, heroModel, unreadFor, TopActions, Screen, Columns, SectionTitle, Locked, PEOPLE_BY_ID, PHASE_STATUS });
+  window.SC3_SCREENS = Object.assign(window.SC3_SCREENS || {}, { LockScreen, AccountCtx, WorkspaceCtx, LiveCtx, BatchCtx, useLive, PlayAs, Photo, ClockGuide, ClockNote, ClockInfo, PushBanners, useStore, useStory, Router, useRoute, heroModel, unreadFor, TopActions, Screen, Columns, SectionTitle, Locked, PEOPLE_BY_ID, PHASE_STATUS });
 })();
