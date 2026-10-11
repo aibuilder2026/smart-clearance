@@ -9,12 +9,15 @@ import {
 	offersFor,
 	pickupsFor,
 	storyMoments,
+	storySum,
 	storyWhole,
 	sumsOf,
 	whole
 } from '../src/lib/workspace/partners';
 import { store } from '../src/lib/workspace/store.svelte';
-import { HISTORY_CASES, kase, STUB_WORLD } from '../src/lib/workspace/stub.svelte';
+import { clearedSums, inJourney, storyCleared } from '../src/lib/workspace/screens/trade/pt';
+import { batchViews } from '../src/lib/workspace/model';
+import { HISTORY_CASES, kase, STUB_WORLD, stubSource } from '../src/lib/workspace/stub.svelte';
 import { run } from './design3';
 
 // The partners' own history (SC-130) is design3/core/ledger.js's partners: from the history's cases in the seed and the
@@ -69,6 +72,34 @@ describe("a distributor's batches are ledger.js's", () => {
 			);
 			expect(plain(storyWhole(kase, s.hero, D.workspace.short))).toEqual(plain(P.storyWhole(W.SC3_STORE.get())));
 		});
+});
+
+describe('a batch whose journey has cleared is one of his cleared batches (SC-162)', () => {
+	const last = D.stages.length;
+	for (const n of [8, last])
+		it(`at stage ${n}: his sums, and the batches in a journey, are ledger.js's`, () => {
+			W.SC3_FLOW.fastForward(n);
+			fastForward(n);
+			const s = store.get();
+			const at = P.distBatches('rakesh', W.SC3_STORE.get());
+			const story = at.done.length ? [storySum(kase, s.hero, D.workspace.short)] : [];
+			expect(plain(sumsOf(distPast(HISTORY_CASES, 'rakesh'), STUB_WORLD, story))).toEqual(
+				plain(P.sumsAt('rakesh', W.SC3_STORE.get()))
+			);
+			expect(plain(clearedSums(stubSource, 'rakesh'))).toEqual(plain(P.sumsAt('rakesh', W.SC3_STORE.get())));
+			const journey = batchViews(s, stubSource.data).filter(
+				(v) => v.distributor === 'rakesh' && inJourney(stubSource, v)
+			);
+			expect(journey.map((v) => v.id)).toEqual(at.journey.map((b: { id: string }) => b.id));
+			expect(storyCleared(stubSource, 'rakesh').map((c) => c.ref)).toEqual(at.done.map((c: { ref: string }) => c.ref));
+		});
+	it('once the chips clear, his seven batches add up: ₹1,27,474 sold + ₹75,686 credited = ₹2,03,160 on 9 notes', () => {
+		W.SC3_FLOW.fastForward(last);
+		fastForward(last);
+		const t = clearedSums(stubSource, 'rakesh');
+		expect([t.n, Math.round(t.sold), Math.round(t.credit), t.notes]).toEqual([7, 127474, 75686, 9]);
+		expect(t.batches.find((x) => x.ref === 'MF-2409-117')).toMatchObject({ credit: 8767.6 });
+	});
 });
 
 describe("a kirana's offers are ledger.js's", () => {

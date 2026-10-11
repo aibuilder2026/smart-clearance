@@ -1404,6 +1404,29 @@ describe("the partners' own history (SC-130)", () => {
 		r.unmount();
 	});
 
+	it('once the chips clear, they are one of his cleared batches on Batches and Orders, and in both sums (SC-162)', async () => {
+		const m = moment('cleared');
+		const r = await draw(source(partnerApi(m, 'rakesh')), 'batches');
+		await waitFor(() => expect(text(r)).toContain('How your 7 cleared batches add up'));
+		let t = text(r);
+		// out of "In a journey now", into its own cleared month with its sum: ₹8,768 credited + ₹21,546 sold
+		expect(t).not.toContain('In a journey now');
+		expect(t).toContain('Cleared · October 2026');
+		expect(t).toMatch(/MF-2409-117 · flagged \d+ Oct · cleared \d+ Oct/);
+		expect(t).toContain('₹8,768 credited+ ₹21,546 sold = ₹30,314');
+		expect(t).toContain('₹75,686Munchly credited youthis page');
+		r.unmount();
+		const o = await draw(source(partnerApi(m, 'rakesh')), 'orders');
+		await waitFor(() => expect(text(o)).toContain('How your 7 cleared batches add up'));
+		t = text(o);
+		expect(t).toContain('₹1,27,474you soldthis page');
+		expect(t).toContain('₹75,686Munchly credited you9 credit notes · on Batches');
+		expect(t).toContain('₹21,546 sold+ ₹8,768 credited = ₹30,314');
+		expect(t).not.toContain('still in a journey');
+		expect(t).not.toMatch(/NaN|undefined|Invalid Date/);
+		o.unmount();
+	});
+
 	it('a batch he cleared opens on what happened, how he ended whole, and his papers with the copies', async () => {
 		const m = moment('executing');
 		const r = await draw(source(partnerApi(m, 'rakesh')), 'batches', 'MF-2407-114');

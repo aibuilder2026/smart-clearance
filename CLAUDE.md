@@ -2078,4 +2078,21 @@
     - the kirana's order button tells a screen reader "Working" and "Done", its Hindi words being snippets.
   - **Checks:** the frontend gate passes (core 288, api 79, workspace 104, admin 17, console 8, demo 5). The day is back at 24 hours.
 
+- **SC-162** (In Review, branch `SC-162-cleared-batch-in-sums`; bug found by Munchly Chips E2E, SC-161): a batch whose journey has cleared is one of the distributor's cleared batches.
+  - **Found:** once the chips cleared, Rakesh's Batches still listed them under "In a journey now" (stop Report). His sums counted only the history's six batches. Orders said their ₹21,546 "sold from the batch still in a journey joins the sum once it clears".
+  - **The cause:** core's `clearedOf` and design3's `distBatches` took any phase but watching as in a journey, and design3's sums took only the history.
+  - **The fix,** design3 first (`ledger.js` `distBatches` `done`, `storySum`, `sumsAt`; `trade.jsx` DistBatches and DistOrders), then core (`partners.ts` `storySum`, `sumsOf` with the story's; `pt.ts` `inJourney`, `storyCleared`, `clearedSums`; DistBatches, DistOrders):
+    - Batches lists the cleared batch in its cleared month with its sum, and no longer under "In a journey now";
+    - Orders gives its row its sum, and counts only a batch still under way as "still in a journey";
+    - both sums count it: Rakesh's seven come to ₹1,27,474 sold + ₹75,686 credited = ₹2,03,160 on 9 credit notes, the chips ₹21,546 + ₹8,768 = ₹30,314.
+
+    On the live workspace it comes from his partner facts. In design3 and the stub, the story's own figures count once Impact has posted. No design round: one obvious fix.
+  - **Checks:**
+    - the frontend gate passes (core 291, api 79, workspace 105, admin 17, console 8, demo 5);
+    - core's sums are held to ledger.js at stages 8 and 9, and Rakesh's stage 9 goldens follow;
+    - a live test on the cleared moment fails without the fix;
+    - backend-api 568 passed, 1 skipped (only the seed manifest changed);
+    - Munchly Chips E2E now checks it;
+    - design3 and the local live app read the same.
+
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

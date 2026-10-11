@@ -191,14 +191,12 @@ export function distributorStep(): Step {
 				'GST collected'
 			]);
 			sumAddsUp('Orders: a cleared batch', orders);
-			// the chips have cleared, but the sum keeps them as a batch in a journey, as design3's prototype does (its
-			// sums are the history's): a reader sees "Cleared" on the row and "still in a journey" in the sum
-			if (/still in a journey joins the sum once it clears/.test(orders) && mine.cleared)
-				running().find(
-					'warning',
-					'/orders',
-					`${HERO} cleared on ${mine.cleared}, but Orders' sum still counts it as "the batch still in a journey" and leaves it out (its row reads Cleared); Batches likewise`
-				);
+			// once cleared, the chips are one of his cleared batches, in the sum with their own (SC-162)
+			story(
+				'Orders: the chips among his cleared batches (SC-162)',
+				/still in a journey/.test(orders) ? 'still in a journey' : 'in his sums',
+				'in his sums'
+			);
 			await running().done('Orders: the lot and the scheme, each on its paper');
 			await sumCard(page, 'Orders', 'Orders');
 			await page.locator('.pt-sum').scrollIntoViewIfNeeded();

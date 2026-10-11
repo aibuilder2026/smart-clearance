@@ -6,7 +6,6 @@
 	import { useRoute } from '../../context';
 	import { ordersNow, ordersPast, type DistJourney, type DistOrder } from '../../dist';
 	import { fmt } from '../../model';
-	import { sumsOf } from '../../partners';
 	import { useWorkspace } from '../../source';
 	import type { LedgerOutcome, Sku, User } from '../../types';
 	import Screen from '../common/Screen.svelte';
@@ -17,7 +16,7 @@
 	import PaperSheet from './PaperSheet.svelte';
 	import SumCard from './SumCard.svelte';
 	import SumLine from './SumLine.svelte';
-	import { clearedOf, day, distJourneysOf, distOfMe, distWorldOf, invoicesOfRef, shopNameOf, worldOf } from './pt';
+	import { clearedOf, clearedSums, day, distJourneysOf, distOfMe, distWorldOf, invoicesOfRef, shopNameOf } from './pt';
 
 	// his Orders, batch by batch (SC-133, option A; screens/trade.jsx DistOrders): what sold from each of the client's
 	// batches at his godown, in a journey and cleared: who bought what, for how much, on which paper; each batch's papers
@@ -53,7 +52,8 @@
 	);
 	// the batches he cleared, as Batches lists them, and their sum (SC-145)
 	const cleared = $derived(clearedOf(ws, dist.id).filter((c) => !now.some((x) => x.ref === c.ref)));
-	const sums = $derived(sumsOf(clearedOf(ws, dist.id), worldOf(ws)));
+	// a batch whose journey has cleared is among them (SC-162)
+	const sums = $derived(clearedSums(ws, dist.id));
 	const past = $derived<Entry[]>(
 		cleared
 			.map((c) => ({
@@ -72,9 +72,11 @@
 	const shops = $derived(all.filter((o) => o.id === 'kirana').reduce((t, o) => t + (o.shops?.length ?? 0), 0));
 	const lots = $derived(all.filter((o) => o.id === 'expiresoon').length);
 	const sales = $derived(all.filter((o) => o.id === 'staff').length);
-	const live = $derived(Math.round(now.reduce((t, b) => t + sum(b.rows), 0)));
-	const liveN = $derived(now.filter((b) => b.rows.length).length);
 	const sumOf = (ref: string) => sums.batches.find((x) => x.ref === ref) ?? null;
+	// what sold from the batches still under way, which joins the sum once each clears
+	const going = $derived(now.filter((b) => !sumOf(b.ref)));
+	const live = $derived(Math.round(going.reduce((t, b) => t + sum(b.rows), 0)));
+	const liveN = $derived(going.filter((b) => b.rows.length).length);
 </script>
 
 <Screen {me} title="Orders" sub="{dist.name} · what sold from each of {w.short}'s batches, to whom, on which paper">
@@ -123,7 +125,7 @@
 								/>{/if}{/snippet}</DistBatchLine
 					>
 					<span class="row tight"
-						>{#if b.rows.length}{@const x = b.j ? null : sumOf(b.ref)}{#if x}<SumLine {x} lead="sold" />{:else}<span
+						>{#if b.rows.length}{@const x = sumOf(b.ref)}{#if x}<SumLine {x} lead="sold" />{:else}<span
 									class="tnum strong">{fmt.inr(sum(b.rows))}</span
 								>{/if}{/if}<Button
 							variant="ghost"

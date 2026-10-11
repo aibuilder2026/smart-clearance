@@ -3,7 +3,7 @@
 import type { IconName } from '../../../icons/registry';
 import { distNows, journeyOf, byAsk, type DistNow, type DistWorld } from '../../dist';
 import { batchViews, invoicesOfCase } from '../../model';
-import { distPast, offersFor, type PartnerWorld } from '../../partners';
+import { distPast, offersFor, storySum, sumsOf, type PartnerWorld } from '../../partners';
 import type { WorkspaceSource } from '../../source';
 import type {
 	BatchView,
@@ -146,14 +146,37 @@ export const distJourneysOf = (ws: WorkspaceSource, distId: string) =>
  *  same agents donate (the stub's second) by its own, any other by the phase backend-api sends with it */
 export const phaseOfView = (ws: WorkspaceSource, v: BatchView) =>
 	v.hero ? ws.state.hero.phase : v.second ? ws.state.mango.phase || null : (v.journey ?? null);
+/** a batch of his whose journey has cleared (SC-162): the batch in focus once Impact has posted it, any other once its
+ *  partner facts say it cleared. It is one of his cleared batches, no longer in a journey */
+const clearedView = (ws: WorkspaceSource, v: BatchView) =>
+	phaseOfView(ws, v) === 'cleared' &&
+	(v.hero ? !!ws.state.hero.posted : (ws.partners?.cases ?? []).some((c) => c.ref === v.id && !!c.cleared));
+/** a batch of his in a journey now: flagged by the Watcher, and its journey not yet cleared (SC-162) */
+export const inJourney = (ws: WorkspaceSource, v: BatchView) =>
+	(phaseOfView(ws, v) ?? 'watching') !== 'watching' && !clearedView(ws, v);
 /** the batches he cleared, as Batches lists them: every cleared batch of his not in a journey now. Orders sums the same
  *  batches, so both pages' sums agree (SC-145) */
 export function clearedOf(ws: WorkspaceSource, distId: string): PartnerCase[] {
-	const journey = batchViews(ws.state, ws.data).filter(
-		(v) => v.distributor === distId && (phaseOfView(ws, v) ?? 'watching') !== 'watching'
-	);
+	const journey = batchViews(ws.state, ws.data).filter((v) => v.distributor === distId && inJourney(ws, v));
 	return distPast(ws.partners?.cases ?? [], distId).filter((c) => !journey.some((v) => v.id === c.ref));
 }
+/** the story's batch once its journey has cleared, where no partner facts carry it (the stub, as ledger.js
+ *  distBatches' `done`): as Batches lists a cleared batch, on the day the story clears (SC-162) */
+export function storyCleared(ws: WorkspaceSource, distId: string) {
+	const v = batchViews(ws.state, ws.data).find((x) => x.hero && x.distributor === distId);
+	if (!v || !ws.case || !clearedView(ws, v) || (ws.partners?.cases ?? []).some((c) => c.ref === v.id)) return [];
+	// the day it cleared, as the stub's ledger posts it
+	const cleared = ws.ledger?.batches.find((b) => b.ref === v.id)?.cleared ?? ws.data.day0;
+	return [{ ref: v.id, sku: v.sku, flagged: ws.data.day0, cleared, outcome: 'sold' as const }];
+}
+/** his cleared batches summed, as Batches and Orders show them (SC-145), a batch whose journey has cleared among them
+ *  (SC-162) */
+export const clearedSums = (ws: WorkspaceSource, distId: string) =>
+	sumsOf(
+		clearedOf(ws, distId),
+		worldOf(ws),
+		storyCleared(ws, distId).map(() => storySum(ws.case!, ws.state.hero, ws.data.workspace.short))
+	);
 /** a sum in whole rupees that add up as shown (SC-145): the cost is the rounded sales plus the rounded credit */
 export const shownSum = (x: Pick<PtSum, 'sold' | 'credit'>) => {
 	const sold = Math.round(x.sold),

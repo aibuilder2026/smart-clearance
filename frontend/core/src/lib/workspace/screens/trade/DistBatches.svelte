@@ -8,7 +8,6 @@
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
 	import { useRoute } from '../../context';
 	import { batchViews, fmt } from '../../model';
-	import { sumsOf } from '../../partners';
 	import { useWorkspace } from '../../source';
 	import type { BatchView, User } from '../../types';
 	import Screen from '../common/Screen.svelte';
@@ -16,7 +15,7 @@
 	import DistBatch from './DistBatch.svelte';
 	import SumCard from './SumCard.svelte';
 	import SumLine from './SumLine.svelte';
-	import { clearedOf, day, monthOf, phaseOfView, stopOf, worldOf } from './pt';
+	import { clearedOf, clearedSums, day, inJourney, monthOf, phaseOfView, stopOf, storyCleared } from './pt';
 
 	// every batch of the client's the Watcher flagged at his godown (SC-130, screens/trade.jsx DistBatches): in a journey
 	// now, everything he cleared by month under how its figures add up (SC-145: what they cost him = what he sold + what
@@ -36,11 +35,14 @@
 	const cases = $derived(ws.partners?.cases ?? []);
 	const phaseOf = (v: BatchView) => phaseOfView(ws, v);
 	const views = $derived(batchViews(s, ws.data).filter((v) => v.distributor === dist.id));
-	const journey = $derived(views.filter((v) => (phaseOf(v) ?? 'watching') !== 'watching'));
+	// a batch whose journey has cleared is one of his cleared batches, no longer in a journey (SC-162)
+	const journey = $derived(views.filter((v) => inJourney(ws, v)));
 	const watching = $derived(views.filter((v) => (phaseOf(v) ?? 'watching') === 'watching'));
-	const past = $derived(clearedOf(ws, dist.id));
+	// the batches he cleared, newest first: the story's once its journey has cleared, where no partner facts carry it
+	// (the stub, SC-162), then every other
+	const past = $derived([...storyCleared(ws, dist.id), ...clearedOf(ws, dist.id)]);
 	// the batches he cleared, summed (SC-145): what they cost him = what he sold + what the client credited him
-	const sums = $derived(sumsOf(past, worldOf(ws)));
+	const sums = $derived(clearedSums(ws, dist.id));
 	const sumOf = (ref: string) => sums.batches.find((x) => x.ref === ref)!;
 	const months = $derived.by(() => {
 		const out: { m: string; label: string; items: typeof past }[] = [];

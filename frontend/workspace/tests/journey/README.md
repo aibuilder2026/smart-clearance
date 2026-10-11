@@ -52,7 +52,8 @@ batch as donated.
 - **The Record (SC-142, SC-144, SC-146):** the photo sent, Vision's read and the match, the audit trail and the yeses;
   every photo drawn, none failed; Rakesh's Photos tab.
 - **The distributor's figures (SC-141, SC-145):** the scheme's row at ₹18.00 effective on its 31 invoices; the sum card
-  on Orders and Batches (cost = sold + credited), and a cleared batch's own sum.
+  on Orders and Batches (cost = sold + credited), and a cleared batch's own sum; once the chips clear, they are among
+  them (SC-162).
 - **The Impact dashboard (SC-157)** and **the console's Food by day (SC-149)**, and Munchly's address,
   munchly-smartclearance.web.app, in the console (SC-150).
 - **The buttons (SC-152):** every button the run presses is watched as it waits; its words go in the report, and a blank
