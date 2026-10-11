@@ -6,6 +6,7 @@
 import { D, SHOPS_ALL, storyOf } from './data';
 import history from './seed/history.json';
 import { fmt } from '../format';
+import { evidenceFile } from './screens/brand/destruction';
 import type { BatchRecord, RecordPhoto, RecordStep, RecordWho, State, StoryPerson } from './types';
 
 export const YES = ['plan.approve', 'docs.review', 'destruction.approve'];
@@ -347,11 +348,6 @@ export function storyPhotos(s: State): RecordPhoto[] {
 				});
 	return out;
 }
-
-/** a destruction photo's file under img/evidence: the one it was sent as (the slow chips' expiry-day landfill photo,
- *  SC-168), else the batch's own (ledger.js record.evidenceFile) */
-export const evidenceFile = (ref: string, which: string, p?: { name?: string } | null) =>
-	p && /\.(webp|jpe?g|png)$/i.test(p.name ?? '') ? p.name!.replace(/^.*\//, '') : `${ref}-${which}.webp`;
 
 /** a shop by its id: one of the story's 31, else another of the distributors' shops */
 function shopName(id: string) {

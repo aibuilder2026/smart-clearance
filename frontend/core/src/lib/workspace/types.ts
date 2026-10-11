@@ -961,7 +961,15 @@ export type CaseData = {
 	destruction?: Destruction | null;
 	/** the stub's journey (SC-168): whether its scheme fills, how many packs left at the godown expire there, the van
 	 *  round's day after day 0, and whether it begins with the distributor's permission; the live workspace has none */
-	story?: { key: StoryKey; fills: boolean; expires: number; vanDay: number; permits: boolean };
+	story?: {
+		key: StoryKey;
+		fills: boolean;
+		expires: number;
+		vanDay: number;
+		permits: boolean;
+		/** the evidence photos its destruction shows as examples, then sends */
+		evidence: { before: string; after: string };
+	};
 	/** the batch the same agents donate: how many packs go to the food bank, which partner takes them, and when */
 	donation: { batch: Batch; sku: Sku; dist: Distributor; plan: Plan; units: number; partner: Partner } & Omit<
 		Journey['donation'],

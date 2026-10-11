@@ -197,7 +197,14 @@ export function caseOf(state: State): CaseData {
 		van: S.journey.van,
 		realised: S.realised,
 		expiry: approved ? h.expiry : null,
-		story: { key, fills: S.fills, expires: S.expiry?.units ?? 0, vanDay: S.vanDay, permits: !S.setupDone },
+		story: {
+			key,
+			fills: S.fills,
+			expires: S.expiry?.units ?? 0,
+			vanDay: S.vanDay,
+			permits: !S.setupDone,
+			evidence: { before: S.evidence.before, after: S.evidence.after }
+		},
 		donation: x
 			? {
 					...S.journey.donation,
