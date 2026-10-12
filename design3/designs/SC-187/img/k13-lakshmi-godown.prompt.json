@@ -1,0 +1,29 @@
+{
+  "name": "k13-lakshmi-godown",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "Mid-morning inside Begum Bazaar godown, Hyderabad: the distributor (the woman in the deep teal saree with a thin cream border, reading glasses on a beaded cord, a long plait) stands by a pallet of plain kraft cartons with a sage-green band, one carton open at the top showing small plain yellow-orange tetra packs, and reads the carton's plain side panel through her glasses, holding its edge; the godown's bright shutter light behind her. Medium shot, 50 mm, her face and the carton sharp.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. Every pack and carton is unbranded: plain kraft-brown cartons with a sage-green band, solid-colour snack packets (amber, green, red) with no lettering, Mango Drink as small plain yellow-orange tetra packs with no lettering. No text, no letters, no numbers, no logos, no watermark, no number plate anywhere. No children.",
+  "seed": 187113,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-lakshmi.webp",
+      "sha256": "095316a76cb40bdbf74c54994b0ab3b8a2dba241a064719830eb0009a4edcb5c"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "latency_s": 37.1,
+  "use": "SC-187 keyframe: the first frame of a Veo clip for the demo film",
+  "model_text": null,
+  "status": "done",
+  "output": "k13-lakshmi-godown.webp 2752x1536",
+  "postprocess": "WebP q82 from k13-lakshmi-godown.png",
+  "derived_from": "k13-lakshmi-godown.png"
+}

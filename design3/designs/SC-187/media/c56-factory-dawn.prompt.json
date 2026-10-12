@@ -1,0 +1,18 @@
+{
+  "prompt": "Exactly as in the image: dawn at the factory's loading bay, thin mist drifting slowly through the low sun; the worker far along the dock pushes the pallet jack a short way and stops; the supervisor beside the truck turns a page on his clipboard; the trucks stand still. A slow, smooth dolly in toward the dock. Every face, hand and arm keeps its form; no extra limbs appear and none vanish; nobody's face changes; nothing is picked up, handed over or put down; no object appears, vanishes or changes shape; the printed labels on the cartons and the packets stay exactly as they are, crisp and legible. Photorealistic live action, 35 mm, natural skin and fabric, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "720p",
+  "duration": 8,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "dolly_in",
+  "audio": false,
+  "seed": 187805,
+  "loras": [],
+  "image": "/Users/arundutta/projects/smart-clearance/.claude/worktrees/console-ui-db-migration-b9ab01/design3/designs/SC-187/src/img/k56-factory-dawn.png",
+  "framed_first": "/Users/arundutta/ltx-video/frames/sc187-c56-factory-dawn.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 9.7,
+  "ltx_output": "/Users/arundutta/Library/Application Support/LTXDesktop/outputs/ltx2_video_20261012_125731_92830c60.mp4",
+  "cost_usd": 0
+}

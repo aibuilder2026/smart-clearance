@@ -1,0 +1,207 @@
+1
+00:00:01,000 --> 00:00:07,270
+Every day, across India, good products run out of time before they run out of demand.
+
+2
+00:00:07,520 --> 00:00:13,070
+A batch waits in a distributor's godown as its best-before date draws closer.
+
+3
+00:00:13,320 --> 00:00:18,425
+Once it crosses the quick-commerce gates, the modern-trade shelves close to it.
+
+4
+00:00:18,675 --> 00:00:26,551
+What usually follows is a write-off: the stock destroyed, the GST credit reversed, and perfectly good food in a landfill.
+
+5
+00:00:26,801 --> 00:00:33,171
+The brand loses, the distributor loses, and the people who would have bought it never get the chance.
+
+6
+00:00:34,610 --> 00:00:36,435
+Smart-Clearance changes that.
+
+7
+00:00:36,685 --> 00:00:42,749
+It is a software-as-a-service platform for manufacturers, built around an ecosystem of AI agents.
+
+8
+00:00:42,999 --> 00:00:53,874
+Every brand gets its own workspace, set up for its supply chain: its distributors and super stockists, its quick-commerce gates, its exits and its rules.
+
+9
+00:00:54,124 --> 00:00:57,722
+Inside it, ten agents work together along nine stops.
+
+10
+00:00:57,972 --> 00:01:04,061
+They detect, verify, value, decide, execute, settle and report.
+
+11
+00:01:04,311 --> 00:01:10,706
+And at the one moment that matters, a person says yes. Nothing moves before that.
+
+12
+00:01:10,956 --> 00:01:21,358
+A platform of its own kind: the whole chain on one system, from the manufacturer to the distributor, the kirana, the buyer and the food bank, each acting in their own name.
+
+13
+00:01:22,298 --> 00:01:25,938
+It starts with the stock data the distributor already has.
+
+14
+00:01:26,188 --> 00:01:32,678
+The Data agent maps the stock export field by field, so nothing is keyed in twice.
+
+15
+00:01:32,928 --> 00:01:39,549
+Every morning, the Watcher checks every batch at every distributor against its sell-through and the quick-commerce gates.
+
+16
+00:01:39,799 --> 00:01:47,082
+When a batch will not sell in time, the supply planner is told on her phone, in plain words, with the write-off it would mean.
+
+17
+00:01:47,332 --> 00:01:51,232
+The batch gets a page of its own: where it stands, and what comes next.
+
+18
+00:01:52,172 --> 00:01:55,198
+Before anything is priced, the batch is verified.
+
+19
+00:01:55,448 --> 00:01:59,430
+Vision asks the distributor for one photo of the carton label.
+
+20
+00:01:59,680 --> 00:02:08,232
+It reads the batch number, the dates and the MRP, checks the barcode and the FSSAI licence, and matches them to the stock record.
+
+21
+00:02:08,482 --> 00:02:11,967
+One photo from a phone, and the batch is real.
+
+22
+00:02:12,907 --> 00:02:23,001
+Now the Valuer prices every exit: the kirana cluster, the marketplace, the staff sale, the food bank, and the quick-commerce channels the batch can still reach.
+
+23
+00:02:23,251 --> 00:02:30,475
+Each one is priced per unit, after costs and GST, against what destroying the stock would cost.
+
+24
+00:02:30,725 --> 00:02:36,652
+The Router then splits the batch across the exits, and explains its reasoning in plain language.
+
+25
+00:02:36,902 --> 00:02:40,845
+The plan lands on the planner's desk with everything she needs to decide.
+
+26
+00:02:41,095 --> 00:02:45,928
+She approves it once. The approval is logged, with who, when, and the device.
+
+27
+00:02:46,178 --> 00:02:52,266
+The distributor is told the plan in his own language, with a pause button, and the agents set off.
+
+28
+00:02:53,206 --> 00:02:58,408
+Outreach sends the kirana cluster its scheme, in Hindi, straight to each shop's phone.
+
+29
+00:02:58,658 --> 00:03:05,857
+A shop sees the offer and its margin, and orders in a tap. Each order gets its own tax invoice, in the distributor's name.
+
+30
+00:03:06,107 --> 00:03:12,233
+The Lister puts the rest on the near-expiry marketplace, hidden from the brand's own territories.
+
+31
+00:03:12,483 --> 00:03:22,650
+When a buyer bids, the Negotiator answers in the distributor's name, holds the reserve, and closes the deal. The buyer pays the token; the truck is loaded.
+
+32
+00:03:22,900 --> 00:03:30,928
+At the godown, the staff sale opens, recorded on one consolidated UPI receipt that Vision reads and reconciles.
+
+33
+00:03:31,178 --> 00:03:40,924
+Packs with enough shelf life go to a food bank, as sealed cartons: the pickup booked, the FSSAI checklist drafted, and the food bank's own receipt issued.
+
+34
+00:03:41,174 --> 00:03:44,470
+And the van round delivers the scheme to every shop that ordered.
+
+35
+00:03:46,930 --> 00:03:52,683
+This is where most clearances fall apart: the paperwork. Here, it is automatic.
+
+36
+00:03:52,933 --> 00:04:13,508
+The Paperwork agent drafts the whole pack: the distributor's tax invoice, ready to issue from Tally with its e-invoice; the brand's credit note, so the distributor ends whole; the GST memo, with the input credit kept and reversed under section 17(5)(h); the FSSAI checklist; and an invoice to every kirana.
+
+37
+00:04:13,758 --> 00:04:19,008
+Every paper is laid out as a signed PDF with the firm's stamp, and reviewed by the planner.
+
+38
+00:04:19,258 --> 00:04:24,299
+The distributor sees his own papers on his own portal, ready to download.
+
+39
+00:04:25,238 --> 00:04:31,878
+Sometimes it does not go as planned. Some shops do not order, and stock is still left at the godown on expiry day.
+
+40
+00:04:32,128 --> 00:04:35,113
+Smart-Clearance handles that too, fully automated.
+
+41
+00:04:35,363 --> 00:04:45,258
+The distributor is asked to destroy the expired packs through an authorised agency, with the evidence: a photo before, a photo after, and the agency's certificate.
+
+42
+00:04:45,508 --> 00:04:49,585
+Vision checks the photos against the batch and the count.
+
+43
+00:04:49,835 --> 00:04:59,291
+The certificate of destruction is signed in place, on the distributor's screen: the agency's officer, two independent witnesses, and the distributor.
+
+44
+00:04:59,541 --> 00:05:09,590
+The planner reviews the evidence and gives her second yes. The expiry credit note and the destruction certificate are issued, and the batch closes, its record complete.
+
+45
+00:05:10,530 --> 00:05:13,362
+When a batch closes, Impact posts the ledger.
+
+46
+00:05:13,612 --> 00:05:19,018
+Money: what was recovered against the write-off, batch by batch, quarter by quarter.
+
+47
+00:05:19,268 --> 00:05:25,477
+GST: the input credit kept and reversed, invoice by invoice, ready for the accountant.
+
+48
+00:05:25,727 --> 00:05:33,965
+Impact: the food kept out of landfill, the CO₂e avoided, the packs donated, and the BRSR line with its evidence.
+
+49
+00:05:34,215 --> 00:05:40,984
+And every batch keeps its record: the photos, the approvals, and the audit trail of every agent and person.
+
+50
+00:05:43,203 --> 00:05:50,552
+The brand recovers. The distributor ends whole. The kiranas earn. The food bank receives.
+
+51
+00:05:50,802 --> 00:05:54,492
+One platform. Ten agents. One yes.
+
+52
+00:05:54,742 --> 00:06:00,364
+Try the guided demo, or sign in to the live prototype: the credentials and steps are in the deck.

@@ -1,0 +1,29 @@
+{
+  "name": "k12-close-lane",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "Golden hour in a narrow kirana lane in Nagpur: the kirana owner (the man in the cream half-sleeve shirt with a red tilak and a moustache) hands a small solid-colour snack packet across his counter to a young man in a checked shirt, both smiling; strings of unbranded packets above the counter, warm low sun flaring down the lane, a scooter passing soft in the background. Medium shot, backlit, the two of them sharp.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. Every pack and carton is unbranded: plain kraft-brown cartons with a sage-green band, solid-colour snack packets (amber, green, red) with no lettering, Mango Drink as small plain yellow-orange tetra packs with no lettering. No text, no letters, no numbers, no logos, no watermark, no number plate anywhere. No children.",
+  "seed": 187112,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-ganesh.png",
+      "sha256": "9d532af12b1bf985a37b5bd33c1c35202c5ed867f8f4903bffc6ddba5af90a34"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "latency_s": 79.4,
+  "use": "SC-187 keyframe: the first frame of a Veo clip for the demo film",
+  "model_text": null,
+  "status": "done",
+  "output": "k12-close-lane.webp 2752x1536",
+  "postprocess": "WebP q82 from k12-close-lane.png",
+  "derived_from": "k12-close-lane.png"
+}

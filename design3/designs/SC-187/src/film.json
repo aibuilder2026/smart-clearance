@@ -1,0 +1,3380 @@
+{
+ "fps": 24,
+ "width": 1920,
+ "height": 1080,
+ "xfade": 0.5,
+ "voice": "cut2-Kore-1.08",
+ "transitions": "cut3",
+ "cut": 3,
+ "total": 366.003,
+ "segments": [
+  {
+   "kind": "clip",
+   "name": "c51-brand-office",
+   "key": "k51-brand-office",
+   "speed": 0.8,
+   "seek": 0,
+   "min": 5,
+   "max": 7.5,
+   "weight": 1.1,
+   "overlays": [
+    {
+     "id": "st-1",
+     "at": 0.85,
+     "until": 7.52,
+     "slide": false,
+     "motion": "",
+     "anim": false
+    },
+    {
+     "id": "role-001",
+     "at": 0.6,
+     "until": 4.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "seconds": 7.742,
+   "hold": 0.242,
+   "sceneOffset": 0.0,
+   "start": 0.0
+  },
+  {
+   "kind": "clip",
+   "name": "c52-dist-office",
+   "key": "k52-dist-office",
+   "speed": 0.55,
+   "seek": 0,
+   "min": 4.5,
+   "max": 7.3,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "st-2",
+     "at": 0.128,
+     "until": 6.078,
+     "slide": false,
+     "motion": "",
+     "anim": false
+    },
+    {
+     "id": "role-003",
+     "at": 0.4,
+     "until": 4.2,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "seconds": 6.992,
+   "hold": 0.0,
+   "sceneOffset": 7.242,
+   "start": 7.242
+  },
+  {
+   "kind": "clip",
+   "name": "c53-qc-dock",
+   "key": "k53-qc-dock",
+   "speed": 0.85,
+   "seek": 0,
+   "min": 4.5,
+   "max": 7.0,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "st-3",
+     "at": 0.0,
+     "until": 4.941,
+     "slide": false,
+     "motion": "",
+     "anim": false
+    },
+    {
+     "id": "role-005",
+     "at": 0.4,
+     "until": 4.0,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "seconds": 6.992,
+   "hold": 0.0,
+   "sceneOffset": 13.734,
+   "start": 13.734
+  },
+  {
+   "kind": "clip",
+   "name": "c54-write-off",
+   "key": "k54-write-off",
+   "speed": 0.85,
+   "seek": 0,
+   "min": 4.5,
+   "max": 7.0,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "st-4",
+     "at": 0.0,
+     "until": 6.575,
+     "slide": false,
+     "motion": "",
+     "anim": false
+    }
+   ],
+   "seconds": 6.992,
+   "hold": 0.0,
+   "sceneOffset": 20.226,
+   "start": 20.226
+  },
+  {
+   "kind": "clip",
+   "name": "c55-kirana-empty",
+   "key": "k55-kirana-empty",
+   "speed": 0.85,
+   "seek": 0,
+   "min": 4.5,
+   "max": 7.0,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "st-5",
+     "at": 0.0,
+     "until": 6.992,
+     "slide": false,
+     "motion": "",
+     "anim": false
+    },
+    {
+     "id": "role-008",
+     "at": 0.4,
+     "until": 4.0,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "seconds": 6.992,
+   "hold": 0.0,
+   "sceneOffset": 26.718,
+   "start": 26.718
+  },
+  {
+   "kind": "clip",
+   "name": "c56-factory-dawn",
+   "key": "k56-factory-dawn",
+   "speed": 0.6,
+   "seek": 0,
+   "min": 6,
+   "max": 6.7,
+   "weight": 1.2,
+   "overlays": [
+    {
+     "id": "title",
+     "at": 0.4,
+     "until": 7.037,
+     "slide": false,
+     "motion": "",
+     "anim": false
+    }
+   ],
+   "seconds": 7.037,
+   "hold": 0.337,
+   "sceneOffset": 0.0,
+   "start": 33.21
+  },
+  {
+   "kind": "video",
+   "name": "quiet--site-hero",
+   "phone": false,
+   "min": 6,
+   "weight": 1.1,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "extra--landing-hero",
+   "layout": "right",
+   "bg": "k56-factory-dawn",
+   "overlays": [
+    {
+     "id": "ft-011",
+     "at": 0.0,
+     "until": 6.95,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-1",
+   "seconds": 6.95,
+   "sceneOffset": 6.537,
+   "start": 39.747
+  },
+  {
+   "kind": "video",
+   "name": "quiet--console-supply",
+   "phone": false,
+   "min": 6,
+   "weight": 1.1,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "quiet--neha-console-munchly-supply",
+   "layout": "right",
+   "bg": "k56-factory-dawn",
+   "overlays": [
+    {
+     "id": "ft-012",
+     "at": 0.0,
+     "until": 6.95,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "p-supply",
+     "at": 1.0,
+     "until": 4.5,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-1",
+   "seconds": 6.95,
+   "sceneOffset": 12.987,
+   "start": 46.197
+  },
+  {
+   "kind": "card",
+   "min": 5.5,
+   "weight": 1.1,
+   "bg": "k56-factory-dawn",
+   "overlays": [
+    {
+     "id": "agents-ring",
+     "at": 0.3,
+     "until": 6.45,
+     "slide": false,
+     "motion": "",
+     "anim": true
+    },
+    {
+     "id": "ft-015",
+     "at": 0.0,
+     "until": 6.45,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-1",
+   "seconds": 6.45,
+   "sceneOffset": 19.437,
+   "start": 52.647
+  },
+  {
+   "kind": "card",
+   "min": 5.5,
+   "weight": 1.2,
+   "bg": "k56-factory-dawn",
+   "overlays": [
+    {
+     "id": "nine-stops",
+     "at": 0.3,
+     "until": 6.537,
+     "slide": false,
+     "motion": "",
+     "anim": true
+    },
+    {
+     "id": "ft-017",
+     "at": 0.0,
+     "until": 6.537,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-1",
+   "seconds": 6.537,
+   "sceneOffset": 25.387,
+   "start": 58.597
+  },
+  {
+   "kind": "video",
+   "name": "quiet--console-overview",
+   "phone": false,
+   "min": 6,
+   "weight": 1.2,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "quiet--neha-console-overview",
+   "layout": "right",
+   "bg": "k56-factory-dawn",
+   "overlays": [
+    {
+     "id": "ft-018",
+     "at": 0.0,
+     "until": 7.037,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "p-agents-at-work",
+     "at": 1.0,
+     "until": 4.5,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-1",
+   "seconds": 7.037,
+   "sceneOffset": 31.424,
+   "start": 64.634
+  },
+  {
+   "kind": "clip",
+   "name": "c58-depot",
+   "key": "k58-depot",
+   "speed": 0.4,
+   "seek": 0,
+   "min": 5,
+   "max": 5.5,
+   "weight": 1.1,
+   "overlays": [
+    {
+     "id": "ft-020",
+     "at": 0.0,
+     "until": 5.95,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "role-021",
+     "at": 0.4,
+     "until": 4.2,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-1",
+   "seconds": 5.95,
+   "hold": 0.45,
+   "sceneOffset": 37.961,
+   "start": 71.171
+  },
+  {
+   "kind": "video",
+   "name": "quiet--console-people",
+   "phone": false,
+   "min": 4.5,
+   "weight": 0.9,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "quiet--neha-console-munchly",
+   "layout": "right",
+   "bg": "k56-factory-dawn",
+   "overlays": [
+    {
+     "id": "ft-022",
+     "at": 0.0,
+     "until": 5.277,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-1",
+   "seconds": 5.277,
+   "sceneOffset": 43.411,
+   "start": 76.621
+  },
+  {
+   "kind": "video",
+   "name": "quiet--setup",
+   "phone": false,
+   "min": 8,
+   "weight": 1.3,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "quiet--priya-command",
+   "layout": "right",
+   "bg": "k51-brand-office",
+   "overlays": [
+    {
+     "id": "co-1",
+     "at": 0.2,
+     "until": 3.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "ft-025",
+     "at": 3.8,
+     "until": 9.267,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "p-export",
+     "at": 3.8,
+     "until": 4.8,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "open": true,
+   "chapter": "ch-2",
+   "seconds": 9.267,
+   "sceneOffset": 0.0,
+   "start": 81.398
+  },
+  {
+   "kind": "video",
+   "name": "detect--command-flagged",
+   "phone": false,
+   "min": 7,
+   "weight": 1.3,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "detect--priya-command",
+   "layout": "right",
+   "bg": "k51-brand-office",
+   "overlays": [
+    {
+     "id": "ft-027",
+     "at": 0.0,
+     "until": 8.267,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "p-flag",
+     "at": 1.2,
+     "until": 5.0,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "p-activity",
+     "at": 3.0,
+     "until": 6.5,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-2",
+   "seconds": 8.267,
+   "sceneOffset": 8.767,
+   "start": 90.165
+  },
+  {
+   "kind": "clip",
+   "name": "c22-priya-phone",
+   "key": "k22-priya-phone",
+   "speed": 0.6,
+   "seek": 2.6,
+   "min": 6,
+   "max": 9.000000000000002,
+   "weight": 1.2,
+   "overlays": [
+    {
+     "id": "bn-030",
+     "at": 1.6,
+     "until": 7.17,
+     "slide": false,
+     "motion": "banner",
+     "anim": false
+    },
+    {
+     "id": "role-031",
+     "at": 0.5,
+     "until": 4.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-2",
+   "seconds": 7.17,
+   "hold": 0.0,
+   "sceneOffset": 16.534,
+   "start": 97.932
+  },
+  {
+   "kind": "video",
+   "name": "detect--journey-flagged",
+   "phone": false,
+   "min": 6,
+   "weight": 1.2,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "detect--priya-journey-chips",
+   "layout": "right",
+   "bg": "k51-brand-office",
+   "overlays": [
+    {
+     "id": "ft-032",
+     "at": 0.0,
+     "until": 7.17,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "p-tracker",
+     "at": 1.0,
+     "until": 4.5,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-2",
+   "seconds": 7.17,
+   "sceneOffset": 23.204,
+   "start": 104.602
+  },
+  {
+   "kind": "video",
+   "name": "detect--rakesh-today-request",
+   "phone": true,
+   "min": 7.5,
+   "weight": 1.3,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "detect--rakesh-today-phone",
+   "layout": "right",
+   "bg": "k57-label-photo",
+   "overlays": [
+    {
+     "id": "co-2",
+     "at": 0.2,
+     "until": 3.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "ft-036",
+     "at": 3.8,
+     "until": 6.821,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "bn-037",
+     "at": 4.2,
+     "until": 6.821,
+     "slide": false,
+     "motion": "banner",
+     "anim": false
+    }
+   ],
+   "open": true,
+   "chapter": "ch-3",
+   "seconds": 6.821,
+   "sceneOffset": 0.0,
+   "start": 111.272
+  },
+  {
+   "kind": "clip",
+   "name": "c57-label-photo",
+   "key": "k57-label-photo",
+   "speed": 0.8,
+   "seek": 0,
+   "min": 5,
+   "max": 5.0,
+   "weight": 1.1,
+   "overlays": [
+    {
+     "id": "role-038",
+     "at": 0.4,
+     "until": 4.2,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-3",
+   "seconds": 4.547,
+   "hold": 0.0,
+   "sceneOffset": 6.321,
+   "start": 117.593
+  },
+  {
+   "kind": "video",
+   "name": "detect--rakesh-camera",
+   "phone": true,
+   "min": 4.5,
+   "weight": 0.9,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "plan--rakesh-photos-phone",
+   "layout": "right",
+   "bg": "k57-label-photo",
+   "overlays": [
+    {
+     "id": "ft-039",
+     "at": 0.0,
+     "until": 4.092,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-3",
+   "seconds": 4.092,
+   "sceneOffset": 10.368,
+   "start": 121.64
+  },
+  {
+   "kind": "video",
+   "name": "plan--route-vision",
+   "phone": false,
+   "min": 8,
+   "weight": 1.5,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "plan--priya-route-chips",
+   "layout": "right",
+   "bg": "k57-label-photo",
+   "overlays": [
+    {
+     "id": "ft-040",
+     "at": 0.0,
+     "until": 7.275,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "p-label",
+     "at": 1.0,
+     "until": 4.0,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "p-match",
+     "at": 3.5,
+     "until": 7.0,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-3",
+   "seconds": 7.275,
+   "sceneOffset": 13.96,
+   "start": 125.232
+  },
+  {
+   "kind": "card",
+   "min": 8.5,
+   "weight": 1.5,
+   "bg": "k24-priya-approve",
+   "overlays": [
+    {
+     "id": "five-exits",
+     "at": 3.8,
+     "until": 8.865,
+     "slide": false,
+     "motion": "",
+     "anim": true
+    },
+    {
+     "id": "co-3",
+     "at": 0.2,
+     "until": 3.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "ft-046",
+     "at": 3.8,
+     "until": 8.865,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "open": true,
+   "chapter": "ch-4",
+   "seconds": 8.865,
+   "sceneOffset": 0.0,
+   "start": 132.007
+  },
+  {
+   "kind": "video",
+   "name": "plan--route-channels",
+   "phone": false,
+   "min": 7,
+   "weight": 1.2,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "plan--priya-route-chips",
+   "layout": "right",
+   "bg": "k24-priya-approve",
+   "overlays": [
+    {
+     "id": "ft-047",
+     "at": 0.0,
+     "until": 7.292,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "p-channels",
+     "at": 1.0,
+     "until": 4.5,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "p-writeoff",
+     "at": 4.0,
+     "until": 7.292,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-4",
+   "seconds": 7.292,
+   "sceneOffset": 8.365,
+   "start": 140.372
+  },
+  {
+   "kind": "video",
+   "name": "plan--route-split",
+   "phone": false,
+   "min": 8,
+   "weight": 1.3,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "plan--priya-route-chips",
+   "layout": "right",
+   "bg": "k24-priya-approve",
+   "overlays": [
+    {
+     "id": "ft-050",
+     "at": 0.0,
+     "until": 8.316,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "p-split",
+     "at": 1.0,
+     "until": 4.5,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-4",
+   "seconds": 8.316,
+   "sceneOffset": 15.157,
+   "start": 147.164
+  },
+  {
+   "kind": "clip",
+   "name": "c24-priya-approve",
+   "key": "k24-priya-approve",
+   "speed": 0.8,
+   "seek": 0,
+   "min": 5,
+   "max": 10.0,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "role-052",
+     "at": 0.4,
+     "until": 4.2,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-4",
+   "seconds": 5.243,
+   "hold": 0.0,
+   "sceneOffset": 22.973,
+   "start": 154.98
+  },
+  {
+   "kind": "video",
+   "name": "plan--route-approve",
+   "phone": false,
+   "min": 8,
+   "weight": 1.4,
+   "speed": 1.15,
+   "seek": 0,
+   "fallback": "plan--priya-approve-sheet",
+   "layout": "right",
+   "bg": "k24-priya-approve",
+   "overlays": [
+    {
+     "id": "ft-053",
+     "at": 0.0,
+     "until": 8.34,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-4",
+   "seconds": 8.34,
+   "sceneOffset": 27.716,
+   "start": 159.723
+  },
+  {
+   "kind": "video",
+   "name": "approve--rakesh-today-plan",
+   "phone": true,
+   "min": 5,
+   "weight": 1,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "approve--rakesh-today-phone",
+   "layout": "right",
+   "bg": "k24-priya-approve",
+   "overlays": [
+    {
+     "id": "ft-054",
+     "at": 0.0,
+     "until": 5.243,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "bn-055",
+     "at": 1.0,
+     "until": 5.243,
+     "slide": false,
+     "motion": "banner",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-4",
+   "seconds": 5.243,
+   "sceneOffset": 35.556,
+   "start": 167.563
+  },
+  {
+   "kind": "clip",
+   "name": "c25-kirana-offer",
+   "key": "k25-kirana-offer",
+   "speed": 0.5,
+   "seek": 0,
+   "min": 7.5,
+   "max": 16.0,
+   "weight": 1.4,
+   "overlays": [
+    {
+     "id": "co-4",
+     "at": 0.2,
+     "until": 3.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "role-058",
+     "at": 3.8,
+     "until": 5.87,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "bn-059",
+     "at": 4.2,
+     "until": 5.87,
+     "slide": false,
+     "motion": "banner",
+     "anim": false
+    }
+   ],
+   "open": true,
+   "chapter": "ch-5",
+   "seconds": 5.87,
+   "hold": 0.0,
+   "sceneOffset": 0.0,
+   "start": 172.306
+  },
+  {
+   "kind": "video",
+   "name": "approve--kirana-offer",
+   "phone": true,
+   "min": 5,
+   "weight": 1,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "approve--kirana-ganesh-offer-phone",
+   "layout": "right",
+   "bg": "k25-kirana-offer",
+   "overlays": [
+    {
+     "id": "ft-060",
+     "at": 0.0,
+     "until": 3.914,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 3.914,
+   "sceneOffset": 5.37,
+   "start": 177.676
+  },
+  {
+   "kind": "video",
+   "name": "approve--kirana-order",
+   "phone": true,
+   "min": 7,
+   "weight": 1.3,
+   "speed": 1.15,
+   "seek": 0,
+   "fallback": "orders--kirana-ganesh-offer-ordered-phone",
+   "layout": "right",
+   "bg": "k25-kirana-offer",
+   "overlays": [
+    {
+     "id": "ft-061",
+     "at": 0.0,
+     "until": 5.479,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 5.479,
+   "sceneOffset": 8.784,
+   "start": 181.09
+  },
+  {
+   "kind": "video",
+   "name": "orders--execution-scheme",
+   "phone": false,
+   "min": 6,
+   "weight": 1.1,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "orders--priya-execution-chips",
+   "layout": "right",
+   "bg": "k25-kirana-offer",
+   "overlays": [
+    {
+     "id": "ft-062",
+     "at": 0.0,
+     "until": 4.696,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 4.696,
+   "sceneOffset": 13.763,
+   "start": 186.069
+  },
+  {
+   "kind": "video",
+   "name": "approve--agrawal-listing",
+   "phone": false,
+   "min": 5,
+   "weight": 1,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "approve--agrawal-listing",
+   "layout": "right",
+   "bg": "k25-kirana-offer",
+   "overlays": [
+    {
+     "id": "ft-063",
+     "at": 0.0,
+     "until": 3.914,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 3.914,
+   "sceneOffset": 17.959,
+   "start": 190.265
+  },
+  {
+   "kind": "clip",
+   "name": "c26-agrawal-tablet",
+   "key": "k26-agrawal-tablet",
+   "speed": 0.65,
+   "seek": 0,
+   "min": 4.5,
+   "max": 12.307692307692307,
+   "weight": 0.9,
+   "overlays": [
+    {
+     "id": "role-064",
+     "at": 0.4,
+     "until": 4.0,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 4.0,
+   "hold": 0.0,
+   "sceneOffset": 21.373,
+   "start": 193.679
+  },
+  {
+   "kind": "video",
+   "name": "deal--agrawal-won",
+   "phone": false,
+   "min": 7,
+   "weight": 1.3,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "deal--agrawal-listing-won",
+   "layout": "right",
+   "bg": "k25-kirana-offer",
+   "overlays": [
+    {
+     "id": "ft-065",
+     "at": 0.0,
+     "until": 5.479,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "p-chat",
+     "at": 1.2,
+     "until": 5.0,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 5.479,
+   "sceneOffset": 24.873,
+   "start": 197.179
+  },
+  {
+   "kind": "clip",
+   "name": "c27-staff-sale",
+   "key": "k27-staff-sale",
+   "speed": 0.6,
+   "seek": 0,
+   "min": 5,
+   "max": 13.333333333333334,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "role-067",
+     "at": 0.4,
+     "until": 4.0,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "bn-068",
+     "at": 1.0,
+     "until": 4.0,
+     "slide": false,
+     "motion": "banner",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 4.0,
+   "hold": 0.0,
+   "sceneOffset": 29.852,
+   "start": 202.158
+  },
+  {
+   "kind": "video",
+   "name": "donation--lakshmi-staff-receipt",
+   "phone": false,
+   "min": 7,
+   "weight": 1.3,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "donation--lakshmi-today",
+   "layout": "right",
+   "bg": "k25-kirana-offer",
+   "overlays": [
+    {
+     "id": "ft-069",
+     "at": 0.0,
+     "until": 5.479,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 5.479,
+   "sceneOffset": 33.352,
+   "start": 205.658
+  },
+  {
+   "kind": "clip",
+   "name": "c28-foodbank-van",
+   "key": "k28-foodbank-van",
+   "speed": 0.85,
+   "seek": 0,
+   "min": 5,
+   "max": 9.411764705882353,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "role-070",
+     "at": 0.4,
+     "until": 4.0,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "bn-071",
+     "at": 1.0,
+     "until": 4.0,
+     "slide": false,
+     "motion": "banner",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 4.0,
+   "hold": 0.0,
+   "sceneOffset": 38.331,
+   "start": 210.637
+  },
+  {
+   "kind": "video",
+   "name": "donation--meera-collected",
+   "phone": true,
+   "min": 7,
+   "weight": 1.3,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "donation--meera-pickups-phone",
+   "layout": "right",
+   "bg": "k25-kirana-offer",
+   "overlays": [
+    {
+     "id": "ft-072",
+     "at": 0.0,
+     "until": 5.479,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 5.479,
+   "sceneOffset": 41.831,
+   "start": 214.137
+  },
+  {
+   "kind": "video",
+   "name": "papers--rakesh-deliveries-van",
+   "phone": false,
+   "min": 5,
+   "weight": 1,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "papers--rakesh-deliveries-done",
+   "layout": "right",
+   "bg": "k25-kirana-offer",
+   "overlays": [
+    {
+     "id": "ft-073",
+     "at": 0.0,
+     "until": 3.914,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 3.914,
+   "sceneOffset": 46.81,
+   "start": 219.116
+  },
+  {
+   "kind": "clip",
+   "name": "r2-godown-noon",
+   "key": "k2-godown-noon",
+   "speed": 0.9,
+   "seek": 0,
+   "min": 4.0,
+   "max": 4.4,
+   "weight": 0.9,
+   "overlays": [
+    {
+     "id": "role-074",
+     "at": 0.4,
+     "until": 4.0,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 4.0,
+   "hold": 0.0,
+   "sceneOffset": 50.224,
+   "start": 222.53
+  },
+  {
+   "kind": "clip",
+   "name": "c09-rakesh-tally-desk",
+   "key": "k09-rakesh-tally-desk",
+   "speed": 0.4,
+   "seek": 0,
+   "min": 7,
+   "max": 5.0,
+   "weight": 1.3,
+   "overlays": [
+    {
+     "id": "co-5",
+     "at": 0.2,
+     "until": 3.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "role-077",
+     "at": 3.8,
+     "until": 5.351,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "bn-078",
+     "at": 4.2,
+     "until": 5.351,
+     "slide": false,
+     "motion": "banner",
+     "anim": false
+    }
+   ],
+   "open": true,
+   "chapter": "ch-6",
+   "seconds": 5.351,
+   "hold": 0.351,
+   "sceneOffset": 0.0,
+   "start": 226.03
+  },
+  {
+   "kind": "video",
+   "name": "settle--paperwork-pack",
+   "phone": false,
+   "min": 7,
+   "weight": 1.2,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "settle--priya-paperwork-chips",
+   "layout": "right",
+   "bg": "k09-rakesh-tally-desk",
+   "overlays": [
+    {
+     "id": "ft-079",
+     "at": 0.0,
+     "until": 5.351,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-6",
+   "seconds": 5.351,
+   "sceneOffset": 4.851,
+   "start": 230.881
+  },
+  {
+   "kind": "video",
+   "name": "papers--paper-invoice-issued",
+   "phone": false,
+   "min": 8,
+   "weight": 1.3,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "papers--paper-chips-invoice-issued",
+   "layout": "right",
+   "bg": "k09-rakesh-tally-desk",
+   "overlays": [
+    {
+     "id": "ft-080",
+     "at": 0.0,
+     "until": 6.116,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "p-irn",
+     "at": 1.0,
+     "until": 4.5,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-6",
+   "seconds": 6.116,
+   "sceneOffset": 9.702,
+   "start": 235.732
+  },
+  {
+   "kind": "video",
+   "name": "settle--paper-credit-note",
+   "phone": false,
+   "min": 5,
+   "weight": 1,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "settle--paper-chips-credit-note",
+   "layout": "right",
+   "bg": "k09-rakesh-tally-desk",
+   "overlays": [
+    {
+     "id": "ft-082",
+     "at": 0.0,
+     "until": 3.822,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-6",
+   "seconds": 3.822,
+   "sceneOffset": 15.318,
+   "start": 241.348
+  },
+  {
+   "kind": "video",
+   "name": "settle--paper-itc",
+   "phone": false,
+   "min": 7,
+   "weight": 1.2,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "settle--paper-chips-itc-memo",
+   "layout": "right",
+   "bg": "k09-rakesh-tally-desk",
+   "overlays": [
+    {
+     "id": "ft-083",
+     "at": 0.0,
+     "until": 5.351,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "p-itc",
+     "at": 1.0,
+     "until": 4.5,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-6",
+   "seconds": 5.351,
+   "sceneOffset": 18.64,
+   "start": 244.67
+  },
+  {
+   "kind": "video",
+   "name": "settle--paper-fssai",
+   "phone": false,
+   "min": 5,
+   "weight": 0.9,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "papers--paper-chips-invoice-issued",
+   "layout": "right",
+   "bg": "k09-rakesh-tally-desk",
+   "overlays": [
+    {
+     "id": "ft-085",
+     "at": 0.0,
+     "until": 3.822,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-6",
+   "seconds": 3.822,
+   "sceneOffset": 23.491,
+   "start": 249.521
+  },
+  {
+   "kind": "video",
+   "name": "settle--paper-kiranas",
+   "phone": false,
+   "min": 5,
+   "weight": 0.9,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "settle--priya-paperwork-chips",
+   "layout": "right",
+   "bg": "k09-rakesh-tally-desk",
+   "overlays": [
+    {
+     "id": "ft-086",
+     "at": 0.0,
+     "until": 3.822,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-6",
+   "seconds": 3.822,
+   "sceneOffset": 26.813,
+   "start": 252.843
+  },
+  {
+   "kind": "video",
+   "name": "papers--paperwork-reviewed",
+   "phone": false,
+   "min": 5,
+   "weight": 1,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "papers--priya-paperwork-chips",
+   "layout": "right",
+   "bg": "k09-rakesh-tally-desk",
+   "overlays": [
+    {
+     "id": "ft-087",
+     "at": 0.0,
+     "until": 3.822,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-6",
+   "seconds": 3.822,
+   "sceneOffset": 30.135,
+   "start": 256.165
+  },
+  {
+   "kind": "video",
+   "name": "papers--rakesh-batch-papers",
+   "phone": false,
+   "min": 7,
+   "weight": 1.2,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "papers--rakesh-batch-papers",
+   "layout": "right",
+   "bg": "k09-rakesh-tally-desk",
+   "overlays": [
+    {
+     "id": "ft-088",
+     "at": 0.0,
+     "until": 5.351,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "p-download",
+     "at": 1.2,
+     "until": 4.5,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-6",
+   "seconds": 5.351,
+   "sceneOffset": 33.457,
+   "start": 259.487
+  },
+  {
+   "kind": "video",
+   "name": "slow--slow-scheme-short",
+   "phone": false,
+   "min": 8,
+   "weight": 1.4,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "orders--priya-execution-chips",
+   "layout": "right",
+   "bg": "k10-landfill-certificate",
+   "overlays": [
+    {
+     "id": "co-6",
+     "at": 0.2,
+     "until": 3.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "ft-092",
+     "at": 3.8,
+     "until": 7.583,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "open": true,
+   "chapter": "ch-7",
+   "seconds": 7.583,
+   "sceneOffset": 0.0,
+   "start": 264.338
+  },
+  {
+   "kind": "video",
+   "name": "slow--slow-left-at-godown",
+   "phone": false,
+   "min": 6,
+   "weight": 1.1,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "orders--priya-execution-chips",
+   "layout": "right",
+   "bg": "k10-landfill-certificate",
+   "overlays": [
+    {
+     "id": "ft-093",
+     "at": 0.0,
+     "until": 5.688,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-7",
+   "seconds": 5.688,
+   "sceneOffset": 7.083,
+   "start": 271.421
+  },
+  {
+   "kind": "video",
+   "name": "slow--slow-rakesh-today-destroy",
+   "phone": true,
+   "min": 5,
+   "weight": 1,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "detect--rakesh-today-phone",
+   "layout": "right",
+   "bg": "k10-landfill-certificate",
+   "overlays": [
+    {
+     "id": "ft-094",
+     "at": 0.0,
+     "until": 4.74,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-7",
+   "seconds": 4.74,
+   "sceneOffset": 12.271,
+   "start": 276.609
+  },
+  {
+   "kind": "video",
+   "name": "slow--slow-destroy-photos",
+   "phone": false,
+   "min": 7,
+   "weight": 1.3,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "history--priya-past-record",
+   "layout": "right",
+   "bg": "k10-landfill-certificate",
+   "overlays": [
+    {
+     "id": "ft-095",
+     "at": 0.0,
+     "until": 6.635,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-7",
+   "seconds": 6.635,
+   "sceneOffset": 16.511,
+   "start": 280.849
+  },
+  {
+   "kind": "clip",
+   "name": "c10-landfill-certificate",
+   "key": "k10-landfill-certificate",
+   "speed": 0.8,
+   "seek": 0,
+   "min": 5,
+   "max": 10.0,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "role-096",
+     "at": 0.4,
+     "until": 4.4,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-7",
+   "seconds": 4.74,
+   "hold": 0.0,
+   "sceneOffset": 22.646,
+   "start": 286.984
+  },
+  {
+   "kind": "video",
+   "name": "slow--slow-destroy-sign",
+   "phone": false,
+   "min": 8,
+   "weight": 1.4,
+   "speed": 1.2,
+   "seek": 0,
+   "fallback": "history--priya-past-papers",
+   "layout": "right",
+   "bg": "k10-landfill-certificate",
+   "overlays": [
+    {
+     "id": "ft-097",
+     "at": 0.0,
+     "until": 7.583,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-7",
+   "seconds": 7.583,
+   "sceneOffset": 26.886,
+   "start": 291.224
+  },
+  {
+   "kind": "video",
+   "name": "slow--slow-review",
+   "phone": false,
+   "min": 7,
+   "weight": 1.2,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "history--priya-past-record",
+   "layout": "right",
+   "bg": "k10-landfill-certificate",
+   "overlays": [
+    {
+     "id": "ft-098",
+     "at": 0.0,
+     "until": 6.635,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-7",
+   "seconds": 6.635,
+   "sceneOffset": 33.969,
+   "start": 298.307
+  },
+  {
+   "kind": "video",
+   "name": "slow--slow-papers",
+   "phone": false,
+   "min": 6,
+   "weight": 1.1,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "history--priya-past-papers",
+   "layout": "right",
+   "bg": "k10-landfill-certificate",
+   "overlays": [
+    {
+     "id": "ft-099",
+     "at": 0.0,
+     "until": 5.688,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-7",
+   "seconds": 5.688,
+   "sceneOffset": 40.104,
+   "start": 304.442
+  },
+  {
+   "kind": "card",
+   "min": 8.5,
+   "weight": 1.6,
+   "bg": "k51-brand-office",
+   "overlays": [
+    {
+     "id": "ledger",
+     "at": 3.8,
+     "until": 5.842,
+     "slide": false,
+     "motion": "",
+     "anim": true
+    },
+    {
+     "id": "co-7",
+     "at": 0.2,
+     "until": 3.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "ft-103",
+     "at": 3.8,
+     "until": 5.842,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "open": true,
+   "chapter": "ch-8",
+   "seconds": 5.842,
+   "sceneOffset": 0.0,
+   "start": 309.63
+  },
+  {
+   "kind": "video",
+   "name": "ledger--execution-cleared",
+   "phone": false,
+   "min": 5,
+   "weight": 1,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "ledger--priya-execution-chips-cleared",
+   "layout": "right",
+   "bg": "k51-brand-office",
+   "overlays": [
+    {
+     "id": "ft-104",
+     "at": 0.0,
+     "until": 3.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-8",
+   "seconds": 3.6,
+   "sceneOffset": 5.342,
+   "start": 314.972
+  },
+  {
+   "kind": "video",
+   "name": "ledger--ledger-money",
+   "phone": false,
+   "min": 7,
+   "weight": 1.2,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "ledger--ledger-money",
+   "layout": "right",
+   "bg": "k51-brand-office",
+   "overlays": [
+    {
+     "id": "ft-105",
+     "at": 0.0,
+     "until": 4.811,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-8",
+   "seconds": 4.811,
+   "sceneOffset": 8.442,
+   "start": 318.072
+  },
+  {
+   "kind": "video",
+   "name": "ledger--ledger-gst",
+   "phone": false,
+   "min": 6,
+   "weight": 1.1,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "ledger--ledger-gst",
+   "layout": "right",
+   "bg": "k51-brand-office",
+   "overlays": [
+    {
+     "id": "ft-106",
+     "at": 0.0,
+     "until": 4.124,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-8",
+   "seconds": 4.124,
+   "sceneOffset": 12.753,
+   "start": 322.383
+  },
+  {
+   "kind": "video",
+   "name": "ledger--ledger-impact",
+   "phone": false,
+   "min": 8,
+   "weight": 1.3,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "ledger--ledger-impact",
+   "layout": "right",
+   "bg": "k51-brand-office",
+   "overlays": [
+    {
+     "id": "ft-107",
+     "at": 0.0,
+     "until": 5.498,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-8",
+   "seconds": 5.498,
+   "sceneOffset": 16.377,
+   "start": 326.007
+  },
+  {
+   "kind": "video",
+   "name": "ledger--batch-record",
+   "phone": false,
+   "min": 8,
+   "weight": 1.3,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "ledger--batch-chips-record",
+   "layout": "right",
+   "bg": "k51-brand-office",
+   "overlays": [
+    {
+     "id": "ft-108",
+     "at": 0.0,
+     "until": 5.498,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-8",
+   "seconds": 5.498,
+   "sceneOffset": 21.375,
+   "start": 331.005
+  },
+  {
+   "kind": "video",
+   "name": "ledger--rakesh-batches",
+   "phone": false,
+   "min": 5,
+   "weight": 1,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "ledger--rakesh-batches",
+   "layout": "right",
+   "bg": "k51-brand-office",
+   "overlays": [
+    {
+     "id": "ft-109",
+     "at": 0.0,
+     "until": 3.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-8",
+   "seconds": 3.6,
+   "sceneOffset": 26.373,
+   "start": 336.003
+  },
+  {
+   "kind": "clip",
+   "name": "r4-office-dashboard",
+   "key": "k4-office-dashboard",
+   "speed": 0.7,
+   "seek": 0,
+   "min": 4,
+   "max": 4.3,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "role-110",
+     "at": 0.4,
+     "until": 4.0,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "chapter": "ch-8",
+   "seconds": 4.0,
+   "hold": 0.0,
+   "sceneOffset": 29.473,
+   "start": 339.103
+  },
+  {
+   "kind": "clip",
+   "name": "c32-foodbank-store",
+   "key": "k32-foodbank-store",
+   "speed": 0.6,
+   "seek": 0,
+   "min": 5,
+   "max": 13.333333333333334,
+   "weight": 1.1,
+   "overlays": [
+    {
+     "id": "role-111",
+     "at": 0.4,
+     "until": 4.2,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "seconds": 5.0,
+   "hold": 0.0,
+   "sceneOffset": 0.0,
+   "start": 342.603
+  },
+  {
+   "kind": "clip",
+   "name": "c12-close-lane",
+   "key": "k12-close-lane",
+   "speed": 0.45,
+   "seek": 0,
+   "min": 4.4,
+   "max": 4.4,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "end-cards",
+     "at": 0.6,
+     "until": 4.4,
+     "slide": false,
+     "motion": "",
+     "anim": false
+    }
+   ],
+   "seconds": 4.4,
+   "hold": 0.0,
+   "sceneOffset": 4.5,
+   "start": 347.103
+  },
+  {
+   "kind": "card",
+   "min": 4,
+   "weight": 0.9,
+   "bg": "k32-foodbank-store",
+   "overlays": [
+    {
+     "id": "one-line",
+     "at": 0.2,
+     "until": 4.0,
+     "slide": false,
+     "motion": "",
+     "anim": false
+    }
+   ],
+   "seconds": 4.0,
+   "sceneOffset": 8.4,
+   "start": 351.003
+  },
+  {
+   "kind": "video",
+   "name": "demo--demo-map",
+   "phone": false,
+   "min": 6,
+   "weight": 1.1,
+   "speed": 1.0,
+   "seek": 0,
+   "fallback": "extra--demo-route-map",
+   "layout": "right",
+   "bg": "k32-foodbank-store",
+   "overlays": [
+    {
+     "id": "ft-114",
+     "at": 0.0,
+     "until": 6.0,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "seconds": 6.0,
+   "sceneOffset": 11.9,
+   "start": 354.503
+  },
+  {
+   "kind": "card",
+   "min": 6,
+   "weight": 1.0,
+   "bg": "k32-foodbank-store",
+   "overlays": [
+    {
+     "id": "end-brand",
+     "at": 0.4,
+     "until": 6.0,
+     "slide": false,
+     "motion": "",
+     "anim": false
+    }
+   ],
+   "seconds": 6.0,
+   "sceneOffset": 17.4,
+   "start": 360.003
+  }
+ ],
+ "overlays": [
+  {
+   "id": "st-1",
+   "kind": "statement",
+   "text": "Good products, __out of time__."
+  },
+  {
+   "id": "role-001",
+   "kind": "role",
+   "who": "A brand's supply planning team",
+   "where": "the morning stock review"
+  },
+  {
+   "id": "st-2",
+   "kind": "statement",
+   "text": "A batch, waiting, as its date draws closer."
+  },
+  {
+   "id": "role-003",
+   "kind": "role",
+   "who": "A distributor",
+   "where": "his office, by the godown"
+  },
+  {
+   "id": "st-3",
+   "kind": "statement",
+   "text": "The quick-commerce gates close. {{The shelves close.}}"
+  },
+  {
+   "id": "role-005",
+   "kind": "role",
+   "who": "A quick-commerce receiving dock",
+   "where": "the batch on hold"
+  },
+  {
+   "id": "st-4",
+   "kind": "statement",
+   "text": "Written off. {{GST credit reversed.}} Landfill."
+  },
+  {
+   "id": "st-5",
+   "kind": "statement",
+   "text": "Everyone loses."
+  },
+  {
+   "id": "role-008",
+   "kind": "role",
+   "who": "A kirana",
+   "where": "the shelf that stayed empty"
+  },
+  {
+   "id": "title",
+   "kind": "title",
+   "title": "Smart-Clearance",
+   "text": "Near-expiry stock, routed by AI agents. **One yes** from a person.",
+   "sub": "Software as a service · for manufacturers"
+  },
+  {
+   "id": "ch-1",
+   "kind": "chapter",
+   "n": "1",
+   "text": "Smart-Clearance"
+  },
+  {
+   "id": "ft-011",
+   "kind": "feature",
+   "eyebrow": "Software as a service",
+   "text": "One platform for manufacturers, built around an **ecosystem of AI agents**.",
+   "dark": false
+  },
+  {
+   "id": "ft-012",
+   "kind": "feature",
+   "eyebrow": "A workspace per brand",
+   "text": "Set up for its supply chain: its **distributors and super stockists**, its gates, its exits, its rules.",
+   "dark": false
+  },
+  {
+   "id": "p-supply",
+   "kind": "pointer",
+   "x": 1557,
+   "y": 364,
+   "text": "The brand's distributors and their godowns",
+   "left": true,
+   "tone": ""
+  },
+  {
+   "id": "agents-ring",
+   "kind": "anim"
+  },
+  {
+   "id": "ft-015",
+   "kind": "feature",
+   "eyebrow": "Agentic by design",
+   "text": "**Ten agents**, working together along **nine stops**, on Gemini.",
+   "dark": false
+  },
+  {
+   "id": "nine-stops",
+   "kind": "anim"
+  },
+  {
+   "id": "ft-017",
+   "kind": "feature",
+   "eyebrow": "Nine stops",
+   "text": "Detect, verify, value, decide, execute, settle, report. Then the **one yes**.",
+   "dark": false
+  },
+  {
+   "id": "ft-018",
+   "kind": "feature",
+   "eyebrow": "The human in the loop",
+   "text": "Nothing moves before a person's **yes**. The staff console watches every client's batches and agents at work.",
+   "dark": false
+  },
+  {
+   "id": "p-agents-at-work",
+   "kind": "pointer",
+   "x": 1342,
+   "y": 433,
+   "text": "The agents at work, stop by stop",
+   "left": true,
+   "tone": ""
+  },
+  {
+   "id": "ft-020",
+   "kind": "feature",
+   "eyebrow": "The whole chain",
+   "text": "The manufacturer, the distributor, the super stockist, the kirana, the buyer, the staff, the food bank: **each on their own screen, acting in their own name**.",
+   "dark": true
+  },
+  {
+   "id": "role-021",
+   "kind": "role",
+   "who": "A super stockist",
+   "where": "the depot"
+  },
+  {
+   "id": "ft-022",
+   "kind": "feature",
+   "eyebrow": "Every party, their own sign-in",
+   "text": "Partners act through their own accounts; **nobody stands in for anyone**.",
+   "dark": false
+  },
+  {
+   "id": "co-1",
+   "kind": "chapter-open",
+   "n": "Chapter 1",
+   "title": "Connect and detect",
+   "text": "The stock data the distributor already has, and the morning check.",
+   "on": [
+    "Connect",
+    "Detect"
+   ],
+   "dark": false
+  },
+  {
+   "id": "ch-2",
+   "kind": "chapter",
+   "n": "2",
+   "text": "Connect and detect"
+  },
+  {
+   "id": "ft-025",
+   "kind": "feature",
+   "eyebrow": "The Data agent",
+   "text": "The stock export **mapped field by field**, and the sell-through loaded. Nothing keyed in twice.",
+   "dark": false
+  },
+  {
+   "id": "p-export",
+   "kind": "pointer",
+   "x": 1188,
+   "y": 433,
+   "text": "The export, mapped by the Data agent",
+   "left": true,
+   "tone": ""
+  },
+  {
+   "id": "ft-027",
+   "kind": "feature",
+   "eyebrow": "The Watcher",
+   "text": "Every morning, **every batch at every distributor**, checked against its sell-through and the quick-commerce gates.",
+   "dark": false
+  },
+  {
+   "id": "p-flag",
+   "kind": "pointer",
+   "x": 973,
+   "y": 387,
+   "text": "Flagged: it will not sell in time",
+   "left": false,
+   "tone": ""
+  },
+  {
+   "id": "p-activity",
+   "kind": "pointer",
+   "x": 1637,
+   "y": 294,
+   "text": "Every hand-off, as it happens",
+   "left": true,
+   "tone": "green"
+  },
+  {
+   "id": "bn-030",
+   "kind": "banner",
+   "to": "To the supply planner",
+   "title": "Masala Chips 150 g · Nagpur",
+   "body": "Priya ji, Nagpur godown mein Masala Chips 150g (batch MF-2409-117) ki 1,360 units 18 Nov se pehle nahi bikengi. Q-commerce block hai. Route dekhne ke liye tap karein.",
+   "left": false,
+   "phone": false
+  },
+  {
+   "id": "role-031",
+   "kind": "role",
+   "who": "The brand's supply planner",
+   "where": "at her desk"
+  },
+  {
+   "id": "ft-032",
+   "kind": "feature",
+   "eyebrow": "A page for every batch",
+   "text": "Where it stands, **what each agent has done**, and what comes next.",
+   "dark": false
+  },
+  {
+   "id": "p-tracker",
+   "kind": "pointer",
+   "x": 1265,
+   "y": 341,
+   "text": "The nine stops, as the batch moves",
+   "left": true,
+   "tone": ""
+  },
+  {
+   "id": "co-2",
+   "kind": "chapter-open",
+   "n": "Chapter 2",
+   "title": "Verify",
+   "text": "One photo from a phone, and the batch is real.",
+   "on": [
+    "Verify"
+   ],
+   "dark": false
+  },
+  {
+   "id": "ch-3",
+   "kind": "chapter",
+   "n": "3",
+   "text": "Verify"
+  },
+  {
+   "id": "ft-036",
+   "kind": "feature",
+   "eyebrow": "The distributor's Today",
+   "text": "What each batch needs from him, with **one button each**.",
+   "dark": false
+  },
+  {
+   "id": "bn-037",
+   "kind": "banner",
+   "to": "To the distributor",
+   "title": "Ek photo chahiye",
+   "body": "Rakesh bhai, Masala Chips 150g ka ek carton ka label photo bhej dein (batch MF-2409-117). Bas ek photo, baaki hum kar lenge.",
+   "left": false,
+   "phone": true
+  },
+  {
+   "id": "role-038",
+   "kind": "role",
+   "who": "The distributor",
+   "where": "at the shelf"
+  },
+  {
+   "id": "ft-039",
+   "kind": "feature",
+   "eyebrow": "Take a photo, or upload one",
+   "text": "The phone's camera, or a photo already taken.",
+   "dark": false
+  },
+  {
+   "id": "ft-040",
+   "kind": "feature",
+   "eyebrow": "Vision, on Gemini",
+   "text": "The batch, the dates and the MRP read from the label; the **barcode, the QR code and the FSSAI licence** checked; matched to the stock record.",
+   "dark": false
+  },
+  {
+   "id": "p-label",
+   "kind": "pointer",
+   "x": 1080,
+   "y": 602,
+   "text": "Read from the carton's label",
+   "left": false,
+   "tone": ""
+  },
+  {
+   "id": "p-match",
+   "kind": "pointer",
+   "x": 1603,
+   "y": 525,
+   "text": "Matches the stock record",
+   "left": true,
+   "tone": "green"
+  },
+  {
+   "id": "five-exits",
+   "kind": "anim"
+  },
+  {
+   "id": "co-3",
+   "kind": "chapter-open",
+   "n": "Chapter 3",
+   "title": "Value, decide, approve",
+   "text": "Every exit priced. The split explained. One yes.",
+   "on": [
+    "Value",
+    "Decide",
+    "Approve"
+   ],
+   "dark": false
+  },
+  {
+   "id": "ch-4",
+   "kind": "chapter",
+   "n": "4",
+   "text": "Value, decide, approve"
+  },
+  {
+   "id": "ft-046",
+   "kind": "feature",
+   "eyebrow": "The Valuer",
+   "text": "**Every exit priced per unit**, after costs and GST, against what destroying the stock would cost.",
+   "dark": false
+  },
+  {
+   "id": "ft-047",
+   "kind": "feature",
+   "eyebrow": "The Valuer",
+   "text": "Five exits, and the **write-off they are measured against**.",
+   "dark": false
+  },
+  {
+   "id": "p-channels",
+   "kind": "pointer",
+   "x": 1188,
+   "y": 341,
+   "text": "Five channels, priced",
+   "left": true,
+   "tone": ""
+  },
+  {
+   "id": "p-writeoff",
+   "kind": "pointer",
+   "x": 1188,
+   "y": 540,
+   "text": "What the write-off would cost",
+   "left": true,
+   "tone": "green"
+  },
+  {
+   "id": "ft-050",
+   "kind": "feature",
+   "eyebrow": "The Router",
+   "text": "The batch **split across the exits**, with its reasoning in plain language, and the alternatives it considered.",
+   "dark": false
+  },
+  {
+   "id": "p-split",
+   "kind": "pointer",
+   "x": 1188,
+   "y": 341,
+   "text": "The recommended split, and why",
+   "left": true,
+   "tone": ""
+  },
+  {
+   "id": "role-052",
+   "kind": "role",
+   "who": "The brand's supply planner",
+   "where": "the one yes"
+  },
+  {
+   "id": "ft-053",
+   "kind": "feature",
+   "eyebrow": "One yes",
+   "text": "The approval is **logged with who, when and the device**. Nothing executes before it.",
+   "dark": false
+  },
+  {
+   "id": "ft-054",
+   "kind": "feature",
+   "eyebrow": "The distributor is told",
+   "text": "The plan in his own language, with a **pause button**.",
+   "dark": false
+  },
+  {
+   "id": "bn-055",
+   "kind": "banner",
+   "to": "To the distributor",
+   "title": "Plan approved · Masala Chips",
+   "body": "Rakesh bhai, Munchly ne MF-2409-117 ka plan approve kiya: 588 packets aapke kiranas ko scheme par, 784 aapke naam se ExpireSoon par. Kuch rokna ho to app mein Pause dabayein.",
+   "left": false,
+   "phone": true
+  },
+  {
+   "id": "co-4",
+   "kind": "chapter-open",
+   "n": "Chapter 4",
+   "title": "Execute: five exits",
+   "text": "The kiranas, the marketplace, the staff sale, the food bank, the van round.",
+   "on": [
+    "Execute"
+   ],
+   "dark": true
+  },
+  {
+   "id": "ch-5",
+   "kind": "chapter",
+   "n": "5",
+   "text": "Five exits"
+  },
+  {
+   "id": "role-058",
+   "kind": "role",
+   "who": "A kirana owner",
+   "where": "his shop"
+  },
+  {
+   "id": "bn-059",
+   "kind": "banner",
+   "to": "To a kirana",
+   "title": "आज का खास ऑफर",
+   "body": "नमस्ते Shree Ganesh Kirana! Munchly Masala Chips 150g पर आज खास ऑफर: 10 पैकेट लो, 2 मुफ़्त. Best before 18 Nov 2026. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें — Rakesh Traders",
+   "left": false,
+   "phone": false
+  },
+  {
+   "id": "ft-060",
+   "kind": "feature",
+   "eyebrow": "Outreach",
+   "text": "The scheme on each shop's phone, **in Hindi**, with its margin and its share.",
+   "dark": false
+  },
+  {
+   "id": "ft-061",
+   "kind": "feature",
+   "eyebrow": "Ordered in a tap",
+   "text": "Each order gets **its own tax invoice**, issued in the distributor's name.",
+   "dark": false
+  },
+  {
+   "id": "ft-062",
+   "kind": "feature",
+   "eyebrow": "The scheme, as the shops see it",
+   "text": "Sent, first order, closed, van round: **every stop with its time**, and the cluster on the map.",
+   "dark": false
+  },
+  {
+   "id": "ft-063",
+   "kind": "feature",
+   "eyebrow": "The Lister",
+   "text": "The rest of the batch on the near-expiry marketplace, **hidden from the brand's own territories**, with the label photo and the dates.",
+   "dark": false
+  },
+  {
+   "id": "role-064",
+   "kind": "role",
+   "who": "A marketplace buyer",
+   "where": "another city"
+  },
+  {
+   "id": "ft-065",
+   "kind": "feature",
+   "eyebrow": "The Negotiator",
+   "text": "Answers the buyer **in the distributor's name**, holds the reserve, closes the deal. The token is paid, the truck is loaded.",
+   "dark": false
+  },
+  {
+   "id": "p-chat",
+   "kind": "pointer",
+   "x": 1603,
+   "y": 694,
+   "text": "The Negotiator, in the chat",
+   "left": true,
+   "tone": ""
+  },
+  {
+   "id": "role-067",
+   "kind": "role",
+   "who": "The distributor and her staff",
+   "where": "the godown gate"
+  },
+  {
+   "id": "bn-068",
+   "kind": "banner",
+   "to": "To the distributor",
+   "title": "Staff sale · Mango Drink",
+   "body": "150 packs of Mango Drink for your staff at ₹8 a pack, at Begum Bazaar godown. Record what sold when the sale is over.",
+   "left": false,
+   "phone": false
+  },
+  {
+   "id": "ft-069",
+   "kind": "feature",
+   "eyebrow": "The staff sale",
+   "text": "Recorded on **one consolidated UPI receipt**, which Vision reads and reconciles with the count.",
+   "dark": false
+  },
+  {
+   "id": "role-070",
+   "kind": "role",
+   "who": "A food bank's city lead",
+   "where": "the pickup"
+  },
+  {
+   "id": "bn-071",
+   "kind": "banner",
+   "to": "To the food bank",
+   "title": "Pickup request · Mango Drink",
+   "body": "86 packs of Mango Drink, 20 days left, with the FSSAI checklist. Pickup from Begum Bazaar godown?",
+   "left": false,
+   "phone": false
+  },
+  {
+   "id": "ft-072",
+   "kind": "feature",
+   "eyebrow": "The Donation agent",
+   "text": "Packs with enough shelf life go to a food bank: the pickup booked, the **FSSAI checklist** drafted, the food bank's **own receipt** issued.",
+   "dark": false
+  },
+  {
+   "id": "ft-073",
+   "kind": "feature",
+   "eyebrow": "The van round",
+   "text": "Every shop that ordered, **on the distributor's own route**.",
+   "dark": false
+  },
+  {
+   "id": "role-074",
+   "kind": "role",
+   "who": "A kirana owner",
+   "where": "collecting her stock"
+  },
+  {
+   "id": "co-5",
+   "kind": "chapter-open",
+   "n": "Chapter 5",
+   "title": "The paperwork",
+   "text": "Where most clearances fall apart. Here, it is automatic.",
+   "on": [
+    "Settle"
+   ],
+   "dark": true
+  },
+  {
+   "id": "ch-6",
+   "kind": "chapter",
+   "n": "6",
+   "text": "The paperwork"
+  },
+  {
+   "id": "role-077",
+   "kind": "role",
+   "who": "The distributor",
+   "where": "his office"
+  },
+  {
+   "id": "bn-078",
+   "kind": "banner",
+   "to": "To the supply planner",
+   "title": "Document pack ready · MF-2409-117",
+   "body": "Papers ready for MF-2409-117: Rakesh's invoice draft, e-way bill check, price-support credit note, GST memo. Nothing to chase.",
+   "left": false,
+   "phone": false
+  },
+  {
+   "id": "ft-079",
+   "kind": "feature",
+   "eyebrow": "The Paperwork agent",
+   "text": "The whole pack drafted: **generated, drafted or not required**, each with its reason.",
+   "dark": false
+  },
+  {
+   "id": "ft-080",
+   "kind": "feature",
+   "eyebrow": "The tax invoice",
+   "text": "Ready to issue from Tally, with its **e-invoice IRN and signed QR code**.",
+   "dark": false
+  },
+  {
+   "id": "p-irn",
+   "kind": "pointer",
+   "x": 1603,
+   "y": 540,
+   "text": "The e-invoice, as the portal returns it",
+   "left": true,
+   "tone": ""
+  },
+  {
+   "id": "ft-082",
+   "kind": "feature",
+   "eyebrow": "The credit note",
+   "text": "The brand's price support, so the **distributor ends whole**.",
+   "dark": false
+  },
+  {
+   "id": "ft-083",
+   "kind": "feature",
+   "eyebrow": "The GST memo",
+   "text": "Input credit **kept on every pack sold, reversed only on what was given away**, under section 17(5)(h).",
+   "dark": false
+  },
+  {
+   "id": "p-itc",
+   "kind": "pointer",
+   "x": 1603,
+   "y": 540,
+   "text": "Kept, reversed, and why",
+   "left": true,
+   "tone": ""
+  },
+  {
+   "id": "ft-085",
+   "kind": "feature",
+   "eyebrow": "The FSSAI checklist",
+   "text": "Drafted from the batch's own dates and the food bank's rules.",
+   "dark": false
+  },
+  {
+   "id": "ft-086",
+   "kind": "feature",
+   "eyebrow": "The invoices to every kirana",
+   "text": "One tax invoice an order, numbered in the distributor's own series.",
+   "dark": false
+  },
+  {
+   "id": "ft-087",
+   "kind": "feature",
+   "eyebrow": "Signed, stamped, reviewed",
+   "text": "Every paper a **signed PDF with the firm's stamp**, reviewed by the planner.",
+   "dark": false
+  },
+  {
+   "id": "ft-088",
+   "kind": "feature",
+   "eyebrow": "The distributor's portal",
+   "text": "His own papers, his **copies of the receipts**, ready to download.",
+   "dark": false
+  },
+  {
+   "id": "p-download",
+   "kind": "pointer",
+   "x": 1603,
+   "y": 433,
+   "text": "Download PDF",
+   "left": true,
+   "tone": "green"
+  },
+  {
+   "id": "co-6",
+   "kind": "chapter-open",
+   "n": "Chapter 6",
+   "title": "When it does not go as planned",
+   "text": "Some shops do not order. Stock is left on expiry day.",
+   "on": [
+    "Execute",
+    "Settle"
+   ],
+   "dark": false
+  },
+  {
+   "id": "ch-7",
+   "kind": "chapter",
+   "n": "7",
+   "text": "Not as planned"
+  },
+  {
+   "id": "ft-092",
+   "kind": "feature",
+   "eyebrow": "The window closes short",
+   "text": "What no shop took **stays at the godown**.",
+   "dark": false
+  },
+  {
+   "id": "ft-093",
+   "kind": "feature",
+   "eyebrow": "Expiry day",
+   "text": "What is left is settled by the **brand's own expiry policy**, fully automated.",
+   "dark": false
+  },
+  {
+   "id": "ft-094",
+   "kind": "feature",
+   "eyebrow": "The distributor is asked",
+   "text": "To destroy the expired packs through an **authorised agency**, and to send the evidence.",
+   "dark": false
+  },
+  {
+   "id": "ft-095",
+   "kind": "feature",
+   "eyebrow": "The evidence",
+   "text": "A photo before, a photo after, the agency and its certificate, two witnesses.",
+   "dark": false
+  },
+  {
+   "id": "role-096",
+   "kind": "role",
+   "who": "The agency's officer, two witnesses, the distributor",
+   "where": "the landfill"
+  },
+  {
+   "id": "ft-097",
+   "kind": "feature",
+   "eyebrow": "Signed in place",
+   "text": "The **certificate of destruction**, signed on the distributor's screen by each of them.",
+   "dark": false
+  },
+  {
+   "id": "ft-098",
+   "kind": "feature",
+   "eyebrow": "The second yes",
+   "text": "Vision's checks on the photos, the agency on the brand's list, and the planner's **second yes**.",
+   "dark": false
+  },
+  {
+   "id": "ft-099",
+   "kind": "feature",
+   "eyebrow": "Closed, with its record complete",
+   "text": "The **expiry credit note** and the destruction certificate issued; the batch closes.",
+   "dark": false
+  },
+  {
+   "id": "ledger",
+   "kind": "anim"
+  },
+  {
+   "id": "co-7",
+   "kind": "chapter-open",
+   "n": "Chapter 7",
+   "title": "Report",
+   "text": "One ledger, three readings, and every batch's record.",
+   "on": [
+    "Report"
+   ],
+   "dark": false
+  },
+  {
+   "id": "ch-8",
+   "kind": "chapter",
+   "n": "8",
+   "text": "Report"
+  },
+  {
+   "id": "ft-103",
+   "kind": "feature",
+   "eyebrow": "Impact",
+   "text": "When a batch closes, Impact **posts the ledger**: money, GST and impact.",
+   "dark": false
+  },
+  {
+   "id": "ft-104",
+   "kind": "feature",
+   "eyebrow": "The batch closes",
+   "text": "Impact posts the ledger the moment the batch clears.",
+   "dark": false
+  },
+  {
+   "id": "ft-105",
+   "kind": "feature",
+   "eyebrow": "Money",
+   "text": "What was recovered against the write-off, **batch by batch, quarter by quarter**.",
+   "dark": false
+  },
+  {
+   "id": "ft-106",
+   "kind": "feature",
+   "eyebrow": "GST",
+   "text": "Input credit kept and reversed, **invoice by invoice**, ready for the accountant.",
+   "dark": false
+  },
+  {
+   "id": "ft-107",
+   "kind": "feature",
+   "eyebrow": "Impact",
+   "text": "Food kept out of landfill, CO₂e avoided, meals served, and the **BRSR line with its evidence**.",
+   "dark": false
+  },
+  {
+   "id": "ft-108",
+   "kind": "feature",
+   "eyebrow": "Every batch keeps its record",
+   "text": "The photos, the yeses, and an **audit trail of every agent and every person**.",
+   "dark": false
+  },
+  {
+   "id": "ft-109",
+   "kind": "feature",
+   "eyebrow": "The partners' own history",
+   "text": "A distributor's batches and papers; a kirana's offers and orders; a food bank's pickups and receipts.",
+   "dark": false
+  },
+  {
+   "id": "role-110",
+   "kind": "role",
+   "who": "The brand and its distributor",
+   "where": "the quarter, read together"
+  },
+  {
+   "id": "role-111",
+   "kind": "role",
+   "who": "A food bank's storeroom",
+   "where": "the cartons received"
+  },
+  {
+   "id": "end-cards",
+   "kind": "end",
+   "cards": [
+    {
+     "who": "The brand",
+     "fig": "recovers",
+     "what": "what the bin would have taken, with its GST credit kept"
+    },
+    {
+     "who": "The distributor",
+     "fig": "ends whole",
+     "what": "the price support makes up the difference"
+    },
+    {
+     "who": "The kiranas",
+     "fig": "earn",
+     "what": "fresh stock at a scheme price, invoice in hand"
+    },
+    {
+     "who": "The food bank",
+     "fig": "serves",
+     "what": "with the receipt that proves it"
+    }
+   ],
+   "links": [],
+   "built": ""
+  },
+  {
+   "id": "one-line",
+   "kind": "statement",
+   "text": "One platform. __Ten agents.__ One yes."
+  },
+  {
+   "id": "ft-114",
+   "kind": "feature",
+   "eyebrow": "Try it",
+   "text": "**The guided demo**: the console's line and three journeys, on real screens. **The live prototype**: sign in with the credentials and steps in the deck.",
+   "dark": false
+  },
+  {
+   "id": "end-brand",
+   "kind": "end",
+   "cards": [],
+   "links": [
+    {
+     "label": "smartclearance.web.app",
+     "text": ""
+    },
+    {
+     "label": "Guided demo",
+     "text": "smartclearance-demo.web.app"
+    },
+    {
+     "label": "Live prototype",
+     "text": "credentials in the deck",
+     "amber": true
+    }
+   ],
+   "built": "Built on Google Cloud: Gemini on Vertex AI · ADK · Cloud Run · Cloud SQL · Pub/Sub · BigQuery · Firebase"
+  }
+ ],
+ "vo": [
+  {
+   "id": "1a",
+   "file": "vo/cut2-Kore-1.08/1a-trim.wav",
+   "at": 1.0,
+   "len": 6.27
+  },
+  {
+   "id": "1b",
+   "file": "vo/cut2-Kore-1.08/1b-trim.wav",
+   "at": 7.52,
+   "len": 5.55
+  },
+  {
+   "id": "1c",
+   "file": "vo/cut2-Kore-1.08/1c-trim.wav",
+   "at": 13.32,
+   "len": 5.105
+  },
+  {
+   "id": "1d",
+   "file": "vo/cut2-Kore-1.08/1d-trim.wav",
+   "at": 18.675,
+   "len": 7.876
+  },
+  {
+   "id": "1e",
+   "file": "vo/cut2-Kore-1.08/1e-trim.wav",
+   "at": 26.801,
+   "len": 6.37
+  },
+  {
+   "id": "2a",
+   "file": "vo/cut2-Kore-1.08/2a-trim.wav",
+   "at": 34.61,
+   "len": 1.825
+  },
+  {
+   "id": "2b",
+   "file": "vo/cut2-Kore-1.08/2b-trim.wav",
+   "at": 36.685,
+   "len": 6.064
+  },
+  {
+   "id": "2c",
+   "file": "vo/cut2-Kore-1.08/2c-trim.wav",
+   "at": 42.999,
+   "len": 10.875
+  },
+  {
+   "id": "2d",
+   "file": "vo/cut2-Kore-1.08/2d-trim.wav",
+   "at": 54.124,
+   "len": 3.598
+  },
+  {
+   "id": "2e",
+   "file": "vo/cut2-Kore-1.08/2e-trim.wav",
+   "at": 57.972,
+   "len": 6.089
+  },
+  {
+   "id": "2f",
+   "file": "vo/cut2-Kore-1.08/2f-trim.wav",
+   "at": 64.311,
+   "len": 6.395
+  },
+  {
+   "id": "2g",
+   "file": "vo/cut2-Kore-1.08/2g-trim.wav",
+   "at": 70.956,
+   "len": 10.402
+  },
+  {
+   "id": "3a",
+   "file": "vo/cut2-Kore-1.08/3a-trim.wav",
+   "at": 82.298,
+   "len": 3.64
+  },
+  {
+   "id": "3b",
+   "file": "vo/cut2-Kore-1.08/3b-trim.wav",
+   "at": 86.188,
+   "len": 6.49
+  },
+  {
+   "id": "3c",
+   "file": "vo/cut2-Kore-1.08/3c-trim.wav",
+   "at": 92.928,
+   "len": 6.621
+  },
+  {
+   "id": "3d",
+   "file": "vo/cut2-Kore-1.08/3d-trim.wav",
+   "at": 99.799,
+   "len": 7.283
+  },
+  {
+   "id": "3e",
+   "file": "vo/cut2-Kore-1.08/3e-trim.wav",
+   "at": 107.332,
+   "len": 3.9
+  },
+  {
+   "id": "4a",
+   "file": "vo/cut2-Kore-1.08/4a-trim.wav",
+   "at": 112.172,
+   "len": 3.026
+  },
+  {
+   "id": "4b",
+   "file": "vo/cut2-Kore-1.08/4b-trim.wav",
+   "at": 115.448,
+   "len": 3.982
+  },
+  {
+   "id": "4c",
+   "file": "vo/cut2-Kore-1.08/4c-trim.wav",
+   "at": 119.68,
+   "len": 8.552
+  },
+  {
+   "id": "4d",
+   "file": "vo/cut2-Kore-1.08/4d-trim.wav",
+   "at": 128.482,
+   "len": 3.485
+  },
+  {
+   "id": "5a",
+   "file": "vo/cut2-Kore-1.08/5a-trim.wav",
+   "at": 132.907,
+   "len": 10.094
+  },
+  {
+   "id": "5b",
+   "file": "vo/cut2-Kore-1.08/5b-trim.wav",
+   "at": 143.251,
+   "len": 7.224
+  },
+  {
+   "id": "5c",
+   "file": "vo/cut2-Kore-1.08/5c-trim.wav",
+   "at": 150.725,
+   "len": 5.927
+  },
+  {
+   "id": "5d",
+   "file": "vo/cut2-Kore-1.08/5d-trim.wav",
+   "at": 156.902,
+   "len": 3.943
+  },
+  {
+   "id": "5e",
+   "file": "vo/cut2-Kore-1.08/5e-trim.wav",
+   "at": 161.095,
+   "len": 4.833
+  },
+  {
+   "id": "5f",
+   "file": "vo/cut2-Kore-1.08/5f-trim.wav",
+   "at": 166.178,
+   "len": 6.088
+  },
+  {
+   "id": "6a",
+   "file": "vo/cut2-Kore-1.08/6a-trim.wav",
+   "at": 173.206,
+   "len": 5.202
+  },
+  {
+   "id": "6b",
+   "file": "vo/cut2-Kore-1.08/6b-trim.wav",
+   "at": 178.658,
+   "len": 7.199
+  },
+  {
+   "id": "6c",
+   "file": "vo/cut2-Kore-1.08/6c-trim.wav",
+   "at": 186.107,
+   "len": 6.126
+  },
+  {
+   "id": "6d",
+   "file": "vo/cut2-Kore-1.08/6d-trim.wav",
+   "at": 192.483,
+   "len": 10.167
+  },
+  {
+   "id": "6e",
+   "file": "vo/cut2-Kore-1.08/6e-trim.wav",
+   "at": 202.9,
+   "len": 8.028
+  },
+  {
+   "id": "6f",
+   "file": "vo/cut2-Kore-1.08/6f-trim.wav",
+   "at": 211.178,
+   "len": 9.746
+  },
+  {
+   "id": "6g",
+   "file": "vo/cut2-Kore-1.08/6g-trim.wav",
+   "at": 221.174,
+   "len": 3.296
+  },
+  {
+   "id": "7a",
+   "file": "vo/cut2-Kore-1.08/7a-trim.wav",
+   "at": 226.93,
+   "len": 5.753
+  },
+  {
+   "id": "7b",
+   "file": "vo/cut2-Kore-1.08/7b-trim.wav",
+   "at": 232.933,
+   "len": 20.575
+  },
+  {
+   "id": "7c",
+   "file": "vo/cut2-Kore-1.08/7c-trim.wav",
+   "at": 253.758,
+   "len": 5.25
+  },
+  {
+   "id": "7d",
+   "file": "vo/cut2-Kore-1.08/7d-trim.wav",
+   "at": 259.258,
+   "len": 5.041
+  },
+  {
+   "id": "8a",
+   "file": "vo/cut2-Kore-1.08/8a-trim.wav",
+   "at": 265.238,
+   "len": 6.64
+  },
+  {
+   "id": "8b",
+   "file": "vo/cut2-Kore-1.08/8b-trim.wav",
+   "at": 272.128,
+   "len": 2.985
+  },
+  {
+   "id": "8c",
+   "file": "vo/cut2-Kore-1.08/8c-trim.wav",
+   "at": 275.363,
+   "len": 9.895
+  },
+  {
+   "id": "8d",
+   "file": "vo/cut2-Kore-1.08/8d-trim.wav",
+   "at": 285.508,
+   "len": 4.077
+  },
+  {
+   "id": "8e",
+   "file": "vo/cut2-Kore-1.08/8e-trim.wav",
+   "at": 289.835,
+   "len": 9.456
+  },
+  {
+   "id": "8f",
+   "file": "vo/cut2-Kore-1.08/8f-trim.wav",
+   "at": 299.541,
+   "len": 10.049
+  },
+  {
+   "id": "9a",
+   "file": "vo/cut2-Kore-1.08/9a-trim.wav",
+   "at": 310.53,
+   "len": 2.832
+  },
+  {
+   "id": "9b",
+   "file": "vo/cut2-Kore-1.08/9b-trim.wav",
+   "at": 313.612,
+   "len": 5.406
+  },
+  {
+   "id": "9c",
+   "file": "vo/cut2-Kore-1.08/9c-trim.wav",
+   "at": 319.268,
+   "len": 6.209
+  },
+  {
+   "id": "9d",
+   "file": "vo/cut2-Kore-1.08/9d-trim.wav",
+   "at": 325.727,
+   "len": 8.238
+  },
+  {
+   "id": "9e",
+   "file": "vo/cut2-Kore-1.08/9e-trim.wav",
+   "at": 334.215,
+   "len": 6.769
+  },
+  {
+   "id": "10a",
+   "file": "vo/cut2-Kore-1.08/10a-trim.wav",
+   "at": 343.203,
+   "len": 7.349
+  },
+  {
+   "id": "10b",
+   "file": "vo/cut2-Kore-1.08/10b-trim.wav",
+   "at": 350.802,
+   "len": 3.69
+  },
+  {
+   "id": "10c",
+   "file": "vo/cut2-Kore-1.08/10c-trim.wav",
+   "at": 354.742,
+   "len": 5.622
+  }
+ ],
+ "scenes": [
+  {
+   "start": 0.0,
+   "beats": [
+    "1a",
+    "1b",
+    "1c",
+    "1d",
+    "1e"
+   ],
+   "segs": 5
+  },
+  {
+   "start": 33.21,
+   "beats": [
+    "2a",
+    "2b",
+    "2c",
+    "2d",
+    "2e",
+    "2f",
+    "2g"
+   ],
+   "segs": 8
+  },
+  {
+   "start": 81.398,
+   "beats": [
+    "3a",
+    "3b",
+    "3c",
+    "3d",
+    "3e"
+   ],
+   "segs": 4
+  },
+  {
+   "start": 111.272,
+   "beats": [
+    "4a",
+    "4b",
+    "4c",
+    "4d"
+   ],
+   "segs": 4
+  },
+  {
+   "start": 132.007,
+   "beats": [
+    "5a",
+    "5b",
+    "5c",
+    "5d",
+    "5e",
+    "5f"
+   ],
+   "segs": 6
+  },
+  {
+   "start": 172.306,
+   "beats": [
+    "6a",
+    "6b",
+    "6c",
+    "6d",
+    "6e",
+    "6f",
+    "6g"
+   ],
+   "segs": 13
+  },
+  {
+   "start": 226.03,
+   "beats": [
+    "7a",
+    "7b",
+    "7c",
+    "7d"
+   ],
+   "segs": 9
+  },
+  {
+   "start": 264.338,
+   "beats": [
+    "8a",
+    "8b",
+    "8c",
+    "8d",
+    "8e",
+    "8f"
+   ],
+   "segs": 8
+  },
+  {
+   "start": 309.63,
+   "beats": [
+    "9a",
+    "9b",
+    "9c",
+    "9d",
+    "9e"
+   ],
+   "segs": 8
+  },
+  {
+   "start": 342.603,
+   "beats": [
+    "10a",
+    "10b",
+    "10c"
+   ],
+   "segs": 5
+  }
+ ]
+}

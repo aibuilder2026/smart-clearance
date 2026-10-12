@@ -15,38 +15,37 @@ const words = JSON.parse(readFileSync(join(here, '../../../../design3/site/asset
 };
 
 describe("the film's words", () => {
-	it('are its twelve chapters from 0:00, in order, each long enough to be a YouTube chapter, and its 40 captions', () => {
+	it('are its ten chapters from 0:00, in order, each long enough to be a YouTube chapter, and its 52 narration lines', () => {
 		const starts = words.chapters.map((c) => c.at);
-		expect(words.runtime).toBe('4:56');
-		expect(starts).toHaveLength(12);
+		expect(words.runtime).toBe('6:06');
+		expect(starts).toHaveLength(10);
 		expect(starts[0]).toBe(0);
 		starts.forEach((s, i) => expect((starts[i + 1] ?? words.duration) - s).toBeGreaterThanOrEqual(10));
-		expect(words.chapters.flatMap((c) => c.lines)).toHaveLength(40);
+		expect(words.chapters.flatMap((c) => c.lines)).toHaveLength(52);
 		expect(words.chapters.map((c) => `${clock(c.at)} ${c.title}`)).toEqual([
 			'0:00 Smart-Clearance',
-			'0:12 The batch',
-			'0:27 A SaaS, run by agents',
-			'0:56 Detect',
-			'1:15 Verify',
-			'1:35 Value, decide, approve',
-			'1:59 The kiranas',
-			'2:31 The staff sale',
-			'2:45 The food bank',
-			'3:07 Delivery and the papers',
-			'3:47 The ledger',
-			'4:34 Everyone ends whole'
+			'0:33 The platform',
+			'1:21 Connect and detect',
+			'1:51 Verify',
+			'2:12 Value, decide, approve',
+			'2:52 Five exits',
+			'3:46 The paperwork',
+			'4:24 When it does not go as planned',
+			'5:09 The ledger',
+			'5:42 The close'
 		]);
 	});
 	it('mark the chapter a time falls in', () => {
 		const starts = words.chapters.map((c) => c.at);
 		expect(chapterAt(0, starts)).toBe(0);
-		expect(chapterAt(56.8, starts)).toBe(3);
-		expect(chapterAt(120, starts)).toBe(6);
-		expect(chapterAt(296, starts)).toBe(11);
+		expect(chapterAt(82, starts)).toBe(2);
+		expect(chapterAt(200, starts)).toBe(5);
+		expect(chapterAt(360, starts)).toBe(9);
 	});
 	it('name no client in the chapters the theatre shows before the words are opened', () => {
 		const titles = words.chapters.map((c) => c.title).join(' ');
-		for (const name of ['Munchly', 'Lakshmi', 'Priya', 'MF-24', 'Mango']) expect(titles).not.toContain(name);
+		for (const name of ['Munchly', 'Lakshmi', 'Priya', 'Rakesh', 'MF-24', 'Mango', 'Chips'])
+			expect(titles).not.toContain(name);
 	});
 });
 

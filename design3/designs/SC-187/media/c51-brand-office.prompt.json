@@ -1,0 +1,18 @@
+{
+  "prompt": "Exactly as in the image, almost a still: in the glass meeting room, the woman in the navy pinstripe kurta keeps her pen pointed at the wall screen and glances at her colleagues; the man in the pale blue shirt nods slowly, the woman in the grey blazer looks from the screen to her laptop; nobody moves from their seat. A slow, steady push in toward the table. Every face, hand and arm keeps its form; no extra limbs appear and none vanish; nobody's face changes; nothing is picked up, handed over or put down; no object appears, vanishes or changes shape; the printed labels on the cartons and the packets stay exactly as they are, crisp and legible. Photorealistic live action, 35 mm, natural skin and fabric, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "720p",
+  "duration": 6,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "dolly_in",
+  "audio": false,
+  "seed": 187800,
+  "loras": [],
+  "image": "/Users/arundutta/projects/smart-clearance/.claude/worktrees/console-ui-db-migration-b9ab01/design3/designs/SC-187/src/img/k51-brand-office.png",
+  "framed_first": "/Users/arundutta/ltx-video/frames/sc187-c51-brand-office.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 9.8,
+  "ltx_output": "/Users/arundutta/Library/Application Support/LTXDesktop/outputs/ltx2_video_20261012_122029_255da120.mp4",
+  "cost_usd": 0
+}

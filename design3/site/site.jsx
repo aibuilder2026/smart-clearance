@@ -110,15 +110,16 @@
   }
 
   /* ---------- the demo film, in a theatre over the page (SC-164) ---------- */
-  // SC-158's film, 4 min 56 s: one batch from the brand to the ledger. Every Watch (the hero, the pill, the close) opens
-  // it in a dark room over the page, which stays where it was. It plays from YouTube, unlisted, on the no-cookie host:
-  // nothing of YouTube loads before Watch. Its poster is the bay at dawn before the title card, which names the client;
-  // the page names none (SC-28), and the film, played on request, may. Without an id, Watch opens the guided demo.
-  // The film is youtu.be/EWFLqM3oHYU, unlisted, on the maintainer's channel (@arundutta3411)
-  const DEMO_FILM = Object.assign({ youtube: "EWFLqM3oHYU", runtime: "4:56", label: "Watch the 5-minute demo", title: "The 5-minute demo", sub: "One batch, from the brand to the ledger",
+  // SC-187's film (cut 3), 6 min 6 s: two batches through five exits, the paperwork, the week that does not go to plan,
+  // and the ledger. Every Watch (the hero, the pill, the close) opens it in a dark room over the page, which stays where
+  // it was. It plays from YouTube, unlisted, on the no-cookie host: nothing of YouTube loads before Watch. Its poster is
+  // the brand and its distributor at the quarter's dashboard, which names no client; the page names none (SC-28), and the
+  // film, played on request, may. Without an id, Watch opens the guided demo.
+  // The film is youtu.be/5Z9-32Fuwh4, unlisted, on the maintainer's channel (@arundutta3411); cut 1's youtu.be/EWFLqM3oHYU is private
+  const DEMO_FILM = Object.assign({ youtube: "5Z9-32Fuwh4", runtime: "6:06", label: "Watch the 6-minute demo", title: "The 6-minute demo", sub: "From the first flag to the ledger",
     poster: "film-poster.webp", thumb: "film-thumb.webp", words: "demo-film.json" }, window.SC3_FILM || {});
   const clock = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
-  // the film's chapters and captions (design3/designs/SC-164/transcript.py, from the film's own timeline), read once,
+  // the film's chapters and captions (design3/designs/SC-187/src/transcript3.py, from the film's own timeline), read once,
   // when the theatre first opens
   let filmWords = null;
   const readFilmWords = () => filmWords || (filmWords = fetch(MEDIA + DEMO_FILM.words).then(r => r.json()).catch(() => { filmWords = null; return null; }));
@@ -157,7 +158,7 @@
     return <motion.div ref={box} className="fp-end" role="group" aria-labelledby="fp-end-h" initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.42, ease: EASE }}>
       <img className="fp-end-bg" src={IMG + DEMO_FILM.poster} alt="" />
       <div className="fp-end-in">
-        <h3 id="fp-end-h">One batch, start to finish.</h3>
+        <h3 id="fp-end-h">One platform. Ten agents. One yes.</h3>
         <p>Now play each part yourself. The guided demo runs the same journey in your browser, a beat at a time.</p>
         <div className="fp-end-ctas">
           <a ref={go} className="btn btn-lg btn-pill fp-go" {...linkProps(LINKS.demo)}>Try the guided demo<Icon name="arrow-up-right" size={16} stroke={2.4} /></a>

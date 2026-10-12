@@ -1,0 +1,18 @@
+{
+  "prompt": "Exactly as in the image: at the landfill, the heap of sealed packets and torn cartons lies still on the covered earth; a little dust blows across the ground from left to right; far behind, the excavator's bucket lowers slowly; nothing else moves. A slow, low push in toward the heap. Every face, hand and arm keeps its form; no extra limbs appear and none vanish; nobody's face changes; nothing is picked up, handed over or put down; no object appears, vanishes or changes shape; the printed labels on the cartons and the packets stay exactly as they are, crisp and legible. Photorealistic live action, 35 mm, natural skin and fabric, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "720p",
+  "duration": 6,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "dolly_in",
+  "audio": false,
+  "seed": 187803,
+  "loras": [],
+  "image": "/Users/arundutta/projects/smart-clearance/.claude/worktrees/console-ui-db-migration-b9ab01/design3/designs/SC-187/src/img/k54-write-off.png",
+  "framed_first": "/Users/arundutta/ltx-video/frames/sc187-c54-write-off.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 9.1,
+  "ltx_output": "/Users/arundutta/Library/Application Support/LTXDesktop/outputs/ltx2_video_20261012_123919_177cc027.mp4",
+  "cost_usd": 0
+}

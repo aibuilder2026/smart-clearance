@@ -142,7 +142,7 @@
 								<div class="fp-end" role="group" aria-labelledby="fp-end-h" in:fade={{ duration: motionMs(420) }}>
 									<img class="fp-end-bg" src={DEMO_FILM.poster} alt="" />
 									<div class="fp-end-in">
-										<h3 id="fp-end-h">One batch, start to finish.</h3>
+										<h3 id="fp-end-h">One platform. Ten agents. One yes.</h3>
 										<p>
 											Now play each part yourself. The guided demo runs the same journey in your browser, a beat at a
 											time.

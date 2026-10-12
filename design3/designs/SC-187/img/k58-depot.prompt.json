@@ -1,0 +1,18 @@
+{
+  "name": "k58-depot",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "prompt": "Image 1 shows the carton label (left) and the snack packet (right). A super stockist's depot near Mumbai, mid-morning: tall racks of stretch-wrapped pallets of Munchly cartons each with its printed label, a wide concrete aisle, shafts of daylight from the roof; in the foreground a depot supervisor in a navy polo shirt with a lanyard stands still reading a tablet held in both hands, looking down at it; an orange forklift parked far down the aisle, its driver seated and still. Medium wide shot, 35 mm, the supervisor and the nearest pallet's labels sharp, the aisle soft. Photorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric, a professional corporate setting. Every person has exactly two arms and two hands, every hand has five fingers, and nothing floats. The kraft-brown shipping cartons each carry one large printed product label exactly like the label in the reference photo: a white sticker with a maroon band reading \"MUNCHLY MASALA CHIPS\", boxed BATCH NO, MFG and BEST BEFORE dates, a barcode and a QR code; the label is crisp, straight and legible. The snack packets are exactly the orange \"MUNCHLY\" Masala Chips packet in the reference photo. No other text, letters, numbers, logos or watermarks anywhere. No number plates. No children.",
+  "condition_images": [
+    "MF-2409-117-16x9.png"
+  ],
+  "seed": 187658,
+  "size": [
+    1376,
+    768
+  ],
+  "aspect": "16:9",
+  "created": "2026-10-12",
+  "use": "SC-187 cut 3 keyframe: the first minute in professional settings, every carton labelled",
+  "cost_usd": 0,
+  "postprocess": "webp q88"
+}

@@ -1,0 +1,39 @@
+{
+  "name": "c25-kirana-offer",
+  "model": "veo-3.1-generate-001",
+  "location": "us-central1",
+  "service": "Vertex AI",
+  "prompt": "Photorealistic cinematic live action, exactly as in the image: behind his counter, the man in the cream shirt with the red tilak reads the offer on his phone, his smile growing a little; he taps the green button at the bottom of the screen once with his thumb, then looks up toward the customer at the edge of the frame and gives a small nod. The hanging packets sway very slightly. The camera holds with a slow, gentle push in. Every face, hand and arm keeps its form; no extra limbs appear and none vanish; nobody's face changes. The printed Munchly product labels on the cartons (the maroon band, the batch and best-before boxes, the barcode and the QR code) and the Munchly packets stay exactly as they are, crisp and legible, and never change; the app screen on the phone stays exactly as it is, sharp and legible, and never changes to anything else. No other text, letters, logos or lettering appear anywhere. Natural light, 35 mm, shallow depth of field, no handheld shake.",
+  "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
+  "seed": 187225,
+  "enhance_prompt": true,
+  "resolution": "1080p",
+  "aspect": "16:9",
+  "duration_s": 8,
+  "fps": 24,
+  "generate_audio": false,
+  "person_generation": "allow_adult",
+  "inputs": [
+    {
+      "role": "first",
+      "file": "k25-kirana-offer.png",
+      "sha256": "ee64566d47a2289d94d09147261211cbec1ba22dcd3258c954725f15dcf1ad23"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 1.6,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "use": "SC-187: a scene of the demo film, image to video from its keyframe",
+  "status": "done",
+  "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/54ec07fc-f5d2-463d-8d14-41b6e6b6eea1",
+  "latency_s": 131.1,
+  "rai_filtered": {
+    "count": 0,
+    "reasons": []
+  },
+  "files": [
+    "c25-kirana-offer.mp4"
+  ],
+  "probe": "{\n    \"programs\": [\n\n    ],\n    \"stream_groups\": [\n\n    ],\n    \"streams\": [\n        {\n            \"width\": 1920,\n            \"height\": 1080,\n            \"r_frame_rate\": \"24/1\",\n            \"nb_frames\": \"192\"\n        }\n    ],\n    \"format\": {\n        \"duration\": \"8.000000\",\n        \"size\": \"14124302\"\n    }\n}"
+}

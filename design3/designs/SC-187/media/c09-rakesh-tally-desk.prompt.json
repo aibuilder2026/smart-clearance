@@ -1,0 +1,18 @@
+{
+  "prompt": "Exactly as in the image: in the small office, the man in the light blue checked shirt with glasses on his nose presses the rubber stamp down onto the printed sheet, holds it a moment, then lifts the stamp an inch; his other hand keeps the sheet flat; the ceiling fan turns slowly; the monitor keeps its plain blue and white grid; the labelled cartons behind him and the packets on the desk stay as they are. A slow, steady push in on the paper and his hands. Every face, hand and arm keeps its form; no extra limbs appear and none vanish; nobody's face changes; nothing is picked up, handed over or put down; no object appears, vanishes or changes shape. The printed Munchly product labels on the cartons and the Munchly packets stay exactly as they are, crisp and legible. Photorealistic live action, 35 mm, natural skin and fabric, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "720p",
+  "duration": 5,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "dolly_in",
+  "audio": false,
+  "seed": 187701,
+  "loras": [],
+  "image": "/Users/arundutta/projects/smart-clearance/.claude/worktrees/console-ui-db-migration-b9ab01/design3/designs/SC-187/src/img/k09-rakesh-tally-desk.png",
+  "framed_first": "/Users/arundutta/ltx-video/frames/sc187-c09-rakesh-tally-desk.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 10.0,
+  "ltx_output": "/Users/arundutta/Library/Application Support/LTXDesktop/outputs/ltx2_video_20261012_085433_58efeb84.mp4",
+  "cost_usd": 0
+}

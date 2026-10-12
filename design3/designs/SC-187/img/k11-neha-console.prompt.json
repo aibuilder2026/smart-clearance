@@ -1,0 +1,29 @@
+{
+  "name": "k11-neha-console",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "A bright modern office in Bengaluru: a software platform's staff member (a woman in her late twenties, a white shirt, black-framed glasses, hair tied back) sits at a desk with a large monitor showing a clean white dashboard with green bars and a route-like diagram, no readable text; a second screen beside it; a plant and a window with soft daylight. Three-quarter shot from behind her right shoulder, the monitor at the left of the frame.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. Every pack and carton is unbranded: plain kraft-brown cartons with a sage-green band, solid-colour snack packets (amber, green, red) with no lettering, Mango Drink as small plain yellow-orange tetra packs with no lettering. No text, no letters, no numbers, no logos, no watermark, no number plate anywhere. No children.",
+  "seed": 187111,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-neha.webp",
+      "sha256": "57bb1af2b34d4ca65872fecfcb0159567a3f6dc6731ecac11d84f4dca1863513"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "latency_s": 37.2,
+  "use": "SC-187 keyframe: the first frame of a Veo clip for the demo film",
+  "model_text": null,
+  "status": "done",
+  "output": "k11-neha-console.webp 2752x1536",
+  "postprocess": "WebP q82 from k11-neha-console.png",
+  "derived_from": "k11-neha-console.png"
+}

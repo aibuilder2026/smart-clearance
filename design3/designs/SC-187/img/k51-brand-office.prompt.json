@@ -1,0 +1,20 @@
+{
+  "name": "k51-brand-office",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "prompt": "Image 1 is the woman; image 2 is the dashboard on the wall screen; image 3 shows the carton label (left) and the snack packet (right). A manufacturer's supply planning office in Pune at nine in the morning: a bright glass-walled meeting room, and at a long white table the woman from image 1 (the navy pinstripe kurta, the navy lanyard and white badge, the low ponytail) sits with two colleagues, a man in a pale blue shirt and a woman in a grey blazer, all three looking at a large wall screen that shows exactly the dashboard from image 2: a white page with a pale green side menu, cards with small figures, and a bar chart of dark green bars with a few light green ones, the app's own green theme, no readable words; one Munchly carton with its printed label stands on the table beside a laptop, a few orange Munchly packets next to it, a glass of water, a notebook. The woman from image 1 points at the chart with a pen; the man frowns slightly. Medium wide shot from the end of the table, soft morning light through the glass, the city soft outside. Photorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric, a professional corporate setting. Every person has exactly two arms and two hands, every hand has five fingers, and nothing floats. The kraft-brown shipping cartons each carry one large printed product label exactly like the label in the reference photo: a white sticker with a maroon band reading \"MUNCHLY MASALA CHIPS\", boxed BATCH NO, MFG and BEST BEFORE dates, a barcode and a QR code; the label is crisp, straight and legible. The snack packets are exactly the orange \"MUNCHLY\" Masala Chips packet in the reference photo. No other text, letters, numbers, logos or watermarks anywhere. No number plates. No children.",
+  "condition_images": [
+    "cast-planner.webp",
+    "ledger--ledger-impact.png",
+    "MF-2409-117-16x9.png"
+  ],
+  "seed": 187751,
+  "size": [
+    1376,
+    768
+  ],
+  "aspect": "16:9",
+  "created": "2026-10-12",
+  "use": "SC-187 cut 3 keyframe: the first minute in professional settings, every carton labelled",
+  "cost_usd": 0,
+  "postprocess": "webp q88"
+}

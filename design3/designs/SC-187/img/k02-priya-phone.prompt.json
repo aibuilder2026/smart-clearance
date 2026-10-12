@@ -1,0 +1,29 @@
+{
+  "name": "k02-priya-phone",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "Early morning in a bright office in Pune: the supply planner (the woman in the navy pinstripe kurta with a navy lanyard and a white badge, black hair in a low ponytail) sits at a white desk by a window with an open laptop whose lid faces the camera, a steel tumbler of chai and a notebook; her phone lies face up on the desk beside her right hand, its screen lit plain white with one green bar across it, and she turns her head to look down at it, her hand reaching for it. Three-quarter view from behind her left shoulder, the phone at the lower right of the frame, soft morning light.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. Every pack and carton is unbranded: plain kraft-brown cartons with a sage-green band, solid-colour snack packets (amber, green, red) with no lettering, Mango Drink as small plain yellow-orange tetra packs with no lettering. No text, no letters, no numbers, no logos, no watermark, no number plate anywhere. No children.",
+  "seed": 187102,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-planner.webp",
+      "sha256": "f3b9921a0e38c3fc4b36d81dc77d793ba3cdb247a160387a8290c7768f68e301"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "latency_s": 37.2,
+  "use": "SC-187 keyframe: the first frame of a Veo clip for the demo film",
+  "model_text": null,
+  "status": "done",
+  "output": "k02-priya-phone.webp 2752x1536",
+  "postprocess": "WebP q82 from k02-priya-phone.png",
+  "derived_from": "k02-priya-phone.png"
+}

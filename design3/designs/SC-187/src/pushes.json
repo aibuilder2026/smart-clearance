@@ -1,0 +1,198 @@
+{
+ "MF-2409-117": {
+  "detect": {
+   "to": "priya",
+   "at": "2026-10-02T08:59:56.573109+05:30",
+   "title": "Masala Chips 150 g · Nagpur",
+   "body": "Priya ji, Nagpur godown mein Masala Chips 150g (batch MF-2409-117) ki 1,360 units 18 Nov se pehle nahi bikengi. Q-commerce block hai. Route dekhne ke liye tap karein.",
+   "hindi": false,
+   "en": null
+  },
+  "verify": {
+   "to": "rakesh",
+   "at": "2026-10-02T10:20:16.695909+05:30",
+   "title": "Ek photo chahiye",
+   "body": "Rakesh bhai, Masala Chips 150g ka ek carton ka label photo bhej dein (batch MF-2409-117). Bas ek photo, baaki hum kar lenge.",
+   "hindi": false,
+   "en": null
+  },
+  "plan": {
+   "to": "priya",
+   "at": "2026-10-03T05:50:09.422469+05:30",
+   "title": "Plan ready · MF-2409-117",
+   "body": "Plan for MF-2409-117: 588 units kirana (₹18), 784 units ExpireSoon (₹15). Net ₹21,950, ₹26,560 better than write-off. GST ITC ₹1,235 safe. Tap to review and approve.",
+   "hindi": false,
+   "en": null
+  },
+  "approved": {
+   "to": "rakesh",
+   "at": "2026-10-04T02:30:23.819349+05:30",
+   "title": "Plan approved · Masala Chips",
+   "body": "Rakesh bhai, Munchly ne MF-2409-117 ka plan approve kiya: 588 packets aapke kiranas ko scheme par, 784 aapke naam se ExpireSoon par. Kuch rokna ho to app mein Pause dabayein.",
+   "hindi": false,
+   "en": null
+  },
+  "offer": {
+   "to": "ganesh",
+   "at": "2026-10-04T03:01:05.774469+05:30",
+   "title": "आज का खास ऑफर",
+   "body": "नमस्ते Shree Ganesh Kirana! Munchly Masala Chips 150g पर आज खास ऑफर: 10 पैकेट लो, 2 मुफ़्त. Best before 18 Nov 2026. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें — Rakesh Traders",
+   "hindi": true,
+   "en": "Today's offer on Munchly Masala Chips 150 g: buy 10 packets, get 2 free. Best before 18 Nov 2026. 48 hours only. Tap to order. Rakesh Traders"
+  },
+  "listing": {
+   "to": "agrawal",
+   "at": "2026-10-04T03:03:16.090149+05:30",
+   "title": "New lot · Masala Chips 150 g",
+   "body": "784 packs from Nagpur, best before 18 Nov 2026, at ₹15.00 a pack.",
+   "hindi": false,
+   "en": null
+  },
+  "award": {
+   "to": "priya",
+   "at": "2026-10-06T15:43:37.872789+05:30",
+   "title": "Awarded on ExpireSoon",
+   "body": "784 units at ₹14.20 to Agrawal Wholesale, Raipur. Token ₹1,670 received; balance ₹9,463 due in 48 h.",
+   "hindi": false,
+   "en": null
+  },
+  "won": {
+   "to": "rakesh",
+   "at": "2026-10-06T15:43:40.662789+05:30",
+   "title": "Buyer mil gaya · ExpireSoon",
+   "body": "Rakesh bhai, Agrawal Wholesale (Raipur) ne 784 packets ₹14.20 par le liye. Token ₹1,670 aa gaya.",
+   "hindi": false,
+   "en": null
+  },
+  "papers": {
+   "to": "priya",
+   "at": "2026-10-08T03:19:17.650869+05:30",
+   "title": "Document pack ready · MF-2409-117",
+   "body": "Papers ready for MF-2409-117: Rakesh's invoice draft, e-way bill check, price-support credit note, GST memo. Nothing to chase.",
+   "hindi": false,
+   "en": null
+  },
+  "invoice": {
+   "to": "rakesh",
+   "at": "2026-10-08T03:19:20.299029+05:30",
+   "title": "Invoice draft ready",
+   "body": "Invoice draft to Agrawal Wholesale, Raipur: 784 × ₹14.20, IGST 5%, ₹11,690. Issue it from Tally. Munchly's price support of ₹8,861 is on its way.",
+   "hindi": false,
+   "en": null
+  },
+  "van": {
+   "to": "rakesh",
+   "at": "2026-10-08T03:19:22.942869+05:30",
+   "title": "Van route for Friday",
+   "body": "Van route for Friday updated: 31 kiranas, 588 packets. The Raipur lot (784) is collected by the buyer's truck once the balance lands.",
+   "hindi": false,
+   "en": null
+  },
+  "closed": {
+   "to": "priya",
+   "at": "2026-10-10T15:07:41.201349+05:30",
+   "title": "Batch closed · 0 cartons destroyed",
+   "body": "₹21,323 recovered, ₹1,235 GST credit kept, 219.5 kg kept out of landfill.",
+   "hindi": false,
+   "en": null
+  }
+ },
+ "MF-2410-118": {
+  "detect": {
+   "to": "priya",
+   "at": "2026-10-02T09:00:07.886469+05:30",
+   "title": "Mango Drink 200 ml · Hyderabad",
+   "body": "Priya ji, Hyderabad godown mein Mango Drink 200ml (batch MF-2410-118) ki 1,580 units 24 Oct se pehle nahi bikengi. Q-commerce block hai. Route dekhne ke liye tap karein.",
+   "hindi": false,
+   "en": null
+  },
+  "verify": {
+   "to": "lakshmi-owner",
+   "at": "2026-10-02T10:46:39.750549+05:30",
+   "title": "Ek photo chahiye",
+   "body": "Lakshmi Agencies, Mango Drink 200ml ka ek carton ka label photo bhej dein (batch MF-2410-118). Bas ek photo, baaki hum kar lenge.",
+   "hindi": false,
+   "en": null
+  },
+  "plan": {
+   "to": "priya",
+   "at": "2026-10-03T11:12:29.892549+05:30",
+   "title": "Plan ready · MF-2410-118",
+   "body": "Plan for MF-2410-118: 1,372 units kirana (₹12), 150 units staff sale (₹8), 86 units food bank (₹0). Net ₹16,888, ₹22,258 better than write-off. GST ITC ₹837 safe. Tap to review and approve.",
+   "hindi": false,
+   "en": null
+  },
+  "approved": {
+   "to": "lakshmi-owner",
+   "at": "2026-10-04T02:34:53.082789+05:30",
+   "title": "Plan approved · Mango Drink",
+   "body": "Lakshmi Agencies, Munchly ne MF-2410-118 ka plan approve kiya: 1,372 packets aapke kiranas ko scheme par, 150 godown ki staff sale mein, 86 food bank ko. Kuch rokna ho to app mein Pause dabayein.",
+   "hindi": false,
+   "en": null
+  },
+  "staff.open": {
+   "to": "lakshmi-owner",
+   "at": "2026-10-04T02:34:56.538069+05:30",
+   "title": "Staff sale · Mango Drink",
+   "body": "150 packs of Mango Drink for your staff at ₹8 a pack, at Begum Bazaar godown. Record what sold when the sale is over.",
+   "hindi": false,
+   "en": null
+  },
+  "pickup": {
+   "to": "meera",
+   "at": "2026-10-04T03:53:46.770309+05:30",
+   "title": "Pickup request · Mango Drink",
+   "body": "86 packs of Mango Drink, 20 days left, with the FSSAI checklist. Pickup from Begum Bazaar godown?",
+   "hindi": false,
+   "en": null
+  },
+  "offer": {
+   "to": "kirana-sri-lakshmi-ganapathi-kirana",
+   "at": "2026-10-04T04:15:45.594309+05:30",
+   "title": "आज का खास ऑफर",
+   "body": "नमस्ते Sri Lakshmi Ganapathi Kirana! Munchly Mango Drink 200ml पर आज खास ऑफर: 10 पैकेट लो, 2 मुफ़्त. Best before 24 Oct 2026. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें — Lakshmi Agencies",
+   "hindi": true,
+   "en": "Today's offer on Munchly Mango Drink 200 ml: buy 10 packets, get 2 free. Best before 24 Oct 2026. 48 hours only. Tap to order. Lakshmi Agencies"
+  },
+  "staff.recorded": {
+   "to": "priya",
+   "at": "2026-10-07T09:21:37.168149+05:30",
+   "title": "Staff sale recorded · Mango Drink",
+   "body": "Lakshmi Agencies sold 150 of 150 packs to staff.",
+   "hindi": false,
+   "en": null
+  },
+  "pickup.confirmed": {
+   "to": "priya",
+   "at": "2026-10-07T09:31:33.065349+05:30",
+   "title": "Feeding India confirmed",
+   "body": "86 packs of Mango Drink, pickup Thursday 10:00 from Begum Bazaar godown.",
+   "hindi": false,
+   "en": null
+  },
+  "papers": {
+   "to": "priya",
+   "at": "2026-10-07T09:55:13.824789+05:30",
+   "title": "Document pack ready · MF-2410-118",
+   "body": "Papers ready for MF-2410-118: price-support credit note, GST memo. Nothing to chase.",
+   "hindi": false,
+   "en": null
+  },
+  "van": {
+   "to": "lakshmi-owner",
+   "at": "2026-10-07T09:55:15.349029+05:30",
+   "title": "Van route for Thursday",
+   "body": "Van route for Thursday updated: 52 kiranas, 1,372 packets.",
+   "hindi": false,
+   "en": null
+  },
+  "closed": {
+   "to": "priya",
+   "at": "2026-10-10T16:22:50.896869+05:30",
+   "title": "Batch closed · 0 cartons destroyed",
+   "body": "₹16,888 recovered, ₹837 GST credit kept, 345.7 kg kept out of landfill.",
+   "hindi": false,
+   "en": null
+  }
+ }
+}

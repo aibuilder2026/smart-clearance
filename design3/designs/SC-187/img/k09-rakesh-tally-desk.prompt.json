@@ -1,0 +1,39 @@
+{
+  "name": "k09-rakesh-tally-desk",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "Evening in the distributor's small office above his godown in Nagpur: the distributor (the man in the light blue checked shirt, grey moustache, his reading glasses now on his nose) sits at a wooden desk pressing a rectangular rubber stamp onto a printed A4 sheet beside a ballpoint pen; a desktop monitor beside him shows a plain accounting ledger grid in blue and white with no readable text; files, a calculator, a tube light and a ceiling fan; behind him stacked Munchly cartons, each with its printed product label, and on the desk's corner two Munchly chips packets and a few Mango Drink packs. He has exactly two hands: one on the stamp, one holding the sheet flat. Medium shot, a warm desk lamp, the stamp and the paper sharp.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. The cartons are kraft-brown shipping cartons, each carrying one large printed product label exactly like the label in the reference photo: a white sticker with a maroon band reading MUNCHLY MASALA CHIPS (or MUNCHLY MANGO DRINK), the ingredients line, a boxed net quantity and MRP, a boxed BATCH NO, MFG and BEST BEFORE dates, the maker's address, the FSSAI mark, a barcode and a QR code, with a blue storage line at the foot; the label is crisp, straight and legible; no carton carries plain lettering, every carton carries this label. The snack packets are Munchly's own orange chips packets exactly like the reference pack: an orange-to-red gradient with the white MUNCHLY wordmark on a green swoosh and 'Masala Chips' beneath; the Mango Drink packs are small yellow-orange tetra packs with a mango and the word Munchly. Every person has exactly two arms and two hands. No other text, letters, numbers, logos or watermarks anywhere. No number plate. No children.",
+  "seed": 187609,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-distributor.webp",
+      "sha256": "dfba3af9f8788b96b8e641b99e173aa4bd294a03006b1dbd4cf6665a1e1d904d"
+    },
+    {
+      "role": "reference",
+      "file": "MF-2409-117.webp",
+      "sha256": "c90ee14fc19e4cd7948a04ce63db2e407614549403b1aa90fbca6c5a23841fca"
+    },
+    {
+      "role": "reference",
+      "file": "pack-chips.webp",
+      "sha256": "bd0e711bb4148b0626d58f6cef7adb98119f69d706a69d98b5167144b0a55396"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "latency_s": 33.5,
+  "use": "SC-187 cut 2 keyframe: cut 1's scene with the real Munchly label and pack as references",
+  "model_text": null,
+  "status": "done",
+  "output": "k09-rakesh-tally-desk.webp 2752x1536",
+  "postprocess": "WebP q82 from k09-rakesh-tally-desk.png",
+  "derived_from": "k09-rakesh-tally-desk.png"
+}
