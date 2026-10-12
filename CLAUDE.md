@@ -2505,4 +2505,31 @@
     - on a phone the card takes its own glass. Desktops keep SC-195's stage.
   - **Checks:** the frontend gate passes (api 83, core 407, admin 22, console 2, demo 9, workspace 115); the phone goldens follow. design3 and the port were played on a phone, an iPad in portrait and 1024 × 768, light and dark, with no page errors. The browser suites were not run (SC-55).
   - **Hosting:** design3's `dist/` is rebuilt. The hosted pages stay on their pinned commits.
+- **SC-197** (In Review, branch `SC-197-admin-console-detail`): Admin and console E2E in detail, on production, recorded as raw footage for the final walkthrough, asked for by the maintainer ("Detail out everything as much as possible", with WhatsApp-style banners without the time and ticks; then "details should be shown with login page in too, hovering over agents network quickly").
+  - **The suite** (`admin-console.journey.ts`), 20 chapters where SC-191 had 12:
+    - the landing page section by section, the hero film's four chapters and the demo film's theatre;
+    - the console's sign-in in detail: the agents network swept by the cursor, five agents picked, a ripple, Pause and Play, the form marked. The tablet's band gets the same before Megha signs in (`Stage.atSignIn`);
+    - New client with every step's options marked;
+    - the client's first stock export, a CSV of its own written for the run, mapped live by the Data agent;
+    - the approver invited;
+    - all eleven agents opened, most customised and saved, one run on request, Outreach off and on;
+    - the rules and the destruction at the godown changed;
+    - Munchly's clock guide and journey-day sheet, read and cancelled;
+    - the platform's screens, and Neha's account and sign-out.
+  - **The stage** (`stage.ts`):
+    - banners quote whose screen it is and its address;
+    - rings close in with corner brackets, a sweep and a pulse;
+    - `mark()` numbers several parts of one screen, each in its own cut-out of the dim, with one banner listing them;
+    - a title card opens each chapter;
+    - the stage writes `recording.chapters.json`, and `cut-chapters.mjs` cuts one clip per chapter, with YouTube-style timestamps and a CSV;
+    - the cursor's script stays out of embedded frames (YouTube's player refused it);
+    - the narrator's log rows no longer overlap.
+  - **The run of 12 Oct on production** (`runs/2026-10-12-prod-admin-detail/REPORT.md`): passed in 25 min 3 s, 67 steps, against production at `6e9aa43` (SC-198's sign-in map had deployed nine minutes before; the sign-in chapters play on it).
+    - The recording, 24 min 57 s at 2560 × 1440, its 1080p copy and 20 chapter clips stay local in `playwright-automation-videos/`.
+    - Production gains Shivalik Snacks, its admin Ritu Malhotra and approver Arvind Sethi, its demo request, its first export (6 rows, 8 of 8 fields mapped), and 16 audit lines in Neha's name.
+  - **Findings, not fixed:**
+    - the Overview's demo requests are not live (as SC-191);
+    - "Shivalik Snacks's" in the audit log and the pipeline's name;
+    - the approver list offers only people who have signed in, so the approver just invited is not yet offered.
+  - **Checks:** lint, Prettier and the workspace type check pass on the suite; trials on the local stack (Shivalik Snacks and Kaveri Foods there) passed before the run.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

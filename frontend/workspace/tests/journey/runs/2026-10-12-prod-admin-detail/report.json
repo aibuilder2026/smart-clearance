@@ -1,0 +1,629 @@
+{
+  "flow": "Admin and console E2E",
+  "status": "passed",
+  "took": 1503,
+  "steps": [
+    {
+      "n": 1,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The landing page's hero: one day of the journey on film",
+      "at": "2026-10-12T20:20:33.322Z",
+      "ms": 43393,
+      "shot": "steps/01-The-landing-page-s-hero-one-day-of-the-journey-o.png"
+    },
+    {
+      "n": 2,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The demo film, in its theatre: its chapters and its words",
+      "at": "2026-10-12T20:21:08.212Z",
+      "ms": 34890,
+      "shot": "steps/02-The-demo-film-in-its-theatre-its-chapters-and-it.png"
+    },
+    {
+      "n": 3,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The statement",
+      "at": "2026-10-12T20:21:20.326Z",
+      "ms": 12114,
+      "shot": "steps/03-The-statement.png"
+    },
+    {
+      "n": 4,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The agents at work on the table, one in focus at a time",
+      "at": "2026-10-12T20:22:30.810Z",
+      "ms": 70484,
+      "shot": "steps/04-The-agents-at-work-on-the-table-one-in-focus-at-.png"
+    },
+    {
+      "n": 5,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The four chapters: the Watcher's alert, the prices, the one yes, the agents at work",
+      "at": "2026-10-12T20:23:13.940Z",
+      "ms": 43130,
+      "shot": "steps/05-The-four-chapters-the-Watcher-s-alert-the-prices.png"
+    },
+    {
+      "n": 6,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Impact's ledger: every rupee worked out",
+      "at": "2026-10-12T20:23:27.703Z",
+      "ms": 13763,
+      "shot": "steps/06-Impact-s-ledger-every-rupee-worked-out.png"
+    },
+    {
+      "n": 7,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The workspace: each team's own view, at the client's own address",
+      "at": "2026-10-12T20:24:02.472Z",
+      "ms": 34769,
+      "shot": "steps/07-The-workspace-each-team-s-own-view-at-the-client.png"
+    },
+    {
+      "n": 8,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The plans: Pilot, Growth, Enterprise",
+      "at": "2026-10-12T20:24:15.625Z",
+      "ms": 13153,
+      "shot": "steps/08-The-plans-Pilot-Growth-Enterprise.png"
+    },
+    {
+      "n": 9,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "A demo booked for Shivalik Snacks",
+      "at": "2026-10-12T20:24:47.174Z",
+      "ms": 31549,
+      "shot": "steps/09-A-demo-booked-for-Shivalik-Snacks.png"
+    },
+    {
+      "n": 10,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Find your workspace names it",
+      "at": "2026-10-12T20:25:10.339Z",
+      "ms": 23165,
+      "shot": "steps/10-Find-your-workspace-names-it.png"
+    },
+    {
+      "n": 11,
+      "who": "Munchly Foods' workspace",
+      "role": "A client's own address",
+      "did": "Workspace: Munchly Foods' own workspace, on the tablet",
+      "at": "2026-10-12T20:25:41.594Z",
+      "ms": 31255,
+      "shot": "steps/11-Workspace-Munchly-Foods-own-workspace-on-the-tab.png"
+    },
+    {
+      "n": 12,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The console's sign-in",
+      "at": "2026-10-12T20:25:47.428Z",
+      "ms": 5834,
+      "shot": "steps/12-The-console-s-sign-in.png"
+    },
+    {
+      "n": 13,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The sign-in's agents: picked, paused, played",
+      "at": "2026-10-12T20:26:54.638Z",
+      "ms": 67210,
+      "shot": "steps/13-The-sign-in-s-agents-picked-paused-played.png"
+    },
+    {
+      "n": 14,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Neha signed in to the console: the Overview",
+      "at": "2026-10-12T20:27:24.324Z",
+      "ms": 29686,
+      "shot": "steps/14-Neha-signed-in-to-the-console-the-Overview.png"
+    },
+    {
+      "n": 15,
+      "who": "Megha Bava",
+      "role": "Smart-Clearance staff · Support",
+      "did": "The tablet's sign-in: the agents round the card",
+      "at": "2026-10-12T20:28:32.609Z",
+      "ms": 68285,
+      "shot": "steps/15-The-tablet-s-sign-in-the-agents-round-the-card.png"
+    },
+    {
+      "n": 16,
+      "who": "Megha Bava",
+      "role": "Smart-Clearance staff · Support",
+      "did": "Megha signed in on the tablet: the same Overview",
+      "at": "2026-10-12T20:28:50.946Z",
+      "ms": 18337,
+      "shot": "steps/16-Megha-signed-in-on-the-tablet-the-same-Overview.png"
+    },
+    {
+      "n": 17,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The request on the Overview: Shivalik Snacks",
+      "at": "2026-10-12T20:29:03.783Z",
+      "ms": 12837,
+      "shot": "steps/17-The-request-on-the-Overview-Shivalik-Snacks.png"
+    },
+    {
+      "n": 18,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "New client · 1 Company",
+      "at": "2026-10-12T20:29:32.456Z",
+      "ms": 28673,
+      "shot": "steps/18-New-client-1-Company.png"
+    },
+    {
+      "n": 19,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "New client · 2 Workspace: its address and sign-in",
+      "at": "2026-10-12T20:29:50.609Z",
+      "ms": 18153,
+      "shot": "steps/19-New-client-2-Workspace-its-address-and-sign-in.png"
+    },
+    {
+      "n": 20,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "New client · 3 Supply chain",
+      "at": "2026-10-12T20:30:11.489Z",
+      "ms": 20880,
+      "shot": "steps/20-New-client-3-Supply-chain.png"
+    },
+    {
+      "n": 21,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "New client · 4 Exits",
+      "at": "2026-10-12T20:30:30.542Z",
+      "ms": 19053,
+      "shot": "steps/21-New-client-4-Exits.png"
+    },
+    {
+      "n": 22,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "New client · 5 Agents: Standard",
+      "at": "2026-10-12T20:30:49.154Z",
+      "ms": 18612,
+      "shot": "steps/22-New-client-5-Agents-Standard.png"
+    },
+    {
+      "n": 23,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "New client · 6 People: the workspace's admin",
+      "at": "2026-10-12T20:30:58.840Z",
+      "ms": 9686,
+      "shot": "steps/23-New-client-6-People-the-workspace-s-admin.png"
+    },
+    {
+      "n": 24,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "New client · 7 Review",
+      "at": "2026-10-12T20:31:17.101Z",
+      "ms": 18261,
+      "shot": "steps/24-New-client-7-Review.png"
+    },
+    {
+      "n": 25,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Shivalik Snacks' workspace set up: its Supply chain tab",
+      "at": "2026-10-12T20:31:39.578Z",
+      "ms": 22477,
+      "shot": "steps/25-Shivalik-Snacks-workspace-set-up-its-Supply-chai.png"
+    },
+    {
+      "n": 26,
+      "who": "Megha Bava",
+      "role": "Smart-Clearance staff · Support",
+      "did": "Shivalik Snacks in Megha's Clients",
+      "at": "2026-10-12T20:31:44.872Z",
+      "ms": 5294,
+      "shot": "steps/26-Shivalik-Snacks-in-Megha-s-Clients.png"
+    },
+    {
+      "n": 27,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The first stock export, mapped by the Data agent",
+      "at": "2026-10-12T20:33:03.486Z",
+      "ms": 78614,
+      "shot": "steps/27-The-first-stock-export-mapped-by-the-Data-agent.png"
+    },
+    {
+      "n": 28,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The supply-chain profile",
+      "at": "2026-10-12T20:33:26.226Z",
+      "ms": 22740,
+      "shot": "steps/28-The-supply-chain-profile.png"
+    },
+    {
+      "n": 29,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Arvind Sethi invited as approver",
+      "at": "2026-10-12T20:34:06.224Z",
+      "ms": 39998,
+      "shot": "steps/29-Arvind-Sethi-invited-as-approver.png"
+    },
+    {
+      "n": 30,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The agents, in the order they work",
+      "at": "2026-10-12T20:34:23.879Z",
+      "ms": 17655,
+      "shot": "steps/30-The-agents-in-the-order-they-work.png"
+    },
+    {
+      "n": 31,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The Data agent: loads at 08:00, 180 days of history",
+      "at": "2026-10-12T20:34:41.982Z",
+      "ms": 18103,
+      "shot": "steps/31-The-Data-agent-loads-at-08-00-180-days-of-histor.png"
+    },
+    {
+      "n": 32,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The Data agent, run on request",
+      "at": "2026-10-12T20:34:52.560Z",
+      "ms": 10578,
+      "shot": "steps/32-The-Data-agent-run-on-request.png"
+    },
+    {
+      "n": 33,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The Watcher's gates: Blinkit at 60 days, Zepto and Instamart at 55% of life",
+      "at": "2026-10-12T20:35:09.122Z",
+      "ms": 16562,
+      "shot": "steps/33-The-Watcher-s-gates-Blinkit-at-60-days-Zepto-and.png"
+    },
+    {
+      "n": 34,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Vision: asks for another photo below 0.92 confidence",
+      "at": "2026-10-12T20:35:24.815Z",
+      "ms": 15693,
+      "shot": "steps/34-Vision-asks-for-another-photo-below-0-92-confide.png"
+    },
+    {
+      "n": 35,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The Valuer: every exit priced, the bin included",
+      "at": "2026-10-12T20:35:35.657Z",
+      "ms": 10842,
+      "shot": "steps/35-The-Valuer-every-exit-priced-the-bin-included.png"
+    },
+    {
+      "n": 36,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The Router: aims for the most money recovered",
+      "at": "2026-10-12T20:35:47.616Z",
+      "ms": 11959,
+      "shot": "steps/36-The-Router-aims-for-the-most-money-recovered.png"
+    },
+    {
+      "n": 37,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The approval: always on, to the workspace admin",
+      "at": "2026-10-12T20:35:59.873Z",
+      "ms": 12257,
+      "shot": "steps/37-The-approval-always-on-to-the-workspace-admin.png"
+    },
+    {
+      "n": 38,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The Lister's reserve: ₹12 a pack, hidden in the client's territories",
+      "at": "2026-10-12T20:36:16.230Z",
+      "ms": 16357,
+      "shot": "steps/38-The-Lister-s-reserve-12-a-pack-hidden-in-the-cli.png"
+    },
+    {
+      "n": 39,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Outreach: English first, 2 free with every 10; off and on again",
+      "at": "2026-10-12T20:36:41.022Z",
+      "ms": 24792,
+      "shot": "steps/39-Outreach-English-first-2-free-with-every-10-off-.png"
+    },
+    {
+      "n": 40,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The Negotiator: never below ₹11.50, a 20% token, on Act",
+      "at": "2026-10-12T20:37:07.476Z",
+      "ms": 26454,
+      "shot": "steps/40-The-Negotiator-never-below-11-50-a-20-token-on-A.png"
+    },
+    {
+      "n": 41,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Paperwork: drafts only; people send them",
+      "at": "2026-10-12T20:37:18.451Z",
+      "ms": 10975,
+      "shot": "steps/41-Paperwork-drafts-only-people-send-them.png"
+    },
+    {
+      "n": 42,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Impact: posts after a 21-day return window",
+      "at": "2026-10-12T20:37:33.041Z",
+      "ms": 14590,
+      "shot": "steps/42-Impact-posts-after-a-21-day-return-window.png"
+    },
+    {
+      "n": 43,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The client's actions: Go live, Pause every agent",
+      "at": "2026-10-12T20:37:50.328Z",
+      "ms": 17287,
+      "shot": "steps/43-The-client-s-actions-Go-live-Pause-every-agent.png"
+    },
+    {
+      "n": 44,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Channels and guardrails",
+      "at": "2026-10-12T20:38:18.486Z",
+      "ms": 28158,
+      "shot": "steps/44-Channels-and-guardrails.png"
+    },
+    {
+      "n": 45,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Destroyed at the godown: evidence, checks, credit",
+      "at": "2026-10-12T20:38:43.923Z",
+      "ms": 25437,
+      "shot": "steps/45-Destroyed-at-the-godown-evidence-checks-credit.png"
+    },
+    {
+      "n": 46,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Integrations",
+      "at": "2026-10-12T20:38:47.034Z",
+      "ms": 3111,
+      "shot": "steps/46-Integrations.png"
+    },
+    {
+      "n": 47,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Shivalik Snacks on Growth",
+      "at": "2026-10-12T20:39:03.025Z",
+      "ms": 15991,
+      "shot": "steps/47-Shivalik-Snacks-on-Growth.png"
+    },
+    {
+      "n": 48,
+      "who": "Megha Bava",
+      "role": "Smart-Clearance staff · Support",
+      "did": "Megha refused: only a Super admin changes a plan",
+      "at": "2026-10-12T20:39:16.487Z",
+      "ms": 13462,
+      "shot": "steps/48-Megha-refused-only-a-Super-admin-changes-a-plan.png"
+    },
+    {
+      "n": 49,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "16 audit lines, each in Neha's name",
+      "at": "2026-10-12T20:39:41.341Z",
+      "ms": 24854,
+      "shot": "steps/49-16-audit-lines-each-in-Neha-s-name.png"
+    },
+    {
+      "n": 50,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The figures: recovered, in flight, waiting, runs",
+      "at": "2026-10-12T20:39:54.216Z",
+      "ms": 12875,
+      "shot": "steps/50-The-figures-recovered-in-flight-waiting-runs.png"
+    },
+    {
+      "n": 51,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Food, by day: kept and destroyed",
+      "at": "2026-10-12T20:40:10.403Z",
+      "ms": 16187,
+      "shot": "steps/51-Food-by-day-kept-and-destroyed.png"
+    },
+    {
+      "n": 52,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Agents at work, a stop filtering the batches",
+      "at": "2026-10-12T20:40:24.089Z",
+      "ms": 13686,
+      "shot": "steps/52-Agents-at-work-a-stop-filtering-the-batches.png"
+    },
+    {
+      "n": 53,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Every client's batches, searched and paged",
+      "at": "2026-10-12T20:40:40.812Z",
+      "ms": 16723,
+      "shot": "steps/53-Every-client-s-batches-searched-and-paged.png"
+    },
+    {
+      "n": 54,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Needs attention, demo requests and agent runs",
+      "at": "2026-10-12T20:40:49.401Z",
+      "ms": 8589,
+      "shot": "steps/54-Needs-attention-demo-requests-and-agent-runs.png"
+    },
+    {
+      "n": 55,
+      "who": "Megha Bava",
+      "role": "Smart-Clearance staff · Support",
+      "did": "The Overview on the tablet",
+      "at": "2026-10-12T20:40:55.581Z",
+      "ms": 6180,
+      "shot": "steps/55-The-Overview-on-the-tablet.png"
+    },
+    {
+      "n": 56,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Munchly Foods' journey clock, read and left at real time",
+      "at": "2026-10-12T20:41:40.116Z",
+      "ms": 44535,
+      "shot": "steps/56-Munchly-Foods-journey-clock-read-and-left-at-rea.png"
+    },
+    {
+      "n": 57,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Munchly Foods' scheduled runs and timers (nothing fired)",
+      "at": "2026-10-12T20:41:50.126Z",
+      "ms": 10010,
+      "shot": "steps/57-Munchly-Foods-scheduled-runs-and-timers-nothing-.png"
+    },
+    {
+      "n": 58,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "A live client's actions: open its workspace, pause, reset",
+      "at": "2026-10-12T20:41:59.140Z",
+      "ms": 9014,
+      "shot": "steps/58-A-live-client-s-actions-open-its-workspace-pause.png"
+    },
+    {
+      "n": 59,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Munchly Foods' SKUs, their gates and a batch's override",
+      "at": "2026-10-12T20:42:34.459Z",
+      "ms": 35319,
+      "shot": "steps/59-Munchly-Foods-SKUs-their-gates-and-a-batch-s-ove.png"
+    },
+    {
+      "n": 60,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Every client, in one table",
+      "at": "2026-10-12T20:42:52.953Z",
+      "ms": 18494,
+      "shot": "steps/60-Every-client-in-one-table.png"
+    },
+    {
+      "n": 61,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "The agents, across every client",
+      "at": "2026-10-12T20:43:12.774Z",
+      "ms": 19821,
+      "shot": "steps/61-The-agents-across-every-client.png"
+    },
+    {
+      "n": 62,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "What the platform connects to",
+      "at": "2026-10-12T20:43:28.335Z",
+      "ms": 15561,
+      "shot": "steps/62-What-the-platform-connects-to.png"
+    },
+    {
+      "n": 63,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Pilot, Growth, Enterprise",
+      "at": "2026-10-12T20:43:39.052Z",
+      "ms": 10717,
+      "shot": "steps/63-Pilot-Growth-Enterprise.png"
+    },
+    {
+      "n": 64,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Smart-Clearance's own team",
+      "at": "2026-10-12T20:43:59.967Z",
+      "ms": 20915,
+      "shot": "steps/64-Smart-Clearance-s-own-team.png"
+    },
+    {
+      "n": 65,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Everything staff did, everywhere",
+      "at": "2026-10-12T20:44:18.242Z",
+      "ms": 18275,
+      "shot": "steps/65-Everything-staff-did-everywhere.png"
+    },
+    {
+      "n": 66,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Shivalik Snacks among the clients",
+      "at": "2026-10-12T20:44:31.264Z",
+      "ms": 13022,
+      "shot": "steps/66-Shivalik-Snacks-among-the-clients.png"
+    },
+    {
+      "n": 67,
+      "who": "Neha Kulkarni",
+      "role": "Smart-Clearance staff · console",
+      "did": "Signed out: back at the sign-in",
+      "at": "2026-10-12T20:44:52.649Z",
+      "ms": 21385,
+      "shot": "steps/67-Signed-out-back-at-the-sign-in.png"
+    }
+  ],
+  "figures": {
+    "Target": "production",
+    "Demo request": "Ritu Malhotra, Shivalik Snacks, ritu@shivalik-snacks.example",
+    "Client": "Shivalik Snacks (shivalik-snacks-smartclearance.web.app), set up from its request",
+    "First export": "6 rows, mapped by the Data agent",
+    "Invited": "Arvind Sethi, arvind.sethi@shivalik-snacks.example, Approver",
+    "Approver": "the workspace admin",
+    "Plan": "Pilot, then Growth",
+    "Support refused": "Only a Super admin can change a client's plan",
+    "Audit lines": 16,
+    "Overview": "Recovered, 30 days ₹64,67,498 52× on the 30 days before · Batches in flight 40 across 5 clients · Waiting for a yes 12 oldest 161 h · Vindhya Dairy · Agent runs today 2 50 agents on"
+  },
+  "findings": [
+    {
+      "severity": "note",
+      "where": "/",
+      "what": "The Overview's demo requests are not part of its 30-second live reading: a new request shows once the Overview is opened again"
+    }
+  ]
+}
