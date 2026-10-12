@@ -1,0 +1,25 @@
+/* Sign-in option A · In focus: the photograph is the page's ground; the card's own glass blurs it further where they
+   meet. It settles once (1.04 to 1 in 1.6 s) and holds; at once under reduced motion. Night dims it. */
+.signin > .ground { background: #2a2219 url(plate.webp) 0% 50% / cover no-repeat; animation: sa-settle 1.6s cubic-bezier(0.22, 1, 0.36, 1) both; transform-origin: 20% 60%; }
+.signin > .ground::before { display: none; }
+@keyframes sa-settle { from { transform: scale(1.04); } }
+[data-theme="dark"] .signin > .ground { filter: brightness(0.56) saturate(0.92); }
+@media (prefers-reduced-motion: reduce) { .signin > .ground { animation: none; } }
+/* the stage: the mark and its line in glass at the top, the caption under them; the packs below, in the photo */
+.sa-stage { align-content: start; gap: 14px; padding-top: 48px; padding-bottom: 44px; }
+.sa-brand { display: grid; gap: 10px; justify-self: start; max-width: 460px; padding: 18px 22px 20px; border-radius: 24px; background: color-mix(in oklab, var(--surface) 80%, transparent); -webkit-backdrop-filter: blur(20px) saturate(140%); backdrop-filter: blur(20px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line-2); }
+.sa-brand .si-tagline { margin: 0; }
+.sa-caption { display: inline-flex; align-items: center; gap: 8px; justify-self: start; padding: 7px 14px; border-radius: 99px; font-size: 13px; color: var(--fg-2); background: color-mix(in oklab, var(--surface) 82%, transparent); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: var(--shadow-1); }
+.sa-caption .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); }
+/* phones: the photograph is a band at the top, fading into the ground, and the card rises over its foot */
+@container app (max-width: 767px) {
+  .signin > .ground { background: var(--bg) url(plate.webp) 7% 0 / auto 330px no-repeat; transform-origin: 20% 0; }
+  .signin > .ground::after { content: ""; position: absolute; left: 0; right: 0; top: 220px; height: 112px; background: linear-gradient(to bottom, transparent, var(--bg)); opacity: 1; mix-blend-mode: normal; }
+  [data-theme="dark"] .signin > .ground { filter: none; }
+  [data-theme="dark"] .signin > .ground::after { background: linear-gradient(to bottom, rgb(0 0 0 / 0.25), var(--bg)); }
+  .si-panel { padding-top: 214px; }
+  .si-card { padding: 22px 18px 18px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow-3); }
+  .si-hero { display: none; }
+}
+/* tablets: the photograph whole behind the card, the packs at its left */
+@container app (min-width: 768px) and (max-width: 1099px) { .signin > .ground { background-position: 0% 60%; } }

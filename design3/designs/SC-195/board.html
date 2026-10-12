@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC-195 Sign-in and swing</title>
+<meta name="description" content="Two parts of Munchly's workspace, three options each: the sign-in's backdrop and how it shows the products, and how a batch's swing is worked out.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<link rel="stylesheet" href="board.css">
+<body>
+<main class="wrap">
+<h1>The sign-in, and the swing explained</h1>
+<p class="lede">SC-195 · Munchly's workspace · two parts, three options each: <b>the sign-in's backdrop and how it shows the products</b>, and <b>how a batch's swing is worked out</b>. Pick one option for each part.</p>
+<p>The maintainer (12 Oct), with screenshots of the live sign-in and of the Mango Drink's Journey card:</p>
+<blockquote><p>“For workspace login, I need a better background, may something with blurry effect --> product showcased should be done in much better way.”</p><p>“See image 6, there should a note added, clicking which I should see the detailed calculation how swing is calculated and loss is minimized.”</p></blockquote>
+<p>The rest of the same list (the console's sign-out on phones, the people's portraits, Lakshmi Agencies and her kirana on the sign-in, Find yours removed, the sign-in's wait, the Execution gap, the receipt opened whole) is built on SC-194; every still here already carries it.</p>
+
+<h2>Part 1 · The sign-in's backdrop and products</h2>
+<h3 class="sub">Today</h3>
+<div class="desks">
+<figure><img src="current/signin-1440-light.webp" width="1440" height="900" loading="lazy" alt="Today: the sign-in on the sage ground, three floating renders (the chips, a carton, the mango drink) beside the card, the result and the tracker under them."><figcaption>The sign-in today · light</figcaption></figure>
+<figure><img src="current/signin-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Today: the sign-in in dark."><figcaption>Today · dark</figcaption></figure>
+</div>
+<p>The live build shows the guided stage (the mark, its line and the three renders, no figure); design3's shows the figure and the tracker too. Every option replaces that stage, so both read the same afterwards.</p>
+
+<h3 class="sub">In every option</h3>
+<div class="shared">
+<div class="card"><h3 class="sub">The card stays</h3><p>Munchly's frosted card on the right, unchanged: the sign-in, the people in the story with their portraits (SC-194) and Powered by Smart-Clearance. Its own glass blurs whatever is behind it.</p></div>
+<div class="card"><h3 class="sub">Calm motion</h3><p>Each backdrop and stage settles once, in under 2.5 s, and holds; nothing loops (WCAG 2.2.2), and under reduced motion it is in place at once.</p></div>
+<div class="card"><h3 class="sub">Text keeps its contrast</h3><p>Anything set on a picture sits on glass or on a wash of the ground's colour, measured on the pixels behind it at the build.</p></div>
+</div>
+
+<section class="opt rec" id="signin-a"><header><h3>Option A · In focus</h3><span class="tag">Recommended</span></header>
+<p>One photograph fills the page: <b>Munchly's packs crisp on a kirana counter</b> in the left third, the shop and the lane <b>soft behind them</b>, a true depth of field, and the frosted card over the blur on the right. The products are the picture, not three floating renders. The stage keeps the product's mark and its line in glass, and names what is in focus. On a phone the photograph is a band at the top and the card rises over its foot. By night the photograph dims.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The calmest of the three: one image, one card, of a piece with the people's photographs (SC-194) and the films.</li><li>A photograph is a new register on the app's front door (DESIGN.md's app imagery is soft 3D renders); the packs in it are the renders' design, drawn photographically.</li><li>The plate is a local Qwen-Image render from the packs' own renders (free); the build would render it again at full size.</li></ul></dd></dl>
+<div class="desks"><figure><img src="signin-a/signin-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option A: the photograph of Munchly's chips and mango drink packs on a kirana counter fills the page, the shop blurred behind the frosted sign-in card."><figcaption>Desktop · light</figcaption></figure><figure><img src="signin-a/signin-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option A in dark: the photograph dimmed."><figcaption>Desktop · dark</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="signin-a/signin-390-light.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone: the photograph as a band at the top, the card over its foot."><figcaption>Phone · light</figcaption></figure><figure><img src="signin-a/signin-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone in dark."><figcaption>Phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="signin-a/mockup.html?theme=light">Open option A</a></div>
+</section>
+
+<section class="opt" id="signin-b"><header><h3>Option B · The range, behind glass</h3></header>
+<p>The films' depot aisle (SC-187), its cartons Munchly's, sits <b>far out of focus</b> behind everything, under a wash of the ground's colour. On the stage, <b>Munchly's range stands on a glass shelf</b>: every food pack the workspace watches, with its name, size and MRP, rising into place one after another (once). On a phone the shelf is a row of four over the card.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Shows the whole range, not two packs, in the design system's own renders.</li><li>The photograph is only light and depth: blurred this far, it could be any warehouse.</li><li>More to read beside a sign-in: six names and prices.</li></ul></dd></dl>
+<div class="desks"><figure><img src="signin-b/signin-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option B: a blurred warehouse behind everything, and six Munchly packs on a glass shelf with their names and prices."><figcaption>Desktop · light</figcaption></figure><figure><img src="signin-b/signin-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option B in dark."><figcaption>Desktop · dark</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="signin-b/signin-390-light.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone: four packs on a glass shelf over the card."><figcaption>Phone · light</figcaption></figure><figure><img src="signin-b/signin-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone in dark."><figcaption>Phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="signin-b/mockup.html?theme=light">Open option B</a></div>
+</section>
+
+<section class="opt" id="signin-c"><header><h3>Option C · The brand's own light</h3></header>
+<p>No photograph: the ground becomes a <b>soft-focus field of light</b> in the design system's inks (mint, sky, the approval's amber, a little of Munchly's orange), drifting into place once and then still. On the stage the three packs are <b>composed large on a glass floor</b>, with their reflections and contact shadows, each named on a tag. On a phone the composition sits over the card, small.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Stays in DESIGN.md's register of soft 3D renders; nothing new to make.</li><li>The blur is abstract light, not a place; the products are bigger and named, but still renders.</li><li>Closest to today, so the least change for a returning visitor.</li></ul></dd></dl>
+<div class="desks"><figure><img src="signin-c/signin-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option C: a soft field of coloured light, the carton, chips and mango drink composed large on a glass floor, each with a name tag."><figcaption>Desktop · light</figcaption></figure><figure><img src="signin-c/signin-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option C in dark."><figcaption>Desktop · dark</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="signin-c/signin-390-light.webp" width="780" height="1688" loading="lazy" alt="Option C on a phone: the three packs over the card."><figcaption>Phone · light</figcaption></figure><figure><img src="signin-c/signin-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option C on a phone in dark."><figcaption>Phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="signin-c/mockup.html?theme=light">Open option C</a></div>
+</section>
+
+<h2>Part 2 · The swing, explained</h2>
+<h3 class="sub">Today</h3>
+<div class="desks"><figure><img src="current/journey-1440-light.webp" width="1440" height="900" loading="lazy" alt="Today: the Mango Drink's Journey card, ₹16,917 recovered, every line done · swing ₹22,194, with nothing to say what the swing is."><figcaption>The Mango Drink's Journey card · “swing ₹22,194” and nothing more</figcaption></figure></div>
+
+<h3 class="sub">What the swing is (money.js, for the Mango Drink)</h3>
+<div class="shared">
+<div class="card"><h3 class="sub">If it were destroyed</h3><p>1,580 packs: the stock written off at cost ₹17,380.00, the GST input credit reversed ₹869.00, disposal ₹2,370.00 and EPR ₹2,038.20. A P&amp;L of <b>−₹22,657.20</b>, ₹14.34 a pack.</p></div>
+<div class="card"><h3 class="sub">With the plan</h3><p>The kiranas ₹15,778.00, the staff sale ₹1,200.00, the food bank −₹60.90: <b>₹16,917.10 recovered</b>. The stock leaves the books at cost either way (−₹17,380.00), so a P&amp;L of <b>−₹462.90</b>.</p></div>
+<div class="card"><h3 class="sub">The swing</h3><p>−₹462.90 − (−₹22,657.20) = <b>₹22,194.30</b>. Put another way: the ₹16,917.10 recovered plus the ₹5,277.20 destroying would have cost beyond the stock. Every option computes it from money.js, for whichever batch the card shows.</p></div>
+</div>
+
+<section class="opt rec" id="swing-a"><header><h3>Option A · How it adds up</h3><span class="tag">Recommended</span></header>
+<p>Under the figure a note says the swing in words, <b>“₹22,194 better than destroying it · How it adds up”</b>, and opens the working in a sheet: the swing, a <b>bridge</b> from the P&amp;L if destroyed to the P&amp;L with the plan (a step for each exit and one for what was not paid), the bin's cost line by line, what each exit did, the swing as a sum, and <b>how the loss was kept small</b> (the best-paying exit first, the exits left out and why, the GST credit kept, no disposal or EPR).</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Every figure on the card can be followed to its rule, in one place, and the card stays as it is.</li><li>The longest read; the bridge needs its caption to say what “Not paid” is.</li><li>The build: a sheet and one chart in core, from figures money.js already gives (and the live case already carries).</li></ul></dd></dl>
+<div class="desks"><figure><img src="swing-a/card-1440-light.webp" width="792" height="591" loading="lazy" alt="Option A: the Journey card with the note, ₹22,194 better than destroying it, How it adds up."><figcaption>The card, with its note</figcaption></figure><figure><img src="swing-a/open-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option A: the working open in a side sheet."><figcaption>The working, open · light</figcaption></figure></div>
+<div class="desks"><figure><img src="swing-a/open-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option A in dark."><figcaption>Open · dark</figcaption></figure><figure><img src="swing-a/working-1440-light.webp" width="424" height="1600" loading="lazy" alt="Option A: the whole working, from the swing and its bridge to how the loss was kept small."><figcaption>The whole sheet</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="swing-a/open-390-light.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone: the working as a bottom sheet."><figcaption>Phone · light</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="swing-a/mockup.html?theme=light">Open option A</a><a class="btn" href="swing-a/mockup.html?theme=light&story=chips">The chips (after the counter)</a></div>
+</section>
+
+<section class="opt" id="swing-b"><header><h3>Option B · Beside the figure</h3></header>
+<p>Under the figure, <b>Show the working</b> opens two columns in place, on the card itself: <b>destroyed against the plan</b>, line by line (sold or given, van and fees, the GST credit, disposal, EPR, the stock at cost), each P&amp;L at its foot and the swing as the difference. No sheet and no chart.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The reader never leaves the card, and the two columns make the comparison plain.</li><li>The card grows by half while it is open; on a phone the figures sit tight.</li><li>Says what the swing is, less why each exit was chosen.</li></ul></dd></dl>
+<div class="desks"><figure><img src="swing-b/card-1440-light.webp" width="792" height="585" loading="lazy" alt="Option B: the card with Show the working under the figure."><figcaption>The card, closed</figcaption></figure><figure><img src="swing-b/open-1440-light.webp" width="792" height="1068" loading="lazy" alt="Option B: the working open on the card, two columns, destroyed and with the plan."><figcaption>Open · light</figcaption></figure></div>
+<div class="desks"><figure><img src="swing-b/open-1440-dark.webp" width="792" height="1068" loading="lazy" alt="Option B open, in dark."><figcaption>Open · dark</figcaption></figure><figure><img src="swing-b/open-390-light.webp" width="716" height="2488" loading="lazy" alt="Option B on a phone, open."><figcaption>Phone · open</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="swing-b/mockup.html?theme=light">Open option B</a><a class="btn" href="swing-b/mockup.html?theme=light&story=chips">The chips (after the counter)</a></div>
+</section>
+
+<section class="opt" id="swing-c"><header><h3>Option C · Pack by pack</h3></header>
+<p>An <b>ⓘ</b> beside “swing” opens <b>where the swing came from</b>: one bar of the swing split by exit, each exit's share (the kirana scheme ₹20,360.48, 92%) and what a pack sent there was worth against the bin, then each exit's pack beside the bin's on one scale (₹11.50, ₹8.00, −₹1.05 against −₹14.34). A popover on desktops and tablets, a sheet on phones.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Answers “why so much” by the exits, quickly, and compact.</li><li>The bin's own lines are one sentence, and the P&amp;L is not shown.</li><li>A pack's share adds what destroying it would have cost beyond its book cost (₹3.34), which needs its sentence.</li></ul></dd></dl>
+<div class="desks"><figure><img src="swing-c/card-1440-light.webp" width="792" height="547" loading="lazy" alt="Option C: the card with an info button beside the swing."><figcaption>The card, with its ⓘ</figcaption></figure><figure><img src="swing-c/open-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option C: the popover, where the swing came from."><figcaption>Open · light</figcaption></figure></div>
+<div class="desks"><figure><img src="swing-c/open-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option C open, in dark."><figcaption>Open · dark</figcaption></figure><figure><img src="swing-c/where-1440-light.webp" width="421" height="522" loading="lazy" alt="Option C: the popover alone."><figcaption>The popover</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="swing-c/open-390-light.webp" width="780" height="1688" loading="lazy" alt="Option C on a phone: a bottom sheet."><figcaption>Phone · light</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="swing-c/mockup.html?theme=light">Open option C</a><a class="btn" href="swing-c/mockup.html?theme=light&story=chips">The chips (after the counter)</a></div>
+</section>
+
+<h2>Side by side</h2>
+<div class="tablewrap"><table class="cmp"><thead><tr><th>Sign-in</th><th>A · In focus</th><th>B · The range, behind glass</th><th>C · The brand's own light</th></tr></thead><tbody>
+<tr><th>The blur</th><td>A real depth of field in one photograph</td><td>The films' depot, far out of focus</td><td>Abstract light in the system's inks</td></tr>
+<tr><th>The products</th><td>Chips and mango drink, photographed</td><td>All six food packs, renders, with name and MRP</td><td>Three renders, large, named</td></tr>
+<tr><th>New imagery</th><td>One Qwen plate (local, free)</td><td>An SC-187 still, already made</td><td>None</td></tr>
+<tr><th>What the build touches</th><td colspan="3">The live sign-in's stage and ground: design3 <code>auth.jsx</code> HeroStage and <code>screens.css</code>, then core's <code>HeroStage.svelte</code>, <code>SignInLive</code> and <code>SignIn</code>; the guided demo's sign-in shows it too</td></tr>
+</tbody></table></div>
+<div class="tablewrap" style="margin-top:14px"><table class="cmp"><thead><tr><th>Swing</th><th>A · How it adds up</th><th>B · Beside the figure</th><th>C · Pack by pack</th></tr></thead><tbody>
+<tr><th>Opens</th><td>A side sheet (a bottom sheet on phones)</td><td>In place, on the card</td><td>A popover (a sheet on phones)</td></tr>
+<tr><th>Shows</th><td>The bin, the exits, both P&amp;Ls, the swing, a bridge, why the loss was small</td><td>Destroyed against the plan, line by line</td><td>Each exit's share, and a pack against the bin</td></tr>
+<tr><th>Chart</th><td>A bridge</td><td>None</td><td>A split bar and a per-pack scale</td></tr>
+<tr><th>Where</th><td colspan="3">Wherever the card shows a swing: the Command Center and a batch's Journey (the kit's TrackerCard money line)</td></tr>
+</tbody></table></div>
+
+<h2>Recommended: A and A</h2>
+<div class="rec-box"><p><b>In focus</b> answers both halves of the request in one move: the blur is the photograph's own depth of field, and the products are what is in focus, as real as the people now are. <b>How it adds up</b> keeps the card as it is and puts the whole calculation, with the reasons the loss was small, one tap away; B suits a quick look, C a question about the exits, but only A shows how the swing is worked out from start to finish.</p></div>
+
+<div class="q" style="margin-top:20px"><h3>To decide</h3><ul><li>Which sign-in option and which swing option to build (any pair).</li><li>For sign-in A: the photograph shows the chips and the mango drink, the two batches the story follows. Keep those two, or show more of the range?</li><li>For swing A: the same working on the Ledger's batch page (Money), or the Journey card only?</li></ul></div>
+
+<footer>Smart-Clearance · SC-195 · every company, person and figure fictional · mockups on design system v3: the live workspace's sign-in, and Priya on the Mango Drink once it has cleared, on the stub</footer>
+</main>
+</body>
+</html>

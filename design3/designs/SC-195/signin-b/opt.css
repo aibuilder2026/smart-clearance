@@ -1,0 +1,30 @@
+/* Sign-in option B · The range, behind glass: the depot still, softened (a 14 px blur baked in, then 18 px more here),
+   under a wash of the ground's colour so text on it keeps its contrast in both themes. */
+.signin > .ground { background: var(--bg); }
+.signin > .ground::before { inset: -40px; height: auto; background: url(depot-soft.webp) 50% 50% / cover no-repeat; filter: blur(18px) saturate(1.08); }
+.signin > .ground::after { content: ""; position: absolute; inset: 0; opacity: 1; mix-blend-mode: normal; background: linear-gradient(100deg, color-mix(in oklab, var(--bg) 74%, transparent) 0%, color-mix(in oklab, var(--bg) 46%, transparent) 55%, color-mix(in oklab, var(--bg) 26%, transparent) 100%); }
+[data-theme="dark"] .signin > .ground::after { background: linear-gradient(100deg, rgb(8 14 11 / 0.86) 0%, rgb(8 14 11 / 0.66) 55%, rgb(8 14 11 / 0.5) 100%); }
+.sb-stage { gap: 26px; }
+.sb-range { display: grid; gap: 12px; max-width: 760px; padding: 18px 20px 16px; border-radius: 26px; background: color-mix(in oklab, var(--surface) 62%, transparent); -webkit-backdrop-filter: blur(20px) saturate(140%); backdrop-filter: blur(20px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line-2); }
+.sb-shelf { display: grid; }
+.sb-on, .sb-names { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 8px; }
+.sb-on { align-items: end; padding: 0 4px; }
+.sb-pack { position: relative; z-index: 1; display: grid; justify-items: center; margin-bottom: -6px; }
+.sb-names { margin: 10px 0 0; padding: 0; list-style: none; }
+.sb-names li { display: grid; justify-items: center; gap: 2px; text-align: center; }
+.sb-shelf.small .sb-on, .sb-shelf.small .sb-names { gap: 4px; }
+.sb-pack img { filter: drop-shadow(0 12px 14px rgb(16 40 28 / 0.18)); }
+.sb-name { font-size: 13px; font-weight: 650; line-height: 1.2; }
+.sb-meta { font-size: 11.5px; color: var(--fg-2); font-variant-numeric: tabular-nums; }
+.sb-shelf.small .sb-name { font-size: 11.5px; }
+.sb-shelf.small .sb-meta { font-size: 10.5px; }
+/* the glass ledge the packs stand on, under their names */
+.sb-ledge { position: relative; height: 10px; margin: 0 -6px; border-radius: 4px; background: linear-gradient(to bottom, color-mix(in oklab, var(--surface) 92%, transparent), color-mix(in oklab, var(--surface) 55%, transparent)); box-shadow: 0 6px 14px rgb(16 40 28 / 0.12), 0 0 0 var(--hair) var(--line-2); }
+.sb-line { margin: 0; max-width: 46ch; font-size: 15px; line-height: 1.5; color: var(--fg-2); }
+/* phones: the row of four over the card, in the sign-in's own grid */
+.sb-phone { display: none; }
+@container app (max-width: 767px) {
+  .signin > .sb-phone { display: block; grid-row: 1; position: relative; z-index: 1; margin: calc(var(--safe-top) + 18px) 16px 0; padding: 14px 12px 10px; border-radius: 22px; background: color-mix(in oklab, var(--surface) 70%, transparent); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line-2); }
+  .signin > .si-panel { grid-row: 2; padding-top: 14px; }
+  .si-hero { display: none; }
+}

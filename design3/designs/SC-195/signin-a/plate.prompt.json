@@ -1,0 +1,30 @@
+{
+  "name": "signin-a/plate",
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "kind": "edit, then an edit to extend it",
+  "steps": [
+    {
+      "prompt": "A realistic photograph for a website background, 16:9. A product still life in the LEFT third of the frame: the orange Munchly Masala Chips pack from the first image and the yellow Munchly Mango Drink carton with its straw from the second image, two chips packs standing and one leaning, three mango drink cartons beside them, placed on a worn wooden counter of an Indian kirana shop, crisp and in sharp focus, keeping their printed MUNCHLY branding exactly. Warm late-afternoon sunlight from the right, soft shadows. Very shallow depth of field, 85 mm lens at f/1.8: everything behind the counter is a creamy out-of-focus kirana interior with shelves of packets and glowing light, soft round bokeh. The right two thirds of the frame hold no products, only the soft blurred shop. Natural colours, no text other than the packs' own print, no people.",
+      "inputs": [
+        "design3/system/img/pack-chips.webp (on white)",
+        "design3/system/img/pack-mango.webp (on white)"
+      ],
+      "seed": 195001,
+      "size": 1024,
+      "out": "a-counter-1.png 1024x1024"
+    },
+    {
+      "prompt": "Keep the left part of this photograph exactly as it is: the Munchly Masala Chips pack and the three Munchly Mango Drink cartons on the worn wooden counter, their print, the light and the shelves behind them. Continue the softly out-of-focus Indian kirana shop interior naturally across the right part of the frame: blurred shelves of packets, warm late-afternoon sunlight from the right, creamy bokeh, the counter's edge continuing. No new products in focus, no text, no people. A realistic photograph, very shallow depth of field.",
+      "inputs": [
+        "a-counter-1.png on the left of a 1820x1024 canvas, its right edge stretched and blurred as a hint"
+      ],
+      "seed": 195011,
+      "size": 1024,
+      "out": "a-wide-1.png 1376x768"
+    }
+  ],
+  "postprocess": "WebP q84 from a-wide-1.png",
+  "use": "SC-195 sign-in option A: the page's ground",
+  "fictional": "Munchly Foods and its packs are fictional",
+  "createdAt": "2026-10-12T15:57:34.000Z"
+}

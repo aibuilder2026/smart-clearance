@@ -1,0 +1,49 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "current/signin-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 9500
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "current/signin-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 9500
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "current/signin-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2500
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html",
+  "out": "current/journey-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2500,
+  "ls": {
+   "sc3-session": {
+    "uid": "priya"
+   }
+  },
+  "js": "SC3_FLOW.useScenario(\"mango\"); SC3_FLOW.fastForward(9); location.hash = \"#/journey/MF-2410-118\";"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html",
+  "out": "current/journey-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2500,
+  "ls": {
+   "sc3-session": {
+    "uid": "priya"
+   }
+  },
+  "js": "SC3_FLOW.useScenario(\"mango\"); SC3_FLOW.fastForward(9); location.hash = \"#/journey/MF-2410-118\";"
+ }
+]

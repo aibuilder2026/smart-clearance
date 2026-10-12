@@ -1,0 +1,86 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/signin-a/mockup.html?shot=1",
+  "out": "signin-a/signin-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/signin-a/mockup.html?shot=1",
+  "out": "signin-a/signin-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/signin-a/mockup.html?shot=1",
+  "out": "signin-a/signin-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/signin-a/mockup.html?shot=1",
+  "out": "signin-a/signin-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/signin-b/mockup.html?shot=1",
+  "out": "signin-b/signin-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/signin-b/mockup.html?shot=1",
+  "out": "signin-b/signin-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/signin-b/mockup.html?shot=1",
+  "out": "signin-b/signin-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/signin-b/mockup.html?shot=1",
+  "out": "signin-b/signin-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/signin-c/mockup.html?shot=1",
+  "out": "signin-c/signin-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/signin-c/mockup.html?shot=1",
+  "out": "signin-c/signin-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/signin-c/mockup.html?shot=1",
+  "out": "signin-c/signin-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/signin-c/mockup.html?shot=1",
+  "out": "signin-c/signin-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 3400
+ }
+]
