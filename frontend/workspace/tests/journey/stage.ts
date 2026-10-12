@@ -71,7 +71,7 @@ const TAB_BEZEL = 11;
 const PHONE_BEZEL = 9;
 const PHONE_SCALE = 0.78;
 /** the stage's layouts: three screens (two tablets and a phone, SC-179), or two (a laptop and a tablet, SC-191) */
-export type Layout = 'three' | 'two';
+export type Layout = 'three' | 'two' | 'one';
 let LAYOUT: Layout = 'three';
 let PANES = {} as Record<PaneId, PaneSpec>;
 let COL = {} as Record<PaneId, number>;
@@ -79,6 +79,23 @@ let COL = {} as Record<PaneId, number>;
  *  its own width, and the landscape screen (a tablet, or a laptop) what is left, with the narrator under it */
 function setLayout(layout: Layout) {
 	LAYOUT = layout;
+	if (layout === 'one') {
+		// one laptop as large as the stage's height allows (SC-197), the narrator in a column beside it
+		const scale = (H - TOP - HEAD - M - 2 * TAB_BEZEL - 10) / 900;
+		const opCol = 1440 * scale + 2 * TAB_BEZEL;
+		PANES = {
+			operator: {
+				label: 'Laptop',
+				size: '1440 × 900',
+				viewport: { width: 1440, height: 900 },
+				scale,
+				max: { width: 2160, height: 1350 },
+				mobile: false
+			}
+		} as Record<PaneId, PaneSpec>;
+		COL = { operator: opCol, distributor: 0, phone: 0 };
+		return;
+	}
 	const phone = layout === 'three';
 	const distScale = (H - TOP - HEAD - M - 2 * TAB_BEZEL) / 1180;
 	const distCol = 820 * distScale + 2 * TAB_BEZEL;
@@ -141,6 +158,8 @@ const KEEP_DRAWING = [
 ];
 /** how long the cursor takes to glide to its target, and how long it rests there before the click */
 const GLIDE = 520;
+/** a scroll further than this many screens is a cut, not a glide (SC-197) */
+const CUT_SCREENS = 3;
 
 /** the cursor every screen draws: an arrow that follows the mouse, gliding, and a ripple where it presses. Its place
  *  is kept across a page's loads (sessionStorage), so it glides on from where it was */
@@ -374,6 +393,9 @@ export class Stage {
 			this.latest[id] = f.data;
 			pane.lastFrame = Date.now();
 			cdp.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => {});
+			// onto the stage as it arrives (SC-197): a 50 ms tick let through 20 frames a second into a 25 fps recording,
+			// so one frame in five repeated, and motion juddered
+			void this.pump();
 		});
 		this.panes[id] = pane;
 		this.run.watch(page);
@@ -403,7 +425,8 @@ export class Stage {
 		for (const pane of Object.values(this.panes)) if (Date.now() - pane.lastFrame > 6000) await this.recast(pane);
 	}
 
-	/** the screens' newest frames onto the stage, at most one a screen per tick */
+	/** the screens' newest frames onto the stage, as they arrive: while one batch is on its way the next frames wait, and
+	 *  only the newest of each screen's goes next */
 	private async pump() {
 		if (this.pumping) return;
 		const batch = Object.entries(this.latest);
@@ -419,6 +442,7 @@ export class Stage {
 			/* the stage is closing */
 		} finally {
 			this.pumping = false;
+			if (Object.keys(this.latest).length) void this.pump();
 		}
 	}
 
@@ -723,34 +747,101 @@ export class Stage {
 				.catch(() => false))
 		)
 			return false;
-		await target
+		// where its scroller has to go: none when it is in view; a long way is a cut, a short one a glide
+		const far = await target
+			.evaluate((el, screens) => {
+				const r = el.getBoundingClientRect();
+				const shown = r.top >= 64 && r.bottom <= innerHeight - 8 && r.left >= 0 && r.right <= innerWidth;
+				if (shown) return null;
+				if (r.left < 0 || r.right > innerWidth)
+					el.scrollIntoView({ behavior: 'instant', block: 'nearest', inline: 'nearest' });
+				let n: Element | null = el.parentElement;
+				while (n && n !== document.body) {
+					const cs = getComputedStyle(n);
+					if (/(auto|scroll)/.test(cs.overflowY) && n.scrollHeight > n.clientHeight + 4) break;
+					n = n.parentElement;
+				}
+				const sc = (n && n !== document.body ? n : document.scrollingElement) as HTMLElement;
+				const box = sc === document.scrollingElement ? { top: 0, height: innerHeight } : sc.getBoundingClientRect();
+				const b = el.getBoundingClientRect();
+				const tall = b.height > box.height * 0.7;
+				const want = sc.scrollTop + (b.top - box.top) - (tall ? 76 : (box.height - b.height) / 2);
+				const to = Math.max(0, Math.min(sc.scrollHeight - sc.clientHeight, want));
+				const dist = Math.abs(to - sc.scrollTop);
+				if (dist < 4) return null;
+				(sc as HTMLElement).dataset.e2eScroll = '1';
+				return { to, far: dist > box.height * screens };
+			}, CUT_SCREENS)
+			.catch(() => null);
+		if (far) await this.glide(target.page(), far.to, far.far);
+		return true;
+	}
+
+	/** the screen scrolls to a place (SC-197). A short way glides at a pace that can be read, its time growing with the
+	 *  distance; a long way dips the screen to dark, jumps and comes back, as a cut in a film, since a smooth scroll over
+	 *  many screens strobes at 25 frames a second. The scroller is the one reveal() marked, else the page */
+	private async glide(page: Page, to: number, cut: boolean) {
+		const pane = Object.values(this.panes).find((p) => p.page === page);
+		if (cut && pane) await this.dip(pane.id, true);
+		await page
 			.evaluate(
-				(el) =>
+				([to, cut]) =>
 					new Promise<void>((done) => {
-						const r = el.getBoundingClientRect();
-						const shown = r.top >= 64 && r.bottom <= innerHeight - 8 && r.left >= 0 && r.right <= innerWidth;
-						if (!shown)
-							el.scrollIntoView({
-								behavior: 'smooth',
-								block: r.height > innerHeight * 0.7 ? 'start' : 'center',
-								inline: 'nearest'
-							});
-						let last = '',
-							still = 0;
+						const sc = (document.querySelector('[data-e2e-scroll="1"]') ?? document.scrollingElement) as HTMLElement;
+						delete sc.dataset.e2eScroll;
+						const from = sc.scrollTop;
+						const set = (y: number) => sc.scrollTo({ top: y, behavior: 'instant' });
+						if (cut) {
+							set(to);
+							requestAnimationFrame(() => requestAnimationFrame(() => done()));
+							return;
+						}
+						const ms = Math.max(450, Math.min(1800, (Math.abs(to - from) / 1300) * 1000));
 						const t0 = performance.now();
-						const tick = () => {
-							const b = el.getBoundingClientRect();
-							const at = `${Math.round(b.top)},${Math.round(b.left)}`;
-							still = at === last ? still + 1 : 0;
-							last = at;
-							if (still > 6 || performance.now() - t0 > 2000) done();
-							else requestAnimationFrame(tick);
+						const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+						const step = (t: number) => {
+							const k = Math.min(1, (t - t0) / ms);
+							set(from + (to - from) * ease(k));
+							if (k < 1) requestAnimationFrame(step);
+							else done();
 						};
-						requestAnimationFrame(tick);
-					})
+						requestAnimationFrame(step);
+					}),
+				[to, cut] as const
 			)
 			.catch(() => {});
-		return true;
+		// what loads as it comes into view settles before the screen comes back
+		await page.waitForTimeout(cut ? 380 : 160);
+		if (cut && pane) await this.dip(pane.id, false);
+	}
+
+	/** a screen dipped to the stage's dark, or back */
+	private async dip(id: PaneId, down: boolean) {
+		await this.stage
+			.evaluate(
+				([id, down]) => {
+					const fx = document.getElementById(`fx-${id}`)!;
+					let el = fx.querySelector('.dip') as HTMLElement | null;
+					if (!el) {
+						el = document.createElement('div');
+						el.className = 'dip';
+						fx.appendChild(el);
+						void el.offsetWidth;
+					}
+					el.classList.toggle('on', down);
+				},
+				[id, down] as const
+			)
+			.catch(() => {});
+		await this.stage.waitForTimeout(down ? 240 : 260);
+	}
+
+	/** the screen back at the top of its page, as reveal() moves it */
+	async top(page: Page) {
+		const y = await page.evaluate(() => document.scrollingElement?.scrollTop ?? 0).catch(() => 0);
+		if (y < 4) return;
+		const h = page.viewportSize()?.height ?? 900;
+		await this.glide(page, 0, y > h * CUT_SCREENS);
 	}
 
 	/** a block wider than its screen, read across: its scroller (the block or the nearest one round it) pans smoothly to
@@ -894,29 +985,67 @@ export class Stage {
 						}
 						card.appendChild(ol);
 					}
-					const bw = Math.min(scr.width - 20, note.points?.length ? 500 : 460);
+					const wide = note.points?.length ? 372 : 336;
+					let bw = wide;
 					card.style.width = `${bw}px`;
 					document.getElementById('callouts')!.appendChild(card);
-					const ch = card.offsetHeight;
-					// what the banner keeps clear of: the ring, or the whole region marked
+					let ch = card.offsetHeight;
+					// what the bubble sits beside: the ring, or the whole region marked (SC-197: beside it, never over it)
 					const [ax, ay, aw, ah] = around
 						? [around.x * k - pad, around.y * k - pad, around.width * k + 2 * pad, around.height * k + 2 * pad]
 						: [x, y, w, h];
-					// from the top, unless the banner would cover what is read and the foot has room; to the side of a wide
-					// screen when it would cover it either way
-					const fromTop = ay > ch + 22 || scr.height - (ay + ah) < ch + 22;
-					let left = scr.left + (scr.width - bw) / 2;
-					const top = fromTop ? scr.top + 10 : scr.bottom - ch - 10;
-					const covers = (l: number) =>
-						l < scr.left + ax + aw && l + bw > scr.left + ax && top < scr.top + ay + ah && top + ch > scr.top + ay;
-					if (covers(left)) {
-						const right = scr.right - bw - 10,
-							leftmost = scr.left + 10;
-						if (!covers(right)) left = right;
-						else if (!covers(leftmost)) left = leftmost;
+					const R = { l: scr.left + ax, t: scr.top + ay, r: scr.left + ax + aw, b: scr.top + ay + ah };
+					const cx = (R.l + R.r) / 2,
+						cy = (R.t + R.b) / 2;
+					// the bubble keeps to the screen it is about; the gap leaves room for its tail
+					const B = { l: scr.left + 8, t: scr.top + 8, r: scr.right - 8, b: scr.bottom - 8 };
+					const G = 15;
+					const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(Math.max(lo, hi), v));
+					const room = {
+						right: B.r - (R.r + G),
+						left: R.l - G - B.l,
+						below: B.b - (R.b + G),
+						above: R.t - G - B.t
+					};
+					type Side = keyof typeof room;
+					// beside it first (a chat's bubble sits beside what it answers), then under or over it; a narrow side takes a
+					// narrower bubble; failing all, the side with the most room
+					let side: Side | null =
+						room.right >= bw ? 'right' : room.left >= bw ? 'left' : room.below >= ch ? 'below' : room.above >= ch ? 'above' : null;
+					if (!side) {
+						const sideways = (room.right >= room.left ? 'right' : 'left') as Side;
+						if (room[sideways] >= 236) {
+							side = sideways;
+							bw = Math.floor(room[sideways]);
+							card.style.width = `${bw}px`;
+							ch = card.offsetHeight;
+						} else side = (Object.keys(room) as Side[]).sort((p, q) => room[q] - room[p])[0];
 					}
+					let left: number, top: number;
+					if (side === 'right' || side === 'left') {
+						left = side === 'right' ? R.r + G : R.l - G - bw;
+						top = clamp(cy - 20, B.t, B.b - ch);
+					} else {
+						top = side === 'below' ? R.b + G : R.t - G - ch;
+						left = clamp(cx - 34, B.l, B.r - bw);
+					}
+					// the tail: on the side facing what is read, pointing at its middle, as a chat bubble's tail does; at a corner
+					// the bubble squares off there, as WhatsApp's does
+					const tail = document.createElement('i');
+					tail.className = `tail ${side}`;
+					tail.innerHTML =
+						'<svg width="11" height="15" viewBox="0 0 11 15"><path d="M11 0 V15 C9 10 5 4.5 0.6 1.6 C-0.2 1 0.2 0 1.2 0 Z" fill="#f7f8f7"/></svg>';
+					if (side === 'right' || side === 'left') {
+						const ty = clamp(cy - top - 7, 0, ch - 15);
+						tail.style.top = `${ty}px`;
+						if (ty < 6) card.classList.add(side === 'right' ? 'sq-tl' : 'sq-tr');
+					} else {
+						const tx = clamp(cx - left - 7, 6, bw - 21);
+						tail.style.left = `${tx}px`;
+					}
+					card.appendChild(tail);
 					Object.assign(card.style, { left: `${left}px`, top: `${top}px` });
-					card.classList.add(fromTop ? 'down' : 'up');
+					card.classList.add(`from-${side}`);
 					requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('on')));
 				},
 				[pane.id, box, vp.width, note ?? null, badge ?? 0, quote, banner, !!opts.ringless, opts.around ?? null] as const
@@ -1190,7 +1319,10 @@ const scr = (id: PaneId) => ({
 
 function STAGE_HTML(about: About, phoneNote: string, host: App) {
 	const O = scr('operator');
-	const laptop = LAYOUT === 'two';
+	const laptop = LAYOUT === 'two' || LAYOUT === 'one';
+	const one = LAYOUT === 'one';
+	/** in the one-screen layout, the narrator's column beside the laptop */
+	const narrX = M + COL.operator + M + 12;
 	/** a laptop's base, under its screen */
 	const BASE = laptop ? 10 : 0;
 	const opH = O.h + 2 * TAB_BEZEL + BASE;
@@ -1267,6 +1399,8 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 .ring{position:absolute;border-radius:10px;border:2px solid #f5c542;box-shadow:0 0 0 3px rgba(245,197,66,.2),0 0 22px rgba(245,197,66,.32);opacity:0;transform:scale(1.04);transition:opacity .25s ease,transform .4s cubic-bezier(.22,1,.36,1)}
 .ring.dim{box-shadow:0 0 0 3px rgba(245,197,66,.2),0 0 22px rgba(245,197,66,.32),0 0 0 2400px rgba(7,12,10,.46)}
 .ring.on{opacity:1;transform:none}
+.dip{position:absolute;inset:0;background:#0c1311;opacity:0;transition:opacity .22s ease;z-index:5}
+.dip.on{opacity:1}
 .dimmer{position:absolute;inset:0;opacity:0;transition:opacity .3s ease}
 .dimmer.on{opacity:1}
 .dimmer svg{display:block}
@@ -1291,10 +1425,20 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 #titlecard i{font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#f5c542;font-style:normal}
 #titlecard b{font:600 21px/1.25 Geist;letter-spacing:-.01em;color:#f3f7f4}
 #callouts{position:absolute;inset:0;pointer-events:none;z-index:20}
-.wa{position:absolute;background:rgba(247,248,247,.97);border-radius:20px;padding:10px 12px 12px;color:#111b21;box-shadow:0 18px 46px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.18);opacity:0;transition:opacity .26s ease,transform .52s cubic-bezier(.22,1,.36,1)}
-.wa.down{transform:translateY(-26px) scale(.97)}
-.wa.up{transform:translateY(26px) scale(.97)}
+.wa{position:absolute;background:#f7f8f7;border-radius:14px;padding:9px 12px 11px;color:#111b21;filter:drop-shadow(0 12px 26px rgba(0,0,0,.42)) drop-shadow(0 2px 4px rgba(0,0,0,.16));opacity:0;transition:opacity .24s ease,transform .5s cubic-bezier(.22,1,.36,1)}
+.wa.from-right{transform:translateX(-14px) scale(.97);transform-origin:left top}
+.wa.from-left{transform:translateX(14px) scale(.97);transform-origin:right top}
+.wa.from-below{transform:translateY(-14px) scale(.97);transform-origin:left top}
+.wa.from-above{transform:translateY(14px) scale(.97);transform-origin:left bottom}
 .wa.on{opacity:1;transform:none}
+.wa.sq-tl{border-top-left-radius:3px}
+.wa.sq-tr{border-top-right-radius:3px}
+.wa .tail{position:absolute;width:11px;height:15px;display:block;line-height:0}
+.wa .tail svg{display:block}
+.wa .tail.right{left:-10px}
+.wa .tail.left{right:-10px;transform:scaleX(-1)}
+.wa .tail.below{top:-12px;transform:rotate(90deg)}
+.wa .tail.above{bottom:-12px;transform:rotate(-90deg) scaleY(-1)}
 .wa-head{display:flex;align-items:center;gap:7px;margin-bottom:7px}
 .wa-ic{flex:none;width:22px;height:22px;border-radius:6px;background:#1f6b45;display:grid;place-items:center;font:700 12.5px/1 Geist;color:#fff}
 .wa-app{font:600 11px/1 Geist;color:#54656f;letter-spacing:.04em;text-transform:uppercase}
@@ -1307,11 +1451,12 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 .wa li{counter-increment:pt;display:flex;gap:8px;font:400 12.3px/1.42 Geist;color:#33424a}
 .wa li::before{content:counter(pt);flex:none;width:19px;height:19px;border-radius:10px;background:#f5c542;color:#1b1503;font:700 11px/19px Geist;text-align:center;margin-top:1px}
 .wa p{font:400 12.5px/1.48 Geist;color:#33424a;margin:0 2px}
+${one ? `#narr{left:${px(narrX)};top:${px(TOP)};width:${px(W - narrX - M)};grid-template-columns:1fr;grid-template-rows:auto auto auto auto 1fr;padding:16px 18px}#log{grid-column:1;grid-row:5;border-left:0;padding-left:0;border-top:1px solid #22312b;padding-top:10px}#cap-did{font-size:16px}#log li{white-space:normal;overflow:visible}#log{gap:6px}` : ''}
 </style></head><body>
 <div id="bar"><span class="mark">S</span><div><h1>${esc(about.flow)}</h1><p>${esc(about.batch)} · ${PROD ? `live on production: ${esc(new URL(ORIGIN[host]).host)}` : "live on this machine's stack"}</p></div>
 <span class="grow"></span><span id="step"></span><span class="rec"><i></i>REC</span><span id="clock">00:00</span></div>
 ${col('operator')}
-${col('distributor')}
+${PANES.distributor ? col('distributor') : ''}
 ${
 	PANES.phone
 		? col(

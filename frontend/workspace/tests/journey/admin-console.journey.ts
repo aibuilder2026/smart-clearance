@@ -1,24 +1,24 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { copyFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
-import { api, mint, ORIGIN, PROD } from './auth.ts';
+import { api, appEnv, mint, ORIGIN, PROD } from './auth.ts';
 import { begin, running } from './flow.ts';
 import { Stage, type Note } from './stage.ts';
 
-// Admin and console E2E on a laptop and a tablet (SC-191): the platform's own side of Smart-Clearance, on the stage
-// (stage.ts) in its two-screen layout. On the laptop Neha Kulkarni, a Super admin, opens the platform's landing page once:
-// a brief tour of it, a demo booked as a prospect would, and the ways in (Find your workspace, the bar's Workspace, which
-// opens a client's own workspace on the tablet, and the bar's Console, where she signs in). On the tablet Megha Bava, in
-// Support, then signs in to the console. Neha sets the company up as a client from its demo request, configures its
-// agents, rules, people and plan, and Megha is refused a plan change; then the console in full: the Overview's dashboards,
-// a live client's journey, agents and SKUs, and the platform's own screens. Every click shows, every screen scrolls to
-// what is read, and the moments a viewer would ask about arrive as a banner on that screen, in business terms.
+// Admin and console E2E on one laptop (SC-191, SC-197): the platform's own side of Smart-Clearance, on the stage
+// (stage.ts) in its one-screen layout. Neha Kulkarni, a Super admin, opens the platform's landing page and glances down it,
+// then takes the bar's Console to the console's sign-in, its agents at work, and signs in. On the console: the Overview's
+// dashboards, live; a company set up as a client from the demo request the landing page sent; its first stock export; its
+// approver; its eleven agents configured one by one; its rules, plan and audit log; a live client's journey controls,
+// runs, SKUs and gates; the platform's own screens; and signing out. Every click shows, every screen glides to what is
+// read, and the moments a viewer would ask about arrive as a chat bubble beside what is read, its tail pointing at it.
 //
-// Each run sets up a new client, which the console cannot delete: the company is the first of COMPANIES that is not a
-// client yet (E2E_COMPANY names one).
+// The demo request is sent before the recording starts, through the landing page's own Book a demo endpoint
+// (POST /v1/demo-requests), so the landing page is shown briefly. Each run sets up a new client, which the console cannot
+// delete: the company is the first of COMPANIES that is not a client yet (E2E_COMPANY names one).
 //
-// E2E_FROM=<step id> resumes on the run's client (E2E_COMPANY names it), with both signed in to the console and the
-// landing page left out; E2E_UNTIL=<step id> stops after it. E2E_LIVE=0 opens no monitor window (it records all the same).
+// E2E_FROM=<step id> resumes on the run's client (E2E_COMPANY names it), signed in to the console and the landing page
+// left out; E2E_UNTIL=<step id> stops after it. E2E_LIVE=0 opens no monitor window (it records all the same).
 
 /** fictional companies, in the synthetic world's manner (a region, then what it makes), each a client once */
 const COMPANIES = [
@@ -54,8 +54,6 @@ const addressOf = (name: string) =>
 		.slice(0, 24) || 'client';
 /** a name's possessive: Aravalli Snacks', Nilgiri Foods' */
 const of = (name: string) => (name.endsWith('s') ? `${name}'` : `${name}'s`);
-/** the Support member on the tablet: the synthetic world's, by address (sessions.sh id=email) */
-const SUPPORT = process.env.E2E_SUPPORT ?? 'megha.bava@smartclearance.example';
 
 type Client = { id: string; name: string; status?: string; plan?: string };
 const toast = (page: Page) => page.locator('.toast').last();
@@ -72,132 +70,25 @@ const WHY = {
 		title: 'One day of the journey, in four chapters',
 		text: 'The film under the heading follows one batch through one day with real people: the strip reads its four chapters, each lit as the film reaches it, and the camera leans in on each place.'
 	},
-	filmPause: {
-		tag: 'Accessibility',
-		title: 'The film has its own Pause',
-		text: 'The hero film loops, so it carries Pause and Play (WCAG 2.2.2); under reduced motion it rests on its first frame.'
-	},
-	theatre: {
-		tag: 'Demo film',
-		title: 'The 6-minute demo, on request',
-		text: "Watch opens a theatre over the page: the demo film from YouTube's no-cookie player, loaded only now, with nothing of YouTube on the page before it. Escape gives the page back where it was."
-	},
-	theatreRead: {
-		tag: 'Demo film',
-		title: 'Read the film instead',
-		text: 'Every chapter of the film as chips to jump to, and its words, chapter by chapter, for anyone who would rather read than watch.'
-	},
-	statement: {
-		tag: 'Pitch',
-		title: 'Three sentences, read as they fill in',
-		text: "The page's case in short: near-expiry stock is binned when it could still sell, and the agents find every exit before it is. Its words light up as the reader scrolls through them."
-	},
 	tableAgent: {
 		tag: 'Agents',
 		title: 'One agent in focus at a time',
 		text: 'The camera closes in on each post on the miniature, and the card in the centre shows what that agent is doing for the batch, live: the gates, the prices, the split, the yes.'
-	},
-	tableRail: {
-		tag: 'Agents',
-		title: 'Jump to any agent',
-		text: 'The rail names all eleven in the order they work; a click moves the tour to that agent. The tour holds while the reader looks.'
-	},
-	tableResult: {
-		tag: 'Outcome',
-		title: 'Sold, not binned',
-		text: 'The tour lands on the result: the packs sent to the kiranas and the buyer as dots, the tags counting them in, and what the batch recovered. Replay walks it again.'
-	},
-	chWatch: {
-		tag: 'Detect',
-		title: "The Watcher's alert",
-		points: ["The Watcher's alert: the batch, its packs at risk, the gates it fails"],
-		text: 'Every morning the Watcher checks each batch against the quick-commerce gates and its sales a day, and flags the packs that will not sell in time, with the write-off they face.'
-	},
-	chPrice: {
-		tag: 'Value',
-		title: 'Every exit priced, the bin included',
-		points: ["The Valuer's prices, net a pack, for each exit", "The Router's split: what each exit takes"],
-		text: "The Valuer prices each exit net a pack: the kiranas' scheme, the marketplace, the staff sale, a food bank and the bin; the Router splits the batch to recover the most."
 	},
 	chYes: {
 		tag: 'Approve',
 		title: 'One yes, with the money on screen',
 		text: 'The plan waits for one person: what each exit takes, what it recovers against destroying it, and the button that releases the agents.'
 	},
-	chWork: {
-		tag: 'Execute',
-		title: 'The agents at work, all at once',
-		text: 'Outreach sends the kiranas their offer in Hindi, the Lister and the Negotiator sell the lot on ExpireSoon, and Paperwork drafts every paper finance needs.',
-		points: [
-			"Outreach: the kiranas' offer, in Hindi",
-			'Lister and Negotiator: the lot on ExpireSoon',
-			'Paperwork: the documents, drafted'
-		]
-	},
-	teams: {
-		tag: 'Teams',
-		title: 'Each team, its own view',
-		text: "Supply chain approves, finance gets its papers, sustainability its ledger, distributors their part: the tabs play through what each team's day looks like in the workspace."
-	},
-	addresses: {
-		tag: 'Product',
-		title: 'One address per client',
-		text: 'Every manufacturer gets its own workspace at <client>-smartclearance.web.app, set up for its own supply chain.'
-	},
-	worksWith: {
-		tag: 'Integrations',
-		title: 'Works with what they already run',
-		text: "The distributors' DMS exports, Tally for the invoices, ExpireSoon for the lots, WhatsApp-style pushes for the kiranas: no new system for anyone in the chain."
-	},
 	plansSite: {
 		tag: 'Plans',
 		title: 'Start with one distributor',
 		text: 'Three plans, priced on request: each widens how far the agents reach in the network.'
 	},
-	booked: {
-		tag: 'Lead',
-		title: 'Sent, and on its way to the console',
-		text: "The request is saved at once: it shows on the console's Overview for Smart-Clearance's staff to set the company up."
-	},
-	footer: {
-		tag: 'Ways in',
-		title: 'The footer, for anyone who already works here',
-		text: "Product's sections, Find your workspace for a client's people, and the staff console for Smart-Clearance's own team."
-	},
-	agents: {
-		tag: 'Agents',
-		title: 'Ten agents, one person',
-		text: "The table tours one batch from the godown to the report: each agent's part in turn, and the one place a person says yes."
-	},
-	ledger: {
-		tag: 'Money',
-		title: 'Every rupee worked out',
-		text: "What one batch recovered against destroying it, the credit given away, the GST kept and the kilos saved: the case a prospect's finance team asks for."
-	},
-	workspace: {
-		tag: 'Product',
-		title: 'A workspace of its own',
-		text: 'Every client gets its own workspace at its own address, set up for its supply chain; each of its teams and partners sees its own part.'
-	},
-	book: {
-		tag: 'Lead',
-		title: 'How a prospect asks',
-		text: "Book a demo, or Talk to us from a plan: the company, the work email and what it makes go straight to Smart-Clearance's console. No sales inbox in between."
-	},
 	doors: {
 		tag: 'Ways in',
 		title: 'Two doors from one page',
 		text: "Console is Smart-Clearance's own staff app; Workspace is where a client's people work. Each is its own app at its own address, and the landing page leads to both."
-	},
-	find: {
-		tag: 'Ways in',
-		title: 'Find your workspace',
-		text: 'Anyone at a client who has lost the address types their email or mobile number: the page names the workspace it belongs to, and nothing else.'
-	},
-	clientWorkspace: {
-		tag: 'Workspace',
-		title: "A client's own workspace",
-		text: "Workspace opens Munchly Foods' own address, munchly-smartclearance.web.app: its supply chain team, its distributors, its kiranas and its food bank sign in here, each to their own part."
 	},
 	console: {
 		tag: 'Console',
@@ -224,11 +115,6 @@ const WHY = {
 		title: 'Email and password, nothing else',
 		text: 'Staff sign in with their work email and password through Firebase Authentication. Nothing is mailed, so there is no forgot-password: an operator hands the default password over.'
 	},
-	roles: {
-		tag: 'Roles',
-		title: 'Same console, different powers',
-		text: "Megha is in Support: she sees every client, the dashboards and the audit log, and helps clients' people. Setting up clients and changing what they pay are kept for Super admins like Neha."
-	},
 	kpis: {
 		tag: 'Dashboard',
 		title: 'The platform at a glance',
@@ -237,7 +123,7 @@ const WHY = {
 	request: {
 		tag: 'Lead',
 		title: 'The request, in the console',
-		text: 'The demo request booked on the landing page is on the Overview, with the plan it asked about. Set up turns it into a client, its details carried over.'
+		text: "The request a prospect sent from the landing page's Book a demo is on the Overview, with the plan it asked about. Set up turns it into a client, its details carried over."
 	},
 	company: {
 		tag: 'Set up',
@@ -323,11 +209,6 @@ const WHY = {
 		tag: 'Plan',
 		title: 'What the client pays for',
 		text: 'The plan sets how many distributors and batches the client may run. Moving it is a commercial change, kept for Super admins, and written to the audit log.'
-	},
-	refused: {
-		tag: 'Roles',
-		title: 'Refused, and said why',
-		text: 'Megha is in Support, so the plan puts itself back and says why beside the control. Nothing changed and nothing was written: commercial terms stay with Super admins.'
 	},
 	audit: {
 		tag: 'Audit',
@@ -544,6 +425,31 @@ const WHY = {
 		title: 'Signing out',
 		text: 'The console covers itself while it signs out, then comes back to its sign-in.'
 	},
+	liveReading: {
+		tag: 'Live',
+		title: 'Read again every 30 seconds',
+		text: 'The dashboard reads the database again every 30 seconds and whenever the tab comes back into focus; nothing on it is stubbed. When it last read is always on screen.'
+	},
+	pause: {
+		tag: 'Accessibility',
+		title: 'Pause, remembered',
+		text: 'Pause stops the readings, so nothing moves while someone presents or reads; the browser remembers it. Resume reads at once.'
+	},
+	atStop: {
+		tag: 'Live',
+		title: 'The plans waiting at Approve',
+		text: "A stop narrows every client's batches to the ones there: here the plans waiting for a person's yes, the oldest first."
+	},
+	waitingList: {
+		tag: 'Batches',
+		title: 'In flight, waiting, closed',
+		text: 'The same table, by where the batches stand: in flight, waiting for a yes, or closed with what each recovered. The view lives in the address, so it can be shared.'
+	},
+	sort: {
+		tag: 'Batches',
+		title: 'Sorted on the server',
+		text: 'Every column sorts across all the batches, not just the page on screen: here by the days each batch has left.'
+	},
 	platformAgents: {
 		tag: 'Agents',
 		title: 'The agents, across every client',
@@ -632,8 +538,6 @@ const exportFile = () => {
 	writeFileSync(file, [head, ...EXPORT_ROWS.map((r) => r.join(','))].join('\n') + '\n');
 	return file;
 };
-/** whose email Find your workspace is shown with: a Munchly person */
-const FINDER = 'priya.deshmukh@munchly.example';
 /** the new client's audit lines, as the audit step counts them */
 let auditLines = 0;
 
@@ -643,10 +547,6 @@ const read = async (s: Stage, items: Locator, most = 6, rest = 450) => {
 	for (let i = 0; i < n; i++) await s.point(items.nth(i), rest);
 	return n;
 };
-
-/** a link the page opens in another tab: here the click is kept on the page, and the stage opens it where it belongs */
-const keep = (link: Locator) =>
-	link.evaluate((a) => a.addEventListener('click', (e) => e.preventDefault(), { once: true }));
 
 /** the cursor sweeps across the sign-in's agents network as a visitor's hand would, quickly, the field linking to it */
 const sweep = async (page: Page, points: [number, number][]) => {
@@ -731,11 +631,10 @@ const nehaIn = async (s: Stage) => {
 const STEPS: Step[] = [
 	{
 		id: 'landing',
-		title: "Neha opens the platform's landing page: the hero, its film of one day, and the demo film",
+		title: "The platform's landing page, briefly, and the way into the console",
 		async run(s) {
 			const page = await s.open('neha', '/', 'opens smartclearance.web.app on her laptop', 'site');
-			await s.spot(page.locator('.hero h1, .hero').first(), WHY.site);
-			// the film's strip: one day of the journey in four chapters, each lit as the film reaches it
+			await s.spot(page.locator('.hero h1').first(), WHY.site);
 			const story = page.locator('.film-story .fs');
 			await s.mark(
 				[
@@ -746,138 +645,17 @@ const STEPS: Step[] = [
 				],
 				WHY.film
 			);
-			const pause = page.locator('.film-ctl button');
-			if (await pause.isVisible().catch(() => false)) {
-				await s.click(pause, 1200);
-				await s.spot(pause, WHY.filmPause, 3800);
-				await s.click(pause, 600);
-			}
 			await running().done("The landing page's hero: one day of the journey on film");
 
-			// the demo film, on request, in a theatre over the page
-			const watch = page
-				.locator('.hero')
-				.getByRole('button', { name: /^Watch the/ })
-				.first();
-			if (await watch.isVisible().catch(() => false)) {
-				await s.click(watch, 900);
-				const theatre = page.getByRole('dialog').first();
-				await expect(theatre).toBeVisible({ timeout: 20_000 });
-				await page.waitForTimeout(3500);
-				await s.spot(theatre.locator('.th-frame, .fp-media').first(), WHY.theatre);
-				const chips = theatre.locator('.fp-ch button');
-				await read(s, chips, 5, 260);
-				if (
-					await chips
-						.nth(3)
-						.isVisible()
-						.catch(() => false)
-				) {
-					await s.click(chips.nth(3), 2600);
-				}
-				const words = theatre.locator('.fp-read summary');
-				if (await words.isVisible().catch(() => false)) {
-					await s.click(words, 900);
-					await s.spot(theatre.locator('.fp-read-in').first(), WHY.theatreRead, 4200);
-					await s.click(words, 400);
-				}
-				await s.click(theatre.getByRole('button', { name: 'Close the film' }), 900);
-				await expect(theatre).toBeHidden({ timeout: 10_000 });
-				await running().done('The demo film, in its theatre: its chapters and its words');
-			}
-		}
-	},
-	{
-		id: 'tour',
-		title:
-			'The landing page, section by section: the statement, the agents at work, the four chapters, the ledger, the workspace, the plans',
-		async run(s) {
-			const page = await s.open('neha', '/', 'reads the landing page, section by section', 'site');
-			// the statement: its words fill in as they are read
-			const say = page.locator('#how');
-			await s.reveal(say);
-			for (let i = 0; i < 3; i++) await s.scroll(page, 0.18);
-			await s.spot(say, WHY.statement, 4800);
-			await running().done('The statement');
-
-			// the agents at work on the table
-			await s.spot(page.locator('#agents .tb-head, #agents').first(), WHY.agents);
+			// a glance down the page: the agents at work, the one yes, the plans
 			await s.reveal(page.locator('#agents .tb-world').first());
-			await page.waitForTimeout(3000);
-			const card = page.locator('#agents .tb-focus').first();
-			if (await card.isVisible().catch(() => false)) await s.spot(card, WHY.tableAgent, 4500);
-			const rail = page.locator('#agents .rail button');
-			if (
-				await rail
-					.first()
-					.isVisible()
-					.catch(() => false)
-			) {
-				for (const i of [2, 5, 7]) {
-					if (
-						!(await rail
-							.nth(i)
-							.isVisible()
-							.catch(() => false))
-					)
-						continue;
-					await s.click(rail.nth(i), 1800);
-				}
-				await s.spot(rail.first().locator('xpath=..'), WHY.tableRail, 4200);
-			}
-			const result = page.locator('#agents .tb-result');
-			await expect(result)
-				.toBeVisible({ timeout: 40_000 })
-				.catch(() => {});
-			if (await result.isVisible().catch(() => false)) await s.spot(result, WHY.tableResult, 4500);
-			await running().done('The agents at work on the table, one in focus at a time');
-
-			// the product's four moments, each in its own colour field
-			const fields: [string, Note][] = [
-				['#watch', WHY.chWatch],
-				['#price', WHY.chPrice],
-				['#yes', WHY.chYes],
-				['#work', WHY.chWork]
-			];
-			for (const [id, note] of fields) {
-				const sec = page.locator(id);
-				await s.reveal(sec.locator('.ch-h').first());
-				await page.waitForTimeout(1100);
-				const cards = sec.locator('.m-card');
-				const n = await cards.count();
-				if (n > 1) {
-					await s.mark(
-						Array.from(
-							{ length: Math.min(n, 3) },
-							(_, i) => [cards.nth(i), note.points?.[i] ?? `Card ${i + 1}`] as [Locator, string]
-						),
-						{ ...note, points: undefined }
-					);
-				} else await s.spot(n ? cards.first() : sec, note);
-			}
-			await running().done("The four chapters: the Watcher's alert, the prices, the one yes, the agents at work");
-
-			// Impact's ledger for one batch
-			const ledger = page.locator('.ledger').first();
-			await s.reveal(ledger);
-			await read(s, ledger.locator('.ledger-row, tr, li'), 6, 320);
-			await s.spot(ledger, WHY.ledger);
-			await running().done("Impact's ledger: every rupee worked out");
-
-			// the workspace section: each team's own view
-			await s.spot(page.locator('#teams .sec-h, #teams').first(), WHY.workspace);
-			const tabs = page.locator('#teams [role="tab"]');
-			for (let i = 0; i < Math.min(await tabs.count(), 4); i++) {
-				await s.click(tabs.nth(i), 1700);
-				if (i === 0) await s.spot(page.locator('#teams .wsd-main').first(), WHY.teams, 4500);
-			}
-			const urls = page.locator('#teams .isl-urls');
-			if (await urls.isVisible().catch(() => false)) await s.spot(urls, WHY.addresses, 4200);
-			const conn = page.locator('#teams .conn-list');
-			if (await conn.isVisible().catch(() => false)) await s.spot(conn, WHY.worksWith, 4200);
-			await running().done("The workspace: each team's own view, at the client's own address");
-
-			// the plans
+			await page.waitForTimeout(2600);
+			const focus = page.locator('#agents .tb-focus').first();
+			if (await focus.isVisible().catch(() => false)) await s.spot(focus, WHY.tableAgent, 4600);
+			const yes = page.locator('#yes .m-card').first();
+			await s.reveal(yes);
+			await page.waitForTimeout(900);
+			await s.spot(yes, WHY.chYes, 4600);
 			const plans = page.locator('#pricing .plan');
 			await s.reveal(page.locator('#pricing'));
 			await s.mark(
@@ -888,92 +666,28 @@ const STEPS: Step[] = [
 				],
 				WHY.plansSite
 			);
-			await running().done('The plans: Pilot, Growth, Enterprise');
-		}
-	},
-	{
-		id: 'book',
-		title: 'Neha books a demo as a prospect would, from a plan',
-		async run(s) {
-			const page = await s.open('neha', '/', 'books a demo as a prospect would', 'site');
-			await s.reveal(page.locator('#pricing'));
-			const ask = page
-				.locator('#pricing')
-				.getByRole('button', { name: /Talk to us/ })
-				.first();
-			await s.click(ask, 600);
-			const sheet = page.getByRole('dialog');
-			await expect(sheet.getByLabel('Your name')).toBeVisible();
-			await s.type(sheet.getByLabel('Your name'), PROSPECT.name);
-			await s.type(sheet.getByLabel('Company'), company);
-			await s.type(sheet.getByLabel('Work email'), `${PROSPECT.first.toLowerCase()}@${domain}`);
-			await s.select(sheet.getByLabel('What you make'), 'Snacks and drinks');
-			await s.type(
-				sheet.getByLabel('Anything we should know (optional)'),
-				'About 40 distributors; quick commerce sends back our snacks with weeks left.'
-			);
-			await s.spot(sheet.locator('form'), WHY.book, 5000);
-			await s.click(sheet.getByRole('button', { name: 'Send request' }), 400);
-			await expect(sheet.getByText(`Thanks, ${PROSPECT.first}.`)).toBeVisible({ timeout: 30_000 });
-			await s.spot(sheet.getByText(`Thanks, ${PROSPECT.first}.`).locator('xpath=..'), WHY.booked, 4200);
-			running().figure('Demo request', `${PROSPECT.name}, ${company}, ${PROSPECT.first.toLowerCase()}@${domain}`);
-			await s.click(sheet.getByRole('button', { name: 'Done' }), 400);
-			await running().done(`A demo booked for ${company}`);
-		}
-	},
-	{
-		id: 'doors',
-		title: "The ways in: Find your workspace, a client's workspace on the tablet, and the console, where Neha signs in",
-		async run(s) {
-			const page = await s.open('neha', '/', 'finds the ways in', 'site');
-			// Find your workspace, in the footer
-			await s.reveal(page.locator('.close'));
-			await page.waitForTimeout(1200);
-			await s.spot(page.locator('.foot').first(), WHY.footer, 4200);
-			await s.click(page.getByRole('button', { name: 'Find your workspace' }).last(), 600);
-			const find = page.getByRole('dialog', { name: 'Find your workspace' });
-			await s.type(find.getByLabel('Email or mobile number'), FINDER);
-			await s.click(find.getByRole('button', { name: 'Find workspaces' }), 800);
-			const found = find.locator('.card').first();
-			await expect(found).toContainText('Munchly Foods', { timeout: 20_000 });
-			await s.spot(found, WHY.find);
-			await page.keyboard.press('Escape');
-			await page.waitForTimeout(500);
-			await running().done('Find your workspace names it');
+			await running().done('A glance down the page: the agents, the one yes, the plans');
 
-			// the bar's two doors
+			// the bar's way in
+			await s.top(page);
 			const nav = page.locator('.site-nav');
-			await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
-			await page.waitForTimeout(1200);
+			const consoleLink = nav.getByRole('link', { name: 'Console', exact: true }).first();
 			await s.mark(
 				[
-					[nav.locator('.nav-links'), 'The sections: How it works, Agents, For teams, Pricing'],
-					[nav.getByRole('link', { name: 'Console', exact: true }).first(), "Console: Smart-Clearance's own staff app"],
+					[consoleLink, "Console: Smart-Clearance's own staff app"],
 					[nav.getByRole('link', { name: 'Workspace', exact: true }).first(), "Workspace: where a client's people work"]
 				],
 				WHY.doors
 			);
-			const workspace = nav.getByRole('link', { name: 'Workspace', exact: true }).first();
-			await keep(workspace);
-			await s.click(workspace, 300);
-			// the workspace opens where its people work: on the tablet
-			const ws = await s.open('ws', '/', "Workspace opens Munchly Foods' own address", 'workspace');
-			await expect(ws.locator('#si-email')).toBeVisible({ timeout: 30_000 });
-			await s.spot(ws.locator('main, .si-card, form').first(), WHY.clientWorkspace);
-			await running().done("Workspace: Munchly Foods' own workspace, on the tablet");
-
-			const consoleLink = nav.getByRole('link', { name: 'Console', exact: true }).first();
 			// the bar's Console opens another tab in a browser; here, the same screen, at the console the run takes
 			await consoleLink.evaluate((a, href) => {
 				a.removeAttribute('target');
 				a.setAttribute('href', href);
 			}, ORIGIN.console + '/');
-			await s.run.act('Neha Kulkarni', 'Smart-Clearance staff · console', 'goes to the console from the bar');
-			await s.active('operator');
 			await s.click(consoleLink, 400);
 			await expect(page.locator('#si-email')).toBeVisible({ timeout: 30_000 });
 			await s.address('operator');
-			await running().done("The console's sign-in");
+			await running().done("The bar's Console: the console's sign-in");
 		}
 	},
 	{
@@ -995,40 +709,141 @@ const STEPS: Step[] = [
 		}
 	},
 	{
-		id: 'support',
-		title: 'Megha, in Support, signs in to the console on the tablet',
+		id: 'overview',
+		title: "Monitoring the platform: the Overview's dashboards, live",
 		async run(s) {
-			await s.run.act(
-				'Megha Bava',
-				'Smart-Clearance staff · Support',
-				'reads the agents round the sign-in on her tablet'
+			const page = await s.open('neha', '/', 'monitors the platform on the Overview');
+			const kpis = page.locator('.cs-ov-kpi');
+			await expect(kpis).toHaveCount(4);
+			await s.mark(
+				[
+					[kpis.nth(0), 'Recovered: money won back across every client, against the range before'],
+					[kpis.nth(1), 'Batches in flight: every batch between its flag and its report'],
+					[kpis.nth(2), 'Waiting for a yes: plans on a person, with the oldest'],
+					[kpis.nth(3), 'Agent runs today, and how many agents are on']
+				],
+				WHY.kpis
 			);
-			await agentsTour(s, await s.atSignIn('megha', 'console'));
-			await running().done("The tablet's sign-in: the agents round the card");
-			const page = await s.open('megha', '/', 'signs in to the console on her tablet');
-			await expect(page.getByRole('heading', { level: 1 })).toHaveText('Overview', { timeout: 30_000 });
-			await s.spot(page.locator('.cs-ov-kpis, .cs-ov-live').first(), WHY.roles);
-			await running().done('Megha signed in on the tablet: the same Overview');
-		}
-	},
-	{
-		id: 'request',
-		title: 'The demo request reaches the console',
-		async run(s) {
-			// the Overview's live reading covers its figures, not the demo requests, which are read again when the page is
-			// opened anew: Neha glances at Clients and comes back, as a person would; a reload is the fallback
+			// a rolling figure draws a strip of digits behind the one shown (the kit's Roll): set aside
+			const fig = (t: string) =>
+				t
+					.replace(/(?:\s*\b0\s+1\s+2\s+3\s+4\s+5\s+6\s+7\s+8\s+9\b)+/g, '')
+					.replace(/₹[\s,]*(?=₹)/g, '')
+					.replace(/\s+/g, ' ')
+					.trim();
+			running().figure('Overview', (await kpis.allInnerTexts()).map(fig).join(' · '));
+			await running().done('The figures: recovered, in flight, waiting, runs');
+
+			// live: read again every 30 seconds, and Pause, remembered in the browser
+			const live = page.locator('.cs-ov-live');
+			const pause = page.getByRole('button', { name: 'Pause updates' }).first();
+			if (await pause.isVisible().catch(() => false)) {
+				await s.spot(live, WHY.liveReading, 4600);
+				await s.click(pause, 700);
+				await s.spot(page.getByRole('button', { name: 'Resume updates' }).first(), WHY.pause, 4200);
+				await s.click(page.getByRole('button', { name: 'Resume updates' }).first(), 700);
+				await running().done('Live every 30 seconds, with Pause');
+			}
+
+			// food kept out of landfill, by day
+			const card = page.locator('.cs-ov-card').filter({ hasText: 'Food, by day' }).first();
+			await s.reveal(card);
+			const range = card.getByRole('group', { name: 'Range' });
+			if (await range.count()) {
+				await s.click(range.getByRole('button', { name: /7/ }), 900);
+				await s.click(range.getByRole('button', { name: /90/ }), 900);
+			}
+			await s.spot(card, WHY.food);
+			const bar = card.locator('svg rect, svg path').nth(40);
+			const box = await bar.boundingBox().catch(() => null);
+			if (box) {
+				await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 12 });
+				await page.waitForTimeout(1800);
+			}
+			const table = card.getByRole('button', { name: /Show as a table/ });
+			if (await table.count()) {
+				await s.click(table, 900);
+				await s.pan(card.locator('.cs-ov-daytable').first());
+				await s.click(card.getByRole('button', { name: /Show as a chart/ }).first(), 500).catch(() => {});
+			}
+			await running().done('Food, by day: kept and destroyed, over 7 and 90 days');
+
+			// the agents at work: every batch at its stop
+			const stops = page.getByRole('group', { name: 'Batches in flight by stop' });
+			await s.reveal(stops);
+			await s.spot(stops, WHY.atWork);
+			const approve = stops.getByRole('button', { name: /^Approve: / }).first();
+			if (await approve.count()) {
+				await s.click(approve, 900);
+				await s.reveal(page.locator('.cs-ov-tablecard'));
+				await s.spot(page.locator('.cs-ov-table tbody tr').first(), WHY.atStop, 4200);
+				await s.click(page.getByRole('button', { name: 'Every stop' }), 700);
+			}
+			await running().done('Agents at work, a stop filtering the batches');
+
+			// every client's batches: searched, filtered, sorted, paged
+			const tablecard = page.locator('.cs-ov-tablecard');
+			await s.reveal(page.locator('.cs-ov-filters'));
+			await s.mark(
+				[
+					[page.locator('.cs-ov-search'), 'Search a batch, a product or a distributor'],
+					[page.locator('.cs-ov-sel[aria-label="Client"]'), 'One client'],
+					[page.locator('.cs-ov-sel[aria-label="Stop"]'), 'One stop'],
+					[page.getByRole('group', { name: 'Which batches' }), 'In flight, waiting for a yes, or closed']
+				],
+				WHY.batches
+			);
+			const search = page.locator('.cs-ov-search input');
+			if (await search.count()) {
+				await s.type(search, 'Munchly');
+				await page.waitForTimeout(1500);
+				await s.point(page.locator('.cs-ov-table tbody tr').first(), 700);
+				await search.fill('');
+				await page.waitForTimeout(800);
+			}
+			const which = page.getByRole('group', { name: 'Which batches' });
+			const waiting = which.getByRole('button', { name: /^Waiting for a yes/ });
+			if (await waiting.isVisible().catch(() => false)) {
+				await s.click(waiting, 1200);
+				await s.spot(tablecard, WHY.waitingList, 4400);
+				await s.click(which.getByRole('button', { name: /^Closed/ }), 1200);
+				await s.point(page.locator('.cs-ov-table tbody tr').first(), 800);
+				await s.click(which.getByRole('button', { name: /^In flight/ }), 900);
+			}
+			const days = page.locator('.cs-ov-table thead button', { hasText: 'Days left' }).first();
+			if (await days.isVisible().catch(() => false)) {
+				await s.click(days, 1000);
+				await s.spot(page.locator('.cs-ov-table thead').first(), WHY.sort, 3800);
+			}
+			const nextPage = page.getByRole('button', { name: 'Next page' });
+			if (await nextPage.isEnabled().catch(() => false)) await s.click(nextPage, 900);
+			await running().done("Every client's batches: searched, filtered, sorted and paged");
+
+			// what waits on a person, the requests, the runs
+			const three = page.locator('.cs-ov-three > *');
+			await s.reveal(page.locator('.cs-ov-three'));
+			await s.mark(
+				[
+					[three.nth(0), 'Needs attention: a plan waiting, a permission not given, a file late'],
+					[three.nth(1), 'Demo requests, from Book a demo on the landing page'],
+					[three.nth(2), "Agent runs: every agent's last run, across every client"]
+				],
+				WHY.attention
+			);
+			await running().done('Needs attention, demo requests and agent runs');
+
+			// the request the landing page sent, waiting to be set up; the Overview's requests are not part of its live
+			// reading, so it is opened again if the request is not there yet
 			running().find(
 				'note',
 				'/',
 				"The Overview's demo requests are not part of its 30-second live reading: a new request shows once the Overview is opened again"
 			);
-			const clients = await s.open('neha', '/clients', 'checks her clients');
-			await s.point(clients.locator('tr:has(td), .list-row').first(), 600);
-			const page = await s.open('neha', '/', 'sees the demo request on the Overview');
-			const row = page.locator('.list-row', { hasText: company }).first();
-			if (!(await row.isVisible({ timeout: 10_000 }).catch(() => false))) {
+			let row = page.locator('.list-row', { hasText: company }).first();
+			if (!(await row.isVisible({ timeout: 6000 }).catch(() => false))) {
 				await s.refresh('neha');
 				await expect(page.getByRole('heading', { level: 1 })).toHaveText('Overview', { timeout: 30_000 });
+				row = page.locator('.list-row', { hasText: company }).first();
 			}
 			await expect(row).toBeVisible({ timeout: 30_000 });
 			await s.spot(row, WHY.request);
@@ -1173,12 +988,6 @@ const STEPS: Step[] = [
 				WHY.clientHead
 			);
 			await running().done(`${of(company)} workspace set up: its Supply chain tab`);
-
-			const tab = await s.open('megha', '/clients', 'sees the new client in Clients');
-			const crow = tab.locator('a, tr, .list-row', { hasText: company }).first();
-			await expect(crow).toBeVisible({ timeout: 30_000 });
-			await s.point(crow, 1600);
-			await running().done(`${company} in Megha's Clients`);
 		}
 	},
 	{
@@ -1519,29 +1328,6 @@ const STEPS: Step[] = [
 		}
 	},
 	{
-		id: 'refused',
-		title: "Megha, in Support, tries to change the client's plan on the tablet and is refused",
-		async run(s) {
-			const page = await s.open('megha', `/clients/${slug}/plan`, `opens ${of(company)} plan on her tablet`);
-			const plan = page.getByRole('group', { name: 'Plan' });
-			await s.reveal(plan);
-			await s.click(plan.getByRole('button', { name: 'Enterprise' }), 600);
-			const why = page.locator('.save-note.err');
-			await expect(why).toHaveText("Only a Super admin can change a client's plan. Put back as it was.", {
-				timeout: 15_000
-			});
-			await expect(plan.getByRole('button', { name: 'Enterprise' })).not.toHaveAttribute('aria-pressed', 'true');
-			await s.spot(why, WHY.refused);
-			running().figure('Support refused', "Only a Super admin can change a client's plan");
-			// the refusal is the point: the API's 403 to Megha's plan change is not a finding
-			const run = running();
-			const expected = (f: { where: string; what: string }) =>
-				f.where.startsWith(`/v1/console/clients/${slug}`) || (f.where.endsWith('/plan') && /403/.test(f.what));
-			run.findings.splice(0, run.findings.length, ...run.findings.filter((f) => !expected(f)));
-			await running().done('Megha refused: only a Super admin changes a plan');
-		}
-	},
-	{
 		id: 'audit',
 		title: "Neha reads the new client's audit log",
 		async run(s) {
@@ -1560,82 +1346,6 @@ const STEPS: Step[] = [
 			await s.spot(log.first(), WHY.audit);
 			running().figure('Audit lines', auditLines);
 			await running().done(`${auditLines} audit lines, each in Neha's name`);
-		}
-	},
-	{
-		id: 'overview',
-		title: 'Neha monitors the dashboards; Megha follows them on the tablet',
-		async run(s) {
-			const page = await s.open('neha', '/', 'monitors the platform on the Overview');
-			const kpis = page.locator('.cs-ov-kpi');
-			await expect(kpis).toHaveCount(4);
-			await s.spot(page.locator('.cs-ov-kpis'), WHY.kpis);
-			// a rolling figure draws a strip of digits behind the one shown (the kit's Roll): set aside
-			const fig = (t: string) =>
-				t
-					.replace(/(?:\s*\b0\s+1\s+2\s+3\s+4\s+5\s+6\s+7\s+8\s+9\b)+/g, '')
-					.replace(/₹[\s,]*(?=₹)/g, '')
-					.replace(/\s+/g, ' ')
-					.trim();
-			running().figure('Overview', (await kpis.allInnerTexts()).map(fig).join(' · '));
-			await running().done('The figures: recovered, in flight, waiting, runs');
-
-			const card = page.locator('.cs-ov-card').filter({ hasText: 'Food, by day' }).first();
-			await s.reveal(card);
-			const range = card.getByRole('group', { name: 'Range' });
-			if (await range.count()) await s.click(range.getByRole('button', { name: /90/ }), 900);
-			await s.spot(card, WHY.food);
-			const bar = card.locator('svg rect, svg path').nth(40);
-			const box = await bar.boundingBox().catch(() => null);
-			if (box) {
-				await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-				await page.waitForTimeout(1600);
-			}
-			const table = card.getByRole('button', { name: /Show as a table/ });
-			if (await table.count()) {
-				await s.click(table, 900);
-				await s.pan(card.locator('.cs-ov-daytable').first());
-				await s.click(card.getByRole('button', { name: /Show as a chart/ }).first(), 500).catch(() => {});
-			}
-			await running().done('Food, by day: kept and destroyed');
-
-			const stops = page.getByRole('group', { name: 'Batches in flight by stop' });
-			await s.reveal(stops);
-			await s.spot(stops, WHY.atWork);
-			const approve = stops.getByRole('button', { name: /^Approve: / }).first();
-			if (await approve.count()) {
-				await s.click(approve, 900);
-				await s.reveal(page.locator('.cs-ov-tablecard'));
-				await s.point(page.locator('.cs-ov-table tbody tr').first(), 900);
-				await s.click(page.getByRole('button', { name: 'Every stop' }), 700);
-			}
-			await running().done('Agents at work, a stop filtering the batches');
-
-			const tablecard = page.locator('.cs-ov-tablecard');
-			await s.reveal(tablecard);
-			await s.spot(tablecard, WHY.batches);
-			const search = page.locator('.cs-ov-search input');
-			if (await search.count()) {
-				await s.type(search, 'Munchly');
-				await page.waitForTimeout(1500);
-				await s.point(page.locator('.cs-ov-table tbody tr').first(), 700);
-				await search.fill('');
-				await page.waitForTimeout(800);
-			}
-			const nextPage = page.getByRole('button', { name: 'Next page' });
-			if (await nextPage.isEnabled().catch(() => false)) await s.click(nextPage, 900);
-			await running().done("Every client's batches, searched and paged");
-
-			const three = page.locator('.cs-ov-three');
-			await s.reveal(three);
-			await s.spot(three, WHY.attention);
-			await running().done('Needs attention, demo requests and agent runs');
-
-			const tab = await s.open('megha', '/', 'follows the dashboards on her tablet');
-			await s.point(tab.locator('.cs-ov-kpis'), 1200);
-			await s.scroll(tab, 0.7);
-			await s.scroll(tab, 0.7);
-			await running().done('The Overview on the tablet');
 		}
 	},
 	{
@@ -1851,22 +1561,19 @@ const STEPS: Step[] = [
 /** a run resumed with E2E_FROM: both signed in to the console, the landing page left out */
 const RESUME: Step = {
 	id: 'resume',
-	title: 'Neha and Megha sign in to the console',
+	title: 'Neha signs in to the console',
 	async run(s) {
 		await nehaIn(s);
 		await running().done('Neha signed in to the console');
-		const page = await s.open('megha', '/', 'signs in to the console on her tablet');
-		await expect(page.getByRole('heading', { level: 1 })).toHaveText('Overview', { timeout: 30_000 });
-		await running().done('Megha signed in on the tablet');
 	}
 };
 
 test.describe.configure({ mode: 'serial' });
 
 // eslint-disable-next-line no-empty-pattern
-test('Admin and console E2E on a laptop and a tablet: the landing page, a client set up and configured, the console in full', async ({}, info) => {
+test('Admin and console E2E on one laptop: the landing page briefly, a client set up and configured, the console in full', async ({}, info) => {
 	test.setTimeout(60 * 60_000);
-	mint(['neha', `megha=${SUPPORT}`]);
+	mint(['neha']);
 	const clients = await api<Client[]>('console', 'neha', '/v1/console/clients');
 	if (!company) {
 		const taken = new Set(clients.flatMap((c) => [c.id, c.name]));
@@ -1882,15 +1589,12 @@ test('Admin and console E2E on a laptop and a tablet: the landing page, a client
 		info,
 		{
 			flow: 'Admin and console E2E',
-			batch: `${company}, set up from its demo request · Neha Kulkarni, Super admin · Megha Bava, Support`
+			batch: `${company}, set up from its demo request · Neha Kulkarni, Super admin`
 		},
 		video,
 		{
-			layout: 'two',
-			holds: { neha: 'operator', megha: 'distributor', ws: 'distributor' },
-			apps: { megha: 'console' },
-			guests: { ws: { name: "Munchly Foods' workspace", role: "A client's own address", org: '' } },
-			roles: { megha: 'Smart-Clearance staff · Support' },
+			layout: 'one',
+			holds: { neha: 'operator' },
 			host: 'console'
 		}
 	);
@@ -1900,9 +1604,25 @@ test('Admin and console E2E on a laptop and a tablet: the landing page, a client
 	let error: string | undefined;
 	try {
 		const resume = !!process.env.E2E_FROM;
-		await s.ready(
-			resume ? { operator: 'console', distributor: 'console' } : { operator: 'site', distributor: 'console' }
-		);
+		// the demo request the landing page's Book a demo sends, sent before the recording, so the landing page is
+		// shown briefly and the Overview has it waiting to be set up
+		if (!resume && !clients.some((c) => c.name === company)) {
+			const r = await fetch(`${appEnv('site').PUBLIC_API_BASE || 'http://localhost:8000'}/v1/demo-requests`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json', Origin: ORIGIN.site },
+				body: JSON.stringify({
+					name: PROSPECT.name,
+					company,
+					email: `${PROSPECT.first.toLowerCase()}@${domain}`,
+					makes: 'Snacks and drinks',
+					plan: 'Pilot',
+					note: 'About 40 distributors; quick commerce sends back our snacks with weeks left.'
+				})
+			});
+			if (!r.ok) throw new Error(`Book a demo answered ${r.status}: ${await r.text()}`);
+			running().figure('Demo request', `${PROSPECT.name}, ${company}, ${PROSPECT.first.toLowerCase()}@${domain}`);
+		}
+		await s.ready(resume ? { operator: 'console' } : { operator: 'site' });
 		await s.record();
 		const at = (id: string) => STEPS.findIndex((x) => x.id === id);
 		const from = resume ? at(process.env.E2E_FROM!) : 0;
