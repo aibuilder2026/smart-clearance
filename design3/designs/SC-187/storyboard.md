@@ -241,6 +241,24 @@ carrying the four animations, the title, the statements and the end cards; 116 o
 - **The spend:** under $1 of Google for the cut (Gemini watching eight clips and listening to the mix); the keyframes,
   the clips and the animations were made locally. The maintainer's cap for these changes was $20.
 
+## The film on the landing page (12 Oct 2026)
+
+The maintainer asked for the YouTube demo to be replaced with cut 3. YouTube cannot replace a video's file, so the cut
+goes up as a new unlisted video (`youtube/README.md`: the file, the title, the description with its chapters, the
+captions, the settings), and the landing page is repointed:
+
+- the theatre's chapters and captions are cut 3's ten scenes and 52 narration lines (`src/transcript3.py` writes
+  `youtube/transcript.json`, `youtube/youtube-description.txt`, `youtube/captions.srt` and
+  `design3/site/assets/media/demo-film.json`);
+- the label reads "Watch the 6-minute demo", the dialog "The 6-minute demo · From the first flag to the ledger", and the
+  end card "One platform. Ten agents. One yes.";
+- the poster and the pill's thumbnail are the brand and its distributor at the quarter's dashboard (the office scene's
+  source clip, SC-154's, as it opens in the film at 5:40), which names no client;
+- the video id follows once the upload is done; until then the page still plays the old film under the new words.
+
+The unit test of the film's words follows (ten chapters, 52 lines, 6:06, no client in a title), as does the keyboard
+spec (unrun, SC-55). The frontend gate passes.
+
 ## Rebuilding the film from a fresh clone
 
 Everything the cut needs is tracked: the clips in `media/`, the keyframes in `img/`, the app screens in `screens/`,

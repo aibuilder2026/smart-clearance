@@ -92,3 +92,6 @@ design3/designs/SC-187/src/*
 !design3/designs/SC-187/src/*.json
 !design3/designs/SC-187/src/*.txt
 !design3/designs/SC-187/src/*.md
+
+# SC-187: the YouTube package ships; the poster's PNG original stays local
+design3/designs/SC-187/youtube/src/

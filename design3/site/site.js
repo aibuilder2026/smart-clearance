@@ -110,10 +110,10 @@
   }
   const DEMO_FILM = Object.assign({
     youtube: "EWFLqM3oHYU",
-    runtime: "4:56",
-    label: "Watch the 5-minute demo",
-    title: "The 5-minute demo",
-    sub: "One batch, from the brand to the ledger",
+    runtime: "6:06",
+    label: "Watch the 6-minute demo",
+    title: "The 6-minute demo",
+    sub: "From the first flag to the ledger",
     poster: "film-poster.webp",
     thumb: "film-thumb.webp",
     words: "demo-film.json"
@@ -190,7 +190,7 @@
       const a = document.activeElement;
       if (!a || a === document.body || box.current && box.current.parentElement.contains(a)) go.current && go.current.focus({ preventScroll: true });
     }, []);
-    return /* @__PURE__ */ React.createElement(motion.div, { ref: box, className: "fp-end", role: "group", "aria-labelledby": "fp-end-h", initial: reduce ? false : { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.42, ease: EASE } }, /* @__PURE__ */ React.createElement("img", { className: "fp-end-bg", src: IMG + DEMO_FILM.poster, alt: "" }), /* @__PURE__ */ React.createElement("div", { className: "fp-end-in" }, /* @__PURE__ */ React.createElement("h3", { id: "fp-end-h" }, "One batch, start to finish."), /* @__PURE__ */ React.createElement("p", null, "Now play each part yourself. The guided demo runs the same journey in your browser, a beat at a time."), /* @__PURE__ */ React.createElement("div", { className: "fp-end-ctas" }, /* @__PURE__ */ React.createElement("a", { ref: go, className: "btn btn-lg btn-pill fp-go", ...linkProps(LINKS.demo) }, "Try the guided demo", /* @__PURE__ */ React.createElement(Icon, { name: "arrow-up-right", size: 16, stroke: 2.4 })), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-lg btn-pill film-ghost", onClick: onBook }, "Book a demo"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn fp-again", onClick: onReplay }, /* @__PURE__ */ React.createElement(Icon, { name: "rotate-ccw", size: 16 }), "Watch again"))));
+    return /* @__PURE__ */ React.createElement(motion.div, { ref: box, className: "fp-end", role: "group", "aria-labelledby": "fp-end-h", initial: reduce ? false : { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.42, ease: EASE } }, /* @__PURE__ */ React.createElement("img", { className: "fp-end-bg", src: IMG + DEMO_FILM.poster, alt: "" }), /* @__PURE__ */ React.createElement("div", { className: "fp-end-in" }, /* @__PURE__ */ React.createElement("h3", { id: "fp-end-h" }, "One platform. Ten agents. One yes."), /* @__PURE__ */ React.createElement("p", null, "Now play each part yourself. The guided demo runs the same journey in your browser, a beat at a time."), /* @__PURE__ */ React.createElement("div", { className: "fp-end-ctas" }, /* @__PURE__ */ React.createElement("a", { ref: go, className: "btn btn-lg btn-pill fp-go", ...linkProps(LINKS.demo) }, "Try the guided demo", /* @__PURE__ */ React.createElement(Icon, { name: "arrow-up-right", size: 16, stroke: 2.4 })), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-lg btn-pill film-ghost", onClick: onBook }, "Book a demo"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn fp-again", onClick: onReplay }, /* @__PURE__ */ React.createElement(Icon, { name: "rotate-ccw", size: 16 }), "Watch again"))));
   }
   function FilmChapters({ chapters, now, onPick }) {
     return /* @__PURE__ */ React.createElement("nav", { className: "fp-ch", "aria-label": "Chapters" }, /* @__PURE__ */ React.createElement("ol", null, chapters.map((c, i) => /* @__PURE__ */ React.createElement("li", { key: c.id }, /* @__PURE__ */ React.createElement("button", { type: "button", className: cx(i === now && "now"), "aria-current": i === now ? "true" : void 0, onClick: () => onPick(c.at) }, /* @__PURE__ */ React.createElement("span", { className: "fp-ch-at" }, clock(c.at)), /* @__PURE__ */ React.createElement("span", { className: "fp-ch-t" }, c.title))))));

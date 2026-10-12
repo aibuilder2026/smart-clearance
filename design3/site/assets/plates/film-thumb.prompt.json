@@ -1,12 +1,12 @@
 {
-  "derived_from": "design3/designs/SC-158/src/build/mango-drink-demo-master.mp4",
-  "film_sidecar": "design3/designs/SC-158/media/mango-drink-demo.prompt.json",
-  "model": "LTX 2.5 Fast (clip c01-factory-dawn) from a Qwen-Image 2.1 keyframe, cut by ffmpeg (SC-158)",
-  "created": "2026-10-11",
-  "designed_in": "design3/designs/SC-164 (option A, the theatre)",
+  "derived_from": "design3/designs/SC-154/media/final-4-office-dashboard.mp4 (the clip the film reuses at 5:40)",
+  "film_sidecar": "design3/designs/SC-187/media/smart-clearance-demo.prompt.json",
+  "model": "Veo 3.1 (SC-154's final-4-office-dashboard) from a Nano Banana 2 keyframe, cut by ffmpeg (SC-187 cut 3)",
+  "created": "2026-10-12",
+  "designed_in": "design3/designs/SC-164 (option A, the theatre); the film SC-187 cut 3",
   "name": "film-thumb",
-  "at_s": 0.5,
+  "at_s": 0.0,
   "output": "film-thumb.webp 208x208",
-  "post_process": "film-poster.png cropped square from x=576 (the bay's pallets and trucks), 208x208 (Lanczos), WebP q78",
-  "use": "the demo pill's thumbnail, shown at 52 px"
+  "post_process": "a square crop of the poster about the two of them at the screen, WebP q80 by Pillow",
+  "use": "the demo film's poster on the landing page: the brand and its distributor reading the quarter's dashboard, no lettering, no client named"
 }

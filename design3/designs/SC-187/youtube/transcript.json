@@ -1,0 +1,296 @@
+{
+ "film": "SC-187 · the demo film, cut 3",
+ "duration": 366.0,
+ "runtime": "6:06",
+ "opening": "Near-expiry stock, routed by AI agents. One yes from a person.",
+ "chapters": [
+  {
+   "id": "opening",
+   "n": 0,
+   "title": "Smart-Clearance",
+   "at": 0.0,
+   "lines": [
+    {
+     "at": 1.0,
+     "text": "Every day, across India, good products run out of time before they run out of demand."
+    },
+    {
+     "at": 7.5,
+     "text": "A batch waits in a distributor's godown as its best-before date draws closer."
+    },
+    {
+     "at": 13.3,
+     "text": "Once it crosses the quick-commerce gates, the modern-trade shelves close to it."
+    },
+    {
+     "at": 18.7,
+     "text": "What usually follows is a write-off: the stock destroyed, the GST credit reversed, and perfectly good food in a landfill."
+    },
+    {
+     "at": 26.8,
+     "text": "The brand loses, the distributor loses, and the people who would have bought it never get the chance."
+    }
+   ]
+  },
+  {
+   "id": "ch-1",
+   "n": 1,
+   "title": "The platform",
+   "at": 33.2,
+   "lines": [
+    {
+     "at": 34.6,
+     "text": "Smart-Clearance changes that."
+    },
+    {
+     "at": 36.7,
+     "text": "It is a software-as-a-service platform for manufacturers, built around an ecosystem of AI agents."
+    },
+    {
+     "at": 43.0,
+     "text": "Every brand gets its own workspace, set up for its supply chain: its distributors and super stockists, its quick-commerce gates, its exits and its rules."
+    },
+    {
+     "at": 54.1,
+     "text": "Inside it, ten agents work together along nine stops."
+    },
+    {
+     "at": 58.0,
+     "text": "They detect, verify, value, decide, execute, settle and report."
+    },
+    {
+     "at": 64.3,
+     "text": "And at the one moment that matters, a person says yes. Nothing moves before that."
+    },
+    {
+     "at": 71.0,
+     "text": "A platform of its own kind: the whole chain on one system, from the manufacturer to the distributor, the kirana, the buyer and the food bank, each acting in their own name."
+    }
+   ]
+  },
+  {
+   "id": "ch-2",
+   "n": 2,
+   "title": "Connect and detect",
+   "at": 81.4,
+   "lines": [
+    {
+     "at": 82.3,
+     "text": "It starts with the stock data the distributor already has."
+    },
+    {
+     "at": 86.2,
+     "text": "The Data agent maps the stock export field by field, so nothing is keyed in twice."
+    },
+    {
+     "at": 92.9,
+     "text": "Every morning, the Watcher checks every batch at every distributor against its sell-through and the quick-commerce gates."
+    },
+    {
+     "at": 99.8,
+     "text": "When a batch will not sell in time, the supply planner is told on her phone, in plain words, with the write-off it would mean."
+    },
+    {
+     "at": 107.3,
+     "text": "The batch gets a page of its own: where it stands, and what comes next."
+    }
+   ]
+  },
+  {
+   "id": "ch-3",
+   "n": 3,
+   "title": "Verify",
+   "at": 111.3,
+   "lines": [
+    {
+     "at": 112.2,
+     "text": "Before anything is priced, the batch is verified."
+    },
+    {
+     "at": 115.4,
+     "text": "Vision asks the distributor for one photo of the carton label."
+    },
+    {
+     "at": 119.7,
+     "text": "It reads the batch number, the dates and the MRP, checks the barcode and the FSSAI licence, and matches them to the stock record."
+    },
+    {
+     "at": 128.5,
+     "text": "One photo from a phone, and the batch is real."
+    }
+   ]
+  },
+  {
+   "id": "ch-4",
+   "n": 4,
+   "title": "Value, decide, approve",
+   "at": 132.0,
+   "lines": [
+    {
+     "at": 132.9,
+     "text": "Now the Valuer prices every exit: the kirana cluster, the marketplace, the staff sale, the food bank, and the quick-commerce channels the batch can still reach."
+    },
+    {
+     "at": 143.3,
+     "text": "Each one is priced per unit, after costs and GST, against what destroying the stock would cost."
+    },
+    {
+     "at": 150.7,
+     "text": "The Router then splits the batch across the exits, and explains its reasoning in plain language."
+    },
+    {
+     "at": 156.9,
+     "text": "The plan lands on the planner's desk with everything she needs to decide."
+    },
+    {
+     "at": 161.1,
+     "text": "She approves it once. The approval is logged, with who, when, and the device."
+    },
+    {
+     "at": 166.2,
+     "text": "The distributor is told the plan in his own language, with a pause button, and the agents set off."
+    }
+   ]
+  },
+  {
+   "id": "ch-5",
+   "n": 5,
+   "title": "Five exits",
+   "at": 172.3,
+   "lines": [
+    {
+     "at": 173.2,
+     "text": "Outreach sends the kirana cluster its scheme, in Hindi, straight to each shop's phone."
+    },
+    {
+     "at": 178.7,
+     "text": "A shop sees the offer and its margin, and orders in a tap. Each order gets its own tax invoice, in the distributor's name."
+    },
+    {
+     "at": 186.1,
+     "text": "The Lister puts the rest on the near-expiry marketplace, hidden from the brand's own territories."
+    },
+    {
+     "at": 192.5,
+     "text": "When a buyer bids, the Negotiator answers in the distributor's name, holds the reserve, and closes the deal. The buyer pays the token; the truck is loaded."
+    },
+    {
+     "at": 202.9,
+     "text": "At the godown, the staff sale opens, recorded on one consolidated UPI receipt that Vision reads and reconciles."
+    },
+    {
+     "at": 211.2,
+     "text": "Packs with enough shelf life go to a food bank, as sealed cartons: the pickup booked, the FSSAI checklist drafted, and the food bank's own receipt issued."
+    },
+    {
+     "at": 221.2,
+     "text": "And the van round delivers the scheme to every shop that ordered."
+    }
+   ]
+  },
+  {
+   "id": "ch-6",
+   "n": 6,
+   "title": "The paperwork",
+   "at": 226.0,
+   "lines": [
+    {
+     "at": 226.9,
+     "text": "This is where most clearances fall apart: the paperwork. Here, it is automatic."
+    },
+    {
+     "at": 232.9,
+     "text": "The Paperwork agent drafts the whole pack: the distributor's tax invoice, ready to issue from Tally with its e-invoice; the brand's credit note, so the distributor ends whole; the GST memo, with the input credit kept and reversed under section 17(5)(h); the FSSAI checklist; and an invoice to every kirana."
+    },
+    {
+     "at": 253.8,
+     "text": "Every paper is laid out as a signed PDF with the firm's stamp, and reviewed by the planner."
+    },
+    {
+     "at": 259.3,
+     "text": "The distributor sees his own papers on his own portal, ready to download."
+    }
+   ]
+  },
+  {
+   "id": "ch-7",
+   "n": 7,
+   "title": "When it does not go as planned",
+   "at": 264.3,
+   "lines": [
+    {
+     "at": 265.2,
+     "text": "Sometimes it does not go as planned. Some shops do not order, and stock is still left at the godown on expiry day."
+    },
+    {
+     "at": 272.1,
+     "text": "Smart-Clearance handles that too, fully automated."
+    },
+    {
+     "at": 275.4,
+     "text": "The distributor is asked to destroy the expired packs through an authorised agency, with the evidence: a photo before, a photo after, and the agency's certificate."
+    },
+    {
+     "at": 285.5,
+     "text": "Vision checks the photos against the batch and the count."
+    },
+    {
+     "at": 289.8,
+     "text": "The certificate of destruction is signed in place, on the distributor's screen: the agency's officer, two independent witnesses, and the distributor."
+    },
+    {
+     "at": 299.5,
+     "text": "The planner reviews the evidence and gives her second yes. The expiry credit note and the destruction certificate are issued, and the batch closes, its record complete."
+    }
+   ]
+  },
+  {
+   "id": "ch-8",
+   "n": 8,
+   "title": "The ledger",
+   "at": 309.6,
+   "lines": [
+    {
+     "at": 310.5,
+     "text": "When a batch closes, Impact posts the ledger."
+    },
+    {
+     "at": 313.6,
+     "text": "Money: what was recovered against the write-off, batch by batch, quarter by quarter."
+    },
+    {
+     "at": 319.3,
+     "text": "GST: the input credit kept and reversed, invoice by invoice, ready for the accountant."
+    },
+    {
+     "at": 325.7,
+     "text": "Impact: the food kept out of landfill, the CO₂e avoided, the packs donated, and the BRSR line with its evidence."
+    },
+    {
+     "at": 334.2,
+     "text": "And every batch keeps its record: the photos, the approvals, and the audit trail of every agent and person."
+    }
+   ]
+  },
+  {
+   "id": "ch-9",
+   "n": 9,
+   "title": "The close",
+   "at": 342.6,
+   "lines": [
+    {
+     "at": 343.2,
+     "text": "The brand recovers. The distributor ends whole. The kiranas earn. The food bank receives."
+    },
+    {
+     "at": 350.8,
+     "text": "One platform. Ten agents. One yes."
+    },
+    {
+     "at": 354.7,
+     "text": "Try the guided demo, or sign in to the live prototype: the credentials and steps are in the deck."
+    }
+   ]
+  }
+ ]
+}

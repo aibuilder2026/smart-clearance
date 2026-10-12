@@ -10,7 +10,7 @@ story's client.
 | --- | --- | --- | --- |
 | **The guided demo** | [smartclearance-demo.web.app](https://smartclearance-demo.web.app), and the hosted prototype in Claude Design ([guided demo](https://claude.ai/design/p/8294ec70-3e6b-4359-8de6-2a3fd056c3b2?file=Smart-Clearance+demo+v3.html)) | the workspace app's stub and the console's demo world, in the browser; nothing is called, nothing is kept | a judge or a buyer with 5 to 18 minutes; any day, any network; always the same story |
 | **The live workspace** | [munchly-smartclearance.web.app](https://munchly-smartclearance.web.app) and the console at [smartclearance-console.web.app](https://smartclearance-console.web.app) | backend-api on Cloud Run, the agents on Gemini, real pushes, real PDFs | showing that it really runs: people signing in on their own devices, agents answering, papers laid out |
-| **The demo film** | Watch on [smartclearance.web.app](https://smartclearance.web.app); [youtu.be/EWFLqM3oHYU](https://youtu.be/EWFLqM3oHYU) (unlisted) | YouTube | a 5-minute walkthrough to send ahead, or to play when there is no time to drive |
+| **The demo film** | Watch on [smartclearance.web.app](https://smartclearance.web.app); [youtu.be/EWFLqM3oHYU](https://youtu.be/EWFLqM3oHYU) (unlisted) | YouTube | a 6-minute walkthrough to send ahead, or to play when there is no time to drive |
 
 ## The guided demo
 
