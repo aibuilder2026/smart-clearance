@@ -51,12 +51,14 @@
 
 	const VALUED: Phase[] = ['valued', 'planned', 'approved', 'executing', 'dispatched', 'settled', 'cleared'];
 	const PLANNED: Phase[] = ['planned', 'approved', 'executing', 'dispatched', 'settled', 'cleared'];
-	const valued = $derived(VALUED.includes(h.phase));
-	const planned = $derived(PLANNED.includes(h.phase));
+	// priced and planned once the phase says so and the plan itself has arrived: on the live workspace the phase can come
+	// over the stream a moment before the case's plan is read (SC-189)
+	const valued = $derived(VALUED.includes(h.phase) && c.plan.rows.length > 0);
+	const planned = $derived(PLANNED.includes(h.phase) && c.plan.lines.length > 0);
 	const approved = $derived(isRouted(h.phase));
 	const v = $derived(hm.view);
 	const sku = $derived(v.skuObj);
-	const foodbank = $derived(c.plan.rows.find((r) => r.id === 'foodbank')!);
+	const foodbank = $derived(c.plan.rows.find((r) => r.id === 'foodbank'));
 	// the exits the Router left out (SC-85): one that pays, but less than the last it chose, and one that may not take the
 	// batch, with its reason; the food bank and the write-off are the floor, not left out
 	const leftOut = $derived(
@@ -154,7 +156,7 @@
 				<p class="t-footnote subtle" style="margin-top: 6px">
 					Hover a bar for price, capacity, time to clear and what happens to the GST credit. Destroying costs {fmt.inr2(
 						-c.plan.writeOff.perUnit
-					)} a unit; a donation costs {fmt.inr2(-foodbank.net)}, because the credit on a gift is reversed.
+					)} a unit{#if foodbank}; a donation costs {fmt.inr2(-foodbank.net)}, because the credit on a gift is reversed{/if}.
 				</p></Card
 			>{:else}<ChannelTable rows={c.plan.rows} {chosen} />{/if}{:else}<Locked
 			icon="scale"

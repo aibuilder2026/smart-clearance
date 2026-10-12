@@ -452,6 +452,17 @@ describe("a partner's own step reads its facts again (SC-180)", () => {
 });
 
 describe('Verify shows the photo the distributor sent (SC-181)', () => {
+	it('the Route Room waits for the plan itself when the phase arrives first, rather than failing (SC-189)', async () => {
+		// the stream moved the chips on to planned a moment before their case, with its plan, was read
+		const m = moment('planned');
+		m.members.priya.cases[CHIPS].plan = null;
+		const r = await draw(source(fakeApi(m, 'priya')), 'route', CHIPS);
+		await waitFor(() => expect(text(r)).toContain('Five channels, priced'));
+		expect(text(r)).toContain('Pricing five channels');
+		expect(text(r)).not.toContain('Internal Error');
+		r.unmount();
+	});
+
 	it("the label photo in Priya's Route Room is Rakesh's own, from its link, whole and never the typeset stand-in", async () => {
 		const m = moment('planned');
 		const url = m.members.priya.cases[CHIPS].journey.photo.url!;
