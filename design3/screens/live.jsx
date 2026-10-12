@@ -308,11 +308,10 @@
       </form>;
     return <div className="signin">
       <div className="ground" aria-hidden="true" />
-      {app.bp === "desktop" && <S.HeroStage />}
+      <S.HeroStage />
       <div className="si-panel">
         <div className="si-card">
           <div className="si-ws"><WorkspaceMark ws={WS} size={app.bp === "phone" ? 52 : 60} /><div className="si-ws-name">{WS.name}</div><span className="si-url"><Icon name="lock" size={12} stroke={2.2} />{WS.domain}</span></div>
-          {app.bp !== "desktop" && !out && <div className="si-hero" aria-hidden="true"><Product name="carton-hero" size={app.bp === "phone" ? 120 : 150} float /></div>}
           <div className="stack tight" style={{ gap: 6 }}><h1 className="si-title">{out ? "Not a member here" : "Sign in"}</h1>{!out && <p className="si-sub">Use the email address you were invited with, and your password.</p>}</div>
           {form}
           {!out && groups && groups.length > 0 && <Chips groups={groups} onPick={v => { setEmail(v); setErr(""); if (pwRef.current) pwRef.current.focus(); }} />}

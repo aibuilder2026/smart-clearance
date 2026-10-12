@@ -12,7 +12,6 @@
 	import { AppRoot } from '@smart-clearance/core';
 	import { ConsoleApp, routeOf, type ConsoleRoute } from '@smart-clearance/core/console';
 	import { untrack } from 'svelte';
-	import plate from '$design3/site/assets/plates/scene.webp';
 	import type { DeviceSpec } from './types.ts';
 
 	// the staff console inside the demo (director.jsx ConsoleScreen, SC-169): the console's own app, embedded, on its
@@ -54,6 +53,6 @@
 
 <div bind:this={box} class="console-screen" style="position: absolute; inset: 0">
 	<AppRoot embedded style="position: absolute; inset: 0">
-		{#key signin}<ConsoleApp api={apiOf(signin)} {route} ongo={(r) => (route = r)} embedded mock {plate} />{/key}
+		{#key signin}<ConsoleApp api={apiOf(signin)} {route} ongo={(r) => (route = r)} embedded mock />{/key}
 	</AppRoot>
 </div>

@@ -1,0 +1,7 @@
+{
+  "name": "signin-b/depot-soft",
+  "source": "design3/designs/SC-187/img/k30-depot.webp (Nano Banana 2, SC-187's film; see its .prompt.json)",
+  "postprocess": "resized to 1600 wide, Gaussian blur radius 14 (Pillow), WebP q80",
+  "use": "SC-195 sign-in option B: the ground, blurred 18 px more in CSS",
+  "createdAt": "2026-10-12T15:57:34.000Z"
+}

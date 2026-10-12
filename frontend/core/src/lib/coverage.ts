@@ -91,6 +91,8 @@ export const COVERAGE: Record<string, Coverage> = {
 	SplitBar: built,
 	MoneyPanel: built,
 	DocCard: built,
+	// the sign-ins' stage (SC-195)
+	AgentStage: built,
 	CodeBlock: built,
 	// the guided demo's (SC-63)
 	StatusBar: built,

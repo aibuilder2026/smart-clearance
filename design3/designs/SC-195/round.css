@@ -1,0 +1,90 @@
+/* SC-195's mockups: what the options share. The swing's charts take the inks SC-149 validated with the dataviz script on
+   the card's surface: kept in the console's green, the bin in clay (#167a52 / #c2410c light, #34a571 / #e0662c dark),
+   never resting on colour alone (every bar is labelled). */
+:root { --viz-kept: #167a52; --viz-gone: #c2410c; --viz-gone-text: #b13a0a; }
+[data-theme="dark"] { --viz-kept: #34a571; --viz-gone: #e0662c; --viz-gone-text: #f08a5a; }
+
+/* ---------- swing A: the note, and the working in a sheet ---------- */
+.sw-note { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 4px 6px; align-self: flex-start; min-height: 34px; margin-top: 4px; padding: 6px 12px 6px 9px; border-radius: var(--r-full); font-size: 13.5px; color: var(--primary-text); background: var(--primary-soft); text-align: left; transition: background-color var(--t-fast); }
+.sw-note:hover { background: color-mix(in oklab, var(--primary) 20%, transparent); }
+.sw-note b { font-weight: 700; font-variant-numeric: tabular-nums; }
+.sw-note .sw-how { font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
+.sw-work { display: grid; gap: 24px; }
+.sw-hero { display: grid; gap: 6px; }
+.sw-big { font: 700 40px/1.02 var(--font-display); letter-spacing: -0.03em; color: var(--primary-text); font-variation-settings: "opsz" 72; }
+.sw-hero p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--fg-2); }
+.sw-bridge { margin: 0; padding: 14px 8px 2px; border-radius: 16px; background: var(--fill); }
+.sw-bridge svg { display: block; width: 100%; height: auto; overflow: visible; }
+.sw-bridge .zero { stroke: var(--line-2); stroke-width: 1; }
+.sw-bridge .link { stroke: var(--fg-3); stroke-width: 1; stroke-dasharray: 2 3; }
+.sw-bridge .bar.kept { fill: var(--viz-kept); }
+.sw-bridge .bar.gone { fill: var(--viz-gone); }
+.sw-bridge .bar.plan { fill: var(--fg-2); }
+.sw-bridge .bar.soft { fill-opacity: 0.55; stroke: var(--viz-kept); stroke-width: 1.2; stroke-dasharray: 3 2; }
+.sw-bridge .val { font: 650 11.5px var(--font-ui); font-variant-numeric: tabular-nums; fill: var(--fg); }
+.sw-bridge .val.gone { fill: var(--viz-gone-text); }
+.sw-bridge .lab { font: 550 11px var(--font-ui); fill: var(--fg-2); }
+.sw-bridge .lab.sub { font-size: 10.5px; fill: var(--fg-3); }
+.sw-work section { display: grid; }
+.sw-work h3 { margin: 0 0 4px; font: 650 15px/1.3 var(--font-ui); letter-spacing: -0.01em; }
+.sw-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: baseline; padding: 9px 0; box-shadow: 0 calc(var(--hair) * -1) 0 var(--line) inset; font-size: 14.5px; }
+.sw-row .k { display: grid; gap: 2px; min-width: 0; }
+.sw-row .sub { font-size: 12.5px; line-height: 1.4; color: var(--fg-3); }
+.sw-row .v { white-space: nowrap; }
+.sw-row .v.gone { color: var(--viz-gone-text); }
+.sw-row .v.kept { color: var(--primary-text); }
+.sw-row.strong { font-weight: 650; }
+.sw-sum { margin: 4px 0 6px; font-size: 18px; letter-spacing: -0.01em; }
+.sw-sum b { color: var(--primary-text); }
+.sw-why { display: grid; gap: 10px; margin: 6px 0 0; padding: 0; list-style: none; }
+.sw-why li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 10px; font-size: 14px; line-height: 1.45; color: var(--fg-2); }
+.sw-why li .ic { margin-top: 2px; color: var(--primary-text); }
+
+.sw-bridge figcaption { padding: 0 6px 10px; font-size: 12px; color: var(--fg-3); }
+
+/* ---------- swing B: two columns, in place ---------- */
+.sw-disc { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; min-height: 32px; padding: 0 8px 0 0; font-size: 13.5px; font-weight: 650; color: var(--primary-text); }
+.sw-disc:hover span { text-decoration: underline; text-underline-offset: 3px; }
+.sw-two { display: grid; margin-top: 8px; padding: 6px 14px 12px; border-radius: 16px; background: var(--fill); }
+.sw-two-r { display: grid; grid-template-columns: minmax(0, 1fr) 118px 118px; gap: 12px; align-items: baseline; padding: 8px 0; font-size: 14px; box-shadow: 0 calc(var(--hair) * -1) 0 var(--line) inset; }
+.sw-two-r > :not(.k) { text-align: right; white-space: nowrap; }
+.sw-two-r .k { display: grid; gap: 2px; min-width: 0; }
+.sw-two-r .sub { font-size: 12px; line-height: 1.35; color: var(--fg-3); }
+.sw-two-r.head { padding-top: 4px; font-size: 12px; font-weight: 650; color: var(--fg-3); letter-spacing: 0.01em; }
+.sw-two-r.total { font-weight: 650; }
+.sw-two-r .gone { color: var(--viz-gone-text); }
+.sw-two-r.swing { margin: 8px -8px 4px; padding: 10px 8px; border-radius: 10px; font-weight: 700; color: var(--primary-text); background: var(--primary-soft); box-shadow: none; }
+.sw-two .t-caption { margin: 4px 0 0; }
+@container app (max-width: 767px) {
+  .sw-two { padding: 4px 12px 10px; }
+  .sw-two-r { grid-template-columns: minmax(0, 1fr) 84px 84px; gap: 8px; font-size: 13px; }
+}
+
+/* ---------- swing C: where it came from, pack by pack ---------- */
+.sw-line { display: inline-flex; align-items: center; gap: 2px; }
+.sw-i { display: inline-grid; place-items: center; width: 28px; height: 28px; margin: -6px 0; border-radius: 50%; color: var(--fg-2); transition: background-color var(--t-fast); }
+.sw-i:hover, .sw-i[aria-expanded="true"] { color: var(--primary-text); background: var(--primary-soft); }
+.sw-pop { position: fixed; z-index: 60; overflow: auto; padding: 18px 18px 16px; border-radius: 20px; text-align: left; background: var(--surface); box-shadow: var(--shadow-3), 0 0 0 var(--hair) var(--line-2); outline: none; }
+.sw-where { display: grid; gap: 14px; }
+.sw-where-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.sw-where-head b { font: 700 26px/1.1 var(--font-display); letter-spacing: -0.02em; color: var(--primary-text); }
+.sw-stack { display: flex; gap: 3px; height: 14px; }
+.sw-stack .seg { border-radius: 3px; background: var(--viz-kept); transform-origin: left center; min-width: 4px; }
+.sw-stack .seg:nth-child(2) { opacity: 0.66; }
+.sw-stack .seg:nth-child(3) { opacity: 0.4; }
+.sw-parts { display: grid; margin: 0; padding: 0; list-style: none; }
+.sw-parts li { display: grid; grid-template-columns: minmax(0, 1fr) auto 38px; gap: 12px; align-items: baseline; padding: 8px 0; box-shadow: 0 calc(var(--hair) * -1) 0 var(--line) inset; font-size: 14px; }
+.sw-parts .k { display: grid; gap: 2px; }
+.sw-parts .sub { font-size: 12.5px; color: var(--fg-3); }
+.sw-parts .pct { text-align: right; color: var(--fg-3); }
+.sw-packs { display: grid; gap: 8px; padding: 12px 14px; border-radius: 14px; background: var(--fill); }
+.sw-pack { display: grid; grid-template-columns: 112px minmax(0, 1fr) 70px; gap: 10px; align-items: center; font-size: 13px; }
+.sw-pack .name { color: var(--fg-2); }
+.sw-pack .track { position: relative; height: 10px; }
+.sw-pack .mid { position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--line-2); }
+.sw-pack .fill { position: absolute; top: 0; bottom: 0; border-radius: 3px; }
+.sw-pack .fill.kept { background: var(--viz-kept); }
+.sw-pack .fill.gone { background: var(--viz-gone); }
+.sw-pack .v { text-align: right; font-weight: 650; }
+.sw-pack .v.gone { color: var(--viz-gone-text); }
+.sw-pack .v.kept { color: var(--primary-text); }

@@ -1,0 +1,47 @@
+/* Sign-in option C · The brand's own light: the ground's aurora becomes a soft-focus field, discs of light in the
+   system's inks, heavily blurred, drifting into place once (2.4 s) and then still; at once under reduced motion. */
+.signin > .ground::before {
+  inset: -12%; height: auto;
+  background:
+    radial-gradient(22% 30% at 16% 30%, rgb(98 196 150 / 0.55), transparent 70%),
+    radial-gradient(18% 24% at 38% 72%, rgb(255 179 71 / 0.42), transparent 70%),
+    radial-gradient(26% 32% at 70% 22%, rgb(120 176 230 / 0.42), transparent 70%),
+    radial-gradient(16% 20% at 58% 56%, rgb(242 120 64 / 0.3), transparent 70%),
+    radial-gradient(30% 36% at 88% 78%, rgb(98 196 150 / 0.4), transparent 72%),
+    radial-gradient(12% 16% at 26% 84%, rgb(120 176 230 / 0.36), transparent 70%);
+  filter: blur(36px) saturate(1.15);
+  animation: sc-drift 2.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+[data-theme="dark"] .signin > .ground::before { opacity: 0.62; filter: blur(40px) saturate(1.25); }
+@keyframes sc-drift { from { transform: scale(1.12) translate(2%, -2%); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .signin > .ground::before { animation: none; } }
+/* the composition: the carton behind, the chips leaning at its left, the mango drink in front at its right, on a glass
+   floor with each pack's reflection and contact shadow; the tags name them */
+.sc-stage { gap: 18px; }
+.c-group { position: relative; height: 380px; max-width: 640px; }
+.c-floor { position: absolute; left: 4%; right: 6%; bottom: 52px; height: 70px; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in oklab, var(--surface) 80%, transparent), transparent); box-shadow: 0 0 0 var(--hair) color-mix(in oklab, var(--line-2) 60%, transparent) inset; }
+.c-pack { position: absolute; bottom: 70px; }
+.c-pack img { display: block; filter: drop-shadow(0 22px 22px rgb(16 40 28 / 0.2)); }
+.c-reflect { position: absolute; left: 0; top: 100%; transform: scaleY(-1); opacity: 0.16; -webkit-mask-image: linear-gradient(to top, black, transparent 40%); mask-image: linear-gradient(to top, black, transparent 40%); pointer-events: none; }
+.c-reflect img { filter: none; }
+.c-carton { left: 26%; bottom: 84px; }
+.c-chips { left: 2%; transform-origin: bottom center; rotate: -7deg; }
+.c-mango { left: 62%; }
+.c-tag { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 99px; font-size: 12.5px; font-weight: 600; color: var(--fg); white-space: nowrap; background: color-mix(in oklab, var(--surface) 84%, transparent); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line-2); }
+.c-tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
+.c-tag-carton { left: 40%; top: 0; }
+.c-tag-chips { left: 0; bottom: 8px; }
+.c-tag-mango { left: 58%; bottom: 8px; }
+/* phones: the composition small, over the card */
+.sc-phone { display: none; }
+@container app (max-width: 767px) {
+  .signin > .sc-phone { display: block; grid-row: 1; position: relative; z-index: 1; margin-top: calc(var(--safe-top) + 6px); }
+  .signin > .si-panel { grid-row: 2; padding-top: 0; }
+  .si-hero { display: none; }
+  .c-group.small { height: 196px; max-width: 360px; margin: 0 auto; }
+  .c-group.small .c-floor { bottom: 18px; height: 36px; }
+  .c-group.small .c-pack { bottom: 30px; }
+  .c-group.small .c-carton { left: 30%; bottom: 36px; }
+  .c-group.small .c-chips { left: 6%; }
+  .c-group.small .c-mango { left: 62%; }
+}

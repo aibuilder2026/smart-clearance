@@ -1,0 +1,48 @@
+/* SC-195 round 2 · what the three stages share. The sign-in loses round 1's photograph: its ground is the app's own
+   again (the sage ground and its aurora), and the stage on it is Smart-Clearance's. */
+.si-photo > .ground { background: var(--bg); animation: none; filter: none !important; }
+.si-photo > .ground::before { display: block; }
+@container app (max-width: 1099px) {
+  .si-photo > .ground { background: var(--bg); }
+  .si-photo > .ground::after { content: none; }
+  .si-photo .si-panel { padding-top: 6px; }
+  .signin > .si-panel { grid-row: 2; }
+}
+
+/* the stage: the head at the top, the caption and Replay at the foot */
+.r2-stage { display: grid; grid-template-rows: auto 1fr auto; gap: 18px; padding: 48px 40px 44px clamp(40px, 6cqi, 96px); min-height: 100%; }
+.r2-head { display: grid; gap: 10px; max-width: 520px; }
+.r2-head .si-tagline { margin: 0; }
+.r2-title { margin: 6px 0 0; font: 700 clamp(34px, 3.3cqi, 46px)/1.04 var(--font-display); letter-spacing: -0.03em; font-variation-settings: "opsz" 72; color: var(--fg); text-wrap: balance; }
+.r2-title span { color: var(--amber-text); }
+[data-theme="dark"] .r2-title span { color: var(--amber); }
+.r2-foot { grid-row: 3; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; max-width: 620px; }
+.r2-caption { display: grid; gap: 3px; min-height: 66px; align-content: end; max-width: 46ch; }
+.r2-caption .n { font-size: 12.5px; font-weight: 650; letter-spacing: 0.02em; color: var(--fg-3); font-variant-numeric: tabular-nums; }
+.r2-caption b { font-size: 17px; font-weight: 650; letter-spacing: -0.01em; color: var(--fg); }
+.r2-caption .did { font-size: 14px; line-height: 1.45; color: var(--fg-2); }
+.r2-caption.human .n { color: var(--amber-text); }
+[data-theme="dark"] .r2-caption.human .n { color: var(--amber); }
+.r2-replay { justify-self: start; margin: 2px 0 0 -10px; color: var(--fg-2); }
+.r2-replay[disabled] { visibility: hidden; }
+
+/* an agent's chip: its tile and name, on glass; the name never fades (secondary ink until it has worked) */
+.r2-chip { display: inline-flex; align-items: center; gap: 7px; padding: 4px 11px 4px 4px; border-radius: 99px; font-size: 13px; font-weight: 650; white-space: nowrap; color: var(--fg); background: color-mix(in oklab, var(--surface) 88%, transparent); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line-2); transition: transform 240ms var(--ease), background-color 240ms var(--ease); }
+.r2-chip i { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: var(--primary-text); background: var(--primary-soft); transition: background-color 240ms var(--ease), color 240ms var(--ease); }
+.r2-chip.small { gap: 5px; padding: 3px 9px 3px 3px; font-size: 12px; }
+.r2-chip.small i { width: 20px; height: 20px; }
+.r2-chip.later { color: var(--fg-2); }
+.r2-chip.later i { color: var(--fg-3); background: var(--fill-2); }
+.r2-chip.now { transform: scale(1.06); }
+.r2-chip.now i { color: var(--primary-fg); background: var(--primary); }
+.r2-chip.human i { color: var(--amber-text); background: var(--amber-soft); }
+.r2-chip.human.now i, .r2-chip.human.done i { color: var(--amber-fg); background: var(--amber); }
+
+/* phones and tablets: the stage is a band over the card */
+.r2-band { grid-row: 1; position: relative; z-index: 1; display: grid; gap: 8px; margin: calc(var(--safe-top) + 10px) 12px 0; padding: 14px 14px 12px; border-radius: 24px; background: color-mix(in oklab, var(--surface) 62%, transparent); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 0 0 var(--hair) var(--line-2); }
+.r2-bandhead { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.r2-bandhead b { font-weight: 700; letter-spacing: -0.01em; }
+.r2-bandhead b span { color: var(--amber-text); }
+[data-theme="dark"] .r2-bandhead b span { color: var(--amber); }
+.r2-bandhead .by { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--fg-3); }
+@media (prefers-reduced-motion: reduce) { .r2-chip { transition: none; } }

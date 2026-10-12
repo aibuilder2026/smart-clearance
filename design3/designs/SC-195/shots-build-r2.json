@@ -1,0 +1,86 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/r2-signin-live-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/console/Smart-Clearance%20console%20v3.html?boot=0",
+  "out": "build/r2-console-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/r2-signin-live-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/console/Smart-Clearance%20console%20v3.html?boot=0",
+  "out": "build/r2-console-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/r2-signin-live-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/console/Smart-Clearance%20console%20v3.html?boot=0",
+  "out": "build/r2-console-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/r2-signin-live-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/console/Smart-Clearance%20console%20v3.html?boot=0",
+  "out": "build/r2-console-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/r2-signin-held-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 1500,
+  "click": [
+   ".ag-chip:nth-of-type(4)"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/r2-signin-held-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 1500,
+  "click": [
+   ".ag-chip:nth-of-type(6)"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/r2-signin-pointer-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "js": "(() => { const f = document.querySelector('.signin > .ag-field'); for (let i = 0; i < 6; i++) f.dispatchEvent(new PointerEvent('pointermove', { clientX: 230 + i * 4, clientY: 600, bubbles: true, pointerType: 'mouse' })); })()"
+ }
+]

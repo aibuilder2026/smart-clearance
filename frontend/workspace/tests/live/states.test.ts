@@ -844,6 +844,34 @@ describe('the staff sale and what is left at the godown (SC-87)', () => {
 		expect(text(r2)).not.toContain('Vision read LA/SR/26-27/0002');
 	});
 
+	it("the Mango Drink's Journey says its swing in words, and opens how it adds up, packs left at the godown and all (SC-195)", async () => {
+		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1440);
+		// the walk behind this moment: 84 packets to 3 kiranas, 120 at the staff sale, 58 to the food bank, and 1,318 left
+		// at the godown and destroyed there; backend-api's figures: net ₹1,865.10, P&L −₹18,447.45, swing ₹4,209.75
+		const r = await draw(source(fakeApi(moment('cleared'), 'priya')), 'journey', MANGO);
+		const note = await waitFor(() => r.getByRole('button', { name: /₹4,210 better than destroying it/ }));
+		expect(text(r)).not.toContain('· swing');
+		await fireEvent.click(note);
+		await waitFor(() => expect(text(r)).toContain('How the swing adds up'));
+		const t = text(r);
+		// the bin, line by line
+		expect(t).toContain('Stock written off at cost1,580 × ₹11.00−₹17,380.00');
+		expect(t).toContain('The bin would cost₹14.34 a pack−₹22,657.20');
+		// each exit's line takes the packs it took, and they add up to what was recovered
+		expect(t).toContain('Kirana scheme84 packets, 70 charged at ₹14.40 (2 free with every 10), less ₹42 van+₹966.00');
+		expect(t).toContain('Staff sale120 packs at ₹8.00, by UPI+₹960.00');
+		expect(t).toContain('Food bank58 packs given: ₹29.00 handling, and their GST credit reversed (₹31.90)−₹60.90');
+		expect(t).toContain('Recovered₹1,865.10');
+		// the packs left still cost what destroying them did, and the P&L and the swing are backend-api's
+		expect(t).toContain('The packs left at the godown1,318 packs no exit took: what destroying them cost−₹2,932.55');
+		expect(t).toContain('The P&L with the plan−₹18,447.45');
+		expect(t).toContain('−₹18,447.45 − (−₹22,657.20) = ₹4,209.75');
+		expect(t).toContain('1,318 packs no exit took were left at the godown and destroyed there');
+		expect(
+			r.getByRole('img', { name: /A bridge from −₹22,657.20 if destroyed to −₹18,447.45 with the plan/ })
+		).toBeTruthy();
+	});
+
 	it("once recorded, Priya's Execution shows what Vision read, and her pack keeps the receipt as a paper (SC-174)", async () => {
 		vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1440); // a desktop: the paper open beside the pack
 		const m = moment('cleared');

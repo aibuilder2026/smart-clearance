@@ -1,101 +1,19 @@
 <script lang="ts">
+	import AgentStage from '../../../components/AgentStage.svelte';
 	import Mark from '../../../components/Mark.svelte';
-	import Money from '../../../components/Money.svelte';
-	import Product from '../../../components/Product.svelte';
-	import Tracker from '../../../components/Tracker.svelte';
 	import Wordmark from '../../../components/Wordmark.svelte';
-	import { cx } from '../../../cx';
-	import { fmt } from '../../../format';
-	import Icon from '../../../icons/Icon.svelte';
-	import { prefersReducedMotion } from '../../../motion';
-	import { track } from '../../model';
-	import { useWorkspace } from '../../source';
 
-	// the stage beside the sign-in form on desktops: the product, and its one number (screens/auth.jsx HeroStage).
-	// WCAG 2.2.2: the batch walks the nine stages once and holds on the result, so nothing loops beside the sign-in. The
-	// walk can be paused on the way (a paused hero stays paused on return), and replayed from the start.
-	// guided (the demo, before the batch exists): the product and its promise, without the result
-	let { guided }: { guided?: boolean } = $props();
-	const ws = useWorkspace();
-	const c = $derived(ws.case!);
-
-	const KEY = 'sc3-hero-paused';
-	const reduce = $derived(prefersReducedMotion.current);
-	const wasPaused = (() => {
-		try {
-			return localStorage.getItem(KEY) === '1';
-		} catch {
-			return false; // storage blocked: the walk plays
-		}
-	})();
-	let paused = $state(wasPaused);
-	let k = $state(wasPaused ? 9 : 0);
-	const done = $derived(k >= 9);
-	$effect(() => {
-		if (reduce) {
-			k = 9;
-			return;
-		}
-		if (paused || k >= 9) return;
-		const t = setTimeout(() => (k = k + 1), 1000);
-		return () => clearTimeout(t);
-	});
-	const remember = (v: boolean) => {
-		try {
-			localStorage.setItem(KEY, v ? '1' : '0');
-		} catch {
-			/* storage blocked */
-		}
-	};
-	function control() {
-		if (done) {
-			k = 0;
-			paused = false;
-			remember(false);
-		} else {
-			paused = !paused;
-			remember(paused);
-		}
-	}
+	// the stage beside the sign-in form (SC-195, round 2, option A, The agent mesh; screens/auth.jsx HeroStage):
+	// Smart-Clearance's own, the platform's ten agents and the one person at work behind the whole sign-in (the kit's
+	// AgentStage), under the product's mark and its line; on a phone or a tablet, a band over the card
 </script>
 
-<div class={cx('si-stage', paused && 'paused')}>
-	<div class="stack tight" style="gap: 10px">
-		<div class="si-product"><Mark size={36} /><Wordmark size={21} /></div>
-		<p class="si-tagline">
-			Every near-expiry carton gets a second chance, chosen by AI. <span class="hi" lang="hi"
-				>हर कार्टन को दूसरा मौका</span
-			>
-		</p>
-	</div>
-	<div class="si-renders" aria-hidden="true">
-		<Product name="pack-chips" size={176} float class="r1" /><Product
-			name="carton-hero"
-			size={208}
-			float
-			class="r2"
-		/><Product name="pack-mango" size={150} float class="r3" />
-	</div>
-	{#if !guided}
-		<div class="si-figure">
-			<span class="si-cap">Recovered from one batch of {c.sku.brand} chips headed for the bin</span><Money
-				value={k >= 9 ? c.actual.net : Math.round((c.actual.net * k) / 9)}
-				size="xl"
-				roll
-				style="color: var(--primary-text)"
-			/><span class="si-cap">instead of {fmt.inr(-c.plan.writeOff.total)} to destroy it</span>
-		</div>
-		<div class="si-track" aria-hidden="true">
-			<Tracker stages={track(ws.data.stages)} done={Math.min(k, 9)} current={k < 9 ? k : -1} />
-		</div>
-		{#if !reduce}<div class="si-ctl">
-				<button type="button" class="btn btn-ghost btn-sm" onclick={control}
-					><Icon name={done ? 'rotate-ccw' : paused ? 'play' : 'pause'} size={15} />{done
-						? 'Replay animation'
-						: paused
-							? 'Play animation'
-							: 'Pause animation'}</button
-				>
-			</div>{/if}
-	{/if}
-</div>
+<AgentStage>
+	<div class="si-product"><Mark size={34} /><Wordmark size={20} /></div>
+	<p class="ag-title">Ten agents. <span>One yes.</span></p>
+	<p class="si-tagline">
+		Every near-expiry carton gets a second chance, chosen by AI. <span class="hi" lang="hi"
+			>हर कार्टन को दूसरा मौका</span
+		>
+	</p>
+</AgentStage>

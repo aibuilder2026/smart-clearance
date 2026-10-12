@@ -24,8 +24,6 @@ export class Console {
 	readonly mock: boolean;
 	/** drawn inside another page: its links carry hash addresses, and nothing reaches for the page's own */
 	readonly embedded: boolean;
-	/** the sign-in's picture, when the host gives one */
-	readonly plate: string | undefined;
 	readonly #me: () => Staff;
 	readonly #route: () => ConsoleRoute | null;
 	readonly #pending: () => ConsoleRoute | null;
@@ -48,7 +46,6 @@ export class Console {
 		links?: Partial<ConsoleLinks>;
 		mock?: boolean;
 		embedded?: boolean;
-		plate?: string;
 		/** scrolls the console's own page to its top */
 		top?: () => void;
 		refresh?: () => Promise<unknown>;
@@ -62,7 +59,6 @@ export class Console {
 		this.links = { site: o.links?.site || LINKS.site, app: o.links?.app || LINKS.app };
 		this.mock = !!o.mock;
 		this.embedded = !!o.embedded;
-		this.plate = o.plate;
 		this.#me = o.me;
 		this.#route = o.route ?? (() => null);
 		this.#pending = o.pending ?? (() => null);

@@ -9,11 +9,9 @@
 .cs-brand { display: grid; gap: 1px; line-height: 1.1; }
 .cs-brand-sub { font-size: 12px; font-weight: 600; color: var(--fg-3); }
 
-/* sign-in: the platform's own front door */
-.cs-si-stage { display: grid; align-content: center; gap: 22px; padding: 40px 40px 48px clamp(40px, 6cqi, 96px); min-height: 100%; }
-.cs-si-title { margin: 0; font-family: var(--font-display); font-weight: 760; font-size: clamp(44px, 5cqi, 64px); line-height: 1; letter-spacing: -0.035em; font-variation-settings: "opsz" 96; }
+/* sign-in: the platform's own front door, its name over the agents at work (SC-195) */
+.cs-si-title { margin: 10px 0 0; font-family: var(--font-display); font-weight: 760; font-size: clamp(44px, 5cqi, 64px); line-height: 1; letter-spacing: -0.035em; font-variation-settings: "opsz" 96; }
 .cs-si-lede { margin: 0; font-size: 17px; color: var(--fg-2); max-width: 40ch; }
-.cs-si-plate { width: 100%; max-width: 640px; height: auto; aspect-ratio: 1376 / 752; object-fit: cover; border-radius: 22px; box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); }
 /* a work email and a password, in the card (SC-46, option A): one message for any wrong sign-in, and a show-password
    button inside the field */
 .cs-si-pw .input { padding-right: 48px; }

@@ -219,11 +219,19 @@ test("admin · the guardrails' steppers and switches, changed", async ({ page },
 	await report(testInfo, await scan(page, 'guardrails · changed, not saved'));
 });
 
-test("a batch's page: its Journey, and a batch in no journey (SC-112)", async ({ page }, testInfo) => {
+test("a batch's page: its Journey, how the swing adds up, and a batch in no journey (SC-112, SC-195)", async ({
+	page
+}, testInfo) => {
 	// the batch's head and its screens as tabs, on its Journey: the tracker card, its cluster and its agents
 	await openWorkspace(page, '/journey/MF-2409-117', { stage: 5 });
 	await expect(page.locator('.bh-tab[aria-current="page"]')).toContainText('Journey');
 	const findings: Finding[] = [...(await scan(page, "a batch's Journey · the plan waiting for a yes"))];
+	// how the swing adds up (SC-195): the note under the card's figure opens the working, with its bridge
+	await page.getByRole('button', { name: /better than destroying it/ }).click();
+	await expect(dialog(page, 'How the swing adds up')).toBeVisible();
+	await settled(page);
+	findings.push(...(await scan(page, "a batch's Journey · how the swing adds up")));
+	await page.keyboard.press('Escape');
 	// a batch the Watcher only watches: its Journey alone, what the Watcher sees of it
 	await page.goto('/journey/MF-2408-311');
 	await expect(page.locator('.bhead h1')).toHaveText('Peanut Chikki 100 g');

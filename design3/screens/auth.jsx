@@ -5,7 +5,7 @@
   const { useState, useEffect, useContext, Fragment } = React;
   const { motion, useReducedMotion } = Motion;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, Store = window.SC3_STORE, Flow = window.SC3_FLOW, S = window.SC3_SCREENS; const fmt = M.fmt;
-  const { cx, Icon, Avatar, Badge, Button, Sheet, Field, Input, OTP, Money, Mark, Wordmark, WorkspaceMark, PoweredBy, Product, Tracker, List, ListRow, useApp } = K;
+  const { cx, Icon, Avatar, Badge, Button, Sheet, Field, Input, OTP, Money, Mark, Wordmark, WorkspaceMark, PoweredBy, Product, Tracker, List, ListRow, AgentStage, useApp } = K;
   const WS = D.WORKSPACE, WS_OF = D.WORKSPACE.name + "' workspace";
   const TEST_CODE = D.EXPLORE.code;
   const userById = id => Store.get().users.find(u => u.id === id);
@@ -26,26 +26,15 @@
     </div>)}</div>;
   }
 
-  /* ---------- the stage beside the form on desktop: the product, and its one number ---------- */
-  // guided (the demo, before the batch exists): the product and its promise, without the result
-  function HeroStage({ guided }) {
-    const reduce = useReducedMotion();
-    // WCAG 2.2.2: the batch walks the nine stages once and holds on the result, so nothing loops beside the sign-in.
-    // The walk can be paused on the way (a paused hero stays paused on return), and replayed from the start.
-    const [paused, setPaused] = useState(() => { try { return localStorage.getItem("sc3-hero-paused") === "1"; } catch (e) { return false; } });
-    const [k, setK] = useState(() => (paused ? 9 : 0));
-    const done = k >= 9;
-    useEffect(() => { if (reduce) { setK(9); return; } if (paused || k >= 9) return; const t = setTimeout(() => setK(k + 1), 1000); return () => clearTimeout(t); }, [reduce, paused, k]);
-    const remember = v => { try { localStorage.setItem("sc3-hero-paused", v ? "1" : "0"); } catch (e) {} };
-    const control = () => { if (done) { setK(0); setPaused(false); remember(false); } else { setPaused(!paused); remember(!paused); } };
-    const stages = D.STAGES.map(x => ({ id: x.id, title: x.title, human: x.human }));
-    return <div className={cx("si-stage", paused && "paused")}>
-      <div className="stack tight" style={{ gap: 10 }}><div className="si-product"><Mark size={36} /><Wordmark size={21} /></div><p className="si-tagline">Every near-expiry carton gets a second chance, chosen by AI. <span className="hi" lang="hi">हर कार्टन को दूसरा मौका</span></p></div>
-      <div className="si-renders" aria-hidden="true"><Product name="pack-chips" size={176} float className="r1" /><Product name="carton-hero" size={208} float className="r2" /><Product name="pack-mango" size={150} float className="r3" /></div>
-      {!guided && <><div className="si-figure"><span className="si-cap">Recovered from one batch of Munchly chips headed for the bin</span><Money value={k >= 9 ? D.ACTUAL.net : Math.round(D.ACTUAL.net * k / 9)} size="xl" roll style={{ color: "var(--primary-text)" }} /><span className="si-cap">instead of {fmt.inr(-D.PLAN.writeOff.total)} to destroy it</span></div>
-      <div className="si-track" aria-hidden="true"><Tracker stages={stages} done={Math.min(k, 9)} current={k < 9 ? k : -1} /></div>
-      {!reduce && <div className="si-ctl"><button type="button" className="btn btn-ghost btn-sm" onClick={control}><Icon name={done ? "rotate-ccw" : paused ? "play" : "pause"} size={15} />{done ? "Replay animation" : paused ? "Play animation" : "Pause animation"}</button></div>}</>}
-    </div>;
+  /* ---------- the stage beside the form (SC-195, round 2, option A, The agent mesh) ---------- */
+  // Smart-Clearance's own: the platform's ten agents and the one person at work behind the whole sign-in (the kit's
+  // AgentStage), under the product's mark and its line; on a phone or a tablet, a band over the card
+  function HeroStage() {
+    return <AgentStage>
+      <div className="si-product"><Mark size={34} /><Wordmark size={20} /></div>
+      <p className="ag-title">Ten agents. <span>One yes.</span></p>
+      <p className="si-tagline">Every near-expiry carton gets a second chance, chosen by AI. <span className="hi" lang="hi">हर कार्टन को दूसरा मौका</span></p>
+    </AgentStage>;
   }
 
   /* ---------- find your workspace: one Smart-Clearance step above every client ---------- */
@@ -112,11 +101,10 @@
     const isPhone = who && !!who.phone && sheet !== "google";
     return <div className={cx("signin", guided && "guided")}>
       <div className="ground" aria-hidden="true" />
-      {app.bp === "desktop" && <HeroStage guided={guided} />}
+      <HeroStage />
       <div className="si-panel">
         <div className="si-card">
           <div className="si-ws"><WorkspaceMark ws={WS} size={app.bp === "phone" ? 52 : 60} /><div className="si-ws-name">{WS.name}</div><Url /></div>
-          {app.bp !== "desktop" && <div className="si-hero" aria-hidden="true"><Product name="carton-hero" size={app.bp === "phone" ? 132 : 160} float />{!guided && <motion.div className="si-chip" initial={reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}><span className="dot" /><span><b>MF-2409-117</b> · routed · <Money value={D.ACTUAL.net} size="s" style={{ fontSize: 15 }} /> recovered</span></motion.div>}</div>}
           <div className="stack tight" style={{ gap: 6 }}><h1 className="si-title">Sign in</h1><p className="si-sub">Use your Munchly email, or the mobile number Munchly or your distributor invited.</p></div>
           <form className="si-form" onSubmit={e => { e.preventDefault(); proceed(); }} noValidate>
             <Field label="Work email or mobile number" htmlFor="si-id" error={err && err.text}><Input id="si-id" value={id} onChange={e => { setId(e.target.value); setErr(null); }} autoComplete="username" spellCheck={false} autoCapitalize="none" placeholder={WS.hint} /></Field>

@@ -89,6 +89,8 @@ export const COMPONENTS: Record<string, { sel: string; text?: string }> = {
 	SaveNote: { sel: '.save-note' },
 	Skeleton: { sel: '.skeleton' },
 	// a signature (SC-183): the pad, and the ink as drawn
+	// the agents at work behind the sign-ins (SC-195): the stage on a desktop, the band on a phone or a tablet
+	AgentStage: { sel: '.ag-stage, .ag-band' },
 	SignPad: { sel: '.signpad' },
 	InkStrokes: { sel: '.inkstrokes, .ink-typed' },
 	Splash: { sel: '.splash' },

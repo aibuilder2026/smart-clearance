@@ -152,21 +152,13 @@ test("demo · the real phone's bar and its notes", async ({ page }, testInfo) =>
 	await report(testInfo, findings);
 });
 
-// The chips' first sign-ins as the visitor makes them inside the devices: Find your workspace, Continue at work,
-// Google's account chooser, and Rakesh bhai's one-time code
+// The chips' first sign-ins as the visitor makes them inside the devices: Continue at work, Google's account chooser,
+// and Rakesh bhai's one-time code (the sign-in's own Find your workspace link went in SC-194)
 test('demo · the sign-ins, made inside the devices', async ({ page }, testInfo) => {
 	await holdable(page);
 	await openDemo(page, [LINE.chips, 0, 0]);
 	const findings: Finding[] = [];
 	const laptop = device(page, "Priya's laptop");
-	await laptop.getByRole('button', { name: 'Not your workspace? Find yours' }).click();
-	const find = laptop.getByRole('dialog', { name: 'Find your workspace' });
-	await expect(find).toBeVisible();
-	await page.waitForTimeout(500);
-	findings.push(...(await check(page, "Priya's sign-in · Find your workspace")));
-	await page.keyboard.press('Escape');
-	await expect(find).toHaveCount(0);
-
 	// Continue looks Priya up (0.5 s): held there to scan the button at work
 	await hold(page, 500);
 	await laptop.getByRole('button', { name: 'Continue' }).click();

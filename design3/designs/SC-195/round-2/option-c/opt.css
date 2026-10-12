@@ -1,0 +1,35 @@
+/* Round 2, option C · The route: the mark's S across the stage, the nine stops on it, the exits forking at Execute, and
+   a faint dot grid behind the whole sign-in */
+.r2c-area { display: grid; align-content: center; gap: 18px; padding-bottom: 20px; }
+.r2c-route { position: relative; width: min(640px, 100%); aspect-ratio: 640 / 470; }
+.r2c-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.r2c-road { fill: none; stroke: var(--line-2); stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
+.r2c-done { fill: none; stroke: var(--primary); stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
+.r2c-fork { fill: none; stroke: color-mix(in oklab, var(--primary) 55%, transparent); stroke-width: 2.5; stroke-linecap: round; }
+.r2c-packet { fill: var(--primary); stroke: var(--surface); stroke-width: 1.5; }
+.r2c-stop circle { fill: var(--surface); stroke: var(--line-2); stroke-width: 2.5; transition: fill 240ms var(--ease), stroke 240ms var(--ease); }
+.r2c-stop.done circle { fill: var(--primary); stroke: var(--surface); }
+.r2c-stop.now circle { fill: var(--surface); stroke: var(--primary); stroke-width: 4; }
+.r2c-stop.human circle { stroke: var(--amber); }
+.r2c-stop.human.done circle, .r2c-stop.human.now circle { fill: var(--amber); stroke: var(--surface); }
+.r2c-batch { fill: var(--primary); stroke: var(--surface); stroke-width: 3; }
+.r2c-pin { fill: var(--amber); stroke: var(--amber-fg); stroke-width: 1.2; }
+.r2c-pin-eye { fill: var(--surface); }
+.r2c-ping { fill: none; stroke: var(--amber); stroke-width: 2; transform-box: fill-box; transform-origin: center; }
+.r2c-at { position: absolute; z-index: 1; display: grid; justify-items: center; gap: 4px; transform: translate(-50%, 16px); }
+.r2c-at.above { transform: translate(-50%, calc(-100% - 16px)); }
+.r2c-at.exit { transform: translate(-50%, -6px); }
+.r2c-name { font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg-3); }
+.r2c-cap { min-height: 0; }
+/* the dot grid, fading out to the right */
+.r2c-grid { position: absolute; inset: 0; background-image: radial-gradient(color-mix(in oklab, var(--fg) 13%, transparent) 1.1px, transparent 1.6px); background-size: 24px 24px; -webkit-mask-image: radial-gradient(120% 90% at 20% 50%, #000 30%, transparent 75%); mask-image: radial-gradient(120% 90% at 20% 50%, #000 30%, transparent 75%); }
+/* the phone's line of nine stops */
+.r2c-line { position: relative; height: 38px; margin: 6px 10px 0; }
+.r2c-track { position: absolute; left: 0; right: 0; top: 50%; height: 6px; margin-top: -3px; border-radius: 3px; background: var(--line-2); overflow: hidden; }
+.r2c-track i { display: block; height: 100%; background: var(--primary); transition: width 380ms var(--ease); }
+.r2c-tick { position: absolute; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--surface); box-shadow: 0 0 0 2px var(--line-2); }
+.r2c-tick.done { background: var(--primary); box-shadow: 0 0 0 2px var(--surface); }
+.r2c-tick.now { box-shadow: 0 0 0 3px var(--primary); }
+.r2c-tick.human { box-shadow: 0 0 0 2px var(--amber); }
+.r2c-tick.human.done, .r2c-tick.human.now { background: var(--amber); }
+@media (prefers-reduced-motion: reduce) { .r2c-track i, .r2c-stop circle { transition: none; } }

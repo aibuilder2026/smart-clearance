@@ -269,6 +269,48 @@
 
 .playas { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; height: 34px; padding: 0 12px 0 4px; border-radius: 99px; font-size: 13.5px; font-weight: 600; color: var(--primary-text); background: var(--primary-soft); transition: background-color var(--t-fast); }
 .playas:hover { background: color-mix(in oklab, var(--primary) 22%, transparent); }
+/* ---------- the swing, explained (SC-195, option A, How it adds up): the note under a card's figure, and the working
+   in a sheet. The bridge takes the inks SC-149 validated with the dataviz script on the card's surface: kept in the
+   console's green, the bin in clay, every bar labelled, so it never rests on colour alone ---------- */
+.sw-work { --viz-kept: #167a52; --viz-gone: #c2410c; --viz-gone-text: #b13a0a; }
+[data-theme="dark"] .sw-work { --viz-kept: #34a571; --viz-gone: #e0662c; --viz-gone-text: #f08a5a; }
+.sw-note { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 4px 6px; align-self: flex-start; min-height: 34px; margin-top: 4px; padding: 6px 12px 6px 9px; border-radius: var(--r-full); font-size: 13.5px; color: var(--primary-text); background: var(--primary-soft); text-align: left; transition: background-color var(--t-fast); }
+.sw-note:hover { background: color-mix(in oklab, var(--primary) 20%, transparent); }
+.sw-note b { font-weight: 700; font-variant-numeric: tabular-nums; }
+.sw-note .sw-how { font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
+.sw-work { display: grid; gap: 24px; }
+.sw-hero { display: grid; gap: 6px; }
+.sw-big { font: 700 40px/1.02 var(--font-display); letter-spacing: -0.03em; color: var(--primary-text); font-variation-settings: "opsz" 72; }
+.sw-hero p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--fg-2); }
+.sw-work .nw { white-space: nowrap; }
+.sw-bridge { margin: 0; padding: 14px 8px 2px; border-radius: 16px; background: var(--fill); }
+.sw-bridge svg { display: block; width: 100%; height: auto; overflow: visible; }
+.sw-bridge .zero { stroke: var(--line-2); stroke-width: 1; }
+.sw-bridge .link { stroke: var(--fg-3); stroke-width: 1; stroke-dasharray: 2 3; }
+.sw-bridge .bar.kept { fill: var(--viz-kept); }
+.sw-bridge .bar.gone { fill: var(--viz-gone); }
+.sw-bridge .bar.plan { fill: var(--fg-2); }
+.sw-bridge .bar.soft { fill-opacity: 0.55; stroke: var(--viz-kept); stroke-width: 1.2; stroke-dasharray: 3 2; }
+.sw-bridge .val { font: 650 11.5px var(--font-ui); font-variant-numeric: tabular-nums; fill: var(--fg); }
+.sw-bridge .val.gone { fill: var(--viz-gone-text); }
+.sw-bridge .lab { font: 550 11px var(--font-ui); fill: var(--fg-2); }
+.sw-bridge .lab.sub { font-size: 10.5px; fill: var(--fg-3); }
+.sw-work section { display: grid; }
+.sw-work h3 { margin: 0 0 4px; font: 650 15px/1.3 var(--font-ui); letter-spacing: -0.01em; }
+.sw-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: baseline; padding: 9px 0; box-shadow: 0 calc(var(--hair) * -1) 0 var(--line) inset; font-size: 14.5px; }
+.sw-row .k { display: grid; gap: 2px; min-width: 0; }
+.sw-row .sub { font-size: 12.5px; line-height: 1.4; color: var(--fg-3); }
+.sw-row .v { white-space: nowrap; }
+.sw-row .v.gone { color: var(--viz-gone-text); }
+.sw-row .v.kept { color: var(--primary-text); }
+.sw-row.strong { font-weight: 650; }
+.sw-sum { margin: 4px 0 6px; font-size: 18px; letter-spacing: -0.01em; }
+.sw-sum b { color: var(--primary-text); }
+.sw-why { display: grid; gap: 10px; margin: 6px 0 0; padding: 0; list-style: none; }
+.sw-why li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 10px; font-size: 14px; line-height: 1.45; color: var(--fg-2); }
+.sw-why li .ic { margin-top: 2px; color: var(--primary-text); }
+
+.sw-bridge figcaption { padding: 0 6px 10px; font-size: 12px; color: var(--fg-3); }
 /* Execution's cards (SC-194): stacked in columns at least 340 px wide, each card under the one before it, so a short card
    (a channel left out of the plan) leaves no hole beside a tall one; a card never breaks across columns */
 .exec-cards { column-width: 340px; column-gap: 20px; margin-bottom: -20px; }
@@ -306,10 +348,6 @@
 .si-ws-name { font-family: var(--font-ui); font-weight: 700; font-size: 22px; letter-spacing: -0.025em; line-height: 1.1; }
 .si-url { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; height: 26px; padding: 0 11px; border-radius: 99px; font-family: var(--font-mono); font-size: 12px; color: var(--fg-2); background: var(--fill-2); white-space: nowrap; overflow: hidden; }
 .si-url .ic { flex: none; color: var(--fg-3); }
-.si-hero { position: relative; display: grid; place-items: center; height: 172px; width: 100%; }
-.si-chip { position: absolute; bottom: 2px; display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 99px; font-size: 13px; color: var(--fg-2); background: var(--glass-strong); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line); white-space: nowrap; }
-.si-chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 4px var(--primary-soft); }
-.si-chip .money { color: var(--primary-text); }
 .si-title { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 34px; line-height: 1.04; letter-spacing: -0.03em; font-variation-settings: "opsz" 72; }
 .si-sub { margin: 0; font-size: 15px; line-height: 1.45; color: var(--fg-2); max-width: 36ch; text-wrap: balance; }
 .si-form { display: grid; gap: 12px; width: 100%; text-align: left; }
@@ -323,23 +361,16 @@
 .si-acct { grid-template-columns: 40px minmax(0, 1fr) auto; width: 100%; text-align: left; border-radius: 16px; box-shadow: 0 0 0 var(--hair) var(--line-2); }
 .signin.guided .si-card { gap: 20px; }
 
-/* the stage beside the form on desktop: the product's mark, then the product's one number, rolling */
-.si-stage { display: grid; align-content: center; gap: 28px; padding: 40px 40px 48px clamp(40px, 6cqi, 96px); min-height: 100%; }
+/* the agents at work behind the sign-in (SC-195, round 2, option A, The agent mesh; the kit's AgentStage): on a
+   desktop the field lies over the ground and under everything else, and the panel lets the pointer through to it round
+   the card; the field and the stage keep to the sign-in's visible height (the kit sets it), pinned while a long card
+   scrolls by. On a phone or a tablet the stage is a band over the card */
+.signin > .ag-field { position: sticky; inset: 0 auto auto; z-index: 0; grid-area: 1 / 1 / 2 / -1; align-self: start; }
+.signin > .ag-stage { position: sticky; top: 0; grid-area: 1 / 1; align-self: start; }
+.signin:has(> .ag-field) > .si-panel { grid-area: 1 / 2; pointer-events: none; }
+.signin:has(> .ag-field) .si-card { pointer-events: auto; }
+.signin > .ag-band ~ .si-panel { grid-row: 2; padding-top: 6px; }
 .si-product { display: flex; align-items: center; gap: 10px; }
-.si-renders { position: relative; height: 230px; max-width: 620px; }
-.si-renders img { filter: drop-shadow(0 18px 24px rgb(16 40 28 / 0.16)); }
-.si-renders .r1 { position: absolute; left: 0; top: 34px; }
-.si-renders .r2 { position: absolute; left: 30%; top: 0; animation-delay: -1.6s !important; }
-.si-renders .r3 { position: absolute; left: 64%; top: 56px; animation-delay: -3.1s !important; }
-.si-figure { display: grid; gap: 6px; }
-.si-figure .num.xl { font-size: clamp(72px, 8cqi, 120px); letter-spacing: -0.045em; }
-.si-cap { font-size: 16px; color: var(--fg-2); max-width: 38ch; }
-.si-track { max-width: 760px; }
-/* the hero's pause: every animation inside it holds where it is, and the current stop's ping goes quiet */
-.si-ctl { display: flex; margin-top: -14px; }
-.si-ctl .btn { margin-left: -12px; color: var(--fg-2); }
-.si-stage.paused *, .si-stage.paused *::before, .si-stage.paused *::after { animation-play-state: paused !important; }
-.si-stage.paused .stop.now .dot::after { animation: none; opacity: 0; }
 
 /* people to explore as */
 .si-people { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }

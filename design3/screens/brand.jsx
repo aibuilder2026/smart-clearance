@@ -110,6 +110,123 @@
     </Screen>;
   }
 
+  /* ---------- the swing, explained (SC-195, option A, How it adds up) ---------- */
+  // The card's figure says what the batch recovered; a note under it says the swing in words and opens how it adds up:
+  // the bin's cost, what each exit did, the P&L either way, the swing between them, a bridge from one to the other,
+  // and how the loss was kept small. The card's figures are money.js's (the plan's, or once the lines are done
+  // actualNet's on what each channel took); each exit's line takes the units it took at the plan's own price and costs
+  // a pack (the ExpireSoon lot at the counter, its fee once), and what was not paid is the swing less the net recovered
+  const SW_NAMES = { kirana: "Kirana scheme", staff: "Staff sale", foodbank: "Food bank", expiresoon: "ExpireSoon" };
+  const r2 = n => Math.round(n * 100) / 100;
+  const inr2 = fmt.inr2;
+  function swingOf(C, posted) {
+    const P = C.plan, wo = P.writeOff, a = C.actual || {}, delta = posted ? a.delta || 0 : 0;
+    const took = posted && C.realised ? Object.fromEntries(C.realised.lines.map(l => [l.id, l.units])) : null;
+    const exits = P.lines.filter(l => l.units > 0 && l.id !== "writeoff").map(l => {
+      const units = took ? took[l.id] || 0 : l.units; if (!units) return null;
+      const es = l.id === "expiresoon", price = es && delta && C.counter ? C.counter.price : l.price;
+      const cost = es ? l.cost : r2((l.cost / l.units) * units), itcLoss = r2((l.itcLoss / l.units) * units), net = r2(units * price - cost - itcLoss);
+      return { id: l.id, name: SW_NAMES[l.id] || l.short, units, price, packPrice: l.packPrice, charged: Math.round((units * l.charged) / l.units), cost, itcLoss, net, perPack: r2(net / units) };
+    }).filter(Boolean);
+    const net = posted ? a.net : P.net, pnl = posted ? a.pnl : P.pnl, swing = posted ? a.swing : P.swing;
+    const sold = exits.filter(e => e.id !== "foodbank").reduce((t, e) => t + e.units, 0), given = exits.filter(e => e.id === "foodbank").reduce((t, e) => t + e.units, 0);
+    return { wo, exits, net, pnl, swing, book: P.bookCost, units: P.units, sku: C.sku, batch: C.batch, sold, given, left: (took && C.realised.godown) || P.leftover || 0,
+      itcLost: r2(exits.reduce((t, e) => t + e.itcLoss, 0)),
+      // what destroying would have cost beyond the stock and nobody paid; and what the packs left still cost
+      notPaid: r2(swing - net), leftCost: r2(pnl - (net - P.bookCost)), out: (P.rows || []).filter(r => !r.baseline && !r.eligible && r.reason) };
+  }
+  // how an exit came to its net, in words
+  function exitHow(e) {
+    if (e.id === "kirana") return `${fmt.num(e.units)} packets, ${fmt.num(e.charged)} charged at ₹${e.packPrice.toFixed(2)} (2 free with every 10), less ₹${fmt.num(e.cost)} van`;
+    if (e.id === "staff") return `${fmt.num(e.units)} packs at ₹${e.price.toFixed(2)}, by UPI`;
+    if (e.id === "foodbank") return `${fmt.num(e.units)} packs given: ₹${e.cost.toFixed(2)} handling, and their GST credit reversed (₹${e.itcLoss.toFixed(2)})`;
+    if (e.id === "expiresoon") return `${fmt.num(e.units)} packs at ₹${e.price.toFixed(2)}, less ₹${fmt.num(e.cost)} listing fee`;
+    return `${fmt.num(e.units)} packs`;
+  }
+  // the bridge: from the P&L if the batch were destroyed to the P&L with the plan, a step for each exit and one for what
+  // was not paid; green rises, clay falls, the two ends stand on zero
+  function SwingBridge({ w }) {
+    const reduce = useReducedMotion();
+    const steps = [{ k: "If destroyed", v: -w.wo.total, end: true, tone: "gone" }]
+      .concat(w.exits.map(e => ({ k: e.name, v: e.net, tone: e.net < 0 ? "gone" : "kept" })))
+      .concat([{ k: "Not paid", v: w.notPaid, tone: "kept", soft: true }, { k: "With the plan", v: w.pnl, end: true, tone: "plan" }]);
+    let run = 0;
+    const bars = steps.map(st => { if (st.end) { run = st.v; return { ...st, from: 0, to: st.v }; } const b = { ...st, from: run, to: run + st.v }; run += st.v; return b; });
+    const lo = Math.min(0, ...bars.map(b => Math.min(b.from, b.to))) * 1.06, hi = Math.max(0, ...bars.map(b => Math.max(b.from, b.to))) + Math.abs(lo) * 0.14;
+    const W = 436, H = 250, top = 20, bot = 62, n = bars.length, bw = Math.min(40, (W - 12 * (n + 1)) / n), gap = (W - n * bw) / (n + 1);
+    const y = v => top + ((hi - v) / (hi - lo)) * (H - top - bot);
+    return <figure className="sw-bridge" role="img" aria-label={`A bridge from ${inr2(-w.wo.total)} if destroyed to ${inr2(w.pnl)} with the plan: ${inr2(w.swing)} better`}>
+      <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+        <line x1="0" x2={W} y1={y(0)} y2={y(0)} className="zero" />
+        {bars.map((b, i) => {
+          const x = gap + i * (bw + gap), y0 = y(Math.max(b.from, b.to)), h = Math.max(2, Math.abs(y(b.from) - y(b.to)));
+          const under = (b.v < 0 && !b.end) || (b.end && b.v < 0 && h > 40);
+          const words = b.k.includes(" ") ? [b.k.slice(0, b.k.indexOf(" ")), b.k.slice(b.k.indexOf(" ") + 1)] : [b.k];
+          return <g key={b.k}>
+            {i > 0 && <line x1={x - gap} x2={x} y1={y(b.end ? b.to : b.from)} y2={y(b.end ? b.to : b.from)} className="link" />}
+            <motion.rect x={x} width={bw} rx="5" className={cx("bar", b.tone, b.soft && "soft")} initial={reduce ? false : { y: y(0), height: 0 }} animate={{ y: y0, height: h }} transition={{ duration: reduce ? 0 : 0.42, delay: reduce ? 0 : i * 0.07, ease: [0.22, 1, 0.36, 1] }} />
+            <text x={x + bw / 2} y={under ? y(b.to) + 15 : y0 - 7} className={cx("val", b.tone)} textAnchor="middle">{(b.v > 0 && !b.end ? "+" : "") + fmt.inr(Math.round(b.v))}</text>
+            {words.map((t, j) => <text key={j} x={x + bw / 2} y={H - 26 + j * 13} className="lab" textAnchor="middle">{t}</text>)}
+          </g>;
+        })}
+      </svg>
+      <figcaption>Not paid: what destroying would have cost beyond the stock (the GST credit, disposal and EPR).</figcaption>
+    </figure>;
+  }
+  // an amount kept whole on its line, so a minus never wraps away from its figure
+  const Amt = ({ v }) => <span className="nw">{inr2(v)}</span>;
+  const SwRow = ({ k, sub, v, strong, tone }) => <div className={cx("sw-row", strong && "strong")}><span className="k"><span>{k}</span>{sub && <span className="sub">{sub}</span>}</span><span className={cx("v tnum", tone)}>{v}</span></div>;
+  function SwingWorking({ w }) {
+    const first = w.exits.slice().sort((a, b) => b.perPack - a.perPack)[0], wo = w.wo;
+    const per = (v, u) => `₹${(v / u).toFixed(2)}`;
+    return <div className="sw-work">
+      <div className="sw-hero">
+        <span className="t-caption subtle">The swing on {w.batch.id}</span>
+        <span className="sw-big tnum">{inr2(w.swing)}</span>
+        <p>Sending the batch to its exits left {D.WORKSPACE.short} <Amt v={w.swing} /> better off than destroying it: a P&amp;L of <Amt v={w.pnl} /> instead of <Amt v={-wo.total} />.</p>
+      </div>
+      <SwingBridge w={w} />
+      <section><h3>If it were destroyed</h3>
+        <SwRow k="Stock written off at cost" sub={`${fmt.num(wo.units)} × ₹${w.sku.cost.toFixed(2)}`} v={inr2(-wo.stock)} />
+        <SwRow k="GST input credit reversed" sub={`${fmt.num(wo.units)} × ₹${wo.itcPerUnit.toFixed(2)}`} v={inr2(-wo.itc)} />
+        <SwRow k="Disposal" sub={`${fmt.num(wo.units)} × ${per(wo.disposal, wo.units)}`} v={inr2(-wo.disposal)} />
+        <SwRow k="EPR" sub={`${wo.kg.toLocaleString("en-IN")} kg × ${per(wo.epr, wo.kg)}`} v={inr2(-wo.epr)} />
+        <SwRow k="The bin would cost" sub={`₹${wo.perUnit.toFixed(2)} a pack`} v={inr2(-wo.total)} strong tone="gone" />
+      </section>
+      <section><h3>What the plan did</h3>
+        {w.exits.map(e => <SwRow key={e.id} k={e.name} sub={exitHow(e)} v={(e.net < 0 ? "" : "+") + inr2(e.net)} tone={e.net < 0 ? "gone" : undefined} />)}
+        <SwRow k="Recovered" v={inr2(w.net)} strong tone="kept" />
+        <SwRow k="The stock leaves the books at cost" sub={`either way: ${fmt.num(w.units)} × ₹${w.sku.cost.toFixed(2)}`} v={inr2(-w.book)} />
+        {Math.abs(w.leftCost) >= 0.01 && <SwRow k="The packs left at the godown" sub={`${fmt.num(w.left)} packs no exit took: what destroying them cost`} v={inr2(w.leftCost)} tone="gone" />}
+        <SwRow k="The P&L with the plan" v={inr2(w.pnl)} strong />
+      </section>
+      <section><h3>The swing</h3>
+        <p className="sw-sum tnum">{inr2(w.pnl)} − ({inr2(-wo.total)}) = <b>{inr2(w.swing)}</b></p>
+        <p className="t-footnote muted">Put another way: {inr2(w.net)} recovered, plus the {inr2(w.notPaid)} destroying it would have cost beyond the stock (the GST credit, disposal and EPR), which nobody paid.</p>
+      </section>
+      <section><h3>How the loss was kept small</h3>
+        <ul className="sw-why">
+          {first && <li><Icon name="route" size={16} /><span>The Router filled the best-paying exit first: the {first.name.toLowerCase()} at <Amt v={first.perPack} /> a pack, net, against <Amt v={-wo.perUnit} /> a pack in the bin.</span></li>}
+          {w.out.slice(0, 2).map(r => <li key={r.id}><Icon name="circle-x" size={16} /><span>{r.short || r.name} was left out: {r.reason}.</span></li>)}
+          <li><Icon name="receipt" size={16} /><span>The GST input credit stays on the {fmt.num(w.sold)} packs sold{w.given ? `; only the ${fmt.num(w.given)} donated packs reverse theirs (${inr2(w.itcLost)})` : ""}.</span></li>
+          {w.left ? <li><Icon name="warehouse" size={16} /><span>{fmt.num(w.left)} packs no exit took were left at the godown and destroyed there; every other pack went somewhere.</span></li>
+            : <li><Icon name="recycle" size={16} /><span>No disposal or EPR to pay: every pack went somewhere.</span></li>}
+        </ul>
+      </section>
+      <p className="t-caption subtle">Worked out from {D.WORKSPACE.short}'s cost sheet and the platform's rules, as the Valuer prices every exit.</p>
+    </div>;
+  }
+  // the card's money: the figure, what it is, and the note that opens how the swing adds up
+  function SwingMoney({ C, posted, label, phone }) {
+    const [open, setOpen] = useState(false); const w = swingOf(C, posted);
+    return <div className="stack tight" style={{ gap: 4 }}>
+      <Money value={w.net} size={phone ? "s" : "m"} roll style={{ color: "var(--primary-text)" }} />
+      <span className="t-footnote subtle">{label}</span>
+      <button type="button" className="sw-note" aria-haspopup="dialog" onClick={() => setOpen(true)}><Icon name="scale" size={15} stroke={2.1} /><span><b>{fmt.inr(w.swing)} better</b> than destroying it</span><span className="sw-how">How it adds up</span></button>
+      <Sheet open={open} onClose={() => setOpen(false)} title="How the swing adds up" side={phone ? "bottom" : "side"} detent="large"><SwingWorking w={w} /></Sheet>
+    </div>;
+  }
+
   /* ---------- S1 Command Center ---------- */
   // the first viewport is the batch, tracked like an order: tracker first, the agents beside it, the cluster under it
   // the Impact card on the Command Center (SC-157): the quarter so far (or the latest with a batch cleared), its kilos
@@ -150,7 +267,7 @@
     const flagged = s.hero.phase !== "watching" && s.setup.confirmed;
     const routed = ["approved", "executing", "dispatched", "settled", "cleared"].includes(s.hero.phase);
     const perm = s.setup.permission;
-    const money = s.hero.plan ? <div className="stack tight" style={{ gap: 2 }}><Money value={s.hero.posted ? C.actual.net : C.plan.net} size={phone ? "s" : "m"} roll style={{ color: "var(--primary-text)" }} /><span className="t-footnote subtle">{s.hero.posted ? (C.ES ? "recovered, after the negotiation" : "recovered, every line done") : routed ? "on plan · settles day 3–7" : "net recovered on the plan"} · swing {fmt.inr(s.hero.posted ? C.actual.swing : C.plan.swing)}</span></div> : undefined;
+    const money = s.hero.plan ? <SwingMoney C={C} posted={!!s.hero.posted} phone={phone} label={s.hero.posted ? (C.ES ? "recovered, after the negotiation" : "recovered, every line done") : routed ? "on plan · settles day 3–7" : "net recovered on the plan"} /> : undefined;
     const holder = personOf(C, C.accounts.distributor);
     // the batch placed, line by line (or what was destroyed at the godown, on the operator's yes)
     const placed = C.plan.lines.filter(l => l.units > 0 && l.id !== "writeoff").map(l => l.id === "kirana" ? `${fmt.num(l.units)} with ${C.kiranas.length} kiranas` : l.id === "expiresoon" ? `${fmt.num(l.units)} with a ${D.BUYER.city} wholesaler` : l.id === "staff" ? `${fmt.num(l.units)} at the staff sale` : `${fmt.num(l.units)} to ${C.donation ? C.donation.partner.name : "a food bank"}`).join(", ");
@@ -703,7 +820,7 @@
     let card;
     if (it.hero) {
       const primary = h.phase === "planned" ? <Button variant="approve" icon="check" onClick={() => go("route", { ref: it.ref })}>Review and approve</Button> : ["approved", "executing"].includes(h.phase) ? <Button variant="primary" iconRight="arrow-right" onClick={() => go("execution", { ref: it.ref })}>Watch execution</Button> : <Button variant="primary" iconRight="arrow-right" onClick={() => go("route", { ref: it.ref })}>Open Route Room</Button>;
-      const money = h.plan ? <div className="stack tight" style={{ gap: 2 }}><Money value={h.posted ? C.actual.net : C.plan.net} size={phone ? "s" : "m"} roll style={{ color: "var(--primary-text)" }} /><span className="t-footnote subtle">{h.posted ? (C.ES ? "recovered, after the negotiation" : "recovered, every line done") : routed ? "on plan · settles day 3–7" : "net recovered on the plan"} · swing {fmt.inr(h.posted ? C.actual.swing : C.plan.swing)}</span></div> : undefined;
+      const money = h.plan ? <SwingMoney C={C} posted={!!h.posted} phone={phone} label={h.posted ? (C.ES ? "recovered, after the negotiation" : "recovered, every line done") : routed ? "on plan · settles day 3–7" : "net recovered on the plan"} /> : undefined;
       card = <TrackerCard view={hm.view} done={hm.done} current={hm.current} eta={hm.eta} etaTone={hm.etaTone} agentLive={hm.agentLive} primary={primary} money={money} />;
     } else card = <S.Live.MangoCard item={it} dim={!!live && S.Live.down(live.conn)} />;
     const cluster = it.hero && <Card pad={false} className="stack" style={{ overflow: "hidden", gap: 0 }}>

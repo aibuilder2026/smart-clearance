@@ -5,7 +5,7 @@
   const { useState, useEffect, useLayoutEffect, useMemo, useCallback, useRef, Fragment, useSyncExternalStore } = React;
   const { motion, AnimatePresence, useReducedMotion, LayoutGroup } = Motion;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, P = window.SC3_PLATFORM, S = window.SC3_SCREENS; const fmt = M.fmt;
-  const { cx, Icon, IconButton, Avatar, Badge, Button, Card, List, ListRow, Segmented, Switch, Stepper, Sheet, Alert, Field, Input, Select, Menu, Tabs, Check, DataTable, Empty, Mark, Wordmark, WorkspaceMark, Page, Shell, Tracker, TrackerCompact, Product, ThemeProvider, AppRoot, NoticeHost, useApp, useNotice, ModeMenuButton, Roll, SaveNote, useSaving } = K;
+  const { cx, Icon, IconButton, Avatar, Badge, Button, Card, List, ListRow, Segmented, Switch, Stepper, Sheet, Alert, Field, Input, Select, Menu, Tabs, Check, DataTable, Empty, Mark, Wordmark, WorkspaceMark, Page, Shell, Tracker, TrackerCompact, Product, ThemeProvider, AppRoot, NoticeHost, useApp, useNotice, ModeMenuButton, Roll, SaveNote, useSaving, AgentStage } = K;
   const { Columns, SectionTitle } = S;
 
   // Embedded (SC-169): a host page that sets window.SC3_CONSOLE_EMBED before this script renders the console itself, from
@@ -17,7 +17,6 @@
   const usePlatform = () => useSyncExternalStore(P.subscribe, P.get);
   // where the other pages live: relative next to each other here, the claude.ai/design links on the hosted pages
   const LINKS = Object.assign({ site: "../site/Smart-Clearance%20site%20v3.html", app: "../app/Smart-Clearance%20app%20v3.html", demo: "../demo/Smart-Clearance%20demo%20v3.html" }, window.SC3_LINKS || {});
-  const PLATE = (window.SC3_SITE_IMG || "../site/assets/plates/") + "scene.webp";
   const STAGES = D.STAGES.map(x => ({ id: x.id, title: x.title, human: x.human }));
   const AGENT = id => P.AGENTS.find(a => a.id === id);
   const LEVEL = id => P.AUTONOMY.find(x => x.id === id);
@@ -185,11 +184,12 @@
     const edit = set => e => { set(e.target.value); setErr(""); };
     return <div className="signin cs-signin">
       <div className="ground" aria-hidden="true" />
-      {app.bp === "desktop" && <div className="cs-si-stage">
+      {/* the agents at work behind the sign-in (SC-195, round 2, option A; the kit's AgentStage), under the console's name */}
+      <AgentStage>
         <div className="si-product"><Mark size={36} /><Wordmark size={21} /></div>
-        <div className="stack tight" style={{ gap: 10 }}><h2 className="cs-si-title">Console</h2><p className="cs-si-lede">Set up and run every client's workspace: its agents, its supply chain, its people.</p></div>
-        <img className="cs-si-plate" src={PLATE} alt="" width="1376" height="752" />
-      </div>}
+        <h2 className="cs-si-title">Console</h2>
+        <p className="cs-si-lede">Set up and run every client's workspace: its agents, its supply chain, its people.</p>
+      </AgentStage>
       <div className="si-panel"><div className="si-card">
         <div className="si-ws"><Mark size={app.bp === "phone" ? 52 : 60} /><div className="si-ws-name">Smart-Clearance staff</div><span className="si-url"><Icon name="lock" size={12} stroke={2.2} />smartclearance-console.web.app</span></div>
         <div className="stack tight" style={{ gap: 6 }}><h1 className="si-title">Sign in</h1><p className="si-sub">Your smartclearance.com email address and your password.</p></div>

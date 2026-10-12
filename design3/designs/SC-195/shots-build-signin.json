@@ -1,0 +1,47 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/signin-live-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 3200
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/signin-live-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 3200
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/signin-live-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 3200
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/signin-live-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 3200
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/signin-live-820-light",
+  "width": 820,
+  "theme": "light",
+  "wait": 3200
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html",
+  "out": "build/signin-stub-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 3200,
+  "ls": {
+   "sc3-session": "null"
+  }
+ }
+]

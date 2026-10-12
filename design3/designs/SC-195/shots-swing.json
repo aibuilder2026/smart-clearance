@@ -1,0 +1,142 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/swing-a/mockup.html?shot=1",
+  "out": "swing-a/card-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".bezel"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/swing-a/mockup.html?shot=1",
+  "out": "swing-a/open-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "click": [
+   ".sw-note"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/swing-a/mockup.html?shot=1",
+  "out": "swing-a/open-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2600,
+  "click": [
+   ".sw-note"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/swing-a/mockup.html?shot=1",
+  "out": "swing-a/open-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600,
+  "click": [
+   ".sw-note"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/swing-a/mockup.html?shot=1",
+  "out": "swing-a/working-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "click": [
+   ".sw-note"
+  ],
+  "el": ".sw-work",
+  "height": 2400
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/swing-b/mockup.html?shot=1",
+  "out": "swing-b/card-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".bezel"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/swing-b/mockup.html?shot=1",
+  "out": "swing-b/open-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "click": [
+   ".sw-disc"
+  ],
+  "el": ".bezel"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/swing-b/mockup.html?shot=1",
+  "out": "swing-b/open-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2600,
+  "click": [
+   ".sw-disc"
+  ],
+  "el": ".bezel"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/swing-b/mockup.html?shot=1",
+  "out": "swing-b/open-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600,
+  "click": [
+   ".sw-disc"
+  ],
+  "el": ".bezel"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/swing-c/mockup.html?shot=1",
+  "out": "swing-c/card-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "el": ".bezel"
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/swing-c/mockup.html?shot=1",
+  "out": "swing-c/open-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "click": [
+   ".sw-i"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/swing-c/mockup.html?shot=1",
+  "out": "swing-c/open-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2600,
+  "click": [
+   ".sw-i"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/swing-c/mockup.html?shot=1",
+  "out": "swing-c/open-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2600,
+  "click": [
+   ".sw-i"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/swing-c/mockup.html?shot=1",
+  "out": "swing-c/where-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2600,
+  "click": [
+   ".sw-i"
+  ],
+  "el": ".sw-pop"
+ }
+]
