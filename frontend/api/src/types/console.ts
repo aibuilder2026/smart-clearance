@@ -241,6 +241,8 @@ export type Staff = {
 	/** the device their passkey lives on */
 	passkey: string;
 	status: 'active' | 'invited';
+	/** their portrait (SC-194), for the staff the story casts; the rest show their initials */
+	img?: string | null;
 };
 
 /** one of the nine stages a batch passes, with when it happens and who acts */

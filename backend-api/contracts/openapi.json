@@ -2935,6 +2935,17 @@
             "title": "Id",
             "type": "string"
           },
+          "img": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Img"
+          },
           "name": {
             "title": "Name",
             "type": "string"

@@ -577,7 +577,7 @@
     return <Screen me={me} title="Execution" sub={`${C.batch.id} · day 0 to 14 · ${AGENTS[agents]}`} back="Route Room">
       {!started ? <Card><Empty icon="sparkles" title="Nothing is executing yet" body="Listing, outreach, negotiation and the food-bank booking start the moment the plan is approved." /></Card> :
       <Columns sideWidth={340}
-        main={<div style={{ display: "grid", gap: 20, gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 340px), 1fr))", alignItems: "start" }}>
+        main={<div className="exec-cards">
           {hasLine("expiresoon") ? <ListerCard h={h} lot={ES} sku={C.sku} batch={C.batch} dist={C.dist} buyer={D.BUYER} reserve={h.listing ? h.listing.reserve : 13.5} client={D.WORKSPACE.short} territories={Object.values(D.DISTRIBUTORS)} req={req} res={res} onOpen={() => (onOpenListing ? onOpenListing() : setSheet(true))} /> : <Card className="stack snug">
             <div className="card-head"><span className="row tight"><span className="icontile gray" style={{ borderRadius: 9 }}><Icon name="shopping-bag" size={17} stroke={2} /></span><span className="card-title">Lister · ExpireSoon</span></span><Badge>not in this plan</Badge></div>
             <span className="t-footnote muted">{esRow && !esRow.eligible ? `ExpireSoon is left out of this plan (${esRow.reason}).` : "The Router gave ExpireSoon nothing: the other exits pay more a unit."} The Lister has nothing to list.</span>

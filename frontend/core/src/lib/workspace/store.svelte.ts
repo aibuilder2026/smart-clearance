@@ -6,7 +6,7 @@ import { D, storyOf } from './data';
 import type { State, StoryKey } from './types';
 
 const KEY = 'sc3-store';
-const VERSION = 5;
+const VERSION = 6;
 const clone = <T>(o: T): T => structuredClone(o);
 
 /** the state the workspace starts in, before the journey: the story's chips, or another of the stub's journeys (SC-168,

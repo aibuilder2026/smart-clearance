@@ -33,6 +33,7 @@ export class Console {
 	readonly #href: (route: ConsoleRoute) => string;
 	readonly #top: () => void;
 	readonly #refresh: () => Promise<unknown>;
+	readonly #account: () => void;
 
 	constructor(o: {
 		data: ConsoleData;
@@ -51,6 +52,8 @@ export class Console {
 		/** scrolls the console's own page to its top */
 		top?: () => void;
 		refresh?: () => Promise<unknown>;
+		/** opens the signed-in staff member's account sheet (Sign out) */
+		account?: () => void;
 	}) {
 		this.data = o.data;
 		this.config = o.config;
@@ -67,6 +70,7 @@ export class Console {
 		this.#href = o.href ?? routePath;
 		this.#top = o.top ?? (() => {});
 		this.#refresh = o.refresh ?? (() => o.data.refresh());
+		this.#account = o.account ?? (() => {});
 	}
 
 	get me() {
@@ -95,6 +99,8 @@ export class Console {
 	preload = (screen: ConsoleScreen) => void this.data.code({ screen }).catch(() => undefined);
 	/** the console's page back at its top (each step of New client) */
 	top = () => this.#top();
+	/** the account sheet, with Sign out: the sidebar's on tablets and desktops, the bar's on a phone (SC-194) */
+	account = () => this.#account();
 
 	agent = (id: string) => this.catalog.agents.find((a) => a.id === id)!;
 	/** an autonomy level by its id ("ask" → Ask) */

@@ -203,8 +203,22 @@
   function SignInButton({ phase, name }) {
     const reduce = useReducedMotion();
     const busy = phase === "busy", done = phase === "done", err = phase === "error";
+    const [lap, setLap] = useState(false);
+    const [slow, setSlow] = useState(false);
+    useEffect(() => {
+      if (!busy) {
+        setLap(false);
+        setSlow(false);
+        return;
+      }
+      const a = setTimeout(() => setLap(!reduce), 1100), b = setTimeout(() => setSlow(true), 3e3);
+      return () => {
+        clearTimeout(a);
+        clearTimeout(b);
+      };
+    }, [busy]);
     const label = done ? `Welcome, ${name}` : busy ? "Signing in…" : "Sign in";
-    return /* @__PURE__ */ React.createElement(
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(
       motion.button,
       {
         type: "submit",
@@ -213,11 +227,11 @@
         animate: err && !reduce ? { x: [0, -8, 8, -5, 5, -2, 0] } : { x: 0 },
         transition: { duration: 0.36, ease: "easeOut" }
       },
-      /* @__PURE__ */ React.createElement("span", { className: "si-btn-ic", "aria-hidden": "true" }, done ? /* @__PURE__ */ React.createElement("svg", { width: "20", height: "20", viewBox: "0 0 24 24" }, /* @__PURE__ */ React.createElement(motion.path, { d: "M5 12.5l4.5 4.5L19 7.5", fill: "none", stroke: "currentColor", strokeWidth: "2.6", strokeLinecap: "round", strokeLinejoin: "round", initial: { pathLength: reduce ? 1 : 0 }, animate: { pathLength: 1 }, transition: { duration: 0.28, ease: EASE } })) : busy ? /* @__PURE__ */ React.createElement("svg", { width: "20", height: "20", viewBox: "12 12 40 40" }, /* @__PURE__ */ React.createElement("circle", { cx: "43.5", cy: "19", r: "4", fill: "currentColor" }), /* @__PURE__ */ React.createElement(motion.path, { d: S_PATH, fill: "none", stroke: "currentColor", strokeWidth: "5", strokeLinecap: "round", strokeLinejoin: "round", initial: { pathLength: reduce ? 1 : 0 }, animate: { pathLength: 1 }, transition: { duration: reduce ? 0 : 1.1, ease: [0.65, 0, 0.35, 1] } })) : /* @__PURE__ */ React.createElement(Icon, { name: "log-in", size: 18 })),
+      /* @__PURE__ */ React.createElement("span", { className: "si-btn-ic", "aria-hidden": "true" }, done ? /* @__PURE__ */ React.createElement("svg", { width: "20", height: "20", viewBox: "0 0 24 24" }, /* @__PURE__ */ React.createElement(motion.path, { d: "M5 12.5l4.5 4.5L19 7.5", fill: "none", stroke: "currentColor", strokeWidth: "2.6", strokeLinecap: "round", strokeLinejoin: "round", initial: { pathLength: reduce ? 1 : 0 }, animate: { pathLength: 1 }, transition: { duration: 0.28, ease: EASE } })) : busy ? /* @__PURE__ */ React.createElement("svg", { className: "si-route", width: "20", height: "20", viewBox: "12 12 40 40" }, /* @__PURE__ */ React.createElement("circle", { cx: "43.5", cy: "19", r: "4", fill: "currentColor" }), lap ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("path", { className: "ghost", d: S_PATH, pathLength: "1", fill: "none", stroke: "currentColor", strokeWidth: "5", strokeLinecap: "round", strokeLinejoin: "round" }), /* @__PURE__ */ React.createElement("path", { className: "run", d: S_PATH, pathLength: "1", fill: "none", stroke: "currentColor", strokeWidth: "5", strokeLinecap: "round", strokeLinejoin: "round" })) : /* @__PURE__ */ React.createElement(motion.path, { d: S_PATH, fill: "none", stroke: "currentColor", strokeWidth: "5", strokeLinecap: "round", strokeLinejoin: "round", initial: { pathLength: reduce ? 1 : 0 }, animate: { pathLength: 1 }, transition: { duration: reduce ? 0 : 1.1, ease: [0.65, 0, 0.35, 1] } })) : /* @__PURE__ */ React.createElement(Icon, { name: "log-in", size: 18 })),
       /* @__PURE__ */ React.createElement("span", { className: "si-btn-lbl" }, /* @__PURE__ */ React.createElement(AnimatePresence, { initial: false }, /* @__PURE__ */ React.createElement(motion.span, { key: label, initial: reduce ? false : { y: 12, opacity: 0 }, animate: { y: 0, opacity: 1 }, exit: reduce ? { opacity: 0, transition: { duration: 0 } } : { y: -12, opacity: 0 }, transition: { duration: 0.24, ease: EASE } }, label))),
-      (busy || done) && /* @__PURE__ */ React.createElement(motion.i, { className: "si-btn-prog", "aria-hidden": "true", initial: { scaleX: reduce ? 0.9 : 0 }, animate: { scaleX: done ? 1 : 0.9 }, transition: { duration: reduce ? 0 : done ? 0.16 : 1.1, ease: done ? EASE : [0.3, 0.7, 0.4, 1] } }),
+      (busy || done) && /* @__PURE__ */ React.createElement(motion.i, { className: "si-btn-prog", "aria-hidden": "true", initial: { scaleX: reduce ? 0.9 : 0 }, animate: { scaleX: done ? 1 : reduce ? 0.9 : [0, 0.82, 0.97] }, transition: done || reduce ? { duration: reduce ? 0 : 0.16, ease: EASE } : { duration: 20, times: [0, 0.055, 1], ease: [[0.3, 0.7, 0.4, 1], [0.1, 0.6, 0.3, 1]] } }),
       /* @__PURE__ */ React.createElement("span", { className: "sr-only", role: "status" }, busy ? "Signing in" : done ? `Signed in. Welcome, ${name}.` : "")
-    );
+    ), slow && busy && /* @__PURE__ */ React.createElement("p", { className: "t-footnote si-slow", role: "status" }, /* @__PURE__ */ React.createElement(Icon, { name: "wifi", size: 14 }), "Slow connection · still signing in"));
   }
   function Chips({ groups, onPick }) {
     return /* @__PURE__ */ React.createElement("div", { className: "si-try" }, /* @__PURE__ */ React.createElement("span", { className: "t-caption subtle strong" }, "People in the story"), groups.map((g) => /* @__PURE__ */ React.createElement("div", { key: g.group, className: "si-chips" }, /* @__PURE__ */ React.createElement("span", { className: "t-caption subtle" }, g.group), /* @__PURE__ */ React.createElement("div", { className: "row tight wrap", style: { justifyContent: "center" } }, g.people.map((p) => /* @__PURE__ */ React.createElement("button", { key: p.id, type: "button", className: "chip", onClick: () => onPick(p.email) }, /* @__PURE__ */ React.createElement(Avatar, { person: p, size: "xs" }), p.short || p.name))))), /* @__PURE__ */ React.createElement("span", { className: "t-caption subtle" }, "A name fills in its email. The password is handed over with the invitation."));
@@ -229,8 +243,6 @@
     const app = useApp();
     const reduce = useReducedMotion();
     const live = useLive();
-    const [find, setFind] = useState(false);
-    const onFind = () => setFind(true);
     const [email, setEmail] = useState(live.prefill || "");
     const [pw, setPw] = useState(live.prefill && !live.wrong ? "············" : "");
     const [show, setShow] = useState(false);
@@ -283,12 +295,7 @@
       setEmail(v);
       setErr("");
       if (pwRef.current) pwRef.current.focus();
-    } }), /* @__PURE__ */ React.createElement("div", { className: "si-foot" }, /* @__PURE__ */ React.createElement(PoweredBy, null), /* @__PURE__ */ React.createElement("span", { className: "si-foot-row" }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-link btn-sm", onClick: onFind }, "Not your workspace? Find yours")), /* @__PURE__ */ React.createElement("span", { className: "si-note" }, "Prototype · every company, person and number is fictional")))), /* @__PURE__ */ React.createElement(S.FindWorkspace, { open: find, onClose: () => setFind(false), initial: email, note: `Only ${WS.name} is set up in this prototype.`, onUse: (v) => {
-      setFind(false);
-      setOut(null);
-      setEmail(v);
-      setErr("");
-    } }));
+    } }), /* @__PURE__ */ React.createElement("div", { className: "si-foot" }, /* @__PURE__ */ React.createElement(PoweredBy, null), /* @__PURE__ */ React.createElement("span", { className: "si-note" }, "Prototype · every company, person and number is fictional")))));
   }
   window.SC3_SCREENS.Live = { cue, cueLong, down, stateWord, ConnMark, Cue, Line, BarSub, Band, Dim, flaggedItems, BatchTabs, Flagged, Switcher, MangoCard, MangoRoom, pausedWords, Quiet, SendFill, ExportUpload, ApproveFailed, NeedsNet, PushStep, SignInLive, SignInButton };
 })();

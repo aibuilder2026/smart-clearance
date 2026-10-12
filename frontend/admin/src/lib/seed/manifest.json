@@ -3,9 +3,9 @@
 	"sources": {
 		"design3/core/money.js": "9f73bdd0916a5b2d",
 		"design3/core/papers.js": "6ab322044c02cb2a",
-		"design3/core/data.js": "d015ed1440668445",
-		"design3/core/store.js": "fb131f55274e4a33",
-		"design3/core/platform.js": "3f1a7b998f279b39",
+		"design3/core/data.js": "a3ad9a0c50985039",
+		"design3/core/store.js": "7d9ad3139237a5b9",
+		"design3/core/platform.js": "6df798fa787a637a",
 		"design3/screens/admin.jsx": "bb2a12a8695d75e0",
 		"design3/system/product.jsx": "b467c3aaafe94fbf"
 	},

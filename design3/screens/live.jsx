@@ -247,16 +247,21 @@
   // place and a line along the foot, then a welcome and a tick; a wrong sign-in shakes it before the message
   function SignInButton({ phase, name }) {
     const reduce = useReducedMotion(); const busy = phase === "busy", done = phase === "done", err = phase === "error";
+    // the wait (SC-194): the S draws once, then laps until the check is done; past 3 s, a line says the connection is slow
+    const [lap, setLap] = useState(false); const [slow, setSlow] = useState(false);
+    useEffect(() => { if (!busy) { setLap(false); setSlow(false); return; } const a = setTimeout(() => setLap(!reduce), 1100), b = setTimeout(() => setSlow(true), 3000); return () => { clearTimeout(a); clearTimeout(b); }; }, [busy]);
     const label = done ? `Welcome, ${name}` : busy ? "Signing in…" : "Sign in";
-    return <motion.button type="submit" className={cx("btn btn-primary btn-lg btn-block si-btn", (busy || done) && "on")} aria-disabled={busy || done || undefined}
+    return <><motion.button type="submit" className={cx("btn btn-primary btn-lg btn-block si-btn", (busy || done) && "on")} aria-disabled={busy || done || undefined}
       animate={err && !reduce ? { x: [0, -8, 8, -5, 5, -2, 0] } : { x: 0 }} transition={{ duration: 0.36, ease: "easeOut" }}>
       <span className="si-btn-ic" aria-hidden="true">{done ? <svg width="20" height="20" viewBox="0 0 24 24"><motion.path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: reduce ? 1 : 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.28, ease: EASE }} /></svg>
-        : busy ? <svg width="20" height="20" viewBox="12 12 40 40"><circle cx="43.5" cy="19" r="4" fill="currentColor" /><motion.path d={S_PATH} fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: reduce ? 1 : 0 }} animate={{ pathLength: 1 }} transition={{ duration: reduce ? 0 : 1.1, ease: [0.65, 0, 0.35, 1] }} /></svg>
+        : busy ? <svg className="si-route" width="20" height="20" viewBox="12 12 40 40"><circle cx="43.5" cy="19" r="4" fill="currentColor" />
+          {lap ? <><path className="ghost" d={S_PATH} pathLength="1" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" /><path className="run" d={S_PATH} pathLength="1" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" /></>
+            : <motion.path d={S_PATH} fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: reduce ? 1 : 0 }} animate={{ pathLength: 1 }} transition={{ duration: reduce ? 0 : 1.1, ease: [0.65, 0, 0.35, 1] }} />}</svg>
         : <Icon name="log-in" size={18} />}</span>
       <span className="si-btn-lbl"><AnimatePresence initial={false}><motion.span key={label} initial={reduce ? false : { y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { y: -12, opacity: 0 }} transition={{ duration: 0.24, ease: EASE }}>{label}</motion.span></AnimatePresence></span>
-      {(busy || done) && <motion.i className="si-btn-prog" aria-hidden="true" initial={{ scaleX: reduce ? 0.9 : 0 }} animate={{ scaleX: done ? 1 : 0.9 }} transition={{ duration: reduce ? 0 : done ? 0.16 : 1.1, ease: done ? EASE : [0.3, 0.7, 0.4, 1] }} />}
+      {(busy || done) && <motion.i className="si-btn-prog" aria-hidden="true" initial={{ scaleX: reduce ? 0.9 : 0 }} animate={{ scaleX: done ? 1 : reduce ? 0.9 : [0, 0.82, 0.97] }} transition={done || reduce ? { duration: reduce ? 0 : 0.16, ease: EASE } : { duration: 20, times: [0, 0.055, 1], ease: [[0.3, 0.7, 0.4, 1], [0.1, 0.6, 0.3, 1]] }} />}
       <span className="sr-only" role="status">{busy ? "Signing in" : done ? `Signed in. Welcome, ${name}.` : ""}</span>
-    </motion.button>;
+    </motion.button>{slow && busy && <p className="t-footnote si-slow" role="status"><Icon name="wifi" size={14} />Slow connection · still signing in</p>}</>;
   }
   // the story's people a judge may sign in as: a chip fills the email only; the password is handed over apart
   function Chips({ groups, onPick }) {
@@ -279,7 +284,7 @@
   // live: the workspace's email and password (the console's sign-in, SC-46), in the client's own card (SC-24). One message
   // for any wrong sign-in, and no forgot-password, since nothing is mailed
   function SignInLive({ groups, check, onSignedIn }) {
-    const app = useApp(); const reduce = useReducedMotion(); const live = useLive(); const [find, setFind] = useState(false); const onFind = () => setFind(true);
+    const app = useApp(); const reduce = useReducedMotion(); const live = useLive();
     const [email, setEmail] = useState(live.prefill || ""); const [pw, setPw] = useState(live.prefill && !live.wrong ? "············" : ""); const [show, setShow] = useState(false);
     const [err, setErr] = useState(live.wrong || ""); const [phase, setPhase] = useState(live.busy ? "busy" : "idle"); const [first, setFirst] = useState("");
     const [out, setOut] = useState(live.outsider || null); const pwRef = useRef(null);
@@ -313,12 +318,10 @@
           {!out && groups && groups.length > 0 && <Chips groups={groups} onPick={v => { setEmail(v); setErr(""); if (pwRef.current) pwRef.current.focus(); }} />}
           <div className="si-foot">
             <PoweredBy />
-            <span className="si-foot-row"><button type="button" className="btn btn-link btn-sm" onClick={onFind}>Not your workspace? Find yours</button></span>
             <span className="si-note">Prototype · every company, person and number is fictional</span>
           </div>
         </div>
       </div>
-      <S.FindWorkspace open={find} onClose={() => setFind(false)} initial={email} note={`Only ${WS.name} is set up in this prototype.`} onUse={v => { setFind(false); setOut(null); setEmail(v); setErr(""); }} />
     </div>;
   }
 

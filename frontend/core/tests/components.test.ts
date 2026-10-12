@@ -6,6 +6,8 @@ import Money from '../src/lib/components/Money.svelte';
 import Page from '../src/lib/components/Page.svelte';
 import Icon from '../src/lib/icons/Icon.svelte';
 import Photo from '../src/lib/workspace/screens/common/Photo.svelte';
+import ConsoleSignInButton from '../src/lib/console/screens/SignInButton.svelte';
+import SignInButton from '../src/lib/workspace/screens/auth/SignInButton.svelte';
 import { Wait, WAIT } from '../src/lib/wait.svelte';
 import FieldFixture from './fixtures/FieldFixture.svelte';
 
@@ -300,4 +302,27 @@ describe('Page, its bar over a head of its own', () => {
 		expect(bar.classList.contains('scrolled')).toBe(true);
 		expect(bar.classList.contains('under')).toBe(false);
 	});
+});
+
+describe("a sign-in's wait (SC-194)", () => {
+	beforeEach(() => vi.useFakeTimers());
+	afterEach(() => vi.useRealTimers());
+	for (const [app, Btn] of [
+		['the workspace', SignInButton],
+		['the console', ConsoleSignInButton]
+	] as const)
+		it(`${app}: the S draws, then laps until the check is done, and past 3 s says the connection is slow`, async () => {
+			const r = render(Btn, { phase: 'busy', name: 'Priya' });
+			expect(r.container.querySelector('.si-route .s')).not.toBeNull();
+			expect(r.queryByText('Slow connection · still signing in')).toBeNull();
+			await vi.advanceTimersByTimeAsync(1100);
+			expect(r.container.querySelector('.si-route .run')).not.toBeNull();
+			expect(r.container.querySelector('.si-route .ghost')).not.toBeNull();
+			await vi.advanceTimersByTimeAsync(1900);
+			expect(r.getAllByRole('status').map((x) => x.textContent)).toContain('Signing in');
+			expect(r.getByText('Slow connection · still signing in').getAttribute('role')).toBe('status');
+			await r.rerender({ phase: 'done', name: 'Priya' });
+			expect(r.queryByText('Slow connection · still signing in')).toBeNull();
+			expect(r.container.querySelector('.si-route')).toBeNull();
+		});
 });

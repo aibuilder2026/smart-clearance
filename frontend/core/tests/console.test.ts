@@ -121,6 +121,20 @@ describe('ConsoleApp, embedded on the demo world', () => {
 		expect(r.container.querySelector('[role="tab"][aria-selected="true"]')?.textContent).toContain('Channels & rules');
 	});
 
+	it("on a phone the bar carries the account, with Sign out, and the staff member's portrait (SC-194)", async () => {
+		// jsdom has no Web Animations, which the account sheet's transition runs on
+		if (!Element.prototype.animate)
+			Element.prototype.animate = function () {
+				return { cancel() {}, finish() {}, onfinish: null, finished: Promise.resolve() } as unknown as Animation;
+			};
+		const r = render(ConsoleHost, { props: { api: demoConsoleApi(), embedded: true, width: 390 } });
+		await waitFor(() => expect(heading(r.container)).toBe('Overview'), { timeout: 5000 });
+		const me = r.getByRole('button', { name: 'Account: Neha Kulkarni, sign out' });
+		expect(me.querySelector('img')?.getAttribute('src')).toContain('p-neha');
+		await fireEvent.click(me);
+		await waitFor(() => expect(r.getByRole('button', { name: 'Sign out' })).toBeTruthy());
+	});
+
 	it('shows the sign-in when no one is signed in', async () => {
 		const r = render(ConsoleHost, { props: { api: demoConsoleApi({ signedIn: null }), embedded: true } });
 		await waitFor(() => expect(heading(r.container)).toBe('Sign in'), { timeout: 5000 });

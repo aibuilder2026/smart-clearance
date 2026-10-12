@@ -239,13 +239,11 @@
 				>{/if}
 			<div class="si-foot">
 				<PoweredBy />
-				<span class="si-foot-row"
-					><button type="button" class="btn btn-link btn-sm" onclick={() => (sheet = 'find')}
-						>Not your workspace? Find yours</button
-					>{#if install && install.can}<button type="button" class="btn btn-ghost btn-sm" onclick={install.prompt}
+				{#if install && install.can}<span class="si-foot-row"
+						><button type="button" class="btn btn-ghost btn-sm" onclick={install.prompt}
 							><Icon name="download" size={15} />Install</button
-						>{/if}</span
-				>
+						></span
+					>{/if}
 				<span class="si-note">Prototype · every company, person and number is fictional</span>
 			</div>
 		</div>

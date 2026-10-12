@@ -4,6 +4,7 @@
 	import { fmt } from '../../model';
 	import type { StaffReceipt } from '../../types';
 	import Photo from '../common/Photo.svelte';
+	import ReceiptSheet from './ReceiptSheet.svelte';
 	import { recWhen } from '../record/record';
 
 	// what Vision read of a staff sale's consolidated receipt (SC-174, option A; screens/finance.jsx ReceiptRead): the
@@ -17,12 +18,18 @@
 		whose
 	}: { r: StaffReceipt; count: number; price: number; src?: string | null; whose?: 'your' } = $props();
 	let open = $state(false);
+	let big = $state(false);
 	const ok = $derived(Math.abs(r.paid - count * price) < 0.5);
 </script>
 
 <div class={cx('rcpt-read', ok ? 'ok' : 'bad')}>
+	{#if src}<ReceiptSheet bind:open={big} {r} {src} />{/if}
 	<div class="row" style="gap: 12px; align-items: flex-start">
-		{#if src}<span class="rcpt-thumb"><Photo {src} alt="The consolidated receipt {r.no}" /></span>{/if}
+		{#if src}<button type="button" class="rcpt-thumb" aria-label="Open the receipt {r.no}" onclick={() => (big = true)}
+				><Photo {src} alt="" /><span class="rcpt-zoom" aria-hidden="true"
+					><Icon name="zoom-in" size={14} stroke={2.2} /></span
+				></button
+			>{/if}
 		<div class="stack tight grow" style="gap: 4px; min-width: 0">
 			<span class="t-caption subtle">Vision read {r.no}</span>
 			<b>{r.payments.length} UPI payments · {fmt.inr2(r.paid)}</b>

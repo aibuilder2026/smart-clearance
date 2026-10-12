@@ -22,7 +22,7 @@
   function PeopleList({ onPick, busy, current }) {
     return <div className="stack" style={{ gap: 18 }}>{D.story().explore.groups.map(g => <div key={g.group} className="stack tight" style={{ gap: 8 }}>
       <div className="row tight"><b className="t-subhead">{g.group}</b><span className="t-caption subtle">{g.note}</span></div>
-      <div className="si-people">{g.ids.map(([id, what]) => { const u = userById(id); return <button type="button" key={id} className={cx("si-person", current === id && "on")} onClick={() => onPick(id)}><Avatar person={u} size="lg" /><span className="stack tight" style={{ gap: 1 }}><b>{u.name}</b><span className="t-caption subtle">{S.ROLES[u.role]} · {u.org}</span><span className="t-footnote">{what}</span></span>{busy === id ? <K.Spinner size={18} /> : current === id ? <Badge size="sm" tone="green">you</Badge> : null}</button>; })}</div>
+      <div className="si-people">{g.ids.filter(([id]) => userById(id)).map(([id, what]) => { const u = userById(id); return <button type="button" key={id} className={cx("si-person", current === id && "on")} onClick={() => onPick(id)}><Avatar person={u} size="lg" /><span className="stack tight" style={{ gap: 1 }}><b>{u.name}</b><span className="t-caption subtle">{S.ROLES[u.role]} · {u.org}</span><span className="t-footnote">{what}</span></span>{busy === id ? <K.Spinner size={18} /> : current === id ? <Badge size="sm" tone="green">you</Badge> : null}</button>; })}</div>
     </div>)}</div>;
   }
 
@@ -127,7 +127,7 @@
           {!guided && <><div className="si-or" aria-hidden="true"><span>or</span></div><button type="button" className="btn btn-secondary btn-lg btn-block" onClick={() => setSheet("demo")}><Icon name="users" size={18} />Explore as someone in the story</button></>}
           <div className="si-foot">
             <PoweredBy />
-            <span className="si-foot-row"><button type="button" className="btn btn-link btn-sm" onClick={() => setSheet("find")}>Not your workspace? Find yours</button>{install && install.can && <button type="button" className="btn btn-ghost btn-sm" onClick={install.prompt}><Icon name="download" size={15} />Install</button>}</span>
+            {install && install.can && <span className="si-foot-row"><button type="button" className="btn btn-ghost btn-sm" onClick={install.prompt}><Icon name="download" size={15} />Install</button></span>}
             <span className="si-note">Prototype · every company, person and number is fictional</span>
           </div>
         </div>

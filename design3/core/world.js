@@ -57,7 +57,7 @@
     const id = "kirana-" + slug(k.name);
     kiranaMember[k.id] = id;
     const dist = D.DISTRIBUTORS[k.distributor];
-    MEMBERS.push({ id, name: k.name, short: k.name, org: k.name, role: "retailer", kind: "partner", access: "partner", status: "active", invitedBy: dist.name, city: k.area + ", " + dist.city, lang: "hi", img: null, login: partnerLogin(k.name) });
+    MEMBERS.push({ id, name: k.name, short: k.name, org: k.name, role: "retailer", kind: "partner", access: "partner", status: "active", invitedBy: dist.name, city: k.area + ", " + dist.city, lang: "hi", img: D.PORTRAITS[id] || null, login: partnerLogin(k.name) });
   });
   KIRANAS.forEach(k => { k.member = kiranaMember[k.id]; });
   const logins = MEMBERS.map(m => m.login);

@@ -3,15 +3,18 @@
 	import { fmt } from '../../model';
 	import { useWorkspace } from '../../source';
 	import type { Distributor, Sku, StaffReceipt } from '../../types';
+	import Icon from '../../../icons/Icon.svelte';
 	import Photo from '../common/Photo.svelte';
 	import { recWhen } from '../record/record';
 	import { possessive } from './ledger';
+	import ReceiptSheet from './ReceiptSheet.svelte';
 
 	// the staff sale's consolidated receipt as a paper of the pack (SC-174, option A; screens/finance.jsx
 	// StaffReceiptPaper): the photo the distributor sent with the sale, his own, and its payments as Vision read them
 	let { r, dist, sku, price }: { r: StaffReceipt; dist: Distributor; sku: Sku; price: number } = $props();
 	const ws = useWorkspace();
 	const src = $derived(r.url || (r.file ? imgUrl(r.file) : null) || null);
+	let big = $state(false);
 </script>
 
 <div class="paper pp">
@@ -23,9 +26,15 @@
 		<span class="pp-stamp ok">READ</span>
 	</div>
 	<div class="pp-sub">The consolidated receipt {dist.short} sent with the staff sale, and what Vision read from it</div>
-	{#if src}<div class="rcpt-photo">
-			<Photo {src} alt="The consolidated receipt {r.no}, as {dist.short} sent it" />
-		</div>{/if}
+	{#if src}<button
+			type="button"
+			class="rcpt-photo"
+			aria-label="Open the receipt {r.no}, as {dist.short} sent it"
+			onclick={() => (big = true)}
+			><Photo {src} alt="" /><span class="rcpt-zoom" aria-hidden="true"
+				><Icon name="zoom-in" size={14} stroke={2.2} /></span
+			></button
+		><ReceiptSheet bind:open={big} {r} {src} />{/if}
 	<div class="pp-line">
 		<span>UPI payments<em>{` ${recWhen(r.from)} to ${recWhen(r.to)}`}</em></span><span
 			>{fmt.num(r.payments.length)}</span

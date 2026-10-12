@@ -341,6 +341,8 @@ class Staff(Shape):
     email: str
     passkey: str
     status: Literal["active", "invited"]
+    # their portrait, for the staff the prototype's story casts (SC-194); the rest are their initials
+    img: str | None = None
 
 
 class Track(Shape):

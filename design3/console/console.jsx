@@ -87,9 +87,12 @@
     { id: "audit", label: "Audit log", short: "Audit", icon: "scroll-text" },
   ];
 
+  // the signed-in staff member and their account sheet: on a phone the Shell has no sidebar, so the bar carries the
+  // account, as the workspace's does (SC-194)
+  const AccountCtx = React.createContext(null);
   function Screen({ title, sub, back, onBack, actions, children }) {
-    const app = useApp();
-    return <Page title={title} sub={sub} back={back} onBack={onBack} actions={<>{actions}{app.bp !== "phone" && <ModeMenuButton />}</>}>{children}</Page>;
+    const app = useApp(); const acct = React.useContext(AccountCtx);
+    return <Page title={title} sub={sub} back={back} onBack={onBack} actions={<>{actions}{app.bp !== "phone" && <ModeMenuButton />}{app.bp === "phone" && acct && <button type="button" className="iconbtn" style={{ width: 40 }} aria-label={`Account: ${acct.me.name}, sign out`} onClick={acct.open}><Avatar person={acct.me} size="sm" /></button>}</>}>{children}</Page>;
   }
   const statusBadge = c => c.status === "live" ? <Badge size="sm" tone="green" dot>Live</Badge> : <Badge size="sm" dot>Setting up</Badge>;
   const planName = id => (P.PLANS.find(p => p.id === id) || { name: id }).name;
@@ -213,18 +216,22 @@
   function SignInButton({ phase, name }) {
     const reduce = useReducedMotion();
     const busy = phase === "busy", done = phase === "done", err = phase === "error";
+    // the wait (SC-194): the S draws once, then laps until the check is done; past 3 s, a line says the connection is slow
+    const [lap, setLap] = useState(false); const [slow, setSlow] = useState(false);
+    useEffect(() => { if (!busy) { setLap(false); setSlow(false); return; } const a = setTimeout(() => setLap(!reduce), 1100), b = setTimeout(() => setSlow(true), 3000); return () => { clearTimeout(a); clearTimeout(b); }; }, [busy]);
     const label = done ? `Welcome, ${name}` : busy ? "Signing in…" : "Sign in";
-    return <motion.button type="submit" className={cx("btn btn-primary btn-lg btn-block cs-si-btn", (busy || done) && "on")} aria-disabled={busy || done || undefined}
+    return <><motion.button type="submit" className={cx("btn btn-primary btn-lg btn-block cs-si-btn", (busy || done) && "on")} aria-disabled={busy || done || undefined}
       animate={err && !reduce ? { x: [0, -8, 8, -5, 5, -2, 0] } : { x: 0 }} transition={{ duration: 0.36, ease: "easeOut" }}>
       <span className="cs-si-ic" aria-hidden="true">{done ? <motion.svg width="20" height="20" viewBox="0 0 24 24" initial={reduce ? false : { scale: 0.4 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 520, damping: 22 }}>
           <motion.path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: reduce ? 1 : 0 }} animate={{ pathLength: 1 }} transition={{ duration: reduce ? 0 : 0.28, ease: EASE }} /></motion.svg>
-        : busy ? <svg width="20" height="20" viewBox="12 12 40 40"><circle cx="43.5" cy="19" r="4" fill="currentColor" />
-          <motion.path d={S_PATH} fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: reduce ? 1 : 0 }} animate={{ pathLength: 1 }} transition={{ duration: reduce ? 0 : 1.1, ease: [0.65, 0, 0.35, 1] }} /></svg>
+        : busy ? <svg className="si-route" width="20" height="20" viewBox="12 12 40 40"><circle cx="43.5" cy="19" r="4" fill="currentColor" />
+          {lap ? <><path className="ghost" d={S_PATH} pathLength="1" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" /><path className="run" d={S_PATH} pathLength="1" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" /></>
+            : <motion.path d={S_PATH} fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: reduce ? 1 : 0 }} animate={{ pathLength: 1 }} transition={{ duration: reduce ? 0 : 1.1, ease: [0.65, 0, 0.35, 1] }} />}</svg>
         : <Icon name="log-in" size={18} />}</span>
       <span className="cs-si-lbl"><AnimatePresence initial={false}><motion.span key={label} initial={reduce ? false : { y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { y: -12, opacity: 0 }} transition={{ duration: 0.24, ease: EASE }}>{label}</motion.span></AnimatePresence></span>
-      {(busy || done) && <motion.i className="cs-si-prog" aria-hidden="true" initial={{ scaleX: reduce ? 0.9 : 0 }} animate={{ scaleX: done ? 1 : 0.9 }} transition={{ duration: reduce ? 0 : done ? 0.16 : 1.1, ease: done ? EASE : [0.3, 0.7, 0.4, 1] }} />}
+      {(busy || done) && <motion.i className="cs-si-prog" aria-hidden="true" initial={{ scaleX: reduce ? 0.9 : 0 }} animate={{ scaleX: done ? 1 : reduce ? 0.9 : [0, 0.82, 0.97] }} transition={done || reduce ? { duration: reduce ? 0 : 0.16, ease: EASE } : { duration: 20, times: [0, 0.055, 1], ease: [[0.3, 0.7, 0.4, 1], [0.1, 0.6, 0.3, 1]] }} />}
       <span className="sr-only" role="status">{busy ? "Signing in" : done ? `Signed in. Welcome, ${name}.` : ""}</span>
-    </motion.button>;
+    </motion.button>{slow && busy && <p className="t-footnote si-slow" role="status"><Icon name="wifi" size={14} />Slow connection · still signing in</p>}</>;
   }
 
   /* ---------- overview: batches on the move, what is waiting for a person, today's runs ---------- */
@@ -1316,14 +1323,15 @@
       : name === "clients" ? <Clients go={go} /> : name === "new-client" ? <NewClient go={go} me={me} /> : name === "agents" ? <AgentsPage go={go} />
       : name === "connectors" ? <ConnectorsPage go={go} /> : name === "plans" ? <PlansPage go={go} /> : name === "staff" ? <StaffPage me={me} /> : name === "audit" ? <AuditPage /> : <Overview go={go} me={me} />;
     const nav = NAV.map(n => (n.id === "clients" ? { ...n, count: s.clients.length } : n));
-    return <div className="cs-app">
-      <Shell nav={nav} current={name === "new-client" ? "clients" : name} onNav={id => go(id)} user={{ name: me.name, role: me.role, org: "Smart-Clearance" }} onUser={() => setAcct(true)}
+    const user = { name: me.name, role: me.role, org: "Smart-Clearance", img: me.img || (P.STAFF.find(x => x.id === me.id) || {}).img };
+    return <div className="cs-app"><AccountCtx.Provider value={{ me: user, open: () => setAcct(true) }}>
+      <Shell nav={nav} current={name === "new-client" ? "clients" : name} onNav={id => go(id)} user={user} onUser={() => setAcct(true)}
         brand={<><Mark size={32} /><span className="cs-brand"><Wordmark size={17} /><span className="cs-brand-sub">Console</span></span></>}>
         {/* each screen loads under the route (SC-49); there is no exit animation, so a route change never waits on the old screen */}
         <div ref={top}><Loading k={name + (route.id || "")} shape={client ? "client" : SCREEN_SHAPE[name] || "list"} kind="screen" title={client ? client.name : TITLES[name]}>{screen}</Loading></div>
       </Shell>
       <AccountSheet open={acct} onClose={() => setAcct(false)} me={me} onOut={onOut} />
-    </div>;
+    </AccountCtx.Provider></div>;
   }
 
   function Root() { return <ThemeProvider><AppRoot className="app-root" style={{ position: "fixed", inset: 0 }}><NoticeHost><App /></NoticeHost></AppRoot></ThemeProvider>; }

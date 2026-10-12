@@ -10,8 +10,8 @@
 
   /* ---------- Smart-Clearance's own people (fictional) ---------- */
   const STAFF = [
-    { id: "neha", name: "Neha Kulkarni", short: "Neha", role: "Super admin", team: "Customer success", email: "neha.kulkarni@smartclearance.com", passkey: "MacBook Pro · Touch ID" },
-    { id: "sameer", name: "Sameer Rao", short: "Sameer", role: "Platform engineer", team: "Platform", email: "sameer.rao@smartclearance.com", passkey: "YubiKey 5C" },
+    { id: "neha", name: "Neha Kulkarni", short: "Neha", role: "Super admin", team: "Customer success", email: "neha.kulkarni@smartclearance.com", passkey: "MacBook Pro · Touch ID", img: D.IMG + "people/p-neha.webp" },
+    { id: "sameer", name: "Sameer Rao", short: "Sameer", role: "Platform engineer", team: "Platform", email: "sameer.rao@smartclearance.com", passkey: "YubiKey 5C", img: D.IMG + "people/p-sameer.webp" },
   ];
 
   /* ---------- how far an agent may go before a person says yes ---------- */
