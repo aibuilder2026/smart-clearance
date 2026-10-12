@@ -13,15 +13,17 @@
 		component: Component<any>;
 		props?: Record<string, unknown>;
 		width?: number;
+		height?: number;
 		/** route the component reads, when it reads one */
 		route?: string;
 	};
-	let { component: C, props = {}, width = 1440, route = 'command' }: Props = $props();
+	let { component: C, props = {}, width = 1440, height = 900, route = 'command' }: Props = $props();
 
 	const app = new AppState({ embedded: true });
 	// svelte-ignore state_referenced_locally (each render is one width)
 	app.w = width;
-	app.h = 900;
+	// svelte-ignore state_referenced_locally (each render is one height)
+	app.h = height;
 	provideApp(app);
 	provideTheme(new Theme('light'));
 	const noop = () => {};

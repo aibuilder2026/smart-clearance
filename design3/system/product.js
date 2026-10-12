@@ -610,6 +610,7 @@
   function AgentStage({ children, band }) {
     const app = useApp();
     const w = useAgentWalk();
+    if (band == null && app.bp === "phone" && app.h > app.w) return null;
     return (band != null ? band : app.bp !== "desktop") ? /* @__PURE__ */ React.createElement(AgentAround, { w }) : /* @__PURE__ */ React.createElement(AgentDesk, { w }, children);
   }
   Object.assign(window.SC3, { STAGE_TIMES, StatusBadge, TrackerCompact, TrackerCard, BatchRow, ChannelTable, SplitBar, MoneyPanel, DocCard, AgentStage });

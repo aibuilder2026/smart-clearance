@@ -531,9 +531,11 @@
       </div>
     </Fragment>;
   }
-  // the stage: SC-195's on a desktop, the agents around the card below it (band: the one below desktops, whatever the size)
+  // the stage: SC-195's on a desktop, the agents around the card below it (band: the one below desktops, whatever the size);
+  // none on a phone held upright (SC-198): too tight to see the agents at work, so the sign-in is the form alone
   function AgentStage({ children, band }) {
     const app = useApp(); const w = useAgentWalk();
+    if (band == null && app.bp === "phone" && app.h > app.w) return null;
     return (band != null ? band : app.bp !== "desktop") ? <AgentAround w={w} /> : <AgentDesk w={w}>{children}</AgentDesk>;
   }
 

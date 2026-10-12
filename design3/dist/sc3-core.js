@@ -1320,6 +1320,6 @@ w"},React.createElement(ie,{size:22,still:!0}),React.createElement("b",null,"Ten
 n":"true"},u.length?u.map(s=>React.createElement("span",{key:s.id,className:M("ag-who",s.human&&"human")},React.createElement("i",null,React.createElement(A,{name:s.icon,size:12,stroke:2.2})),s.name)):React.createElement("span",{className:"\
 ag-who rest"},e.k<0?"A batch the gates will refuse":"Sold, not binned"),React.createElement("span",{className:"ag-did"},i)),React.createElement("div",{className:"ag-rail",role:"toolbar","aria-label":"The nine stops",onKeyDown:E},C.map((s,d)=>React.
 createElement("button",{key:s.id,type:"button",ref:p=>R.current[d]=p,tabIndex:d===r?0:-1,"aria-label":`${s.t}: ${U(d)}`,"aria-pressed":!!e.held&&e.held.stop===d,className:M(d<m&&"done",d===m&&"now",s.human&&"human"),onFocus:()=>g(d),onClick:()=>e.
-pick(G(d)[0])},React.createElement("i",null)))),React.createElement(ce,{w:e})))}function Le({children:e,band:t}){const c=H(),a=we();return(t!=null?t:c.bp!=="desktop")?React.createElement(Ge,{w:a}):React.createElement(Oe,{w:a},e)}Object.assign(
-window.SC3,{STAGE_TIMES:X,StatusBadge:j,TrackerCompact:Q,TrackerCard:fe,BatchRow:ke,ChannelTable:ve,SplitBar:Ne,MoneyPanel:xe,DocCard:Me,AgentStage:Le})})();
+pick(G(d)[0])},React.createElement("i",null)))),React.createElement(ce,{w:e})))}function Le({children:e,band:t}){const c=H(),a=we();return t==null&&c.bp==="phone"&&c.h>c.w?null:(t!=null?t:c.bp!=="desktop")?React.createElement(Ge,{w:a}):React.
+createElement(Oe,{w:a},e)}Object.assign(window.SC3,{STAGE_TIMES:X,StatusBadge:j,TrackerCompact:Q,TrackerCard:fe,BatchRow:ke,ChannelTable:ve,SplitBar:Ne,MoneyPanel:xe,DocCard:Me,AgentStage:Le})})();
 

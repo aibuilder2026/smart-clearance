@@ -31,7 +31,11 @@ seen on the real sign-ins before the port.
   ink at 10 to 14% once it has worked, at 24 to 30% with a rim while it works (amber for the yes).
 - **Clear ground for the words:** no block under the stage's head or its foot (Pause and the hint), nor on the river or
   round a post. Every ink is the field's own ink at low alpha, so the text keeps the contrast it had.
-- **Below desktops** the same ground sits behind the agents around the card (SC-196), denser for the smaller box.
+- **Tablets, and phones held sideways,** keep the agents around the card (SC-196), on the same ground, denser for
+  the smaller box.
+- **A phone held upright shows the form alone** (the maintainer, after seeing it: "for mobile portrait mode, make it like
+  before cause no animation can be seen in such tight space"). The stage draws nothing there (a phone breakpoint, taller
+  than wide), so the card sits on the sign-in's own ground, as before SC-195.
 - Motion is unchanged: the ground never moves; the posts follow the walk, under its Pause and Play, and rest on the
   result under reduced motion.
 
