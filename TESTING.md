@@ -178,7 +178,7 @@ story's figures as it goes, softly, so the run reaches the end and reports every
 
 People sign in with Firebase custom tokens (`backend-api/scripts/sessions.sh`); no password is typed or printed.
 
-### The five suites
+### The six suites
 
 ```bash
 cd frontend
@@ -187,6 +187,7 @@ corepack pnpm test:journey:mango               # Munchly Mango E2E
 corepack pnpm test:journey:leftover            # Munchly Chips Leftover E2E
 corepack pnpm test:journey:mango-leftover      # Munchly Mango Leftover E2E
 corepack pnpm test:journey:sad                 # Munchly Chips Sad Path E2E: three screens, one recording
+corepack pnpm test:journey:mango-stage         # Munchly Mango E2E on three screens: the happy path, one recording
 ```
 
 | Suite | Resets? | The journey | What it proves |
@@ -196,6 +197,7 @@ corepack pnpm test:journey:sad                 # Munchly Chips Sad Path E2E: thr
 | **Munchly Chips Leftover E2E** (SC-116) | yes | The chips, with `E2E_LEFTOVER` (8) kiranas not ordering: 144 packs left; Neha fires Report now; Rakesh sends two evidence photos and the agency's certificate number; Vision checks them; Priya's second yes | the destruction at the godown (route B): the Expiry credit note, the agency's certificate, Left at the godown and the Expiry settlement |
 | **Munchly Mango Leftover E2E** (SC-135) | yes | The Mango, with `E2E_LEFTOVER` (10) kiranas not buying, `E2E_DECLINE` (2) of them pressing Not this time; Neha closes the offer window early; expiry day; the destruction on Lakshmi Agencies' evidence | every paper read back from its PDF; a kirana for each outcome (ordered, declined, expired); the ITC memo part reversed; her portal and copies |
 | **Munchly Chips Sad Path E2E** (SC-179, SC-184) | yes | The chips on three screens at once: Priya on a landscape tablet and Rakesh on a portrait one, both signing in on screen and online throughout, and a phone on which each kirana, Agrawal and Neha sign in on the app's own screen (no password typed: the check is answered with their session); a cursor shows every click. Two kiranas order 48 packets, seen live on Priya's Execution; the lot is won; Neha closes the window on the other 36 shops, 540 packets are left; expiry day; Rakesh's evidence for 540 packs, the certificate signed in place; Priya's second yes | the destruction of nearly a whole scheme; orders arriving live; Vision validating the photos on screen; the certificate signed stroke by stroke, its signatures and log read; the kiranas' invoices and the Impact screens; one recording of all three (2560 × 1440) |
+| **Munchly Mango E2E on three screens** (SC-190) | yes | The Mango Drink, sold through, on the sad path's stage: Priya on a landscape tablet and Lakshmi Agencies on a portrait one, both signing in on screen and online throughout, and a phone on which Neha, three kiranas and Meera sign in as each is needed; the business notes at each moment that matters. The first `E2E_SHOWN` (3) ordering kiranas order on the phone, the other 49 as themselves through backend-api; her staff sale on its receipt; Feeding India's pickup; the papers; the van round; the review; Report now (₹16,917.10) | the happy path told as one recording (2560 × 1440): each order landing live on Priya's Execution, Vision reading the label and the staff sale's receipt, the papers and kirana invoices, the Impact screens, and Lakshmi Agencies ending whole |
 
 ### Options
 

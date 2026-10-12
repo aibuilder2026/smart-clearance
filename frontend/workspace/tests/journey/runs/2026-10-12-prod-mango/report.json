@@ -1,0 +1,551 @@
+{
+	"flow": "Munchly Mango E2E",
+	"status": "passed",
+	"took": 827,
+	"steps": [
+		{
+			"n": 1,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Priya signed in: her Command Center",
+			"at": "2026-10-12T09:37:51.988Z",
+			"ms": 41282,
+			"shot": "steps/01-Priya-signed-in-her-Command-Center.png"
+		},
+		{
+			"n": 2,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Lakshmi Agencies signed in: its Today",
+			"at": "2026-10-12T09:38:10.453Z",
+			"ms": 18465,
+			"shot": "steps/02-Lakshmi-Agencies-signed-in-its-Today.png"
+		},
+		{
+			"n": 3,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Neha signed in: Munchly in the console",
+			"at": "2026-10-12T09:38:24.904Z",
+			"ms": 14451,
+			"shot": "steps/03-Neha-signed-in-Munchly-in-the-console.png"
+		},
+		{
+			"n": 4,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Reset journey: the day length",
+			"at": "2026-10-12T09:38:39.071Z",
+			"ms": 14167,
+			"shot": "steps/04-Reset-journey-the-day-length.png"
+		},
+		{
+			"n": 5,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Journey reset to day 0, 08:00",
+			"at": "2026-10-12T09:38:43.752Z",
+			"ms": 4681,
+			"shot": "steps/05-Journey-reset-to-day-0-08-00.png"
+		},
+		{
+			"n": 6,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Priya's and Lakshmi Agencies' tablets on the fresh journey",
+			"at": "2026-10-12T09:38:57.604Z",
+			"ms": 13852,
+			"shot": "steps/06-Priya-s-and-Lakshmi-Agencies-tablets-on-the-fres.png"
+		},
+		{
+			"n": 7,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Setup: the export mapped",
+			"at": "2026-10-12T09:39:00.032Z",
+			"ms": 2428,
+			"shot": "steps/07-Setup-the-export-mapped.png"
+		},
+		{
+			"n": 8,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Setup confirmed: the Watcher starts at 09:00",
+			"at": "2026-10-12T09:39:13.963Z",
+			"ms": 13931,
+			"shot": "steps/08-Setup-confirmed-the-Watcher-starts-at-09-00.png"
+		},
+		{
+			"n": 9,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Permission given before: Smart-Clearance acts for Lakshmi Agencies",
+			"at": "2026-10-12T09:39:25.766Z",
+			"ms": 11803,
+			"shot": "steps/09-Permission-given-before-Smart-Clearance-acts-for.png"
+		},
+		{
+			"n": 10,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Watcher run from the console",
+			"at": "2026-10-12T09:39:39.002Z",
+			"ms": 13236,
+			"shot": "steps/10-Watcher-run-from-the-console.png"
+		},
+		{
+			"n": 11,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Command Center: the Mango Drink at risk, ₹22,657.2 if destroyed",
+			"at": "2026-10-12T09:39:59.728Z",
+			"ms": 20726,
+			"shot": "steps/11-Command-Center-the-Mango-Drink-at-risk-22-657-2-.png"
+		},
+		{
+			"n": 12,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Today: the Mango Drink's card asks for the label photo",
+			"at": "2026-10-12T09:40:03.519Z",
+			"ms": 3791,
+			"shot": "steps/12-Today-the-Mango-Drink-s-card-asks-for-the-label-.png"
+		},
+		{
+			"n": 13,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "The label photo chosen",
+			"at": "2026-10-12T09:40:07.267Z",
+			"ms": 3748,
+			"shot": "steps/13-The-label-photo-chosen.png"
+		},
+		{
+			"n": 14,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Vision is reading the label",
+			"at": "2026-10-12T09:40:08.523Z",
+			"ms": 1256,
+			"shot": "steps/14-Vision-is-reading-the-label.png"
+		},
+		{
+			"n": 15,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Vision validated the label: the batch, its dates and MRP match the export",
+			"at": "2026-10-12T09:40:41.523Z",
+			"ms": 33000,
+			"shot": "steps/15-Vision-validated-the-label-the-batch-its-dates-a.png"
+		},
+		{
+			"n": 16,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Command Center: the plan ready, ₹16,917",
+			"at": "2026-10-12T09:41:12.297Z",
+			"ms": 30774,
+			"shot": "steps/16-Command-Center-the-plan-ready-16-917.png"
+		},
+		{
+			"n": 17,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Route Room: five channels priced, each bar read",
+			"at": "2026-10-12T09:41:40.863Z",
+			"ms": 28566,
+			"shot": "steps/17-Route-Room-five-channels-priced-each-bar-read.png"
+		},
+		{
+			"n": 18,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Route Room: the channels as a table",
+			"at": "2026-10-12T09:41:54.303Z",
+			"ms": 13440,
+			"shot": "steps/18-Route-Room-the-channels-as-a-table.png"
+		},
+		{
+			"n": 19,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Route Room: the recommended split, waiting for a yes",
+			"at": "2026-10-12T09:42:03.262Z",
+			"ms": 8959,
+			"shot": "steps/19-Route-Room-the-recommended-split-waiting-for-a-y.png"
+		},
+		{
+			"n": 20,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "The approve sheet: the scheme, the staff sale and the donation",
+			"at": "2026-10-12T09:42:05.712Z",
+			"ms": 2450,
+			"shot": "steps/20-The-approve-sheet-the-scheme-the-staff-sale-and-.png"
+		},
+		{
+			"n": 21,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Plan placed",
+			"at": "2026-10-12T09:42:17.490Z",
+			"ms": 11778,
+			"shot": "steps/21-Plan-placed.png"
+		},
+		{
+			"n": 22,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Execution: the scheme sent, the staff sale open, the donation booked",
+			"at": "2026-10-12T09:42:33.603Z",
+			"ms": 16113,
+			"shot": "steps/22-Execution-the-scheme-sent-the-staff-sale-open-th.png"
+		},
+		{
+			"n": 23,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Lakshmi Agencies' Orders: the scheme sent to its kiranas",
+			"at": "2026-10-12T09:42:34.975Z",
+			"ms": 1372,
+			"shot": "steps/23-Lakshmi-Agencies-Orders-the-scheme-sent-to-its-k.png"
+		},
+		{
+			"n": 24,
+			"who": "Sri Lakshmi Ganapathi Kirana",
+			"role": "Kirana · Sri Lakshmi Ganapathi Kirana",
+			"did": "Sri Lakshmi Ganapathi Kirana ordered 24 packets",
+			"at": "2026-10-12T09:43:00.060Z",
+			"ms": 25085,
+			"shot": "steps/24-Sri-Lakshmi-Ganapathi-Kirana-ordered-24-packets.png"
+		},
+		{
+			"n": 25,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Live on Priya's tablet: Sri Lakshmi Ganapathi Kirana, 24 packets",
+			"at": "2026-10-12T09:43:08.927Z",
+			"ms": 8867,
+			"shot": "steps/25-Live-on-Priya-s-tablet-Sri-Lakshmi-Ganapathi-Kir.png"
+		},
+		{
+			"n": 26,
+			"who": "Al-Noor Provision Store",
+			"role": "Kirana · Al-Noor Provision Store",
+			"did": "Al-Noor Provision Store ordered 28 packets",
+			"at": "2026-10-12T09:43:34.041Z",
+			"ms": 25114,
+			"shot": "steps/26-Al-Noor-Provision-Store-ordered-28-packets.png"
+		},
+		{
+			"n": 27,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Live on Priya's tablet: Al-Noor Provision Store, 28 packets",
+			"at": "2026-10-12T09:43:37.756Z",
+			"ms": 3715,
+			"shot": "steps/27-Live-on-Priya-s-tablet-Al-Noor-Provision-Store-2.png"
+		},
+		{
+			"n": 28,
+			"who": "Deccan General Stores",
+			"role": "Kirana · Deccan General Stores",
+			"did": "Deccan General Stores ordered 32 packets",
+			"at": "2026-10-12T09:44:02.785Z",
+			"ms": 25029,
+			"shot": "steps/28-Deccan-General-Stores-ordered-32-packets.png"
+		},
+		{
+			"n": 29,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Live on Priya's tablet: Deccan General Stores, 32 packets",
+			"at": "2026-10-12T09:44:05.759Z",
+			"ms": 2974,
+			"shot": "steps/29-Live-on-Priya-s-tablet-Deccan-General-Stores-32-.png"
+		},
+		{
+			"n": 30,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "The scheme filled: 52 shops, 1,372 packets",
+			"at": "2026-10-12T09:46:25.920Z",
+			"ms": 140161,
+			"shot": "steps/30-The-scheme-filled-52-shops-1-372-packets.png"
+		},
+		{
+			"n": 31,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Today: the staff sale asked for on the batch",
+			"at": "2026-10-12T09:46:30.358Z",
+			"ms": 4438,
+			"shot": "steps/31-Today-the-staff-sale-asked-for-on-the-batch.png"
+		},
+		{
+			"n": 32,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "The consolidated receipt sent: Vision is reading it",
+			"at": "2026-10-12T09:46:44.006Z",
+			"ms": 13648,
+			"shot": "steps/32-The-consolidated-receipt-sent-Vision-is-reading-.png"
+		},
+		{
+			"n": 33,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Vision read the receipt: its UPI payments match the count",
+			"at": "2026-10-12T09:47:13.837Z",
+			"ms": 29831,
+			"shot": "steps/33-Vision-read-the-receipt-its-UPI-payments-match-t.png"
+		},
+		{
+			"n": 34,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Staff sale recorded: 150 packs, with its receipt",
+			"at": "2026-10-12T09:47:18.221Z",
+			"ms": 4384,
+			"shot": "steps/34-Staff-sale-recorded-150-packs-with-its-receipt.png"
+		},
+		{
+			"n": 35,
+			"who": "Meera",
+			"role": "Food bank",
+			"did": "Pickup confirmed",
+			"at": "2026-10-12T09:47:48.437Z",
+			"ms": 30216,
+			"shot": "steps/35-Pickup-confirmed.png"
+		},
+		{
+			"n": 36,
+			"who": "Meera",
+			"role": "Food bank",
+			"did": "Donation collected: 58 packs",
+			"at": "2026-10-12T09:47:57.821Z",
+			"ms": 9384,
+			"shot": "steps/36-Donation-collected-58-packs.png"
+		},
+		{
+			"n": 37,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Today: the van round asked for on the batch",
+			"at": "2026-10-12T09:48:07.658Z",
+			"ms": 9837,
+			"shot": "steps/37-Today-the-van-round-asked-for-on-the-batch.png"
+		},
+		{
+			"n": 38,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "The van round run: every shop delivered",
+			"at": "2026-10-12T09:48:28.174Z",
+			"ms": 20516,
+			"shot": "steps/38-The-van-round-run-every-shop-delivered.png"
+		},
+		{
+			"n": 39,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Paper: Price-support credit note CN/0117",
+			"at": "2026-10-12T09:48:39.355Z",
+			"ms": 11181,
+			"shot": "steps/39-Paper-Price-support-credit-note-CN-0117.png"
+		},
+		{
+			"n": 40,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Paper: Staff sale receipt LA/SR/26-27/0002",
+			"at": "2026-10-12T09:48:44.709Z",
+			"ms": 5354,
+			"shot": "steps/40-Paper-Staff-sale-receipt-LA-SR-26-27-0002.png"
+		},
+		{
+			"n": 41,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Paper: GST ITC memo s.17(5)(h)",
+			"at": "2026-10-12T09:48:47.914Z",
+			"ms": 3205,
+			"shot": "steps/41-Paper-GST-ITC-memo-s-17-5-h-.png"
+		},
+		{
+			"n": 42,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Paper: FSSAI surplus-food checklist 58 units",
+			"at": "2026-10-12T09:48:51.413Z",
+			"ms": 3499,
+			"shot": "steps/42-Paper-FSSAI-surplus-food-checklist-58-units.png"
+		},
+		{
+			"n": 43,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Paper: Donation receipt FI/HYD/26-27/0417",
+			"at": "2026-10-12T09:48:56.458Z",
+			"ms": 5045,
+			"shot": "steps/43-Paper-Donation-receipt-FI-HYD-26-27-0417.png"
+		},
+		{
+			"n": 44,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "The sales register: a tax invoice for every kirana order",
+			"at": "2026-10-12T09:49:07.057Z",
+			"ms": 10599,
+			"shot": "steps/44-The-sales-register-a-tax-invoice-for-every-kiran.png"
+		},
+		{
+			"n": 45,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Pack reviewed",
+			"at": "2026-10-12T09:49:11.475Z",
+			"ms": 4418,
+			"shot": "steps/45-Pack-reviewed.png"
+		},
+		{
+			"n": 46,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Report now: Expire it and report now?",
+			"at": "2026-10-12T09:49:38.262Z",
+			"ms": 26787,
+			"shot": "steps/46-Report-now-Expire-it-and-report-now-.png"
+		},
+		{
+			"n": 47,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Impact posted the ledger: ₹16,917.1 recovered",
+			"at": "2026-10-12T09:49:43.356Z",
+			"ms": 5094,
+			"shot": "steps/47-Impact-posted-the-ledger-16-917-1-recovered.png"
+		},
+		{
+			"n": 48,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Impact: kept out of landfill, destroyed, CO₂e avoided",
+			"at": "2026-10-12T09:49:56.207Z",
+			"ms": 12851,
+			"shot": "steps/48-Impact-kept-out-of-landfill-destroyed-CO-e-avoid.png"
+		},
+		{
+			"n": 49,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Impact: food by week, and where the kilos went",
+			"at": "2026-10-12T09:50:00.582Z",
+			"ms": 4375,
+			"shot": "steps/49-Impact-food-by-week-and-where-the-kilos-went.png"
+		},
+		{
+			"n": 50,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "The batch's Impact: its BRSR line, the meals and the evidence",
+			"at": "2026-10-12T09:50:04.983Z",
+			"ms": 4401,
+			"shot": "steps/50-The-batch-s-Impact-its-BRSR-line-the-meals-and-t.png"
+		},
+		{
+			"n": 51,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Its batch: what happened",
+			"at": "2026-10-12T09:50:07.649Z",
+			"ms": 2666,
+			"shot": "steps/51-Its-batch-what-happened.png"
+		},
+		{
+			"n": 52,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Its batch: it ends whole",
+			"at": "2026-10-12T09:50:16.723Z",
+			"ms": 9074,
+			"shot": "steps/52-Its-batch-it-ends-whole.png"
+		},
+		{
+			"n": 53,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Its papers: the credit note, and its copy of the food bank receipt",
+			"at": "2026-10-12T09:50:22.991Z",
+			"ms": 6268,
+			"shot": "steps/53-Its-papers-the-credit-note-and-its-copy-of-the-f.png"
+		},
+		{
+			"n": 54,
+			"who": "Lakshmi Agencies",
+			"role": "Distributor",
+			"did": "Orders: the scheme, the staff sale and the food bank, under the batch",
+			"at": "2026-10-12T09:50:25.967Z",
+			"ms": 2976,
+			"shot": "steps/54-Orders-the-scheme-the-staff-sale-and-the-food-ba.png"
+		},
+		{
+			"n": 55,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Execution: every line done",
+			"at": "2026-10-12T09:50:27.369Z",
+			"ms": 1402,
+			"shot": "steps/55-Execution-every-line-done.png"
+		},
+		{
+			"n": 56,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "The ledger: the batch's money",
+			"at": "2026-10-12T09:50:38.357Z",
+			"ms": 10988,
+			"shot": "steps/56-The-ledger-the-batch-s-money.png"
+		},
+		{
+			"n": 57,
+			"who": "Priya Deshmukh",
+			"role": "Supply Chain",
+			"did": "Command Center at the end",
+			"at": "2026-10-12T09:50:57.746Z",
+			"ms": 19389,
+			"shot": "steps/57-Command-Center-at-the-end.png"
+		}
+	],
+	"figures": {
+		"Write-off at Detect": "₹22,657.2",
+		"Plan net": "₹16,917.1",
+		"Plan line kirana": "1372 packs",
+		"Plan line staff": "150 packs",
+		"Plan line foodbank": "58 packs",
+		"Kiranas offered the scheme": 58,
+		"Kirana orders": "52 shops, 1372 packets",
+		"Staff sale": 150,
+		"Donation": "58 packs collected",
+		"Paper: Price-support credit note": "CN/0117 (generated, PDF)",
+		"Paper: Staff sale receipt": "LA/SR/26-27/0002 (generated, PDF)",
+		"Paper: GST ITC memo": "s.17(5)(h) (generated, PDF)",
+		"Paper: FSSAI surplus-food checklist": "58 units (generated, PDF)",
+		"Paper: Donation receipt": "FI/HYD/26-27/0417 (generated, PDF)",
+		"Paper: Destruction certificate": "0 units left (not required)",
+		"Actual net": "₹16,917.1",
+		"Left at the godown": 0
+	},
+	"findings": [
+		{
+			"severity": "note",
+			"where": "/offer/MF-2410-118",
+			"what": "Bilal Stores ordered 16 packets where the story has 28 (the offer screen orders in twelves)"
+		},
+		{
+			"severity": "note",
+			"where": "/offer/MF-2410-118",
+			"what": "Saraswathi Kirana ordered 16 packets where the story has 4 (the offer screen orders in twelves)"
+		}
+	]
+}

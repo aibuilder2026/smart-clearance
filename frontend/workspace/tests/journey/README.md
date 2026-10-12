@@ -250,6 +250,46 @@ E2E_FROM=deal E2E_UNTIL=window corepack pnpm test:journey:sad     # part of it, 
 It resets Munchly's journey first. Each person's custom token is minted again after 40 minutes, since one is good for an
 hour.
 
+## Munchly Mango E2E on three screens
+
+The Mango Drink's happy path on the sad path's stage (SC-190), `munchly-mango-stage.journey.ts` with `stage.ts`, for a
+recording that tells the journey from a reset to Impact's report. Munchly Mango E2E (SC-104) stays the one that takes
+the batch on from where it stands; this one resets.
+
+**The screens:** Priya on the tablet in landscape and Lakshmi Agencies on the tablet in portrait, each signing in on
+camera and online to the end, and the phone, on which Neha signs in to the console, and three kiranas and Meera of
+Feeding India sign in to the workspace as each is needed. The sign-ins, the cursor, the scrolling, the spotlights and the
+business notes are the sad path's (SC-184, SC-188); `Stage.open` takes the cast (`holds`: who keeps a tablet; `phone`:
+the note under the phone).
+
+**The journey:**
+
+- Neha resets the journey from the console. Priya confirms Setup, Lakshmi Agencies gives its permission (or reads it
+  as given), and Neha runs the Watcher.
+- Lakshmi Agencies sends the label photo (`agents/evals/vision/images/mango.webp`), and Vision matches it to the
+  export on its tablet.
+- Priya opens the plan from her Command Center: the Route Room's channels read bar by bar, as a table panned sideways,
+  and the split (₹16,917: 1,372 packets to the kiranas, 150 to the staff sale, 58 to a food bank; no ExpireSoon lot, at
+  22 days left). She approves it.
+- The first `E2E_SHOWN` (3) ordering kiranas sign in on the phone and order their story's share, each order checked
+  live on Priya's Execution. The other ordering kiranas order as themselves through backend-api, each with its own
+  session, meanwhile, and a note says so; Priya watches the scheme fill (52 shops, 1,372 packets).
+- Lakshmi Agencies records the staff sale on its consolidated receipt (`design3/system/img/receipts/MF-2410-118.webp`),
+  which Vision reads on its tablet. Meera confirms and collects Feeding India's pickup on the phone.
+- Paperwork drafts the pack, and Lakshmi Agencies runs the van round from its Today.
+- Priya reads every paper and the sales register, with a glance at each kirana's tax invoice, and marks the pack
+  reviewed. Neha fires Report now.
+- Priya reads the Impact screens and the batch's BRSR line; Lakshmi Agencies reads its batch (what happened, ending
+  whole, its papers) and its Orders; Priya ends on Execution, the ledger and the Command Center, with the outcome.
+
+```sh
+corepack pnpm test:journey:mango-stage                            # the stage on screen, recorded
+E2E_TARGET=prod corepack pnpm test:journey:mango-stage            # on production
+E2E_FROM=staff E2E_UNTIL=papers corepack pnpm test:journey:mango-stage   # part of it, on the journey as it stands
+```
+
+Its run of 12 Oct on production is in `runs/2026-10-12-prod-mango/`.
+
 ## Before a run
 
 - backend-api on :8000 (`backend-api/scripts/dev.sh`), on a world with Munchly's live workspace (`hydrate.sh --reset`,

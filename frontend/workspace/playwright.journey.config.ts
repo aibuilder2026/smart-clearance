@@ -16,6 +16,9 @@ import { defineConfig } from '@playwright/test';
 //                                                   window closes on the rest, the packs left destroyed at the godown;
 //                                                   three screens side by side, everyone signing in on screen, recorded
 //                                                   as one video (it resets the journey)
+//   corepack pnpm test:journey:mango-stage          Munchly Mango E2E on three screens (SC-190): the Mango Drink's happy
+//                                                   path from a fresh journey, everyone signing in on screen, with the
+//                                                   stage's notes, recorded as one video (it resets the journey)
 //   corepack pnpm test:journey --headed             watch it run (E2E_SLOWMO=250 slows each action, in ms)
 //   corepack pnpm test:journey --ui                 Playwright's UI mode, step by step
 //
@@ -56,6 +59,7 @@ export default defineConfig({
 		{ name: 'Munchly Chips Leftover E2E', testMatch: /munchly-chips-leftover\.journey\.ts/ },
 		{ name: 'Munchly Mango Leftover E2E', testMatch: /munchly-mango-leftover\.journey\.ts/ },
 		// SC-179: three screens at once, its own browsers and its own recording (stage.ts)
-		{ name: 'Munchly Chips Sad Path E2E', testMatch: /munchly-chips-sad\.journey\.ts/ }
+		{ name: 'Munchly Chips Sad Path E2E', testMatch: /munchly-chips-sad\.journey\.ts/ },
+		{ name: 'Munchly Mango Stage E2E', testMatch: /munchly-mango-stage\.journey\.ts/ }
 	]
 });
