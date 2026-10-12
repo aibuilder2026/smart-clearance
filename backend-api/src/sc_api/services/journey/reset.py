@@ -147,6 +147,8 @@ async def _story(ctx: Ctx, c: m.Client, j: dict[str, Any], day0: date) -> None:
         if cm.status != x["status"]:
             cm.status = x["status"]
             cm.joined_at = None if x["status"] == "invited" else cm.joined_at or ctx.clock.now()
+        if x.get("img") and cm.img != x["img"]:  # the story's portrait (SC-194: Lakshmi Agencies and her first shop)
+            cm.img = x["img"]
     for kind, n in j["numbers"].items():  # the papers are numbered from the story's again
         row = await ctx.session.get(m.DocumentNumber, (c.id, kind), with_for_update=True)
         if row is not None:

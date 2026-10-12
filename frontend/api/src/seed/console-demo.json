@@ -309,7 +309,7 @@
 						"access": "Partner",
 						"provider": "Phone and code",
 						"status": "active",
-						"img": null,
+						"img": "sc3img:/people/p-lakshmi.webp",
 						"email": "",
 						"phone": "+91 98480 10550"
 					},
@@ -1799,7 +1799,8 @@
 				"role": "Super admin",
 				"team": "Customer success",
 				"email": "neha.kulkarni@smartclearance.com",
-				"passkey": "MacBook Pro · Touch ID"
+				"passkey": "MacBook Pro · Touch ID",
+				"img": "sc3img:/people/p-neha.webp"
 			},
 			{
 				"status": "active",
@@ -1809,7 +1810,8 @@
 				"role": "Platform engineer",
 				"team": "Platform",
 				"email": "sameer.rao@smartclearance.com",
-				"passkey": "YubiKey 5C"
+				"passkey": "YubiKey 5C",
+				"img": "sc3img:/people/p-sameer.webp"
 			}
 		],
 		"runs": [

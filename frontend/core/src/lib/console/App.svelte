@@ -76,7 +76,8 @@
 		mock: untrack(() => mock),
 		embedded: untrack(() => embedded),
 		plate: untrack(() => plate),
-		top: () => main()?.scrollTo?.(0, 0)
+		top: () => main()?.scrollTo?.(0, 0),
+		account: () => (account = true)
 	});
 	provideConsole(k);
 
@@ -232,7 +233,7 @@
 		<Shell
 			{nav}
 			current={name === 'new-client' ? 'clients' : (name ?? '')}
-			user={{ name: me.name, role: me.role, org: 'Smart-Clearance' }}
+			user={{ name: me.name, role: me.role, org: 'Smart-Clearance', img: me.img }}
 			onuser={() => (account = true)}
 			{brand}
 		>

@@ -274,11 +274,27 @@
   /* ---------- the staff sale's consolidated receipt (SC-174, option A) ---------- */
   // what Vision read of it: the payments, their total and span, and whether it is what was counted; the UPI references
   // on request. `whose`: "your" for the distributor, else the count is the distributor's
+  // the receipt opened whole (SC-194): fitted to the sheet, then at full size to read its rows, by a tap on it or the
+  // button; at full size it scrolls both ways
+  function ReceiptSheet({ open, onClose, r, src }) {
+    const app = useApp(); const [zoom, setZoom] = useState(false);
+    const close = () => { setZoom(false); onClose(); };
+    return <Sheet open={open} onClose={close} title={`Receipt ${r.no}`} side={app.bp === "phone" ? "bottom" : "center"} detent="large">
+      <div className="stack">
+        <div className={cx("rcpt-big", zoom && "zoomed")}><button type="button" aria-pressed={zoom} aria-label={zoom ? "Fit the receipt to the sheet" : "Zoom in on the receipt"} onClick={() => setZoom(!zoom)}><S.Photo src={src} alt={`The consolidated receipt ${r.no}`} /></button></div>
+        <div className="row tight wrap" style={{ justifyContent: "space-between" }}>
+          <span className="t-footnote subtle">{r.payments.length} UPI payments · {fmt.inr2(r.paid)}</span>
+          <Button size="sm" variant="secondary" icon={zoom ? "zoom-out" : "zoom-in"} onClick={() => setZoom(!zoom)}>{zoom ? "Fit to the sheet" : "Zoom in"}</Button>
+        </div>
+      </div>
+    </Sheet>;
+  }
   function ReceiptRead({ r, count, price, src, whose }) {
-    const [open, setOpen] = useState(false); const ok = Math.abs(r.paid - count * price) < 0.5;
+    const [open, setOpen] = useState(false); const [big, setBig] = useState(false); const ok = Math.abs(r.paid - count * price) < 0.5;
     return <div className={cx("rcpt-read", ok ? "ok" : "bad")}>
+      {src && <ReceiptSheet open={big} onClose={() => setBig(false)} r={r} src={src} />}
       <div className="row" style={{ gap: 12, alignItems: "flex-start" }}>
-        {src && <span className="rcpt-thumb"><S.Photo src={src} alt={`The consolidated receipt ${r.no}`} /></span>}
+        {src && <button type="button" className="rcpt-thumb" aria-label={`Open the receipt ${r.no}`} onClick={() => setBig(true)}><S.Photo src={src} alt="" /><span className="rcpt-zoom" aria-hidden="true"><Icon name="zoom-in" size={14} stroke={2.2} /></span></button>}
         <div className="stack tight grow" style={{ gap: 4, minWidth: 0 }}>
           <span className="t-caption subtle">Vision read {r.no}</span>
           <b>{r.payments.length} UPI payments · {fmt.inr2(r.paid)}</b>
@@ -292,11 +308,12 @@
   }
   // the receipt as a paper of the pack: the photo he sent, and its payments as Vision read them
   function StaffReceiptPaper({ r, dist, sku, price }) {
-    const src = r.url || (r.file ? window.SC3_IMG + r.file : null);
+    const src = r.url || (r.file ? window.SC3_IMG + r.file : null); const [big, setBig] = useState(false);
     return <div className="paper pp">
       <div className="pp-head"><div><div className="pp-title">Staff sale receipt</div><div className="pp-no">{r.no} · {dist.name}</div></div><span className="pp-stamp ok">READ</span></div>
       <div className="pp-sub">The consolidated receipt {dist.short} sent with the staff sale, and what Vision read from it</div>
-      {src && <div className="rcpt-photo"><S.Photo src={src} alt={`The consolidated receipt ${r.no}, as ${dist.short} sent it`} /></div>}
+      {src && <button type="button" className="rcpt-photo" aria-label={`Open the receipt ${r.no}, as ${dist.short} sent it`} onClick={() => setBig(true)}><S.Photo src={src} alt="" /><span className="rcpt-zoom" aria-hidden="true"><Icon name="zoom-in" size={14} stroke={2.2} /></span></button>}
+      {src && <ReceiptSheet open={big} onClose={() => setBig(false)} r={r} src={src} />}
       <Line k="UPI payments" sub={`${recWhen(r.from)} to ${recWhen(r.to)}`} v={fmt.num(r.payments.length)} />
       <Line k="Packs sold to staff" sub={`${sku.brand} ${sku.name} at ₹${price.toFixed(2)}`} v={fmt.num(r.units)} />
       <Line k="Received by UPI" v={fmt.inr2(r.paid)} strong />

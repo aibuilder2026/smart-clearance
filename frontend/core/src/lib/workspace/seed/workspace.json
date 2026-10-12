@@ -6305,6 +6305,14 @@
 						"Order from the Hindi offer"
 					],
 					[
+						"lakshmi-owner",
+						"Send the photo, record the staff sale, run the van"
+					],
+					[
+						"kirana-sri-lakshmi-ganapathi-kirana",
+						"Order from Lakshmi Agencies' offer"
+					],
+					[
 						"meera",
 						"Confirm a food-bank pickup"
 					]
@@ -6342,7 +6350,7 @@
 		]
 	},
 	"initial": {
-		"v": 5,
+		"v": 6,
 		"workspace": "munchly",
 		"setup": {
 			"confirmed": false,
@@ -6515,7 +6523,8 @@
 				"status": "active",
 				"kind": "partner",
 				"lastSeen": null,
-				"extra": true
+				"extra": true,
+				"img": "sc3img:/people/p-lakshmi.webp"
 			},
 			{
 				"id": "jaidurga",

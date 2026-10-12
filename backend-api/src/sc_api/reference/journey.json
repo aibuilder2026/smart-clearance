@@ -1715,7 +1715,7 @@
 			"invitedBy": null,
 			"city": null,
 			"lang": null,
-			"img": null,
+			"img": "sc3img:/people/p-lakshmi.webp",
 			"login": "lakshmi-agencies@google.example"
 		},
 		{
@@ -2315,7 +2315,7 @@
 			"invitedBy": "Lakshmi Agencies",
 			"city": "Begum Bazaar, Hyderabad",
 			"lang": "hi",
-			"img": null,
+			"img": "sc3img:/people/p-lakshmi-ganapathi.webp",
 			"login": "sri-lakshmi-ganapathi-kirana@google.example"
 		},
 		{
@@ -4666,6 +4666,14 @@
 				[
 					"ganesh",
 					"Order from the Hindi offer"
+				],
+				[
+					"lakshmi-owner",
+					"Send the photo, record the staff sale, run the van"
+				],
+				[
+					"kirana-sri-lakshmi-ganapathi-kirana",
+					"Order from Lakshmi Agencies' offer"
 				],
 				[
 					"meera",

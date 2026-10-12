@@ -104,7 +104,7 @@
   const idOfLogin = email => { const v = email.trim().toLowerCase(); const m = W ? W.MEMBERS.find(x => x.login === v) : Store.get().users.find(u => (u.email || "").toLowerCase() === v); return m && m.id; };
   S.liveDomain = () => (W ? W.DOMAINS.staff : WS.emailDomain);
   // the story's people a judge may sign in as (backend-api's public page: accounts), by where they stand
-  const ACCOUNTS = D.EXPLORE.groups.map(g => ({ group: g.group, people: g.ids.map(([id]) => { const u = userById(id); return u && { id, name: u.name, short: u.short, img: u.img, email: loginOf(id) }; }).filter(Boolean) }));
+  const ACCOUNTS = D.EXPLORE.groups.map(g => ({ group: g.group, people: g.ids.map(([id]) => { const u = userById(id) || (W && W.MEMBERS.find(m => m.id === id)); return u && { id, name: u.name, short: u.short, img: u.img, email: loginOf(id) }; }).filter(Boolean) }));
 
   // the journey clock steps by a quarter hour; at 1 day = 5 min that is every 3.1 s of real time. Still in a still
   function useClock(base) {

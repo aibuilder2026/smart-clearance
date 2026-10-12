@@ -47,6 +47,14 @@
 .btn-faces { display: inline-grid; gap: inherit; }
 .btn-face { grid-area: 1 / 1; display: inline-flex; align-items: center; justify-content: center; gap: inherit; white-space: nowrap; }
 .btn-arc { flex: none; animation: spin 0.8s linear infinite; }
+/* a sign-in's wait (SC-194): once the S has drawn in the button, a stretch of it runs from the dot to the end, a lap every
+   1.15 s, as the splash's route does (SC-131), for as long as the check takes; past 3 s a line under the button says the
+   connection is slow. Still under reduced motion */
+.si-route .ghost { opacity: 0.35; }
+.si-route .run { stroke-dasharray: 0.3 1.4; stroke-dashoffset: 0.3; animation: si-run 1.15s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+@keyframes si-run { from { stroke-dashoffset: 0.3; } to { stroke-dashoffset: -1; } }
+.si-slow { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0; color: var(--fg-2); }
+@media (prefers-reduced-motion: reduce) { .si-route .run { animation: none; stroke-dasharray: none; stroke-dashoffset: 0; } }
 .btn-line { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; transform-origin: left center; background: currentColor; opacity: 0.55; pointer-events: none; }
 .btn-note { display: grid; grid-template-columns: auto 1fr; align-items: start; gap: 2px 6px; max-width: 46ch; margin-top: 8px; font-size: 12.5px; font-weight: 400; line-height: 1.4; color: var(--fg-2); text-align: left; }
 .btn-note .ic { margin-top: 1.5px; }

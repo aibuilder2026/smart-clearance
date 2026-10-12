@@ -253,6 +253,22 @@ describe('the sign-in, on email and password', () => {
 		expect((r.container.querySelector('#si-pw') as HTMLInputElement).type).toBe('text');
 	});
 
+	it('offers each distributor with a shop of its own, each with their portrait, and no Find yours (SC-194)', async () => {
+		const { s } = signedOut();
+		const r = await draw(s, null);
+		const chip = (name: string) => r.getByRole('button', { name });
+		for (const [name, face] of [
+			['Rakesh bhai', 'p-rakesh'],
+			['Ganesh ji', 'p-ganesh'],
+			['Lakshmi Agencies', 'p-lakshmi'],
+			['Sri Lakshmi Ganapathi Kirana', 'p-lakshmi-ganapathi']
+		])
+			expect(chip(name).querySelector('img')?.getAttribute('src')).toContain(face);
+		await fireEvent.click(chip('Lakshmi Agencies'));
+		expect((r.container.querySelector('#si-email') as HTMLInputElement).value).toBe('lakshmi-agencies@google.example');
+		expect(text(r)).not.toContain('Find yours');
+	});
+
 	it('says one thing for any wrong sign-in, and nothing about which part', async () => {
 		const WRONG = 'That email and password do not match an account in this workspace.';
 		const { m, s } = signedOut({ signIn: () => Promise.reject(new ApiError(400, WRONG)) });
@@ -836,6 +852,13 @@ describe('the staff sale and what is left at the godown (SC-87)', () => {
 		await waitFor(() => expect(text(r)).toContain('Vision read LA/SR/26-27/0002'));
 		expect(text(r)).toContain('12 UPI payments · ₹960.00');
 		expect(text(r)).toContain('120 packs × ₹8 · matches the count');
+		// the receipt opens whole, and zooms to its full size (SC-194)
+		await fireEvent.click(r.getByRole('button', { name: 'Open the receipt LA/SR/26-27/0002' }));
+		const zoom = await waitFor(() => r.getByRole('button', { name: 'Zoom in on the receipt' }));
+		expect(r.getByRole('img', { name: 'The consolidated receipt LA/SR/26-27/0002' })).toBeTruthy();
+		await fireEvent.click(zoom);
+		expect(zoom.getAttribute('aria-pressed')).toBe('true');
+		expect(zoom.closest('.rcpt-big')?.classList.contains('zoomed')).toBe(true);
 		r.unmount();
 		const p = await draw(source(fakeApi(m, 'priya')), 'paperwork', MANGO);
 		await waitFor(() => expect(text(p)).toContain('Staff sale receipt'));
@@ -847,7 +870,7 @@ describe('the staff sale and what is left at the godown (SC-87)', () => {
 		expect(t).toContain('Received by UPI₹960.00');
 		expect(t).toContain('627517000001Staff 1');
 		expect(
-			p.getByRole('img', { name: 'The consolidated receipt LA/SR/26-27/0002, as Lakshmi Agencies sent it' })
+			p.getByRole('button', { name: 'Open the receipt LA/SR/26-27/0002, as Lakshmi Agencies sent it' })
 		).toBeTruthy();
 	});
 

@@ -186,7 +186,7 @@
   };
   S.liveDomain = () => W ? W.DOMAINS.staff : WS.emailDomain;
   const ACCOUNTS = D.EXPLORE.groups.map((g) => ({ group: g.group, people: g.ids.map(([id]) => {
-    const u = userById(id);
+    const u = userById(id) || W && W.MEMBERS.find((m) => m.id === id);
     return u && { id, name: u.name, short: u.short, img: u.img, email: loginOf(id) };
   }).filter(Boolean) }));
   function useClock(base) {

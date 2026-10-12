@@ -8,9 +8,7 @@
 	import Product from '../../../components/Product.svelte';
 	import WorkspaceMark from '../../../components/WorkspaceMark.svelte';
 	import Icon from '../../../icons/Icon.svelte';
-	import { isEmail } from '../../../identity';
 	import { prefersReducedMotion } from '../../../motion';
-	import FindWorkspace, { type WorkspaceMatch } from '../../../patterns/FindWorkspace.svelte';
 	import { useWorkspace } from '../../source';
 	import type { User } from '../../types';
 	import HeroStage from './HeroStage.svelte';
@@ -36,7 +34,6 @@
 	let error = $state('');
 	let phase = $state<Phase>('idle');
 	let first = $state('');
-	let find = $state(false);
 	/** the address that signed in but is not a member here, and what the backend said */
 	// (an account whose session was found on opening the app and is not a member here: the backend's words, and no address,
 	// since only the backend knows it)
@@ -87,12 +84,6 @@
 		email = '';
 		password = '';
 	};
-	// Find your workspace, from this workspace alone: an address on its own domain, or one it offers on its sign-in
-	async function lookup(t: string): Promise<WorkspaceMatch[]> {
-		const v = t.trim().toLowerCase();
-		const known = groups.some((g) => g.people.some((p) => p.email.toLowerCase() === v));
-		return isEmail(v) && (known || v.endsWith('@' + W.emailDomain)) ? [{ workspace: W, value: t }] : [];
-	}
 </script>
 
 <div class="signin">
@@ -191,24 +182,7 @@
 					</div>{/if}{/if}
 			<div class="si-foot">
 				<PoweredBy />
-				<span class="si-foot-row"
-					><button type="button" class="btn btn-link btn-sm" onclick={() => (find = true)}
-						>Not your workspace? Find yours</button
-					></span
-				>
 			</div>
 		</div>
 	</div>
-	<FindWorkspace
-		bind:open={find}
-		initial={email}
-		find={lookup}
-		domain={(ws.publicInfo?.platform ?? ws.data.platform).domain}
-		onuse={(v) => {
-			find = false;
-			outside = null;
-			email = v;
-			error = '';
-		}}
-	/>
 </div>

@@ -10,7 +10,7 @@ from sc_api.domain.rules import staff_invite_error
 from sc_api.errors import ApiError
 from sc_api.identity import CANNOT_SIGN_IN
 from sc_api.schemas import Staff, StaffInviteInput
-from sc_api.services import audit, users
+from sc_api.services import audit, reference, users
 from sc_api.services.context import Actor, Ctx
 
 EMAIL_AND_PASSWORD = "Email and password"
@@ -39,6 +39,11 @@ async def _role(ctx: Ctx, name: str) -> m.Role:
     return role
 
 
+def _portrait(ref: str) -> str | None:
+    """the portrait design3 gives a staff member of the story (Neha, Sameer), from the console's reference data"""
+    return next((x.get("img") for x in reference.load("console.json")["state"]["staff"] if x["id"] == ref), None)
+
+
 def present(s: m.StaffMember, user: m.User, role: m.Role) -> Staff:
     return Staff(
         id=s.ref,
@@ -49,6 +54,7 @@ def present(s: m.StaffMember, user: m.User, role: m.Role) -> Staff:
         email=user.email or "",
         passkey=EMAIL_AND_PASSWORD if s.status == "active" else NOT_SET_UP,
         status=s.status,
+        img=_portrait(s.ref),
     )
 
 

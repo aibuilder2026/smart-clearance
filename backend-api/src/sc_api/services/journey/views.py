@@ -22,6 +22,7 @@ from sc_api.services.context import Actor, Ctx
 from sc_api.services.journey import events as ev
 from sc_api.services.journey import ledger as ledger_
 from sc_api.services.journey import world
+from sc_api.services.reference import load
 
 STAFF_ROLES = world.STAFF_ROLES
 ACCESS_LABEL = {"approver": "Approver", "admin": "Admin", "member": "Member", "partner": "Partner"}
@@ -158,8 +159,15 @@ async def sign_in_accounts(ctx: Ctx, c: m.Client) -> list[dict[str, Any]]:
     if not doc.get("synthetic") or not doc.get("accounts"):
         return []
     people = {cm.ref: (cm, u) for cm, u in await world.members(ctx, c.id)}
+    # the story's suggestions as the reference has them now (SC-194: Lakshmi Agencies and her first shop joined them),
+    # so a workspace built before keeps up without a rebuild; each person's portrait likewise
+    story = load("journey.json")
+    groups = [
+        {"group": g["group"], "people": [{"id": i, "does": does} for i, does in g["ids"]]} for g in story["explore"]
+    ]
+    faces = {x["id"]: x.get("img") for x in story["members"]}
     out = []
-    for g in doc["accounts"]:
+    for g in groups:
         found = [(people[p["id"]], p["does"]) for p in g["people"] if p["id"] in people]
         rows = [
             {
@@ -167,7 +175,7 @@ async def sign_in_accounts(ctx: Ctx, c: m.Client) -> list[dict[str, Any]]:
                 "name": cm.name,
                 "role": cm.workspace_role or "operator",
                 "title": cm.role_label,
-                "img": cm.img,
+                "img": cm.img or faces.get(cm.ref),
                 "email": u.email or "",
                 "does": does,
             }

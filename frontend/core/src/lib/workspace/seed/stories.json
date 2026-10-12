@@ -696,6 +696,7 @@
 				"role": "Owner, distributor",
 				"org": "Lakshmi Agencies",
 				"city": "Hyderabad",
+				"img": "sc3img:/people/p-lakshmi.webp",
 				"phone": "+91 98480 10550",
 				"sign": "Phone OTP",
 				"lang": "hi",
@@ -708,6 +709,7 @@
 				"role": "Owner, kirana",
 				"org": "Sri Lakshmi Ganapathi Kirana",
 				"city": "Begum Bazaar, Hyderabad",
+				"img": "sc3img:/people/p-lakshmi-ganapathi.webp",
 				"phone": "+91 98480 60011",
 				"sign": "Phone OTP",
 				"lang": "hi",
@@ -2106,7 +2108,7 @@
 			]
 		},
 		"initial": {
-			"v": 5,
+			"v": 6,
 			"workspace": "munchly",
 			"setup": {
 				"confirmed": true,
@@ -2283,7 +2285,8 @@
 					"status": "active",
 					"kind": "partner",
 					"lastSeen": null,
-					"extra": true
+					"extra": true,
+					"img": "sc3img:/people/p-lakshmi.webp"
 				},
 				{
 					"id": "jaidurga",
@@ -2349,6 +2352,7 @@
 					"short": "Sri Lakshmi Ganapathi Kirana",
 					"org": "Sri Lakshmi Ganapathi Kirana",
 					"role": "retailer",
+					"img": "sc3img:/people/p-lakshmi-ganapathi.webp",
 					"provider": "phone",
 					"phone": "+91 98480 60011",
 					"email": "",
@@ -4629,6 +4633,14 @@
 							"Order from the Hindi offer"
 						],
 						[
+							"lakshmi-owner",
+							"Send the photo, record the staff sale, run the van"
+						],
+						[
+							"kirana-sri-lakshmi-ganapathi-kirana",
+							"Order from Lakshmi Agencies' offer"
+						],
+						[
 							"kirana-shubham-provision",
 							"Say Not this time to the scheme"
 						]
@@ -4666,7 +4678,7 @@
 			]
 		},
 		"initial": {
-			"v": 5,
+			"v": 6,
 			"workspace": "munchly",
 			"setup": {
 				"confirmed": false,
@@ -4839,7 +4851,8 @@
 					"status": "active",
 					"kind": "partner",
 					"lastSeen": null,
-					"extra": true
+					"extra": true,
+					"img": "sc3img:/people/p-lakshmi.webp"
 				},
 				{
 					"id": "jaidurga",

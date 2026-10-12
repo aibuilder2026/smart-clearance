@@ -54,6 +54,7 @@ async def test_lets_in_active_staff_only(api, neha):
         "email": f"neha.kulkarni@{STAFF_DOMAIN}",
         "passkey": "Email and password",
         "status": "active",
+        "img": "sc3img:/people/p-neha.webp",  # her portrait from the films' cast (SC-194)
     }
     assert (await api.get("/v1/console/session", headers=neha)).json()["name"] == "Neha Kulkarni"
     stranger = await api.post("/v1/console/session", headers={"Authorization": "Bearer fake:nobody"})

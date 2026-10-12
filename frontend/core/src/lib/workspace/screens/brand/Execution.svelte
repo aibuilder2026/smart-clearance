@@ -83,9 +83,7 @@
 
 {#snippet matches()}<Badge size="sm" tone="green">matches</Badge>{/snippet}
 {#snippet short()}<Badge size="sm">{c.donation.units} units</Badge>{/snippet}
-{#snippet main()}<div
-		style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); align-items: start"
-	>
+{#snippet main()}<div class="exec-cards">
 		{#if hasES}<ListerCard
 				{h}
 				lot={es}

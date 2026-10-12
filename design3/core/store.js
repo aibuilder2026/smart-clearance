@@ -4,7 +4,7 @@
    scenario; the Mango Drink's or the slow chips' carries its key. */
 (function () {
   const D = window.SC3_DATA;
-  const KEY = "sc3-store", VERSION = 5;
+  const KEY = "sc3-store", VERSION = 6;
   function seed(scenario) {
     const S = scenario && scenario !== "chips" && D.STORIES[scenario] ? D.storyOf(scenario) : null;
     const P = D.PEOPLE;
@@ -17,7 +17,7 @@
     [["patil-owner", "Patil Distributors", "distributor", "+91 98220 10431", "active"], ["gupta-owner", "Gupta & Sons", "distributor", "+91 98260 22118", "active"], ["lakshmi-owner", "Lakshmi Agencies", "distributor", "+91 98480 10550", "active"],
      ["jaidurga", "Jai Durga Stores", "retailer", "+91 98230 60011", "active"], ["krishna", "Krishna Kirana Bhandar", "retailer", "+91 98230 60012", "deactivated"],
      ["shreesai", "Shree Sai Kirana", "retailer", "+91 98230 60013", "invited", "Rakesh Traders"], ["ifbn", "India FoodBanking Network", "foodbank", "", "invited", "Munchly Foods"]]
-      .forEach(([id, org, role, phone, status, invitedBy]) => users.push({ id, name: org, short: org, org, role: role, provider: phone ? "phone" : "google", phone, email: phone ? "" : "partners@ifbn.example", status, invitedBy, kind: "partner", lastSeen: null, extra: true }));
+      .forEach(([id, org, role, phone, status, invitedBy]) => users.push({ id, name: org, short: org, org, role: role, provider: phone ? "phone" : "google", phone, email: phone ? "" : "partners@ifbn.example", status, invitedBy, kind: "partner", lastSeen: null, extra: true, img: D.PORTRAITS[id] }));
     // another journey's own accounts: the shop a person plays, or the one that says Not this time
     if (S) S.users.forEach(u => users.push(Object.assign({}, u)));
     return Object.assign({

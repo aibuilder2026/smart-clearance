@@ -955,6 +955,43 @@ async def test_the_snapshot_carries_what_the_screens_state(api, munchly):
     assert priya["title"] == J["people"]["priya"]["role"]
 
 
+async def test_the_sign_in_offers_each_distributor_with_a_shop_of_its_own_and_their_faces(api, munchly, ctx):
+    """SC-194: Lakshmi Agencies and her first shop, Sri Lakshmi Ganapathi Kirana, beside Rakesh bhai and Ganesh ji, each
+    with the portrait the films cast; a workspace built before keeps up without a rebuild, and Reset journey gives its
+    members their portraits"""
+    shop = "kirana-sri-lakshmi-ganapathi-kirana"
+    partners = next(g for g in (await api.get(WS)).json()["accounts"] if g["group"] == "Invited partners")["people"]
+    assert [p["id"] for p in partners] == ["rakesh", "ganesh", "lakshmi-owner", shop, "meera"]
+    faces = {p["id"]: p["img"] for p in partners}
+    assert faces["lakshmi-owner"] == "sc3img:/people/p-lakshmi.webp"
+    assert faces[shop] == "sc3img:/people/p-lakshmi-ganapathi.webp"
+    # built before: the doc's own suggestions lack them, and the members have no portrait
+    c = await ctx.session.get(m.Client, "munchly")
+    doc = dict(c.workspace_doc)
+    doc["accounts"] = [
+        {**g, "people": [p for p in g["people"] if p["id"] not in ("lakshmi-owner", shop)]} for g in doc["accounts"]
+    ]
+    c.workspace_doc = doc
+    for cm in (
+        await ctx.session.execute(select(m.ClientMember).where(m.ClientMember.ref.in_(["lakshmi-owner", shop])))
+    ).scalars():
+        cm.img = None
+    await ctx.session.commit()
+    partners = next(g for g in (await api.get(WS)).json()["accounts"] if g["group"] == "Invited partners")["people"]
+    assert {p["id"]: p["img"] for p in partners}[shop] == "sc3img:/people/p-lakshmi-ganapathi.webp"
+    assert (
+        await api.post("/v1/console/clients/munchly/journey/reset", json={}, headers=token(NEHA))
+    ).status_code == 200
+    ctx.session.expire_all()
+    imgs = {
+        cm.ref: cm.img
+        for cm in (
+            await ctx.session.execute(select(m.ClientMember).where(m.ClientMember.ref.in_(["lakshmi-owner", shop])))
+        ).scalars()
+    }
+    assert imgs == {"lakshmi-owner": "sc3img:/people/p-lakshmi.webp", shop: "sc3img:/people/p-lakshmi-ganapathi.webp"}
+
+
 async def test_a_change_retried_with_its_key_acts_once(api, munchly, cloud):
     await to_plan(api, cloud)
     assert (await api.post(f"{WS}/cases/{HERO}/approval", json={"device": "phone"}, headers=PRIYA)).status_code == 200

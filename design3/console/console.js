@@ -106,9 +106,11 @@
     { id: "staff", label: "Staff", icon: "users", phoneHidden: true },
     { id: "audit", label: "Audit log", short: "Audit", icon: "scroll-text" }
   ];
+  const AccountCtx = React.createContext(null);
   function Screen({ title, sub, back, onBack, actions, children }) {
     const app = useApp();
-    return /* @__PURE__ */ React.createElement(Page, { title, sub, back, onBack, actions: /* @__PURE__ */ React.createElement(React.Fragment, null, actions, app.bp !== "phone" && /* @__PURE__ */ React.createElement(ModeMenuButton, null)) }, children);
+    const acct = React.useContext(AccountCtx);
+    return /* @__PURE__ */ React.createElement(Page, { title, sub, back, onBack, actions: /* @__PURE__ */ React.createElement(React.Fragment, null, actions, app.bp !== "phone" && /* @__PURE__ */ React.createElement(ModeMenuButton, null), app.bp === "phone" && acct && /* @__PURE__ */ React.createElement("button", { type: "button", className: "iconbtn", style: { width: 40 }, "aria-label": `Account: ${acct.me.name}, sign out`, onClick: acct.open }, /* @__PURE__ */ React.createElement(Avatar, { person: acct.me, size: "sm" }))) }, children);
   }
   const statusBadge = (c) => c.status === "live" ? /* @__PURE__ */ React.createElement(Badge, { size: "sm", tone: "green", dot: true }, "Live") : /* @__PURE__ */ React.createElement(Badge, { size: "sm", dot: true }, "Setting up");
   const planName = (id) => (P.PLANS.find((p) => p.id === id) || { name: id }).name;
@@ -221,8 +223,22 @@
   function SignInButton({ phase, name }) {
     const reduce = useReducedMotion();
     const busy = phase === "busy", done = phase === "done", err = phase === "error";
+    const [lap, setLap] = useState(false);
+    const [slow, setSlow] = useState(false);
+    useEffect(() => {
+      if (!busy) {
+        setLap(false);
+        setSlow(false);
+        return;
+      }
+      const a = setTimeout(() => setLap(!reduce), 1100), b = setTimeout(() => setSlow(true), 3e3);
+      return () => {
+        clearTimeout(a);
+        clearTimeout(b);
+      };
+    }, [busy]);
     const label = done ? `Welcome, ${name}` : busy ? "Signing in…" : "Sign in";
-    return /* @__PURE__ */ React.createElement(
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(
       motion.button,
       {
         type: "submit",
@@ -231,11 +247,11 @@
         animate: err && !reduce ? { x: [0, -8, 8, -5, 5, -2, 0] } : { x: 0 },
         transition: { duration: 0.36, ease: "easeOut" }
       },
-      /* @__PURE__ */ React.createElement("span", { className: "cs-si-ic", "aria-hidden": "true" }, done ? /* @__PURE__ */ React.createElement(motion.svg, { width: "20", height: "20", viewBox: "0 0 24 24", initial: reduce ? false : { scale: 0.4 }, animate: { scale: 1 }, transition: { type: "spring", stiffness: 520, damping: 22 } }, /* @__PURE__ */ React.createElement(motion.path, { d: "M5 12.5l4.5 4.5L19 7.5", fill: "none", stroke: "currentColor", strokeWidth: "2.6", strokeLinecap: "round", strokeLinejoin: "round", initial: { pathLength: reduce ? 1 : 0 }, animate: { pathLength: 1 }, transition: { duration: reduce ? 0 : 0.28, ease: EASE } })) : busy ? /* @__PURE__ */ React.createElement("svg", { width: "20", height: "20", viewBox: "12 12 40 40" }, /* @__PURE__ */ React.createElement("circle", { cx: "43.5", cy: "19", r: "4", fill: "currentColor" }), /* @__PURE__ */ React.createElement(motion.path, { d: S_PATH, fill: "none", stroke: "currentColor", strokeWidth: "5", strokeLinecap: "round", strokeLinejoin: "round", initial: { pathLength: reduce ? 1 : 0 }, animate: { pathLength: 1 }, transition: { duration: reduce ? 0 : 1.1, ease: [0.65, 0, 0.35, 1] } })) : /* @__PURE__ */ React.createElement(Icon, { name: "log-in", size: 18 })),
+      /* @__PURE__ */ React.createElement("span", { className: "cs-si-ic", "aria-hidden": "true" }, done ? /* @__PURE__ */ React.createElement(motion.svg, { width: "20", height: "20", viewBox: "0 0 24 24", initial: reduce ? false : { scale: 0.4 }, animate: { scale: 1 }, transition: { type: "spring", stiffness: 520, damping: 22 } }, /* @__PURE__ */ React.createElement(motion.path, { d: "M5 12.5l4.5 4.5L19 7.5", fill: "none", stroke: "currentColor", strokeWidth: "2.6", strokeLinecap: "round", strokeLinejoin: "round", initial: { pathLength: reduce ? 1 : 0 }, animate: { pathLength: 1 }, transition: { duration: reduce ? 0 : 0.28, ease: EASE } })) : busy ? /* @__PURE__ */ React.createElement("svg", { className: "si-route", width: "20", height: "20", viewBox: "12 12 40 40" }, /* @__PURE__ */ React.createElement("circle", { cx: "43.5", cy: "19", r: "4", fill: "currentColor" }), lap ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("path", { className: "ghost", d: S_PATH, pathLength: "1", fill: "none", stroke: "currentColor", strokeWidth: "5", strokeLinecap: "round", strokeLinejoin: "round" }), /* @__PURE__ */ React.createElement("path", { className: "run", d: S_PATH, pathLength: "1", fill: "none", stroke: "currentColor", strokeWidth: "5", strokeLinecap: "round", strokeLinejoin: "round" })) : /* @__PURE__ */ React.createElement(motion.path, { d: S_PATH, fill: "none", stroke: "currentColor", strokeWidth: "5", strokeLinecap: "round", strokeLinejoin: "round", initial: { pathLength: reduce ? 1 : 0 }, animate: { pathLength: 1 }, transition: { duration: reduce ? 0 : 1.1, ease: [0.65, 0, 0.35, 1] } })) : /* @__PURE__ */ React.createElement(Icon, { name: "log-in", size: 18 })),
       /* @__PURE__ */ React.createElement("span", { className: "cs-si-lbl" }, /* @__PURE__ */ React.createElement(AnimatePresence, { initial: false }, /* @__PURE__ */ React.createElement(motion.span, { key: label, initial: reduce ? false : { y: 12, opacity: 0 }, animate: { y: 0, opacity: 1 }, exit: reduce ? { opacity: 0, transition: { duration: 0 } } : { y: -12, opacity: 0 }, transition: { duration: 0.24, ease: EASE } }, label))),
-      (busy || done) && /* @__PURE__ */ React.createElement(motion.i, { className: "cs-si-prog", "aria-hidden": "true", initial: { scaleX: reduce ? 0.9 : 0 }, animate: { scaleX: done ? 1 : 0.9 }, transition: { duration: reduce ? 0 : done ? 0.16 : 1.1, ease: done ? EASE : [0.3, 0.7, 0.4, 1] } }),
+      (busy || done) && /* @__PURE__ */ React.createElement(motion.i, { className: "cs-si-prog", "aria-hidden": "true", initial: { scaleX: reduce ? 0.9 : 0 }, animate: { scaleX: done ? 1 : reduce ? 0.9 : [0, 0.82, 0.97] }, transition: done || reduce ? { duration: reduce ? 0 : 0.16, ease: EASE } : { duration: 20, times: [0, 0.055, 1], ease: [[0.3, 0.7, 0.4, 1], [0.1, 0.6, 0.3, 1]] } }),
       /* @__PURE__ */ React.createElement("span", { className: "sr-only", role: "status" }, busy ? "Signing in" : done ? `Signed in. Welcome, ${name}.` : "")
-    );
+    ), slow && busy && /* @__PURE__ */ React.createElement("p", { className: "t-footnote si-slow", role: "status" }, /* @__PURE__ */ React.createElement(Icon, { name: "wifi", size: 14 }), "Slow connection · still signing in"));
   }
   const LIVE_KEY = "sc3-console-live";
   const STOP_TITLES = D.STAGES.map((x) => x.title);
@@ -1405,18 +1421,19 @@
     const name = TITLES[route.name] ? route.name : "overview";
     const screen = name === "clients" && route.id ? /* @__PURE__ */ React.createElement(ClientPage, { id: route.id, tab: route.tab, go, me }) : name === "clients" ? /* @__PURE__ */ React.createElement(Clients, { go }) : name === "new-client" ? /* @__PURE__ */ React.createElement(NewClient, { go, me }) : name === "agents" ? /* @__PURE__ */ React.createElement(AgentsPage, { go }) : name === "connectors" ? /* @__PURE__ */ React.createElement(ConnectorsPage, { go }) : name === "plans" ? /* @__PURE__ */ React.createElement(PlansPage, { go }) : name === "staff" ? /* @__PURE__ */ React.createElement(StaffPage, { me }) : name === "audit" ? /* @__PURE__ */ React.createElement(AuditPage, null) : /* @__PURE__ */ React.createElement(Overview, { go, me });
     const nav = NAV.map((n) => n.id === "clients" ? { ...n, count: s.clients.length } : n);
-    return /* @__PURE__ */ React.createElement("div", { className: "cs-app" }, /* @__PURE__ */ React.createElement(
+    const user = { name: me.name, role: me.role, org: "Smart-Clearance", img: me.img || (P.STAFF.find((x) => x.id === me.id) || {}).img };
+    return /* @__PURE__ */ React.createElement("div", { className: "cs-app" }, /* @__PURE__ */ React.createElement(AccountCtx.Provider, { value: { me: user, open: () => setAcct(true) } }, /* @__PURE__ */ React.createElement(
       Shell,
       {
         nav,
         current: name === "new-client" ? "clients" : name,
         onNav: (id) => go(id),
-        user: { name: me.name, role: me.role, org: "Smart-Clearance" },
+        user,
         onUser: () => setAcct(true),
         brand: /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Mark, { size: 32 }), /* @__PURE__ */ React.createElement("span", { className: "cs-brand" }, /* @__PURE__ */ React.createElement(Wordmark, { size: 17 }), /* @__PURE__ */ React.createElement("span", { className: "cs-brand-sub" }, "Console")))
       },
       /* @__PURE__ */ React.createElement("div", { ref: top }, /* @__PURE__ */ React.createElement(Loading, { k: name + (route.id || ""), shape: client ? "client" : SCREEN_SHAPE[name] || "list", kind: "screen", title: client ? client.name : TITLES[name] }, screen))
-    ), /* @__PURE__ */ React.createElement(AccountSheet, { open: acct, onClose: () => setAcct(false), me, onOut }));
+    ), /* @__PURE__ */ React.createElement(AccountSheet, { open: acct, onClose: () => setAcct(false), me, onOut })));
   }
   function Root() {
     return /* @__PURE__ */ React.createElement(ThemeProvider, null, /* @__PURE__ */ React.createElement(AppRoot, { className: "app-root", style: { position: "fixed", inset: 0 } }, /* @__PURE__ */ React.createElement(NoticeHost, null, /* @__PURE__ */ React.createElement(App, null))));
