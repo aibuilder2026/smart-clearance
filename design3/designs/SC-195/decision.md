@@ -72,3 +72,22 @@ the Command Center's card and a batch's Journey; `screens.css`), then core (`wor
 - the inks pass the dataviz validator on the sheet's fill: #167a52 / #c2410c in light (CVD ΔE 9.1, normal 25.2),
   #34a571 / #e0662c in dark (9.0, 25.2), every bar labelled;
 - amounts are kept whole on their line, so a minus never wraps away from its figure.
+
+## Round 2 (12 Oct 2026)
+
+After the build, the maintainer:
+
+> The background of munchly console does not loopk good, I need the design to be more smartclearance specific,
+> showcasing agentic mix in the UI on sign in, Try using cool motion animations, you have framer and other best of the
+> best plugins, see what you can cook. It need to look really solid in light and dark mode
+
+Read as the Munchly workspace's sign-in (round 1's In focus). Three stages of Smart-Clearance's own, in
+`round-2/` (`r2.jsx` shared; each option's `opt.jsx`; `pages.py` writes the pages; `THIRD_PARTY_NOTICES.md` for the two
+adapted ThreeUI effects), each with stills in light and dark at 1440 and 390 and its motion recorded (`motion.mp4`):
+
+- **A, The agent mesh** (recommended): ThreeUI's constellation behind the whole sign-in; the ten agents and you on an
+  orbit, lit in turn, the yes amber, sparks to the three exits at once;
+- **B, Agents at work**: a deck of live agent runs in depth, the newest at the front, the rest receding into the blur;
+- **C, The route**: the mark's S as the route through the nine stops; the exits fork at Execute; the pin lands.
+
+The walk: 420 ms a stop, 800 on the yes, 900 on the exits, 4.64 s, then still; Replay; at rest under reduced motion.

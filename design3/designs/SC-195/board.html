@@ -12,11 +12,51 @@
 <body>
 <main class="wrap">
 <h1>The sign-in, and the swing explained</h1>
-<p class="lede">SC-195 · Munchly's workspace · two parts, three options each: <b>the sign-in's backdrop and how it shows the products</b>, and <b>how a batch's swing is worked out</b>. Pick one option for each part.</p>
+<p class="lede">SC-195 · Munchly's workspace · round 2 first: <b>the sign-in's stage, Smart-Clearance's own</b>. Below it, round 1's two parts, three options each: <b>the sign-in's backdrop and how it shows the products</b>, and <b>how a batch's swing is worked out</b>. Pick one option for each part.</p>
 <p>The maintainer (12 Oct), with screenshots of the live sign-in and of the Mango Drink's Journey card:</p>
 <blockquote><p>“For workspace login, I need a better background, may something with blurry effect --> product showcased should be done in much better way.”</p><p>“See image 6, there should a note added, clicking which I should see the detailed calculation how swing is calculated and loss is minimized.”</p></blockquote>
 <p>The rest of the same list (the console's sign-out on phones, the people's portraits, Lakshmi Agencies and her kirana on the sign-in, Find yours removed, the sign-in's wait, the Execution gap, the receipt opened whole) is built on SC-194; every still here already carries it.</p>
 
+<h2>Round 2 · The sign-in, Smart-Clearance's own</h2>
+<p>The maintainer (12 Oct), after round 1's In focus was built:</p>
+<blockquote><p>“The background of munchly console does not loopk good, I need the design to be more smartclearance specific, showcasing agentic mix in the UI on sign in, Try using cool motion animations, you have framer and other best of the best plugins, see what you can cook. It need to look really solid in light and dark mode”</p></blockquote>
+<div class="shared">
+<div class="card"><h3 class="sub">The same story in all three</h3><p>The platform's ten agents and the one person, in the order they work a batch through the nine stops: Data, the Watcher, Vision, the Valuer, the Router, <b>your yes</b>, then Outreach, the Lister and the Negotiator <b>at once</b> on the exits, Paperwork and Impact. The product's words, no client's figures, so a live workspace shows it before anyone signs in.</p></div>
+<div class="card"><h3 class="sub">Motion that stops</h3><p>It plays once as the page opens, 4.6 s (420 ms a stop, 800 on the yes, 900 while the exits work), then holds; Replay plays it again; under reduced motion it is drawn at rest. Framer Motion, springs named for the Svelte build.</p></div>
+<div class="card"><h3 class="sub">The card stays Munchly's</h3><p>The frosted card, its people and Powered by Smart-Clearance are as built. The stage, and on phones a band over the card, is Smart-Clearance's: “Ten agents. One yes.”</p></div>
+</div>
+<section class="opt rec" id="r2-a"><header><h3>Option A · The agent mesh</h3><span class="tag">Recommended</span></header>
+<p>ThreeUI's constellation field, adapted (MIT), drifts behind the <b>whole sign-in</b>, under the card's glass. Eleven of its nodes are named: the agents and you, on an orbit. As the batch walks, each lights in turn and the handoff draws; the thread turns <b>amber at your yes</b>, and at Execute <b>sparks fan out</b> to the three agents that work the exits at once. The stop's caption sits in the orbit's middle, on glass.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The most “agentic”: a network of agents handing work on, the whole page alive behind the card.</li><li>Busiest of the three; the field is kept faint so the card and the head stay calm.</li><li>Canvas 2D: one drawing loop that stops with the walk.</li></ul></dd></dl>
+<figure><video src="round-2/option-a/motion.mp4" controls muted playsinline preload="metadata" width="1280" height="800" aria-label="Option A, the sign-in's stage playing once"></video><figcaption>The motion, once (about 5 s), then still</figcaption></figure>
+<div class="desks"><figure><img src="round-2/option-a/walk-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option A mid-walk, light."><figcaption>Mid-walk · light</figcaption></figure><figure><img src="round-2/option-a/rest-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option A at rest, dark."><figcaption>At rest · dark</figcaption></figure></div>
+<div class="desks"><figure><img src="round-2/option-a/rest-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option A at rest, light."><figcaption>At rest · light</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="round-2/option-a/rest-390-light.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone, light."><figcaption>Phone · light</figcaption></figure><figure><img src="round-2/option-a/rest-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option A on a phone, dark."><figcaption>Phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="round-2/option-a/mockup.html?theme=light">Open option A</a><a class="btn" href="round-2/option-a/mockup.html?theme=dark">In dark</a></div>
+</section>
+<section class="opt" id="r2-b"><header><h3>Option B · Agents at work</h3></header>
+<p>A <b>deck of live runs</b> in depth. Each stop's run arrives at the front (the agent's tile wearing the aura, what it did, the call it made), and the runs before it recede up and back <b>into the blur</b>; your run is amber, and at Execute three arrive at once, fanned. Faint runs hang out of focus behind the whole sign-in.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>Reads like the product: the agent feed and its tool calls, the depth giving the blur.</li><li>Text-heavy at the front; the picture is the work, not the system.</li><li>Framer Motion only, no canvas.</li></ul></dd></dl>
+<figure><video src="round-2/option-b/motion.mp4" controls muted playsinline preload="metadata" width="1280" height="800" aria-label="Option B, the sign-in's stage playing once"></video><figcaption>The motion, once (about 5 s), then still</figcaption></figure>
+<div class="desks"><figure><img src="round-2/option-b/walk-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option B mid-walk, light."><figcaption>Mid-walk · light</figcaption></figure><figure><img src="round-2/option-b/rest-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option B at rest, dark."><figcaption>At rest · dark</figcaption></figure></div>
+<div class="desks"><figure><img src="round-2/option-b/rest-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option B at rest, light."><figcaption>At rest · light</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="round-2/option-b/rest-390-light.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone, light."><figcaption>Phone · light</figcaption></figure><figure><img src="round-2/option-b/rest-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option B on a phone, dark."><figcaption>Phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="round-2/option-b/mockup.html?theme=light">Open option B</a><a class="btn" href="round-2/option-b/mockup.html?theme=dark">In dark</a></div>
+</section>
+<section class="opt" id="r2-c"><header><h3>Option C · The route</h3></header>
+<p>The mark's S becomes <b>the route</b> a batch takes through the nine stops, laid across the stage in three rows, each stop with its agents. The batch rides it, the road it has travelled drawn green; your yes rings amber; at Execute the road <b>forks into the three exits</b>, packets streaming along them (ThreeUI's gateway flow, adapted); at Report <b>the pin lands</b>, as the loader's does. A faint dot grid behind.</p>
+<dl class="facts"><dt>Trade-offs</dt><dd><ul><li>The most on-brand: the mark's route, the loader's pin, the stops as the tracker names them.</li><li>The most diagrammatic; the agents are labels on a map rather than the actors.</li><li>SVG and Framer Motion; one line of nine stops on a phone.</li></ul></dd></dl>
+<figure><video src="round-2/option-c/motion.mp4" controls muted playsinline preload="metadata" width="1280" height="800" aria-label="Option C, the sign-in's stage playing once"></video><figcaption>The motion, once (about 5 s), then still</figcaption></figure>
+<div class="desks"><figure><img src="round-2/option-c/walk-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option C mid-walk, light."><figcaption>Mid-walk · light</figcaption></figure><figure><img src="round-2/option-c/rest-1440-dark.webp" width="1440" height="900" loading="lazy" alt="Option C at rest, dark."><figcaption>At rest · dark</figcaption></figure></div>
+<div class="desks"><figure><img src="round-2/option-c/rest-1440-light.webp" width="1440" height="900" loading="lazy" alt="Option C at rest, light."><figcaption>At rest · light</figcaption></figure></div>
+<div class="phones" style="margin-top:12px"><figure><img src="round-2/option-c/rest-390-light.webp" width="780" height="1688" loading="lazy" alt="Option C on a phone, light."><figcaption>Phone · light</figcaption></figure><figure><img src="round-2/option-c/rest-390-dark.webp" width="780" height="1688" loading="lazy" alt="Option C on a phone, dark."><figcaption>Phone · dark</figcaption></figure></div>
+<div class="links"><a class="btn primary" href="round-2/option-c/mockup.html?theme=light">Open option C</a><a class="btn" href="round-2/option-c/mockup.html?theme=dark">In dark</a></div>
+</section>
+
+<div class="q" style="margin-top:20px"><h3>To decide</h3><ul><li>Which stage to build (A, B or C), or another round.</li><li>The console's own sign-in could take the same stage, so both of Smart-Clearance's front doors match. Yes, or the workspace only?</li></ul></div>
+
+<h2 style="margin-top:72px">Round 1 · picked A and A, built</h2>
+<p>Round 1's In focus sign-in and How it adds up were built on this branch; round 2 replaces the sign-in's stage. The swing's working stays.</p>
 <h2>Part 1 · The sign-in's backdrop and products</h2>
 <h3 class="sub">Today</h3>
 <div class="desks">

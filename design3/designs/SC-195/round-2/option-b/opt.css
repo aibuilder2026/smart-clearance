@@ -1,0 +1,28 @@
+/* Round 2, option B · Agents at work: a deck of runs in depth on the stage, and faint runs out of focus behind the
+   whole sign-in */
+.r2b-area { display: grid; align-content: center; justify-items: start; gap: 22px; padding-bottom: 24px; }
+.r2b-deck { position: relative; width: min(500px, 100%); height: 410px; }
+.r2b-slot { position: absolute; left: 0; right: 0; bottom: 0; transform-origin: 50% 100%; }
+.r2b-run { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: start; padding: 16px 18px; border-radius: 22px; background: color-mix(in oklab, var(--surface) 90%, transparent); -webkit-backdrop-filter: blur(16px) saturate(140%); backdrop-filter: blur(16px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line-2); }
+.r2b-tile { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; color: var(--primary-text); background: var(--primary-soft); }
+.r2b-run.human .r2b-tile { color: var(--amber-fg); background: var(--amber); }
+.r2b-run.human { box-shadow: var(--shadow-2), 0 0 0 1.5px color-mix(in oklab, var(--amber) 70%, transparent); }
+.r2b-body { display: grid; gap: 4px; min-width: 0; }
+.r2b-top { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; }
+.r2b-top b { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
+.r2b-stop { font-size: 12.5px; font-weight: 600; color: var(--fg-3); font-variant-numeric: tabular-nums; }
+.r2b-now { margin-left: auto; padding: 2px 8px; border-radius: 99px; font-size: 11.5px; font-weight: 650; color: var(--primary-text); background: var(--primary-soft); }
+.r2b-run.human .r2b-now { color: var(--amber-text); background: var(--amber-soft); }
+[data-theme="dark"] .r2b-run.human .r2b-now { color: var(--amber); }
+.r2b-body p { margin: 0; font-size: 14.5px; line-height: 1.45; color: var(--fg-2); }
+.r2b-body code { justify-self: start; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 4px 9px; border-radius: 8px; font: 500 12px var(--font-mono); color: var(--fg-2); background: var(--fill); box-shadow: 0 0 0 var(--hair) var(--line); }
+.r2b-cap { min-height: 0; }
+/* the haze: faint runs behind the whole sign-in */
+.r2b-haze { position: absolute; inset: 0; overflow: hidden; }
+.r2b-ghost { position: absolute; width: 300px; transform-origin: 0 0; pointer-events: none; }
+/* compact: the band's deck on phones and tablets, and the haze's runs */
+.r2b-run.compact { gap: 10px; padding: 10px 12px; border-radius: 16px; }
+.r2b-run.compact .r2b-tile { width: 32px; height: 32px; border-radius: 10px; }
+.r2b-run.compact .r2b-top b { font-size: 14px; }
+.r2b-run.compact .r2b-body p { font-size: 12.5px; }
+.r2b-deck.compact { width: 100%; height: 134px; margin-top: 4px; }

@@ -1,0 +1,107 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/round-2/option-a/mockup.html?shot=1",
+  "out": "round-2/option-a/walk-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 3500
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/round-2/option-a/mockup.html?shot=1",
+  "out": "round-2/option-a/rest-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 7000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/round-2/option-a/mockup.html?shot=1",
+  "out": "round-2/option-a/rest-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 7000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/round-2/option-a/mockup.html?shot=1",
+  "out": "round-2/option-a/rest-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 7000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/round-2/option-a/mockup.html?shot=1",
+  "out": "round-2/option-a/rest-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 7000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/round-2/option-b/mockup.html?shot=1",
+  "out": "round-2/option-b/walk-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 3500
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/round-2/option-b/mockup.html?shot=1",
+  "out": "round-2/option-b/rest-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 7000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/round-2/option-b/mockup.html?shot=1",
+  "out": "round-2/option-b/rest-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 7000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/round-2/option-b/mockup.html?shot=1",
+  "out": "round-2/option-b/rest-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 7000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/round-2/option-b/mockup.html?shot=1",
+  "out": "round-2/option-b/rest-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 7000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/round-2/option-c/mockup.html?shot=1",
+  "out": "round-2/option-c/walk-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 3500
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/round-2/option-c/mockup.html?shot=1",
+  "out": "round-2/option-c/rest-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 7000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/round-2/option-c/mockup.html?shot=1",
+  "out": "round-2/option-c/rest-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 7000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/round-2/option-c/mockup.html?shot=1",
+  "out": "round-2/option-c/rest-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 7000
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-195/round-2/option-c/mockup.html?shot=1",
+  "out": "round-2/option-c/rest-390-dark",
+  "width": 390,
+  "theme": "dark",
+  "wait": 7000
+ }
+]
