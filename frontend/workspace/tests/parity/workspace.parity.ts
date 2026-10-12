@@ -55,7 +55,6 @@ async function open(browser: Browser, testInfo: TestInfo, url: string, uid: stri
 			try {
 				localStorage.setItem('sc3-theme', 'system');
 				localStorage.setItem('sc3-store', store);
-				localStorage.removeItem('sc3-hero-paused');
 				if (uid) localStorage.setItem('sc3-session', JSON.stringify({ uid, at: 1 }));
 				else localStorage.removeItem('sc3-session');
 				sessionStorage.setItem('sc3-app-splash', '1');

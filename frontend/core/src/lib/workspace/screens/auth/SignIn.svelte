@@ -1,20 +1,18 @@
 <script lang="ts">
+	import { imgUrl } from '../../../assets';
 	import { useApp } from '../../../app.svelte';
 	import Avatar from '../../../components/Avatar.svelte';
 	import Button from '../../../components/Button.svelte';
 	import Field from '../../../components/Field.svelte';
 	import Input from '../../../components/Input.svelte';
-	import Money from '../../../components/Money.svelte';
 	import OTP from '../../../components/OTP.svelte';
 	import PoweredBy from '../../../components/PoweredBy.svelte';
-	import Product from '../../../components/Product.svelte';
 	import Sheet from '../../../components/Sheet.svelte';
 	import Spinner from '../../../components/Spinner.svelte';
 	import WorkspaceMark from '../../../components/WorkspaceMark.svelte';
 	import { cx } from '../../../cx';
 	import Icon from '../../../icons/Icon.svelte';
 	import { digits, isEmail, phoneOf } from '../../../identity';
-	import { rise } from '../../../motion/transitions';
 	import FindWorkspace, { type WorkspaceMatch } from '../../../patterns/FindWorkspace.svelte';
 	import { role } from '../../model';
 	import { useWorkspace } from '../../source';
@@ -36,7 +34,6 @@
 	};
 	let { onsignin, install, guided, prefill = '' }: Props = $props();
 	const ws = useWorkspace();
-	const c = $derived(ws.case!);
 
 	const app = useApp();
 	// the workspace as its sign-in page shows it, before anyone is in
@@ -156,11 +153,13 @@
 	const TRY = $derived(ws.publicInfo?.prototype?.accounts ?? []);
 	const isPhone = $derived(!!who && !!who.phone && sheet !== 'google');
 	const side = $derived(app.bp === 'phone' ? 'bottom' : 'center');
+	// the sign-in's ground (SC-195, option A, In focus): the photograph of the client's packs, its shop soft behind them
+	const plate = `url("${imgUrl('signin-plate.webp')}")`;
 </script>
 
-<div class={cx('signin', guided && 'guided')}>
+<div class={cx('signin si-photo', guided && 'guided')} style:--si-plate={plate}>
 	<div class="ground" aria-hidden="true"></div>
-	{#if app.bp === 'desktop'}<HeroStage {guided} />{/if}
+	{#if app.bp === 'desktop'}<HeroStage />{/if}
 	<div class="si-panel">
 		<div class="si-card">
 			<div class="si-ws">
@@ -168,14 +167,6 @@
 				<div class="si-ws-name">{W.name}</div>
 				<Url />
 			</div>
-			{#if app.bp !== 'desktop'}<div class="si-hero" aria-hidden="true">
-					<Product name="carton-hero" size={app.bp === 'phone' ? 132 : 160} float />
-					{#if !guided}<div class="si-chip" in:rise|global={{ delay: 900 }}>
-							<span class="dot"></span><span
-								><b>{c.batch.id}</b> · routed · <Money value={c.actual.net} size="s" style="font-size: 15px" /> recovered</span
-							>
-						</div>{/if}
-				</div>{/if}
 			<div class="stack tight" style="gap: 6px">
 				<h1 class="si-title">Sign in</h1>
 				<p class="si-sub">

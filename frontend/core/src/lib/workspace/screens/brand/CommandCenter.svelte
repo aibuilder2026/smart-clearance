@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SwingMoney from './SwingMoney.svelte';
 	import { useApp } from '../../../app.svelte';
 	import AgentFeed from '../../../components/AgentFeed.svelte';
 	import Badge from '../../../components/Badge.svelte';
@@ -7,7 +8,6 @@
 	import Card from '../../../components/Card.svelte';
 	import ClusterMap from '../../../components/ClusterMap.svelte';
 	import Empty from '../../../components/Empty.svelte';
-	import Money from '../../../components/Money.svelte';
 	import TrackerCard from '../../../components/TrackerCard.svelte';
 	import Columns from '../../../patterns/Columns.svelte';
 	import SectionTitle from '../../../patterns/SectionTitle.svelte';
@@ -102,18 +102,12 @@
 			onclick={() => router.go('execution', { ref: c.batch.id })}>Watch execution</Button
 		>{:else}<Button variant="primary" iconRight="arrow-right" onclick={openRoute}>Open Route Room</Button
 		>{/if}{/snippet}
-{#snippet money()}<div class="stack tight" style="gap: 2px">
-		<Money
-			value={s.hero.posted ? c.actual.net : c.plan.net}
-			size={phone ? 's' : 'm'}
-			roll
-			style="color: var(--primary-text)"
-		/><span class="t-footnote subtle"
-			>{s.hero.posted ? recoveredOf(c) : routed ? 'on plan · settles day 3–7' : 'net recovered on the plan'} · swing {fmt.inr(
-				s.hero.posted ? c.actual.swing : c.plan.swing
-			)}</span
-		>
-	</div>{/snippet}
+{#snippet money()}<SwingMoney
+		{c}
+		posted={!!s.hero.posted}
+		{phone}
+		label={s.hero.posted ? recoveredOf(c) : routed ? 'on plan · settles day 3–7' : 'net recovered on the plan'}
+	/>{/snippet}
 {#snippet emptyAction()}{#if !s.setup.confirmed}<Button
 			variant="primary"
 			iconRight="arrow-right"

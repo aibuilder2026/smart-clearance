@@ -1,0 +1,81 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html",
+  "out": "build/swing-mango-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2500,
+  "ls": {
+   "sc3-session": {
+    "uid": "priya"
+   }
+  },
+  "js": "SC3_FLOW.useScenario(\"mango\"); SC3_FLOW.fastForward(9); location.hash = \"#/journey/MF-2410-118\";",
+  "click": [
+   ".sw-note"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html",
+  "out": "build/swing-mango-1440-dark",
+  "width": 1440,
+  "theme": "dark",
+  "wait": 2500,
+  "ls": {
+   "sc3-session": {
+    "uid": "priya"
+   }
+  },
+  "js": "SC3_FLOW.useScenario(\"mango\"); SC3_FLOW.fastForward(9); location.hash = \"#/journey/MF-2410-118\";",
+  "click": [
+   ".sw-note"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html",
+  "out": "build/swing-mango-390-light",
+  "width": 390,
+  "theme": "light",
+  "wait": 2500,
+  "ls": {
+   "sc3-session": {
+    "uid": "priya"
+   }
+  },
+  "js": "SC3_FLOW.useScenario(\"mango\"); SC3_FLOW.fastForward(9); location.hash = \"#/journey/MF-2410-118\";",
+  "click": [
+   ".sw-note"
+  ]
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html",
+  "out": "build/swing-slow-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "height": 2400,
+  "wait": 2500,
+  "ls": {
+   "sc3-session": {
+    "uid": "priya"
+   }
+  },
+  "js": "SC3_FLOW.useScenario(\"slow\"); SC3_FLOW.fastForward(9); location.hash = \"#/journey/MF-2409-117\";",
+  "click": [
+   ".sw-note"
+  ],
+  "el": ".sw-work"
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html",
+  "out": "build/command-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 2500,
+  "ls": {
+   "sc3-session": {
+    "uid": "priya"
+   }
+  },
+  "js": "SC3_FLOW.useScenario(\"chips\"); SC3_FLOW.fastForward(5); location.hash = \"#/command\";"
+ }
+]

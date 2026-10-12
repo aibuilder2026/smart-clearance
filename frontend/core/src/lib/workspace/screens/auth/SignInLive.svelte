@@ -1,11 +1,11 @@
 <script lang="ts">
+	import { imgUrl } from '../../../assets';
 	import { useApp } from '../../../app.svelte';
 	import Avatar from '../../../components/Avatar.svelte';
 	import Button from '../../../components/Button.svelte';
 	import Field from '../../../components/Field.svelte';
 	import Input from '../../../components/Input.svelte';
 	import PoweredBy from '../../../components/PoweredBy.svelte';
-	import Product from '../../../components/Product.svelte';
 	import WorkspaceMark from '../../../components/WorkspaceMark.svelte';
 	import Icon from '../../../icons/Icon.svelte';
 	import { prefersReducedMotion } from '../../../motion';
@@ -84,11 +84,13 @@
 		email = '';
 		password = '';
 	};
+	// the sign-in's ground (SC-195, option A, In focus): the photograph of the client's packs, its shop soft behind them
+	const plate = `url("${imgUrl('signin-plate.webp')}")`;
 </script>
 
-<div class="signin">
+<div class="signin si-photo" style:--si-plate={plate}>
 	<div class="ground" aria-hidden="true"></div>
-	{#if app.bp === 'desktop'}<HeroStage guided />{/if}
+	{#if app.bp === 'desktop'}<HeroStage />{/if}
 	<div class="si-panel">
 		<div class="si-card">
 			<div class="si-ws">
@@ -96,9 +98,6 @@
 				<div class="si-ws-name">{W.name}</div>
 				<Url />
 			</div>
-			{#if app.bp !== 'desktop' && !outside}<div class="si-hero" aria-hidden="true">
-					<Product name="carton-hero" size={app.bp === 'phone' ? 120 : 150} float />
-				</div>{/if}
 			<div class="stack tight" style="gap: 6px">
 				<h1 class="si-title">{outside ? 'Not a member here' : 'Sign in'}</h1>
 				{#if !outside}<p class="si-sub">Use the email address you were invited with, and your password.</p>{/if}

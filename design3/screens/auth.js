@@ -24,44 +24,12 @@
       return /* @__PURE__ */ React.createElement("button", { type: "button", key: id, className: cx("si-person", current === id && "on"), onClick: () => onPick(id) }, /* @__PURE__ */ React.createElement(Avatar, { person: u, size: "lg" }), /* @__PURE__ */ React.createElement("span", { className: "stack tight", style: { gap: 1 } }, /* @__PURE__ */ React.createElement("b", null, u.name), /* @__PURE__ */ React.createElement("span", { className: "t-caption subtle" }, S.ROLES[u.role], " · ", u.org), /* @__PURE__ */ React.createElement("span", { className: "t-footnote" }, what)), busy === id ? /* @__PURE__ */ React.createElement(K.Spinner, { size: 18 }) : current === id ? /* @__PURE__ */ React.createElement(Badge, { size: "sm", tone: "green" }, "you") : null);
     })))));
   }
-  function HeroStage({ guided }) {
+  const PLATE = () => `url("${new URL((window.SC3_IMG || "system/img/") + "signin-plate.webp", document.baseURI).href}")`;
+  const FOCUS = `${D.WORKSPACE.short}'s packs, on a kirana counter`;
+  function HeroStage() {
     const reduce = useReducedMotion();
-    const [paused, setPaused] = useState(() => {
-      try {
-        return localStorage.getItem("sc3-hero-paused") === "1";
-      } catch (e) {
-        return false;
-      }
-    });
-    const [k, setK] = useState(() => paused ? 9 : 0);
-    const done = k >= 9;
-    useEffect(() => {
-      if (reduce) {
-        setK(9);
-        return;
-      }
-      if (paused || k >= 9) return;
-      const t = setTimeout(() => setK(k + 1), 1e3);
-      return () => clearTimeout(t);
-    }, [reduce, paused, k]);
-    const remember = (v) => {
-      try {
-        localStorage.setItem("sc3-hero-paused", v ? "1" : "0");
-      } catch (e) {
-      }
-    };
-    const control = () => {
-      if (done) {
-        setK(0);
-        setPaused(false);
-        remember(false);
-      } else {
-        setPaused(!paused);
-        remember(!paused);
-      }
-    };
-    const stages = D.STAGES.map((x) => ({ id: x.id, title: x.title, human: x.human }));
-    return /* @__PURE__ */ React.createElement("div", { className: cx("si-stage", paused && "paused") }, /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { gap: 10 } }, /* @__PURE__ */ React.createElement("div", { className: "si-product" }, /* @__PURE__ */ React.createElement(Mark, { size: 36 }), /* @__PURE__ */ React.createElement(Wordmark, { size: 21 })), /* @__PURE__ */ React.createElement("p", { className: "si-tagline" }, "Every near-expiry carton gets a second chance, chosen by AI. ", /* @__PURE__ */ React.createElement("span", { className: "hi", lang: "hi" }, "हर कार्टन को दूसरा मौका"))), /* @__PURE__ */ React.createElement("div", { className: "si-renders", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Product, { name: "pack-chips", size: 176, float: true, className: "r1" }), /* @__PURE__ */ React.createElement(Product, { name: "carton-hero", size: 208, float: true, className: "r2" }), /* @__PURE__ */ React.createElement(Product, { name: "pack-mango", size: 150, float: true, className: "r3" })), !guided && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "si-figure" }, /* @__PURE__ */ React.createElement("span", { className: "si-cap" }, "Recovered from one batch of Munchly chips headed for the bin"), /* @__PURE__ */ React.createElement(Money, { value: k >= 9 ? D.ACTUAL.net : Math.round(D.ACTUAL.net * k / 9), size: "xl", roll: true, style: { color: "var(--primary-text)" } }), /* @__PURE__ */ React.createElement("span", { className: "si-cap" }, "instead of ", fmt.inr(-D.PLAN.writeOff.total), " to destroy it")), /* @__PURE__ */ React.createElement("div", { className: "si-track", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Tracker, { stages, done: Math.min(k, 9), current: k < 9 ? k : -1 })), !reduce && /* @__PURE__ */ React.createElement("div", { className: "si-ctl" }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-ghost btn-sm", onClick: control }, /* @__PURE__ */ React.createElement(Icon, { name: done ? "rotate-ccw" : paused ? "play" : "pause", size: 15 }), done ? "Replay animation" : paused ? "Play animation" : "Pause animation"))));
+    const rise = (d) => reduce ? { initial: false } : { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.42, delay: d, ease: [0.22, 1, 0.36, 1] } };
+    return /* @__PURE__ */ React.createElement("div", { className: "si-stage si-focus" }, /* @__PURE__ */ React.createElement(motion.div, { className: "si-brand", ...rise(0.25) }, /* @__PURE__ */ React.createElement("div", { className: "si-product" }, /* @__PURE__ */ React.createElement(Mark, { size: 34 }), /* @__PURE__ */ React.createElement(Wordmark, { size: 20 })), /* @__PURE__ */ React.createElement("p", { className: "si-tagline" }, "Every near-expiry carton gets a second chance, chosen by AI. ", /* @__PURE__ */ React.createElement("span", { className: "hi", lang: "hi" }, "हर कार्टन को दूसरा मौका"))), /* @__PURE__ */ React.createElement(motion.span, { className: "si-caption", ...rise(0.55) }, /* @__PURE__ */ React.createElement("span", { className: "dot", "aria-hidden": "true" }), FOCUS));
   }
   function FindWorkspace({ open, onClose, onUse, initial, note }) {
     const app = useApp();
@@ -205,7 +173,7 @@
     };
     const TRY = D.story().explore.accounts;
     const isPhone = who && !!who.phone && sheet !== "google";
-    return /* @__PURE__ */ React.createElement("div", { className: cx("signin", guided && "guided") }, /* @__PURE__ */ React.createElement("div", { className: "ground", "aria-hidden": "true" }), app.bp === "desktop" && /* @__PURE__ */ React.createElement(HeroStage, { guided }), /* @__PURE__ */ React.createElement("div", { className: "si-panel" }, /* @__PURE__ */ React.createElement("div", { className: "si-card" }, /* @__PURE__ */ React.createElement("div", { className: "si-ws" }, /* @__PURE__ */ React.createElement(WorkspaceMark, { ws: WS, size: app.bp === "phone" ? 52 : 60 }), /* @__PURE__ */ React.createElement("div", { className: "si-ws-name" }, WS.name), /* @__PURE__ */ React.createElement(Url, null)), app.bp !== "desktop" && /* @__PURE__ */ React.createElement("div", { className: "si-hero", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(Product, { name: "carton-hero", size: app.bp === "phone" ? 132 : 160, float: true }), !guided && /* @__PURE__ */ React.createElement(motion.div, { className: "si-chip", initial: reduce ? false : { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, transition: { delay: 0.9 } }, /* @__PURE__ */ React.createElement("span", { className: "dot" }), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("b", null, "MF-2409-117"), " · routed · ", /* @__PURE__ */ React.createElement(Money, { value: D.ACTUAL.net, size: "s", style: { fontSize: 15 } }), " recovered"))), /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { gap: 6 } }, /* @__PURE__ */ React.createElement("h1", { className: "si-title" }, "Sign in"), /* @__PURE__ */ React.createElement("p", { className: "si-sub" }, "Use your Munchly email, or the mobile number Munchly or your distributor invited.")), /* @__PURE__ */ React.createElement("form", { className: "si-form", onSubmit: (e) => {
+    return /* @__PURE__ */ React.createElement("div", { className: cx("signin si-photo", guided && "guided"), style: { "--si-plate": PLATE() } }, /* @__PURE__ */ React.createElement("div", { className: "ground", "aria-hidden": "true" }), app.bp === "desktop" && /* @__PURE__ */ React.createElement(HeroStage, null), /* @__PURE__ */ React.createElement("div", { className: "si-panel" }, /* @__PURE__ */ React.createElement("div", { className: "si-card" }, /* @__PURE__ */ React.createElement("div", { className: "si-ws" }, /* @__PURE__ */ React.createElement(WorkspaceMark, { ws: WS, size: app.bp === "phone" ? 52 : 60 }), /* @__PURE__ */ React.createElement("div", { className: "si-ws-name" }, WS.name), /* @__PURE__ */ React.createElement(Url, null)), /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { gap: 6 } }, /* @__PURE__ */ React.createElement("h1", { className: "si-title" }, "Sign in"), /* @__PURE__ */ React.createElement("p", { className: "si-sub" }, "Use your Munchly email, or the mobile number Munchly or your distributor invited.")), /* @__PURE__ */ React.createElement("form", { className: "si-form", onSubmit: (e) => {
       e.preventDefault();
       proceed();
     }, noValidate: true }, /* @__PURE__ */ React.createElement(Field, { label: "Work email or mobile number", htmlFor: "si-id", error: err && err.text }, /* @__PURE__ */ React.createElement(Input, { id: "si-id", value: id, onChange: (e) => {
@@ -257,5 +225,5 @@
     const how = me.provider === "google" ? me.kind === "staff" ? `Google Workspace · ${me.email}` : `Google, by invitation · ${me.email}` : me.provider === "phone" ? `One-time code · ${me.phone}` : me.provider;
     return /* @__PURE__ */ React.createElement(Sheet, { open, onClose, title: "Workspace", side: app.bp === "phone" ? "bottom" : "center", detent: "large" }, /* @__PURE__ */ React.createElement("div", { className: "stack" }, /* @__PURE__ */ React.createElement("div", { className: "row", style: { gap: 14 } }, /* @__PURE__ */ React.createElement(WorkspaceMark, { ws: WS, size: 56 }), /* @__PURE__ */ React.createElement("div", { className: "stack tight", style: { gap: 4, minWidth: 0 } }, /* @__PURE__ */ React.createElement("div", { className: "t-title3" }, WS.name), /* @__PURE__ */ React.createElement(Url, null))), /* @__PURE__ */ React.createElement(List, { head: "You" }, /* @__PURE__ */ React.createElement(ListRow, { title: me.name, sub: `${S.ROLES[me.role]} · ${me.org}` }), /* @__PURE__ */ React.createElement(ListRow, { title: "Signed in with", sub: how })), /* @__PURE__ */ React.createElement(List, { head: "Your workspaces", foot: me.kind === "partner" ? "If another brand you work with runs Smart-Clearance, its workspace appears here too, under the same sign-in." : `${WS.plan} since ${WS.since} · ${WS.region}` }, /* @__PURE__ */ React.createElement(ListRow, { leading: /* @__PURE__ */ React.createElement(WorkspaceMark, { ws: WS, size: 32 }), title: WS.name, sub: WS.domain, value: /* @__PURE__ */ React.createElement(Badge, { size: "sm", tone: "green", icon: "check" }, "current") })), me.role === "admin" && onSettings && /* @__PURE__ */ React.createElement(Button, { variant: "secondary", icon: "building-2", onClick: onSettings }, "Workspace settings"), /* @__PURE__ */ React.createElement("div", { className: "row", style: { justifyContent: "center", paddingTop: 4 } }, /* @__PURE__ */ React.createElement(PoweredBy, null))));
   }
-  Object.assign(window.SC3_SCREENS, { SignIn, HeroStage, FindWorkspace, WorkspaceSheet, PeopleList, DEMO_PEOPLE, DEMO, TEST_CODE });
+  Object.assign(window.SC3_SCREENS, { SignIn, HeroStage, signInPlate: PLATE, FindWorkspace, WorkspaceSheet, PeopleList, DEMO_PEOPLE, DEMO, TEST_CODE });
 })();

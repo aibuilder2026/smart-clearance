@@ -2,8 +2,8 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { openWorkspace } from './workspace';
 
 // Behaviour axe-core cannot see, in the workspace app: the sign-in by keyboard, the one-time code taking focus, sheets
-// taking, keeping and returning focus, the users' row menu as a WAI-ARIA menu button, and the sign-in hero's Pause
-// (WCAG 2.2.2). One desktop run is enough.
+// taking, keeping and returning focus, and the users' row menu as a WAI-ARIA menu button. The sign-in's stage holds
+// still once it has settled (SC-195), so it has no Pause; the motion spec checks nothing loops. One desktop run is enough.
 // eslint-disable-next-line no-empty-pattern -- Playwright needs the fixtures argument destructured
 test.beforeEach(async ({}, testInfo) => {
 	test.skip(testInfo.project.name !== 'desktop-light', 'keyboard checks run once, on desktop-light');
@@ -108,33 +108,4 @@ test("keyboard · a user's row menu (APG): arrows, Home and End, and Escape give
 	await expect(items.first()).toBeFocused();
 	await page.keyboard.press('Enter');
 	await expect(page.getByRole('dialog', { name: 'Role for Shree Sai Kirana' })).toBeVisible();
-});
-
-test.describe('with motion', () => {
-	test.use({ contextOptions: { reducedMotion: 'no-preference' } });
-
-	test("keyboard · the sign-in hero's Pause animation stops the walk, and is remembered (WCAG 2.2.2)", async ({
-		page
-	}) => {
-		await openWorkspace(page, '/', { as: null });
-		const pause = page.getByRole('button', { name: 'Pause animation' });
-		await pause.focus();
-		await page.keyboard.press('Enter');
-		const play = page.getByRole('button', { name: 'Play animation' });
-		await expect(play, 'the same button, now Play').toBeFocused();
-		const done = () => page.locator('.si-track .stop.done').count();
-		const at = await done();
-		await page.waitForTimeout(2200);
-		expect(await done(), 'paused, the batch stays at its stage').toBe(at);
-
-		await page.reload();
-		await page.waitForSelector('.app[data-mounted] .si-title');
-		await expect(page.getByRole('button', { name: 'Play animation' }), 'a paused hero stays paused').toBeVisible();
-		await page.getByRole('button', { name: 'Play animation' }).focus();
-		await page.keyboard.press('Enter');
-		await expect(page.getByRole('button', { name: 'Pause animation' })).toBeFocused();
-		await expect(page.getByRole('button', { name: 'Replay animation' }), 'it plays once and holds').toBeVisible({
-			timeout: 12_000
-		});
-	});
 });

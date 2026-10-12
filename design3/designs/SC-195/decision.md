@@ -40,4 +40,35 @@ The charts take SC-149's validated inks (#167a52 / #c2410c light, #34a571 / #e06
 
 ## The pick
 
-Waiting for the maintainer.
+12 Oct 2026, in the same request, through the board's two questions: **sign-in A, In focus** and **swing A, How it adds
+up**, both the recommended options. The board was published as a private claude.ai artifact
+(https://claude.ai/artifact/KnwHKox8M3HSmcwrRcNynP), since this session's sign-in had no Claude Design access; the copies
+for app v3 are written by `publish.py`.
+
+## The build (12 Oct 2026)
+
+**The sign-in, In focus.** design3 first (`screens/auth.jsx` HeroStage and SignIn, `screens/live.jsx` SignInLive,
+`screens/screens.css`), then core (`HeroStage.svelte`, `SignIn.svelte`, `SignInLive.svelte`, `screens.css` verbatim):
+
+- the plate, `design3/system/img/signin-plate.webp` (1920 × 1072, 106 KB): the picked photograph rendered again at
+  Qwen-Image's native size (2752 × 1536), which held the composition, sharpened the packs and corrected a misprinted
+  "Mango"; its steps are in `signin-plate.prompt.json`;
+- both workspace sign-ins (`.si-photo`) take it as their ground through `--si-plate`, made absolute, since a url() in a
+  custom property resolves against the stylesheet that uses it;
+- the stage: the mark and its line in glass, and "Munchly's packs, on a kirana counter" (the workspace's own name); the
+  three floating renders, the result, the tracker and its Pause (SC-19, SC-21) are gone, and so is the card's carton;
+- phones and tablets: a band of the photograph at the top (330 px, 520 px on tablets so the packs clear the card),
+  fading into the ground;
+- the text on the glass, measured on the rendered pixels at 1440: the primary ink 11.1:1 and the secondary 5.0:1 at
+  the lowest in light, 15.4:1 and 8.2:1 in dark.
+
+**The swing, How it adds up.** design3 first (`screens/brand.jsx` swingOf, SwingBridge, SwingWorking, SwingMoney, on
+the Command Center's card and a batch's Journey; `screens.css`), then core (`workspace/swing.ts`, `SwingBridge`,
+`SwingWorking`, `SwingMoney`, on `CommandCenter` and `BatchJourney`):
+
+- each exit's line takes the units it took (realised, once the lines are done) at the plan's own price and costs a
+  pack, the ExpireSoon lot at the counter; "Not paid" is the swing less the net, so the bridge lands on the P&L; the
+  packs left at the godown get their own line;
+- the inks pass the dataviz validator on the sheet's fill: #167a52 / #c2410c in light (CVD ΔE 9.1, normal 25.2),
+  #34a571 / #e0662c in dark (9.0, 25.2), every bar labelled;
+- amounts are kept whole on their line, so a minus never wraps away from its figure.
