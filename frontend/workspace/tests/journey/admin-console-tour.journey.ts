@@ -10,13 +10,13 @@ import { Stage, type Note } from './stage.ts';
 // - the landing page, briefly, then the bar's Console;
 // - the console's sign-in, its agents picked quickly, and Neha Kulkarni, a Super admin, signed in;
 // - the Overview: its figures and its agents at work;
-// - one client's agents configured: the pipeline, the Watcher's gates, the Lister's reserve, the Negotiator trusted to
+// - one client's agents configured: the pipeline, the Watcher's gates, the Negotiator trusted to
 //   act, the approval always on; every change goes to the client's audit log.
 //
 // The notes are green cards beside what is read, their caret pointing at it, and the rings and clicks are green
 // (stage.ts `Cast.ink`, `Cast.notes`). It sets up no client: it configures one an earlier Admin and console E2E run set
-// up (E2E_CLIENT, kaveri by default). Each setting it changes moves between two values, so every run saves a change and
-// writes its audit line.
+// up (E2E_CLIENT, kaveri by default). The Watcher's gate moves between two values, so every run saves a change and writes
+// its audit line; the Negotiator ends on Act.
 //
 // E2E_LIVE=0 opens no monitor window (it records all the same).
 
@@ -57,11 +57,6 @@ const WHY = {
 		tag: 'Watcher',
 		title: 'The quick-commerce gates',
 		text: 'The Watcher flags a batch once Blinkit, Zepto and Instamart would refuse it: too few days, or too little life left.'
-	},
-	reserve: {
-		tag: 'Lister',
-		title: 'A floor no buyer sees',
-		text: 'The Lister never lists a lot below this price a pack on ExpireSoon, and hides it inside the client’s territories.'
 	},
 	autonomy: {
 		tag: 'Negotiator',
@@ -134,7 +129,7 @@ test('Admin and console tour: the landing page, the console and a client’s age
 		await s.chapter('2 · The console', { n: 2, of: 3, title: 'Into the console' }, 900);
 		const chips = site.locator('.ag-crew .ag-chip');
 		await site.waitForTimeout(500);
-		for (const name of ['Watcher', 'You']) {
+		for (const name of ['You']) {
 			const chip = chips.filter({ hasText: name }).first();
 			if (await chip.isVisible().catch(() => false)) await s.click(chip, 500);
 		}
@@ -176,20 +171,16 @@ test('Admin and console tour: the landing page, the console and a client’s age
 		await save('Watcher');
 		running().figure('Watcher', `Blinkit takes stock with at least ${days} days`);
 
-		await s.click(agent('Lister'), 300);
-		const reserve = await toggle(s, insp.locator('#set-lister-reserve'), '12', '12.5');
-		await s.spot(insp.locator('#set-lister-reserve'), WHY.reserve, 2700);
-		await save('Lister');
-		running().figure('Lister', `reserve ₹${reserve} a pack`);
-
 		await s.click(agent('Negotiator'), 300);
 		const auto = insp.getByRole('group', { name: 'Negotiator: autonomy' }).first();
-		const acting = (await auto.getByRole('button', { name: 'Act' }).getAttribute('aria-pressed')) === 'true';
-		const level = acting ? 'Ask' : 'Act';
-		await s.click(auto.getByRole('button', { name: level }), 400);
-		await expect(toast(con)).toHaveText(`Negotiator: ${level}, for ${client.name}`, { timeout: 15_000 });
+		// trusted to act: pressed now, or shown as it already is
+		const act = auto.getByRole('button', { name: 'Act' });
+		if ((await act.getAttribute('aria-pressed')) !== 'true') {
+			await s.click(act, 300);
+			await expect(toast(con)).toHaveText(`Negotiator: Act, for ${client.name}`, { timeout: 15_000 });
+		}
 		await s.spot(auto, WHY.autonomy, 2500);
-		running().figure('Negotiator', level);
+		running().figure('Negotiator', 'Act');
 
 		await s.spot(con.locator('.cs-pipe .is-gate').first(), WHY.approval, 2400);
 		await running().done(`${of(client.name)} agents configured`);

@@ -2505,7 +2505,7 @@
     - on a phone the card takes its own glass. Desktops keep SC-195's stage.
   - **Checks:** the frontend gate passes (api 83, core 407, admin 22, console 2, demo 9, workspace 115); the phone goldens follow. design3 and the port were played on a phone, an iPad in portrait and 1024 × 768, light and dark, with no page errors. The browser suites were not run (SC-55).
   - **Hosting:** design3's `dist/` is rebuilt. The hosted pages stay on their pinned commits.
-- **SC-197** (In Review, branch `SC-197-admin-console-detail`): Admin and console E2E on one laptop, on production, recorded as raw footage for the final walkthrough, asked for by the maintainer.
+- **SC-197** (PR #179, merged): Admin and console E2E on one laptop, on production, recorded as raw footage for the final walkthrough, asked for by the maintainer.
   - **The ask:**
     - "Detail out the major flows as to how dashboards can be monitored", with WhatsApp-style notes, without the time and ticks;
     - the notes positioned "next to the highlighted area, no overlap and should pointing to it like whatsapp chats have a small tail";
@@ -2546,4 +2546,19 @@
     - "Kaveri Foods's" in the console's words;
     - the approver list offers only people who have signed in.
   - **Checks:** lint, Prettier and the workspace type check pass on the suite; local trials passed before the run.
+- **SC-199** (In Review, branch `SC-199-admin-console-tour`): Admin and console tour, about a minute on one laptop, recorded on production, asked for by the maintainer ("a quick 1 minute tour of admin landing and console journey E2E tests. Highlighting main points and client agent configuration", with notes like a reference still "but in green background and the highlighting border should be green").
+  - **The suite** (`admin-console-tour.journey.ts`, `corepack pnpm test:journey:admin-tour`, its own Playwright project), in three chapters:
+    - the landing page's heading and the bar's Console;
+    - the sign-in's approval picked, Neha signing in, and the Overview's figures;
+    - one client's agents: the pipeline, the Watcher's gate changed and saved, the Negotiator on Act, the approval always on.
+
+    It sets up no client: it configures Kaveri Foods (`E2E_CLIENT`), which SC-197's run set up. The gate moves between 60 and 65, so every run saves a change.
+  - **The stage** (`stage.ts`), chosen per suite through `Cast`, the other suites unchanged:
+    - `ink: 'green'`: the rings, numbers, clicks and the screen's outline in green, as CSS variables;
+    - `notes: 'card'`: a green card beside what is read, the tag and the title on one line, the note under it, and a caret pointing at it;
+    - `pace`: holds about half as long;
+    - `quiet`: the sign-in's password note left out;
+    - `chapter()` takes how long its title card holds.
+  - **The run of 12 Oct on production** (`runs/2026-10-12-prod-admin-tour/REPORT.md`): passed, 64.6 s of recording, against `6e9aa43`. The recording and its 1080p copy stay local in `playwright-automation-videos/`.
+  - **Changed on production:** Kaveri Foods' Watcher gate (60 days) and Negotiator (Act), with their audit lines. An earlier, longer attempt left the gate at 65, the Lister's reserve at ₹12.50 and the Negotiator on Ask. This run put the gate and the Negotiator back; the reserve stays at ₹12.50.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

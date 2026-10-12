@@ -1,0 +1,49 @@
+{
+	"flow": "Admin and console tour",
+	"status": "passed",
+	"took": 66,
+	"steps": [
+		{
+			"n": 1,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "The landing page, then the bar’s Console",
+			"at": "2026-10-12T22:36:36.484Z",
+			"ms": 16931,
+			"shot": "steps/01-The-landing-page-then-the-bar-s-Console.png"
+		},
+		{
+			"n": 2,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Neha signed in",
+			"at": "2026-10-12T22:36:54.601Z",
+			"ms": 18117,
+			"shot": "steps/02-Neha-signed-in.png"
+		},
+		{
+			"n": 3,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "The Overview: every client at a glance",
+			"at": "2026-10-12T22:36:59.436Z",
+			"ms": 4835,
+			"shot": "steps/03-The-Overview-every-client-at-a-glance.png"
+		},
+		{
+			"n": 4,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Kaveri Foods' agents configured",
+			"at": "2026-10-12T22:37:24.020Z",
+			"ms": 24584,
+			"shot": "steps/04-Kaveri-Foods-agents-configured.png"
+		}
+	],
+	"figures": {
+		"Target": "production",
+		"Watcher": "Blinkit takes stock with at least 60 days",
+		"Negotiator": "Act"
+	},
+	"findings": []
+}

@@ -396,8 +396,7 @@ The same story in about a minute (SC-199), `admin-console-tour.journey.ts`, on o
 3. one client's agents configured:
    - the pipeline;
    - the Watcher's Blinkit gate;
-   - the Lister's reserve;
-   - the Negotiator's autonomy;
+   - the Negotiator trusted to act;
    - the approval, always on.
 
 **The notes** are green cards beside what is read, with the tag and the title on one line and a caret pointing at it.
@@ -406,7 +405,8 @@ The rings, numbers, clicks and the screen's outline are green too (the stage's `
 left out (`Cast.quiet`).
 
 **What it changes:** it sets up no client. It configures one an earlier Admin and console E2E run set up (`E2E_CLIENT`,
-`kaveri` by default). Each setting moves between two values, so every run saves a change and writes its audit line.
+`kaveri` by default). The Watcher's gate moves between two values, so every run saves a change and writes its audit
+line; the Negotiator ends on Act.
 
 ```sh
 corepack pnpm test:journey:admin-tour                       # on this machine's stack, with the landing page on :5173
