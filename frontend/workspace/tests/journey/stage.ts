@@ -258,8 +258,9 @@ export class Stage {
 				args: [...KEEP_DRAWING, '--window-position=0,0', '--window-size=1440,860']
 			});
 			monitor = await (await mb.newContext({ viewport: null })).newPage();
+			// the stage's own dark ground until its first frame arrives
 			await monitor.setContent(
-				'<!doctype html><title>Munchly Chips Sad Path E2E · the stage, live</title><style>html,body{margin:0;height:100%;background:#0c1311}img{width:100vw;height:100vh;object-fit:contain;display:block}</style><img id="m" alt="">'
+				`<!doctype html><title>Munchly Chips Sad Path E2E · the stage, live</title><style>html,body{margin:0;height:100%;background:#0c1311}img{width:100vw;height:100vh;object-fit:contain;display:block}</style><img id="m" src="${WAITING}" alt="The stage, as it is recorded">`
 			);
 		}
 		const s = new Stage(stageBrowser, paneBrowser, monitor, stage, info, about, video);
@@ -702,6 +703,9 @@ const px = (n: number) => `${Math.round(n)}px`;
 /** a screen before its first frame: blank white, as a device waking */
 const BLANK =
 	'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%221%22 height=%221%22%3E%3Crect width=%221%22 height=%221%22 fill=%22%23fff%22/%3E%3C/svg%3E';
+/** the monitor before the stage's first frame: the stage's dark ground, in its 16:9 */
+const WAITING =
+	'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%229%22%3E%3Crect width=%2216%22 height=%229%22 fill=%22%230c1311%22/%3E%3C/svg%3E';
 const scr = (id: PaneId) => ({
 	w: PANES[id].viewport.width * PANES[id].scale,
 	h: PANES[id].viewport.height * PANES[id].scale
