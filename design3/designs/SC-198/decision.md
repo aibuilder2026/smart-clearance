@@ -39,6 +39,15 @@ seen on the real sign-ins before the port.
 - Motion is unchanged: the ground never moves; the posts follow the walk, under its Pause and Play, and rest on the
   result under reduced motion.
 
+## The port
+
+`frontend/core`: `components/agents/mesh.ts` (`agGround`, the posts, the clear ground for the words) and
+`components/AgentStage.svelte` (nothing on a phone held upright). The tests: a new one for the phone held upright, the
+SC-196 one now on a phone held sideways (700 × 390), and the two phone sign-in goldens lose the agents' words.
+
 ## Stills
 
-`stills/`: the workspace and the console at 1440 in light and dark, 820 × 1180 and 390 × 844, with no page errors.
+- `stills/`: design3's workspace and console at 1440 in light and dark, 820 × 1180, and 390 × 844 in light and dark.
+- `stills/build/`: the port's stub builds (`ws-`, `cs-`) at the same sizes, plus a phone held sideways (700 × 390).
+
+No page errors in any of them.
