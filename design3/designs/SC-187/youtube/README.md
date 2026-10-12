@@ -12,8 +12,13 @@ pointed at it; the old one (youtu.be/EWFLqM3oHYU, cut 1's film from SC-158) can 
 4. Subtitles: upload `captions.srt` (English), the narration as closed captions.
 5. Settings as before: not made for kids; altered or synthetic content: yes (AI-generated people and scenes); embedding
    allowed; visibility Unlisted.
-6. Once it is live, give the 11-character video id (the part after `youtu.be/`); the landing page's default
-   (`frontend/admin/src/env.ts`, `PUBLIC_DEMO_FILM`), design3's `DEMO_FILM.youtube` and DEMO.md take it.
+6. Once it is live, the landing page's default (`frontend/admin/src/env.ts`, `PUBLIC_DEMO_FILM`), design3's
+   `DEMO_FILM.youtube` and DEMO.md take the id.
+
+Done on 12 Oct 2026 through Claude in Chrome: the page fetched the master from `serve.py` (a local CORS file server)
+and handed it to Studio's own uploader, since the browser tools have no file picker and their upload cap is 10 MB.
+The film is youtu.be/5Z9-32Fuwh4 (unlisted; checks passed, AI use disclosed, embedding allowed); cut 1's
+youtu.be/EWFLqM3oHYU is set to private.
 
 `transcript.json` is the same chapters and lines the landing page's theatre reads (`design3/site/assets/media/demo-film.json`),
 all three written by `src/transcript3.py` from the cut's own timeline.

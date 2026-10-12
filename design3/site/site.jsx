@@ -115,8 +115,8 @@
   // it was. It plays from YouTube, unlisted, on the no-cookie host: nothing of YouTube loads before Watch. Its poster is
   // the brand and its distributor at the quarter's dashboard, which names no client; the page names none (SC-28), and the
   // film, played on request, may. Without an id, Watch opens the guided demo.
-  // The film is on the maintainer's channel (@arundutta3411), unlisted; its id is set once uploaded (SC-187)
-  const DEMO_FILM = Object.assign({ youtube: "EWFLqM3oHYU", runtime: "6:06", label: "Watch the 6-minute demo", title: "The 6-minute demo", sub: "From the first flag to the ledger",
+  // The film is youtu.be/5Z9-32Fuwh4, unlisted, on the maintainer's channel (@arundutta3411); cut 1's youtu.be/EWFLqM3oHYU is private
+  const DEMO_FILM = Object.assign({ youtube: "5Z9-32Fuwh4", runtime: "6:06", label: "Watch the 6-minute demo", title: "The 6-minute demo", sub: "From the first flag to the ledger",
     poster: "film-poster.webp", thumb: "film-thumb.webp", words: "demo-film.json" }, window.SC3_FILM || {});
   const clock = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
   // the film's chapters and captions (design3/designs/SC-187/src/transcript3.py, from the film's own timeline), read once,

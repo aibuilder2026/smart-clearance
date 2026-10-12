@@ -109,7 +109,7 @@
     } }, /* @__PURE__ */ React.createElement("span", { className: "lr-main" }, /* @__PURE__ */ React.createElement("span", { className: "lr-title" }, t)), /* @__PURE__ */ React.createElement(Icon, { name: "chevron-right", size: 18, className: "chev" })))), /* @__PURE__ */ React.createElement("a", { className: "btn btn-primary btn-lg btn-block", ...linkProps(LINKS.app), onClick: () => setSheet(false) }, "Workspace"), /* @__PURE__ */ React.createElement("a", { className: "btn btn-secondary btn-lg btn-block", ...linkProps(LINKS.console), onClick: () => setSheet(false) }, "Console"))));
   }
   const DEMO_FILM = Object.assign({
-    youtube: "EWFLqM3oHYU",
+    youtube: "5Z9-32Fuwh4",
     runtime: "6:06",
     label: "Watch the 6-minute demo",
     title: "The 6-minute demo",

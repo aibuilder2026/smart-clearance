@@ -254,7 +254,8 @@ captions, the settings), and the landing page is repointed:
   end card "One platform. Ten agents. One yes.";
 - the poster and the pill's thumbnail are the brand and its distributor at the quarter's dashboard (the office scene's
   source clip, SC-154's, as it opens in the film at 5:40), which names no client;
-- the video id follows once the upload is done; until then the page still plays the old film under the new words.
+- the film is youtu.be/5Z9-32Fuwh4, uploaded through Claude in Chrome (the page fetched the master from a local CORS
+  server, `youtube/serve.py`, and handed it to Studio's uploader); cut 1's video is private. The id is the page's default.
 
 The unit test of the film's words follows (ten chapters, 52 lines, 6:06, no client in a title), as does the keyboard
 spec (unrun, SC-55). The frontend gate passes.
