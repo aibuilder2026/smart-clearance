@@ -244,9 +244,59 @@
   }
   // the field's inks, as rgb, by day and by night (the agents' green and the yes's amber validated on the sign-in's ground)
   const AG_INK = {
-    light: { ink: "13, 28, 21", lit: "22, 122, 82", amber: "211, 154, 18", hole: "#f2f6f3" },
-    dark: { ink: "214, 255, 232", lit: "60, 203, 138", amber: "247, 192, 74", hole: "#0b110e" },
+    light: { ink: "13, 28, 21", lit: "22, 122, 82", amber: "211, 154, 18", hole: "#f2f6f3", water: "rgba(112, 166, 199, 0.3)", block: 0.06, post: 0.085, dot: 0.11, window: 0 },
+    dark: { ink: "214, 255, 232", lit: "60, 203, 138", amber: "247, 192, 74", hole: "#0b110e", water: "rgba(64, 92, 196, 0.32)", block: 0.06, post: 0.09, dot: 0.09, window: 0.15 },
   };
+  // the ground under the field (SC-198, the map under the agents): the guided demo's plate, a dotted grid, the town's
+  // blocks in clusters, two roads and the river, seeded so every visit draws the same; drawn once a size and a theme
+  const AG_DOT = 18;
+  function agRiver(w, h, band) {
+    const y = band ? h * 0.9 : h * 0.86, pts = [];
+    for (let i = 0; i <= 48; i++) { const u = i / 48; pts.push({ x: -40 + u * (w + 80), y: y + Math.sin(u * Math.PI * 2.2 + 0.6) * h * (band ? 0.03 : 0.05) - u * h * 0.04 }); }
+    return pts;
+  }
+  function agGround(w, h, band, dark, stars, clear) {
+    const I = AG_INK[dark ? "dark" : "light"], dpr = Math.min(window.devicePixelRatio || 1, 2), c = document.createElement("canvas");
+    c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
+    const g = c.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.fillStyle = `rgba(${I.ink}, ${I.dot})`;
+    for (let x = AG_DOT / 2; x < w; x += AG_DOT) for (let y = AG_DOT / 2; y < h; y += AG_DOT) { g.beginPath(); g.arc(x, y, 1, 0, Math.PI * 2); g.fill(); }
+    const river = agRiver(w, h, band), rw = band ? 22 : Math.max(26, Math.min(44, h * 0.045));
+    const nearRiver = (x, y, pad) => river.some(p => Math.hypot(p.x - x, p.y - y) < rw / 2 + pad);
+    const nearPost = (x, y) => stars.some(s => Math.abs(s.x - x) < 52 && Math.abs(s.y - y) < 44);
+    // the stage's words keep a clear ground: no block under the head or the foot
+    const underWords = (x, y) => clear.some(r => x + bw / 2 > r.x0 && x - bw / 2 < r.x1 && y + bh / 2 > r.y0 && y - bh / 2 < r.y1);
+    // the roads, under everything else: one across the town, one down between the stage and the card
+    g.lineCap = "round"; g.strokeStyle = `rgba(${I.ink}, ${I.block * 1.3})`; g.lineWidth = band ? 6 : 8;
+    g.beginPath(); g.moveTo(-10, h * 0.4); g.bezierCurveTo(w * 0.35, h * 0.37, w * 0.65, h * 0.44, w + 10, h * 0.39);
+    g.moveTo(w * 0.6, -10); g.bezierCurveTo(w * 0.58, h * 0.3, w * 0.63, h * 0.6, w * 0.6, h + 10); g.stroke();
+    // the blocks: clusters of two or three a row, on the grid, kept off the river and the agents' posts
+    const rnd = agSeeded(198), bw = AG_DOT * 2 - 4, bh = AG_DOT * 1.5, n = Math.max(6, Math.round(w * h / (band ? 20000 : 34000)));
+    for (let i = 0; i < n; i++) {
+      const cx0 = Math.floor(rnd() * w / AG_DOT) * AG_DOT + 4, cy0 = Math.floor(rnd() * h / AG_DOT) * AG_DOT + 4, cols = 2 + Math.floor(rnd() * 2), rows = 1 + Math.floor(rnd() * 2);
+      for (let a = 0; a < cols; a++) for (let b = 0; b < rows; b++) {
+        if (rnd() < 0.2) continue;
+        const x = cx0 + a * (bw + 6), y = cy0 + b * (bh + 6);
+        if (nearRiver(x + bw / 2, y + bh / 2, 14) || nearPost(x + bw / 2, y + bh / 2) || underWords(x + bw / 2, y + bh / 2)) continue;
+        g.beginPath(); g.roundRect(x, y, bw, bh, 6);
+        // by night some blocks are lit windows
+        g.fillStyle = I.window && rnd() < 0.3 ? `rgba(${I.amber}, ${I.window})` : `rgba(${I.ink}, ${I.block})`; g.fill();
+      }
+    }
+    g.strokeStyle = I.water; g.lineWidth = rw; g.lineJoin = "round";
+    g.beginPath(); river.forEach((p, i) => (i ? g.lineTo(p.x, p.y) : g.moveTo(p.x, p.y))); g.stroke();
+    return c;
+  }
+  // each agent's post: a block under its node, lit while it works, tinted once it has
+  function agPosts(ctx, f, I) {
+    const pw = f.band ? 34 : 46, ph = f.band ? 26 : 34;
+    f.stars.forEach(n => {
+      const st = f.state(n.c), col = n.c.human ? I.amber : I.lit;
+      ctx.beginPath(); ctx.roundRect(n.x - pw / 2, n.y - ph / 2, pw, ph, 7);
+      ctx.fillStyle = st === "now" ? `rgba(${col}, ${f.dark ? 0.3 : 0.24})` : st === "done" ? `rgba(${col}, ${f.dark ? 0.14 : 0.1})` : `rgba(${I.ink}, ${I.post})`; ctx.fill();
+      if (st !== "later") { ctx.lineWidth = 1; ctx.strokeStyle = `rgba(${col}, ${st === "now" ? 0.6 : 0.3})`; ctx.stroke(); }
+    });
+  }
   const agSeeded = seed => () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
   // the ambient field, seeded so every visit draws the same
   function agField(w, h, band) {
@@ -274,6 +324,12 @@
   function agDraw(ctx, f, now) {
     const I = AG_INK[f.dark ? "dark" : "light"], band = f.band, stars = f.stars, all = f.nodes.concat(stars), link = band ? 70 : 120;
     ctx.clearRect(0, 0, f.w, f.h);
+    const clear = band || !f.off.y ? [] : [{ x0: -1, y0: -1, x1: f.off.x + 620, y1: f.off.y - 6 }, { x0: -1, y0: f.h - 76, x1: f.off.x + 600, y1: f.h + 1 }];
+    const gk = `${f.w}x${f.h}|${f.dark}|${band}|${Math.round(f.off.x)},${Math.round(f.off.y)}|${stars.map(s => `${Math.round(s.x)},${Math.round(s.y)}`).join(";")}`;
+    if (f.w < 1 || f.h < 1) return;
+    if (f.groundKey !== gk) { f.ground = agGround(f.w, f.h, band, f.dark, stars, clear); f.groundKey = gk; }
+    ctx.drawImage(f.ground, 0, 0, f.w, f.h);
+    if (stars.length) agPosts(ctx, f, I);
     ctx.lineWidth = 1;
     for (let a = 0; a < all.length; a++) for (let b = a + 1; b < all.length; b++) {
       const d = Math.hypot(all[a].x - all[b].x, all[a].y - all[b].y); if (d >= link) continue;
