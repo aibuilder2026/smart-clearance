@@ -335,6 +335,8 @@ E2E_TARGET=prod corepack pnpm test:journey:admin                   # on producti
 E2E_COMPANY="Nilgiri Foods" E2E_FROM=agents corepack pnpm test:journey:admin   # part of it, on a client already set up
 ```
 
+Its run of 12 Oct on production is in `runs/2026-10-12-prod-admin/`: it set up Aravalli Snacks.
+
 ## Before a run
 
 - backend-api on :8000 (`backend-api/scripts/dev.sh`), on a world with Munchly's live workspace (`hydrate.sh --reset`,

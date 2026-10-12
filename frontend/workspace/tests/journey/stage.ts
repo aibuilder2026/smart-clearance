@@ -1032,7 +1032,7 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 .ring.dim{box-shadow:0 0 0 3px rgba(245,197,66,.2),0 0 22px rgba(245,197,66,.32),0 0 0 2400px rgba(7,12,10,.46)}
 .ring.on{opacity:1;transform:none}
 #callouts{position:absolute;inset:0;pointer-events:none;z-index:20}
-.wa{position:absolute;background:rgba(247,248,247,.97);border-radius:20px;padding:10px 12px 12px;color:#111b21;box-shadow:0 18px 46px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.18);opacity:0;transition:opacity .26s ease,transform .52s cubic-bezier(.2,1.25,.35,1)}
+.wa{position:absolute;background:rgba(247,248,247,.97);border-radius:20px;padding:10px 12px 12px;color:#111b21;box-shadow:0 18px 46px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.18);opacity:0;transition:opacity .26s ease,transform .52s cubic-bezier(.22,1,.36,1)}
 .wa.down{transform:translateY(-26px) scale(.97)}
 .wa.up{transform:translateY(26px) scale(.97)}
 .wa.on{opacity:1;transform:none}
