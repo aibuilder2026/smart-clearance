@@ -5,7 +5,7 @@
   const { useState, useEffect, useContext, Fragment } = React;
   const { motion, useReducedMotion } = Motion;
   const K = window.SC3, D = window.SC3_DATA, M = window.SC3_MONEY, Store = window.SC3_STORE, Flow = window.SC3_FLOW, S = window.SC3_SCREENS; const fmt = M.fmt;
-  const { cx, Icon, Avatar, Badge, Button, Sheet, Field, Input, OTP, Money, Mark, Wordmark, WorkspaceMark, PoweredBy, Product, Tracker, List, ListRow, useApp } = K;
+  const { cx, Icon, Avatar, Badge, Button, Sheet, Field, Input, OTP, Money, Mark, Wordmark, WorkspaceMark, PoweredBy, Product, Tracker, List, ListRow, AgentStage, useApp } = K;
   const WS = D.WORKSPACE, WS_OF = D.WORKSPACE.name + "' workspace";
   const TEST_CODE = D.EXPLORE.code;
   const userById = id => Store.get().users.find(u => u.id === id);
@@ -26,23 +26,15 @@
     </div>)}</div>;
   }
 
-  /* ---------- the stage beside the form on desktop (SC-195, option A, In focus) ---------- */
-  // One photograph is the sign-in's ground (.si-photo): Munchly's packs crisp on a kirana counter in its left third, the
-  // shop and the lane soft behind them, under the frosted card. The stage keeps the product's mark and its line in
-  // glass, and names what is in focus. It settles once and holds (WCAG 2.2.2), at once under reduced motion
-  // absolute, since a url() in a custom property resolves against the stylesheet that uses it, not the page
-  const PLATE = () => `url("${new URL((window.SC3_IMG || "system/img/") + "signin-plate.webp", document.baseURI).href}")`;
-  const FOCUS = `${D.WORKSPACE.short}'s packs, on a kirana counter`;
+  /* ---------- the stage beside the form (SC-195, round 2, option A, The agent mesh) ---------- */
+  // Smart-Clearance's own: the platform's ten agents and the one person at work behind the whole sign-in (the kit's
+  // AgentStage), under the product's mark and its line; on a phone or a tablet, a band over the card
   function HeroStage() {
-    const reduce = useReducedMotion();
-    const rise = d => (reduce ? { initial: false } : { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.42, delay: d, ease: [0.22, 1, 0.36, 1] } });
-    return <div className="si-stage si-focus">
-      <motion.div className="si-brand" {...rise(0.25)}>
-        <div className="si-product"><Mark size={34} /><Wordmark size={20} /></div>
-        <p className="si-tagline">Every near-expiry carton gets a second chance, chosen by AI. <span className="hi" lang="hi">हर कार्टन को दूसरा मौका</span></p>
-      </motion.div>
-      <motion.span className="si-caption" {...rise(0.55)}><span className="dot" aria-hidden="true" />{FOCUS}</motion.span>
-    </div>;
+    return <AgentStage>
+      <div className="si-product"><Mark size={34} /><Wordmark size={20} /></div>
+      <p className="ag-title">Ten agents. <span>One yes.</span></p>
+      <p className="si-tagline">Every near-expiry carton gets a second chance, chosen by AI. <span className="hi" lang="hi">हर कार्टन को दूसरा मौका</span></p>
+    </AgentStage>;
   }
 
   /* ---------- find your workspace: one Smart-Clearance step above every client ---------- */
@@ -107,9 +99,9 @@
     const join = () => { Flow.act("join", who.id); finish(who.id); };
     const TRY = D.story().explore.accounts; // the journey's own people (SC-168)
     const isPhone = who && !!who.phone && sheet !== "google";
-    return <div className={cx("signin si-photo", guided && "guided")} style={{ "--si-plate": PLATE() }}>
+    return <div className={cx("signin", guided && "guided")}>
       <div className="ground" aria-hidden="true" />
-      {app.bp === "desktop" && <HeroStage />}
+      <HeroStage />
       <div className="si-panel">
         <div className="si-card">
           <div className="si-ws"><WorkspaceMark ws={WS} size={app.bp === "phone" ? 52 : 60} /><div className="si-ws-name">{WS.name}</div><Url /></div>
@@ -182,5 +174,5 @@
     </Sheet>;
   }
 
-  Object.assign(window.SC3_SCREENS, { SignIn, HeroStage, signInPlate: PLATE, FindWorkspace, WorkspaceSheet, PeopleList, DEMO_PEOPLE, DEMO, TEST_CODE });
+  Object.assign(window.SC3_SCREENS, { SignIn, HeroStage, FindWorkspace, WorkspaceSheet, PeopleList, DEMO_PEOPLE, DEMO, TEST_CODE });
 })();

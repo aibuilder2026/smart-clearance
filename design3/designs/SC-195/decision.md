@@ -91,3 +91,52 @@ adapted ThreeUI effects), each with stills in light and dark at 1440 and 390 and
 - **C, The route**: the mark's S as the route through the nine stops; the exits fork at Execute; the pin lands.
 
 The walk: 420 ms a stop, 800 on the yes, 900 on the exits, 4.64 s, then still; Replay; at rest under reduced motion.
+
+### The pick (round 2)
+
+12 Oct 2026, through the board's question: **A, The agent mesh**, "and it should loop constantly and it should be live an
+interactive on touch and mouse click"; and the console's own sign-in takes the same stage ("Console too").
+
+- **Looping:** the walk plays, holds on its result, and plays again, with the field drifting all the while. WCAG 2.2.2
+  asks for a way to pause anything that moves for longer than five seconds, so the stage has Pause and Play,
+  remembered in the browser; under reduced motion it is drawn at rest. AGENTS.md's loop rule gains it beside the
+  landing page's hero film.
+- **Live and interactive:** the field gives way to the pointer and lights the links near it; a tap or click on the
+  field sends a ripple through it; each agent is a button that, pressed (or tapped, or Enter), holds the walk at its stop
+  and says what it does, until it is let go.
+
+### The build (round 2, 12 Oct 2026)
+
+One stage for both sign-ins, in the kit: `AgentStage` in `system/product.jsx` (styles in `components.css`, the
+sign-in's placement in `screens.css`), then core's `AgentStage.svelte` with `agents/mesh.ts`, `AgentField.svelte` and
+`AgentCaption.svelte`. The MIT notice for the adapted constellation field is beside each copy
+(`system/THIRD_PARTY_NOTICES.md`, `frontend/core/src/lib/components/agents/THIRD_PARTY_NOTICES.md`).
+
+- **The loop:** 600 ms before the batch sets off, the nine stops in 4.64 s, 2.8 s on the result, then round again, the
+  last handoffs fading over 500 ms as it starts. The field drifts only while the walk moves.
+- **Pause and Play** under the stage (an icon in the band), remembered in the browser (`sc3-agents`); Pause keeps focus
+  as it turns to Play. Under reduced motion every agent is drawn lit and nothing drifts; there is no Pause, since nothing
+  moves, and an agent can still be picked.
+- **The pointer:** the nodes near it give way a little, and it joins the field as a node of its own, its links drawn in
+  the agents' green. A click or a tap on the field sends a ripple through it and lets go of an agent. Touch keeps the
+  page scrolling (`touch-action: pan-y`).
+- **An agent picked** (its chip, its node, or by keyboard) holds the walk at its stop: it is at work, those before it
+  have worked, the rest wait; the caption names it, says what it did and the call it made, and a status line says it to
+  a screen reader. Picked again, Play, Escape or a click in the field lets the walk go on.
+- **Keyboard:** the agents are one stop in a tab (a toolbar), the arrows, Home and End move between them.
+- **Desktops:** the field covers the whole sign-in under the card's glass, and the panel lets the pointer through round
+  the card. The stage and the field keep to the sign-in's visible height, pinned while a long card scrolls by (the
+  workspace's people list makes it scroll). The chips near the orbit's foot turn sideways so Paperwork and the
+  Negotiator never meet.
+- **Phones and tablets:** the band over the card; the agent at work is its tile on its node, the caption naming it, so
+  the three exits never crowd.
+- **The console:** its sign-in keeps "Console" and its line over the same stage; the scene plate beside the card is
+  retired, and so is the plate the console's hosts passed in (`plate` on `ConsoleApp`).
+- **Retired:** round 1's photograph (`system/img/signin-plate.webp`) and its `.si-photo` ground; the sign-in's ground
+  is the app's own again, with its aurora.
+- **Found on the way:** inside the guided demo's scaled devices the canvas measured the orbit in screen pixels, so the
+  threads and the chips drifted apart; it now measures in its own (the device's scale divided out), for the pointer too.
+
+Stills in `build/` (`r2-signin-live-*`, `r2-console-*`, `r2-signin-held-*`, `r2-signin-pointer-1440-light`) and the
+motion recorded in `build/r2-motion.mp4` (20 s: the walk round twice, the pointer, a ripple, the Valuer and the Lister
+held, Play).

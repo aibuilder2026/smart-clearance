@@ -1,6 +1,16 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Field, FindWorkspace, Icon, Input, Mark, prefersReducedMotion, useApp, Wordmark } from '../../index';
+	import {
+		AgentStage,
+		Field,
+		FindWorkspace,
+		Icon,
+		Input,
+		Mark,
+		prefersReducedMotion,
+		useApp,
+		Wordmark
+	} from '../../index';
 	import { ApiError, SIGN_IN_FAILED, type SignInInput, type Staff } from '@smart-clearance/api/console';
 	import { useConsole } from '../console.svelte';
 	import SignInButton, { type Phase } from './SignInButton.svelte';
@@ -14,9 +24,6 @@
 	let { check, enter }: Props = $props();
 	const app = useApp();
 	const k = useConsole();
-	// the plate beside the card on desktops (design3/site/assets/plates/scene.webp), which the host gives so its build
-	// hashes it
-	const plate = k.plate;
 	let email = $state('');
 	let password = $state('');
 	let show = $state(false);
@@ -64,22 +71,12 @@
 
 <div class="signin cs-signin">
 	<div class="ground" aria-hidden="true"></div>
-	{#if app.bp === 'desktop'}<div class="cs-si-stage">
-			<div class="si-product"><Mark size={36} /><Wordmark size={21} /></div>
-			<div class="stack tight" style="gap: 10px">
-				<h2 class="cs-si-title">Console</h2>
-				<p class="cs-si-lede">Set up and run every client's workspace: its agents, its supply chain, its people.</p>
-			</div>
-			{#if plate}<img
-					class="cs-si-plate"
-					src={plate}
-					alt=""
-					width="1376"
-					height="752"
-					fetchpriority="low"
-					decoding="async"
-				/>{/if}
-		</div>{/if}
+	<!-- the agents at work behind the sign-in (SC-195, round 2, option A; the kit's AgentStage), under the console's name -->
+	<AgentStage>
+		<div class="si-product"><Mark size={36} /><Wordmark size={21} /></div>
+		<h2 class="cs-si-title">Console</h2>
+		<p class="cs-si-lede">Set up and run every client's workspace: its agents, its supply chain, its people.</p>
+	</AgentStage>
 	<div class="si-panel">
 		<div class="si-card">
 			<div class="si-ws">

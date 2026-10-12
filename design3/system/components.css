@@ -545,3 +545,59 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
 .inkstrokes { display: block; flex: none; max-width: 100%; overflow: visible; color: #1f2a86; }
 .inkstrokes g { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
 .ink-typed { display: inline-block; font: italic 500 calc(var(--h, 40px) * 0.6)/1.1 Georgia, "Times New Roman", serif; color: #1f2a86; white-space: nowrap; }
+
+/* the agents at work, the sign-ins' stage (SC-195, round 2, option A, The agent mesh): a field of nodes behind the
+   whole sign-in, eleven of them the platform's agents and the one person on an orbit in the stage, the caption in its
+   middle on glass; on a phone or a tablet, a band over the card. The canvas takes the pointer; the page still scrolls */
+.ag-field { position: absolute; inset: 0; touch-action: pan-y; -webkit-tap-highlight-color: transparent; }
+.ag-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.ag-stage { display: grid; grid-template-rows: auto minmax(320px, 1fr) auto; gap: 16px; padding: 48px 40px 32px clamp(40px, 6cqi, 96px); pointer-events: none; }
+.ag-stage :is(button, a) { pointer-events: auto; }
+.ag-head { display: grid; gap: 10px; max-width: 520px; }
+.ag-head .si-tagline { margin: 0; }
+.ag-title { margin: 6px 0 0; font: 700 clamp(34px, 3.3cqi, 46px)/1.04 var(--font-display); letter-spacing: -0.03em; font-variation-settings: "opsz" 72; color: var(--fg); text-wrap: balance; }
+.ag-title span, .ag-bandhead b span { color: var(--amber-text); }
+[data-theme="dark"] .ag-title span, [data-theme="dark"] .ag-bandhead b span { color: var(--amber); }
+.ag-orbit { position: relative; display: grid; place-items: center; min-height: 0; }
+.ag-crew { position: absolute; inset: 0; pointer-events: none; }
+/* an agent: its tile and name, on glass; the name never fades (the secondary ink until it has worked) */
+.ag-chip { position: absolute; display: inline-flex; align-items: center; gap: 7px; min-height: 32px; padding: 4px 11px 4px 4px; border: 0; border-radius: 99px; font: 650 13px/1 var(--font-ui); white-space: nowrap; color: var(--fg); background: color-mix(in oklab, var(--surface) 88%, transparent); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line-2); transition: scale 240ms var(--ease), background-color 240ms var(--ease), box-shadow 240ms var(--ease); }
+button.ag-chip { cursor: pointer; pointer-events: auto; }
+button.ag-chip:hover { box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line-2); }
+button.ag-chip:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+button.ag-chip[aria-pressed="true"] { box-shadow: var(--shadow-2), 0 0 0 2px var(--primary); }
+button.ag-chip.human[aria-pressed="true"] { box-shadow: var(--shadow-2), 0 0 0 2px var(--amber); }
+.ag-chip i { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: var(--primary-text); background: var(--primary-soft); transition: background-color 240ms var(--ease), color 240ms var(--ease); }
+.ag-chip.later { color: var(--fg-2); }
+.ag-chip.later i { color: var(--fg-3); background: var(--fill-2); }
+.ag-chip.now { scale: 1.06; }
+.ag-chip.now i { color: var(--primary-fg); background: var(--primary); }
+.ag-chip.human i { color: var(--amber-text); background: var(--amber-soft); }
+.ag-chip.human.now i, .ag-chip.human.done i { color: var(--amber-fg); background: var(--amber); }
+/* in the band, the agent at work is its tile, on its node */
+.ag-tile { position: absolute; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; translate: -50% -50%; color: var(--primary-fg); background: var(--primary); box-shadow: 0 0 0 2px var(--surface), var(--shadow-1); }
+.ag-tile.human { color: var(--amber-fg); background: var(--amber); }
+/* what the batch is doing, or the agent picked; in the orbit's middle on glass, so the threads never cut its words */
+.ag-caption { display: grid; gap: 3px; align-content: start; max-width: 46ch; }
+.ag-caption .n { font-size: 12.5px; font-weight: 650; letter-spacing: 0.02em; color: var(--fg-2); font-variant-numeric: tabular-nums; }
+.ag-caption b { font-size: 17px; font-weight: 650; letter-spacing: -0.01em; color: var(--fg); }
+.ag-caption .did { font-size: 14px; line-height: 1.45; color: var(--fg-2); }
+.ag-caption code { justify-self: inherit; margin-top: 3px; font: 500 12px/1.4 var(--font-mono); color: var(--primary-text); }
+.ag-caption.human .n, .ag-caption.human code { color: var(--amber-text); }
+[data-theme="dark"] .ag-caption.human .n, [data-theme="dark"] .ag-caption.human code { color: var(--amber); }
+.ag-caption.centre { position: relative; width: 290px; justify-items: center; text-align: center; padding: 12px 16px; border-radius: 18px; background: color-mix(in oklab, var(--surface) 80%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.ag-foot { display: flex; align-items: center; gap: 12px; }
+.ag-play { color: var(--fg-2); }
+.ag-foot .ag-play { margin-left: -10px; }
+.ag-hint { font-size: 13px; color: var(--fg-2); }
+/* phones and tablets: the stage is a band over the card */
+.ag-band { grid-row: 1; position: relative; z-index: 1; display: grid; gap: 8px; margin: calc(var(--safe-top) + 10px) 12px 0; padding: 10px 14px 12px; border-radius: 24px; background: color-mix(in oklab, var(--surface) 62%, transparent); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 0 0 var(--hair) var(--line-2); }
+.ag-bandhead { display: flex; align-items: center; gap: 8px; min-height: 32px; font-size: 14px; }
+.ag-bandhead b { font-weight: 700; letter-spacing: -0.01em; }
+.ag-bandhead .ag-play { margin: 0 -6px 0 auto; }
+.ag-orbit.band { display: block; height: 168px; }
+.ag-caption.band { min-height: 58px; }
+.ag-caption.band b { font-size: 14.5px; }
+.ag-caption.band .did { font-size: 12.5px; }
+@container app (min-width: 768px) { .ag-orbit.band { height: 220px; } .ag-band { max-width: 760px; width: calc(100% - 24px); justify-self: center; } }
+@media (prefers-reduced-motion: reduce) { .ag-chip, .ag-chip i { transition: none; } }

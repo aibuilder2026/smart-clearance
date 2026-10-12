@@ -34,6 +34,36 @@ test('keyboard · the sign-in: email, password, show, Sign in, and Enter signs i
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Overview');
 });
 
+test('keyboard · the agents behind the sign-in: one stop in a tab, an agent held, Escape, Pause (SC-195)', async ({
+	page
+}) => {
+	await openConsole(page, '/', { signedIn: false });
+	const crew = page.getByRole('toolbar', { name: 'The agents, in the order they work' });
+	const data = crew.getByRole('button', { name: /^Data/ });
+	const vision = crew.getByRole('button', { name: /^Vision/ });
+	await data.focus();
+	await page.keyboard.press('ArrowRight');
+	await page.keyboard.press('ArrowRight');
+	await expect(vision, 'the arrows move along the agents, one stop in a tab').toBeFocused();
+	await expect(data).toHaveAttribute('tabindex', '-1');
+	await page.keyboard.press('Enter');
+	await expect(vision).toHaveAttribute('aria-pressed', 'true');
+	await expect(page.getByRole('status').filter({ hasText: 'Vision, Verify' }), 'the agent picked is said').toHaveCount(
+		1
+	);
+	await expect(page.getByRole('button', { name: 'Play the agents' }), 'the walk holds on it').toBeVisible();
+	await page.keyboard.press('Escape');
+	await expect(vision).toHaveAttribute('aria-pressed', 'false');
+	const pause = page.getByRole('button', { name: 'Pause the agents' });
+	await pause.focus();
+	await page.keyboard.press('Enter');
+	await expect(
+		page.getByRole('button', { name: 'Play the agents' }),
+		'Pause keeps focus as it turns to Play'
+	).toBeFocused();
+	expect(await page.evaluate(() => localStorage.getItem('sc3-agents')), 'remembered in the browser').toBe('paused');
+});
+
 test('keyboard · Find a workspace takes focus, keeps Tab inside, and gives focus back on Escape', async ({ page }) => {
 	await openConsole(page, '/', { signedIn: false });
 	const opener = page.getByRole('button', { name: 'Find a workspace' });

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import '../app.css';
 	import '@smart-clearance/core/console/console.css';
-	import plate from '$design3/site/assets/plates/scene.webp';
 	import { AppRoot, ICON_SVG, ThemeProvider } from '@smart-clearance/core';
 	import { ConsoleApp, routeOf, routePath, type ConsoleRoute, type GoOptions } from '@smart-clearance/core/console';
 	import { goto } from '$app/navigation';
@@ -32,7 +31,7 @@
 <!-- the prototype's Root: the theme, and a fixed app root the screens scroll inside; the console brings its own toasts -->
 <ThemeProvider>
 	<AppRoot class="app-root" style="position: fixed; inset: 0">
-		<ConsoleApp {data} {route} ongo={go} preloaded {pending} {error} links={LINKS} {plate} mock={usingMock} />
+		<ConsoleApp {data} {route} ongo={go} preloaded {pending} {error} links={LINKS} mock={usingMock} />
 	</AppRoot>
 </ThemeProvider>
 <!-- the route's page draws nothing (the console draws every place); its error page neither: ConsoleApp says Not found -->

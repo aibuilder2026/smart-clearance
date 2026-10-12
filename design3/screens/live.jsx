@@ -306,9 +306,9 @@
         <SignInButton phase={phase} name={first} />
         <p className="t-footnote muted si-hint">First time here? Whoever invited you gives you your first password. Nothing is sent by email.</p>
       </form>;
-    return <div className="signin si-photo" style={{ "--si-plate": S.signInPlate() }}>
+    return <div className="signin">
       <div className="ground" aria-hidden="true" />
-      {app.bp === "desktop" && <S.HeroStage />}
+      <S.HeroStage />
       <div className="si-panel">
         <div className="si-card">
           <div className="si-ws"><WorkspaceMark ws={WS} size={app.bp === "phone" ? 52 : 60} /><div className="si-ws-name">{WS.name}</div><span className="si-url"><Icon name="lock" size={12} stroke={2.2} />{WS.domain}</span></div>

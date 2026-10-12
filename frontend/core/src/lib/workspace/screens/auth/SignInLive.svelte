@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { imgUrl } from '../../../assets';
 	import { useApp } from '../../../app.svelte';
 	import Avatar from '../../../components/Avatar.svelte';
 	import Button from '../../../components/Button.svelte';
@@ -84,13 +83,11 @@
 		email = '';
 		password = '';
 	};
-	// the sign-in's ground (SC-195, option A, In focus): the photograph of the client's packs, its shop soft behind them
-	const plate = `url("${imgUrl('signin-plate.webp')}")`;
 </script>
 
-<div class="signin si-photo" style:--si-plate={plate}>
+<div class="signin">
 	<div class="ground" aria-hidden="true"></div>
-	{#if app.bp === 'desktop'}<HeroStage />{/if}
+	<HeroStage />
 	<div class="si-panel">
 		<div class="si-card">
 			<div class="si-ws">

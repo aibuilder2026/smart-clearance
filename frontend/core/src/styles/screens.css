@@ -361,38 +361,16 @@
 .si-acct { grid-template-columns: 40px minmax(0, 1fr) auto; width: 100%; text-align: left; border-radius: 16px; box-shadow: 0 0 0 var(--hair) var(--line-2); }
 .signin.guided .si-card { gap: 20px; }
 
-/* the workspace's front door (SC-195, option A, In focus): one photograph is the ground, Munchly's packs crisp on a
-   kirana counter in its left third, the shop and the lane soft behind them; the card's own glass blurs it further where
-   they meet. The sign-in sets --si-plate. It settles once (1.04 to 1 in 1.6 s) and holds, at once under reduced motion;
-   night dims it. On a phone or a tablet it is a band at the top, fading into the ground, and the card rises over its foot */
-.si-photo > .ground { background: #2a2219 var(--si-plate) 0% 50% / cover no-repeat; animation: si-settle 1.6s var(--ease) both; transform-origin: 20% 60%; }
-.si-photo > .ground::before { display: none; }
-@keyframes si-settle { from { transform: scale(1.04); } }
-[data-theme="dark"] .si-photo > .ground { filter: brightness(0.56) saturate(0.92); }
-@media (prefers-reduced-motion: reduce) { .si-photo > .ground { animation: none; } }
-/* tablets: a taller band, the packs in view above the card */
-@container app (min-width: 768px) and (max-width: 1099px) {
-  .si-photo > .ground { background: var(--bg) var(--si-plate) 4% 0 / auto 520px no-repeat; transform-origin: 20% 0; }
-  .si-photo > .ground::after { content: ""; position: absolute; left: 0; right: 0; top: 390px; height: 132px; background: linear-gradient(to bottom, transparent, var(--bg)); opacity: 1; mix-blend-mode: normal; }
-  [data-theme="dark"] .si-photo > .ground { filter: none; }
-  [data-theme="dark"] .si-photo > .ground::after { background: linear-gradient(to bottom, rgb(0 0 0 / 0.25), var(--bg)); }
-  .si-photo .si-panel { padding-top: 372px; }
-}
-@container app (max-width: 767px) {
-  .si-photo > .ground { background: var(--bg) var(--si-plate) 7% 0 / auto 330px no-repeat; transform-origin: 20% 0; }
-  .si-photo > .ground::after { content: ""; position: absolute; left: 0; right: 0; top: 220px; height: 112px; background: linear-gradient(to bottom, transparent, var(--bg)); opacity: 1; mix-blend-mode: normal; }
-  [data-theme="dark"] .si-photo > .ground { filter: none; }
-  [data-theme="dark"] .si-photo > .ground::after { background: linear-gradient(to bottom, rgb(0 0 0 / 0.25), var(--bg)); }
-  .si-photo .si-panel { padding-top: 214px; }
-  .si-photo .si-card { padding: 22px 18px 18px; border-radius: 28px; background: var(--surface); box-shadow: var(--shadow-3); }
-}
-/* the stage beside the form on desktop: the product's mark and its line in glass at the top, and what is in focus */
-.si-stage { display: grid; align-content: start; gap: 14px; padding: 48px 40px 48px clamp(40px, 6cqi, 96px); min-height: 100%; }
+/* the agents at work behind the sign-in (SC-195, round 2, option A, The agent mesh; the kit's AgentStage): on a
+   desktop the field lies over the ground and under everything else, and the panel lets the pointer through to it round
+   the card; the field and the stage keep to the sign-in's visible height (the kit sets it), pinned while a long card
+   scrolls by. On a phone or a tablet the stage is a band over the card */
+.signin > .ag-field { position: sticky; inset: 0 auto auto; z-index: 0; grid-area: 1 / 1 / 2 / -1; align-self: start; }
+.signin > .ag-stage { position: sticky; top: 0; grid-area: 1 / 1; align-self: start; }
+.signin:has(> .ag-field) > .si-panel { grid-area: 1 / 2; pointer-events: none; }
+.signin:has(> .ag-field) .si-card { pointer-events: auto; }
+.signin > .ag-band ~ .si-panel { grid-row: 2; padding-top: 6px; }
 .si-product { display: flex; align-items: center; gap: 10px; }
-.si-brand { display: grid; gap: 10px; justify-self: start; max-width: 460px; padding: 18px 22px 20px; border-radius: 24px; background: color-mix(in oklab, var(--surface) 80%, transparent); -webkit-backdrop-filter: blur(20px) saturate(140%); backdrop-filter: blur(20px) saturate(140%); box-shadow: var(--shadow-2), 0 0 0 var(--hair) var(--line-2); }
-.si-brand .si-tagline { margin: 0; }
-.si-caption { display: inline-flex; align-items: center; gap: 8px; justify-self: start; padding: 7px 14px; border-radius: 99px; font-size: 13px; color: var(--fg-2); background: color-mix(in oklab, var(--surface) 82%, transparent); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: var(--shadow-1); }
-.si-caption .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); }
 
 /* people to explore as */
 .si-people { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }

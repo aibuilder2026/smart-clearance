@@ -81,6 +81,7 @@ export { default as SectionTitle } from './patterns/SectionTitle.svelte';
 // the workspace app's (SC-62): feedback, the live-tracking world's maps, charts and feed, and the product patterns
 export { default as Skeleton } from './components/Skeleton.svelte';
 export { default as SignPad } from './components/SignPad.svelte';
+export { default as AgentStage } from './components/AgentStage.svelte';
 export { default as InkStrokes } from './components/InkStrokes.svelte';
 export { default as Tile } from './components/Tile.svelte';
 export { default as Countdown } from './components/Countdown.svelte';

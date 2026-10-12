@@ -2,8 +2,8 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { openWorkspace } from './workspace';
 
 // Behaviour axe-core cannot see, in the workspace app: the sign-in by keyboard, the one-time code taking focus, sheets
-// taking, keeping and returning focus, and the users' row menu as a WAI-ARIA menu button. The sign-in's stage holds
-// still once it has settled (SC-195), so it has no Pause; the motion spec checks nothing loops. One desktop run is enough.
+// taking, keeping and returning focus, and the users' row menu as a WAI-ARIA menu button. The agents at work behind the
+// sign-in (SC-195) loop under their Pause, and an agent can be picked by keyboard. One desktop run is enough.
 // eslint-disable-next-line no-empty-pattern -- Playwright needs the fixtures argument destructured
 test.beforeEach(async ({}, testInfo) => {
 	test.skip(testInfo.project.name !== 'desktop-light', 'keyboard checks run once, on desktop-light');
@@ -50,6 +50,36 @@ test('keyboard · the sign-in: the email, Enter, the Google account, Enter', asy
 	await page.keyboard.press('Enter');
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Command Center');
 	await expect(page).toHaveURL(/\/command$/);
+});
+
+test('keyboard · the agents behind the sign-in: one stop in a tab, an agent held, Escape, Pause (SC-195)', async ({
+	page
+}) => {
+	await openWorkspace(page, '/', { as: null });
+	const crew = page.getByRole('toolbar', { name: 'The agents, in the order they work' });
+	const data = crew.getByRole('button', { name: /^Data/ });
+	const vision = crew.getByRole('button', { name: /^Vision/ });
+	await data.focus();
+	await page.keyboard.press('ArrowRight');
+	await page.keyboard.press('ArrowRight');
+	await expect(vision, 'the arrows move along the agents, one stop in a tab').toBeFocused();
+	await expect(data).toHaveAttribute('tabindex', '-1');
+	await page.keyboard.press('Enter');
+	await expect(vision).toHaveAttribute('aria-pressed', 'true');
+	await expect(page.getByRole('status').filter({ hasText: 'Vision, Verify' }), 'the agent picked is said').toHaveCount(
+		1
+	);
+	await expect(page.getByRole('button', { name: 'Play the agents' }), 'the walk holds on it').toBeVisible();
+	await page.keyboard.press('Escape');
+	await expect(vision).toHaveAttribute('aria-pressed', 'false');
+	const pause = page.getByRole('button', { name: 'Pause the agents' });
+	await pause.focus();
+	await page.keyboard.press('Enter');
+	await expect(
+		page.getByRole('button', { name: 'Play the agents' }),
+		'Pause keeps focus as it turns to Play'
+	).toBeFocused();
+	expect(await page.evaluate(() => localStorage.getItem('sc3-agents')), 'remembered in the browser').toBe('paused');
 });
 
 test("keyboard · a phone number: the one-time code's first box takes focus", async ({ page }) => {

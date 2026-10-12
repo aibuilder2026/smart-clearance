@@ -34,8 +34,6 @@
 		error?: { status: number; message?: string } | null;
 		/** the other surfaces: the landing page and a client's workspace */
 		links?: Partial<ConsoleLinks>;
-		/** the sign-in's picture (design3/site/assets/plates/scene.webp, which the host imports so its build hashes it) */
-		plate?: string;
 		/** the API is the in-browser mock: the sign-in says the prototype's people are fictional, the account sheet offers
 		 *  to reset the data */
 		mock?: boolean;

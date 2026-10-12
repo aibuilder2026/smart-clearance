@@ -34,23 +34,10 @@
 		go: (route: ConsoleRoute, opts?: GoOptions) => Promise<unknown>;
 		error?: { status: number; message?: string } | null;
 		links?: Partial<ConsoleLinks>;
-		plate?: string;
 		mock?: boolean;
 		embedded?: boolean;
 	};
-	let {
-		data,
-		config,
-		catalog,
-		route,
-		pending,
-		go,
-		error = null,
-		links,
-		plate,
-		mock,
-		embedded = false
-	}: Props = $props();
+	let { data, config, catalog, route, pending, go, error = null, links, mock, embedded = false }: Props = $props();
 
 	const app = useApp();
 	const notices = useNotice();
@@ -75,7 +62,6 @@
 		links: untrack(() => links),
 		mock: untrack(() => mock),
 		embedded: untrack(() => embedded),
-		plate: untrack(() => plate),
 		top: () => main()?.scrollTo?.(0, 0),
 		account: () => (account = true)
 	});
