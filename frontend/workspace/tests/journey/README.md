@@ -306,34 +306,55 @@ cannot delete**: the company is the first of the suite's `COMPANIES` that is not
   session is minted by address (`sessions.sh megha=megha.bava@smartclearance.example`), as the synthetic world's staff
   have hydrate's uids.
 
-**The journey:**
+**The journey, in detail** (SC-197: 20 chapters, each opening with a title card):
 
-- **the landing page, once**, gone over briefly: the hero, the statement, the agents at work, the chapters, Impact's
-  ledger and the workspace section;
-- how a prospect asks: Talk to us under a plan, Book a demo filled in for the company and sent;
-- **the ways in**: Find your workspace (a work email names its workspace), and the bar's Workspace and Console.
-  Workspace opens Munchly Foods' own sign-in on the tablet; Console takes the laptop to the console, and Neha signs in;
-- Megha signs in on the tablet;
-- the request on Neha's Overview, after a glance at Clients (the Overview does not read demo requests again on its own);
-- Neha presses Set up and walks New client's seven steps: the company, its address and staff domain, its supply chain
-  (through distributors, destroyed at the godown), its exits, the agents' first autonomy (Standard), its admin (the
-  prospect) and the plan (Pilot); the client opens on its Supply chain tab, its first stock export next, and Megha's
-  Clients lists it;
-- Neha configures its agents: the Watcher's quick-commerce gates, the Lister's reserve, the Negotiator on Act, the
-  approval always on; reads its channels and rules; invites its approver; moves it to Growth;
-- Megha tries Enterprise on the tablet and is refused: only a Super admin changes a plan;
-- Neha reads the client's audit log, every line in her name;
-- Neha monitors the Overview: the figures, Food by day (90 days, a day's tooltip, the table), Agents at work (a stop
-  filtering the batches), every client's batches searched and paged, Needs attention, demo requests and agent runs;
-  Megha follows them on the tablet;
-- a live client, Munchly Foods: the prototype's clock and its note, its agents' scheduled runs and timers (nothing is
-  fired), its SKUs with their gates and one SKU's sheet;
-- the platform's own screens: Agents, Connectors, Plans, Staff and the audit log;
-- the new client among the clients.
+1. **the hero:** the film of one day and its four chapters, marked one by one; Pause and Play; the 6-minute demo film
+   in its theatre (a chapter jumped to, Read the film instead, closed);
+2. **the landing page, section by section:** the statement filling in; the agents at work on the table (the centre
+   card, three agents picked on the rail, the result); the four chapters in their colour fields, each card marked;
+   Impact's ledger; the workspace section's four teams played through, its addresses and integrations; the three plans;
+3. **a demo booked** from a plan, as a prospect would;
+4. **the ways in:** the footer, Find your workspace, the bar's sections, Console and Workspace marked; Workspace opens
+   Munchly Foods' sign-in on the tablet; Console takes the laptop to the console's sign-in;
+5. **the console's sign-in, in detail:** the agents network swept by the cursor, five agents picked (each says what it
+   did), a ripple on the field, Pause and Play, the form's three parts marked; then Neha signs in;
+6. **Megha's sign-in on the tablet:** the same agents round the card, five of the nine stops picked on the pill's rail;
+7. the request on the Overview;
+8. **New client, step by step:** each step's fields or options marked and explained (the company, the address, staff
+   domain and sign-in methods, route to market, ownership and expiry policy, each exit, the three presets, the admin,
+   the review and the plan); the client's head and tabs; Megha's Clients;
+9. **the first stock export:** a CSV of the client's own (fictional distributors in its city, written for the run)
+   uploaded, the Data agent mapping it live, the mapping read; the supply chain drawn, and the profile sheet;
+10. **people:** the approver invited as Approver, the people table, a row's menu;
+11. **all eleven agents, one by one:** the autonomy legend and the pipeline, then each agent's inspector, most of them
+    customised and saved (the Data agent at 08:00 with 180 days, and Run now; the Watcher's gates; Vision's confidence;
+    the Valuer's locked estimates; the Router's aim; the approval sent to the new approver; the Lister's reserve;
+    Outreach in English with its scheme, switched off and on; the Negotiator's floor, counters and token, on Act;
+    Paperwork's drafts; Impact's return window); the pipeline after, and the client's actions menu (read, not pressed);
+12. **channels and rules:** each exit, the staff-sale cap and offer window raised, and the destruction at the godown
+    marked row by row and changed, then saved;
+13. integrations, and the plan moved to Growth (Go live left alone);
+14. Megha refused a plan change;
+15. the client's audit log, every line in Neha's name;
+16. the Overview's dashboards, Megha following on the tablet;
+17. **a live client, Munchly Foods:** Live, the journey-day badge and the clock note marked; the clock's guide and the
+    journey day read (cancelled); its runs and timers (nothing fired); its actions menu (not pressed); its
+    distributors, SKUs and gates, and a batch's override form (cancelled);
+18. **the platform:** clients searched, the agents' catalog with the new client's chip, a connector's sheet, the plans
+    marked, the staff table and the invite form (closed), the audit log filtered to the new client;
+19. the new client among the clients;
+20. **Neha's account and sign-out:** the account sheet marked, Sign out, the splash, back at the sign-in.
+
+**Production gains, each run:** one client, its admin and its approver (Firebase accounts on the default password in
+the shared pool), its demo request, its first export in its exports bucket, and one Data agent run on it (a saved map
+for the Bizom-style layout: no model call).
 
 **The notes** arrive as banners on the screen being read (stage.ts `spot`), in the manner of a phone's notification,
-not a chat: the Smart-Clearance mark, its name and the note's tag, then the note's title and a sentence or two, with no
-time or ticks. A banner slides down from the screen's top (or up from its foot when what is read sits under the top),
+not a chat: the Smart-Clearance mark, its name and the note's tag, a quoted line naming
+whose screen it is and its address (as a reply quotes the message it answers), then the note's title and a sentence or
+two, with no time or ticks. The ring round what is read closes in with four corner brackets, a sweep of light crosses
+it once, and it pulses twice. Several parts of one screen are **marked** together (stage.ts `mark`, SC-197): each is
+ringed and numbered as the cursor reaches it, and one banner lists what each number is. A banner slides down from the screen's top (or up from its foot when what is read sits under the top),
 while a ring lights what is read and the rest of that screen dims. Every click shows: the arrow dips and two rings
 spread where it lands.
 
@@ -343,7 +364,15 @@ E2E_TARGET=prod corepack pnpm test:journey:admin                   # on producti
 E2E_COMPANY="Nilgiri Foods" E2E_FROM=agents corepack pnpm test:journey:admin   # part of it, on a client already set up
 ```
 
-`E2E_FROM` signs both in to the console and leaves the landing page out. Its run of 12 Oct on production is in
+`E2E_FROM` signs both in to the console and leaves the landing page out.
+
+**Cutting it for the edit** (SC-197): the stage writes `recording.chapters.json` beside the recording (each chapter's
+title, start and end), and `cut-chapters.mjs` cuts one clip per chapter, a quarter second either side, with the
+chapters in YouTube's form and as CSV:
+
+```sh
+node tests/journey/cut-chapters.mjs <recording.mp4> [out-dir] [--1080]
+``` Its run of 12 Oct on production is in
 `runs/2026-10-12-prod-admin/`: it set up Nilgiri Foods. The first run, on three screens, set up Aravalli Snacks.
 
 ## Before a run

@@ -8,6 +8,7 @@ import {
 	type TestInfo
 } from '@playwright/test';
 import { spawn, type ChildProcess } from 'node:child_process';
+import { writeFileSync } from 'node:fs';
 import { ORIGIN, person, PROD, signInOnScreen, STAND_IN, type App } from './auth.ts';
 import { ROLES, settled } from './flow.ts';
 import { Run, type About } from './record.ts';
@@ -33,9 +34,19 @@ import { Run, type About } from './record.ts';
 //
 // E2E_LIVE=0 opens no monitor window (the stage is recorded all the same).
 
+/** an element's box on its screen, in CSS pixels */
+type Box = { x: number; y: number; width: number; height: number };
 export type PaneId = 'operator' | 'distributor' | 'phone';
 /** a note the stage shows beside what a person reads: why it is done this way in a demo, or what to see there */
-export type Note = { tag: string; title: string; text: string };
+export type Note = {
+	tag: string;
+	title: string;
+	text: string;
+	/** a numbered list under the text: what each marked part of the screen is (mark(), SC-197) */
+	points?: string[];
+};
+/** a chapter of the recording: where it starts, from the recording's first frame (SC-197: cut into one clip each) */
+export type Chapter = { n: number; title: string; start: number };
 
 type PaneSpec = {
 	label: string;
@@ -134,7 +145,8 @@ const GLIDE = 520;
 /** the cursor every screen draws: an arrow that follows the mouse, gliding, and a ripple where it presses. Its place
  *  is kept across a page's loads (sessionStorage), so it glides on from where it was */
 const CURSOR = `(() => {
-	if (window.__e2eCursor) return;
+	// the top page only: an embedded frame (YouTube's player, SC-197) has no cursor of its own, and may refuse markup
+	if (window.__e2eCursor || window.top !== window) return;
 	window.__e2eCursor = true;
 	const KEY = 'e2e-cursor';
 	const at = () => { try { return JSON.parse(sessionStorage.getItem(KEY) || 'null'); } catch { return null; } };
@@ -293,6 +305,8 @@ export class Stage {
 	private holds = HOLDS;
 	/** the flow's cast: its guests, the apps its people work in, their roles */
 	private crew: Cast = {};
+	/** the recording's chapters, in order (chapter()) */
+	readonly chapters: Chapter[] = [];
 
 	private constructor(
 		private stageBrowser: Browser,
@@ -547,6 +561,26 @@ export class Stage {
 		await loaded(pane.page);
 	}
 
+	/** a person's screen at an app's own sign-in, before they sign in (SC-197: the sign-in read in detail first), named as
+	 *  theirs. Their sign-in follows with open() */
+	async atSignIn(who: string, app: App) {
+		const id = this.paneOf(who);
+		const pane = this.panes[id];
+		await this.active(id);
+		if (pane.signedIn.workspace && app === 'workspace') await this.signOut(pane);
+		if (new URL(pane.page.url()).origin !== ORIGIN[app] || pane.app !== null) {
+			await pane.page.goto(ORIGIN[app] + '/');
+			await settled(pane.page);
+		}
+		await expect(pane.page.locator('#si-email')).toBeVisible({ timeout: 30_000 });
+		await loaded(pane.page);
+		pane.who = null;
+		pane.app = null;
+		await this.hold(id, who, app);
+		await this.address(id);
+		return pane.page;
+	}
+
 	/** someone opens an app at a path on their screen, the caption naming them and what they are about to do. A screen
 	 *  already theirs moves within the app, as a click would; a phone handed over is signed out of the workspace by the
 	 *  one who had it, and the next person signs in on the app's own screen */
@@ -782,15 +816,30 @@ export class Stage {
 
 	/** the ring round an element on the stage (and the dim and the card for a note), placed from where the element sits
 	 *  on its screen */
-	private async ring(target: Locator, note?: Note) {
+	private async ring(
+		target: Locator,
+		note?: Note,
+		badge?: number,
+		banner = true,
+		/** a banner with no ring of its own, placed clear of a whole region (mark(): every part marked) */
+		opts: { ringless?: boolean; around?: Box } = {}
+	) {
 		const page = target.page();
 		const pane = Object.values(this.panes).find((p) => p.page === page);
 		const box = await target.boundingBox().catch(() => null);
 		if (!pane || !box) return;
 		const vp = PANES[pane.id].viewport;
+		// the banner's quoted line, as a reply quotes the message it answers: who holds the screen, and where it is
+		const u = new URL(page.url());
+		const quote = note
+			? {
+					who: pane.who ? this.personOf(pane.who).name : PANES[pane.id].label,
+					where: (u.host + u.pathname).replace(/\/$/, '')
+				}
+			: null;
 		await this.stage
 			.evaluate(
-				([id, b, vw, note]) => {
+				([id, b, vw, note, badge, quote, banner, ringless, around]) => {
 					const fx = document.getElementById(`fx-${id}`)!;
 					const scr = document.getElementById(`scr-${id}`)!.getBoundingClientRect();
 					const k = scr.width / vw;
@@ -801,34 +850,156 @@ export class Stage {
 					const w = Math.min(scr.width - x - 2, b.width * k + 2 * pad),
 						h = Math.min(scr.height - y - 2, b.height * k + 2 * pad);
 					const ring = document.createElement('div');
-					ring.className = note ? 'ring dim' : 'ring';
+					// a note dims the rest of the screen (several marked parts are dimmed round by mark()'s dimmer instead)
+					const dim = note && !ringless && !fx.querySelector('.dimmer');
+					ring.className = 'ring' + (dim ? ' dim' : '') + (note || badge ? ' lit' : '');
 					Object.assign(ring.style, { left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px` });
-					fx.appendChild(ring);
-					requestAnimationFrame(() => ring.classList.add('on'));
-					if (!note) return;
+					// a lit ring: four corner brackets that close in on it, and one sweep of light across it
+					if (note || badge)
+						ring.innerHTML =
+							'<i class="bk tl"></i><i class="bk tr"></i><i class="bk bl"></i><i class="bk br"></i><i class="sweep"></i>';
+					if (badge) {
+						const n = document.createElement('span');
+						n.className = 'pin';
+						n.textContent = String(badge);
+						// the number sits on the ring's top-left corner, inside the screen
+						if (y < 14) n.classList.add('in');
+						ring.appendChild(n);
+					}
+					if (!ringless) {
+						fx.appendChild(ring);
+						requestAnimationFrame(() => requestAnimationFrame(() => ring.classList.add('on')));
+					}
+					if (!note || !banner) return;
 					// the note arrives on that screen as a notification banner does: it slides down from the screen's top, or up
-					// from its foot when what is read sits under the top (the app's mark, its name and the note's tag, then the note)
+					// from its foot when what is read sits under the top (the app's mark, its name and the note's tag, a quoted
+					// line naming the screen, then the note). No time, no ticks: it is not a chat
 					const card = document.createElement('div');
 					card.className = 'wa';
 					card.innerHTML =
 						'<div class="wa-head"><span class="wa-ic">S</span><span class="wa-app">Smart-Clearance</span><span class="wa-tag"></span></div>' +
-						'<b></b><p></p>';
+						'<div class="wa-q"><b class="wa-qw"></b><span class="wa-qa"></span></div>' +
+						'<b class="wa-t"></b><p></p>';
 					card.querySelector('.wa-tag')!.textContent = note.tag;
-					card.querySelector('b')!.textContent = note.title;
+					card.querySelector('.wa-qw')!.textContent = quote!.who;
+					card.querySelector('.wa-qa')!.textContent = quote!.where;
+					card.querySelector('.wa-t')!.textContent = note.title;
 					card.querySelector('p')!.textContent = note.text;
-					const bw = Math.min(scr.width - 20, 460);
+					if (note.points?.length) {
+						const ol = document.createElement('ol');
+						for (const t of note.points) {
+							const li = document.createElement('li');
+							li.textContent = t;
+							ol.appendChild(li);
+						}
+						card.appendChild(ol);
+					}
+					const bw = Math.min(scr.width - 20, note.points?.length ? 500 : 460);
 					card.style.width = `${bw}px`;
 					document.getElementById('callouts')!.appendChild(card);
 					const ch = card.offsetHeight;
-					const left = scr.left + (scr.width - bw) / 2;
-					// from the top, unless the banner would cover what is read and the foot has room
-					const fromTop = y > ch + 22 || scr.height - (y + h) < ch + 22;
+					// what the banner keeps clear of: the ring, or the whole region marked
+					const [ax, ay, aw, ah] = around
+						? [around.x * k - pad, around.y * k - pad, around.width * k + 2 * pad, around.height * k + 2 * pad]
+						: [x, y, w, h];
+					// from the top, unless the banner would cover what is read and the foot has room; to the side of a wide
+					// screen when it would cover it either way
+					const fromTop = ay > ch + 22 || scr.height - (ay + ah) < ch + 22;
+					let left = scr.left + (scr.width - bw) / 2;
 					const top = fromTop ? scr.top + 10 : scr.bottom - ch - 10;
+					const covers = (l: number) =>
+						l < scr.left + ax + aw && l + bw > scr.left + ax && top < scr.top + ay + ah && top + ch > scr.top + ay;
+					if (covers(left)) {
+						const right = scr.right - bw - 10,
+							leftmost = scr.left + 10;
+						if (!covers(right)) left = right;
+						else if (!covers(leftmost)) left = leftmost;
+					}
 					Object.assign(card.style, { left: `${left}px`, top: `${top}px` });
 					card.classList.add(fromTop ? 'down' : 'up');
 					requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('on')));
 				},
-				[pane.id, box, vp.width, note ?? null] as const
+				[pane.id, box, vp.width, note ?? null, badge ?? 0, quote, banner, !!opts.ringless, opts.around ?? null] as const
+			)
+			.catch(() => {});
+	}
+
+	/** several parts of one screen, each marked with its number (SC-197): the screen dims once, each part is ringed and
+	 *  numbered in turn as the cursor reaches it, and one banner lists what each number is. Parts not on screen are left
+	 *  out, and the list follows the ones marked */
+	async mark(parts: [Locator, string][], note: Note, hold?: number) {
+		if (!parts.length) return;
+		const page = parts[0][0].page();
+		const shown: [Locator, string][] = [];
+		for (const [t, label] of parts)
+			if (
+				await t
+					.first()
+					.isVisible()
+					.catch(() => false)
+			)
+				shown.push([t.first(), label]);
+		if (!shown.length) return;
+		// the parts are read where they are: the screen comes to the first, and the rest are marked as they sit
+		await this.reveal(shown[0][0]);
+		const boxes = (await Promise.all(shown.map(([t]) => t.boundingBox().catch(() => null)))).filter(
+			(b): b is Box => !!b
+		);
+		// the screen dims round every part at once, each part left bright in its own cut-out
+		await this.dimmer(page, boxes);
+		for (let i = 0; i < shown.length; i++) {
+			const box = boxes[i];
+			if (box) await page.mouse.move(box.x + box.width / 2, box.y + Math.min(box.height / 2, 24));
+			await page.waitForTimeout(GLIDE - 120);
+			await this.ring(shown[i][0], undefined, i + 1, false);
+			await page.waitForTimeout(260);
+		}
+		// the banner with its numbered list, kept clear of every part
+		const around = boxes.length
+			? {
+					x: Math.min(...boxes.map((b) => b.x)),
+					y: Math.min(...boxes.map((b) => b.y)),
+					width: Math.max(...boxes.map((b) => b.x + b.width)) - Math.min(...boxes.map((b) => b.x)),
+					height: Math.max(...boxes.map((b) => b.y + b.height)) - Math.min(...boxes.map((b) => b.y))
+				}
+			: undefined;
+		await this.ring(shown[0][0], { ...note, points: shown.map(([, l]) => l) }, undefined, true, {
+			ringless: true,
+			around
+		});
+		const words = note.title.length + note.text.length + shown.reduce((n, [, l]) => n + l.length, 0);
+		await page.waitForTimeout(hold ?? Math.min(12_000, Math.max(5500, words * 34)));
+		await this.unring();
+		await page.waitForTimeout(300);
+	}
+
+	/** the rest of a screen dimmed round several parts at once: one layer with a rounded cut-out for each */
+	private async dimmer(page: Page, boxes: Box[]) {
+		const pane = Object.values(this.panes).find((p) => p.page === page);
+		if (!pane || !boxes.length) return;
+		const vp = PANES[pane.id].viewport;
+		await this.stage
+			.evaluate(
+				([id, boxes, vw, vh]) => {
+					const fx = document.getElementById(`fx-${id}`)!;
+					const scr = document.getElementById(`scr-${id}`)!.getBoundingClientRect();
+					const k = scr.width / vw;
+					const pad = 5;
+					const holes = boxes
+						.map(
+							(b) =>
+								`<rect x="${b.x * k - pad}" y="${b.y * k - pad}" width="${b.width * k + 2 * pad}" height="${b.height * k + 2 * pad}" rx="10" fill="#000"/>`
+						)
+						.join('');
+					const w = vw * k,
+						h = vh * k;
+					const el = document.createElement('div');
+					el.className = 'dimmer';
+					el.innerHTML = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><defs><mask id="dm-${id}"><rect width="${w}" height="${h}" fill="#fff"/>${holes}</mask></defs><rect width="${w}" height="${h}" fill="rgba(7,12,10,.5)" mask="url(#dm-${id})"/></svg>`;
+					fx.appendChild(el);
+					requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('on')));
+				},
+				[pane.id, boxes, vp.width, vp.height] as const
 			)
 			.catch(() => {});
 	}
@@ -837,7 +1008,7 @@ export class Stage {
 	private async unring() {
 		await this.stage
 			.evaluate(() => {
-				for (const el of document.querySelectorAll('.ring, .wa')) {
+				for (const el of document.querySelectorAll('.ring, .wa, .dimmer')) {
 					el.classList.remove('on');
 					setTimeout(() => el.remove(), 320);
 				}
@@ -914,8 +1085,27 @@ export class Stage {
 	}
 
 	/** the step under way, as the narrator heads it */
-	async chapter(title: string) {
+	async chapter(title: string, card?: { n: number; of: number; title: string }) {
 		await this.stage.evaluate((t) => (document.getElementById('chapter')!.textContent = t), title).catch(() => {});
+		if (this.recording && card)
+			this.chapters.push({ n: card.n, title: card.title, start: (Date.now() - this.recording) / 1000 });
+		if (!card) return;
+		// a title card across the stage's foot as a chapter opens (SC-197): a lower third an edit can keep or cut
+		await this.stage
+			.evaluate(
+				([n, of, t]) => {
+					const el = document.getElementById('titlecard')!;
+					el.querySelector('i')!.textContent = `Chapter ${n} of ${of}`;
+					el.querySelector('b')!.textContent = t;
+					el.classList.remove('on');
+					void el.offsetWidth;
+					el.classList.add('on');
+					setTimeout(() => el.classList.remove('on'), 3600);
+				},
+				[card.n, card.of, card.title] as const
+			)
+			.catch(() => {});
+		await this.stage.waitForTimeout(1600);
 	}
 
 	/** a figure the narrator keeps in view (the scheme's orders, the packs left …) */
@@ -961,6 +1151,17 @@ export class Stage {
 		for (const t of this.timers) clearInterval(t);
 		this.ffmpeg?.stdin?.end();
 		await this.ended;
+		if (this.chapters.length) {
+			const end = (Date.now() - this.recording) / 1000;
+			writeFileSync(
+				this.video.replace(/\.mp4$/, '.chapters.json'),
+				JSON.stringify(
+					this.chapters.map((c, i) => ({ ...c, end: this.chapters[i + 1]?.start ?? end })),
+					null,
+					'\t'
+				) + '\n'
+			);
+		}
 		await this.paneBrowser.close().catch(() => {});
 		await this.stageBrowser.close().catch(() => {});
 		await this.monitor
@@ -1057,7 +1258,7 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 .stat b{font:600 13px 'Geist Mono',monospace;color:#7fe0a8}
 .stat span{font-size:11px;color:#9fb3a8}
 #log{grid-column:2;grid-row:2/5;list-style:none;padding:0;display:flex;flex-direction:column;gap:3px;overflow:hidden;border-left:1px solid #22312b;padding-left:16px}
-#log li{display:flex;gap:8px;font-size:12px;color:#b9c9c0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#log li{flex:none;display:flex;gap:8px;line-height:1.35;font-size:12px;color:#b9c9c0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #log li:first-child{color:#e8efe9}
 #log i{font:500 11px 'Geist Mono',monospace;color:#6f877c;font-style:normal;min-width:20px;text-align:right}
 .note{margin-top:12px;font-size:11.5px;color:#8aa196;line-height:1.45}
@@ -1066,6 +1267,29 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 .ring{position:absolute;border-radius:10px;border:2px solid #f5c542;box-shadow:0 0 0 3px rgba(245,197,66,.2),0 0 22px rgba(245,197,66,.32);opacity:0;transform:scale(1.04);transition:opacity .25s ease,transform .4s cubic-bezier(.22,1,.36,1)}
 .ring.dim{box-shadow:0 0 0 3px rgba(245,197,66,.2),0 0 22px rgba(245,197,66,.32),0 0 0 2400px rgba(7,12,10,.46)}
 .ring.on{opacity:1;transform:none}
+.dimmer{position:absolute;inset:0;opacity:0;transition:opacity .3s ease}
+.dimmer.on{opacity:1}
+.dimmer svg{display:block}
+.ring.lit.on{animation:pulse 2.4s ease-in-out .5s 2}
+@keyframes pulse{50%{border-color:#ffe08a}}
+.bk{position:absolute;width:14px;height:14px;border:0 solid #f5c542;opacity:0;transition:all .5s cubic-bezier(.22,1,.36,1) .12s}
+.bk.tl{left:-12px;top:-12px;border-width:3px 0 0 3px;border-radius:6px 0 0 0}
+.bk.tr{right:-12px;top:-12px;border-width:3px 3px 0 0;border-radius:0 6px 0 0}
+.bk.bl{left:-12px;bottom:-12px;border-width:0 0 3px 3px;border-radius:0 0 0 6px}
+.bk.br{right:-12px;bottom:-12px;border-width:0 3px 3px 0;border-radius:0 0 6px 0}
+.ring.on .bk{opacity:1}
+.ring.on .bk.tl{left:-7px;top:-7px}.ring.on .bk.tr{right:-7px;top:-7px}.ring.on .bk.bl{left:-7px;bottom:-7px}.ring.on .bk.br{right:-7px;bottom:-7px}
+.ring .sweep{position:absolute;inset:0;border-radius:8px;overflow:hidden;pointer-events:none}
+.ring .sweep::after{content:'';position:absolute;top:0;bottom:0;width:38%;left:-45%;background:linear-gradient(100deg,transparent,rgba(255,236,170,.32),transparent);transform:skewX(-14deg)}
+.ring.on .sweep::after{animation:sweep 1.1s cubic-bezier(.3,.6,.3,1) .25s 1 forwards}
+@keyframes sweep{to{left:115%}}
+.pin{position:absolute;left:-11px;top:-11px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#f5c542;color:#1b1503;font:700 12px/22px Geist;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.4);transform:scale(.4);opacity:0;transition:all .38s cubic-bezier(.34,1.56,.64,1) .1s}
+.pin.in{top:3px;left:3px}
+.ring.on .pin{transform:none;opacity:1}
+#titlecard{position:absolute;left:50%;bottom:26px;transform:translate(-50%,24px);opacity:0;z-index:30;display:flex;flex-direction:column;gap:3px;padding:13px 26px 14px;border-radius:16px;background:rgba(12,19,17,.94);border:1px solid #2f4a3d;box-shadow:0 20px 50px rgba(0,0,0,.55);transition:opacity .35s ease,transform .6s cubic-bezier(.22,1,.36,1);max-width:900px;text-align:center}
+#titlecard.on{opacity:1;transform:translate(-50%,0)}
+#titlecard i{font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#f5c542;font-style:normal}
+#titlecard b{font:600 21px/1.25 Geist;letter-spacing:-.01em;color:#f3f7f4}
 #callouts{position:absolute;inset:0;pointer-events:none;z-index:20}
 .wa{position:absolute;background:rgba(247,248,247,.97);border-radius:20px;padding:10px 12px 12px;color:#111b21;box-shadow:0 18px 46px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.18);opacity:0;transition:opacity .26s ease,transform .52s cubic-bezier(.22,1,.36,1)}
 .wa.down{transform:translateY(-26px) scale(.97)}
@@ -1075,7 +1299,13 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 .wa-ic{flex:none;width:22px;height:22px;border-radius:6px;background:#1f6b45;display:grid;place-items:center;font:700 12.5px/1 Geist;color:#fff}
 .wa-app{font:600 11px/1 Geist;color:#54656f;letter-spacing:.04em;text-transform:uppercase}
 .wa-tag{flex:none;font:600 9.5px/1 'Geist Mono',monospace;letter-spacing:.07em;text-transform:uppercase;color:#1f6b45;background:#e6f2ea;border:1px solid #c8e2d1;border-radius:5px;padding:3px 6px 2px}
-.wa b{display:block;font:600 14.5px/1.3 Geist;color:#111b21;letter-spacing:-.005em;margin:0 2px 3px}
+.wa b.wa-t{display:block;font:600 14.5px/1.3 Geist;color:#111b21;letter-spacing:-.005em;margin:0 2px 3px}
+.wa-q{display:flex;flex-direction:column;gap:1px;margin:0 0 8px;padding:5px 9px 6px;border-left:4px solid #1f6b45;border-radius:6px;background:#eef3ef}
+.wa-qw{font:600 11.5px/1.3 Geist;color:#1f6b45}
+.wa-qa{font:400 10.5px/1.3 'Geist Mono',monospace;color:#5b6b64;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wa ol{margin:8px 2px 0;padding:0;list-style:none;counter-reset:pt;display:flex;flex-direction:column;gap:4px}
+.wa li{counter-increment:pt;display:flex;gap:8px;font:400 12.3px/1.42 Geist;color:#33424a}
+.wa li::before{content:counter(pt);flex:none;width:19px;height:19px;border-radius:10px;background:#f5c542;color:#1b1503;font:700 11px/19px Geist;text-align:center;margin-top:1px}
 .wa p{font:400 12.5px/1.48 Geist;color:#33424a;margin:0 2px}
 </style></head><body>
 <div id="bar"><span class="mark">S</span><div><h1>${esc(about.flow)}</h1><p>${esc(about.batch)} · ${PROD ? `live on production: ${esc(new URL(ORIGIN[host]).host)}` : "live on this machine's stack"}</p></div>
@@ -1091,6 +1321,7 @@ ${
 		: ''
 }
 <div id="callouts"></div>
+<div id="titlecard"><i></i><b></b></div>
 <div id="narr"><div id="chapter"></div><div class="cap"><span id="cap-who"></span><span id="cap-role"></span></div><ol id="log"></ol><div id="cap-did"></div><div id="stats"></div></div>
 <script>
 let t0 = 0;
