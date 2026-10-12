@@ -2505,31 +2505,45 @@
     - on a phone the card takes its own glass. Desktops keep SC-195's stage.
   - **Checks:** the frontend gate passes (api 83, core 407, admin 22, console 2, demo 9, workspace 115); the phone goldens follow. design3 and the port were played on a phone, an iPad in portrait and 1024 × 768, light and dark, with no page errors. The browser suites were not run (SC-55).
   - **Hosting:** design3's `dist/` is rebuilt. The hosted pages stay on their pinned commits.
-- **SC-197** (In Review, branch `SC-197-admin-console-detail`): Admin and console E2E in detail, on production, recorded as raw footage for the final walkthrough, asked for by the maintainer ("Detail out everything as much as possible", with WhatsApp-style banners without the time and ticks; then "details should be shown with login page in too, hovering over agents network quickly").
-  - **The suite** (`admin-console.journey.ts`), 20 chapters where SC-191 had 12:
-    - the landing page section by section, the hero film's four chapters and the demo film's theatre;
-    - the console's sign-in in detail: the agents network swept by the cursor, five agents picked, a ripple, Pause and Play, the form marked. The tablet's band gets the same before Megha signs in (`Stage.atSignIn`);
-    - New client with every step's options marked;
-    - the client's first stock export, a CSV of its own written for the run, mapped live by the Data agent;
+- **SC-197** (In Review, branch `SC-197-admin-console-detail`): Admin and console E2E on one laptop, on production, recorded as raw footage for the final walkthrough, asked for by the maintainer.
+  - **The ask:**
+    - "Detail out the major flows as to how dashboards can be monitored", with WhatsApp-style notes, without the time and ticks;
+    - the notes positioned "next to the highlighted area, no overlap and should pointing to it like whatsapp chats have a small tail";
+    - the landing page "just briefly showed", on "just one screen, laptop, moving from landing to console";
+    - the sign-in's agents network hovered over quickly;
+    - then "The videos are flickering".
+  - **The suite** (`admin-console.journey.ts`), 14 chapters on one laptop:
+    - the landing page briefly, then the bar's Console;
+    - the sign-in's agents network swept, five agents picked, Pause and Play, the form marked;
+    - **the dashboards**: the four figures, the 30-second reading with Pause, Food by day over 7 and 90 days, Agents at work filtering by a stop, and the batches searched, filtered, sorted and paged; then Needs attention, Demo requests and Agent runs;
+    - New client from the request, every step's options marked;
+    - the first stock export, mapped live by the Data agent;
     - the approver invited;
-    - all eleven agents opened, most customised and saved, one run on request, Outreach off and on;
-    - the rules and the destruction at the godown changed;
-    - Munchly's clock guide and journey-day sheet, read and cancelled;
-    - the platform's screens, and Neha's account and sign-out.
+    - all eleven agents, most customised;
+    - the rules and the destruction at the godown;
+    - the plan, the audit log, a live client's controls, and the platform's screens;
+    - sign-out.
+
+    The demo request is sent before recording, through the landing page's own `POST /v1/demo-requests`.
   - **The stage** (`stage.ts`):
-    - banners quote whose screen it is and its address;
-    - rings close in with corner brackets, a sweep and a pulse;
-    - `mark()` numbers several parts of one screen, each in its own cut-out of the dim, with one banner listing them;
-    - a title card opens each chapter;
-    - the stage writes `recording.chapters.json`, and `cut-chapters.mjs` cuts one clip per chapter, with YouTube-style timestamps and a CSV;
-    - the cursor's script stays out of embedded frames (YouTube's player refused it);
-    - the narrator's log rows no longer overlap.
-  - **The run of 12 Oct on production** (`runs/2026-10-12-prod-admin-detail/REPORT.md`): passed in 25 min 3 s, 67 steps, against production at `6e9aa43` (SC-198's sign-in map had deployed nine minutes before; the sign-in chapters play on it).
-    - The recording, 24 min 57 s at 2560 × 1440, its 1080p copy and 20 chapter clips stay local in `playwright-automation-videos/`.
-    - Production gains Shivalik Snacks, its admin Ritu Malhotra and approver Arvind Sethi, its demo request, its first export (6 rows, 8 of 8 fields mapped), and 16 audit lines in Neha's name.
+    - the `one` layout: a laptop with the narrator beside it;
+    - the notes as bubbles beside what is read, never over it, choosing right, left, below or above, with a tail pointing at it, a quoted line naming the screen, and no time or ticks;
+    - rings with corner brackets, a sweep and a pulse;
+    - `mark()` numbers several parts, each in its own cut-out of the dim;
+    - a title card for each chapter, `recording.chapters.json`, and `cut-chapters.mjs`, which cuts one clip per chapter;
+    - `atSignIn()`.
+  - **The flicker:**
+    - Frames reached the stage on a 50 ms tick, so the 25 fps recording repeated about one frame in five while anything moved (probed: 19.8 distinct a second). They now go as they arrive: 24.8 in the probe, and 4% repeats inside motion on production, against 20%.
+    - A browser's smooth scroll over a long page strobed. The stage now glides short scrolls at a readable pace, and dips to dark and cuts over three screens.
+    - The cursor's script stays out of embedded frames.
+  - **The run of 12 Oct on production** (`runs/2026-10-12-prod-admin-laptop/REPORT.md`): passed in 18 min 36 s, 54 steps, against `6e9aa43`.
+    - The recording (18 min 33 s, 2560 × 1440), its 1080p copy and 14 chapter clips stay local in `playwright-automation-videos/`.
+    - Production gains Kaveri Foods, with its admin and approver, its request, its first export (8 of 8 fields mapped) and 16 audit lines.
+    - The two-screen run before it, which set up Shivalik Snacks, is kept in `runs/2026-10-12-prod-admin-detail/`.
   - **Findings, not fixed:**
-    - the Overview's demo requests are not live (as SC-191);
-    - "Shivalik Snacks's" in the audit log and the pipeline's name;
-    - the approver list offers only people who have signed in, so the approver just invited is not yet offered.
-  - **Checks:** lint, Prettier and the workspace type check pass on the suite; trials on the local stack (Shivalik Snacks and Kaveri Foods there) passed before the run.
+    - the Overview's demo requests are not live;
+    - Set up is clipped in Demo requests;
+    - "Kaveri Foods's" in the console's words;
+    - the approver list offers only people who have signed in.
+  - **Checks:** lint, Prettier and the workspace type check pass on the suite; local trials passed before the run.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

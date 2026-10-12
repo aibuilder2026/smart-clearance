@@ -1,0 +1,86 @@
+[
+	{
+		"n": 1,
+		"title": "The platform's landing page, briefly, and the way into the console",
+		"start": 0.002,
+		"end": 74.755
+	},
+	{
+		"n": 2,
+		"title": "Neha signs in to the console, after the agents at work behind its sign-in",
+		"start": 74.755,
+		"end": 164.589
+	},
+	{
+		"n": 3,
+		"title": "Monitoring the platform: the Overview's dashboards, live",
+		"start": 164.589,
+		"end": 296.237
+	},
+	{
+		"n": 4,
+		"title": "Neha sets the company up as a client from its request, in seven steps",
+		"start": 296.237,
+		"end": 444.725
+	},
+	{
+		"n": 5,
+		"title": "Neha uploads the client's first stock export, and the Data agent maps it",
+		"start": 444.725,
+		"end": 540.478
+	},
+	{
+		"n": 6,
+		"title": "Neha invites the client's approver, and reads its people",
+		"start": 540.478,
+		"end": 577.664
+	},
+	{
+		"n": 7,
+		"title": "Neha configures the new client's eleven agents, one by one",
+		"start": 577.664,
+		"end": 791.564
+	},
+	{
+		"n": 8,
+		"title": "Neha sets the client's channels and rules, and how packs are destroyed at the godown",
+		"start": 791.564,
+		"end": 842.332
+	},
+	{
+		"n": 9,
+		"title": "Neha reads the client's integrations and moves its plan",
+		"start": 842.332,
+		"end": 860.362
+	},
+	{
+		"n": 10,
+		"title": "Neha reads the new client's audit log",
+		"start": 860.362,
+		"end": 883.809
+	},
+	{
+		"n": 11,
+		"title": "A live client, Munchly Foods: its journey clock, its agents' runs and timers, its SKUs and their gates",
+		"start": 883.809,
+		"end": 978.918
+	},
+	{
+		"n": 12,
+		"title": "The platform's own screens: Clients, Agents, Connectors, Plans, Staff and the audit log",
+		"start": 978.918,
+		"end": 1077.122
+	},
+	{
+		"n": 13,
+		"title": "Neha sees the new client among the clients",
+		"start": 1077.122,
+		"end": 1089.572
+	},
+	{
+		"n": 14,
+		"title": "Neha reads her account and signs out of the console",
+		"start": 1089.572,
+		"end": 1113.25
+	}
+]
