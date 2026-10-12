@@ -2495,4 +2495,14 @@
   - **Checks:** the frontend gate passes (api 83, core 407 with `agents.test.ts`, admin 22, console 2, demo 9, workspace 115); the sign-in goldens follow; backend-api 574 passed, 1 skipped (only its seed manifest changed). design3 and the port's stub builds (workspace, console on its mock, the guided demo) were played at 1440 and 390, light and dark, with the pointer, a ripple, an agent held and Pause, by keyboard and under reduced motion, with no page errors. The keyboard specs of the workspace and the console gain the stage; the browser suites were not run (SC-55).
   - **Hosting:** design3's `dist/` is rebuilt. The hosted pages stay on their pinned commits.
 
+- **SC-196** (In Review, branch `SC-196-agents-portrait`): the sign-ins' agents on phones and tablets.
+  - **The request:** "on mobile and ipad, the login graph does not great in portrait mode, need better design just for these devices, rest all is fine". SC-195's band squeezed the desktop's orbit into a short, wide box, and stretched on a tall tablet.
+  - **Design first:** three options on one board, published as a private artifact. A, the ring (recommended); B, the relay; C, around the card. The maintainer picked **C**, and asked that tablets held sideways below 1100 px take it too. Designs, recordings and the decision are in `design3/designs/SC-196/`.
+  - **Around the card** (the kit's `AgentStage` below desktops, design3 first, then core's `agents/AgentAround.svelte` and `mesh.ts` `agAround`):
+    - the field behind the whole sign-in, pinned and taking no room in its rows;
+    - the eleven agents on a loop round the card, below the pill, as tiles. A tap holds the walk on one; a tap on the field lets go;
+    - a pill at the top with Pause, who is at work and what they did, and the nine stops as a rail of buttons (one stop in a tab, Enter holding the walk on a stop's agent);
+    - on a phone the card takes its own glass. Desktops keep SC-195's stage.
+  - **Checks:** the frontend gate passes (api 83, core 407, admin 22, console 2, demo 9, workspace 115); the phone goldens follow. design3 and the port were played on a phone, an iPad in portrait and 1024 × 768, light and dark, with no page errors. The browser suites were not run (SC-55).
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted pages stay on their pinned commits.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

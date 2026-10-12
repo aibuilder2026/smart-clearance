@@ -337,7 +337,7 @@
     }, [dep]);
     return s;
   }
-  function AgentField({ w, stars, band, orbit, height }) {
+  function AgentField({ w, stars, band, orbit, height, local }) {
     const box = useRef(null), cv = useRef(null), size = useBox(box);
     const f = useRef({ nodes: [], ripples: [], pointer: null, stepAt: 0, resetAt: -1e9, raf: 0, last: 0, off: { x: 0, y: 0 } }).current;
     const prevK = useRef(w.k);
@@ -349,7 +349,7 @@
     useEffect(() => {
       if (!size) return;
       f.nodes = agField(size.w, size.h, band);
-      if (!band && orbit.current && box.current) {
+      if (!band && !local && orbit && orbit.current && box.current) {
         const a = orbit.current.getBoundingClientRect(), b = box.current.getBoundingClientRect(), z = scaleOf();
         f.off = { x: (a.left - b.left) / z, y: (a.top - b.top) / z };
       }
@@ -429,7 +429,7 @@
         kick();
         return;
       }
-      const hit = (f.stars || []).map((s) => ({ s, d: Math.hypot(s.x - p.x, s.y - p.y) })).filter((x) => x.d < (band ? 24 : 18)).sort((a, b) => a.d - b.d)[0];
+      const hit = (f.stars || []).map((s) => ({ s, d: Math.hypot(s.x - p.x, s.y - p.y) })).filter((x) => x.d < (band ? 24 : local ? 22 : 18)).sort((a, b) => a.d - b.d)[0];
       if (hit) w.pick(hit.s.c);
       else {
         if (!w.reduce) f.ripples.push({ x: p.x, y: p.y, born: performance.now(), t: 0, r: 6 });
@@ -437,7 +437,7 @@
       }
       kick();
     };
-    return /* @__PURE__ */ React.createElement("div", { ref: box, className: cx("ag-field", band && "band"), style: height ? { height } : void 0, "aria-hidden": "true", onPointerMove: onMove, onPointerLeave: onLeave, onPointerCancel: onLeave, onPointerDown: onDown, onPointerUp: onUp }, /* @__PURE__ */ React.createElement("canvas", { ref: cv, className: "ag-canvas" }));
+    return /* @__PURE__ */ React.createElement("div", { ref: box, className: cx("ag-field", band && "band"), style: height ? local ? { height, marginBottom: -height } : { height } : void 0, "aria-hidden": "true", onPointerMove: onMove, onPointerLeave: onLeave, onPointerCancel: onLeave, onPointerDown: onDown, onPointerUp: onUp }, /* @__PURE__ */ React.createElement("canvas", { ref: cv, className: "ag-canvas" }));
   }
   function AgentCaption({ w, className }) {
     const s = w.held ? AG_STOPS[w.held.stop] : w.playing ? AG_STOPS[w.k] : null, h = w.held;
@@ -450,13 +450,10 @@
     return compact ? /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-ghost btn-sm btn-icon ag-play", "aria-label": `${label} the agents`, onClick: w.toggle }, /* @__PURE__ */ React.createElement(Icon, { name: icon, size: 16 })) : /* @__PURE__ */ React.createElement("button", { type: "button", className: "btn btn-ghost btn-sm ag-play", "aria-label": `${label} the agents`, onClick: w.toggle }, /* @__PURE__ */ React.createElement(Icon, { name: icon, size: 15 }), label);
   }
   const AgentWords = ({ w }) => /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("ol", { className: "sr-only", "aria-label": "How Smart-Clearance's agents work a batch" }, AG_STOPS.map((s, i) => /* @__PURE__ */ React.createElement("li", { key: s.id }, s.t, ": ", agNames(i), ". ", agAt(i).map((c) => c.did).join(". "), "."))), /* @__PURE__ */ React.createElement("p", { className: "sr-only", role: "status" }, w.held ? `${w.held.name}, ${AG_STOPS[w.held.stop].t}: ${w.held.did}.` : ""));
-  function AgentStage({ children, band }) {
-    const app = useApp();
-    const w = useAgentWalk();
+  function AgentDesk({ w, children }) {
     const orbit = useRef(null);
-    const isBand = band != null ? band : app.bp !== "desktop";
-    const size = useBox(orbit, isBand);
-    const stars = useMemo(() => size ? agOrbit(size.w, size.h, isBand) : [], [size && size.w, size && size.h, isBand]);
+    const size = useBox(orbit);
+    const stars = useMemo(() => size ? agOrbit(size.w, size.h, false) : [], [size && size.w, size && size.h]);
     const [rove, setRove] = useState(0);
     const chips = useRef([]);
     const stage = useRef(null);
@@ -469,7 +466,7 @@
       const o = new ResizeObserver(f);
       o.observe(host);
       return () => o.disconnect();
-    }, [isBand]);
+    }, []);
     const key = (e) => {
       const n = AG_CREW.length, to = { ArrowRight: rove + 1, ArrowDown: rove + 1, ArrowLeft: rove - 1, ArrowUp: rove - 1, Home: 0, End: n - 1 }[e.key];
       if (e.key === "Escape" && w.held) {
@@ -483,14 +480,58 @@
       chips.current[i] && chips.current[i].focus();
     };
     const place = (n) => ({ left: n.x, top: n.y, transform: Math.abs(n.ox) < 0.2 ? n.oy < 0 ? "translate(-50%, calc(-100% - 12px))" : "translate(-50%, 12px)" : n.ox < 0 ? "translate(calc(-100% - 12px), -50%)" : "translate(12px, -50%)" });
-    if (isBand) return /* @__PURE__ */ React.createElement("div", { className: "ag-band" }, /* @__PURE__ */ React.createElement("div", { className: "ag-bandhead" }, /* @__PURE__ */ React.createElement(Mark, { size: 22, still: true }), /* @__PURE__ */ React.createElement("b", null, "Ten agents. ", /* @__PURE__ */ React.createElement("span", null, "One yes.")), /* @__PURE__ */ React.createElement(AgentPlay, { w, compact: true })), /* @__PURE__ */ React.createElement("div", { ref: orbit, className: "ag-orbit band", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement(AgentField, { w, stars, band: true, orbit }), size && stars.map((n) => {
-      const st = w.state(n.c);
-      return (st === "now" || w.done && !w.held && n.c.human) && /* @__PURE__ */ React.createElement("span", { key: n.c.id, className: cx("ag-tile", n.c.human && "human", st, st === "now" && !w.reduce && "aura"), style: { left: n.x, top: n.y } }, /* @__PURE__ */ React.createElement(Icon, { name: n.c.icon, size: 13, stroke: 2.2 }));
-    })), /* @__PURE__ */ React.createElement(AgentCaption, { w, className: "band" }), /* @__PURE__ */ React.createElement(AgentWords, { w }));
     return /* @__PURE__ */ React.createElement(Fragment, null, /* @__PURE__ */ React.createElement(AgentField, { w, stars, orbit, height }), /* @__PURE__ */ React.createElement("div", { ref: stage, className: "ag-stage", style: height ? { height } : void 0 }, /* @__PURE__ */ React.createElement("div", { className: "ag-head" }, children), /* @__PURE__ */ React.createElement("div", { ref: orbit, className: "ag-orbit" }, /* @__PURE__ */ React.createElement("div", { className: "ag-crew", role: "toolbar", "aria-label": "The agents, in the order they work", onKeyDown: key }, size && stars.map((n, i) => {
       const st = w.state(n.c);
       return /* @__PURE__ */ React.createElement("button", { key: n.c.id, type: "button", ref: (el) => chips.current[i] = el, tabIndex: i === rove ? 0 : -1, "aria-pressed": !!w.held && w.held.id === n.c.id, className: cx("ag-chip", n.c.human && "human", st, st === "now" && !w.reduce && "aura"), style: place(n), onFocus: () => setRove(i), onClick: () => w.pick(n.c) }, /* @__PURE__ */ React.createElement(AgentChip, { c: n.c }), /* @__PURE__ */ React.createElement("span", { className: "sr-only" }, ", ", AG_STOPS[n.c.stop].t));
     })), /* @__PURE__ */ React.createElement(AgentCaption, { w, className: "centre" })), /* @__PURE__ */ React.createElement("div", { className: "ag-foot" }, /* @__PURE__ */ React.createElement(AgentPlay, { w }), /* @__PURE__ */ React.createElement("span", { className: "ag-hint" }, "Pick an agent to see its work")), /* @__PURE__ */ React.createElement(AgentWords, { w })));
+  }
+  function agAround(w, h, tab, top) {
+    const t = top + (tab ? 30 : 26), b = h - (tab ? 34 : 28), rx = w / 2 - (tab ? 40 : 24), ry = (b - t) / 2, cxp = w / 2, cyp = (t + b) / 2;
+    return AG_CREW.map((c, i) => {
+      const a = (-90 + i * 360 / AG_CREW.length) * Math.PI / 180, ox = Math.cos(a), oy = Math.sin(a);
+      return { c, x: cxp + rx * ox, y: cyp + ry * oy, ox, oy };
+    });
+  }
+  function AgentAround({ w }) {
+    const app = useApp(), tab = app.bp === "tablet", pill = useRef(null);
+    const [host, setHost] = useState(null);
+    useEffect(() => {
+      const p = pill.current, el = p && p.parentElement;
+      if (!el) return;
+      const f = () => setHost({ w: el.clientWidth, h: el.clientHeight, top: p.offsetTop + p.offsetHeight });
+      f();
+      const o = new ResizeObserver(f);
+      o.observe(el);
+      o.observe(p);
+      return () => o.disconnect();
+    }, []);
+    const stars = useMemo(() => host ? agAround(host.w, host.h, tab, host.top) : [], [host && host.w, host && host.h, host && host.top, tab]);
+    const now = w.held ? [w.held] : w.playing ? agAt(w.k) : [];
+    const k = w.held ? w.held.stop : w.done ? AG_N : w.k;
+    const [rove, setRove] = useState(0);
+    const stops = useRef([]);
+    const key = (e) => {
+      const n = AG_N, to = { ArrowRight: rove + 1, ArrowDown: rove + 1, ArrowLeft: rove - 1, ArrowUp: rove - 1, Home: 0, End: n - 1 }[e.key];
+      if (e.key === "Escape" && w.held) {
+        w.release();
+        return;
+      }
+      if (to == null) return;
+      e.preventDefault();
+      const i = (to + n) % n;
+      setRove(i);
+      stops.current[i] && stops.current[i].focus();
+    };
+    const did = w.held ? w.held.did : w.playing ? now.length > 1 ? "Work the exits at once: the kiranas, the marketplace, a bid" : now[0].did : w.k < 0 ? "Ten agents and one person take it from here." : "Ten agents worked the batch. One person said yes.";
+    return /* @__PURE__ */ React.createElement(Fragment, null, /* @__PURE__ */ React.createElement(AgentField, { w, stars, local: true, height: host && host.h }), /* @__PURE__ */ React.createElement("div", { className: "ag-around", "aria-hidden": "true", style: host ? { height: host.h, marginBottom: -host.h } : void 0 }, host && stars.map((n) => {
+      const st = w.state(n.c);
+      return /* @__PURE__ */ React.createElement("span", { key: n.c.id, className: cx("ag-ptile", n.c.human && "human", st, w.held && w.held.id === n.c.id && "held", st === "now" && !w.reduce && "aura"), style: { left: n.x, top: n.y } }, /* @__PURE__ */ React.createElement(Icon, { name: n.c.icon, size: tab ? 15 : 13, stroke: 2.2 }));
+    })), /* @__PURE__ */ React.createElement("div", { ref: pill, className: "ag-pill" }, /* @__PURE__ */ React.createElement("div", { className: "ag-pill-row" }, /* @__PURE__ */ React.createElement(Mark, { size: 22, still: true }), /* @__PURE__ */ React.createElement("b", null, "Ten agents. ", /* @__PURE__ */ React.createElement("span", null, "One yes.")), /* @__PURE__ */ React.createElement(AgentPlay, { w, compact: true })), /* @__PURE__ */ React.createElement("div", { className: "ag-pill-now", "aria-hidden": "true" }, now.length ? now.map((c) => /* @__PURE__ */ React.createElement("span", { key: c.id, className: cx("ag-who", c.human && "human") }, /* @__PURE__ */ React.createElement("i", null, /* @__PURE__ */ React.createElement(Icon, { name: c.icon, size: 12, stroke: 2.2 })), c.name)) : /* @__PURE__ */ React.createElement("span", { className: "ag-who rest" }, w.k < 0 ? "A batch the gates will refuse" : "Sold, not binned"), /* @__PURE__ */ React.createElement("span", { className: "ag-did" }, did)), /* @__PURE__ */ React.createElement("div", { className: "ag-rail", role: "toolbar", "aria-label": "The nine stops", onKeyDown: key }, AG_STOPS.map((s, i) => /* @__PURE__ */ React.createElement("button", { key: s.id, type: "button", ref: (el) => stops.current[i] = el, tabIndex: i === rove ? 0 : -1, "aria-label": `${s.t}: ${agNames(i)}`, "aria-pressed": !!w.held && w.held.stop === i, className: cx(i < k && "done", i === k && "now", s.human && "human"), onFocus: () => setRove(i), onClick: () => w.pick(agAt(i)[0]) }, /* @__PURE__ */ React.createElement("i", null)))), /* @__PURE__ */ React.createElement(AgentWords, { w })));
+  }
+  function AgentStage({ children, band }) {
+    const app = useApp();
+    const w = useAgentWalk();
+    return (band != null ? band : app.bp !== "desktop") ? /* @__PURE__ */ React.createElement(AgentAround, { w }) : /* @__PURE__ */ React.createElement(AgentDesk, { w }, children);
   }
   Object.assign(window.SC3, { STAGE_TIMES, StatusBadge, TrackerCompact, TrackerCard, BatchRow, ChannelTable, SplitBar, MoneyPanel, DocCard, AgentStage });
 })();

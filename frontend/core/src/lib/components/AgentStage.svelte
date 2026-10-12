@@ -4,6 +4,7 @@
 	import { cx } from '../cx';
 	import Icon from '../icons/Icon.svelte';
 	import { prefersReducedMotion } from '../motion';
+	import AgentAround from './agents/AgentAround.svelte';
 	import AgentCaption from './agents/AgentCaption.svelte';
 	import AgentField from './agents/AgentField.svelte';
 	import {
@@ -21,7 +22,6 @@
 		type Star,
 		type Walk
 	} from './agents/mesh';
-	import Mark from './Mark.svelte';
 
 	// the agents at work, the sign-ins' stage (SC-195, round 2, option A, The agent mesh; the kit's AgentStage).
 	// ThreeUI's constellation field (adapted, MIT; agents/THIRD_PARTY_NOTICES.md) drifts behind the whole sign-in, under
@@ -32,7 +32,8 @@
 	// Play (WCAG 2.2.2), remembered in the browser; under reduced motion it is drawn at rest, every agent lit. It is live:
 	// the field gives way to the pointer and draws its links to it, a click or a tap sends a ripple through it (and lets
 	// go of an agent), and each agent, pressed, holds the walk at its stop and says what it does. No client's data, so a
-	// live workspace shows it before anyone signs in. On a phone or a tablet it is a band over the card.
+	// live workspace shows it before anyone signs in. Below desktops the agents stand round the card instead (SC-196,
+	// Around the card: agents/AgentAround.svelte).
 	type Props = { children?: Snippet; band?: boolean };
 	let { children, band }: Props = $props();
 	const app = useApp();
@@ -112,7 +113,7 @@
 	const isBand = $derived(band ?? app.bp !== 'desktop');
 	let ow = $state(0);
 	let oh = $state(0);
-	const stars: Star[] = $derived(ow && oh ? agOrbit(ow, oh, isBand) : []);
+	const stars: Star[] = $derived(ow && oh && !isBand ? agOrbit(ow, oh, false) : []);
 	let orbit: HTMLElement | null = $state(null);
 	// on a desktop the stage and the field keep to the sign-in's visible height, pinned while a long card scrolls by
 	let stage: HTMLElement | undefined = $state();
@@ -187,21 +188,7 @@
 {/snippet}
 
 {#if isBand}
-	<div class="ag-band">
-		<div class="ag-bandhead"><Mark size={22} /><b>Ten agents. <span>One yes.</span></b>{@render play(true)}</div>
-		<div bind:this={orbit} class="ag-orbit band" aria-hidden="true" bind:clientWidth={ow} bind:clientHeight={oh}>
-			<AgentField {walk} {stars} band {orbit} />
-			{#each stars as n (n.c.id)}
-				{@const st = walk.state(n.c)}
-				{#if st === 'now' || (walk.done && !held && n.c.human)}<span
-						class={cx('ag-tile', n.c.human && 'human', st, st === 'now' && !reduce && 'aura')}
-						style="left: {n.x}px; top: {n.y}px"><Icon name={n.c.icon} size={13} stroke={2.2} /></span
-					>{/if}
-			{/each}
-		</div>
-		<AgentCaption {walk} class="band" />
-		{@render words()}
-	</div>
+	<AgentAround {walk} {play} {words} />
 {:else}
 	<AgentField {walk} {stars} {orbit} {height} />
 	<div bind:this={stage} class="ag-stage" style:height={height ? `${height}px` : undefined}>

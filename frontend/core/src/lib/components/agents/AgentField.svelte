@@ -7,8 +7,16 @@
 	// nodes where the stage's orbit is, or the band's own box. Frames run while the walk moves, the pointer is in the
 	// field, a ripple spreads or the field is still settling. A click or a tap on a named node picks that agent; anywhere
 	// else it sends a ripple through the field and lets the walk go on
-	type Props = { walk: Walk; stars: Star[]; band?: boolean; orbit?: HTMLElement | null; height?: number | null };
-	let { walk, stars, band = false, orbit = null, height = null }: Props = $props();
+	type Props = {
+		walk: Walk;
+		stars: Star[];
+		band?: boolean;
+		orbit?: HTMLElement | null;
+		height?: number | null;
+		/** the agents placed in the canvas's own box (round the card), and the field taking no room in the rows */
+		local?: boolean;
+	};
+	let { walk, stars, band = false, orbit = null, height = null, local = false }: Props = $props();
 	let box: HTMLDivElement | undefined = $state();
 	let cv: HTMLCanvasElement | undefined = $state();
 	let w = $state(0);
@@ -92,7 +100,7 @@
 	$effect(() => {
 		if (!w || !h) return;
 		f.nodes = agField(w, h, band);
-		if (!band && orbit && box) {
+		if (!band && !local && orbit && box) {
 			const a = orbit.getBoundingClientRect(),
 				b = box.getBoundingClientRect(),
 				z = scaleOf();
@@ -148,7 +156,7 @@
 		if (!d || Math.hypot(p.x - d.x, p.y - d.y) > 10) return kick();
 		const hit = f.stars
 			.map((s) => ({ s, d: Math.hypot(s.x - p.x, s.y - p.y) }))
-			.filter((x) => x.d < (band ? 24 : 18))
+			.filter((x) => x.d < (band ? 24 : local ? 22 : 18))
 			.sort((a, b) => a.d - b.d)[0];
 		if (hit) walk.pick(hit.s.c);
 		else {
@@ -165,6 +173,7 @@
 	bind:clientHeight={h}
 	class={cx('ag-field', band && 'band')}
 	style:height={height ? `${height}px` : undefined}
+	style:margin-bottom={height && local ? `-${height}px` : undefined}
 	aria-hidden="true"
 	onpointermove={onmove}
 	onpointerleave={onleave}

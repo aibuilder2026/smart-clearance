@@ -32,3 +32,34 @@ their own ground so threads never cross the words.
 
 Board: `board.html`, published as a private artifact, https://claude.ai/artifact/3KX1LKFqNmpAaphz1xFSg9 (Claude Design's
 write needs `/design-login`, as for SC-195).
+
+## The pick
+
+12 Oct 2026, through the board's question: **C, Around the card**. Tablets held sideways but narrower than 1100 px take
+the same design ("The picked option").
+
+## The build (12 Oct 2026)
+
+The kit's `AgentStage` (design3 `system/product.jsx`) now has two layouts. On a desktop, `AgentDesk` is SC-195's stage
+as built. Below a desktop, `AgentAround` serves phones and tablets either way up. Then the port: core's
+`AgentStage.svelte`, `agents/AgentAround.svelte` and `agents/mesh.ts` (`agAround`).
+
+- **The field** fills the whole sign-in behind the card, as on a desktop. It is pinned while a long card scrolls by,
+  and takes no room in the sign-in's rows: the kit cancels its height with an equal negative margin.
+- **The agents:** the eleven stand on a loop round the card's edges, from the top, clockwise.
+  - The loop fills the visible box below the pill (the pill's bottom is measured), so no tile sits half under it.
+  - Each agent is a tile on its node. Its tint lies over the surface, so it stays opaque over the field's lit nodes.
+  - A tap on a tile holds the walk on that agent (the field's own hit test, 22 px). A tap on the field sends a ripple
+    and lets go.
+- **The pill** at the top shows the mark, "Ten agents. One yes." and Pause. It says who is at work (the agent's tile and
+  name, or the three exits together), and what they did.
+- **The rail:** the nine stops form a rail at the foot of the pill. Each stop is a 24 px button over a 4 px bar.
+  - One stop in a tab, the arrows between them.
+  - Pressing a stop holds the walk on that stop's agent; pressing it again lets go. A status line says which.
+- **The card** sits under the pill. On a phone it has its own glass, so the form stays legible over the field.
+- **Narrow landscape:** tablets held sideways below 1100 px take the same design, as asked.
+- **Reduced motion:** every agent is drawn lit, there is no Pause, and a stop can still be picked.
+
+Stills of both sign-ins are in `build/`: phone (390 × 844), iPad portrait (820 × 1180) and narrow landscape
+(1024 × 768), in light and dark, plus the desktop unchanged (1440). `build/motion-390.mp4` and `motion-820.mp4` record
+the console's sign-in on a phone and an iPad: the walk, a stop held and let go, and the field tapped.

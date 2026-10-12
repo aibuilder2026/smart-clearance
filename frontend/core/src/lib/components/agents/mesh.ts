@@ -198,6 +198,22 @@ export function agOrbit(w: number, h: number, band: boolean): Star[] {
 		return { c, x: w / 2 + rx * ox, y: h / 2 + ry * oy, ox, oy };
 	});
 }
+// below desktops (SC-196, Around the card): the eleven on a loop round the card's edges, from the top, clockwise, filling
+// the sign-in's visible box below the pill (top: where the pill ends), clear of the edges
+export function agAround(w: number, h: number, tab: boolean, top: number): Star[] {
+	const t = top + (tab ? 30 : 26),
+		b = h - (tab ? 34 : 28),
+		rx = w / 2 - (tab ? 40 : 24),
+		ry = (b - t) / 2,
+		cxp = w / 2,
+		cyp = (t + b) / 2;
+	return AG_CREW.map((c, i) => {
+		const a = ((-90 + (i * 360) / AG_CREW.length) * Math.PI) / 180,
+			ox = Math.cos(a),
+			oy = Math.sin(a);
+		return { c, x: cxp + rx * ox, y: cyp + ry * oy, ox, oy };
+	});
+}
 // the handoffs: each agent to the next, the yes to all three of the exits, and all three to Paperwork
 type Thread = { a: Star; b: Star; stop: number; fan?: boolean };
 export function agThreads(stars: Star[]): Thread[] {

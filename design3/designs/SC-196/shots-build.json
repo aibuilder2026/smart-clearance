@@ -1,0 +1,105 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/workspace-390-light",
+  "width": 390,
+  "height": 844,
+  "theme": "light",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/workspace-390-dark",
+  "width": 390,
+  "height": 844,
+  "theme": "dark",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/workspace-820-light",
+  "width": 820,
+  "height": 1180,
+  "theme": "light",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/workspace-820-dark",
+  "width": 820,
+  "height": 1180,
+  "theme": "dark",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/workspace-1024-light",
+  "width": 1024,
+  "height": 768,
+  "theme": "light",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/workspace-1024-dark",
+  "width": 1024,
+  "height": 768,
+  "theme": "dark",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/console/Smart-Clearance%20console%20v3.html?boot=0",
+  "out": "build/console-390-light",
+  "width": 390,
+  "height": 844,
+  "theme": "light",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/console/Smart-Clearance%20console%20v3.html?boot=0",
+  "out": "build/console-390-dark",
+  "width": 390,
+  "height": 844,
+  "theme": "dark",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/console/Smart-Clearance%20console%20v3.html?boot=0",
+  "out": "build/console-820-light",
+  "width": 820,
+  "height": 1180,
+  "theme": "light",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/console/Smart-Clearance%20console%20v3.html?boot=0",
+  "out": "build/console-820-dark",
+  "width": 820,
+  "height": 1180,
+  "theme": "dark",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/console/Smart-Clearance%20console%20v3.html?boot=0",
+  "out": "build/console-1024-light",
+  "width": 1024,
+  "height": 768,
+  "theme": "light",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/console/Smart-Clearance%20console%20v3.html?boot=0",
+  "out": "build/console-1024-dark",
+  "width": 1024,
+  "height": 768,
+  "theme": "dark",
+  "wait": 3400
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "build/workspace-1440-light",
+  "width": 1440,
+  "theme": "light",
+  "wait": 3400
+ }
+]

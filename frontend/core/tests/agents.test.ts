@@ -107,11 +107,33 @@ describe('the stage', () => {
 		flushSync();
 		expect(getByRole('button', { name: 'Play the agents' })).toBeTruthy();
 	});
-	it('is a band over the card on a phone, its Pause a button of its own', () => {
-		const { container, getByRole } = show(390);
-		expect(container.querySelector('.ag-band')).toBeTruthy();
+	it('stands round the card below desktops: a pill with Pause, the stops as a rail, the agents hidden from a reader (SC-196)', async () => {
+		const { container, getByRole, getAllByRole } = show(390);
+		expect(container.querySelector('.ag-pill')).toBeTruthy();
 		expect(container.querySelector('.ag-stage')).toBeNull();
-		expect(container.querySelector('.ag-orbit.band')!.getAttribute('aria-hidden')).toBe('true');
+		expect(container.querySelector('.ag-around')!.getAttribute('aria-hidden')).toBe('true');
 		expect(getByRole('button', { name: 'Pause the agents' })).toBeTruthy();
+		const rail = getByRole('toolbar', { name: 'The nine stops' });
+		const stops = getAllByRole('button').filter((b) => rail.contains(b));
+		expect(stops.map((b) => b.getAttribute('aria-label'))).toEqual([
+			'Connect: Data',
+			'Detect: Watcher',
+			'Verify: Vision',
+			'Value: Valuer',
+			'Decide: Router',
+			'Approve: You',
+			'Execute: Outreach, Lister and Negotiator',
+			'Settle: Paperwork',
+			'Report: Impact'
+		]);
+		expect(stops.filter((b) => b.tabIndex === 0)).toHaveLength(1);
+		// a stop pressed holds the walk on its agent, and says so; pressed again, it lets go
+		await fireEvent.click(stops[3]);
+		expect(stops[3].getAttribute('aria-pressed')).toBe('true');
+		expect(container.querySelector('.ag-pill [role="status"]')!.textContent).toContain('Valuer, Value');
+		expect(container.querySelector('.ag-pill-now')!.textContent).toContain('Priced every exit');
+		expect(getByRole('button', { name: 'Play the agents' })).toBeTruthy();
+		await fireEvent.click(stops[3]);
+		expect(stops[3].getAttribute('aria-pressed')).toBe('false');
 	});
 });
