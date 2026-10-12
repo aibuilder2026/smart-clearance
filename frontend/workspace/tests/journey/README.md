@@ -290,6 +290,62 @@ E2E_FROM=staff E2E_UNTIL=papers corepack pnpm test:journey:mango-stage   # part 
 
 Its run of 12 Oct on production is in `runs/2026-10-12-prod-mango/`.
 
+## Admin and console E2E
+
+The platform's own side (SC-191), `admin-console.journey.ts`: the landing page once, how the console and a client's
+workspace are reached, then the console in full, from a prospect's demo request to a configured client and the
+dashboards. It touches no batch and never resets the journey, but **each run sets up a new client, which the console
+cannot delete**: the company is the first of the suite's `COMPANIES` that is not a client yet (`E2E_COMPANY` names one).
+
+**Two screens, side by side** (the stage's `two` layout, `Cast.layout`), no phone:
+
+- a laptop (1440 × 900): Neha Kulkarni, a Super admin. It opens smartclearance.web.app once, then the console, where
+  she signs in on its own screen;
+- a tablet in portrait (820 × 1180): first Munchly Foods' workspace, opened from the landing page's Workspace (a guest
+  of the cast, `Cast.guests`, who signs in nowhere), then Megha Bava, in Support, signed in to the console. Her
+  session is minted by address (`sessions.sh megha=megha.bava@smartclearance.example`), as the synthetic world's staff
+  have hydrate's uids.
+
+**The journey:**
+
+- **the landing page, once**, gone over briefly: the hero, the statement, the agents at work, the chapters, Impact's
+  ledger and the workspace section;
+- how a prospect asks: Talk to us under a plan, Book a demo filled in for the company and sent;
+- **the ways in**: Find your workspace (a work email names its workspace), and the bar's Workspace and Console.
+  Workspace opens Munchly Foods' own sign-in on the tablet; Console takes the laptop to the console, and Neha signs in;
+- Megha signs in on the tablet;
+- the request on Neha's Overview, after a glance at Clients (the Overview does not read demo requests again on its own);
+- Neha presses Set up and walks New client's seven steps: the company, its address and staff domain, its supply chain
+  (through distributors, destroyed at the godown), its exits, the agents' first autonomy (Standard), its admin (the
+  prospect) and the plan (Pilot); the client opens on its Supply chain tab, its first stock export next, and Megha's
+  Clients lists it;
+- Neha configures its agents: the Watcher's quick-commerce gates, the Lister's reserve, the Negotiator on Act, the
+  approval always on; reads its channels and rules; invites its approver; moves it to Growth;
+- Megha tries Enterprise on the tablet and is refused: only a Super admin changes a plan;
+- Neha reads the client's audit log, every line in her name;
+- Neha monitors the Overview: the figures, Food by day (90 days, a day's tooltip, the table), Agents at work (a stop
+  filtering the batches), every client's batches searched and paged, Needs attention, demo requests and agent runs;
+  Megha follows them on the tablet;
+- a live client, Munchly Foods: the prototype's clock and its note, its agents' scheduled runs and timers (nothing is
+  fired), its SKUs with their gates and one SKU's sheet;
+- the platform's own screens: Agents, Connectors, Plans, Staff and the audit log;
+- the new client among the clients.
+
+**The notes** arrive as banners on the screen being read (stage.ts `spot`), in the manner of a phone's notification,
+not a chat: the Smart-Clearance mark, its name and the note's tag, then the note's title and a sentence or two, with no
+time or ticks. A banner slides down from the screen's top (or up from its foot when what is read sits under the top),
+while a ring lights what is read and the rest of that screen dims. Every click shows: the arrow dips and two rings
+spread where it lands.
+
+```sh
+corepack pnpm test:journey:admin                                   # on this machine's stack, with the landing page on :5173
+E2E_TARGET=prod corepack pnpm test:journey:admin                   # on production
+E2E_COMPANY="Nilgiri Foods" E2E_FROM=agents corepack pnpm test:journey:admin   # part of it, on a client already set up
+```
+
+`E2E_FROM` signs both in to the console and leaves the landing page out. Its run of 12 Oct on production is in
+`runs/2026-10-12-prod-admin/`: it set up Nilgiri Foods. The first run, on three screens, set up Aravalli Snacks.
+
 ## Before a run
 
 - backend-api on :8000 (`backend-api/scripts/dev.sh`), on a world with Munchly's live workspace (`hydrate.sh --reset`,

@@ -10,15 +10,19 @@ import { readFileSync } from 'node:fs';
 
 const REPO = new URL('../../../../', import.meta.url);
 
-export type App = 'workspace' | 'console';
+export type App = 'workspace' | 'console' | 'site';
 /** the stack a run takes: this machine's dev servers and local API (the default), or production's (E2E_TARGET=prod,
  *  SC-137): the deployed apps on Firebase Hosting, backend-api on Cloud Run, the agents on Cloud Run */
 export const PROD = process.env.E2E_TARGET === 'prod';
 export const ORIGIN: Record<App, string> = {
 	workspace:
 		process.env.E2E_WORKSPACE_URL ?? (PROD ? 'https://munchly-smartclearance.web.app' : 'http://localhost:5175'),
-	console: process.env.E2E_CONSOLE_URL ?? (PROD ? 'https://smartclearance-console.web.app' : 'http://localhost:5174')
+	console: process.env.E2E_CONSOLE_URL ?? (PROD ? 'https://smartclearance-console.web.app' : 'http://localhost:5174'),
+	// the landing page (SC-191): no one signs in there; a visitor reads it and books a demo
+	site: process.env.E2E_SITE_URL ?? (PROD ? 'https://smartclearance.web.app' : 'http://localhost:5173')
 };
+/** each app's folder under frontend/ */
+const DIR: Record<App, string> = { workspace: 'workspace', console: 'console', site: 'admin' };
 
 export type Person = { uid: string; email: string; name: string; role: string; org: string; token: string };
 type Session = { idToken: string; refreshToken: string; expiresAt: number };
@@ -27,7 +31,8 @@ type Session = { idToken: string; refreshToken: string; expiresAt: number };
  *  address and the app's browser key), read once with gh */
 const PROD_VARS: Record<App, { PUBLIC_API_BASE: string; PUBLIC_FIREBASE_API_KEY: string }> = {
 	workspace: { PUBLIC_API_BASE: 'WORKSPACE_API_BASE', PUBLIC_FIREBASE_API_KEY: 'WORKSPACE_FIREBASE_API_KEY' },
-	console: { PUBLIC_API_BASE: 'PUBLIC_API_BASE', PUBLIC_FIREBASE_API_KEY: 'PUBLIC_FIREBASE_API_KEY' }
+	console: { PUBLIC_API_BASE: 'PUBLIC_API_BASE', PUBLIC_FIREBASE_API_KEY: 'PUBLIC_FIREBASE_API_KEY' },
+	site: { PUBLIC_API_BASE: 'PUBLIC_API_BASE', PUBLIC_FIREBASE_API_KEY: 'PUBLIC_FIREBASE_API_KEY' }
 };
 const prodEnv = new Map<App, Record<string, string>>();
 function prodSettings(app: App): Record<string, string> {
@@ -49,7 +54,7 @@ function prodSettings(app: App): Record<string, string> {
 /** what an app's .env.local names (backend-api/scripts/app-env.sh writes them); on production, its build settings */
 export function appEnv(app: App): Record<string, string> {
 	if (PROD) return prodSettings(app);
-	const text = readFileSync(new URL(`frontend/${app}/.env.local`, REPO), 'utf8');
+	const text = readFileSync(new URL(`frontend/${DIR[app]}/.env.local`, REPO), 'utf8');
 	return Object.fromEntries(
 		text
 			.split('\n')

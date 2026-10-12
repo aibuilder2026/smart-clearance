@@ -178,7 +178,7 @@ story's figures as it goes, softly, so the run reaches the end and reports every
 
 People sign in with Firebase custom tokens (`backend-api/scripts/sessions.sh`); no password is typed or printed.
 
-### The six suites
+### The seven suites
 
 ```bash
 cd frontend
@@ -188,6 +188,7 @@ corepack pnpm test:journey:leftover            # Munchly Chips Leftover E2E
 corepack pnpm test:journey:mango-leftover      # Munchly Mango Leftover E2E
 corepack pnpm test:journey:sad                 # Munchly Chips Sad Path E2E: three screens, one recording
 corepack pnpm test:journey:mango-stage         # Munchly Mango E2E on three screens: the happy path, one recording
+corepack pnpm test:journey:admin               # Admin and console E2E: the landing page's ways in, a demo request to a configured client, the console in full
 ```
 
 | Suite | Resets? | The journey | What it proves |
@@ -198,6 +199,7 @@ corepack pnpm test:journey:mango-stage         # Munchly Mango E2E on three scre
 | **Munchly Mango Leftover E2E** (SC-135) | yes | The Mango, with `E2E_LEFTOVER` (10) kiranas not buying, `E2E_DECLINE` (2) of them pressing Not this time; Neha closes the offer window early; expiry day; the destruction on Lakshmi Agencies' evidence | every paper read back from its PDF; a kirana for each outcome (ordered, declined, expired); the ITC memo part reversed; her portal and copies |
 | **Munchly Chips Sad Path E2E** (SC-179, SC-184) | yes | The chips on three screens at once: Priya on a landscape tablet and Rakesh on a portrait one, both signing in on screen and online throughout, and a phone on which each kirana, Agrawal and Neha sign in on the app's own screen (no password typed: the check is answered with their session); a cursor shows every click. Two kiranas order 48 packets, seen live on Priya's Execution; the lot is won; Neha closes the window on the other 36 shops, 540 packets are left; expiry day; Rakesh's evidence for 540 packs, the certificate signed in place; Priya's second yes | the destruction of nearly a whole scheme; orders arriving live; Vision validating the photos on screen; the certificate signed stroke by stroke, its signatures and log read; the kiranas' invoices and the Impact screens; one recording of all three (2560 × 1440) |
 | **Munchly Mango E2E on three screens** (SC-190) | yes | The Mango Drink, sold through, on the sad path's stage: Priya on a landscape tablet and Lakshmi Agencies on a portrait one, both signing in on screen and online throughout, and a phone on which Neha, three kiranas and Meera sign in as each is needed; the business notes at each moment that matters. The first `E2E_SHOWN` (3) ordering kiranas order on the phone, the other 49 as themselves through backend-api; her staff sale on its receipt; Feeding India's pickup; the papers; the van round; the review; Report now (₹16,917.10) | the happy path told as one recording (2560 × 1440): each order landing live on Priya's Execution, Vision reading the label and the staff sale's receipt, the papers and kirana invoices, the Impact screens, and Lakshmi Agencies ending whole |
+| **Admin and console E2E** (SC-191) | never resets; **adds a client each run** | The platform's own side on a laptop and a tablet side by side, no phone: the laptop opens the landing page once, goes over it briefly and books a demo, then shows the ways in (Find your workspace; Workspace opens a client's workspace on the tablet; Console, where Neha, a Super admin, signs in); Megha (Support) signs in on the tablet. Neha sets the company up from its request (New client's seven steps), configures its agents (the Watcher's gates, the Lister's reserve, the Negotiator on Act), reads its rules, invites its approver and moves it to Growth; Megha is refused a plan change; Neha reads its audit log, monitors the Overview, a live client's agents and SKUs, and the platform's Agents, Connectors, Plans, Staff and audit log | the landing page's ways in; Book a demo reaching the console; New client from a request; the agents' settings and autonomy; the roles (Support refused a plan change); the audit log in the staff member's name; the Overview's figures, Food by day, Agents at work and the batches table; the platform's screens; one recording of both (2560 × 1440) |
 
 ### Options
 

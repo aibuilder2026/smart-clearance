@@ -24,3 +24,16 @@ def test_unknown_people_are_refused_before_anything_is_signed():
         sessions.main(["priya", "nobody-here"])
     with pytest.raises(SystemExit, match="none given"):
         sessions.main([])
+
+
+def test_another_staff_member_by_address_on_the_staff_domain():
+    domain = sessions.get_settings().staff_email_domain
+    who, megha = sessions.staff(f"megha=megha.bava@{domain}")
+    assert who == "megha"
+    assert megha["name"] == "Megha Bava"
+    assert megha["uid"] == synthetic_uid(f"megha.bava@{domain}")
+    assert megha["role"] == "staff"
+    # an address off the staff domain is nobody the suite may sign in as
+    assert sessions.staff("ritu=ritu@aravalli-snacks.example") is None
+    with pytest.raises(SystemExit, match="ritu"):
+        sessions.main(["ritu=ritu@aravalli-snacks.example"])

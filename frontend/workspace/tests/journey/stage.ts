@@ -44,6 +44,8 @@ type PaneSpec = {
 	scale: number;
 	/** the screencast's largest frame: the screen drawn on the stage at about twice its size, for a sharp recording */
 	max: { width: number; height: number };
+	/** a touch device (a tablet or a phone), or a laptop's mouse and keyboard */
+	mobile: boolean;
 };
 
 /** the stage, in CSS pixels (drawn at twice that, and recorded at 2560 × 1440) */
@@ -56,39 +58,65 @@ const HEAD = 46;
 /** a tablet's bezel and a phone's, each side */
 const TAB_BEZEL = 11;
 const PHONE_BEZEL = 9;
-/** the distributor's tablet, in portrait, takes the stage's height */
-const DIST_SCALE = (H - TOP - HEAD - M - 2 * TAB_BEZEL) / 1180;
-const DIST_COL = 820 * DIST_SCALE + 2 * TAB_BEZEL;
 const PHONE_SCALE = 0.78;
-const PHONE_COL = 390 * PHONE_SCALE + 2 * PHONE_BEZEL;
-/** the operator's tablet, in landscape, takes what is left, the narrator under it */
-const OP_COL = W - 4 * M - DIST_COL - PHONE_COL;
-const OP_SCALE = (OP_COL - 2 * TAB_BEZEL) / 1180;
-
-const PANES: Record<PaneId, PaneSpec> = {
-	operator: {
-		label: 'Tablet',
-		size: '1180 × 820 · landscape',
-		viewport: { width: 1180, height: 820 },
-		scale: OP_SCALE,
-		max: { width: 1600, height: 1112 }
-	},
-	distributor: {
-		label: 'Tablet',
-		size: '820 × 1180 · portrait',
-		viewport: { width: 820, height: 1180 },
-		scale: DIST_SCALE,
-		max: { width: 1180, height: 1698 }
-	},
-	phone: {
-		label: 'Phone',
-		size: '390 × 844',
-		viewport: { width: 390, height: 844 },
-		scale: PHONE_SCALE,
-		max: { width: 700, height: 1515 }
-	}
-};
-const COL: Record<PaneId, number> = { operator: OP_COL, distributor: DIST_COL, phone: PHONE_COL };
+/** the stage's layouts: three screens (two tablets and a phone, SC-179), or two (a laptop and a tablet, SC-191) */
+export type Layout = 'three' | 'two';
+let LAYOUT: Layout = 'three';
+let PANES = {} as Record<PaneId, PaneSpec>;
+let COL = {} as Record<PaneId, number>;
+/** the screens of a layout and their widths on the stage: the tablet in portrait takes the stage's height, the phone
+ *  its own width, and the landscape screen (a tablet, or a laptop) what is left, with the narrator under it */
+function setLayout(layout: Layout) {
+	LAYOUT = layout;
+	const phone = layout === 'three';
+	const distScale = (H - TOP - HEAD - M - 2 * TAB_BEZEL) / 1180;
+	const distCol = 820 * distScale + 2 * TAB_BEZEL;
+	const phoneCol = phone ? 390 * PHONE_SCALE + 2 * PHONE_BEZEL : 0;
+	const op = phone ? { width: 1180, height: 820 } : { width: 1440, height: 900 };
+	const opCol = W - (phone ? 4 : 3) * M - distCol - phoneCol;
+	const opScale = (opCol - 2 * TAB_BEZEL) / op.width;
+	PANES = {
+		operator: phone
+			? {
+					label: 'Tablet',
+					size: '1180 × 820 · landscape',
+					viewport: op,
+					scale: opScale,
+					max: { width: 1600, height: 1112 },
+					mobile: true
+				}
+			: {
+					label: 'Laptop',
+					size: '1440 × 900',
+					viewport: op,
+					scale: opScale,
+					max: { width: 2160, height: 1350 },
+					mobile: false
+				},
+		distributor: {
+			label: 'Tablet',
+			size: '820 × 1180 · portrait',
+			viewport: { width: 820, height: 1180 },
+			scale: distScale,
+			max: { width: 1180, height: 1698 },
+			mobile: true
+		},
+		...(phone
+			? {
+					phone: {
+						label: 'Phone',
+						size: '390 × 844',
+						viewport: { width: 390, height: 844 },
+						scale: PHONE_SCALE,
+						max: { width: 700, height: 1515 },
+						mobile: true
+					}
+				}
+			: {})
+	} as Record<PaneId, PaneSpec>;
+	COL = { operator: opCol, distributor: distCol, phone: phoneCol };
+}
+setLayout('three');
 
 /** the recording's size */
 const OUT = { width: 2560, height: 1440 };
@@ -116,7 +144,7 @@ const CURSOR = `(() => {
 		c = document.createElement('div');
 		c.id = 'e2e-cursor';
 		c.setAttribute('aria-hidden', 'true');
-		c.innerHTML = '<svg width="26" height="26" viewBox="0 0 26 26"><path d="M4 2.5v18.2l5-4.5 3.3 7.3 3.2-1.4-3.2-7.2 6.9-.3z" fill="#141a17" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>';
+		c.innerHTML = '<svg width="31" height="31" viewBox="0 0 26 26" style="transform-origin:4px 3px;transition:transform .14s ease"><path d="M4 2.5v18.2l5-4.5 3.3 7.3 3.2-1.4-3.2-7.2 6.9-.3z" fill="#141a17" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>';
 		c.style.cssText = 'position:fixed;left:0;top:0;z-index:2147483647;pointer-events:none;transition:transform ${GLIDE - 60}ms cubic-bezier(.25,.7,.2,1);filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))';
 		const p = at() || [innerWidth * 0.55, innerHeight * 0.62];
 		c.style.transform = 'translate(' + p[0] + 'px,' + p[1] + 'px)';
@@ -134,12 +162,17 @@ const CURSOR = `(() => {
 	addEventListener('mousedown', (e) => {
 		// no ripple for a pen touching a signature pad: it draws
 		if (e.target instanceof Element && e.target.closest('.signpad')) return;
-		const r = document.createElement('div');
-		r.setAttribute('aria-hidden', 'true');
-		r.style.cssText = 'position:fixed;left:' + (e.clientX - 22) + 'px;top:' + (e.clientY - 22) + 'px;width:44px;height:44px;border-radius:50%;border:3px solid #f5c542;background:rgba(245,197,66,.28);z-index:2147483646;pointer-events:none;transform:scale(.35);opacity:1;transition:transform .5s ease-out,opacity .6s ease-out';
-		document.documentElement.appendChild(r);
-		requestAnimationFrame(() => requestAnimationFrame(() => { r.style.transform = 'scale(1.5)'; r.style.opacity = '0'; }));
-		setTimeout(() => r.remove(), 800);
+		// the arrow dips as it presses, and two rings spread from where it landed
+		const arrow = make().firstChild;
+		if (arrow) { arrow.style.transform = 'scale(.82)'; setTimeout(() => (arrow.style.transform = ''), 170); }
+		[0, 130].forEach((delay, i) => setTimeout(() => {
+			const r = document.createElement('div');
+			r.setAttribute('aria-hidden', 'true');
+			r.style.cssText = 'position:fixed;left:' + (e.clientX - 26) + 'px;top:' + (e.clientY - 26) + 'px;width:52px;height:52px;border-radius:50%;border:3px solid #f5c542;background:' + (i ? 'transparent' : 'rgba(245,197,66,.32)') + ';z-index:2147483646;pointer-events:none;transform:scale(.3);opacity:1;transition:transform .55s ease-out,opacity .65s ease-out';
+			document.documentElement.appendChild(r);
+			requestAnimationFrame(() => requestAnimationFrame(() => { r.style.transform = 'scale(1.6)'; r.style.opacity = '0'; }));
+			setTimeout(() => r.remove(), 900);
+		}, delay));
 	}, true);
 })();`;
 
@@ -158,8 +191,23 @@ type Pane = {
 
 /** the people who keep a screen of their own (the chips' distributor by default); everyone else takes the phone */
 const HOLDS: Record<string, PaneId> = { priya: 'operator', rakesh: 'distributor' };
+/** someone on the stage who never signs in: a visitor reading the landing page (SC-191) */
+export type Guest = { name: string; role: string; org?: string };
 /** a flow's own cast for the stage: who holds the two tablets, and who the phone signs in, as its caption says */
-export type Cast = { holds?: Record<string, PaneId>; phone?: string };
+export type Cast = {
+	holds?: Record<string, PaneId>;
+	phone?: string;
+	/** people who never sign in, by id */
+	guests?: Record<string, Guest>;
+	/** the app a person works in, where it is not the workspace (Neha's is the console) */
+	apps?: Record<string, App>;
+	/** how the stage names a person's role, beside the journey's ROLES */
+	roles?: Record<string, string>;
+	/** the app whose address the stage's bar names as the one live (the workspace's by default) */
+	host?: App;
+	/** the screens: two tablets and a phone (the default), or a laptop and a tablet in portrait */
+	layout?: Layout;
+};
 const PHONE_NOTE =
 	'Each kirana, Agrawal Wholesale on ExpireSoon and Neha in the console sign in here as they are needed.';
 
@@ -172,8 +220,6 @@ const initials = (name: string) =>
 		.map((w) => w[0]!.toUpperCase())
 		.join('');
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-const appOf = (who: string): App => (who === 'neha' ? 'console' : 'workspace');
-const roleOf = (who: string) => ROLES[who] ?? `Kirana · ${person(who).org}`;
 
 /** a run whose caption, step log and stills are the stage's */
 class StageRun extends Run {
@@ -221,6 +267,12 @@ export async function loaded(page: Page, timeout = 12_000) {
 		.catch(() => {});
 }
 
+/** the landing page's loader has lifted (SC-35, SC-131) and gone: the page is no longer busy behind it */
+export async function lifted(page: Page) {
+	await expect(page.locator('[data-loader-busy]')).toHaveCount(0, { timeout: 30_000 });
+	await page.waitForFunction(() => !document.querySelector('.loader'), null, { timeout: 15_000 }).catch(() => {});
+}
+
 export class Stage {
 	readonly run: Run;
 	private panes = {} as Record<PaneId, Pane>;
@@ -239,6 +291,8 @@ export class Stage {
 	private told = false;
 	/** who holds the two tablets */
 	private holds = HOLDS;
+	/** the flow's cast: its guests, the apps its people work in, their roles */
+	private crew: Cast = {};
 
 	private constructor(
 		private stageBrowser: Browser,
@@ -258,7 +312,8 @@ export class Stage {
 		const paneBrowser = await chromium.launch({ headless: true, args: KEEP_DRAWING });
 		const ctx = await stageBrowser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 2 });
 		const stage = await ctx.newPage();
-		await stage.setContent(STAGE_HTML(about, cast.phone ?? PHONE_NOTE));
+		setLayout(cast.layout ?? 'three');
+		await stage.setContent(STAGE_HTML(about, cast.phone ?? PHONE_NOTE, cast.host ?? 'workspace'));
 		await stage.evaluate(() => document.fonts.ready);
 		let monitor: Page | null = null;
 		if (LIVE) {
@@ -275,6 +330,7 @@ export class Stage {
 		}
 		const s = new Stage(stageBrowser, paneBrowser, monitor, stage, info, about, video);
 		s.holds = cast.holds ?? HOLDS;
+		s.crew = cast;
 		for (const id of Object.keys(PANES) as PaneId[]) await s.addPane(id);
 		s.timers.push(setInterval(() => void s.pump(), 50));
 		s.timers.push(setInterval(() => void s.watchdog(), 3000));
@@ -287,8 +343,8 @@ export class Stage {
 		const ctx = await this.paneBrowser.newContext({
 			viewport: spec.viewport,
 			deviceScaleFactor: 2,
-			isMobile: true,
-			hasTouch: true,
+			isMobile: spec.mobile,
+			hasTouch: spec.mobile,
 			colorScheme: 'light',
 			// a live build registers a service worker; the dev servers register none (playwright.journey.config.ts)
 			serviceWorkers: 'block'
@@ -364,13 +420,18 @@ export class Stage {
 			.catch(() => {});
 	}
 
-	/** every screen on its app's sign-in screen, fully drawn, before anything is recorded */
-	async ready(apps: Record<PaneId, App>) {
+	/** every screen on its app's sign-in screen (the landing page with its loader lifted), fully drawn, before anything
+	 *  is recorded */
+	async ready(apps: Partial<Record<PaneId, App>>) {
 		for (const id of Object.keys(apps) as PaneId[]) {
 			const page = this.panes[id].page;
-			await page.goto(ORIGIN[apps[id]] + '/');
-			await settled(page);
-			await expect(page.locator('#si-email')).toBeVisible({ timeout: 30_000 });
+			const app = apps[id]!;
+			await page.goto(ORIGIN[app] + '/');
+			if (app === 'site') await lifted(page);
+			else {
+				await settled(page);
+				await expect(page.locator('#si-email')).toBeVisible({ timeout: 30_000 });
+			}
 			await loaded(page);
 			await this.address(id);
 		}
@@ -424,6 +485,22 @@ export class Stage {
 		return Object.values(this.panes).map((p) => p.page);
 	}
 
+	/** a person on the stage: a guest of the flow's, or someone with a session */
+	private personOf(who: string): { name: string; org: string } {
+		const g = this.crew.guests?.[who];
+		return g ? { name: g.name, org: g.org ?? '' } : person(who);
+	}
+
+	/** the app a person works in */
+	appOf(who: string): App {
+		return this.crew.apps?.[who] ?? (who === 'neha' ? 'console' : 'workspace');
+	}
+
+	/** how the stage names a person's role */
+	private roleOf(who: string) {
+		return this.crew.guests?.[who]?.role ?? this.crew.roles?.[who] ?? ROLES[who] ?? `Kirana · ${person(who).org}`;
+	}
+
 	pane(id: PaneId) {
 		return this.panes[id].page;
 	}
@@ -435,8 +512,13 @@ export class Stage {
 
 	/** who holds a screen, as its label names them */
 	private async hold(id: PaneId, who: string | null, app: App | null) {
-		const p = who ? person(who) : null;
-		const org = !p || who === 'neha' || ROLES[who!] === undefined || who === 'agrawal' ? '' : p.org;
+		const p = who ? this.personOf(who) : null;
+		const guest = who ? this.crew.guests?.[who] : undefined;
+		const org = guest
+			? (guest.org ?? '')
+			: !p || who === 'neha' || ROLES[who!] === undefined || who === 'agrawal'
+				? ''
+				: p.org;
 		await this.stage.evaluate(
 			([id, ini, name, sub]) => {
 				document.getElementById(`ini-${id}`)!.textContent = ini;
@@ -447,7 +529,10 @@ export class Stage {
 				id,
 				p ? initials(p.name) : '·',
 				p ? p.name : 'Signed out',
-				p ? [roleOf(who!), org].filter(Boolean).join(' · ') + (app === 'console' ? ' · console' : '') : PANES[id].label
+				p
+					? [this.roleOf(who!), org].filter(Boolean).join(' · ') +
+						(app === 'console' && !guest && !/console/.test(this.roleOf(who!)) ? ' · console' : '')
+					: PANES[id].label
 			] as const
 		);
 	}
@@ -465,16 +550,17 @@ export class Stage {
 	/** someone opens an app at a path on their screen, the caption naming them and what they are about to do. A screen
 	 *  already theirs moves within the app, as a click would; a phone handed over is signed out of the workspace by the
 	 *  one who had it, and the next person signs in on the app's own screen */
-	async open(who: string, path: string, did: string, app: App = appOf(who)) {
+	async open(who: string, path: string, did: string, app: App = this.appOf(who)) {
 		const id = this.paneOf(who);
 		const pane = this.panes[id];
-		const p = person(who);
-		await this.run.act(p.name, roleOf(who), did);
+		const p = this.personOf(who);
+		await this.run.act(p.name, this.roleOf(who), did);
 		await this.active(id);
 		if (pane.who !== who || pane.app !== app) await this.handOver(pane, who, app);
 		await this.go(pane.page, app, path);
-		await settled(pane.page);
-		if (app === 'workspace') await expect(pane.page.locator('#main')).toBeVisible();
+		if (app === 'site') await lifted(pane.page);
+		else await settled(pane.page);
+		if (app === 'workspace' && !this.crew.guests?.[who]) await expect(pane.page.locator('#main')).toBeVisible();
 		await loaded(pane.page);
 		await this.address(id);
 		return pane.page;
@@ -483,6 +569,14 @@ export class Stage {
 	/** the screen passes to someone: whoever is in the workspace on it signs out first, then the next person signs in
 	 *  to their app (or finds it still signed in, the console on a phone) */
 	private async handOver(pane: Pane, who: string, app: App) {
+		if (app === 'site' || this.crew.guests?.[who]) {
+			// the landing page, or a guest shown an app's own address (its sign-in): nobody signs in, so nothing to hand
+			// over but the screen
+			pane.who = who;
+			pane.app = app;
+			await this.hold(pane.id, who, app);
+			return;
+		}
 		if (pane.signedIn.workspace && pane.signedIn.workspace !== who) await this.signOut(pane);
 		if (pane.signedIn[app] === who) {
 			// still signed in on that app's address: the phone switches to it
@@ -562,8 +656,12 @@ export class Stage {
 
 	/** moves within the app as a link would (SvelteKit's router takes the click), or loads the address if it does not */
 	private async go(page: Page, app: App, path: string) {
-		const want = (u: URL) => u.pathname + u.search === path;
+		const want = (u: URL) => u.origin === ORIGIN[app] && u.pathname + u.search === path;
 		if (want(new URL(page.url()))) return;
+		if (new URL(page.url()).origin !== ORIGIN[app]) {
+			await page.goto(ORIGIN[app] + path);
+			return;
+		}
 		await page.evaluate((p) => {
 			const a = document.createElement('a');
 			a.href = p;
@@ -667,8 +765,9 @@ export class Stage {
 		} else await page.waitForTimeout(GLIDE + rest);
 	}
 
-	/** an element read with a note: the screen scrolls to it, the rest of its screen dims, a ring lights it, and a card
-	 *  beside it says why (a tag, a title and a sentence or two), held long enough to read, then gone */
+	/** an element read with a note: the screen scrolls to it, the rest of its screen dims, a ring lights it, and a banner
+	 *  slides onto that screen, as a WhatsApp message arrives (SC-191), saying why (a tag, a title and a sentence or two),
+	 *  held long enough to read, then gone */
 	async spot(target: Locator, note: Note, hold?: number) {
 		const page = target.page();
 		if (!(await this.reveal(target))) return;
@@ -707,27 +806,27 @@ export class Stage {
 					fx.appendChild(ring);
 					requestAnimationFrame(() => ring.classList.add('on'));
 					if (!note) return;
-					// the card beside the element: under it where the stage has room, else over it, its arrow on the element
+					// the note arrives on that screen as a notification banner does: it slides down from the screen's top, or up
+					// from its foot when what is read sits under the top (the app's mark, its name and the note's tag, then the note)
 					const card = document.createElement('div');
-					card.className = 'callout';
+					card.className = 'wa';
 					card.innerHTML =
-						'<div class="co-head"><span class="co-tag"></span><b></b></div><p></p><i class="co-arrow"></i>';
-					card.querySelector('.co-tag')!.textContent = note.tag;
+						'<div class="wa-head"><span class="wa-ic">S</span><span class="wa-app">Smart-Clearance</span><span class="wa-tag"></span></div>' +
+						'<b></b><p></p>';
+					card.querySelector('.wa-tag')!.textContent = note.tag;
 					card.querySelector('b')!.textContent = note.title;
 					card.querySelector('p')!.textContent = note.text;
+					const bw = Math.min(scr.width - 20, 460);
+					card.style.width = `${bw}px`;
 					document.getElementById('callouts')!.appendChild(card);
-					const cw = card.offsetWidth,
-						ch = card.offsetHeight;
-					const ex = scr.left + x,
-						ey = scr.top + y;
-					const below = ey + h + 16 + ch < innerHeight - 10;
-					const top = below ? ey + h + 16 : Math.max(60, ey - ch - 16);
-					const left = Math.min(innerWidth - cw - 12, Math.max(12, ex + Math.min(w, 220) / 2 - 40));
+					const ch = card.offsetHeight;
+					const left = scr.left + (scr.width - bw) / 2;
+					// from the top, unless the banner would cover what is read and the foot has room
+					const fromTop = y > ch + 22 || scr.height - (y + h) < ch + 22;
+					const top = fromTop ? scr.top + 10 : scr.bottom - ch - 10;
 					Object.assign(card.style, { left: `${left}px`, top: `${top}px` });
-					card.classList.add(below ? 'below' : 'above');
-					const arrow = card.querySelector('.co-arrow') as HTMLElement;
-					arrow.style.left = `${Math.min(cw - 28, Math.max(16, ex + Math.min(w, 220) / 2 - left - 7))}px`;
-					requestAnimationFrame(() => card.classList.add('on'));
+					card.classList.add(fromTop ? 'down' : 'up');
+					requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('on')));
 				},
 				[pane.id, box, vp.width, note ?? null] as const
 			)
@@ -738,7 +837,7 @@ export class Stage {
 	private async unring() {
 		await this.stage
 			.evaluate(() => {
-				for (const el of document.querySelectorAll('.ring, .callout')) {
+				for (const el of document.querySelectorAll('.ring, .wa')) {
 					el.classList.remove('on');
 					setTimeout(() => el.remove(), 320);
 				}
@@ -888,13 +987,16 @@ const scr = (id: PaneId) => ({
 	h: PANES[id].viewport.height * PANES[id].scale
 });
 
-function STAGE_HTML(about: About, phoneNote: string) {
+function STAGE_HTML(about: About, phoneNote: string, host: App) {
 	const O = scr('operator');
-	const opH = O.h + 2 * TAB_BEZEL;
+	const laptop = LAYOUT === 'two';
+	/** a laptop's base, under its screen */
+	const BASE = laptop ? 10 : 0;
+	const opH = O.h + 2 * TAB_BEZEL + BASE;
 	const x = {
 		operator: M,
-		distributor: M + OP_COL + M,
-		phone: M + OP_COL + M + DIST_COL + M
+		distributor: M + COL.operator + M,
+		phone: M + COL.operator + M + COL.distributor + M
 	};
 	const label = (id: PaneId) => `
 		<div class="label">
@@ -907,10 +1009,10 @@ function STAGE_HTML(about: About, phoneNote: string) {
 		const { w, h } = scr(id);
 		const inset = (id === 'phone' ? PHONE_BEZEL : TAB_BEZEL) - 1;
 		// the stage's own layer over the screen: the rings round what is read, clipped to the screen
-		return `<div class="dev" id="dev-${id}"><img id="scr-${id}" src="${BLANK}" style="width:${px(w)};height:${px(h)}" alt=""><div class="fx" id="fx-${id}" style="left:${px(inset)};top:${px(inset)};width:${px(w)};height:${px(h)}"></div></div>`;
+		return `<div class="dev${id === 'operator' && laptop ? ' laptop' : ''}" id="dev-${id}"><img id="scr-${id}" src="${BLANK}" style="width:${px(w)};height:${px(h)}" alt=""><div class="fx" id="fx-${id}" style="left:${px(inset)};top:${px(inset)};width:${px(w)};height:${px(h)}"></div></div>`;
 	};
 	const col = (id: PaneId, extra = '') =>
-		`<div class="col" style="left:${px(x[id])};width:${px(COL[id])}">${label(id)}${device(id)}${extra}</div>`;
+		`<div class="col" style="left:${px(x[id])};width:${px(COL[id])}">${label(id)}${device(id)}${id === 'operator' && laptop ? '<div class="lbase"></div>' : ''}${extra}</div>`;
 	return `<!doctype html><html><head><meta charset="utf-8">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=block">
 <style>
@@ -938,10 +1040,13 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 .dev img{display:block;background:#fff}
 .dev.on{box-shadow:0 0 0 2px #f5c542,0 0 28px rgba(245,197,66,.25)}
 #dev-operator,#dev-distributor{padding:${px(TAB_BEZEL - 1)};border-radius:20px}
+#dev-operator.laptop{border-radius:14px 14px 4px 4px}
+#dev-operator.laptop img{border-radius:5px}
+.lbase{height:10px;margin:0 -22px;border-radius:2px 2px 12px 12px;background:linear-gradient(#34453d,#1b2521);box-shadow:0 6px 14px rgba(0,0,0,.35)}
 #dev-operator img,#dev-distributor img{border-radius:9px}
 #dev-phone{padding:${px(PHONE_BEZEL - 1)};border-radius:30px}
 #dev-phone img{border-radius:22px}
-#narr{position:absolute;left:${px(M)};top:${px(TOP + HEAD + opH + M)};width:${px(OP_COL)};bottom:${px(M)};border:1px solid #22312b;border-radius:12px;background:rgba(18,28,24,.86);padding:12px 16px;display:grid;grid-template-columns:1.1fr 1fr;grid-template-rows:auto auto auto 1fr;column-gap:18px;row-gap:7px;overflow:hidden}
+#narr{position:absolute;left:${px(M)};top:${px(TOP + HEAD + opH + M)};width:${px(COL.operator)};bottom:${px(M)};border:1px solid #22312b;border-radius:12px;background:rgba(18,28,24,.86);padding:12px 16px;display:grid;grid-template-columns:1.1fr 1fr;grid-template-rows:auto auto auto 1fr;column-gap:18px;row-gap:7px;overflow:hidden}
 #chapter{grid-column:1/-1;font:600 12.5px Geist;color:#f5c542;letter-spacing:.01em}
 .cap{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 #cap-who{font:700 19px/1.2 Geist;letter-spacing:-.01em}
@@ -962,25 +1067,29 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 .ring.dim{box-shadow:0 0 0 3px rgba(245,197,66,.2),0 0 22px rgba(245,197,66,.32),0 0 0 2400px rgba(7,12,10,.46)}
 .ring.on{opacity:1;transform:none}
 #callouts{position:absolute;inset:0;pointer-events:none;z-index:20}
-.callout{position:absolute;width:340px;background:rgba(13,21,18,.97);border:1px solid #3a5247;border-radius:14px;padding:13px 16px 14px;box-shadow:0 18px 44px rgba(0,0,0,.5),0 0 0 1px rgba(245,197,66,.06);opacity:0;transform:translateY(8px);transition:opacity .3s ease,transform .42s cubic-bezier(.22,1,.36,1)}
-.callout.above{transform:translateY(-8px)}
-.callout.on{opacity:1;transform:none}
-.co-head{display:flex;align-items:center;gap:9px;margin-bottom:7px}
-.co-tag{flex:none;font:600 10px/1 'Geist Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#13201a;background:#f5c542;border-radius:6px;padding:4px 7px 3px}
-.callout b{font:600 14.5px/1.25 Geist;color:#f2f6f3;letter-spacing:-.005em}
-.callout p{font:400 12.5px/1.5 Geist;color:#c3d3ca;margin:0}
-.co-arrow{position:absolute;width:13px;height:13px;background:rgba(13,21,18,.97);border-left:1px solid #3a5247;border-top:1px solid #3a5247;transform:rotate(45deg)}
-.callout.below .co-arrow{top:-7.5px}
-.callout.above .co-arrow{bottom:-7.5px;transform:rotate(225deg)}
+.wa{position:absolute;background:rgba(247,248,247,.97);border-radius:20px;padding:10px 12px 12px;color:#111b21;box-shadow:0 18px 46px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.18);opacity:0;transition:opacity .26s ease,transform .52s cubic-bezier(.22,1,.36,1)}
+.wa.down{transform:translateY(-26px) scale(.97)}
+.wa.up{transform:translateY(26px) scale(.97)}
+.wa.on{opacity:1;transform:none}
+.wa-head{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.wa-ic{flex:none;width:22px;height:22px;border-radius:6px;background:#1f6b45;display:grid;place-items:center;font:700 12.5px/1 Geist;color:#fff}
+.wa-app{font:600 11px/1 Geist;color:#54656f;letter-spacing:.04em;text-transform:uppercase}
+.wa-tag{flex:none;font:600 9.5px/1 'Geist Mono',monospace;letter-spacing:.07em;text-transform:uppercase;color:#1f6b45;background:#e6f2ea;border:1px solid #c8e2d1;border-radius:5px;padding:3px 6px 2px}
+.wa b{display:block;font:600 14.5px/1.3 Geist;color:#111b21;letter-spacing:-.005em;margin:0 2px 3px}
+.wa p{font:400 12.5px/1.48 Geist;color:#33424a;margin:0 2px}
 </style></head><body>
-<div id="bar"><span class="mark">S</span><div><h1>${esc(about.flow)}</h1><p>${esc(about.batch)} · ${PROD ? `live on production: ${esc(new URL(ORIGIN.workspace).host)}` : "live on this machine's stack"}</p></div>
+<div id="bar"><span class="mark">S</span><div><h1>${esc(about.flow)}</h1><p>${esc(about.batch)} · ${PROD ? `live on production: ${esc(new URL(ORIGIN[host]).host)}` : "live on this machine's stack"}</p></div>
 <span class="grow"></span><span id="step"></span><span class="rec"><i></i>REC</span><span id="clock">00:00</span></div>
 ${col('operator')}
 ${col('distributor')}
-${col(
-	'phone',
-	`<div class="note" style="width:${px(PHONE_COL)}">${esc(phoneNote)}</div><div class="note" style="width:${px(PHONE_COL)}">Everyone signs in on the app's own screen. The password check is answered with that person's own session, so no password is typed: the field takes a stand-in.</div>`
-)}
+${
+	PANES.phone
+		? col(
+				'phone',
+				`<div class="note" style="width:${px(COL.phone)}">${esc(phoneNote)}</div><div class="note" style="width:${px(COL.phone)}">Everyone signs in on the app's own screen. The password check is answered with that person's own session, so no password is typed: the field takes a stand-in.</div>`
+			)
+		: ''
+}
 <div id="callouts"></div>
 <div id="narr"><div id="chapter"></div><div class="cap"><span id="cap-who"></span><span id="cap-role"></span></div><ol id="log"></ol><div id="cap-did"></div><div id="stats"></div></div>
 <script>

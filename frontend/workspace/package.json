@@ -21,7 +21,8 @@
 		"test:journey:leftover": "playwright test -c playwright.journey.config.ts --project=\"Munchly Chips Leftover E2E\"",
 		"test:journey:mango-leftover": "playwright test -c playwright.journey.config.ts --project=\"Munchly Mango Leftover E2E\"",
 		"test:journey:sad": "playwright test -c playwright.journey.config.ts --project=\"Munchly Chips Sad Path E2E\"",
-		"test:journey:mango-stage": "playwright test -c playwright.journey.config.ts --project=\"Munchly Mango Stage E2E\""
+		"test:journey:mango-stage": "playwright test -c playwright.journey.config.ts --project=\"Munchly Mango Stage E2E\"",
+		"test:journey:admin": "playwright test -c playwright.journey.config.ts --project=\"Admin Console E2E\""
 	},
 	"dependencies": {
 		"@smart-clearance/api": "workspace:*",
