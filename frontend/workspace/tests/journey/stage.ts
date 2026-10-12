@@ -1011,7 +1011,15 @@ export class Stage {
 					// beside it first (a chat's bubble sits beside what it answers), then under or over it; a narrow side takes a
 					// narrower bubble; failing all, the side with the most room
 					let side: Side | null =
-						room.right >= bw ? 'right' : room.left >= bw ? 'left' : room.below >= ch ? 'below' : room.above >= ch ? 'above' : null;
+						room.right >= bw
+							? 'right'
+							: room.left >= bw
+								? 'left'
+								: room.below >= ch
+									? 'below'
+									: room.above >= ch
+										? 'above'
+										: null;
 					if (!side) {
 						const sideways = (room.right >= room.left ? 'right' : 'left') as Side;
 						if (room[sideways] >= 236) {
