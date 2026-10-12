@@ -1,0 +1,7 @@
+{
+  "name": "ui-approve",
+  "kind": "recording",
+  "made_with": "Playwright on the workspace app's stub (record-ui.mjs)",
+  "created": "2026-10-12",
+  "use": "SC-187: an interaction in the real UI, played in the film's window"
+}

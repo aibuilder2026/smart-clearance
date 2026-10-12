@@ -1,0 +1,29 @@
+{
+  "name": "k04-priya-approve",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "Close-up over the shoulder: the supply planner's hands (a steel bracelet watch on her left wrist, the sleeves of a navy pinstripe kurta) hold a phone over a white desk, her right thumb pressing one wide green button at the bottom of a plain white screen that shows nothing else; the laptop and the Pune office soft in the background, morning light. 50 mm macro, the thumb and the button sharp.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. Every pack and carton is unbranded: plain kraft-brown cartons with a sage-green band, solid-colour snack packets (amber, green, red) with no lettering, Mango Drink as small plain yellow-orange tetra packs with no lettering. No text, no letters, no numbers, no logos, no watermark, no number plate anywhere. No children.",
+  "seed": 187104,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-planner.webp",
+      "sha256": "f3b9921a0e38c3fc4b36d81dc77d793ba3cdb247a160387a8290c7768f68e301"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "latency_s": 41.7,
+  "use": "SC-187 keyframe: the first frame of a Veo clip for the demo film",
+  "model_text": null,
+  "status": "done",
+  "output": "k04-priya-approve.webp 2752x1536",
+  "postprocess": "WebP q82 from k04-priya-approve.png",
+  "derived_from": "k04-priya-approve.png"
+}

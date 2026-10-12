@@ -1,0 +1,39 @@
+{
+  "name": "c08-feeding-india-van",
+  "model": "veo-3.1-generate-001",
+  "location": "us-central1",
+  "service": "Vertex AI",
+  "prompt": "Photorealistic cinematic live action, exactly as in the image: the woman in the green T-shirt takes the kraft carton from the godown worker, turns and sets it into the open back of the white van, then turns back smiling as the second worker brings the next carton. The camera holds with a gentle, slow drift to the right. Every face, hand and arm keeps its form; no extra limbs appear and none vanish; nobody's face changes. No text, no letters, no numbers, no logos, no lettering appears anywhere, on no carton, packet, screen, sign or vehicle. Natural light, 35 mm, shallow depth of field, no handheld shake.",
+  "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
+  "seed": 187208,
+  "enhance_prompt": true,
+  "resolution": "1080p",
+  "aspect": "16:9",
+  "duration_s": 8,
+  "fps": 24,
+  "generate_audio": false,
+  "person_generation": "allow_adult",
+  "inputs": [
+    {
+      "role": "first",
+      "file": "k08-feeding-india-van.png",
+      "sha256": "b11a73fde9427fc1ded531d4df26de50d17c8f6fb67b954718afbad4c36661df"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 1.6,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "use": "SC-187: a scene of the demo film, image to video from its keyframe",
+  "status": "done",
+  "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/85a047f5-fb8b-453e-a68d-a7b2684e37c9",
+  "latency_s": 130.4,
+  "rai_filtered": {
+    "count": 0,
+    "reasons": []
+  },
+  "files": [
+    "c08-feeding-india-van.mp4"
+  ],
+  "probe": "{\n    \"programs\": [\n\n    ],\n    \"stream_groups\": [\n\n    ],\n    \"streams\": [\n        {\n            \"width\": 1920,\n            \"height\": 1080,\n            \"r_frame_rate\": \"24/1\",\n            \"nb_frames\": \"192\"\n        }\n    ],\n    \"format\": {\n        \"duration\": \"8.000000\",\n        \"size\": \"10773720\"\n    }\n}"
+}

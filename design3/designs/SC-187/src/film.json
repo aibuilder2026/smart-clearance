@@ -1,0 +1,1788 @@
+{
+ "fps": 24,
+ "width": 1920,
+ "height": 1080,
+ "xfade": 0.5,
+ "voice": "gemini-2.5-pro-tts-Kore-brisk-1.1",
+ "total": 177.643,
+ "segments": [
+  {
+   "kind": "clip",
+   "name": "c01-godown-date",
+   "key": "k01-godown-date",
+   "speed": 0.8,
+   "min": 4.5,
+   "max": 10.0,
+   "weight": 2,
+   "overlays": [
+    {
+     "id": "st-1",
+     "at": 0.75,
+     "until": 4.694,
+     "slide": false
+    },
+    {
+     "id": "st-2",
+     "at": 4.544,
+     "until": 7.616,
+     "slide": false
+    },
+    {
+     "id": "lower-rakesh",
+     "at": 0.8,
+     "until": 4.6,
+     "slide": false
+    }
+   ],
+   "seconds": 7.616,
+   "hold": 0.0,
+   "sceneOffset": 0.0,
+   "start": 0.0
+  },
+  {
+   "kind": "clip",
+   "name": "c13-lakshmi-godown",
+   "key": "k13-lakshmi-godown",
+   "speed": 0.8,
+   "min": 4.5,
+   "max": 10.0,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "st-3",
+     "at": 1.317,
+     "until": 6.058,
+     "slide": false
+    },
+    {
+     "id": "lower-lakshmi",
+     "at": 0.4,
+     "until": 4.6,
+     "slide": false
+    }
+   ],
+   "seconds": 6.058,
+   "hold": 0.0,
+   "sceneOffset": 7.116,
+   "start": 7.116
+  },
+  {
+   "kind": "clip",
+   "name": "r1-bay-dawn",
+   "key": "k1-bay-dawn",
+   "speed": 0.9,
+   "min": 5,
+   "max": 8.88888888888889,
+   "weight": 1.2,
+   "overlays": [
+    {
+     "id": "title",
+     "at": 0.4,
+     "until": 6.172,
+     "slide": false
+    }
+   ],
+   "seconds": 6.172,
+   "hold": 0.0,
+   "sceneOffset": 0.0,
+   "start": 12.674
+  },
+  {
+   "kind": "screen",
+   "shot": "quiet--neha-console-overview",
+   "bg": "k11-neha-console",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.0,
+   "focus": null,
+   "min": 4,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "cap-007",
+     "at": 0.0,
+     "until": 4.976,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-1",
+   "seconds": 4.976,
+   "sceneOffset": 5.672,
+   "start": 18.346
+  },
+  {
+   "kind": "still",
+   "name": "agents-nine-stops",
+   "zoom": 1.3,
+   "min": 4,
+   "anchor": 0.3,
+   "weight": 1.2,
+   "overlays": [
+    {
+     "id": "cap-008",
+     "at": 0.0,
+     "until": 5.172,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-1",
+   "seconds": 5.172,
+   "sceneOffset": 10.148,
+   "start": 22.822
+  },
+  {
+   "kind": "clip",
+   "name": "c02-priya-phone",
+   "key": "k02-priya-phone",
+   "speed": 0.85,
+   "min": 4.5,
+   "max": 9.411764705882353,
+   "weight": 1.2,
+   "overlays": [
+    {
+     "id": "lower-priya",
+     "at": 0.5,
+     "until": 4.8,
+     "slide": false
+    },
+    {
+     "id": "push-detect",
+     "at": 2.0,
+     "until": 7.051,
+     "slide": true
+    }
+   ],
+   "chapter": "ch-2",
+   "seconds": 7.051,
+   "hold": 0.0,
+   "sceneOffset": 0.0,
+   "start": 27.494
+  },
+  {
+   "kind": "screen",
+   "shot": "detect--priya-command",
+   "bg": "k02-priya-phone",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.0,
+   "focus": [
+    544,
+    448,
+    1856,
+    1150
+   ],
+   "min": 4,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "cap-012",
+     "at": 0.0,
+     "until": 6.126,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-2",
+   "seconds": 6.126,
+   "sceneOffset": 6.551,
+   "start": 34.045
+  },
+  {
+   "kind": "screen",
+   "shot": "detect--priya-journey-chips",
+   "bg": "k02-priya-phone",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.0,
+   "focus": null,
+   "min": 4,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "co-risk",
+     "at": 0.0,
+     "until": 6.126,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-2",
+   "seconds": 6.126,
+   "sceneOffset": 12.177,
+   "start": 39.671
+  },
+  {
+   "kind": "clip",
+   "name": "c03-rakesh-label-photo",
+   "key": "k03-rakesh-label-photo",
+   "speed": 0.85,
+   "min": 4.5,
+   "max": 9.411764705882353,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "push-verify",
+     "at": 1.2,
+     "until": 5.663,
+     "slide": true
+    }
+   ],
+   "chapter": "ch-3",
+   "seconds": 5.663,
+   "hold": 0.0,
+   "sceneOffset": 0.0,
+   "start": 45.297
+  },
+  {
+   "kind": "screen",
+   "shot": "plan--priya-route-chips",
+   "bg": "k03-rakesh-label-photo",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.0,
+   "focus": [
+    540,
+    1230,
+    1870,
+    760
+   ],
+   "min": 5,
+   "weight": 1.4,
+   "overlays": [
+    {
+     "id": "cap-016",
+     "at": 0.0,
+     "until": 6.628,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-3",
+   "seconds": 6.628,
+   "sceneOffset": 5.163,
+   "start": 50.46
+  },
+  {
+   "kind": "screen",
+   "shot": "plan--priya-route-chips",
+   "bg": "k02-priya-phone",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.0,
+   "focus": [
+    540,
+    2080,
+    1870,
+    720
+   ],
+   "min": 4.5,
+   "weight": 1.2,
+   "overlays": [
+    {
+     "id": "push-plan",
+     "at": 0.4,
+     "until": 4.5,
+     "slide": true
+    },
+    {
+     "id": "cap-019",
+     "at": 0.0,
+     "until": 5.364,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-4",
+   "seconds": 5.364,
+   "sceneOffset": 0.0,
+   "start": 56.588
+  },
+  {
+   "kind": "screen",
+   "shot": "plan--priya-route-chips",
+   "bg": "k02-priya-phone",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.0,
+   "focus": [
+    540,
+    2890,
+    1870,
+    640
+   ],
+   "min": 4,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "cap-020",
+     "at": 0.0,
+     "until": 4.72,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-4",
+   "seconds": 4.72,
+   "sceneOffset": 4.864,
+   "start": 61.452
+  },
+  {
+   "kind": "clip",
+   "name": "c04-priya-approve",
+   "key": "k04-priya-approve",
+   "speed": 0.8,
+   "min": 4,
+   "max": 10.0,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "co-yes",
+     "at": 0.0,
+     "until": 4.72,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-4",
+   "seconds": 4.72,
+   "hold": 0.0,
+   "sceneOffset": 9.084,
+   "start": 65.672
+  },
+  {
+   "kind": "video",
+   "name": "ui-approve",
+   "bg": "k04-priya-approve",
+   "phone": false,
+   "speed": 1.3,
+   "min": 4,
+   "weight": 1,
+   "seek": 5,
+   "fallback": "plan--priya-approve-sheet",
+   "overlays": [
+    {
+     "id": "push-approved",
+     "at": 1.5,
+     "until": 4.72,
+     "slide": true
+    },
+    {
+     "id": "cap-023",
+     "at": 0.0,
+     "until": 4.72,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-4",
+   "seconds": 4.72,
+   "sceneOffset": 13.304,
+   "start": 69.892
+  },
+  {
+   "kind": "clip",
+   "name": "c05-kirana-nagpur-offer",
+   "key": "k05-kirana-nagpur-offer",
+   "speed": 0.85,
+   "min": 4,
+   "max": 9.411764705882353,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "lower-ganesh",
+     "at": 0.4,
+     "until": 4.0,
+     "slide": false
+    },
+    {
+     "id": "push-offer",
+     "at": 1.0,
+     "until": 4.173,
+     "slide": true
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 4.173,
+   "hold": 0.0,
+   "sceneOffset": 0.0,
+   "start": 74.112
+  },
+  {
+   "kind": "video",
+   "name": "ui-order",
+   "bg": "k05-kirana-nagpur-offer",
+   "phone": true,
+   "speed": 1.3,
+   "min": 4,
+   "weight": 1,
+   "seek": 2,
+   "fallback": "orders--kirana-ganesh-offer-ordered-phone",
+   "overlays": [
+    {
+     "id": "co-shops",
+     "at": 0.0,
+     "until": 4.173,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 4.173,
+   "sceneOffset": 3.673,
+   "start": 77.785
+  },
+  {
+   "kind": "screen",
+   "shot": "deal--agrawal-listing-won",
+   "bg": "k06-agrawal-raipur",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.0,
+   "focus": [
+    1968,
+    584,
+    1152,
+    650
+   ],
+   "min": 3.5,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "co-lot",
+     "at": 0.0,
+     "until": 3.673,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 3.673,
+   "sceneOffset": 7.346,
+   "start": 81.458
+  },
+  {
+   "kind": "clip",
+   "name": "c06-agrawal-raipur",
+   "key": "k06-agrawal-raipur",
+   "speed": 0.9,
+   "min": 3.5,
+   "max": 8.88888888888889,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "lower-agrawal",
+     "at": 0.3,
+     "until": 3.6,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 3.673,
+   "hold": 0.0,
+   "sceneOffset": 10.519,
+   "start": 84.631
+  },
+  {
+   "kind": "clip",
+   "name": "c07-staff-sale-gate",
+   "key": "k07-staff-sale-gate",
+   "speed": 0.85,
+   "min": 4,
+   "max": 9.411764705882353,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "push-staff",
+     "at": 0.6,
+     "until": 4.173,
+     "slide": true
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 4.173,
+   "hold": 0.0,
+   "sceneOffset": 13.692,
+   "start": 87.804
+  },
+  {
+   "kind": "screen",
+   "shot": "donation--lakshmi-today",
+   "bg": "k07-staff-sale-gate",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.0,
+   "focus": [
+    544,
+    1120,
+    1920,
+    390
+   ],
+   "min": 3.5,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "co-staff",
+     "at": 0.0,
+     "until": 3.673,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 3.673,
+   "sceneOffset": 17.365,
+   "start": 91.477
+  },
+  {
+   "kind": "clip",
+   "name": "c08-feeding-india-van",
+   "key": "k08-feeding-india-van",
+   "speed": 0.85,
+   "min": 4,
+   "max": 9.411764705882353,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "lower-meera",
+     "at": 0.3,
+     "until": 3.8,
+     "slide": false
+    },
+    {
+     "id": "push-pickup",
+     "at": 0.8,
+     "until": 4.173,
+     "slide": true
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 4.173,
+   "hold": 0.0,
+   "sceneOffset": 20.538,
+   "start": 94.65
+  },
+  {
+   "kind": "screen",
+   "shot": "donation--meera-receipt-sheet",
+   "bg": "k08-feeding-india-van",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.0,
+   "focus": [
+    2700,
+    40,
+    460,
+    560
+   ],
+   "min": 3.5,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "co-meals",
+     "at": 0.0,
+     "until": 3.673,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 3.673,
+   "sceneOffset": 24.211,
+   "start": 98.323
+  },
+  {
+   "kind": "screen",
+   "shot": "papers--rakesh-deliveries-done",
+   "bg": "k05-kirana-nagpur-offer",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.0,
+   "focus": null,
+   "min": 3.5,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "cap-035",
+     "at": 0.0,
+     "until": 3.673,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-5",
+   "seconds": 3.673,
+   "sceneOffset": 27.384,
+   "start": 101.496
+  },
+  {
+   "kind": "clip",
+   "name": "c09-rakesh-tally-desk",
+   "key": "k09-rakesh-tally-desk",
+   "speed": 0.85,
+   "min": 4,
+   "max": 9.411764705882353,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "push-papers",
+     "at": 0.7,
+     "until": 4.0,
+     "slide": true
+    }
+   ],
+   "chapter": "ch-6",
+   "seconds": 4.0,
+   "hold": 0.0,
+   "sceneOffset": 0.0,
+   "start": 104.669
+  },
+  {
+   "kind": "screen",
+   "shot": "papers--paper-chips-invoice-issued",
+   "bg": "k09-rakesh-tally-desk",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.0,
+   "focus": [
+    2200,
+    1050,
+    920,
+    440
+   ],
+   "min": 4.5,
+   "weight": 1.2,
+   "overlays": [
+    {
+     "id": "cap-038",
+     "at": 0.0,
+     "until": 4.5,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-6",
+   "seconds": 4.5,
+   "sceneOffset": 3.5,
+   "start": 108.169
+  },
+  {
+   "kind": "screen",
+   "shot": "papers--paper-chips-invoice-issued",
+   "bg": "k09-rakesh-tally-desk",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.0,
+   "focus": [
+    2200,
+    3700,
+    920,
+    380
+   ],
+   "min": 3.5,
+   "weight": 0.8,
+   "overlays": [
+    {
+     "id": "cap-039",
+     "at": 0.0,
+     "until": 3.5,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-6",
+   "seconds": 3.5,
+   "sceneOffset": 7.5,
+   "start": 112.169
+  },
+  {
+   "kind": "screen",
+   "shot": "settle--paper-chips-credit-note",
+   "bg": "k09-rakesh-tally-desk",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.0,
+   "focus": null,
+   "min": 4,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "cap-040",
+     "at": 0.0,
+     "until": 4.0,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-6",
+   "seconds": 4.0,
+   "sceneOffset": 10.5,
+   "start": 115.169
+  },
+  {
+   "kind": "screen",
+   "shot": "settle--paper-chips-itc-memo",
+   "bg": "k09-rakesh-tally-desk",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.0,
+   "focus": [
+    2200,
+    1100,
+    920,
+    720
+   ],
+   "min": 5,
+   "weight": 1.3,
+   "overlays": [
+    {
+     "id": "co-itc",
+     "at": 0.0,
+     "until": 5.0,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-6",
+   "seconds": 5.0,
+   "sceneOffset": 14.0,
+   "start": 118.669
+  },
+  {
+   "kind": "screen",
+   "shot": "history--priya-past-record",
+   "bg": "k10-landfill-certificate",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.0,
+   "focus": [
+    583,
+    614,
+    2500,
+    870
+   ],
+   "min": 4,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "cap-042",
+     "at": 0.0,
+     "until": 4.0,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-6",
+   "seconds": 4.0,
+   "sceneOffset": 18.5,
+   "start": 123.169
+  },
+  {
+   "kind": "clip",
+   "name": "c10-landfill-certificate",
+   "key": "k10-landfill-certificate",
+   "speed": 0.85,
+   "min": 3.5,
+   "max": 9.411764705882353,
+   "weight": 0.8,
+   "overlays": [],
+   "chapter": "ch-6",
+   "seconds": 3.5,
+   "hold": 0.0,
+   "sceneOffset": 22.0,
+   "start": 126.669
+  },
+  {
+   "kind": "video",
+   "name": "ui-sign",
+   "bg": "k10-landfill-certificate",
+   "phone": false,
+   "speed": 1.5,
+   "min": 4.5,
+   "weight": 1.2,
+   "seek": 22,
+   "fallback": "history--priya-past-papers",
+   "overlays": [
+    {
+     "id": "cap-043",
+     "at": 0.0,
+     "until": 4.5,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-6",
+   "seconds": 4.5,
+   "sceneOffset": 25.0,
+   "start": 129.669
+  },
+  {
+   "kind": "screen",
+   "shot": "history--priya-past-papers",
+   "bg": "k10-landfill-certificate",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.0,
+   "focus": [
+    2160,
+    888,
+    896,
+    1190
+   ],
+   "min": 4,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "cap-044",
+     "at": 0.0,
+     "until": 4.0,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-6",
+   "seconds": 4.0,
+   "sceneOffset": 29.0,
+   "start": 133.669
+  },
+  {
+   "kind": "screen",
+   "shot": "ledger--priya-execution-chips-cleared",
+   "bg": "k14-office-dashboard",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.0,
+   "focus": null,
+   "min": 3.5,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "push-closed",
+     "at": 0.5,
+     "until": 5.439,
+     "slide": true
+    }
+   ],
+   "chapter": "ch-7",
+   "seconds": 5.439,
+   "sceneOffset": 0.0,
+   "start": 137.169
+  },
+  {
+   "kind": "screen",
+   "shot": "ledger--ledger-money",
+   "bg": "k14-office-dashboard",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.0,
+   "focus": [
+    544,
+    560,
+    2576,
+    540
+   ],
+   "min": 4,
+   "weight": 1.2,
+   "overlays": [
+    {
+     "id": "co-money",
+     "at": 0.0,
+     "until": 6.326,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-7",
+   "seconds": 6.326,
+   "sceneOffset": 4.939,
+   "start": 142.108
+  },
+  {
+   "kind": "screen",
+   "shot": "ledger--ledger-gst",
+   "bg": "k14-office-dashboard",
+   "phone": false,
+   "scroll": true,
+   "zoom": 1.0,
+   "focus": null,
+   "min": 3.5,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "cap-048",
+     "at": 0.0,
+     "until": 5.439,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-7",
+   "seconds": 5.439,
+   "sceneOffset": 10.765,
+   "start": 147.934
+  },
+  {
+   "kind": "screen",
+   "shot": "ledger--ledger-impact",
+   "bg": "k14-office-dashboard",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.0,
+   "focus": [
+    545,
+    572,
+    2567,
+    1343
+   ],
+   "min": 4.5,
+   "weight": 1.3,
+   "overlays": [
+    {
+     "id": "co-impact",
+     "at": 0.0,
+     "until": 7.02,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-7",
+   "seconds": 7.02,
+   "sceneOffset": 15.704,
+   "start": 152.873
+  },
+  {
+   "kind": "screen",
+   "shot": "ledger--batch-chips-impact",
+   "bg": "k14-office-dashboard",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.0,
+   "focus": [
+    544,
+    512,
+    1776,
+    336
+   ],
+   "min": 3.5,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "cap-050",
+     "at": 0.0,
+     "until": 5.439,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-7",
+   "seconds": 5.439,
+   "sceneOffset": 22.224,
+   "start": 159.393
+  },
+  {
+   "kind": "clip",
+   "name": "r4-office-dashboard",
+   "key": "k4-office-dashboard",
+   "speed": 0.9,
+   "min": 5,
+   "max": 8.88888888888889,
+   "weight": 1.2,
+   "overlays": [
+    {
+     "id": "end-cards",
+     "at": 0.5,
+     "until": 5.117,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-8",
+   "seconds": 5.117,
+   "hold": 0.0,
+   "sceneOffset": 0.0,
+   "start": 164.332
+  },
+  {
+   "kind": "screen",
+   "shot": "extra--demo-route-map",
+   "bg": "k12-close-lane",
+   "phone": false,
+   "scroll": false,
+   "zoom": 1.04,
+   "focus": null,
+   "min": 4,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "cap-053",
+     "at": 0.0,
+     "until": 4.097,
+     "slide": false
+    }
+   ],
+   "chapter": "ch-8",
+   "seconds": 4.097,
+   "sceneOffset": 4.617,
+   "start": 168.949
+  },
+  {
+   "kind": "clip",
+   "name": "c12-close-lane",
+   "key": "k12-close-lane",
+   "speed": 0.8,
+   "min": 5,
+   "max": 10.0,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "end-brand",
+     "at": 0.6,
+     "until": 5.097,
+     "slide": false
+    }
+   ],
+   "seconds": 5.097,
+   "hold": 0.0,
+   "sceneOffset": 8.214,
+   "start": 172.546
+  }
+ ],
+ "overlays": [
+  {
+   "id": "st-1",
+   "kind": "statement",
+   "text": "Stock going __short-dated__."
+  },
+  {
+   "id": "st-2",
+   "kind": "statement",
+   "text": "The quick-commerce gates close. {{Nobody wants it.}}"
+  },
+  {
+   "id": "lower-rakesh",
+   "kind": "lower",
+   "name": "Rakesh bhai",
+   "role": "Rakesh Traders · the chips' distributor",
+   "place": "Nagpur"
+  },
+  {
+   "id": "st-3",
+   "kind": "statement",
+   "text": "Written off. {{GST credit reversed.}} Landfill."
+  },
+  {
+   "id": "lower-lakshmi",
+   "kind": "lower",
+   "name": "Lakshmi",
+   "role": "Lakshmi Agencies · the Mango Drink's distributor",
+   "place": "Begum Bazaar, Hyderabad"
+  },
+  {
+   "id": "title",
+   "kind": "title",
+   "title": "Smart-Clearance",
+   "text": "Near-expiry stock, routed by AI agents. **One yes** from a person.",
+   "sub": "Software as a service · for manufacturers"
+  },
+  {
+   "id": "ch-1",
+   "kind": "chapter",
+   "n": "1",
+   "text": "A SaaS, run by agents"
+  },
+  {
+   "id": "cap-007",
+   "kind": "caption",
+   "text": "One workspace per brand, set up and watched by Smart-Clearance's staff in the **console**.",
+   "label": "The staff console",
+   "tone": "",
+   "right": false
+  },
+  {
+   "id": "cap-008",
+   "kind": "caption",
+   "text": "**Ten agents on Gemini** along nine stops: Data, Watcher, Vision, Valuer, Router, Lister, Outreach, Negotiator, Paperwork, Impact. Nothing executes before a person's yes.",
+   "label": "Agentic by design",
+   "tone": "amber",
+   "right": false
+  },
+  {
+   "id": "ch-2",
+   "kind": "chapter",
+   "n": "2",
+   "text": "Detect"
+  },
+  {
+   "id": "lower-priya",
+   "kind": "lower",
+   "name": "Priya Deshmukh",
+   "role": "Munchly Foods · supply chain, the one yes",
+   "place": "Pune"
+  },
+  {
+   "id": "push-detect",
+   "kind": "push",
+   "to": "To Priya · Munchly Foods",
+   "title": "Masala Chips 150 g · Nagpur",
+   "body": "Priya ji, Nagpur godown mein Masala Chips 150g (batch MF-2409-117) ki 1,360 units 18 Nov se pehle nahi bikengi. Q-commerce block hai. Route dekhne ke liye tap karein.",
+   "left": false
+  },
+  {
+   "id": "cap-012",
+   "kind": "caption",
+   "text": "Every morning the **Watcher** checks every batch at every distributor against sell-through and the quick-commerce gates.",
+   "label": "Watcher",
+   "tone": "",
+   "right": false
+  },
+  {
+   "id": "co-risk",
+   "kind": "callout",
+   "fig": "1,360 packs at risk",
+   "what": "**₹26,330** if destroyed",
+   "x": 96,
+   "y": 520,
+   "w": 0,
+   "pill": "Masala Chips · MF-2409-117",
+   "tone": "red",
+   "card": true,
+   "ring": null
+  },
+  {
+   "id": "ch-3",
+   "kind": "chapter",
+   "n": "3",
+   "text": "Verify"
+  },
+  {
+   "id": "push-verify",
+   "kind": "push",
+   "to": "To Rakesh Traders · distributor",
+   "title": "Ek photo chahiye",
+   "body": "Rakesh bhai, Masala Chips 150g ka ek carton ka label photo bhej dein (batch MF-2409-117). Bas ek photo, baaki hum kar lenge.",
+   "left": false
+  },
+  {
+   "id": "cap-016",
+   "kind": "caption",
+   "text": "**Vision** reads the label and matches the batch, the dates and the MRP to the DMS export: the barcode, the QR code and the FSSAI licence on the carton.",
+   "label": "Vision · Gemini",
+   "tone": "",
+   "right": false
+  },
+  {
+   "id": "ch-4",
+   "kind": "chapter",
+   "n": "4",
+   "text": "Value, decide, approve"
+  },
+  {
+   "id": "push-plan",
+   "kind": "push",
+   "to": "To Priya · Munchly Foods",
+   "title": "Plan ready · MF-2409-117",
+   "body": "Plan for MF-2409-117: 588 units kirana (₹18), 784 units ExpireSoon (₹15). Net ₹21,950, ₹26,560 better than write-off. GST ITC ₹1,235 safe. Tap to review and approve.",
+   "left": false
+  },
+  {
+   "id": "cap-019",
+   "kind": "caption",
+   "text": "The **Valuer** prices every exit against the bin, per unit, after costs and GST.",
+   "label": "Valuer",
+   "tone": "",
+   "right": false
+  },
+  {
+   "id": "cap-020",
+   "kind": "caption",
+   "text": "The **Router** splits the batch and says why: **588** to the kiranas, **784** to ExpireSoon. Net **₹21,950**, **₹26,560** better than the bin.",
+   "label": "Router",
+   "tone": "",
+   "right": false
+  },
+  {
+   "id": "co-yes",
+   "kind": "callout",
+   "fig": "One yes",
+   "what": "logged with who, when and the device",
+   "x": 110,
+   "y": 120,
+   "w": 0,
+   "pill": "The human in the loop",
+   "tone": "amber",
+   "card": true,
+   "ring": null
+  },
+  {
+   "id": "push-approved",
+   "kind": "push",
+   "to": "To Rakesh Traders · distributor",
+   "title": "Plan approved · Masala Chips",
+   "body": "Rakesh bhai, Munchly ne MF-2409-117 ka plan approve kiya: 588 packets aapke kiranas ko scheme par, 784 aapke naam se ExpireSoon par. Kuch rokna ho to app mein Pause dabayein.",
+   "left": false
+  },
+  {
+   "id": "cap-023",
+   "kind": "caption",
+   "text": "Approved. The distributor is told, with a Pause, and the agents set off.",
+   "label": "Approve",
+   "tone": "amber",
+   "right": false
+  },
+  {
+   "id": "ch-5",
+   "kind": "chapter",
+   "n": "5",
+   "text": "Execute · five channels"
+  },
+  {
+   "id": "lower-ganesh",
+   "kind": "lower",
+   "name": "Ganesh ji",
+   "role": "Shree Sai Kirana · one of 38 shops offered",
+   "place": "Nagpur"
+  },
+  {
+   "id": "push-offer",
+   "kind": "push",
+   "to": "To Shree Sai Kirana · Nagpur",
+   "title": "आज का खास ऑफर",
+   "body": "नमस्ते Shree Ganesh Kirana! Munchly Masala Chips 150g पर आज खास ऑफर: 10 पैकेट लो, 2 मुफ़्त. Best before 18 Nov 2026. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें — Rakesh Traders",
+   "left": false
+  },
+  {
+   "id": "co-shops",
+   "kind": "callout",
+   "fig": "31 shops · 588 packets",
+   "what": "each order with its own tax invoice",
+   "x": 110,
+   "y": 120,
+   "w": 0,
+   "pill": "Outreach · the kirana scheme",
+   "tone": "",
+   "card": true,
+   "ring": null
+  },
+  {
+   "id": "co-lot",
+   "kind": "callout",
+   "fig": "784 packs at ₹14.20",
+   "what": "listed by the **Lister**, countered by the **Negotiator**, won by Agrawal Wholesale",
+   "x": 110,
+   "y": 120,
+   "w": 0,
+   "pill": "ExpireSoon",
+   "tone": "violet",
+   "card": true,
+   "ring": null
+  },
+  {
+   "id": "lower-agrawal",
+   "kind": "lower",
+   "name": "Agrawal ji",
+   "role": "Agrawal Wholesale · the ExpireSoon buyer",
+   "place": "Raipur"
+  },
+  {
+   "id": "push-staff",
+   "kind": "push",
+   "to": "To Lakshmi Agencies · distributor",
+   "title": "Staff sale · Mango Drink",
+   "body": "150 packs of Mango Drink for your staff at ₹8 a pack, at Begum Bazaar godown. Record what sold when the sale is over.",
+   "left": false
+  },
+  {
+   "id": "co-staff",
+   "kind": "callout",
+   "fig": "150 packs at ₹8",
+   "what": "recorded on the consolidated UPI receipt, read by **Vision**",
+   "x": 110,
+   "y": 120,
+   "w": 0,
+   "pill": "The staff sale",
+   "tone": "",
+   "card": true,
+   "ring": null
+  },
+  {
+   "id": "lower-meera",
+   "kind": "lower",
+   "name": "Meera",
+   "role": "Feeding India · city lead",
+   "place": "Hyderabad"
+  },
+  {
+   "id": "push-pickup",
+   "kind": "push",
+   "to": "To Meera · Feeding India",
+   "title": "Pickup request · Mango Drink",
+   "body": "86 packs of Mango Drink, 20 days left, with the FSSAI checklist. Pickup from Begum Bazaar godown?",
+   "left": false
+  },
+  {
+   "id": "co-meals",
+   "kind": "callout",
+   "fig": "86 packs · 86 meals",
+   "what": "receipt **FI/HYD/26-27/0417**, in the food bank's own series",
+   "x": 110,
+   "y": 120,
+   "w": 0,
+   "pill": "The donation",
+   "tone": "",
+   "card": true,
+   "ring": null
+  },
+  {
+   "id": "cap-035",
+   "kind": "caption",
+   "text": "The Saturday **van round** delivers the scheme to every shop that ordered.",
+   "label": "Delivery",
+   "tone": "",
+   "right": false
+  },
+  {
+   "id": "ch-6",
+   "kind": "chapter",
+   "n": "6",
+   "text": "When packs cannot sell"
+  },
+  {
+   "id": "push-papers",
+   "kind": "push",
+   "to": "To Priya · Munchly Foods",
+   "title": "Document pack ready · MF-2409-117",
+   "body": "Papers ready for MF-2409-117: Rakesh's invoice draft, e-way bill check, price-support credit note, GST memo. Nothing to chase.",
+   "left": false
+  },
+  {
+   "id": "cap-038",
+   "kind": "caption",
+   "text": "The distributor's **tax invoice** INV/26-27/0931, issued from Tally: its e-invoice IRN, acknowledgement and signed QR code.",
+   "label": "Paperwork · the tax invoice",
+   "tone": "",
+   "right": false
+  },
+  {
+   "id": "cap-039",
+   "kind": "caption",
+   "text": "Signed by the proprietor over the firm's stamp. Every paper is.",
+   "label": "Signed and stamped",
+   "tone": "",
+   "right": false
+  },
+  {
+   "id": "cap-040",
+   "kind": "caption",
+   "text": "The **price-support credit note** CN/0118: Munchly makes the distributor whole. A financial note, no GST adjustment.",
+   "label": "Credit note",
+   "tone": "",
+   "right": false
+  },
+  {
+   "id": "co-itc",
+   "kind": "callout",
+   "fig": "₹1,235 of input GST kept",
+   "what": "reversed only on packs given away or destroyed · s.17(5)(h)",
+   "x": 110,
+   "y": 120,
+   "w": 0,
+   "pill": "The GST ITC memo",
+   "tone": "",
+   "card": true,
+   "ring": null
+  },
+  {
+   "id": "cap-042",
+   "kind": "caption",
+   "text": "Destroyed at the godown, against evidence: the label, the before and the after photos, each checked by **Vision**, on the batch's record.",
+   "label": "The second yes",
+   "tone": "amber",
+   "right": false
+  },
+  {
+   "id": "cap-043",
+   "kind": "caption",
+   "text": "The **certificate of destruction** is signed in place, on the distributor's screen: the agency's officer, two witnesses, the distributor.",
+   "label": "Signed in place",
+   "tone": "amber",
+   "right": false
+  },
+  {
+   "id": "cap-044",
+   "kind": "caption",
+   "text": "On Priya's second yes: the **expiry credit note** makes the distributor whole, and the batch closes.",
+   "label": "The second yes",
+   "tone": "amber",
+   "right": false
+  },
+  {
+   "id": "ch-7",
+   "kind": "chapter",
+   "n": "7",
+   "text": "The ledger"
+  },
+  {
+   "id": "push-closed",
+   "kind": "push",
+   "to": "To Priya · Munchly Foods",
+   "title": "Batch closed · 0 cartons destroyed",
+   "body": "₹21,323 recovered, ₹1,235 GST credit kept, 219.5 kg kept out of landfill.",
+   "left": false
+  },
+  {
+   "id": "co-money",
+   "kind": "callout",
+   "fig": "₹21,323 · ₹16,888",
+   "what": "recovered on the chips and the Mango Drink, against the write-off",
+   "x": 110,
+   "y": 120,
+   "w": 0,
+   "pill": "Money",
+   "tone": "",
+   "card": true,
+   "ring": null
+  },
+  {
+   "id": "cap-048",
+   "kind": "caption",
+   "text": "GST: input credit kept and reversed under s.17(5)(h), invoice by invoice, exported as the CA receives it.",
+   "label": "GST",
+   "tone": "",
+   "right": false
+  },
+  {
+   "id": "co-impact",
+   "kind": "callout",
+   "fig": "565 kg · 1.4 t CO₂e · 86 meals",
+   "what": "the two batches: kept out of landfill, the CO₂e avoided, the meals served; BRSR Principle 6 with its evidence",
+   "x": 110,
+   "y": 120,
+   "w": 0,
+   "pill": "Impact · ESG",
+   "tone": "",
+   "card": true,
+   "ring": null
+  },
+  {
+   "id": "cap-050",
+   "kind": "caption",
+   "text": "The batch's own **BRSR line** and its evidence: INV/26-27/0931 · the kirana order logs · CN/0118; the BRSR table and the GST summary export in a click.",
+   "label": "BRSR",
+   "tone": "",
+   "right": false
+  },
+  {
+   "id": "ch-8",
+   "kind": "chapter",
+   "n": "8",
+   "text": "Everyone ends whole"
+  },
+  {
+   "id": "end-cards",
+   "kind": "end",
+   "cards": [
+    {
+     "who": "Munchly Foods",
+     "fig": "₹21,323",
+     "what": "recovered on the chips, against a ₹26,330 write-off"
+    },
+    {
+     "who": "The distributors",
+     "fig": "end whole",
+     "what": "the price support makes up the difference"
+    },
+    {
+     "who": "31 kiranas",
+     "fig": "earn",
+     "what": "on 588 packets at a scheme price, invoice in hand"
+    },
+    {
+     "who": "Feeding India",
+     "fig": "86 meals",
+     "what": "with the receipt that proves it"
+    }
+   ],
+   "links": [],
+   "built": ""
+  },
+  {
+   "id": "cap-053",
+   "kind": "caption",
+   "text": "**The guided demo:** the console's line and three journeys, on real screens. **The live prototype:** sign in with the credentials and steps in the deck.",
+   "label": "Try it",
+   "tone": "amber",
+   "right": false
+  },
+  {
+   "id": "end-brand",
+   "kind": "end",
+   "cards": [],
+   "links": [
+    {
+     "label": "smartclearance.web.app",
+     "text": ""
+    },
+    {
+     "label": "Guided demo",
+     "text": "smartclearance-demo.web.app"
+    },
+    {
+     "label": "Live prototype",
+     "text": "credentials in the deck",
+     "amber": true
+    }
+   ],
+   "built": "Built on Google Cloud: Gemini on Vertex AI · ADK · Cloud Run · Cloud SQL · Pub/Sub · BigQuery · Firebase"
+  }
+ ],
+ "vo": [
+  {
+   "id": "1a",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/1a-trim.wav",
+   "at": 0.9,
+   "len": 3.594
+  },
+  {
+   "id": "1b",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/1b-trim.wav",
+   "at": 4.694,
+   "len": 3.689
+  },
+  {
+   "id": "1c",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/1c-trim.wav",
+   "at": 8.583,
+   "len": 4.241
+  },
+  {
+   "id": "2a",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/2a-trim.wav",
+   "at": 13.674,
+   "len": 3.75
+  },
+  {
+   "id": "2b",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/2b-trim.wav",
+   "at": 17.624,
+   "len": 8.343
+  },
+  {
+   "id": "2c",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/2c-trim.wav",
+   "at": 26.167,
+   "len": 1.477
+  },
+  {
+   "id": "3a",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/3a-trim.wav",
+   "at": 27.994,
+   "len": 2.685
+  },
+  {
+   "id": "3b",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/3b-trim.wav",
+   "at": 30.879,
+   "len": 8.015
+  },
+  {
+   "id": "3c",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/3c-trim.wav",
+   "at": 39.094,
+   "len": 6.353
+  },
+  {
+   "id": "4a",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/4a-trim.wav",
+   "at": 45.797,
+   "len": 10.941
+  },
+  {
+   "id": "5a",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/5a-trim.wav",
+   "at": 56.988,
+   "len": 9.486
+  },
+  {
+   "id": "5b",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/5b-trim.wav",
+   "at": 66.674,
+   "len": 3.559
+  },
+  {
+   "id": "5c",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/5c-trim.wav",
+   "at": 70.433,
+   "len": 2.01
+  },
+  {
+   "id": "5d",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/5d-trim.wav",
+   "at": 72.643,
+   "len": 1.618
+  },
+  {
+   "id": "6a",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/6a-trim.wav",
+   "at": 74.612,
+   "len": 5.12
+  },
+  {
+   "id": "6b",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/6b-trim.wav",
+   "at": 79.932,
+   "len": 4.14
+  },
+  {
+   "id": "6c",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/6c-trim.wav",
+   "at": 84.272,
+   "len": 9.416
+  },
+  {
+   "id": "6d",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/6d-trim.wav",
+   "at": 93.888,
+   "len": 3.85
+  },
+  {
+   "id": "6e",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/6e-trim.wav",
+   "at": 97.938,
+   "len": 4.616
+  },
+  {
+   "id": "6f",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/6f-trim.wav",
+   "at": 102.754,
+   "len": 2.061
+  },
+  {
+   "id": "7a",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/7a-trim.wav",
+   "at": 105.069,
+   "len": 3.553
+  },
+  {
+   "id": "7b",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/7b-trim.wav",
+   "at": 108.822,
+   "len": 8.254
+  },
+  {
+   "id": "7c",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/7c-trim.wav",
+   "at": 117.276,
+   "len": 7.672
+  },
+  {
+   "id": "7d",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/7d-trim.wav",
+   "at": 125.148,
+   "len": 4.427
+  },
+  {
+   "id": "7e",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/7e-trim.wav",
+   "at": 129.775,
+   "len": 6.757
+  },
+  {
+   "id": "8a",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/8a-trim.wav",
+   "at": 137.569,
+   "len": 1.613
+  },
+  {
+   "id": "8b",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/8b-trim.wav",
+   "at": 139.382,
+   "len": 8.457
+  },
+  {
+   "id": "8c",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/8c-trim.wav",
+   "at": 148.039,
+   "len": 3.482
+  },
+  {
+   "id": "8d",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/8d-trim.wav",
+   "at": 151.721,
+   "len": 12.76
+  },
+  {
+   "id": "9a",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/9a-trim.wav",
+   "at": 164.832,
+   "len": 5.931
+  },
+  {
+   "id": "9b",
+   "file": "vo/gemini-2.5-pro-tts-Kore-brisk-1.1/9b-trim.wav",
+   "at": 170.963,
+   "len": 5.98
+  }
+ ],
+ "scenes": [
+  {
+   "start": 0.0,
+   "beats": [
+    "1a",
+    "1b",
+    "1c"
+   ],
+   "segs": 2
+  },
+  {
+   "start": 12.674,
+   "beats": [
+    "2a",
+    "2b",
+    "2c"
+   ],
+   "segs": 3
+  },
+  {
+   "start": 27.494,
+   "beats": [
+    "3a",
+    "3b",
+    "3c"
+   ],
+   "segs": 3
+  },
+  {
+   "start": 45.297,
+   "beats": [
+    "4a"
+   ],
+   "segs": 2
+  },
+  {
+   "start": 56.588,
+   "beats": [
+    "5a",
+    "5b",
+    "5c",
+    "5d"
+   ],
+   "segs": 4
+  },
+  {
+   "start": 74.112,
+   "beats": [
+    "6a",
+    "6b",
+    "6c",
+    "6d",
+    "6e",
+    "6f"
+   ],
+   "segs": 9
+  },
+  {
+   "start": 104.669,
+   "beats": [
+    "7a",
+    "7b",
+    "7c",
+    "7d",
+    "7e"
+   ],
+   "segs": 9
+  },
+  {
+   "start": 137.169,
+   "beats": [
+    "8a",
+    "8b",
+    "8c",
+    "8d"
+   ],
+   "segs": 5
+  },
+  {
+   "start": 164.332,
+   "beats": [
+    "9a",
+    "9b"
+   ],
+   "segs": 3
+  }
+ ]
+}

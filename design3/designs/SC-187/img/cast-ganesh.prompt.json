@@ -1,0 +1,23 @@
+{
+  "name": "cast-ganesh",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "sheet",
+  "prompt": "A character reference sheet on a plain neutral grey studio background, soft even light, photographic, realistic skin and fabric: the same person three times side by side, full face front view, three-quarter view and profile, head and shoulders, the same clothes in every view, no text, no labels, no logos. The person: an Indian man in his mid-forties who runs a small kirana shop: short neat black hair with a little grey at the temples, a trimmed moustache, a small red tilak on his forehead, a cream half-sleeve cotton shirt with a breast pocket and a pen in it, a steel watch; a friendly, alert face",
+  "seed": 187001,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "latency_s": 17.4,
+  "use": "SC-187 cast: a fictional person, the reference for every keyframe they are in",
+  "model_text": null,
+  "status": "done",
+  "output": "cast-ganesh.webp 2752x1536",
+  "postprocess": "WebP q82 from cast-ganesh.png",
+  "derived_from": "cast-ganesh.png"
+}

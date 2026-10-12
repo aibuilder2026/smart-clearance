@@ -1,0 +1,40 @@
+{
+  "name": "smart-clearance-demo",
+  "kind": "film",
+  "created": "2026-10-12",
+  "voice": "gemini-2.5-pro-tts-Kore-brisk-1.1",
+  "seconds": 177.643,
+  "made_with": [
+    "Nano Banana 2 (gemini-3.1-flash-image, Vertex AI) for the cast sheets and keyframes",
+    "Veo 3.1 (veo-3.1-generate-001, Vertex AI, 1080p, no audio) for the clips, image to video; four clips reused from SC-154",
+    "the workspace and console apps on the live stack for the screens (director.py, capture.mjs); the stub for the recordings",
+    "Cloud Text-to-Speech, Chirp 3 HD en-IN, for the voice-over (vo.py)",
+    "Lyria 2 (lyria-002, Vertex AI) for the music bed (lyria.py, bed.py)",
+    "ffmpeg for the cut (assemble.py)"
+  ],
+  "segments": 40,
+  "clips": [
+    "c01-godown-date",
+    "c02-priya-phone",
+    "c03-rakesh-label-photo",
+    "c04-priya-approve",
+    "c05-kirana-nagpur-offer",
+    "c06-agrawal-raipur",
+    "c07-staff-sale-gate",
+    "c08-feeding-india-van",
+    "c09-rakesh-tally-desk",
+    "c10-landfill-certificate",
+    "c11-neha-console",
+    "c12-close-lane",
+    "c13-lakshmi-godown",
+    "ui-approve",
+    "ui-order",
+    "ui-sign"
+  ],
+  "music": [
+    "bed-6",
+    "lift-2"
+  ],
+  "postprocess": "libx264 crf 18, aac 192k, loudnorm I=-14 TP=-1.5",
+  "fictional": "every person, company and figure is fictional; the figures are the two journeys' own"
+}

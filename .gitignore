@@ -82,3 +82,13 @@ design3/designs/SC-158/src/*
 !design3/designs/SC-158/src/film.json
 !design3/designs/SC-158/src/pushes.json
 !design3/designs/SC-158/src/figures.json
+
+# SC-187: the three-minute demo film's pipeline scripts ship; its PNG originals, clips, screens, voice, build and logs stay local
+!design3/designs/SC-187/src/
+design3/designs/SC-187/src/*
+!design3/designs/SC-187/src/*.py
+!design3/designs/SC-187/src/*.mjs
+!design3/designs/SC-187/src/*.sh
+!design3/designs/SC-187/src/*.json
+!design3/designs/SC-187/src/*.txt
+!design3/designs/SC-187/src/*.md

@@ -1,0 +1,29 @@
+{
+  "name": "k09-rakesh-tally-desk",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "Evening in the distributor's small office above his godown in Nagpur: the distributor (the man in the light blue checked shirt, grey moustache, his reading glasses now on his nose) sits at a wooden desk pressing a rectangular rubber stamp onto a printed A4 sheet beside a ballpoint pen; a desktop monitor beside him shows a plain accounting ledger grid in blue and white with no readable text; files, a calculator, a tube light and a ceiling fan. Medium shot, a warm desk lamp, the stamp and the paper sharp.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. Every pack and carton is unbranded: plain kraft-brown cartons with a sage-green band, solid-colour snack packets (amber, green, red) with no lettering, Mango Drink as small plain yellow-orange tetra packs with no lettering. No text, no letters, no numbers, no logos, no watermark, no number plate anywhere. No children.",
+  "seed": 187109,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-distributor.webp",
+      "sha256": "dfba3af9f8788b96b8e641b99e173aa4bd294a03006b1dbd4cf6665a1e1d904d"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "latency_s": 21.2,
+  "use": "SC-187 keyframe: the first frame of a Veo clip for the demo film",
+  "model_text": null,
+  "status": "done",
+  "output": "k09-rakesh-tally-desk.webp 2752x1536",
+  "postprocess": "WebP q82 from k09-rakesh-tally-desk.png",
+  "derived_from": "k09-rakesh-tally-desk.png"
+}

@@ -1,0 +1,18 @@
+{
+  "name": "bed-6",
+  "model": "lyria-002",
+  "location": "us-central1",
+  "service": "Vertex AI",
+  "kind": "music",
+  "prompt": "Polished, optimistic corporate technology underscore for a narrated product demo: soft felt piano playing a simple forward-looking motif, warm string pad, a light airy synth arpeggio far in the background, subtle soft pulse, hopeful and confident, bright but gentle, minimal and spacious, steady 76 BPM, no drums, no vocals, modern clean mix, even from start to end",
+  "negative_prompt": "vocals, singing, drums, percussion hits, distortion, lo-fi, aggressive, fast",
+  "seed": 187106,
+  "cost_usd": 0.06,
+  "price_table_date": "2026-10-12",
+  "created": "2026-10-12",
+  "latency_s": 25.5,
+  "use": "SC-187: a candidate for the demo film's music bed",
+  "watermark": "SynthID",
+  "status": "done",
+  "output": "music-bed-6.mp3 (mp3 192k from bed-6.wav)"
+}

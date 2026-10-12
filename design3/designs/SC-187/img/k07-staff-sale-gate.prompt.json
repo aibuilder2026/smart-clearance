@@ -1,0 +1,29 @@
+{
+  "name": "k07-staff-sale-gate",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "Dusk at a godown's gate in Begum Bazaar, Hyderabad, a violet sky: a folding table under a tube light with neat rows of small plain yellow-orange tetra packs with no lettering; the distributor (the woman in her late forties in a deep teal cotton saree with a thin cream border, reading glasses on a beaded cord, a long plait, a small gold nose pin) stands behind the table holding her phone, recording the sale, while two godown workers in grey T-shirts buy packs, one holding his phone out toward a small white stand on the table with a plain square sticker. Medium wide shot, warm tube light against the violet dusk.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. Every pack and carton is unbranded: plain kraft-brown cartons with a sage-green band, solid-colour snack packets (amber, green, red) with no lettering, Mango Drink as small plain yellow-orange tetra packs with no lettering. No text, no letters, no numbers, no logos, no watermark, no number plate anywhere. No children.",
+  "seed": 187107,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-lakshmi.webp",
+      "sha256": "095316a76cb40bdbf74c54994b0ab3b8a2dba241a064719830eb0009a4edcb5c"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "latency_s": 38.9,
+  "use": "SC-187 keyframe: the first frame of a Veo clip for the demo film",
+  "model_text": null,
+  "status": "done",
+  "output": "k07-staff-sale-gate.webp 2752x1536",
+  "postprocess": "WebP q82 from k07-staff-sale-gate.png",
+  "derived_from": "k07-staff-sale-gate.png"
+}

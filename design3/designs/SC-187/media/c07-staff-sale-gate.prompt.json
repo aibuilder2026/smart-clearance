@@ -1,0 +1,39 @@
+{
+  "name": "c07-staff-sale-gate",
+  "model": "veo-3.1-generate-001",
+  "location": "us-central1",
+  "service": "Vertex AI",
+  "prompt": "Photorealistic cinematic live action, exactly as in the image: at the folding table under the tube light at dusk, the woman in the deep teal saree looks from her phone to the table and back, typing once with her thumb; the worker in front of the table holds his phone toward the small white stand for a moment, then picks up a few yellow-orange tetra packs; the second worker waits. The camera holds, with a very slow push in; the violet sky stays. Every face, hand and arm keeps its form; no extra limbs appear and none vanish; nobody's face changes. No text, no letters, no numbers, no logos, no lettering appears anywhere, on no carton, packet, screen, sign or vehicle. Natural light, 35 mm, shallow depth of field, no handheld shake.",
+  "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
+  "seed": 187207,
+  "enhance_prompt": true,
+  "resolution": "1080p",
+  "aspect": "16:9",
+  "duration_s": 8,
+  "fps": 24,
+  "generate_audio": false,
+  "person_generation": "allow_adult",
+  "inputs": [
+    {
+      "role": "first",
+      "file": "k07-staff-sale-gate.png",
+      "sha256": "519b3e8d83190bc1a22f768972dfc129b4d14c2ff53a800323c53bebf165cf64"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 1.6,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "use": "SC-187: a scene of the demo film, image to video from its keyframe",
+  "status": "done",
+  "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/d7a2b752-714e-4d20-a8d7-4452f584f7b4",
+  "latency_s": 114.6,
+  "rai_filtered": {
+    "count": 0,
+    "reasons": []
+  },
+  "files": [
+    "c07-staff-sale-gate.mp4"
+  ],
+  "probe": "{\n    \"programs\": [\n\n    ],\n    \"stream_groups\": [\n\n    ],\n    \"streams\": [\n        {\n            \"width\": 1920,\n            \"height\": 1080,\n            \"r_frame_rate\": \"24/1\",\n            \"nb_frames\": \"192\"\n        }\n    ],\n    \"format\": {\n        \"duration\": \"8.000000\",\n        \"size\": \"10066640\"\n    }\n}"
+}

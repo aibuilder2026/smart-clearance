@@ -1,0 +1,18 @@
+{
+  "name": "lift-2",
+  "model": "lyria-002",
+  "location": "us-central1",
+  "service": "Vertex AI",
+  "kind": "music",
+  "prompt": "Polished corporate technology underscore, the warmer fuller section of the same piece: soft felt piano motif now joined by a warm string swell and a gentle rising synth pad, hopeful and resolved, still calm and spacious, steady 68 BPM, D-flat major, no drums, no vocals, modern clean mix, even from start to end",
+  "negative_prompt": "vocals, singing, drums, percussion hits, distortion, lo-fi, aggressive, fast",
+  "seed": 187302,
+  "cost_usd": 0.06,
+  "price_table_date": "2026-10-12",
+  "created": "2026-10-12",
+  "latency_s": 27.3,
+  "use": "SC-187: a candidate for the demo film's music bed",
+  "watermark": "SynthID",
+  "status": "done",
+  "output": "music-lift-2.mp3 (mp3 192k from lift-2.wav)"
+}
