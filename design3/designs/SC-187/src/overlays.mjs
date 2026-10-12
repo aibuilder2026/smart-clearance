@@ -86,12 +86,47 @@ em { font-style: normal; color: var(--amber); font-weight: 700; }
 .role .where { font-size: 20px; color: var(--green-100); }
 
 /* cut 2: a feature label: an eyebrow and one line, top left under the chapter, for what a screen does */
-.feature { position: absolute; left: 72px; top: 120px; max-width: 620px; }
+.feature { position: absolute; left: 72px; top: 120px; max-width: 540px; }
 .feature .eyebrow { font-size: 18px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber-text); background: var(--amber-soft); padding: 6px 12px; border-radius: 999px; display: inline-block; margin-bottom: 10px; }
 .feature .line { font-size: 30px; font-weight: 600; line-height: 1.25; color: var(--fg); text-wrap: balance; }
 .feature .line b { color: var(--primary-text); }
 .feature.dark .line { color: #fff; text-shadow: 0 2px 14px rgb(0 0 0 / 0.5); }
 .feature.dark .eyebrow { background: var(--amber); color: var(--amber-fg); }
+
+/* cut 3: a notification banner, as a phone shows one: the app's icon, its name and "now", a bold title, the body;
+   on a phone it sits inside the screen's top, elsewhere at the frame's top right */
+.banner { position: absolute; top: 40px; right: 40px; width: 560px; background: rgb(255 255 255 / 0.96); border-radius: 24px; padding: 16px 18px 18px; box-shadow: 0 24px 48px -16px rgb(13 28 21 / 0.45), 0 6px 16px -8px rgb(13 28 21 / 0.25); border: 1px solid rgb(13 28 21 / 0.06); display: grid; grid-template-columns: 44px 1fr; gap: 0 14px; }
+.banner svg { width: 44px; height: 44px; border-radius: 12px; grid-row: 1 / 3; align-self: start; }
+.banner .head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+.banner .app { font-size: 17px; font-weight: 700; color: var(--fg); }
+.banner .when { margin-left: auto; font-size: 15px; color: var(--fg-3); }
+.banner .ptitle { font-size: 19px; font-weight: 700; line-height: 1.25; margin-bottom: 3px; color: var(--fg); }
+.banner .pbody { font-size: 16.5px; line-height: 1.35; color: var(--fg-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.banner .to { position: absolute; left: 18px; bottom: -34px; font-size: 16px; font-weight: 600; color: #fff; background: rgb(13 28 21 / 0.74); padding: 5px 12px; border-radius: 999px; }
+.banner.phone { top: 54px; left: 704px; right: auto; width: 392px; padding: 12px 14px 13px; border-radius: 20px; grid-template-columns: 36px 1fr; gap: 0 10px; }
+.banner.phone svg { width: 36px; height: 36px; border-radius: 10px; }
+.banner.phone .app { font-size: 14px; } .banner.phone .when { font-size: 13px; } .banner.phone .ptitle { font-size: 16px; } .banner.phone .pbody { font-size: 14px; }
+.banner.phone .to { display: none; }
+
+/* cut 3: a chapter opens over the scene it starts on: a veil over the frame, the chapter's name, one line, and the nine
+   stops with this chapter's lit; it rises in and leaves, and the screen underneath comes clear */
+.copen { position: absolute; inset: 0; background: rgb(242 246 243 / 0.84); }
+.copen.dark { background: rgb(7 38 26 / 0.72); }
+.copen .box { position: absolute; left: 120px; top: 50%; transform: translateY(-50%); max-width: 1500px; }
+.copen .n { font-size: 22px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--amber-text); margin-bottom: 14px; }
+.copen h2 { font-size: 112px; font-weight: 700; line-height: 1; color: var(--fg); margin-bottom: 18px; letter-spacing: -0.02em; }
+.copen p { font-size: 36px; color: var(--fg-2); max-width: 1200px; text-wrap: balance; margin-bottom: 44px; }
+.copen .rail { display: flex; align-items: center; gap: 0; }
+.copen .rail span { font-size: 19px; font-weight: 700; padding: 9px 18px; border-radius: 999px; background: #fff; color: var(--fg-3); border: 1.5px solid rgb(13 28 21 / 0.1); }
+.copen .rail i { width: 22px; height: 2px; background: rgb(13 28 21 / 0.14); }
+.copen .rail span.done { color: var(--green-700); background: var(--green-50); border-color: var(--green-200); }
+.copen .rail span.on { background: var(--green-700); color: #fff; border-color: var(--green-700); }
+.copen .rail span.yes { background: var(--amber); color: var(--amber-fg); border-color: var(--amber); }
+.copen.dark .n { color: var(--amber); } .copen.dark h2 { color: #fff; } .copen.dark p { color: var(--green-50); }
+.copen.dark .rail span { background: rgb(255 255 255 / 0.12); color: rgb(255 255 255 / 0.7); border-color: rgb(255 255 255 / 0.2); }
+.copen.dark .rail i { background: rgb(255 255 255 / 0.25); }
+.copen.dark .rail span.done { background: rgb(255 255 255 / 0.2); color: #fff; }
+.copen.dark .rail span.on { background: var(--green-300); color: var(--green-900); border-color: var(--green-300); }
 
 /* a ring that marks a UI element the camera has closed in on */
 .ring { position: absolute; border: 4px solid var(--amber); border-radius: 14px; box-shadow: 0 0 0 6px rgb(242 180 55 / 0.25), 0 10px 40px rgb(0 0 0 / 0.25); }
@@ -154,6 +189,16 @@ function html(o) {
         <div class="head">${icon}<span class="app">Smart-Clearance</span><span class="when">now</span></div>
         <div class="ptitle${/[ऀ-ॿ]/.test(o.title) ? " hi" : ""}">${esc(o.title)}</div><div class="pbody${/[ऀ-ॿ]/.test(o.body) ? " hi" : ""}">${esc(o.body)}</div>
         ${o.to ? `<div class="to">${esc(o.to)}</div>` : ""}</div></div>`;
+    case "banner":
+      return `<div class="stage"><div class="banner${o.phone ? " phone" : ""}">${icon}
+        <div class="head"><span class="app">Smart-Clearance</span><span class="when">now</span></div>
+        <div><div class="ptitle${/[ऀ-ॿ]/.test(o.title) ? " hi" : ""}">${esc(o.title)}</div><div class="pbody${/[ऀ-ॿ]/.test(o.body) ? " hi" : ""}">${esc(o.body)}</div></div>
+        ${o.to ? `<div class="to">${esc(o.to)}</div>` : ""}</div></div>`;
+    case "chapter-open": {
+      const STOPS = ["Connect", "Detect", "Verify", "Value", "Decide", "Approve", "Execute", "Settle", "Report"];
+      const rail = STOPS.map((st, i) => { const cls = o.on.includes(st) ? (st === "Approve" ? "yes" : "on") : (i < STOPS.indexOf(o.on[0]) ? "done" : ""); return `<span class="${cls}">${st}</span>`; }).join("<i></i>");
+      return `<div class="stage"><div class="copen${o.dark ? " dark" : ""}"><div class="box"><div class="n">${esc(o.n)}</div><h2 class="display">${esc(o.title)}</h2>${o.text ? `<p>${rich(o.text)}</p>` : ""}<div class="rail">${rail}</div></div></div></div>`;
+    }
     case "caption":
       return `<div class="stage"><div class="caption${o.right ? " right" : ""}">${o.label ? `<span class="label ${o.tone || ""}">${esc(o.label)}</span>` : ""}<div class="text">${rich(o.text)}</div></div></div>`;
     case "lower":
@@ -196,6 +241,7 @@ const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, de
 let n = 0;
 for (const o of film.overlays) {
   if (only.size && !only.has(o.id)) continue;
+  if (o.kind === "anim") continue;
   await page.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>${CSS}</style></head><body>${html(o)}</body></html>`, { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(120);

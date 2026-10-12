@@ -124,10 +124,33 @@ def backdrops(key: str, name: str, scale: int = S2) -> tuple[Path, Path]:
     return a, b
 
 
+def photo_ground(key: str, name: str, scale: int = S2) -> Path:
+    """cut 3: the studio ground over the chapter's keyframe pulled far out of focus, so the app stands in its scene;
+    the left column rises to the ground's own colour, where the labels keep their contrast"""
+    import numpy as np
+
+    path = BUILD / f"ground-{key}.png"
+    if path.exists():
+        return path
+    src = find("img", key)
+    if not src:
+        return studio_ground(name)
+    im = Image.open(src).convert("RGB").resize((W * scale, H * scale), Image.LANCZOS).filter(ImageFilter.GaussianBlur(34 * scale))
+    im = ImageEnhance.Brightness(ImageEnhance.Color(im).enhance(0.6)).enhance(1.1)
+    ground = np.array(Image.open(studio_ground(name)).convert("RGB"), dtype=np.float32)
+    photo = np.array(im, dtype=np.float32)
+    xx = np.arange(W * scale, dtype=np.float32)[None, :, None]
+    a = 0.52 + 0.44 * np.clip((720 * scale - xx) / (360 * scale), 0, 1)
+    out = np.clip(photo * (1 - a) + ground * a, 0, 255).astype(np.uint8)
+    Image.fromarray(out, "RGB").save(path)
+    return path
+
+
 def grounds(seg: dict, name: str) -> tuple[Path, Path]:
-    """what a screen stands on: the studio ground (cut 2), or a keyframe pulled out of focus (cut 1)"""
-    if seg.get("ground", "studio") == "studio" or not seg.get("bg"):
-        g = studio_ground(name)
+    """what a screen stands on: the studio ground over the chapter's keyframe (cut 3), the plain studio ground (cut 2),
+    or a keyframe pulled out of focus as the window lands (cut 1)"""
+    if seg.get("ground", "studio") == "studio":
+        g = photo_ground(seg["bg"], name) if seg.get("bg") else studio_ground(name)
         return g, g
     return backdrops(seg["bg"], name)
 
@@ -157,17 +180,24 @@ def window_plates(phone: bool, shot_w: int, shot_h: int, name: str, url: str, la
     import numpy as np
 
     pad = 70 * S2
-    if phone:
+    COL_L, COL_R = 650 * S2, (W - 40) * S2  # the right column: the labels keep the left 600 px
+    if phone and shot_w > shot_h:
+        # a tablet: fits the column with a bezel
+        scale = min((COL_R - COL_L - 28 * S2) / shot_w, 880 * S2 / shot_h)
+        w, h = int(shot_w * scale), int(shot_h * scale)
+        radius, bezel, bar = 40 * S2, 14 * S2, 0
+        x0, y0 = COL_L + (COL_R - COL_L - w) // 2, (H * S2 - h) // 2
+    elif phone:
         h = (900 if layout == "right" else 880) * S2
         scale = h / shot_h
         w = int(shot_w * scale)
         x0, y0 = ((W * S2 - w) // 2 - 60 * S2, 40 * S2) if layout == "right" else (640 * S2, 40 * S2)
         radius, bezel, bar = 54 * S2, 12 * S2, 0
     else:
-        w = (1250 if layout == "right" else 1500) * S2
+        w = (COL_R - COL_L) if layout == "right" else 1500 * S2
         scale = w / shot_w
         h = int(min(shot_h, (820 if layout == "right" else 940) * S2 / scale) * scale)  # a tall page shows its top; a scroll moves it
-        x0, y0 = (W * S2 - w - 80 * S2, 110 * S2) if layout == "right" else (W * S2 - w - 110 * S2, 70 * S2)
+        x0, y0 = (COL_L, 110 * S2) if layout == "right" else (W * S2 - w - 110 * S2, 70 * S2)
         radius, bezel, bar = 16 * S2, 0, 40 * S2
     cw, ch = w + 2 * bezel + 2 * pad, h + bar + 2 * bezel + 2 * pad
     sx, sy = pad + bezel, pad + bezel + bar
@@ -351,7 +381,7 @@ def render_clip(seg: dict, name: str, out: Path) -> None:
     if src:
         # a clip slowed below 0.85 is motion-interpolated to the frames it needs, so it plays smoothly instead of stepping
         interp = f"minterpolate=fps={FPS / speed:.3f}:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1," if speed < 0.85 else ""
-        chain = (f"[0:v]scale={W}:{H}:flags=lanczos,setpts=PTS-STARTPTS,{interp}setpts=PTS/{speed},fps={FPS},tpad=stop_mode=clone:stop_duration={D}[v0]")
+        chain = (f"[0:v]scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos,crop={W}:{H},setpts=PTS-STARTPTS,{interp}setpts=PTS/{speed},fps={FPS},tpad=stop_mode=clone:stop_duration={D}[v0]")
         seek = float(seg.get("seek") or 0)
         cmd = FFMPEG + (["-ss", f"{seek:.3f}"] if seek else []) + ["-i", str(src)] + silence(D)
         last, amap = "v0", "1:a"
@@ -426,23 +456,45 @@ def render_card(seg: dict, name: str, out: Path) -> None:
 # ---- the overlays ---------------------------------------------------------------------------------------------------
 
 def add_overlays(seg: dict, chain: str, last: str, D: float, cmd: list[str]) -> tuple[str, str]:
-    """appends each overlay of the segment as a looped PNG input with its fade (and a slide for a pop-up)"""
+    """appends each overlay of the segment: a PNG with its fade and its motion (a pop-up banner springs down and leaves
+    upward; a label rises into place), or an animation's frame sequence (src/anim/<id>/), held on its last frame"""
     items = []
     if seg.get("chapter"):
-        items.append({"id": seg["chapter"], "at": 0.0, "until": D, "slide": False, "fade": 0.4})
+        items.append({"id": seg["chapter"], "at": 0.0, "until": D, "motion": "", "fade": 0.4, "anim": False})
     for o in seg.get("overlays", []):
-        items.append({"id": o["id"], "at": o["at"], "until": min(o["until"], D), "slide": o.get("slide", False), "fade": 0.35})
+        motion = o.get("motion") or ("slide" if o.get("slide") else "")
+        items.append({"id": o["id"], "at": o["at"], "until": min(o["until"], D), "motion": motion, "fade": 0.35, "anim": o.get("anim", False)})
     for it in items:
+        a, b, f = it["at"], it["until"], it["fade"]
+        idx = sum(1 for x in cmd if x == "-i")
+        lab = f"o{idx}"
+        if it["anim"]:
+            d = HERE / "anim" / it["id"]
+            if not (d / "f-0001.png").exists():
+                print(f"   (no animation {it['id']})")
+                continue
+            cmd += ["-framerate", str(FPS), "-start_number", "1", "-i", str(d / "f-%04d.png")]
+            chain += (f";[{idx}:v]format=rgba,tpad=start_duration={a}:start_mode=add:color=0x00000000,tpad=stop_mode=clone:stop_duration={D},"
+                      f"fade=t=in:st={a}:d=0.3:alpha=1[{lab}]")
+            chain += f";[{last}][{lab}]overlay=x=0:y=0:eof_action=pass:format=auto[{lab}v]"
+            last = f"{lab}v"
+            continue
         png = OVL / f"{it['id']}.png"
         if not png.exists():
             print(f"   (no overlay {it['id']})")
             continue
-        idx = sum(1 for a in cmd if a == "-i")
         cmd += ["-loop", "1", "-framerate", str(FPS), "-t", str(D), "-i", str(png)]
-        a, b, f = it["at"], it["until"], it["fade"]
-        lab = f"o{idx}"
-        chain += f";[{idx}:v]format=rgba,fade=t=in:st={a}:d={f}:alpha=1,fade=t=out:st={max(a, b - f)}:d={f}:alpha=1[{lab}]"
-        ypos = f"'-70*(1-(1-cos(PI*min(1,max(0,(t-{a})/0.5))))/2)'" if it["slide"] else "0"
+        m = it["motion"]
+        fin = 0.25 if m == "banner" else f
+        chain += f";[{idx}:v]format=rgba,fade=t=in:st={a}:d={fin}:alpha=1,fade=t=out:st={max(a, b - f)}:d={f}:alpha=1[{lab}]"
+        if m == "slide":
+            ypos = f"'-70*(1-(1-cos(PI*min(1,max(0,(t-{a})/0.5))))/2)'"
+        elif m == "banner":
+            ypos = f"'-170*pow(1-min(1,max(0,(t-{a})/0.5)),3)+9*sin(PI*min(1,max(0,(t-{a}-0.5)/0.4)))-170*pow(min(1,max(0,(t-({b}-0.45))/0.45)),3)'"
+        elif m == "rise":
+            ypos = f"'44*pow(1-min(1,max(0,(t-{a})/0.5)),3)'"
+        else:
+            ypos = "0"
         chain += f";[{last}][{lab}]overlay=x=0:y={ypos}:enable='between(t,{a},{b})':format=auto[{lab}v]"
         last = f"{lab}v"
     return chain, last
@@ -490,8 +542,12 @@ def main() -> None:
     vprev = "0:v"
     for i in range(1, len(parts)):
         off = cum - XF
-        both = segs[i - 1]["kind"] in ("screen", "video") and segs[i]["kind"] in ("screen", "video")
-        kind = ("smoothleft" if i % 2 else "smoothup") if (both and FILM.get("wipes")) else "fade"
+        app = lambda sg: sg["kind"] in ("screen", "video", "still", "card")
+        if FILM.get("transitions") == "cut3":
+            kind = "smoothleft" if (app(segs[i - 1]) and app(segs[i]) and not segs[i].get("open")) else "fade"
+        else:
+            both = segs[i - 1]["kind"] in ("screen", "video") and segs[i]["kind"] in ("screen", "video")
+            kind = ("smoothleft" if i % 2 else "smoothup") if (both and FILM.get("wipes")) else "fade"
         chain += f"[{vprev}][{i}:v]xfade=transition={kind}:duration={XF}:offset={off:.3f}[v{i}];"
         vprev = f"v{i}"
         cum += durs[i] - XF

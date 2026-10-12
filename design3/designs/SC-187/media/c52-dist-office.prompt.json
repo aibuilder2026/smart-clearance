@@ -1,0 +1,18 @@
+{
+  "prompt": "Exactly as in the image, almost a still: the man in the light blue checked shirt reads the printed stock report at his desk, his eyes moving along the highlighted line; he lets out a slow breath and glances once toward the open door and the godown, then back at the report; his hands stay on the desk. A slow, steady push in on him and the report. Every face, hand and arm keeps its form; no extra limbs appear and none vanish; nobody's face changes; nothing is picked up, handed over or put down; no object appears, vanishes or changes shape; the printed labels on the cartons and the packets stay exactly as they are, crisp and legible. Photorealistic live action, 35 mm, natural skin and fabric, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "720p",
+  "duration": 6,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "dolly_in",
+  "audio": false,
+  "seed": 187801,
+  "loras": [],
+  "image": "/Users/arundutta/projects/smart-clearance/.claude/worktrees/console-ui-db-migration-b9ab01/design3/designs/SC-187/src/img/k52-dist-office.png",
+  "framed_first": "/Users/arundutta/ltx-video/frames/sc187-c52-dist-office.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 9.8,
+  "ltx_output": "/Users/arundutta/Library/Application Support/LTXDesktop/outputs/ltx2_video_20261012_115759_a528846b.mp4",
+  "cost_usd": 0
+}

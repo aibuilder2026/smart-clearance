@@ -1,0 +1,18 @@
+{
+  "prompt": "Exactly as in the image, almost a still: over his shoulder, the man in the light blue checked shirt holds his phone steady in both hands, its screen facing him and the camera; the camera screen on the phone shows the carton label in its frame and does not change; he presses the round shutter button once with his thumb, the screen flashes white for an instant, and he holds the phone still. Locked-off camera, no movement. Every face, hand and arm keeps its form; no extra limbs appear and none vanish; nobody's face changes; nothing is picked up, handed over or put down; no object appears, vanishes or changes shape; the printed labels on the cartons and the packets stay exactly as they are, crisp and legible. Photorealistic live action, 35 mm, natural skin and fabric, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "720p",
+  "duration": 6,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "static",
+  "audio": false,
+  "seed": 187806,
+  "loras": [],
+  "image": "/Users/arundutta/projects/smart-clearance/.claude/worktrees/console-ui-db-migration-b9ab01/design3/designs/SC-187/src/img/k57-label-photo.png",
+  "framed_first": "/Users/arundutta/ltx-video/frames/sc187-c57-label-photo.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 9.3,
+  "ltx_output": "/Users/arundutta/Library/Application Support/LTXDesktop/outputs/ltx2_video_20261012_130711_0348495c.mp4",
+  "cost_usd": 0
+}

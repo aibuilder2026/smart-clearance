@@ -180,6 +180,67 @@ chapter cards); 110 overlays; 52 spoken beats.
 - **The spend:** $72.92 against the $75 cap (Veo 3.1 clips, Nano Banana 2 keyframes and retakes, Lyria's bed under its
   $10); the voice and the listening and watching checks a few cents; the four LTX clips and the app recordings free.
 
+## Cut 3 (12 Oct 2026): the maintainer's notes on cut 2
+
+The notes, and what each changed:
+
+1. **The first minute** ("lots of hallucinations and glitches"; start with manufacturers, brands and distributors looking
+   at stock, in professional settings). Scene 1 is re-shot in offices: a brand's supply planning team at a stock-ageing
+   screen; a distributor at his desk by the godown with a stock report; a quick-commerce receiving dock with a pallet
+   on hold; the write-off at the landfill; a kirana's shelf that stayed empty. The title shot is a factory's loading
+   bay at dawn, and the super stockist's depot is re-shot too. All eight keyframes are Qwen-Image 2.1 locally
+   (`src/gen-qwen.sh`: an edit with the cast sheet and a 16:9 reference of the real label beside the pack as condition
+   images, `src/refs16/`, at 1024, about 2.5 minutes each) and all eight clips LTX 2.5 Fast locally (`src/gen-ltx3.py`,
+   720p, near-static prompts), at no cost. An edit keeps its first condition image's aspect, so the reference is 16:9;
+   at 2048 with four condition images the edit swapped the 48 GB machine into a crash, so `guard.sh` now watches the
+   free memory beside it. Qwen holds the cast's identity from the sheet and prints the label legibly on every carton.
+2. **The chapters** ("looks like a slide"). The seven chapter cards are gone. A chapter opens over the screen it starts
+   on: a veil over the frame, "CHAPTER n", the name, one line and the nine stops with this chapter's lit, rising in
+   and leaving after 3.4 s as the screen underneath comes clear (`chapter-open` in `overlays.mjs`, `chapter_open()` in
+   `film3.py`). The chapter's own labels wait for it.
+3. **Overlaps and pop-ups.** The window now fits the right column whatever the recording's shape (a landscape phone
+   recording is a tablet, fitted and centred), the desktop window starts at 650 and the feature label keeps to 540 px.
+   The pop-ups are notification banners as a phone shows them: the app's icon, its name and "now", a bold title, the
+   body; inside the phone's screen on a phone segment, at the frame's top right elsewhere; springing down, settling,
+   leaving upward (`banner`, motion "banner"). Every label rises into place (motion "rise").
+4. **The camera** held the wrong way round: the label-photo shot is re-shot over the distributor's shoulder with the
+   phone's screen toward him and the camera, showing the app's own camera screen with the label in its frame
+   (`k57-label-photo`, Qwen with the app's screenshot as a condition image).
+5. **Audio and music**: unchanged.
+6. **The background**: behind the app's windows, the chapter's own keyframe pulled far out of focus under the studio
+   ground, stronger at the right and lifting to the ground's colour under the labels (`photo_ground`).
+7. **Transitions and charts**: a push (`smoothleft`) between two app screens, a dissolve to and from live action, the
+   window rising in; four animations on the design system's tokens replace the two stills and open two chapters
+   (`src/anim.mjs`: the ten agents round the one yes, the nine stops lighting along a rail, the five exits priced
+   against the bin, the ledger's recovered-against-written-off bar and the impact tiles; illustrative, no figures).
+
+Google spend for the cut: under $1 (Gemini watching the new clips). The maintainer's cap for these changes was $20.
+
+## The film, cut 3 (12 Oct 2026)
+
+`media/smart-clearance-demo.mp4`: 6 min 6.4 s (366.4 s), 1920 × 1080, 24 fps, H.264 (crf 24; the crf-18 master stays
+local in `src/build3/`), AAC stereo at −14.4 LUFS integrated. `media/smart-clearance-demo-720p.mp4` is the same cut at
+1280 × 720, and `landing-demo/smart-clearance-demo.mp4` at the repository root is a copy of the 1080p file. 10 scenes,
+70 segments: 20 live-action shots (8 on LTX 2.5 Fast from Qwen keyframes, the first minute and the depot;
+8 on Veo 3.1 from cut 2; 3 from SC-154's landing-page film), 44 recordings of the working app, 6 grounds
+carrying the four animations, the title, the statements and the end cards; 116 overlays; 52 spoken beats.
+
+- **The scenes land at** 0:00 the problem, 0:33 Smart-Clearance, 1:21 Connect and detect, 1:51 Verify, 2:12 Value, decide, approve, 2:52 Execute: five exits, 3:46 the paperwork, 4:24 when it does not go as planned, 5:10 the ledger and ESG, 5:43 the close.
+- **Every new clip was reviewed** as in cut 2 (its 1 fps sheet and Gemini through `src/eyes.py`), and cut to its clean
+  seconds: the office, the dock, the write-off and the kirana hold for six seconds; the distributor and the label photo
+  for four; the factory at dawn for four; the depot for two, slowed to fill its share.
+- **Checks:** every keyframe viewed (the real label on every carton, the cast's faces held, the camera's screen facing
+  the distributor); the whole cut's contact sheet at one frame every six seconds; spot frames of the first minute and
+  of every chapter opening; `ffprobe`; `ebur128`; Gemini listening to the whole mix (narration 10/10, no truncation,
+  the bed right, the lift near the end, mix 10/10; the only "gaps" it hears are the chapter openings' breaths).
+- **Found on the way:** a Qwen edit at 2048 with four condition images swapped the machine into a crash (the first
+  frame never finished; `guard.sh` now watches the memory); an edit keeps its first condition image's aspect, so the
+  label and the pack go in as one 16:9 reference; the first office frame showed an amber-and-red stock table where the
+  maintainer wanted the app's own green charts, so it was re-rendered with the Ledger's Impact screen as a condition
+  image.
+- **The spend:** under $1 of Google for the cut (Gemini watching eight clips and listening to the mix); the keyframes,
+  the clips and the animations were made locally. The maintainer's cap for these changes was $20.
+
 ## Rebuilding the film from a fresh clone
 
 Everything the cut needs is tracked: the clips in `media/`, the keyframes in `img/`, the app screens in `screens/`,

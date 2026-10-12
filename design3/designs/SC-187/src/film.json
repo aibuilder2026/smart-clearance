@@ -4,141 +4,185 @@
  "height": 1080,
  "xfade": 0.5,
  "voice": "cut2-Kore-1.08",
- "total": 365.044,
+ "transitions": "cut3",
+ "cut": 3,
+ "total": 366.003,
  "segments": [
   {
    "kind": "clip",
-   "name": "c21-godown-date",
-   "key": "k21-godown-date",
-   "speed": 0.5,
+   "name": "c51-brand-office",
+   "key": "k51-brand-office",
+   "speed": 0.8,
    "seek": 0,
    "min": 5,
-   "max": 16.0,
-   "weight": 0.9,
+   "max": 7.5,
+   "weight": 1.1,
    "overlays": [
     {
      "id": "st-1",
      "at": 0.85,
      "until": 7.52,
-     "slide": false
+     "slide": false,
+     "motion": "",
+     "anim": false
     },
     {
      "id": "role-001",
      "at": 0.6,
-     "until": 4.4,
-     "slide": false
+     "until": 4.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
-   "seconds": 8.856,
-   "hold": 0.0,
+   "seconds": 7.742,
+   "hold": 0.242,
    "sceneOffset": 0.0,
    "start": 0.0
   },
   {
    "kind": "clip",
-   "name": "c29-lakshmi-godown",
-   "key": "k29-lakshmi-godown",
-   "speed": 0.5,
+   "name": "c52-dist-office",
+   "key": "k52-dist-office",
+   "speed": 0.55,
    "seek": 0,
    "min": 4.5,
-   "max": 16.0,
+   "max": 7.3,
    "weight": 1,
    "overlays": [
     {
      "id": "st-2",
-     "at": 0.0,
-     "until": 4.964,
-     "slide": false
+     "at": 0.128,
+     "until": 6.078,
+     "slide": false,
+     "motion": "",
+     "anim": false
     },
     {
      "id": "role-003",
      "at": 0.4,
      "until": 4.2,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
-   "seconds": 8.785,
+   "seconds": 6.992,
    "hold": 0.0,
-   "sceneOffset": 8.356,
-   "start": 8.356
+   "sceneOffset": 7.242,
+   "start": 7.242
   },
   {
    "kind": "clip",
-   "name": "c31-dark-store",
-   "key": "k31-dark-store",
-   "speed": 0.6,
-   "seek": 4.0,
+   "name": "c53-qc-dock",
+   "key": "k53-qc-dock",
+   "speed": 0.85,
+   "seek": 0,
    "min": 4.5,
-   "max": 6.666666666666667,
+   "max": 7.0,
    "weight": 1,
    "overlays": [
     {
      "id": "st-3",
      "at": 0.0,
-     "until": 2.034,
-     "slide": false
+     "until": 4.941,
+     "slide": false,
+     "motion": "",
+     "anim": false
     },
     {
      "id": "role-005",
      "at": 0.4,
      "until": 4.0,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
-   "seconds": 8.785,
-   "hold": 2.118,
-   "sceneOffset": 16.641,
-   "start": 16.641
+   "seconds": 6.992,
+   "hold": 0.0,
+   "sceneOffset": 13.734,
+   "start": 13.734
   },
   {
    "kind": "clip",
-   "name": "c01-godown-date",
-   "key": "k01-godown-date",
-   "speed": 0.5,
+   "name": "c54-write-off",
+   "key": "k54-write-off",
+   "speed": 0.85,
    "seek": 0,
    "min": 4.5,
-   "max": 16.0,
+   "max": 7.0,
    "weight": 1,
    "overlays": [
     {
      "id": "st-4",
      "at": 0.0,
-     "until": 1.875,
-     "slide": false
-    },
-    {
-     "id": "st-5",
-     "at": 1.725,
-     "until": 8.785,
-     "slide": false
+     "until": 6.575,
+     "slide": false,
+     "motion": "",
+     "anim": false
     }
    ],
-   "seconds": 8.785,
+   "seconds": 6.992,
    "hold": 0.0,
-   "sceneOffset": 24.926,
-   "start": 24.926
+   "sceneOffset": 20.226,
+   "start": 20.226
   },
   {
    "kind": "clip",
-   "name": "r1-bay-dawn",
-   "key": "k1-bay-dawn",
+   "name": "c55-kirana-empty",
+   "key": "k55-kirana-empty",
+   "speed": 0.85,
+   "seek": 0,
+   "min": 4.5,
+   "max": 7.0,
+   "weight": 1,
+   "overlays": [
+    {
+     "id": "st-5",
+     "at": 0.0,
+     "until": 6.992,
+     "slide": false,
+     "motion": "",
+     "anim": false
+    },
+    {
+     "id": "role-008",
+     "at": 0.4,
+     "until": 4.0,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    }
+   ],
+   "seconds": 6.992,
+   "hold": 0.0,
+   "sceneOffset": 26.718,
+   "start": 26.718
+  },
+  {
+   "kind": "clip",
+   "name": "c56-factory-dawn",
+   "key": "k56-factory-dawn",
    "speed": 0.6,
    "seek": 0,
    "min": 6,
-   "max": 13.333333333333334,
+   "max": 6.7,
    "weight": 1.2,
    "overlays": [
     {
      "id": "title",
      "at": 0.4,
-     "until": 6.637,
-     "slide": false
+     "until": 7.037,
+     "slide": false,
+     "motion": "",
+     "anim": false
     }
    ],
-   "seconds": 6.637,
-   "hold": 0.0,
+   "seconds": 7.037,
+   "hold": 0.337,
    "sceneOffset": 0.0,
-   "start": 33.211
+   "start": 33.21
   },
   {
    "kind": "video",
@@ -150,18 +194,21 @@
    "seek": 0,
    "fallback": "extra--landing-hero",
    "layout": "right",
+   "bg": "k56-factory-dawn",
    "overlays": [
     {
-     "id": "ft-010",
+     "id": "ft-011",
      "at": 0.0,
-     "until": 6.584,
-     "slide": false
+     "until": 6.95,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-1",
-   "seconds": 6.584,
-   "sceneOffset": 6.137,
-   "start": 39.348
+   "seconds": 6.95,
+   "sceneOffset": 6.537,
+   "start": 39.747
   },
   {
    "kind": "video",
@@ -173,64 +220,85 @@
    "seek": 0,
    "fallback": "quiet--neha-console-munchly-supply",
    "layout": "right",
+   "bg": "k56-factory-dawn",
    "overlays": [
     {
-     "id": "ft-011",
+     "id": "ft-012",
      "at": 0.0,
-     "until": 6.584,
-     "slide": false
+     "until": 6.95,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
      "id": "p-supply",
      "at": 1.0,
      "until": 4.5,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-1",
-   "seconds": 6.584,
-   "sceneOffset": 12.221,
-   "start": 45.432
+   "seconds": 6.95,
+   "sceneOffset": 12.987,
+   "start": 46.197
   },
   {
-   "kind": "still",
-   "name": "system",
-   "zoom": 1.08,
-   "min": 5,
-   "anchor": 0.5,
-   "weight": 1,
+   "kind": "card",
+   "min": 5.5,
+   "weight": 1.1,
+   "bg": "k56-factory-dawn",
    "overlays": [
     {
-     "id": "ft-013",
+     "id": "agents-ring",
+     "at": 0.3,
+     "until": 6.45,
+     "slide": false,
+     "motion": "",
+     "anim": true
+    },
+    {
+     "id": "ft-015",
      "at": 0.0,
-     "until": 5.531,
-     "slide": false
+     "until": 6.45,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-1",
-   "seconds": 5.531,
-   "sceneOffset": 18.305,
-   "start": 51.516
+   "seconds": 6.45,
+   "sceneOffset": 19.437,
+   "start": 52.647
   },
   {
-   "kind": "still",
-   "name": "agents-nine-stops",
-   "zoom": 1.12,
-   "min": 6,
-   "anchor": 0.4,
-   "weight": 1.3,
+   "kind": "card",
+   "min": 5.5,
+   "weight": 1.2,
+   "bg": "k56-factory-dawn",
    "overlays": [
     {
-     "id": "ft-014",
+     "id": "nine-stops",
+     "at": 0.3,
+     "until": 6.537,
+     "slide": false,
+     "motion": "",
+     "anim": true
+    },
+    {
+     "id": "ft-017",
      "at": 0.0,
-     "until": 6.69,
-     "slide": false
+     "until": 6.537,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-1",
-   "seconds": 6.69,
-   "sceneOffset": 23.336,
-   "start": 56.547
+   "seconds": 6.537,
+   "sceneOffset": 25.387,
+   "start": 58.597
   },
   {
    "kind": "video",
@@ -242,53 +310,62 @@
    "seek": 0,
    "fallback": "quiet--neha-console-overview",
    "layout": "right",
+   "bg": "k56-factory-dawn",
    "overlays": [
     {
-     "id": "ft-015",
+     "id": "ft-018",
      "at": 0.0,
-     "until": 6.637,
-     "slide": false
+     "until": 7.037,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
      "id": "p-agents-at-work",
      "at": 1.0,
      "until": 4.5,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-1",
-   "seconds": 6.637,
-   "sceneOffset": 29.526,
-   "start": 62.737
+   "seconds": 7.037,
+   "sceneOffset": 31.424,
+   "start": 64.634
   },
   {
    "kind": "clip",
-   "name": "c30-depot",
-   "key": "k30-depot",
-   "speed": 0.5,
+   "name": "c58-depot",
+   "key": "k58-depot",
+   "speed": 0.4,
    "seek": 0,
    "min": 5,
-   "max": 16.0,
+   "max": 5.5,
    "weight": 1.1,
    "overlays": [
     {
-     "id": "ft-017",
+     "id": "ft-020",
      "at": 0.0,
-     "until": 5.584,
-     "slide": false
+     "until": 5.95,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
-     "id": "role-018",
+     "id": "role-021",
      "at": 0.4,
      "until": 4.2,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-1",
-   "seconds": 5.584,
-   "hold": 0.0,
-   "sceneOffset": 35.663,
-   "start": 68.874
+   "seconds": 5.95,
+   "hold": 0.45,
+   "sceneOffset": 37.961,
+   "start": 71.171
   },
   {
    "kind": "video",
@@ -300,63 +377,64 @@
    "seek": 0,
    "fallback": "quiet--neha-console-munchly",
    "layout": "right",
+   "bg": "k56-factory-dawn",
    "overlays": [
     {
-     "id": "ft-019",
+     "id": "ft-022",
      "at": 0.0,
-     "until": 4.978,
-     "slide": false
+     "until": 5.277,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-1",
-   "seconds": 4.978,
-   "sceneOffset": 40.747,
-   "start": 73.958
-  },
-  {
-   "kind": "card",
-   "min": 3.2,
-   "weight": 0.5,
-   "overlays": [
-    {
-     "id": "cc-Chapter 1",
-     "at": 0.2,
-     "until": 3.465,
-     "slide": false
-    }
-   ],
-   "seconds": 3.465,
-   "sceneOffset": 45.225,
-   "start": 78.436
+   "seconds": 5.277,
+   "sceneOffset": 43.411,
+   "start": 76.621
   },
   {
    "kind": "video",
    "name": "quiet--setup",
    "phone": false,
-   "min": 6,
-   "weight": 1.2,
+   "min": 8,
+   "weight": 1.3,
    "speed": 1.0,
    "seek": 0,
    "fallback": "quiet--priya-command",
    "layout": "right",
+   "bg": "k51-brand-office",
    "overlays": [
     {
-     "id": "ft-022",
-     "at": 0.0,
-     "until": 6.861,
-     "slide": false
+     "id": "co-1",
+     "at": 0.2,
+     "until": 3.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "ft-025",
+     "at": 3.8,
+     "until": 9.267,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
      "id": "p-export",
-     "at": 1.0,
+     "at": 3.8,
      "until": 4.8,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
+   "open": true,
    "chapter": "ch-2",
-   "seconds": 6.861,
+   "seconds": 9.267,
    "sceneOffset": 0.0,
-   "start": 81.401
+   "start": 81.398
   },
   {
    "kind": "video",
@@ -368,30 +446,37 @@
    "seek": 0,
    "fallback": "detect--priya-command",
    "layout": "right",
+   "bg": "k51-brand-office",
    "overlays": [
     {
-     "id": "ft-024",
+     "id": "ft-027",
      "at": 0.0,
-     "until": 7.933,
-     "slide": false
+     "until": 8.267,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
      "id": "p-flag",
      "at": 1.2,
      "until": 5.0,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
      "id": "p-activity",
      "at": 3.0,
      "until": 6.5,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-2",
-   "seconds": 7.933,
-   "sceneOffset": 6.361,
-   "start": 87.762
+   "seconds": 8.267,
+   "sceneOffset": 8.767,
+   "start": 90.165
   },
   {
    "kind": "clip",
@@ -404,23 +489,27 @@
    "weight": 1.2,
    "overlays": [
     {
-     "id": "push-detect",
+     "id": "bn-030",
      "at": 1.6,
-     "until": 6.861,
-     "slide": true
+     "until": 7.17,
+     "slide": false,
+     "motion": "banner",
+     "anim": false
     },
     {
-     "id": "role-028",
+     "id": "role-031",
      "at": 0.5,
      "until": 4.6,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-2",
-   "seconds": 6.861,
+   "seconds": 7.17,
    "hold": 0.0,
-   "sceneOffset": 13.794,
-   "start": 95.195
+   "sceneOffset": 16.534,
+   "start": 97.932
   },
   {
    "kind": "video",
@@ -432,92 +521,97 @@
    "seek": 0,
    "fallback": "detect--priya-journey-chips",
    "layout": "right",
+   "bg": "k51-brand-office",
    "overlays": [
     {
-     "id": "ft-029",
+     "id": "ft-032",
      "at": 0.0,
-     "until": 6.861,
-     "slide": false
+     "until": 7.17,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
      "id": "p-tracker",
      "at": 1.0,
      "until": 4.5,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-2",
-   "seconds": 6.861,
-   "sceneOffset": 20.155,
-   "start": 101.556
-  },
-  {
-   "kind": "card",
-   "min": 3.2,
-   "weight": 0.5,
-   "overlays": [
-    {
-     "id": "cc-Chapter 2",
-     "at": 0.2,
-     "until": 3.559,
-     "slide": false
-    }
-   ],
-   "seconds": 3.559,
-   "sceneOffset": 26.516,
-   "start": 107.917
+   "seconds": 7.17,
+   "sceneOffset": 23.204,
+   "start": 104.602
   },
   {
    "kind": "video",
    "name": "detect--rakesh-today-request",
    "phone": true,
-   "min": 5,
-   "weight": 1,
+   "min": 7.5,
+   "weight": 1.3,
    "speed": 1.0,
    "seek": 0,
    "fallback": "detect--rakesh-today-phone",
    "layout": "right",
+   "bg": "k57-label-photo",
    "overlays": [
     {
-     "id": "ft-033",
-     "at": 0.0,
-     "until": 4.462,
-     "slide": false
+     "id": "co-2",
+     "at": 0.2,
+     "until": 3.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
-     "id": "push-verify",
-     "at": 1.2,
-     "until": 4.462,
-     "slide": true
+     "id": "ft-036",
+     "at": 3.8,
+     "until": 6.821,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "bn-037",
+     "at": 4.2,
+     "until": 6.821,
+     "slide": false,
+     "motion": "banner",
+     "anim": false
     }
    ],
+   "open": true,
    "chapter": "ch-3",
-   "seconds": 4.462,
+   "seconds": 6.821,
    "sceneOffset": 0.0,
-   "start": 110.976
+   "start": 111.272
   },
   {
    "kind": "clip",
-   "name": "c03-rakesh-label-photo",
-   "key": "k03-rakesh-label-photo",
+   "name": "c57-label-photo",
+   "key": "k57-label-photo",
    "speed": 0.8,
    "seek": 0,
    "min": 5,
-   "max": 10.0,
+   "max": 5.0,
    "weight": 1.1,
    "overlays": [
     {
-     "id": "role-035",
+     "id": "role-038",
      "at": 0.4,
      "until": 4.2,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-3",
-   "seconds": 4.462,
+   "seconds": 4.547,
    "hold": 0.0,
-   "sceneOffset": 3.962,
-   "start": 114.938
+   "sceneOffset": 6.321,
+   "start": 117.593
   },
   {
    "kind": "video",
@@ -529,18 +623,21 @@
    "seek": 0,
    "fallback": "plan--rakesh-photos-phone",
    "layout": "right",
+   "bg": "k57-label-photo",
    "overlays": [
     {
-     "id": "ft-036",
+     "id": "ft-039",
      "at": 0.0,
-     "until": 4.016,
-     "slide": false
+     "until": 4.092,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-3",
-   "seconds": 4.016,
-   "sceneOffset": 7.924,
-   "start": 118.9
+   "seconds": 4.092,
+   "sceneOffset": 10.368,
+   "start": 121.64
   },
   {
    "kind": "video",
@@ -552,81 +649,116 @@
    "seek": 0,
    "fallback": "plan--priya-route-chips",
    "layout": "right",
+   "bg": "k57-label-photo",
    "overlays": [
     {
-     "id": "ft-037",
+     "id": "ft-040",
      "at": 0.0,
-     "until": 7.139,
-     "slide": false
+     "until": 7.275,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
      "id": "p-label",
      "at": 1.0,
      "until": 4.0,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
      "id": "p-match",
      "at": 3.5,
      "until": 7.0,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-3",
-   "seconds": 7.139,
-   "sceneOffset": 11.44,
-   "start": 122.416
+   "seconds": 7.275,
+   "sceneOffset": 13.96,
+   "start": 125.232
   },
   {
    "kind": "card",
-   "min": 3.2,
-   "weight": 0.5,
+   "min": 8.5,
+   "weight": 1.5,
+   "bg": "k24-priya-approve",
    "overlays": [
     {
-     "id": "cc-Chapter 3",
+     "id": "five-exits",
+     "at": 3.8,
+     "until": 8.865,
+     "slide": false,
+     "motion": "",
+     "anim": true
+    },
+    {
+     "id": "co-3",
      "at": 0.2,
-     "until": 2.856,
-     "slide": false
+     "until": 3.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "ft-046",
+     "at": 3.8,
+     "until": 8.865,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
-   "seconds": 2.856,
-   "sceneOffset": 18.079,
-   "start": 129.055
+   "open": true,
+   "chapter": "ch-4",
+   "seconds": 8.865,
+   "sceneOffset": 0.0,
+   "start": 132.007
   },
   {
    "kind": "video",
    "name": "plan--route-channels",
    "phone": false,
-   "min": 9,
-   "weight": 1.5,
+   "min": 7,
+   "weight": 1.2,
    "speed": 1.0,
    "seek": 0,
    "fallback": "plan--priya-route-chips",
    "layout": "right",
+   "bg": "k24-priya-approve",
    "overlays": [
     {
-     "id": "ft-042",
+     "id": "ft-047",
      "at": 0.0,
-     "until": 10.074,
-     "slide": false
+     "until": 7.292,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
      "id": "p-channels",
      "at": 1.0,
      "until": 4.5,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
      "id": "p-writeoff",
      "at": 4.0,
-     "until": 7.5,
-     "slide": false
+     "until": 7.292,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-4",
-   "seconds": 10.074,
-   "sceneOffset": 0.0,
-   "start": 131.411
+   "seconds": 7.292,
+   "sceneOffset": 8.365,
+   "start": 140.372
   },
   {
    "kind": "video",
@@ -638,24 +770,29 @@
    "seek": 0,
    "fallback": "plan--priya-route-chips",
    "layout": "right",
+   "bg": "k24-priya-approve",
    "overlays": [
     {
-     "id": "ft-045",
+     "id": "ft-050",
      "at": 0.0,
-     "until": 8.931,
-     "slide": false
+     "until": 8.316,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
      "id": "p-split",
      "at": 1.0,
      "until": 4.5,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-4",
-   "seconds": 8.931,
-   "sceneOffset": 9.574,
-   "start": 140.985
+   "seconds": 8.316,
+   "sceneOffset": 15.157,
+   "start": 147.164
   },
   {
    "kind": "clip",
@@ -668,17 +805,19 @@
    "weight": 1,
    "overlays": [
     {
-     "id": "role-047",
+     "id": "role-052",
      "at": 0.4,
      "until": 4.2,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-4",
-   "seconds": 5.716,
+   "seconds": 5.243,
    "hold": 0.0,
-   "sceneOffset": 18.005,
-   "start": 149.416
+   "sceneOffset": 22.973,
+   "start": 154.98
   },
   {
    "kind": "video",
@@ -690,18 +829,21 @@
    "seek": 0,
    "fallback": "plan--priya-approve-sheet",
    "layout": "right",
+   "bg": "k24-priya-approve",
    "overlays": [
     {
-     "id": "ft-048",
+     "id": "ft-053",
      "at": 0.0,
-     "until": 9.003,
-     "slide": false
+     "until": 8.34,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-4",
-   "seconds": 9.003,
-   "sceneOffset": 23.221,
-   "start": 154.632
+   "seconds": 8.34,
+   "sceneOffset": 27.716,
+   "start": 159.723
   },
   {
    "kind": "video",
@@ -713,69 +855,71 @@
    "seek": 0,
    "fallback": "approve--rakesh-today-phone",
    "layout": "right",
+   "bg": "k24-priya-approve",
    "overlays": [
     {
-     "id": "ft-049",
+     "id": "ft-054",
      "at": 0.0,
-     "until": 5.716,
-     "slide": false
+     "until": 5.243,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
-     "id": "push-approved",
+     "id": "bn-055",
      "at": 1.0,
-     "until": 5.716,
-     "slide": true
+     "until": 5.243,
+     "slide": false,
+     "motion": "banner",
+     "anim": false
     }
    ],
    "chapter": "ch-4",
-   "seconds": 5.716,
-   "sceneOffset": 31.724,
-   "start": 163.135
-  },
-  {
-   "kind": "card",
-   "min": 3.2,
-   "weight": 0.5,
-   "overlays": [
-    {
-     "id": "cc-Chapter 4",
-     "at": 0.2,
-     "until": 3.558,
-     "slide": false
-    }
-   ],
-   "seconds": 3.558,
-   "sceneOffset": 36.94,
-   "start": 168.351
+   "seconds": 5.243,
+   "sceneOffset": 35.556,
+   "start": 167.563
   },
   {
    "kind": "clip",
    "name": "c25-kirana-offer",
    "key": "k25-kirana-offer",
-   "speed": 0.6,
+   "speed": 0.5,
    "seek": 0,
-   "min": 5,
-   "max": 13.333333333333334,
-   "weight": 1,
+   "min": 7.5,
+   "max": 16.0,
+   "weight": 1.4,
    "overlays": [
     {
-     "id": "role-053",
-     "at": 0.4,
-     "until": 4.0,
-     "slide": false
+     "id": "co-4",
+     "at": 0.2,
+     "until": 3.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
-     "id": "push-offer",
-     "at": 1.2,
-     "until": 4.0,
-     "slide": true
+     "id": "role-058",
+     "at": 3.8,
+     "until": 5.87,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "bn-059",
+     "at": 4.2,
+     "until": 5.87,
+     "slide": false,
+     "motion": "banner",
+     "anim": false
     }
    ],
+   "open": true,
    "chapter": "ch-5",
-   "seconds": 4.0,
+   "seconds": 5.87,
    "hold": 0.0,
    "sceneOffset": 0.0,
-   "start": 171.409
+   "start": 172.306
   },
   {
    "kind": "video",
@@ -787,18 +931,21 @@
    "seek": 0,
    "fallback": "approve--kirana-ganesh-offer-phone",
    "layout": "right",
+   "bg": "k25-kirana-offer",
    "overlays": [
     {
-     "id": "ft-055",
+     "id": "ft-060",
      "at": 0.0,
-     "until": 3.891,
-     "slide": false
+     "until": 3.914,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-5",
-   "seconds": 3.891,
-   "sceneOffset": 3.5,
-   "start": 174.909
+   "seconds": 3.914,
+   "sceneOffset": 5.37,
+   "start": 177.676
   },
   {
    "kind": "video",
@@ -810,18 +957,21 @@
    "seek": 0,
    "fallback": "orders--kirana-ganesh-offer-ordered-phone",
    "layout": "right",
+   "bg": "k25-kirana-offer",
    "overlays": [
     {
-     "id": "ft-056",
+     "id": "ft-061",
      "at": 0.0,
-     "until": 5.447,
-     "slide": false
+     "until": 5.479,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-5",
-   "seconds": 5.447,
-   "sceneOffset": 6.891,
-   "start": 178.3
+   "seconds": 5.479,
+   "sceneOffset": 8.784,
+   "start": 181.09
   },
   {
    "kind": "video",
@@ -833,18 +983,21 @@
    "seek": 0,
    "fallback": "orders--priya-execution-chips",
    "layout": "right",
+   "bg": "k25-kirana-offer",
    "overlays": [
     {
-     "id": "ft-057",
+     "id": "ft-062",
      "at": 0.0,
-     "until": 4.669,
-     "slide": false
+     "until": 4.696,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-5",
-   "seconds": 4.669,
-   "sceneOffset": 11.838,
-   "start": 183.247
+   "seconds": 4.696,
+   "sceneOffset": 13.763,
+   "start": 186.069
   },
   {
    "kind": "video",
@@ -856,18 +1009,21 @@
    "seek": 0,
    "fallback": "approve--agrawal-listing",
    "layout": "right",
+   "bg": "k25-kirana-offer",
    "overlays": [
     {
-     "id": "ft-058",
+     "id": "ft-063",
      "at": 0.0,
-     "until": 3.891,
-     "slide": false
+     "until": 3.914,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-5",
-   "seconds": 3.891,
-   "sceneOffset": 16.007,
-   "start": 187.416
+   "seconds": 3.914,
+   "sceneOffset": 17.959,
+   "start": 190.265
   },
   {
    "kind": "clip",
@@ -880,17 +1036,19 @@
    "weight": 0.9,
    "overlays": [
     {
-     "id": "role-059",
+     "id": "role-064",
      "at": 0.4,
      "until": 4.0,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-5",
    "seconds": 4.0,
    "hold": 0.0,
-   "sceneOffset": 19.398,
-   "start": 190.807
+   "sceneOffset": 21.373,
+   "start": 193.679
   },
   {
    "kind": "video",
@@ -902,24 +1060,29 @@
    "seek": 0,
    "fallback": "deal--agrawal-listing-won",
    "layout": "right",
+   "bg": "k25-kirana-offer",
    "overlays": [
     {
-     "id": "ft-060",
+     "id": "ft-065",
      "at": 0.0,
-     "until": 5.447,
-     "slide": false
+     "until": 5.479,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
      "id": "p-chat",
      "at": 1.2,
      "until": 5.0,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-5",
-   "seconds": 5.447,
-   "sceneOffset": 22.898,
-   "start": 194.307
+   "seconds": 5.479,
+   "sceneOffset": 24.873,
+   "start": 197.179
   },
   {
    "kind": "clip",
@@ -932,23 +1095,27 @@
    "weight": 1,
    "overlays": [
     {
-     "id": "role-062",
+     "id": "role-067",
      "at": 0.4,
      "until": 4.0,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
-     "id": "push-staff",
+     "id": "bn-068",
      "at": 1.0,
      "until": 4.0,
-     "slide": true
+     "slide": false,
+     "motion": "banner",
+     "anim": false
     }
    ],
    "chapter": "ch-5",
    "seconds": 4.0,
    "hold": 0.0,
-   "sceneOffset": 27.845,
-   "start": 199.254
+   "sceneOffset": 29.852,
+   "start": 202.158
   },
   {
    "kind": "video",
@@ -960,18 +1127,21 @@
    "seek": 0,
    "fallback": "donation--lakshmi-today",
    "layout": "right",
+   "bg": "k25-kirana-offer",
    "overlays": [
     {
-     "id": "ft-064",
+     "id": "ft-069",
      "at": 0.0,
-     "until": 5.447,
-     "slide": false
+     "until": 5.479,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-5",
-   "seconds": 5.447,
-   "sceneOffset": 31.345,
-   "start": 202.754
+   "seconds": 5.479,
+   "sceneOffset": 33.352,
+   "start": 205.658
   },
   {
    "kind": "clip",
@@ -984,23 +1154,27 @@
    "weight": 1,
    "overlays": [
     {
-     "id": "role-065",
+     "id": "role-070",
      "at": 0.4,
      "until": 4.0,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
-     "id": "push-pickup",
+     "id": "bn-071",
      "at": 1.0,
      "until": 4.0,
-     "slide": true
+     "slide": false,
+     "motion": "banner",
+     "anim": false
     }
    ],
    "chapter": "ch-5",
    "seconds": 4.0,
    "hold": 0.0,
-   "sceneOffset": 36.292,
-   "start": 207.701
+   "sceneOffset": 38.331,
+   "start": 210.637
   },
   {
    "kind": "video",
@@ -1012,18 +1186,21 @@
    "seek": 0,
    "fallback": "donation--meera-pickups-phone",
    "layout": "right",
+   "bg": "k25-kirana-offer",
    "overlays": [
     {
-     "id": "ft-067",
+     "id": "ft-072",
      "at": 0.0,
-     "until": 5.447,
-     "slide": false
+     "until": 5.479,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-5",
-   "seconds": 5.447,
-   "sceneOffset": 39.792,
-   "start": 211.201
+   "seconds": 5.479,
+   "sceneOffset": 41.831,
+   "start": 214.137
   },
   {
    "kind": "video",
@@ -1035,18 +1212,21 @@
    "seek": 0,
    "fallback": "papers--rakesh-deliveries-done",
    "layout": "right",
+   "bg": "k25-kirana-offer",
    "overlays": [
     {
-     "id": "ft-068",
+     "id": "ft-073",
      "at": 0.0,
-     "until": 3.891,
-     "slide": false
+     "until": 3.914,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-5",
-   "seconds": 3.891,
-   "sceneOffset": 44.739,
-   "start": 216.148
+   "seconds": 3.914,
+   "sceneOffset": 46.81,
+   "start": 219.116
   },
   {
    "kind": "clip",
@@ -1059,62 +1239,61 @@
    "weight": 0.9,
    "overlays": [
     {
-     "id": "role-069",
+     "id": "role-074",
      "at": 0.4,
      "until": 4.0,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-5",
    "seconds": 4.0,
    "hold": 0.0,
-   "sceneOffset": 48.13,
-   "start": 219.539
-  },
-  {
-   "kind": "card",
-   "min": 3.2,
-   "weight": 0.5,
-   "overlays": [
-    {
-     "id": "cc-Chapter 5",
-     "at": 0.2,
-     "until": 2.6,
-     "slide": false
-    }
-   ],
-   "seconds": 2.6,
-   "sceneOffset": 51.63,
-   "start": 223.039
+   "sceneOffset": 50.224,
+   "start": 222.53
   },
   {
    "kind": "clip",
    "name": "c09-rakesh-tally-desk",
    "key": "k09-rakesh-tally-desk",
-   "speed": 0.5,
+   "speed": 0.4,
    "seek": 0,
-   "min": 4.0,
-   "max": 4.0,
-   "weight": 1,
+   "min": 7,
+   "max": 5.0,
+   "weight": 1.3,
    "overlays": [
     {
-     "id": "role-072",
-     "at": 0.4,
-     "until": 4.0,
-     "slide": false
+     "id": "co-5",
+     "at": 0.2,
+     "until": 3.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
-     "id": "push-papers",
-     "at": 1.0,
-     "until": 4.0,
-     "slide": true
+     "id": "role-077",
+     "at": 3.8,
+     "until": 5.351,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "bn-078",
+     "at": 4.2,
+     "until": 5.351,
+     "slide": false,
+     "motion": "banner",
+     "anim": false
     }
    ],
+   "open": true,
    "chapter": "ch-6",
-   "seconds": 4.0,
-   "hold": 0.0,
+   "seconds": 5.351,
+   "hold": 0.351,
    "sceneOffset": 0.0,
-   "start": 225.139
+   "start": 226.03
   },
   {
    "kind": "video",
@@ -1126,18 +1305,21 @@
    "seek": 0,
    "fallback": "settle--priya-paperwork-chips",
    "layout": "right",
+   "bg": "k09-rakesh-tally-desk",
    "overlays": [
     {
-     "id": "ft-074",
+     "id": "ft-079",
      "at": 0.0,
-     "until": 5.357,
-     "slide": false
+     "until": 5.351,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-6",
-   "seconds": 5.357,
-   "sceneOffset": 3.5,
-   "start": 228.639
+   "seconds": 5.351,
+   "sceneOffset": 4.851,
+   "start": 230.881
   },
   {
    "kind": "video",
@@ -1149,24 +1331,29 @@
    "seek": 0,
    "fallback": "papers--paper-chips-invoice-issued",
    "layout": "right",
+   "bg": "k09-rakesh-tally-desk",
    "overlays": [
     {
-     "id": "ft-075",
+     "id": "ft-080",
      "at": 0.0,
-     "until": 6.122,
-     "slide": false
+     "until": 6.116,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
      "id": "p-irn",
      "at": 1.0,
      "until": 4.5,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-6",
-   "seconds": 6.122,
-   "sceneOffset": 8.357,
-   "start": 233.496
+   "seconds": 6.116,
+   "sceneOffset": 9.702,
+   "start": 235.732
   },
   {
    "kind": "video",
@@ -1178,18 +1365,21 @@
    "seek": 0,
    "fallback": "settle--paper-chips-credit-note",
    "layout": "right",
+   "bg": "k09-rakesh-tally-desk",
    "overlays": [
     {
-     "id": "ft-077",
+     "id": "ft-082",
      "at": 0.0,
-     "until": 3.826,
-     "slide": false
+     "until": 3.822,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-6",
-   "seconds": 3.826,
-   "sceneOffset": 13.979,
-   "start": 239.118
+   "seconds": 3.822,
+   "sceneOffset": 15.318,
+   "start": 241.348
   },
   {
    "kind": "video",
@@ -1201,24 +1391,29 @@
    "seek": 0,
    "fallback": "settle--paper-chips-itc-memo",
    "layout": "right",
+   "bg": "k09-rakesh-tally-desk",
    "overlays": [
     {
-     "id": "ft-078",
+     "id": "ft-083",
      "at": 0.0,
-     "until": 5.357,
-     "slide": false
+     "until": 5.351,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
      "id": "p-itc",
      "at": 1.0,
      "until": 4.5,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-6",
-   "seconds": 5.357,
-   "sceneOffset": 17.305,
-   "start": 242.444
+   "seconds": 5.351,
+   "sceneOffset": 18.64,
+   "start": 244.67
   },
   {
    "kind": "video",
@@ -1230,18 +1425,21 @@
    "seek": 0,
    "fallback": "papers--paper-chips-invoice-issued",
    "layout": "right",
+   "bg": "k09-rakesh-tally-desk",
    "overlays": [
     {
-     "id": "ft-080",
+     "id": "ft-085",
      "at": 0.0,
-     "until": 3.826,
-     "slide": false
+     "until": 3.822,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-6",
-   "seconds": 3.826,
-   "sceneOffset": 22.162,
-   "start": 247.301
+   "seconds": 3.822,
+   "sceneOffset": 23.491,
+   "start": 249.521
   },
   {
    "kind": "video",
@@ -1253,18 +1451,21 @@
    "seek": 0,
    "fallback": "settle--priya-paperwork-chips",
    "layout": "right",
+   "bg": "k09-rakesh-tally-desk",
    "overlays": [
     {
-     "id": "ft-081",
+     "id": "ft-086",
      "at": 0.0,
-     "until": 3.826,
-     "slide": false
+     "until": 3.822,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-6",
-   "seconds": 3.826,
-   "sceneOffset": 25.488,
-   "start": 250.627
+   "seconds": 3.822,
+   "sceneOffset": 26.813,
+   "start": 252.843
   },
   {
    "kind": "video",
@@ -1276,18 +1477,21 @@
    "seek": 0,
    "fallback": "papers--priya-paperwork-chips",
    "layout": "right",
+   "bg": "k09-rakesh-tally-desk",
    "overlays": [
     {
-     "id": "ft-082",
+     "id": "ft-087",
      "at": 0.0,
-     "until": 3.826,
-     "slide": false
+     "until": 3.822,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-6",
-   "seconds": 3.826,
-   "sceneOffset": 28.814,
-   "start": 253.953
+   "seconds": 3.822,
+   "sceneOffset": 30.135,
+   "start": 256.165
   },
   {
    "kind": "video",
@@ -1299,63 +1503,64 @@
    "seek": 0,
    "fallback": "papers--rakesh-batch-papers",
    "layout": "right",
+   "bg": "k09-rakesh-tally-desk",
    "overlays": [
     {
-     "id": "ft-083",
+     "id": "ft-088",
      "at": 0.0,
-     "until": 5.357,
-     "slide": false
+     "until": 5.351,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     },
     {
      "id": "p-download",
      "at": 1.2,
      "until": 4.5,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-6",
-   "seconds": 5.357,
-   "sceneOffset": 32.14,
-   "start": 257.279
-  },
-  {
-   "kind": "card",
-   "min": 3.2,
-   "weight": 0.5,
-   "overlays": [
-    {
-     "id": "cc-Chapter 6",
-     "at": 0.2,
-     "until": 2.6,
-     "slide": false
-    }
-   ],
-   "seconds": 2.6,
-   "sceneOffset": 36.997,
-   "start": 262.136
+   "seconds": 5.351,
+   "sceneOffset": 33.457,
+   "start": 259.487
   },
   {
    "kind": "video",
    "name": "slow--slow-scheme-short",
    "phone": false,
-   "min": 7,
-   "weight": 1.2,
+   "min": 8,
+   "weight": 1.4,
    "speed": 1.0,
    "seek": 0,
    "fallback": "orders--priya-execution-chips",
    "layout": "right",
+   "bg": "k10-landfill-certificate",
    "overlays": [
     {
-     "id": "ft-087",
-     "at": 0.0,
-     "until": 6.392,
-     "slide": false
+     "id": "co-6",
+     "at": 0.2,
+     "until": 3.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "ft-092",
+     "at": 3.8,
+     "until": 7.583,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
+   "open": true,
    "chapter": "ch-7",
-   "seconds": 6.392,
+   "seconds": 7.583,
    "sceneOffset": 0.0,
-   "start": 264.236
+   "start": 264.338
   },
   {
    "kind": "video",
@@ -1367,18 +1572,21 @@
    "seek": 0,
    "fallback": "orders--priya-execution-chips",
    "layout": "right",
+   "bg": "k10-landfill-certificate",
    "overlays": [
     {
-     "id": "ft-088",
+     "id": "ft-093",
      "at": 0.0,
-     "until": 5.479,
-     "slide": false
+     "until": 5.688,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-7",
-   "seconds": 5.479,
-   "sceneOffset": 5.892,
-   "start": 270.128
+   "seconds": 5.688,
+   "sceneOffset": 7.083,
+   "start": 271.421
   },
   {
    "kind": "video",
@@ -1390,18 +1598,21 @@
    "seek": 0,
    "fallback": "detect--rakesh-today-phone",
    "layout": "right",
+   "bg": "k10-landfill-certificate",
    "overlays": [
     {
-     "id": "ft-089",
+     "id": "ft-094",
      "at": 0.0,
-     "until": 4.566,
-     "slide": false
+     "until": 4.74,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-7",
-   "seconds": 4.566,
-   "sceneOffset": 10.871,
-   "start": 275.107
+   "seconds": 4.74,
+   "sceneOffset": 12.271,
+   "start": 276.609
   },
   {
    "kind": "video",
@@ -1413,18 +1624,21 @@
    "seek": 0,
    "fallback": "history--priya-past-record",
    "layout": "right",
+   "bg": "k10-landfill-certificate",
    "overlays": [
     {
-     "id": "ft-090",
+     "id": "ft-095",
      "at": 0.0,
-     "until": 6.392,
-     "slide": false
+     "until": 6.635,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-7",
-   "seconds": 6.392,
-   "sceneOffset": 14.937,
-   "start": 279.173
+   "seconds": 6.635,
+   "sceneOffset": 16.511,
+   "start": 280.849
   },
   {
    "kind": "clip",
@@ -1437,17 +1651,19 @@
    "weight": 1,
    "overlays": [
     {
-     "id": "role-091",
+     "id": "role-096",
      "at": 0.4,
      "until": 4.4,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-7",
-   "seconds": 4.566,
+   "seconds": 4.74,
    "hold": 0.0,
-   "sceneOffset": 20.829,
-   "start": 285.065
+   "sceneOffset": 22.646,
+   "start": 286.984
   },
   {
    "kind": "video",
@@ -1459,18 +1675,21 @@
    "seek": 0,
    "fallback": "history--priya-past-papers",
    "layout": "right",
+   "bg": "k10-landfill-certificate",
    "overlays": [
     {
-     "id": "ft-092",
+     "id": "ft-097",
      "at": 0.0,
-     "until": 7.305,
-     "slide": false
+     "until": 7.583,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-7",
-   "seconds": 7.305,
-   "sceneOffset": 24.895,
-   "start": 289.131
+   "seconds": 7.583,
+   "sceneOffset": 26.886,
+   "start": 291.224
   },
   {
    "kind": "video",
@@ -1482,18 +1701,21 @@
    "seek": 0,
    "fallback": "history--priya-past-record",
    "layout": "right",
+   "bg": "k10-landfill-certificate",
    "overlays": [
     {
-     "id": "ft-093",
+     "id": "ft-098",
      "at": 0.0,
-     "until": 6.392,
-     "slide": false
+     "until": 6.635,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-7",
-   "seconds": 6.392,
-   "sceneOffset": 31.7,
-   "start": 295.936
+   "seconds": 6.635,
+   "sceneOffset": 33.969,
+   "start": 298.307
   },
   {
    "kind": "video",
@@ -1505,34 +1727,58 @@
    "seek": 0,
    "fallback": "history--priya-past-papers",
    "layout": "right",
+   "bg": "k10-landfill-certificate",
    "overlays": [
     {
-     "id": "ft-094",
+     "id": "ft-099",
      "at": 0.0,
-     "until": 5.479,
-     "slide": false
+     "until": 5.688,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-7",
-   "seconds": 5.479,
-   "sceneOffset": 37.592,
-   "start": 301.828
+   "seconds": 5.688,
+   "sceneOffset": 40.104,
+   "start": 304.442
   },
   {
    "kind": "card",
-   "min": 3.2,
-   "weight": 0.5,
+   "min": 8.5,
+   "weight": 1.6,
+   "bg": "k51-brand-office",
    "overlays": [
     {
-     "id": "cc-Chapter 7",
+     "id": "ledger",
+     "at": 3.8,
+     "until": 5.842,
+     "slide": false,
+     "motion": "",
+     "anim": true
+    },
+    {
+     "id": "co-7",
      "at": 0.2,
-     "until": 2.922,
-     "slide": false
+     "until": 3.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
+    },
+    {
+     "id": "ft-103",
+     "at": 3.8,
+     "until": 5.842,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
-   "seconds": 2.922,
-   "sceneOffset": 42.571,
-   "start": 306.807
+   "open": true,
+   "chapter": "ch-8",
+   "seconds": 5.842,
+   "sceneOffset": 0.0,
+   "start": 309.63
   },
   {
    "kind": "video",
@@ -1544,18 +1790,21 @@
    "seek": 0,
    "fallback": "ledger--priya-execution-chips-cleared",
    "layout": "right",
+   "bg": "k51-brand-office",
    "overlays": [
     {
-     "id": "ft-097",
+     "id": "ft-104",
      "at": 0.0,
-     "until": 3.694,
-     "slide": false
+     "until": 3.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-8",
-   "seconds": 3.694,
-   "sceneOffset": 0.0,
-   "start": 309.229
+   "seconds": 3.6,
+   "sceneOffset": 5.342,
+   "start": 314.972
   },
   {
    "kind": "video",
@@ -1567,18 +1816,21 @@
    "seek": 0,
    "fallback": "ledger--ledger-money",
    "layout": "right",
+   "bg": "k51-brand-office",
    "overlays": [
     {
-     "id": "ft-098",
+     "id": "ft-105",
      "at": 0.0,
-     "until": 5.172,
-     "slide": false
+     "until": 4.811,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-8",
-   "seconds": 5.172,
-   "sceneOffset": 3.194,
-   "start": 312.423
+   "seconds": 4.811,
+   "sceneOffset": 8.442,
+   "start": 318.072
   },
   {
    "kind": "video",
@@ -1590,18 +1842,21 @@
    "seek": 0,
    "fallback": "ledger--ledger-gst",
    "layout": "right",
+   "bg": "k51-brand-office",
    "overlays": [
     {
-     "id": "ft-099",
+     "id": "ft-106",
      "at": 0.0,
-     "until": 4.433,
-     "slide": false
+     "until": 4.124,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-8",
-   "seconds": 4.433,
-   "sceneOffset": 7.866,
-   "start": 317.095
+   "seconds": 4.124,
+   "sceneOffset": 12.753,
+   "start": 322.383
   },
   {
    "kind": "video",
@@ -1613,41 +1868,21 @@
    "seek": 0,
    "fallback": "ledger--ledger-impact",
    "layout": "right",
+   "bg": "k51-brand-office",
    "overlays": [
     {
-     "id": "ft-100",
+     "id": "ft-107",
      "at": 0.0,
-     "until": 5.911,
-     "slide": false
+     "until": 5.498,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-8",
-   "seconds": 5.911,
-   "sceneOffset": 11.799,
-   "start": 321.028
-  },
-  {
-   "kind": "video",
-   "name": "ledger--ledger-export",
-   "phone": false,
-   "min": 4.5,
-   "weight": 0.9,
-   "speed": 1.0,
-   "seek": 0,
-   "fallback": "ledger--batch-chips-impact",
-   "layout": "right",
-   "overlays": [
-    {
-     "id": "ft-101",
-     "at": 0.0,
-     "until": 3.6,
-     "slide": false
-    }
-   ],
-   "chapter": "ch-8",
-   "seconds": 3.6,
-   "sceneOffset": 17.21,
-   "start": 326.439
+   "seconds": 5.498,
+   "sceneOffset": 16.377,
+   "start": 326.007
   },
   {
    "kind": "video",
@@ -1659,18 +1894,21 @@
    "seek": 0,
    "fallback": "ledger--batch-chips-record",
    "layout": "right",
+   "bg": "k51-brand-office",
    "overlays": [
     {
-     "id": "ft-102",
+     "id": "ft-108",
      "at": 0.0,
-     "until": 5.911,
-     "slide": false
+     "until": 5.498,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-8",
-   "seconds": 5.911,
-   "sceneOffset": 20.31,
-   "start": 329.539
+   "seconds": 5.498,
+   "sceneOffset": 21.375,
+   "start": 331.005
   },
   {
    "kind": "video",
@@ -1682,18 +1920,21 @@
    "seek": 0,
    "fallback": "ledger--rakesh-batches",
    "layout": "right",
+   "bg": "k51-brand-office",
    "overlays": [
     {
-     "id": "ft-103",
+     "id": "ft-109",
      "at": 0.0,
-     "until": 3.694,
-     "slide": false
+     "until": 3.6,
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-8",
-   "seconds": 3.694,
-   "sceneOffset": 25.721,
-   "start": 334.95
+   "seconds": 3.6,
+   "sceneOffset": 26.373,
+   "start": 336.003
   },
   {
    "kind": "clip",
@@ -1706,17 +1947,19 @@
    "weight": 1,
    "overlays": [
     {
-     "id": "role-104",
+     "id": "role-110",
      "at": 0.4,
      "until": 4.0,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "chapter": "ch-8",
    "seconds": 4.0,
    "hold": 0.0,
-   "sceneOffset": 28.915,
-   "start": 338.144
+   "sceneOffset": 29.473,
+   "start": 339.103
   },
   {
    "kind": "clip",
@@ -1729,16 +1972,18 @@
    "weight": 1.1,
    "overlays": [
     {
-     "id": "role-105",
+     "id": "role-111",
      "at": 0.4,
      "until": 4.2,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "seconds": 5.0,
    "hold": 0.0,
    "sceneOffset": 0.0,
-   "start": 341.644
+   "start": 342.603
   },
   {
    "kind": "clip",
@@ -1754,29 +1999,34 @@
      "id": "end-cards",
      "at": 0.6,
      "until": 4.4,
-     "slide": false
+     "slide": false,
+     "motion": "",
+     "anim": false
     }
    ],
    "seconds": 4.4,
    "hold": 0.0,
    "sceneOffset": 4.5,
-   "start": 346.144
+   "start": 347.103
   },
   {
    "kind": "card",
    "min": 4,
    "weight": 0.9,
+   "bg": "k32-foodbank-store",
    "overlays": [
     {
      "id": "one-line",
      "at": 0.2,
      "until": 4.0,
-     "slide": false
+     "slide": false,
+     "motion": "",
+     "anim": false
     }
    ],
    "seconds": 4.0,
    "sceneOffset": 8.4,
-   "start": 350.044
+   "start": 351.003
   },
   {
    "kind": "video",
@@ -1788,33 +2038,39 @@
    "seek": 0,
    "fallback": "extra--demo-route-map",
    "layout": "right",
+   "bg": "k32-foodbank-store",
    "overlays": [
     {
-     "id": "ft-108",
+     "id": "ft-114",
      "at": 0.0,
      "until": 6.0,
-     "slide": false
+     "slide": false,
+     "motion": "rise",
+     "anim": false
     }
    ],
    "seconds": 6.0,
    "sceneOffset": 11.9,
-   "start": 353.544
+   "start": 354.503
   },
   {
    "kind": "card",
    "min": 6,
    "weight": 1.0,
+   "bg": "k32-foodbank-store",
    "overlays": [
     {
      "id": "end-brand",
      "at": 0.4,
      "until": 6.0,
-     "slide": false
+     "slide": false,
+     "motion": "",
+     "anim": false
     }
    ],
    "seconds": 6.0,
    "sceneOffset": 17.4,
-   "start": 359.044
+   "start": 360.003
   }
  ],
  "overlays": [
@@ -1826,8 +2082,8 @@
   {
    "id": "role-001",
    "kind": "role",
-   "who": "A distributor",
-   "where": "his godown"
+   "who": "A brand's supply planning team",
+   "where": "the morning stock review"
   },
   {
    "id": "st-2",
@@ -1838,7 +2094,7 @@
    "id": "role-003",
    "kind": "role",
    "who": "A distributor",
-   "where": "her godown"
+   "where": "his office, by the godown"
   },
   {
    "id": "st-3",
@@ -1848,8 +2104,8 @@
   {
    "id": "role-005",
    "kind": "role",
-   "who": "A quick-commerce dark store",
-   "where": ""
+   "who": "A quick-commerce receiving dock",
+   "where": "the batch on hold"
   },
   {
    "id": "st-4",
@@ -1860,6 +2116,12 @@
    "id": "st-5",
    "kind": "statement",
    "text": "Everyone loses."
+  },
+  {
+   "id": "role-008",
+   "kind": "role",
+   "who": "A kirana",
+   "where": "the shelf that stayed empty"
   },
   {
    "id": "title",
@@ -1875,14 +2137,14 @@
    "text": "Smart-Clearance"
   },
   {
-   "id": "ft-010",
+   "id": "ft-011",
    "kind": "feature",
    "eyebrow": "Software as a service",
    "text": "One platform for manufacturers, built around an **ecosystem of AI agents**.",
    "dark": false
   },
   {
-   "id": "ft-011",
+   "id": "ft-012",
    "kind": "feature",
    "eyebrow": "A workspace per brand",
    "text": "Set up for its supply chain: its **distributors and super stockists**, its gates, its exits, its rules.",
@@ -1891,28 +2153,36 @@
   {
    "id": "p-supply",
    "kind": "pointer",
-   "x": 1512,
-   "y": 368,
+   "x": 1557,
+   "y": 364,
    "text": "The brand's distributors and their godowns",
    "left": true,
    "tone": ""
   },
   {
-   "id": "ft-013",
+   "id": "agents-ring",
+   "kind": "anim"
+  },
+  {
+   "id": "ft-015",
    "kind": "feature",
    "eyebrow": "Agentic by design",
    "text": "**Ten agents**, working together along **nine stops**, on Gemini.",
    "dark": false
   },
   {
-   "id": "ft-014",
+   "id": "nine-stops",
+   "kind": "anim"
+  },
+  {
+   "id": "ft-017",
    "kind": "feature",
    "eyebrow": "Nine stops",
    "text": "Detect, verify, value, decide, execute, settle, report. Then the **one yes**.",
    "dark": false
   },
   {
-   "id": "ft-015",
+   "id": "ft-018",
    "kind": "feature",
    "eyebrow": "The human in the loop",
    "text": "Nothing moves before a person's **yes**. The staff console watches every client's batches and agents at work.",
@@ -1921,38 +2191,43 @@
   {
    "id": "p-agents-at-work",
    "kind": "pointer",
-   "x": 1293,
-   "y": 438,
+   "x": 1342,
+   "y": 433,
    "text": "The agents at work, stop by stop",
    "left": true,
    "tone": ""
   },
   {
-   "id": "ft-017",
+   "id": "ft-020",
    "kind": "feature",
    "eyebrow": "The whole chain",
    "text": "The manufacturer, the distributor, the super stockist, the kirana, the buyer, the staff, the food bank: **each on their own screen, acting in their own name**.",
    "dark": true
   },
   {
-   "id": "role-018",
+   "id": "role-021",
    "kind": "role",
    "who": "A super stockist",
    "where": "the depot"
   },
   {
-   "id": "ft-019",
+   "id": "ft-022",
    "kind": "feature",
    "eyebrow": "Every party, their own sign-in",
    "text": "Partners act through their own accounts; **nobody stands in for anyone**.",
    "dark": false
   },
   {
-   "id": "cc-Chapter 1",
-   "kind": "chapter-card",
+   "id": "co-1",
+   "kind": "chapter-open",
    "n": "Chapter 1",
    "title": "Connect and detect",
-   "text": "The stock data the distributor already has, and the morning check."
+   "text": "The stock data the distributor already has, and the morning check.",
+   "on": [
+    "Connect",
+    "Detect"
+   ],
+   "dark": false
   },
   {
    "id": "ch-2",
@@ -1961,7 +2236,7 @@
    "text": "Connect and detect"
   },
   {
-   "id": "ft-022",
+   "id": "ft-025",
    "kind": "feature",
    "eyebrow": "The Data agent",
    "text": "The stock export **mapped field by field**, and the sell-through loaded. Nothing keyed in twice.",
@@ -1970,14 +2245,14 @@
   {
    "id": "p-export",
    "kind": "pointer",
-   "x": 1137,
-   "y": 438,
+   "x": 1188,
+   "y": 433,
    "text": "The export, mapped by the Data agent",
-   "left": false,
+   "left": true,
    "tone": ""
   },
   {
-   "id": "ft-024",
+   "id": "ft-027",
    "kind": "feature",
    "eyebrow": "The Watcher",
    "text": "Every morning, **every batch at every distributor**, checked against its sell-through and the quick-commerce gates.",
@@ -1986,8 +2261,8 @@
   {
    "id": "p-flag",
    "kind": "pointer",
-   "x": 918,
-   "y": 391,
+   "x": 973,
+   "y": 387,
    "text": "Flagged: it will not sell in time",
    "left": false,
    "tone": ""
@@ -1995,28 +2270,29 @@
   {
    "id": "p-activity",
    "kind": "pointer",
-   "x": 1593,
-   "y": 298,
+   "x": 1637,
+   "y": 294,
    "text": "Every hand-off, as it happens",
    "left": true,
    "tone": "green"
   },
   {
-   "id": "push-detect",
-   "kind": "push",
+   "id": "bn-030",
+   "kind": "banner",
    "to": "To the supply planner",
    "title": "Masala Chips 150 g · Nagpur",
    "body": "Priya ji, Nagpur godown mein Masala Chips 150g (batch MF-2409-117) ki 1,360 units 18 Nov se pehle nahi bikengi. Q-commerce block hai. Route dekhne ke liye tap karein.",
-   "left": false
+   "left": false,
+   "phone": false
   },
   {
-   "id": "role-028",
+   "id": "role-031",
    "kind": "role",
    "who": "The brand's supply planner",
    "where": "at her desk"
   },
   {
-   "id": "ft-029",
+   "id": "ft-032",
    "kind": "feature",
    "eyebrow": "A page for every batch",
    "text": "Where it stands, **what each agent has done**, and what comes next.",
@@ -2025,18 +2301,22 @@
   {
    "id": "p-tracker",
    "kind": "pointer",
-   "x": 1215,
-   "y": 344,
+   "x": 1265,
+   "y": 341,
    "text": "The nine stops, as the batch moves",
    "left": true,
    "tone": ""
   },
   {
-   "id": "cc-Chapter 2",
-   "kind": "chapter-card",
+   "id": "co-2",
+   "kind": "chapter-open",
    "n": "Chapter 2",
    "title": "Verify",
-   "text": "One photo from a phone, and the batch is real."
+   "text": "One photo from a phone, and the batch is real.",
+   "on": [
+    "Verify"
+   ],
+   "dark": false
   },
   {
    "id": "ch-3",
@@ -2045,35 +2325,36 @@
    "text": "Verify"
   },
   {
-   "id": "ft-033",
+   "id": "ft-036",
    "kind": "feature",
    "eyebrow": "The distributor's Today",
    "text": "What each batch needs from him, with **one button each**.",
    "dark": false
   },
   {
-   "id": "push-verify",
-   "kind": "push",
+   "id": "bn-037",
+   "kind": "banner",
    "to": "To the distributor",
    "title": "Ek photo chahiye",
    "body": "Rakesh bhai, Masala Chips 150g ka ek carton ka label photo bhej dein (batch MF-2409-117). Bas ek photo, baaki hum kar lenge.",
-   "left": false
+   "left": false,
+   "phone": true
   },
   {
-   "id": "role-035",
+   "id": "role-038",
    "kind": "role",
    "who": "The distributor",
    "where": "at the shelf"
   },
   {
-   "id": "ft-036",
+   "id": "ft-039",
    "kind": "feature",
    "eyebrow": "Take a photo, or upload one",
    "text": "The phone's camera, or a photo already taken.",
    "dark": false
   },
   {
-   "id": "ft-037",
+   "id": "ft-040",
    "kind": "feature",
    "eyebrow": "Vision, on Gemini",
    "text": "The batch, the dates and the MRP read from the label; the **barcode, the QR code and the FSSAI licence** checked; matched to the stock record.",
@@ -2082,8 +2363,8 @@
   {
    "id": "p-label",
    "kind": "pointer",
-   "x": 1028,
-   "y": 610,
+   "x": 1080,
+   "y": 602,
    "text": "Read from the carton's label",
    "left": false,
    "tone": ""
@@ -2091,18 +2372,28 @@
   {
    "id": "p-match",
    "kind": "pointer",
-   "x": 1559,
-   "y": 532,
+   "x": 1603,
+   "y": 525,
    "text": "Matches the stock record",
    "left": true,
    "tone": "green"
   },
   {
-   "id": "cc-Chapter 3",
-   "kind": "chapter-card",
+   "id": "five-exits",
+   "kind": "anim"
+  },
+  {
+   "id": "co-3",
+   "kind": "chapter-open",
    "n": "Chapter 3",
    "title": "Value, decide, approve",
-   "text": "Every exit priced. The split explained. One yes."
+   "text": "Every exit priced. The split explained. One yes.",
+   "on": [
+    "Value",
+    "Decide",
+    "Approve"
+   ],
+   "dark": false
   },
   {
    "id": "ch-4",
@@ -2111,32 +2402,39 @@
    "text": "Value, decide, approve"
   },
   {
-   "id": "ft-042",
+   "id": "ft-046",
    "kind": "feature",
    "eyebrow": "The Valuer",
    "text": "**Every exit priced per unit**, after costs and GST, against what destroying the stock would cost.",
    "dark": false
   },
   {
+   "id": "ft-047",
+   "kind": "feature",
+   "eyebrow": "The Valuer",
+   "text": "Five exits, and the **write-off they are measured against**.",
+   "dark": false
+  },
+  {
    "id": "p-channels",
    "kind": "pointer",
-   "x": 1137,
-   "y": 344,
+   "x": 1188,
+   "y": 341,
    "text": "Five channels, priced",
-   "left": false,
+   "left": true,
    "tone": ""
   },
   {
    "id": "p-writeoff",
    "kind": "pointer",
-   "x": 1137,
-   "y": 548,
+   "x": 1188,
+   "y": 540,
    "text": "What the write-off would cost",
-   "left": false,
+   "left": true,
    "tone": "green"
   },
   {
-   "id": "ft-045",
+   "id": "ft-050",
    "kind": "feature",
    "eyebrow": "The Router",
    "text": "The batch **split across the exits**, with its reasoning in plain language, and the alternatives it considered.",
@@ -2145,46 +2443,51 @@
   {
    "id": "p-split",
    "kind": "pointer",
-   "x": 1137,
-   "y": 344,
+   "x": 1188,
+   "y": 341,
    "text": "The recommended split, and why",
-   "left": false,
+   "left": true,
    "tone": ""
   },
   {
-   "id": "role-047",
+   "id": "role-052",
    "kind": "role",
    "who": "The brand's supply planner",
    "where": "the one yes"
   },
   {
-   "id": "ft-048",
+   "id": "ft-053",
    "kind": "feature",
    "eyebrow": "One yes",
    "text": "The approval is **logged with who, when and the device**. Nothing executes before it.",
    "dark": false
   },
   {
-   "id": "ft-049",
+   "id": "ft-054",
    "kind": "feature",
    "eyebrow": "The distributor is told",
    "text": "The plan in his own language, with a **pause button**.",
    "dark": false
   },
   {
-   "id": "push-approved",
-   "kind": "push",
+   "id": "bn-055",
+   "kind": "banner",
    "to": "To the distributor",
    "title": "Plan approved · Masala Chips",
    "body": "Rakesh bhai, Munchly ne MF-2409-117 ka plan approve kiya: 588 packets aapke kiranas ko scheme par, 784 aapke naam se ExpireSoon par. Kuch rokna ho to app mein Pause dabayein.",
-   "left": false
+   "left": false,
+   "phone": true
   },
   {
-   "id": "cc-Chapter 4",
-   "kind": "chapter-card",
+   "id": "co-4",
+   "kind": "chapter-open",
    "n": "Chapter 4",
    "title": "Execute: five exits",
-   "text": "The kiranas, the marketplace, the staff sale, the food bank, the van round."
+   "text": "The kiranas, the marketplace, the staff sale, the food bank, the van round.",
+   "on": [
+    "Execute"
+   ],
+   "dark": true
   },
   {
    "id": "ch-5",
@@ -2193,55 +2496,56 @@
    "text": "Five exits"
   },
   {
-   "id": "role-053",
+   "id": "role-058",
    "kind": "role",
    "who": "A kirana owner",
    "where": "his shop"
   },
   {
-   "id": "push-offer",
-   "kind": "push",
+   "id": "bn-059",
+   "kind": "banner",
    "to": "To a kirana",
    "title": "आज का खास ऑफर",
    "body": "नमस्ते Shree Ganesh Kirana! Munchly Masala Chips 150g पर आज खास ऑफर: 10 पैकेट लो, 2 मुफ़्त. Best before 18 Nov 2026. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें — Rakesh Traders",
-   "left": false
+   "left": false,
+   "phone": false
   },
   {
-   "id": "ft-055",
+   "id": "ft-060",
    "kind": "feature",
    "eyebrow": "Outreach",
    "text": "The scheme on each shop's phone, **in Hindi**, with its margin and its share.",
    "dark": false
   },
   {
-   "id": "ft-056",
+   "id": "ft-061",
    "kind": "feature",
    "eyebrow": "Ordered in a tap",
    "text": "Each order gets **its own tax invoice**, issued in the distributor's name.",
    "dark": false
   },
   {
-   "id": "ft-057",
+   "id": "ft-062",
    "kind": "feature",
    "eyebrow": "The scheme, as the shops see it",
    "text": "Sent, first order, closed, van round: **every stop with its time**, and the cluster on the map.",
    "dark": false
   },
   {
-   "id": "ft-058",
+   "id": "ft-063",
    "kind": "feature",
    "eyebrow": "The Lister",
    "text": "The rest of the batch on the near-expiry marketplace, **hidden from the brand's own territories**, with the label photo and the dates.",
    "dark": false
   },
   {
-   "id": "role-059",
+   "id": "role-064",
    "kind": "role",
    "who": "A marketplace buyer",
    "where": "another city"
   },
   {
-   "id": "ft-060",
+   "id": "ft-065",
    "kind": "feature",
    "eyebrow": "The Negotiator",
    "text": "Answers the buyer **in the distributor's name**, holds the reserve, closes the deal. The token is paid, the truck is loaded.",
@@ -2250,73 +2554,79 @@
   {
    "id": "p-chat",
    "kind": "pointer",
-   "x": 1559,
-   "y": 704,
+   "x": 1603,
+   "y": 694,
    "text": "The Negotiator, in the chat",
    "left": true,
    "tone": ""
   },
   {
-   "id": "role-062",
+   "id": "role-067",
    "kind": "role",
    "who": "The distributor and her staff",
    "where": "the godown gate"
   },
   {
-   "id": "push-staff",
-   "kind": "push",
+   "id": "bn-068",
+   "kind": "banner",
    "to": "To the distributor",
    "title": "Staff sale · Mango Drink",
    "body": "150 packs of Mango Drink for your staff at ₹8 a pack, at Begum Bazaar godown. Record what sold when the sale is over.",
-   "left": false
+   "left": false,
+   "phone": false
   },
   {
-   "id": "ft-064",
+   "id": "ft-069",
    "kind": "feature",
    "eyebrow": "The staff sale",
    "text": "Recorded on **one consolidated UPI receipt**, which Vision reads and reconciles with the count.",
    "dark": false
   },
   {
-   "id": "role-065",
+   "id": "role-070",
    "kind": "role",
    "who": "A food bank's city lead",
    "where": "the pickup"
   },
   {
-   "id": "push-pickup",
-   "kind": "push",
+   "id": "bn-071",
+   "kind": "banner",
    "to": "To the food bank",
    "title": "Pickup request · Mango Drink",
    "body": "86 packs of Mango Drink, 20 days left, with the FSSAI checklist. Pickup from Begum Bazaar godown?",
-   "left": false
+   "left": false,
+   "phone": false
   },
   {
-   "id": "ft-067",
+   "id": "ft-072",
    "kind": "feature",
    "eyebrow": "The Donation agent",
    "text": "Packs with enough shelf life go to a food bank: the pickup booked, the **FSSAI checklist** drafted, the food bank's **own receipt** issued.",
    "dark": false
   },
   {
-   "id": "ft-068",
+   "id": "ft-073",
    "kind": "feature",
    "eyebrow": "The van round",
    "text": "Every shop that ordered, **on the distributor's own route**.",
    "dark": false
   },
   {
-   "id": "role-069",
+   "id": "role-074",
    "kind": "role",
    "who": "A kirana owner",
    "where": "collecting her stock"
   },
   {
-   "id": "cc-Chapter 5",
-   "kind": "chapter-card",
+   "id": "co-5",
+   "kind": "chapter-open",
    "n": "Chapter 5",
    "title": "The paperwork",
-   "text": "Where most clearances fall apart. Here, it is automatic."
+   "text": "Where most clearances fall apart. Here, it is automatic.",
+   "on": [
+    "Settle"
+   ],
+   "dark": true
   },
   {
    "id": "ch-6",
@@ -2325,28 +2635,29 @@
    "text": "The paperwork"
   },
   {
-   "id": "role-072",
+   "id": "role-077",
    "kind": "role",
    "who": "The distributor",
    "where": "his office"
   },
   {
-   "id": "push-papers",
-   "kind": "push",
+   "id": "bn-078",
+   "kind": "banner",
    "to": "To the supply planner",
    "title": "Document pack ready · MF-2409-117",
    "body": "Papers ready for MF-2409-117: Rakesh's invoice draft, e-way bill check, price-support credit note, GST memo. Nothing to chase.",
-   "left": false
+   "left": false,
+   "phone": false
   },
   {
-   "id": "ft-074",
+   "id": "ft-079",
    "kind": "feature",
    "eyebrow": "The Paperwork agent",
    "text": "The whole pack drafted: **generated, drafted or not required**, each with its reason.",
    "dark": false
   },
   {
-   "id": "ft-075",
+   "id": "ft-080",
    "kind": "feature",
    "eyebrow": "The tax invoice",
    "text": "Ready to issue from Tally, with its **e-invoice IRN and signed QR code**.",
@@ -2355,21 +2666,21 @@
   {
    "id": "p-irn",
    "kind": "pointer",
-   "x": 1559,
-   "y": 548,
+   "x": 1603,
+   "y": 540,
    "text": "The e-invoice, as the portal returns it",
    "left": true,
    "tone": ""
   },
   {
-   "id": "ft-077",
+   "id": "ft-082",
    "kind": "feature",
    "eyebrow": "The credit note",
    "text": "The brand's price support, so the **distributor ends whole**.",
    "dark": false
   },
   {
-   "id": "ft-078",
+   "id": "ft-083",
    "kind": "feature",
    "eyebrow": "The GST memo",
    "text": "Input credit **kept on every pack sold, reversed only on what was given away**, under section 17(5)(h).",
@@ -2378,35 +2689,35 @@
   {
    "id": "p-itc",
    "kind": "pointer",
-   "x": 1559,
-   "y": 548,
+   "x": 1603,
+   "y": 540,
    "text": "Kept, reversed, and why",
    "left": true,
    "tone": ""
   },
   {
-   "id": "ft-080",
+   "id": "ft-085",
    "kind": "feature",
    "eyebrow": "The FSSAI checklist",
    "text": "Drafted from the batch's own dates and the food bank's rules.",
    "dark": false
   },
   {
-   "id": "ft-081",
+   "id": "ft-086",
    "kind": "feature",
    "eyebrow": "The invoices to every kirana",
    "text": "One tax invoice an order, numbered in the distributor's own series.",
    "dark": false
   },
   {
-   "id": "ft-082",
+   "id": "ft-087",
    "kind": "feature",
    "eyebrow": "Signed, stamped, reviewed",
    "text": "Every paper a **signed PDF with the firm's stamp**, reviewed by the planner.",
    "dark": false
   },
   {
-   "id": "ft-083",
+   "id": "ft-088",
    "kind": "feature",
    "eyebrow": "The distributor's portal",
    "text": "His own papers, his **copies of the receipts**, ready to download.",
@@ -2415,18 +2726,23 @@
   {
    "id": "p-download",
    "kind": "pointer",
-   "x": 1559,
-   "y": 438,
+   "x": 1603,
+   "y": 433,
    "text": "Download PDF",
    "left": true,
    "tone": "green"
   },
   {
-   "id": "cc-Chapter 6",
-   "kind": "chapter-card",
+   "id": "co-6",
+   "kind": "chapter-open",
    "n": "Chapter 6",
    "title": "When it does not go as planned",
-   "text": "Some shops do not order. Stock is left on expiry day."
+   "text": "Some shops do not order. Stock is left on expiry day.",
+   "on": [
+    "Execute",
+    "Settle"
+   ],
+   "dark": false
   },
   {
    "id": "ch-7",
@@ -2435,66 +2751,74 @@
    "text": "Not as planned"
   },
   {
-   "id": "ft-087",
+   "id": "ft-092",
    "kind": "feature",
    "eyebrow": "The window closes short",
    "text": "What no shop took **stays at the godown**.",
    "dark": false
   },
   {
-   "id": "ft-088",
+   "id": "ft-093",
    "kind": "feature",
    "eyebrow": "Expiry day",
    "text": "What is left is settled by the **brand's own expiry policy**, fully automated.",
    "dark": false
   },
   {
-   "id": "ft-089",
+   "id": "ft-094",
    "kind": "feature",
    "eyebrow": "The distributor is asked",
    "text": "To destroy the expired packs through an **authorised agency**, and to send the evidence.",
    "dark": false
   },
   {
-   "id": "ft-090",
+   "id": "ft-095",
    "kind": "feature",
    "eyebrow": "The evidence",
    "text": "A photo before, a photo after, the agency and its certificate, two witnesses.",
    "dark": false
   },
   {
-   "id": "role-091",
+   "id": "role-096",
    "kind": "role",
    "who": "The agency's officer, two witnesses, the distributor",
    "where": "the landfill"
   },
   {
-   "id": "ft-092",
+   "id": "ft-097",
    "kind": "feature",
    "eyebrow": "Signed in place",
    "text": "The **certificate of destruction**, signed on the distributor's screen by each of them.",
    "dark": false
   },
   {
-   "id": "ft-093",
+   "id": "ft-098",
    "kind": "feature",
    "eyebrow": "The second yes",
    "text": "Vision's checks on the photos, the agency on the brand's list, and the planner's **second yes**.",
    "dark": false
   },
   {
-   "id": "ft-094",
+   "id": "ft-099",
    "kind": "feature",
    "eyebrow": "Closed, with its record complete",
    "text": "The **expiry credit note** and the destruction certificate issued; the batch closes.",
    "dark": false
   },
   {
-   "id": "cc-Chapter 7",
-   "kind": "chapter-card",
+   "id": "ledger",
+   "kind": "anim"
+  },
+  {
+   "id": "co-7",
+   "kind": "chapter-open",
    "n": "Chapter 7",
    "title": "Report",
-   "text": "One ledger, three readings, and every batch's record."
+   "text": "One ledger, three readings, and every batch's record.",
+   "on": [
+    "Report"
+   ],
+   "dark": false
   },
   {
    "id": "ch-8",
@@ -2503,62 +2827,62 @@
    "text": "Report"
   },
   {
-   "id": "ft-097",
+   "id": "ft-103",
    "kind": "feature",
    "eyebrow": "Impact",
-   "text": "When a batch closes, Impact **posts the ledger**.",
+   "text": "When a batch closes, Impact **posts the ledger**: money, GST and impact.",
    "dark": false
   },
   {
-   "id": "ft-098",
+   "id": "ft-104",
+   "kind": "feature",
+   "eyebrow": "The batch closes",
+   "text": "Impact posts the ledger the moment the batch clears.",
+   "dark": false
+  },
+  {
+   "id": "ft-105",
    "kind": "feature",
    "eyebrow": "Money",
    "text": "What was recovered against the write-off, **batch by batch, quarter by quarter**.",
    "dark": false
   },
   {
-   "id": "ft-099",
+   "id": "ft-106",
    "kind": "feature",
    "eyebrow": "GST",
    "text": "Input credit kept and reversed, **invoice by invoice**, ready for the accountant.",
    "dark": false
   },
   {
-   "id": "ft-100",
+   "id": "ft-107",
    "kind": "feature",
    "eyebrow": "Impact",
    "text": "Food kept out of landfill, CO₂e avoided, meals served, and the **BRSR line with its evidence**.",
    "dark": false
   },
   {
-   "id": "ft-101",
-   "kind": "feature",
-   "eyebrow": "Exportable in a click",
-   "text": "The BRSR table, the GST summary and the ledger, for the period chosen.",
-   "dark": false
-  },
-  {
-   "id": "ft-102",
+   "id": "ft-108",
    "kind": "feature",
    "eyebrow": "Every batch keeps its record",
    "text": "The photos, the yeses, and an **audit trail of every agent and every person**.",
    "dark": false
   },
   {
-   "id": "ft-103",
+   "id": "ft-109",
    "kind": "feature",
    "eyebrow": "The partners' own history",
    "text": "A distributor's batches and papers; a kirana's offers and orders; a food bank's pickups and receipts.",
    "dark": false
   },
   {
-   "id": "role-104",
+   "id": "role-110",
    "kind": "role",
    "who": "The brand and its distributor",
    "where": "the quarter, read together"
   },
   {
-   "id": "role-105",
+   "id": "role-111",
    "kind": "role",
    "who": "A food bank's storeroom",
    "where": "the cartons received"
@@ -2597,7 +2921,7 @@
    "text": "One platform. __Ten agents.__ One yes."
   },
   {
-   "id": "ft-108",
+   "id": "ft-114",
    "kind": "feature",
    "eyebrow": "Try it",
    "text": "**The guided demo**: the console's line and three journeys, on real screens. **The live prototype**: sign in with the credentials and steps in the deck.",
@@ -2659,283 +2983,283 @@
   {
    "id": "2a",
    "file": "vo/cut2-Kore-1.08/2a-trim.wav",
-   "at": 34.611,
+   "at": 34.61,
    "len": 1.825
   },
   {
    "id": "2b",
    "file": "vo/cut2-Kore-1.08/2b-trim.wav",
-   "at": 36.686,
+   "at": 36.685,
    "len": 6.064
   },
   {
    "id": "2c",
    "file": "vo/cut2-Kore-1.08/2c-trim.wav",
-   "at": 43.0,
+   "at": 42.999,
    "len": 10.875
   },
   {
    "id": "2d",
    "file": "vo/cut2-Kore-1.08/2d-trim.wav",
-   "at": 54.125,
+   "at": 54.124,
    "len": 3.598
   },
   {
    "id": "2e",
    "file": "vo/cut2-Kore-1.08/2e-trim.wav",
-   "at": 57.973,
+   "at": 57.972,
    "len": 6.089
   },
   {
    "id": "2f",
    "file": "vo/cut2-Kore-1.08/2f-trim.wav",
-   "at": 64.312,
+   "at": 64.311,
    "len": 6.395
   },
   {
    "id": "2g",
    "file": "vo/cut2-Kore-1.08/2g-trim.wav",
-   "at": 70.957,
+   "at": 70.956,
    "len": 10.402
   },
   {
    "id": "3a",
    "file": "vo/cut2-Kore-1.08/3a-trim.wav",
-   "at": 82.001,
+   "at": 82.298,
    "len": 3.64
   },
   {
    "id": "3b",
    "file": "vo/cut2-Kore-1.08/3b-trim.wav",
-   "at": 85.891,
+   "at": 86.188,
    "len": 6.49
   },
   {
    "id": "3c",
    "file": "vo/cut2-Kore-1.08/3c-trim.wav",
-   "at": 92.631,
+   "at": 92.928,
    "len": 6.621
   },
   {
    "id": "3d",
    "file": "vo/cut2-Kore-1.08/3d-trim.wav",
-   "at": 99.502,
+   "at": 99.799,
    "len": 7.283
   },
   {
    "id": "3e",
    "file": "vo/cut2-Kore-1.08/3e-trim.wav",
-   "at": 107.035,
+   "at": 107.332,
    "len": 3.9
   },
   {
    "id": "4a",
    "file": "vo/cut2-Kore-1.08/4a-trim.wav",
-   "at": 111.576,
+   "at": 112.172,
    "len": 3.026
   },
   {
    "id": "4b",
    "file": "vo/cut2-Kore-1.08/4b-trim.wav",
-   "at": 114.852,
+   "at": 115.448,
    "len": 3.982
   },
   {
    "id": "4c",
    "file": "vo/cut2-Kore-1.08/4c-trim.wav",
-   "at": 119.084,
+   "at": 119.68,
    "len": 8.552
   },
   {
    "id": "4d",
    "file": "vo/cut2-Kore-1.08/4d-trim.wav",
-   "at": 127.886,
+   "at": 128.482,
    "len": 3.485
   },
   {
    "id": "5a",
    "file": "vo/cut2-Kore-1.08/5a-trim.wav",
-   "at": 132.011,
+   "at": 132.907,
    "len": 10.094
   },
   {
    "id": "5b",
    "file": "vo/cut2-Kore-1.08/5b-trim.wav",
-   "at": 142.355,
+   "at": 143.251,
    "len": 7.224
   },
   {
    "id": "5c",
    "file": "vo/cut2-Kore-1.08/5c-trim.wav",
-   "at": 149.829,
+   "at": 150.725,
    "len": 5.927
   },
   {
    "id": "5d",
    "file": "vo/cut2-Kore-1.08/5d-trim.wav",
-   "at": 156.006,
+   "at": 156.902,
    "len": 3.943
   },
   {
    "id": "5e",
    "file": "vo/cut2-Kore-1.08/5e-trim.wav",
-   "at": 160.199,
+   "at": 161.095,
    "len": 4.833
   },
   {
    "id": "5f",
    "file": "vo/cut2-Kore-1.08/5f-trim.wav",
-   "at": 165.282,
+   "at": 166.178,
    "len": 6.088
   },
   {
    "id": "6a",
    "file": "vo/cut2-Kore-1.08/6a-trim.wav",
-   "at": 172.009,
+   "at": 173.206,
    "len": 5.202
   },
   {
    "id": "6b",
    "file": "vo/cut2-Kore-1.08/6b-trim.wav",
-   "at": 177.461,
+   "at": 178.658,
    "len": 7.199
   },
   {
    "id": "6c",
    "file": "vo/cut2-Kore-1.08/6c-trim.wav",
-   "at": 184.91,
+   "at": 186.107,
    "len": 6.126
   },
   {
    "id": "6d",
    "file": "vo/cut2-Kore-1.08/6d-trim.wav",
-   "at": 191.286,
+   "at": 192.483,
    "len": 10.167
   },
   {
    "id": "6e",
    "file": "vo/cut2-Kore-1.08/6e-trim.wav",
-   "at": 201.703,
+   "at": 202.9,
    "len": 8.028
   },
   {
    "id": "6f",
    "file": "vo/cut2-Kore-1.08/6f-trim.wav",
-   "at": 209.981,
+   "at": 211.178,
    "len": 9.746
   },
   {
    "id": "6g",
    "file": "vo/cut2-Kore-1.08/6g-trim.wav",
-   "at": 219.977,
+   "at": 221.174,
    "len": 3.296
   },
   {
    "id": "7a",
    "file": "vo/cut2-Kore-1.08/7a-trim.wav",
-   "at": 225.739,
+   "at": 226.93,
    "len": 5.753
   },
   {
    "id": "7b",
    "file": "vo/cut2-Kore-1.08/7b-trim.wav",
-   "at": 231.742,
+   "at": 232.933,
    "len": 20.575
   },
   {
    "id": "7c",
    "file": "vo/cut2-Kore-1.08/7c-trim.wav",
-   "at": 252.567,
+   "at": 253.758,
    "len": 5.25
   },
   {
    "id": "7d",
    "file": "vo/cut2-Kore-1.08/7d-trim.wav",
-   "at": 258.067,
+   "at": 259.258,
    "len": 5.041
   },
   {
    "id": "8a",
    "file": "vo/cut2-Kore-1.08/8a-trim.wav",
-   "at": 264.836,
+   "at": 265.238,
    "len": 6.64
   },
   {
    "id": "8b",
    "file": "vo/cut2-Kore-1.08/8b-trim.wav",
-   "at": 271.726,
+   "at": 272.128,
    "len": 2.985
   },
   {
    "id": "8c",
    "file": "vo/cut2-Kore-1.08/8c-trim.wav",
-   "at": 274.961,
+   "at": 275.363,
    "len": 9.895
   },
   {
    "id": "8d",
    "file": "vo/cut2-Kore-1.08/8d-trim.wav",
-   "at": 285.106,
+   "at": 285.508,
    "len": 4.077
   },
   {
    "id": "8e",
    "file": "vo/cut2-Kore-1.08/8e-trim.wav",
-   "at": 289.433,
+   "at": 289.835,
    "len": 9.456
   },
   {
    "id": "8f",
    "file": "vo/cut2-Kore-1.08/8f-trim.wav",
-   "at": 299.139,
+   "at": 299.541,
    "len": 10.049
   },
   {
    "id": "9a",
    "file": "vo/cut2-Kore-1.08/9a-trim.wav",
-   "at": 309.829,
+   "at": 310.53,
    "len": 2.832
   },
   {
    "id": "9b",
    "file": "vo/cut2-Kore-1.08/9b-trim.wav",
-   "at": 312.911,
+   "at": 313.612,
    "len": 5.406
   },
   {
    "id": "9c",
    "file": "vo/cut2-Kore-1.08/9c-trim.wav",
-   "at": 318.567,
+   "at": 319.268,
    "len": 6.209
   },
   {
    "id": "9d",
    "file": "vo/cut2-Kore-1.08/9d-trim.wav",
-   "at": 325.026,
+   "at": 325.727,
    "len": 8.238
   },
   {
    "id": "9e",
    "file": "vo/cut2-Kore-1.08/9e-trim.wav",
-   "at": 333.514,
+   "at": 334.215,
    "len": 6.769
   },
   {
    "id": "10a",
    "file": "vo/cut2-Kore-1.08/10a-trim.wav",
-   "at": 342.244,
+   "at": 343.203,
    "len": 7.349
   },
   {
    "id": "10b",
    "file": "vo/cut2-Kore-1.08/10b-trim.wav",
-   "at": 349.843,
+   "at": 350.802,
    "len": 3.69
   },
   {
    "id": "10c",
    "file": "vo/cut2-Kore-1.08/10c-trim.wav",
-   "at": 353.783,
+   "at": 354.742,
    "len": 5.622
   }
  ],
@@ -2949,10 +3273,10 @@
     "1d",
     "1e"
    ],
-   "segs": 4
+   "segs": 5
   },
   {
-   "start": 33.211,
+   "start": 33.21,
    "beats": [
     "2a",
     "2b",
@@ -2962,10 +3286,10 @@
     "2f",
     "2g"
    ],
-   "segs": 9
+   "segs": 8
   },
   {
-   "start": 81.401,
+   "start": 81.398,
    "beats": [
     "3a",
     "3b",
@@ -2973,20 +3297,20 @@
     "3d",
     "3e"
    ],
-   "segs": 5
+   "segs": 4
   },
   {
-   "start": 110.976,
+   "start": 111.272,
    "beats": [
     "4a",
     "4b",
     "4c",
     "4d"
    ],
-   "segs": 5
+   "segs": 4
   },
   {
-   "start": 131.411,
+   "start": 132.007,
    "beats": [
     "5a",
     "5b",
@@ -2998,7 +3322,7 @@
    "segs": 6
   },
   {
-   "start": 171.409,
+   "start": 172.306,
    "beats": [
     "6a",
     "6b",
@@ -3008,20 +3332,20 @@
     "6f",
     "6g"
    ],
-   "segs": 14
+   "segs": 13
   },
   {
-   "start": 225.139,
+   "start": 226.03,
    "beats": [
     "7a",
     "7b",
     "7c",
     "7d"
    ],
-   "segs": 10
+   "segs": 9
   },
   {
-   "start": 264.236,
+   "start": 264.338,
    "beats": [
     "8a",
     "8b",
@@ -3030,10 +3354,10 @@
     "8e",
     "8f"
    ],
-   "segs": 9
+   "segs": 8
   },
   {
-   "start": 309.229,
+   "start": 309.63,
    "beats": [
     "9a",
     "9b",
@@ -3044,7 +3368,7 @@
    "segs": 8
   },
   {
-   "start": 341.644,
+   "start": 342.603,
    "beats": [
     "10a",
     "10b",

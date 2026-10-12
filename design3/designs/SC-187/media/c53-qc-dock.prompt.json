@@ -1,0 +1,18 @@
+{
+  "prompt": "Exactly as in the image, almost a still: at the receiving dock, the supervisor in the hi-vis vest keeps his finger on the carton's label and reads the date, glances at the tablet in his other hand, and gives one small shake of his head; the worker with the pallet jack in the background stands still; a little daylight shifts under the shutter. Locked-off camera, no movement. Every face, hand and arm keeps its form; no extra limbs appear and none vanish; nobody's face changes; nothing is picked up, handed over or put down; no object appears, vanishes or changes shape; the printed labels on the cartons and the packets stay exactly as they are, crisp and legible. Photorealistic live action, 35 mm, natural skin and fabric, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "720p",
+  "duration": 6,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "static",
+  "audio": false,
+  "seed": 187802,
+  "loras": [],
+  "image": "/Users/arundutta/projects/smart-clearance/.claude/worktrees/console-ui-db-migration-b9ab01/design3/designs/SC-187/src/img/k53-qc-dock.png",
+  "framed_first": "/Users/arundutta/ltx-video/frames/sc187-c53-qc-dock.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 9.1,
+  "ltx_output": "/Users/arundutta/Library/Application Support/LTXDesktop/outputs/ltx2_video_20261012_123011_d446fb85.mp4",
+  "cost_usd": 0
+}

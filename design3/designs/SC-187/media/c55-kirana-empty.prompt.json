@@ -1,0 +1,18 @@
+{
+  "prompt": "Exactly as in the image, almost a still: behind his counter, the shop owner keeps his open hand toward the empty gap on the shelf and gives a small apologetic shrug; the young woman in the yellow kurta looks at the gap, then at him, and nods with mild disappointment; the hanging packets sway very slightly. Locked-off camera, no movement. Every face, hand and arm keeps its form; no extra limbs appear and none vanish; nobody's face changes; nothing is picked up, handed over or put down; no object appears, vanishes or changes shape; the printed labels on the cartons and the packets stay exactly as they are, crisp and legible. Photorealistic live action, 35 mm, natural skin and fabric, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "720p",
+  "duration": 6,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "static",
+  "audio": false,
+  "seed": 187804,
+  "loras": [],
+  "image": "/Users/arundutta/projects/smart-clearance/.claude/worktrees/console-ui-db-migration-b9ab01/design3/designs/SC-187/src/img/k55-kirana-empty.png",
+  "framed_first": "/Users/arundutta/ltx-video/frames/sc187-c55-kirana-empty.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 9.1,
+  "ltx_output": "/Users/arundutta/Library/Application Support/LTXDesktop/outputs/ltx2_video_20261012_124826_75b30428.mp4",
+  "cost_usd": 0
+}
