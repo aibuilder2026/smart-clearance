@@ -1,0 +1,2762 @@
+{
+ "fps": 25,
+ "width": 1920,
+ "height": 1080,
+ "end": 210.539,
+ "src": {
+  "admin": "/Users/arundutta/projects/smart-clearance/playwright-automation-videos/admin-console-tour-prod-2026-10-12.mp4",
+  "mango": "/Users/arundutta/projects/smart-clearance/frontend/workspace/tests/journey/runs/2026-10-12-prod-mango/munchly-mango-e2e-prod-2026-10-12.mp4",
+  "chips": "/Users/arundutta/projects/smart-clearance/frontend/workspace/tests/journey/runs/2026-10-12-prod-sad/munchly-chips-sad-path-e2e-prod-2026-10-12.mp4"
+ },
+ "dev": {
+  "priya": [
+   41,
+   183,
+   1075,
+   745
+  ],
+  "dist": [
+   1176,
+   183,
+   843,
+   1216
+  ],
+  "phone": [
+   2077,
+   180,
+   445,
+   973
+  ],
+  "laptop": [
+   41,
+   183,
+   1926,
+   1202
+  ]
+ },
+ "layout": {
+  "L": {
+   "priya": [
+    620,
+    121,
+    1206
+   ]
+  },
+  "P": {
+   "dist": [
+    1060,
+    72,
+    649
+   ]
+  },
+  "PH": {
+   "phone": [
+    1170,
+    70,
+    430
+   ]
+  },
+  "LP": {
+   "priya": [
+    96,
+    206,
+    1100
+   ],
+   "phone": [
+    1290,
+    76,
+    430
+   ]
+  },
+  "LT": {
+   "laptop": [
+    500,
+    122,
+    1340
+   ]
+  }
+ },
+ "back": {
+  "console": "g05-backdrop",
+  "intro": "g04-town-network",
+  "mango": "g06w-mango",
+  "chips": "g07w-chips",
+  "close": "g08-town-sunrise"
+ },
+ "vo": {
+  "p1": {
+   "at": 2.2,
+   "dur": 2.814,
+   "text": "Every day in India, good food runs out of time."
+  },
+  "p2": {
+   "at": 5.614,
+   "dur": 3.158,
+   "text": "Not because it has spoiled, but because it is short-dated."
+  },
+  "p3": {
+   "at": 9.272,
+   "dur": 3.994,
+   "text": "Once a batch slips past the quick-commerce cut-off, nobody will take it."
+  },
+  "p4": {
+   "at": 13.766,
+   "dur": 5.827,
+   "text": "So it is written off, its tax credit is reversed, and perfectly good food ends up in a landfill."
+  },
+  "i1": {
+   "at": 21.993,
+   "dur": 3.643,
+   "text": "Smart-Clearance gives every one of those cartons a second chance."
+  },
+  "i2": {
+   "at": 26.336,
+   "dur": 12.287,
+   "text": "It is software as a service for manufacturers. Every brand gets its own workspace, where ten AI agents, built on Gemini, walk each short-dated batch to the exits that recover the most."
+  },
+  "i3": {
+   "at": 39.123,
+   "dur": 2.121,
+   "text": "And a person says yes, just once."
+  },
+  "c1": {
+   "at": 45.544,
+   "dur": 4.406,
+   "text": "It all begins in the console, where the Smart-Clearance team runs the platform."
+  },
+  "c2": {
+   "at": 50.65,
+   "dur": 7.237,
+   "text": "One overview shows every client at a glance: what has been recovered, what is in flight, and what is waiting for a yes."
+  },
+  "c3": {
+   "at": 58.587,
+   "dur": 10.56,
+   "text": "Each client's agents are tuned to its own supply chain: the Watcher's quick-commerce gates, how far the Negotiator may bargain, and the one approval that is never switched off."
+  },
+  "m1": {
+   "at": 73.147,
+   "dur": 3.241,
+   "text": "Now, two batches from Munchly Foods, live in production."
+  },
+  "m2": {
+   "at": 77.338,
+   "dur": 10.304,
+   "text": "First, the Mango Drink at Lakshmi Agencies in Hyderabad. The Watcher flags it: twenty-two days left, and over twenty-two thousand rupees about to be written off."
+  },
+  "m3": {
+   "at": 88.492,
+   "dur": 5.172,
+   "text": "Vision reads the carton's label from a single photo, and matches it to the stock export."
+  },
+  "m4": {
+   "at": 94.514,
+   "dur": 7.455,
+   "text": "The Valuer prices every exit, the Router splits the batch, and Priya, in supply chain, approves the plan with one yes."
+  },
+  "m5": {
+   "at": 102.819,
+   "dur": 6.61,
+   "text": "Fifty-two kiranas take the scheme. Every order lands live on her screen, each with its own tax invoice."
+  },
+  "m6": {
+   "at": 110.279,
+   "dur": 7.987,
+   "text": "The staff sale is checked against its U P I receipt, and Feeding India collects fifty-eight packs, with a donation receipt of its own."
+  },
+  "m7": {
+   "at": 119.116,
+   "dur": 10.547,
+   "text": "Paperwork signs every paper, Impact posts the ledger, and Lakshmi Agencies ends whole. Nearly seventeen thousand rupees recovered, and nothing left to waste."
+  },
+  "k1": {
+   "at": 134.113,
+   "dur": 1.928,
+   "text": "But not every batch goes to plan."
+  },
+  "k2": {
+   "at": 136.991,
+   "dur": 6.176,
+   "text": "The Masala Chips at Rakesh Traders in Nagpur are offered to thirty-eight kiranas. Just two of them buy."
+  },
+  "k3": {
+   "at": 144.017,
+   "dur": 10.501,
+   "text": "On Expire Soon, a wholesaler bids thirteen rupees a pack. The Negotiator counters at fourteen rupees twenty, and seven hundred and seventy-two packs are sold."
+  },
+  "k4": {
+   "at": 155.368,
+   "dur": 4.91,
+   "text": "Still, when the window closes, five hundred and forty packets are left at the godown."
+  },
+  "k5": {
+   "at": 161.228,
+   "dur": 9.122,
+   "text": "On expiry day, nothing is hidden. Rakesh sends two photos, before and after, and Vision checks the label, the count, the slate and the landfill."
+  },
+  "k6": {
+   "at": 171.2,
+   "dur": 6.013,
+   "text": "The agency's officer, two witnesses and Rakesh sign the certificate in place, right on his screen."
+  },
+  "k7": {
+   "at": 178.063,
+   "dur": 11.315,
+   "text": "Only after Priya's second yes is the credit note issued. Even now, nearly twelve thousand rupees are recovered, the distributor ends whole, and every kilo is on the record."
+  },
+  "f1": {
+   "at": 192.828,
+   "dur": 7.232,
+   "text": "The brand recovers. The distributor ends whole. Kiranas earn, food banks receive, and less food goes to waste."
+  },
+  "f2": {
+   "at": 200.86,
+   "dur": 3.679,
+   "text": "Smart-Clearance. Every near-expiry carton, a second chance."
+  }
+ },
+ "shots": [
+  {
+   "type": "clip",
+   "start": 0.0,
+   "clip": "l01-hourglass",
+   "speed": 0.72,
+   "seek": 0.0,
+   "zoom": [
+    1.0,
+    1.1
+   ],
+   "focus": [
+    0.52,
+    0.5
+   ],
+   "ov": [
+    {
+     "id": "st-1",
+     "from": 1.9,
+     "to": 7.714
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fadeblack",
+   "grade": "warm",
+   "n": 1,
+   "dur": 7.214
+  },
+  {
+   "type": "clip",
+   "start": 7.214,
+   "clip": "l02-pages",
+   "speed": 0.75,
+   "seek": 0.0,
+   "zoom": [
+    1.02,
+    1.12
+   ],
+   "focus": [
+    0.5,
+    0.5
+   ],
+   "ov": [
+    {
+     "id": "st-2",
+     "from": 0.0,
+     "to": 2.4
+    },
+    {
+     "id": "st-3",
+     "from": 1.858,
+     "to": 6.652
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "grade": "warm",
+   "n": 2,
+   "dur": 6.152
+  },
+  {
+   "type": "clip",
+   "start": 13.366,
+   "clip": "l03-landfill",
+   "speed": 0.7,
+   "seek": 0.0,
+   "zoom": [
+    1.0,
+    1.12
+   ],
+   "focus": [
+    0.4,
+    0.75
+   ],
+   "ov": [
+    {
+     "id": "ch-loss#0",
+     "from": 1.6,
+     "to": 8.827
+    },
+    {
+     "id": "ch-loss#1",
+     "from": 2.6,
+     "to": 8.827
+    },
+    {
+     "id": "ch-loss#2",
+     "from": 3.9,
+     "to": 8.827
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "grade": "muted",
+   "n": 3,
+   "dur": 8.027
+  },
+  {
+   "type": "clip",
+   "start": 21.393,
+   "clip": "l04-town",
+   "speed": 0.62,
+   "seek": 0.0,
+   "zoom": [
+    1.0,
+    1.1
+   ],
+   "focus": [
+    0.5,
+    0.5
+   ],
+   "ov": [
+    {
+     "id": "title",
+     "from": 0.5,
+     "to": 9.143
+    },
+    {
+     "id": "pillars#0",
+     "from": 5.943,
+     "to": 12.043
+    },
+    {
+     "id": "pillars#1",
+     "from": 7.943,
+     "to": 12.043
+    },
+    {
+     "id": "pillars#2",
+     "from": 10.343,
+     "to": 12.043
+    }
+   ],
+   "xf": 0.8,
+   "kind": "fade",
+   "grade": "warm",
+   "n": 4,
+   "dur": 11.543
+  },
+  {
+   "type": "screen",
+   "start": 32.936,
+   "src": "admin",
+   "t0": 13.6,
+   "layout": "LT",
+   "back": "intro",
+   "speed": 1.0,
+   "cams": {
+    "laptop": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      1.4,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      3.4,
+      1.55,
+      0.3,
+      0.55
+     ],
+     [
+      9,
+      1.62,
+      0.3,
+      0.57
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "k-agents",
+     "from": 0.3,
+     "to": 4.6
+    },
+    {
+     "id": "k-yes",
+     "from": 4.9,
+     "to": 10.808
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": true,
+   "n": 5,
+   "dur": 10.008
+  },
+  {
+   "type": "title",
+   "start": 42.944,
+   "back": "console",
+   "clip": null,
+   "ov": [
+    {
+     "id": "chap-1",
+     "from": 0.25,
+     "to": 3.2
+    }
+   ],
+   "xf": 0.8,
+   "kind": "fade",
+   "n": 6,
+   "dur": 2.7
+  },
+  {
+   "type": "screen",
+   "start": 45.644,
+   "src": "admin",
+   "t0": 1.2,
+   "layout": "LT",
+   "back": "console",
+   "speed": 1.0,
+   "cams": {
+    "laptop": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      3.4,
+      1.18,
+      0.32,
+      0.42
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "k-land",
+     "from": 0.3,
+     "to": 3.4
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": true,
+   "n": 7,
+   "dur": 2.9
+  },
+  {
+   "type": "screen",
+   "start": 48.544,
+   "src": "admin",
+   "t0": 22.6,
+   "layout": "LT",
+   "back": "console",
+   "speed": 1.6,
+   "cams": {
+    "laptop": [
+     [
+      0,
+      1.25,
+      0.72,
+      0.48
+     ],
+     [
+      2.2,
+      1.25,
+      0.72,
+      0.48
+     ],
+     [
+      3.2,
+      1.0,
+      0.5,
+      0.5
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "k-sign",
+     "from": 0.2,
+     "to": 2.306
+    },
+    {
+     "id": "tag-neha",
+     "from": 0.2,
+     "to": 2.306
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 8,
+   "dur": 1.806
+  },
+  {
+   "type": "screen",
+   "start": 50.35,
+   "src": "admin",
+   "t0": 30.4,
+   "layout": "LT",
+   "back": "console",
+   "speed": 1.12,
+   "cams": {
+    "laptop": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      1.2,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      2.8,
+      1.5,
+      0.6,
+      0.27
+     ],
+     [
+      5.6,
+      1.5,
+      0.6,
+      0.27
+     ],
+     [
+      7.0,
+      1.3,
+      0.55,
+      0.55
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "k-over",
+     "from": 0.2,
+     "to": 8.437
+    },
+    {
+     "id": "tag-neha",
+     "from": 0.0,
+     "to": 8.437
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 9,
+   "dur": 7.937
+  },
+  {
+   "type": "screen",
+   "start": 58.287,
+   "src": "admin",
+   "t0": 41.6,
+   "layout": "LT",
+   "back": "console",
+   "speed": 1.85,
+   "cams": {
+    "laptop": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      1.6,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      3.0,
+      1.45,
+      0.72,
+      0.42
+     ],
+     [
+      5.4,
+      1.45,
+      0.72,
+      0.42
+     ],
+     [
+      6.6,
+      1.4,
+      0.68,
+      0.45
+     ],
+     [
+      8.6,
+      1.4,
+      0.6,
+      0.62
+     ],
+     [
+      10.0,
+      1.45,
+      0.5,
+      0.62
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "k-cfg",
+     "from": 0.2,
+     "to": 14.36
+    },
+    {
+     "id": "tag-neha",
+     "from": 0.0,
+     "to": 14.36
+    },
+    {
+     "id": "k-gate",
+     "from": 2.6,
+     "to": 5.6
+    },
+    {
+     "id": "k-neg",
+     "from": 5.9,
+     "to": 8.4
+    },
+    {
+     "id": "k-appr",
+     "from": 8.7,
+     "to": 14.36
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 10,
+   "dur": 13.46
+  },
+  {
+   "type": "clip",
+   "start": 71.747,
+   "clip": "l06-mango",
+   "speed": 0.66,
+   "seek": 0.0,
+   "zoom": [
+    1.0,
+    1.12
+   ],
+   "focus": [
+    0.45,
+    0.42
+   ],
+   "ov": [
+    {
+     "id": "chap-2",
+     "from": 0.9,
+     "to": 9.691
+    }
+   ],
+   "xf": 0.9,
+   "kind": "fadeblack",
+   "grade": "warm",
+   "n": 11,
+   "dur": 9.191
+  },
+  {
+   "type": "screen",
+   "start": 80.938,
+   "src": "mango",
+   "t0": 149.6,
+   "layout": "L",
+   "back": "mango",
+   "speed": 0.85,
+   "cams": {
+    "priya": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      1.0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      2.6,
+      1.55,
+      0.3,
+      0.52
+     ],
+     [
+      9,
+      1.6,
+      0.3,
+      0.52
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-priya",
+     "from": 0.2,
+     "to": 7.754
+    },
+    {
+     "id": "m-risk",
+     "from": 0.4,
+     "to": 7.754
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": true,
+   "n": 12,
+   "dur": 7.254
+  },
+  {
+   "type": "screen",
+   "start": 88.192,
+   "src": "mango",
+   "t0": 164.2,
+   "layout": "P",
+   "back": "mango",
+   "speed": 1.0,
+   "cams": {
+    "dist": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      2.2,
+      1.18,
+      0.5,
+      0.32
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-lak",
+     "from": 0.2,
+     "to": 2.8
+    },
+    {
+     "id": "m-label",
+     "from": 0.4,
+     "to": 2.8
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": true,
+   "n": 13,
+   "dur": 2.3
+  },
+  {
+   "type": "screen",
+   "start": 90.492,
+   "src": "mango",
+   "t0": 185.3,
+   "layout": "P",
+   "back": "mango",
+   "speed": 1.0,
+   "cams": {
+    "dist": [
+     [
+      0,
+      1.18,
+      0.55,
+      0.36
+     ],
+     [
+      3,
+      1.25,
+      0.55,
+      0.38
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-lak",
+     "from": 0.0,
+     "to": 4.222
+    },
+    {
+     "id": "m-label",
+     "from": 0.0,
+     "to": 4.222
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 14,
+   "dur": 3.722
+  },
+  {
+   "type": "screen",
+   "start": 94.214,
+   "src": "mango",
+   "t0": 248.6,
+   "layout": "L",
+   "back": "mango",
+   "speed": 1.0,
+   "cams": {
+    "priya": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      0.8,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      2.2,
+      1.55,
+      0.35,
+      0.55
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-priya",
+     "from": 0.0,
+     "to": 3.2
+    },
+    {
+     "id": "m-price",
+     "from": 0.2,
+     "to": 3.2
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 15,
+   "dur": 2.7
+  },
+  {
+   "type": "screen",
+   "start": 96.914,
+   "src": "mango",
+   "t0": 271.2,
+   "layout": "L",
+   "back": "mango",
+   "speed": 1.0,
+   "cams": {
+    "priya": [
+     [
+      0,
+      1.1,
+      0.38,
+      0.62
+     ],
+     [
+      2.6,
+      1.2,
+      0.36,
+      0.62
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-priya",
+     "from": 0.0,
+     "to": 2.9
+    },
+    {
+     "id": "m-price",
+     "from": 0.0,
+     "to": 2.9
+    },
+    {
+     "id": "m-plan",
+     "from": 0.3,
+     "to": 2.9
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 16,
+   "dur": 2.4
+  },
+  {
+   "type": "screen",
+   "start": 99.314,
+   "src": "mango",
+   "t0": 288.6,
+   "layout": "L",
+   "back": "mango",
+   "speed": 1.0,
+   "cams": {
+    "priya": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      0.6,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      2.0,
+      1.4,
+      0.78,
+      0.45
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-priya",
+     "from": 0.0,
+     "to": 3.705
+    },
+    {
+     "id": "m-yes",
+     "from": 0.1,
+     "to": 3.705
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 17,
+   "dur": 3.205
+  },
+  {
+   "type": "screen",
+   "start": 102.519,
+   "src": "mango",
+   "t0": 331.4,
+   "layout": "LP",
+   "back": "mango",
+   "speed": 1.3,
+   "cams": {
+    "priya": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      99,
+      1.06,
+      0.5,
+      0.5
+     ]
+    ],
+    "phone": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      1.4,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      2.6,
+      1.3,
+      0.5,
+      0.3
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "m-kir",
+     "from": 0.2,
+     "to": 4.4
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": true,
+   "n": 18,
+   "dur": 3.9
+  },
+  {
+   "type": "screen",
+   "start": 106.419,
+   "src": "mango",
+   "t0": 347.0,
+   "layout": "L",
+   "back": "mango",
+   "speed": 1.0,
+   "cams": {
+    "priya": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      0.5,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      2.0,
+      1.4,
+      0.32,
+      0.62
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-priya",
+     "from": 0.2,
+     "to": 4.06
+    },
+    {
+     "id": "m-live",
+     "from": 0.2,
+     "to": 4.06
+    },
+    {
+     "id": "m-fill",
+     "from": 0.6,
+     "to": 4.06
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": true,
+   "n": 19,
+   "dur": 3.56
+  },
+  {
+   "type": "screen",
+   "start": 109.979,
+   "src": "mango",
+   "t0": 578.2,
+   "layout": "P",
+   "back": "mango",
+   "speed": 1.0,
+   "cams": {
+    "dist": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      0.8,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      2.2,
+      1.35,
+      0.5,
+      0.6
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-lak",
+     "from": 0.2,
+     "to": 3.3
+    },
+    {
+     "id": "m-staff",
+     "from": 0.3,
+     "to": 3.3
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": true,
+   "n": 20,
+   "dur": 2.8
+  },
+  {
+   "type": "screen",
+   "start": 112.779,
+   "src": "mango",
+   "t0": 593.4,
+   "layout": "P",
+   "back": "mango",
+   "speed": 1.0,
+   "cams": {
+    "dist": [
+     [
+      0,
+      1.35,
+      0.5,
+      0.6
+     ],
+     [
+      2.2,
+      1.4,
+      0.5,
+      0.6
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-lak",
+     "from": 0.0,
+     "to": 2.6
+    },
+    {
+     "id": "m-staff",
+     "from": 0.0,
+     "to": 2.6
+    },
+    {
+     "id": "m-upi",
+     "from": 0.2,
+     "to": 2.6
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 21,
+   "dur": 2.1
+  },
+  {
+   "type": "screen",
+   "start": 114.879,
+   "src": "mango",
+   "t0": 628.6,
+   "layout": "PH",
+   "back": "mango",
+   "speed": 1.0,
+   "cams": {
+    "phone": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      1.6,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      3.0,
+      1.2,
+      0.5,
+      0.42
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-meera",
+     "from": 0.2,
+     "to": 4.437
+    },
+    {
+     "id": "m-donate",
+     "from": 0.3,
+     "to": 4.437
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": true,
+   "n": 22,
+   "dur": 3.937
+  },
+  {
+   "type": "screen",
+   "start": 118.816,
+   "src": "mango",
+   "t0": 685.6,
+   "layout": "L",
+   "back": "mango",
+   "speed": 1.0,
+   "cams": {
+    "priya": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      0.6,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      2.0,
+      1.55,
+      0.7,
+      0.45
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-priya",
+     "from": 0.2,
+     "to": 3.4
+    },
+    {
+     "id": "m-paper",
+     "from": 0.2,
+     "to": 3.4
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 23,
+   "dur": 2.9
+  },
+  {
+   "type": "screen",
+   "start": 121.716,
+   "src": "mango",
+   "t0": 755.4,
+   "layout": "L",
+   "back": "mango",
+   "speed": 1.0,
+   "cams": {
+    "priya": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      0.4,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      1.8,
+      1.5,
+      0.4,
+      0.4
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-priya",
+     "from": 0.0,
+     "to": 3.5
+    },
+    {
+     "id": "m-ledger",
+     "from": 0.1,
+     "to": 3.5
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 24,
+   "dur": 3.0
+  },
+  {
+   "type": "screen",
+   "start": 124.716,
+   "src": "mango",
+   "t0": 765.5,
+   "layout": "P",
+   "back": "mango",
+   "speed": 0.75,
+   "cams": {
+    "dist": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      0.6,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      2.2,
+      1.22,
+      0.45,
+      0.32
+     ],
+     [
+      9,
+      1.25,
+      0.45,
+      0.33
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-lak",
+     "from": 0.2,
+     "to": 8.697
+    },
+    {
+     "id": "m-whole",
+     "from": 0.6,
+     "to": 8.697
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": true,
+   "n": 25,
+   "dur": 7.797
+  },
+  {
+   "type": "clip",
+   "start": 132.513,
+   "clip": "l07-chips",
+   "speed": 0.66,
+   "seek": 0.0,
+   "zoom": [
+    1.0,
+    1.12
+   ],
+   "focus": [
+    0.6,
+    0.45
+   ],
+   "ov": [
+    {
+     "id": "chap-3",
+     "from": 0.9,
+     "to": 5.378
+    }
+   ],
+   "xf": 0.9,
+   "kind": "fadeblack",
+   "grade": "cool",
+   "n": 26,
+   "dur": 4.878
+  },
+  {
+   "type": "screen",
+   "start": 137.391,
+   "src": "chips",
+   "t0": 325.0,
+   "layout": "L",
+   "back": "chips",
+   "speed": 0.6,
+   "cams": {
+    "priya": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      0.6,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      2.0,
+      1.5,
+      0.35,
+      0.68
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-priya",
+     "from": 0.2,
+     "to": 3.3
+    },
+    {
+     "id": "k-two",
+     "from": 0.2,
+     "to": 3.3
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": true,
+   "n": 27,
+   "dur": 2.8
+  },
+  {
+   "type": "screen",
+   "start": 140.191,
+   "src": "chips",
+   "t0": 372.0,
+   "layout": "P",
+   "back": "chips",
+   "speed": 1.0,
+   "cams": {
+    "dist": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      0.5,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      1.8,
+      1.35,
+      0.4,
+      0.52
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-rakesh",
+     "from": 0.2,
+     "to": 4.026
+    },
+    {
+     "id": "k-two",
+     "from": 0.0,
+     "to": 4.026
+    },
+    {
+     "id": "k-two-c",
+     "from": 0.4,
+     "to": 4.026
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": true,
+   "n": 28,
+   "dur": 3.526
+  },
+  {
+   "type": "screen",
+   "start": 143.717,
+   "src": "chips",
+   "t0": 395.4,
+   "layout": "PH",
+   "back": "chips",
+   "speed": 1.0,
+   "cams": {
+    "phone": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      1.0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      2.2,
+      1.25,
+      0.5,
+      0.6
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-agr",
+     "from": 0.2,
+     "to": 3.8
+    },
+    {
+     "id": "k-bid",
+     "from": 0.3,
+     "to": 3.8
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": true,
+   "n": 29,
+   "dur": 3.3
+  },
+  {
+   "type": "screen",
+   "start": 147.017,
+   "src": "chips",
+   "t0": 414.5,
+   "layout": "PH",
+   "back": "chips",
+   "speed": 0.65,
+   "cams": {
+    "phone": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      3.6,
+      1.06,
+      0.5,
+      0.55
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-agr",
+     "from": 0.0,
+     "to": 4.3
+    },
+    {
+     "id": "k-bid",
+     "from": 0.0,
+     "to": 4.3
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 30,
+   "dur": 3.8
+  },
+  {
+   "type": "screen",
+   "start": 150.817,
+   "src": "chips",
+   "t0": 428.4,
+   "layout": "PH",
+   "back": "chips",
+   "speed": 0.6,
+   "cams": {
+    "phone": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      0.6,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      2.0,
+      1.3,
+      0.5,
+      0.42
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-agr",
+     "from": 0.0,
+     "to": 4.751
+    },
+    {
+     "id": "k-bid",
+     "from": 0.0,
+     "to": 4.751
+    },
+    {
+     "id": "k-won",
+     "from": 0.3,
+     "to": 4.751
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 31,
+   "dur": 4.251
+  },
+  {
+   "type": "screen",
+   "start": 155.068,
+   "src": "chips",
+   "t0": 459.4,
+   "layout": "PH",
+   "back": "chips",
+   "speed": 1.0,
+   "cams": {
+    "phone": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      1.6,
+      1.2,
+      0.5,
+      0.45
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-neha2",
+     "from": 0.2,
+     "to": 2.8
+    },
+    {
+     "id": "k-close",
+     "from": 0.2,
+     "to": 2.8
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 32,
+   "dur": 2.3
+  },
+  {
+   "type": "screen",
+   "start": 157.368,
+   "src": "chips",
+   "t0": 467.4,
+   "layout": "L",
+   "back": "chips",
+   "speed": 1.0,
+   "cams": {
+    "priya": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      0.4,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      1.8,
+      1.55,
+      0.36,
+      0.48
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-priya",
+     "from": 0.2,
+     "to": 4.06
+    },
+    {
+     "id": "k-close-L",
+     "from": 0.0,
+     "to": 4.06
+    },
+    {
+     "id": "k-left",
+     "from": 0.6,
+     "to": 4.06
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": true,
+   "n": 33,
+   "dur": 3.56
+  },
+  {
+   "type": "screen",
+   "start": 160.928,
+   "src": "chips",
+   "t0": 518.6,
+   "layout": "P",
+   "back": "chips",
+   "speed": 1.0,
+   "cams": {
+    "dist": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      2.4,
+      1.1,
+      0.5,
+      0.3
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-rakesh",
+     "from": 0.2,
+     "to": 3.1
+    },
+    {
+     "id": "k-expiry",
+     "from": 0.2,
+     "to": 3.1
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": true,
+   "n": 34,
+   "dur": 2.6
+  },
+  {
+   "type": "screen",
+   "start": 163.528,
+   "src": "chips",
+   "t0": 532.6,
+   "layout": "P",
+   "back": "chips",
+   "speed": 1.0,
+   "cams": {
+    "dist": [
+     [
+      0,
+      1.1,
+      0.5,
+      0.3
+     ],
+     [
+      1.2,
+      1.5,
+      0.5,
+      0.3
+     ],
+     [
+      3.4,
+      1.55,
+      0.5,
+      0.31
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-rakesh",
+     "from": 0.0,
+     "to": 4.0
+    },
+    {
+     "id": "k-expiry",
+     "from": 0.0,
+     "to": 4.0
+    },
+    {
+     "id": "k-photos",
+     "from": 0.3,
+     "to": 4.0
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 35,
+   "dur": 3.5
+  },
+  {
+   "type": "screen",
+   "start": 167.028,
+   "src": "chips",
+   "t0": 630.4,
+   "layout": "P",
+   "back": "chips",
+   "speed": 1.0,
+   "cams": {
+    "dist": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      1.0,
+      1.4,
+      0.5,
+      0.3
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-rakesh",
+     "from": 0.0,
+     "to": 4.372
+    },
+    {
+     "id": "k-expiry",
+     "from": 0.0,
+     "to": 4.372
+    },
+    {
+     "id": "k-vision",
+     "from": 0.3,
+     "to": 4.372
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 36,
+   "dur": 3.872
+  },
+  {
+   "type": "screen",
+   "start": 170.9,
+   "src": "chips",
+   "t0": 555.6,
+   "layout": "P",
+   "back": "chips",
+   "speed": 1.4,
+   "cams": {
+    "dist": [
+     [
+      0,
+      1.35,
+      0.72,
+      0.18
+     ],
+     [
+      2.0,
+      1.4,
+      0.72,
+      0.18
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-rakesh",
+     "from": 0.0,
+     "to": 2.7
+    },
+    {
+     "id": "k-signed",
+     "from": 0.2,
+     "to": 2.7
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 37,
+   "dur": 2.2
+  },
+  {
+   "type": "screen",
+   "start": 173.1,
+   "src": "chips",
+   "t0": 578.0,
+   "layout": "P",
+   "back": "chips",
+   "speed": 1.4,
+   "cams": {
+    "dist": [
+     [
+      0,
+      1.35,
+      0.72,
+      0.2
+     ],
+     [
+      2.0,
+      1.4,
+      0.72,
+      0.2
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-rakesh",
+     "from": 0.0,
+     "to": 2.4
+    },
+    {
+     "id": "k-signed",
+     "from": 0.0,
+     "to": 2.4
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 38,
+   "dur": 1.9
+  },
+  {
+   "type": "screen",
+   "start": 175.0,
+   "src": "chips",
+   "t0": 616.4,
+   "layout": "P",
+   "back": "chips",
+   "speed": 1.0,
+   "cams": {
+    "dist": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      0.4,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      1.8,
+      1.4,
+      0.5,
+      0.52
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-rakesh",
+     "from": 0.0,
+     "to": 3.263
+    },
+    {
+     "id": "k-signed",
+     "from": 0.0,
+     "to": 3.263
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 39,
+   "dur": 2.763
+  },
+  {
+   "type": "screen",
+   "start": 177.763,
+   "src": "chips",
+   "t0": 664.6,
+   "layout": "L",
+   "back": "chips",
+   "speed": 0.42,
+   "cams": {
+    "priya": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      0.6,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      2.2,
+      1.35,
+      0.72,
+      0.62
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-priya",
+     "from": 0.2,
+     "to": 4.1
+    },
+    {
+     "id": "k-second",
+     "from": 0.2,
+     "to": 4.1
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": true,
+   "n": 40,
+   "dur": 3.6
+  },
+  {
+   "type": "screen",
+   "start": 181.363,
+   "src": "chips",
+   "t0": 687.4,
+   "layout": "L",
+   "back": "chips",
+   "speed": 0.2,
+   "cams": {
+    "priya": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      0.4,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      1.8,
+      1.5,
+      0.25,
+      0.66
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-priya",
+     "from": 0.0,
+     "to": 3.6
+    },
+    {
+     "id": "k-second",
+     "from": 0.0,
+     "to": 3.6
+    },
+    {
+     "id": "k-cn",
+     "from": 0.3,
+     "to": 3.6
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": false,
+   "n": 41,
+   "dur": 3.1
+  },
+  {
+   "type": "screen",
+   "start": 184.463,
+   "src": "chips",
+   "t0": 806.4,
+   "layout": "P",
+   "back": "chips",
+   "speed": 0.9,
+   "cams": {
+    "dist": [
+     [
+      0,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      0.8,
+      1.0,
+      0.5,
+      0.5
+     ],
+     [
+      2.4,
+      1.4,
+      0.5,
+      0.36
+     ],
+     [
+      9,
+      1.45,
+      0.5,
+      0.38
+     ]
+    ]
+   },
+   "ov": [
+    {
+     "id": "tag-rakesh",
+     "from": 0.2,
+     "to": 8.665
+    },
+    {
+     "id": "k-whole",
+     "from": 0.5,
+     "to": 8.665
+    }
+   ],
+   "xf": 0.5,
+   "kind": "fade",
+   "enter": true,
+   "n": 42,
+   "dur": 7.765
+  },
+  {
+   "type": "clip",
+   "start": 192.228,
+   "clip": "l08-sunrise",
+   "speed": 0.6,
+   "seek": 0.0,
+   "zoom": [
+    1.12,
+    1.0
+   ],
+   "focus": [
+    0.5,
+    0.5
+   ],
+   "ov": [
+    {
+     "id": "cl-1",
+     "from": 0.6,
+     "to": 9.132
+    },
+    {
+     "id": "cl-2",
+     "from": 1.85,
+     "to": 9.132
+    },
+    {
+     "id": "cl-3",
+     "from": 3.2,
+     "to": 9.132
+    },
+    {
+     "id": "cl-4",
+     "from": 5.5,
+     "to": 9.132
+    }
+   ],
+   "xf": 0.9,
+   "kind": "fadeblack",
+   "grade": "warm",
+   "n": 43,
+   "dur": 8.232
+  },
+  {
+   "type": "title",
+   "start": 200.46,
+   "back": "close",
+   "clip": null,
+   "ov": [
+    {
+     "id": "end",
+     "from": 0.2,
+     "to": 10.079
+    }
+   ],
+   "xf": 0.9,
+   "kind": "fade",
+   "n": 44,
+   "dur": 10.079
+  }
+ ],
+ "overlays": [
+  {
+   "id": "st-1",
+   "kind": "statement",
+   "kicker": "EVERY DAY, ACROSS INDIA",
+   "lines": [
+    "Good food,",
+    "running out of time."
+   ]
+  },
+  {
+   "id": "st-2",
+   "kind": "statement",
+   "kicker": "THE PROBLEM",
+   "lines": [
+    "Short-dated.",
+    "Not spoiled."
+   ]
+  },
+  {
+   "id": "st-3",
+   "kind": "statement",
+   "kicker": "THE QUICK-COMMERCE CUT-OFF",
+   "lines": [
+    "Past it,",
+    "nobody takes it."
+   ]
+  },
+  {
+   "id": "ch-loss",
+   "kind": "chips",
+   "items": [
+    "Written off",
+    "Tax credit reversed",
+    "Landfill"
+   ],
+   "y": 760,
+   "tone": "clay"
+  },
+  {
+   "id": "title",
+   "kind": "title",
+   "tagline": "Every near-expiry carton, a second chance."
+  },
+  {
+   "id": "pillars",
+   "kind": "chips",
+   "items": [
+    "Software as a service",
+    "Ten AI agents on Gemini",
+    "One human yes"
+   ],
+   "y": 880,
+   "tone": "glass",
+   "center": true
+  },
+  {
+   "id": "k-agents",
+   "kind": "kicker",
+   "kicker": "BEFORE ANYONE SIGNS IN",
+   "head": "Ten agents. Nine stops.",
+   "x": 96,
+   "y": 360,
+   "w": 360,
+   "hs": 50
+  },
+  {
+   "id": "k-yes",
+   "kind": "kicker",
+   "kicker": "STOP 6 OF 9",
+   "head": "One person says yes.",
+   "x": 96,
+   "y": 360,
+   "w": 360,
+   "hs": 50,
+   "accent": "amber"
+  },
+  {
+   "id": "chap-1",
+   "kind": "chapter",
+   "num": "01",
+   "label": "THE PLATFORM",
+   "head": "Admin and console",
+   "sub": "smartclearance-console.web.app  ·  live in production"
+  },
+  {
+   "id": "tag-neha",
+   "kind": "tag",
+   "person": "p-neha",
+   "name": "Neha Kulkarni",
+   "role": "Smart-Clearance staff",
+   "x": 96,
+   "y": 96
+  },
+  {
+   "id": "k-land",
+   "kind": "kicker",
+   "kicker": "THE LANDING PAGE",
+   "head": "One platform, every brand.",
+   "x": 96,
+   "y": 360,
+   "w": 360,
+   "hs": 50
+  },
+  {
+   "id": "k-sign",
+   "kind": "kicker",
+   "kicker": "STAFF SIGN-IN",
+   "head": "Into the console.",
+   "x": 96,
+   "y": 360,
+   "w": 360,
+   "hs": 50
+  },
+  {
+   "id": "k-over",
+   "kind": "kicker",
+   "kicker": "THE OVERVIEW",
+   "head": "Every client, live.",
+   "x": 96,
+   "y": 360,
+   "w": 360,
+   "hs": 50
+  },
+  {
+   "id": "k-cfg",
+   "kind": "kicker",
+   "kicker": "PER CLIENT",
+   "head": "Tuned to each supply chain.",
+   "x": 96,
+   "y": 360,
+   "w": 360,
+   "hs": 50
+  },
+  {
+   "id": "k-gate",
+   "kind": "callout",
+   "kicker": "THE WATCHER",
+   "fig": "60 days",
+   "cap": "quick-commerce gate",
+   "x": 96,
+   "y": 670,
+   "w": 360,
+   "fs": 70
+  },
+  {
+   "id": "k-neg",
+   "kind": "callout",
+   "kicker": "THE NEGOTIATOR",
+   "fig": "Act",
+   "cap": "answers bids in its limits",
+   "x": 96,
+   "y": 670,
+   "w": 360,
+   "fs": 70
+  },
+  {
+   "id": "k-appr",
+   "kind": "callout",
+   "kicker": "THE APPROVAL",
+   "fig": "Always on",
+   "cap": "nothing moves without a yes",
+   "x": 96,
+   "y": 670,
+   "w": 360,
+   "fs": 70,
+   "accent": "amber"
+  },
+  {
+   "id": "chap-2",
+   "kind": "chapter",
+   "num": "02",
+   "label": "THE HAPPY PATH",
+   "head": "Munchly Mango Drink",
+   "sub": "MF-2410-118  ·  Lakshmi Agencies, Hyderabad  ·  live in production"
+  },
+  {
+   "id": "tag-priya",
+   "kind": "tag",
+   "person": "p-priya",
+   "name": "Priya Deshmukh",
+   "role": "Supply chain · Munchly Foods",
+   "x": 96,
+   "y": 96
+  },
+  {
+   "id": "tag-lak",
+   "kind": "tag",
+   "person": "p-lakshmi",
+   "name": "Lakshmi Agencies",
+   "role": "Distributor · Begum Bazaar",
+   "x": 96,
+   "y": 96
+  },
+  {
+   "id": "tag-meera",
+   "kind": "tag",
+   "person": "p-meera",
+   "name": "Meera",
+   "role": "Feeding India · Hyderabad",
+   "x": 96,
+   "y": 96
+  },
+  {
+   "id": "m-risk",
+   "kind": "kicker",
+   "kicker": "DETECT · THE WATCHER",
+   "head": "22 days left. ₹22,657 at stake.",
+   "x": 96,
+   "y": 360,
+   "w": 440
+  },
+  {
+   "id": "m-label",
+   "kind": "kicker",
+   "kicker": "VERIFY · VISION",
+   "head": "One photo. The label read and matched.",
+   "x": 96,
+   "y": 360,
+   "w": 860
+  },
+  {
+   "id": "m-price",
+   "kind": "kicker",
+   "kicker": "VALUE · DECIDE",
+   "head": "Every exit priced. The batch split.",
+   "x": 96,
+   "y": 360,
+   "w": 440
+  },
+  {
+   "id": "m-plan",
+   "kind": "callout",
+   "kicker": "THE PLAN",
+   "fig": "₹16,917",
+   "cap": "instead of a ₹22,657 write-off",
+   "x": 96,
+   "y": 670,
+   "w": 440
+  },
+  {
+   "id": "m-yes",
+   "kind": "kicker",
+   "kicker": "APPROVE",
+   "head": "One yes releases the agents.",
+   "x": 96,
+   "y": 360,
+   "w": 440,
+   "accent": "amber"
+  },
+  {
+   "id": "m-kir",
+   "kind": "kicker",
+   "kicker": "EXECUTE · OUTREACH",
+   "head": "The offer, in Hindi. Orders land live.",
+   "x": 96,
+   "y": 78,
+   "w": 1100
+  },
+  {
+   "id": "m-live",
+   "kind": "kicker",
+   "kicker": "EVERY ORDER, LIVE",
+   "head": "Each order lands on her screen.",
+   "x": 96,
+   "y": 360,
+   "w": 440
+  },
+  {
+   "id": "m-fill",
+   "kind": "callout",
+   "kicker": "THE KIRANA SCHEME",
+   "fig": "52 shops",
+   "cap": "1,372 packets, each invoiced",
+   "x": 96,
+   "y": 670,
+   "w": 440
+  },
+  {
+   "id": "m-staff",
+   "kind": "kicker",
+   "kicker": "STAFF SALE",
+   "head": "Checked against one UPI receipt.",
+   "x": 96,
+   "y": 360,
+   "w": 860
+  },
+  {
+   "id": "m-upi",
+   "kind": "callout",
+   "kicker": "VISION READ",
+   "fig": "18 payments",
+   "cap": "₹1,200 — matches the count",
+   "x": 96,
+   "y": 670,
+   "w": 860
+  },
+  {
+   "id": "m-donate",
+   "kind": "kicker",
+   "kicker": "DONATION",
+   "head": "58 packs to Feeding India, receipted.",
+   "x": 96,
+   "y": 360,
+   "w": 860
+  },
+  {
+   "id": "m-paper",
+   "kind": "kicker",
+   "kicker": "SETTLE · PAPERWORK",
+   "head": "Every paper signed and stamped.",
+   "x": 96,
+   "y": 360,
+   "w": 440
+  },
+  {
+   "id": "m-ledger",
+   "kind": "kicker",
+   "kicker": "REPORT · IMPACT",
+   "head": "The ledger, posted.",
+   "x": 96,
+   "y": 360,
+   "w": 440
+  },
+  {
+   "id": "m-whole",
+   "kind": "callout",
+   "kicker": "RECOVERED",
+   "fig": "₹16,917",
+   "cap": "distributor ends whole: ₹0 loss",
+   "x": 96,
+   "y": 670,
+   "w": 860
+  },
+  {
+   "id": "chap-3",
+   "kind": "chapter",
+   "num": "03",
+   "label": "THE SAD PATH",
+   "head": "Munchly Masala Chips",
+   "sub": "MF-2409-117  ·  Rakesh Traders, Nagpur  ·  live in production"
+  },
+  {
+   "id": "tag-rakesh",
+   "kind": "tag",
+   "person": "p-rakesh",
+   "name": "Rakesh bhai",
+   "role": "Distributor · Rakesh Traders",
+   "x": 96,
+   "y": 96
+  },
+  {
+   "id": "tag-agr",
+   "kind": "tag",
+   "person": "p-agrawal",
+   "name": "Agrawal Wholesale",
+   "role": "Buyer on ExpireSoon · Raipur",
+   "x": 96,
+   "y": 96
+  },
+  {
+   "id": "tag-neha2",
+   "kind": "tag",
+   "person": "p-neha",
+   "name": "Neha Kulkarni",
+   "role": "Smart-Clearance console",
+   "x": 96,
+   "y": 96
+  },
+  {
+   "id": "k-two",
+   "kind": "kicker",
+   "kicker": "38 KIRANAS OFFERED",
+   "head": "Only two of them buy.",
+   "x": 96,
+   "y": 360,
+   "w": 440
+  },
+  {
+   "id": "k-two-c",
+   "kind": "callout",
+   "kicker": "THE SCHEME",
+   "fig": "2 of 38",
+   "cap": "48 packets ordered",
+   "x": 96,
+   "y": 670,
+   "w": 860
+  },
+  {
+   "id": "k-bid",
+   "kind": "kicker",
+   "kicker": "EXPIRESOON · THE NEGOTIATOR",
+   "head": "A bid of ₹13. Countered at ₹14.20.",
+   "x": 96,
+   "y": 360,
+   "w": 860
+  },
+  {
+   "id": "k-won",
+   "kind": "callout",
+   "kicker": "SOLD",
+   "fig": "772 packs",
+   "cap": "at ₹14.20, token paid",
+   "x": 96,
+   "y": 670,
+   "w": 860
+  },
+  {
+   "id": "k-close",
+   "kind": "kicker",
+   "kicker": "THE WINDOW CLOSES",
+   "head": "540 packets left at the godown.",
+   "x": 96,
+   "y": 360,
+   "w": 860
+  },
+  {
+   "id": "k-close-L",
+   "kind": "kicker",
+   "kicker": "THE WINDOW CLOSES",
+   "head": "540 packets left at the godown.",
+   "x": 96,
+   "y": 360,
+   "w": 440
+  },
+  {
+   "id": "k-left",
+   "kind": "callout",
+   "kicker": "LEFT AT THE GODOWN",
+   "fig": "540",
+   "cap": "packets no channel took",
+   "x": 96,
+   "y": 670,
+   "w": 440,
+   "accent": "clay"
+  },
+  {
+   "id": "k-expiry",
+   "kind": "kicker",
+   "kicker": "EXPIRY DAY",
+   "head": "Nothing is hidden.",
+   "x": 96,
+   "y": 360,
+   "w": 860
+  },
+  {
+   "id": "k-photos",
+   "kind": "callout",
+   "kicker": "THE EVIDENCE",
+   "fig": "2 photos",
+   "cap": "before, at the godown · after, at the landfill",
+   "x": 96,
+   "y": 670,
+   "w": 860
+  },
+  {
+   "id": "k-vision",
+   "kind": "callout",
+   "kicker": "VISION'S CHECKS",
+   "fig": "4 of 4",
+   "cap": "label · count · slate · landfill",
+   "x": 96,
+   "y": 670,
+   "w": 860
+  },
+  {
+   "id": "k-signed",
+   "kind": "kicker",
+   "kicker": "SIGNED IN PLACE",
+   "head": "The officer, two witnesses and Rakesh.",
+   "x": 96,
+   "y": 360,
+   "w": 860
+  },
+  {
+   "id": "k-second",
+   "kind": "kicker",
+   "kicker": "THE SECOND YES",
+   "head": "Money moves only on proof.",
+   "x": 96,
+   "y": 360,
+   "w": 440,
+   "accent": "amber"
+  },
+  {
+   "id": "k-cn",
+   "kind": "callout",
+   "kicker": "EXPIRY CREDIT NOTE",
+   "fig": "₹13,284",
+   "cap": "CN/0118, issued on her yes",
+   "x": 96,
+   "y": 670,
+   "w": 440
+  },
+  {
+   "id": "k-whole",
+   "kind": "callout",
+   "kicker": "STILL RECOVERED",
+   "fig": "₹11,702",
+   "cap": "distributor ends whole: ₹0 loss",
+   "x": 96,
+   "y": 670,
+   "w": 860
+  },
+  {
+   "id": "cl-1",
+   "kind": "line",
+   "text": "The brand recovers.",
+   "y": 330
+  },
+  {
+   "id": "cl-2",
+   "kind": "line",
+   "text": "The distributor ends whole.",
+   "y": 430
+  },
+  {
+   "id": "cl-3",
+   "kind": "line",
+   "text": "Kiranas earn. Food banks receive.",
+   "y": 530
+  },
+  {
+   "id": "cl-4",
+   "kind": "line",
+   "text": "Less food goes to waste.",
+   "y": 630,
+   "accent": "amber"
+  },
+  {
+   "id": "end",
+   "kind": "end",
+   "url": "smartclearance.web.app",
+   "demo": "smartclearance-demo.web.app"
+  }
+ ]
+}
