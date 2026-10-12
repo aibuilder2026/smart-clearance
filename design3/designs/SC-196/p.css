@@ -1,0 +1,20 @@
+/* SC-196 · what the three options share: the band no longer stretches with the sign-in's rows (it left an empty slab
+   under its caption on a tall tablet), and the agents as tiles on their nodes */
+@container app (max-width: 1099px) { .signin:has(> .ag-band, > .sv-pill) { align-content: start; } }
+.sv-tiles { position: absolute; inset: 0; pointer-events: none; }
+.sv-tile { position: absolute; translate: -50% -50%; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; cursor: pointer; pointer-events: auto; -webkit-tap-highlight-color: transparent; color: var(--fg-3); background-color: var(--surface); box-shadow: 0 0 0 1.5px var(--line-2), var(--shadow-1); transition: scale 240ms var(--ease), background-color 240ms var(--ease), color 240ms var(--ease), box-shadow 240ms var(--ease); }
+/* a tile's tint lies over the surface, so it stays opaque over the field's lit nodes */
+.sv-tile.done { color: var(--primary-text); background-image: linear-gradient(var(--primary-soft), var(--primary-soft)); box-shadow: 0 0 0 1.5px color-mix(in oklab, var(--primary) 35%, transparent), var(--shadow-1); }
+.sv-tile.now { color: var(--primary-fg); background-color: var(--primary); background-image: none; box-shadow: 0 0 0 2px var(--surface), var(--shadow-2); scale: 1.14; }
+.sv-tile.human { color: var(--amber-text); }
+.sv-tile.human.done, .sv-tile.human.now { color: var(--amber-fg); background-color: var(--amber); background-image: none; box-shadow: 0 0 0 2px var(--surface), var(--shadow-1); }
+.sv-tile[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--primary), var(--shadow-2); }
+.sv-tile.human[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--amber), var(--shadow-2); }
+.sv-tile:focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; }
+.sv-name { position: absolute; padding: 2px 6px; border-radius: 7px; white-space: nowrap; font: 650 12px/1.1 var(--font-ui); letter-spacing: -0.005em; color: var(--fg-2); background: color-mix(in oklab, var(--surface) 84%, transparent); pointer-events: none; }
+.sv-tile.done .sv-name, .sv-tile.now .sv-name { color: var(--fg); }
+.sv-name.below { top: calc(100% + 3px); left: 50%; translate: -50% 0; }
+.sv-name.above { bottom: calc(100% + 3px); left: 50%; translate: -50% 0; }
+.sv-name.left { right: calc(100% + 4px); top: 50%; translate: 0 -50%; }
+.sv-name.right { left: calc(100% + 4px); top: 50%; translate: 0 -50%; }
+@media (prefers-reduced-motion: reduce) { .sv-tile { transition: none; } }

@@ -1,0 +1,16 @@
+/* SC-196 option A · The ring: a circle of agents, the caption in its middle */
+.pa-band { gap: 4px; }
+.pa-stage { position: relative; height: 300px; }
+.pa-stage .ag-field { position: absolute; inset: 0; }
+.pa-centre { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+.ag-caption.pa-cap { width: 168px; min-height: 0; justify-items: center; text-align: center; gap: 2px; padding: 10px 12px; border-radius: 16px; background: color-mix(in oklab, var(--surface) 82%, transparent); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.ag-caption.pa-cap b { font-size: 15px; line-height: 1.2; text-wrap: balance; }
+.ag-caption.pa-cap .did { font-size: 12px; line-height: 1.35; }
+.ag-caption.pa-cap code { font-size: 10.5px; }
+@container app (min-width: 768px) {
+  .pa-stage { height: 440px; }
+  .ag-caption.pa-cap { width: 250px; padding: 14px 18px; }
+  .ag-caption.pa-cap b { font-size: 17px; }
+  .ag-caption.pa-cap .did { font-size: 13.5px; }
+  .ag-caption.pa-cap code { font-size: 11.5px; }
+}
