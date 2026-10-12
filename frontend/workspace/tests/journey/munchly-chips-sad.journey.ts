@@ -358,8 +358,15 @@ const STEPS: Step[] = [
 			// the lot was already won, so the shortfall does not move onto it: the packets stay at the godown
 			story('ExpireSoon lot after the window', c.journey.listing?.units, 772);
 			await s.stat('left', 'packets left at the godown', String(left()));
-			await s.open('priya', `/execution/${HERO}`, 'reads Execution once the scheme has closed short');
-			await running().done(`Execution: the scheme closed, ${left()} packets unordered`);
+			// Priya's tablet is still on Execution: the window's end reaches it live, and says where the packets stayed
+			const priya = await s.open('priya', `/execution/${HERO}`, 'sees the scheme close short on Execution');
+			const ended = main(priya)
+				.getByText(/The window ended/)
+				.first();
+			await expect(ended).toBeVisible({ timeout: 45_000 });
+			await expect(ended).toContainText(/stayed at Rakesh Traders' godown/);
+			await s.point(ended, 900);
+			await running().done(`Execution: the window ended, ${left()} packets stayed at the godown`);
 		}
 	},
 	{
