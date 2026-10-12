@@ -548,7 +548,7 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
 
 /* the agents at work, the sign-ins' stage (SC-195, round 2, option A, The agent mesh): a field of nodes behind the
    whole sign-in, eleven of them the platform's agents and the one person on an orbit in the stage, the caption in its
-   middle on glass; on a phone or a tablet, a band over the card. The canvas takes the pointer; the page still scrolls */
+   middle on glass; below desktops, the agents round the card (SC-196). The canvas takes the pointer; the page still scrolls */
 .ag-field { position: absolute; inset: 0; touch-action: pan-y; -webkit-tap-highlight-color: transparent; }
 .ag-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
 .ag-stage { display: grid; grid-template-rows: auto minmax(320px, 1fr) auto; gap: 16px; padding: 48px 40px 32px clamp(40px, 6cqi, 96px); pointer-events: none; }
@@ -556,8 +556,8 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
 .ag-head { display: grid; gap: 10px; max-width: 520px; }
 .ag-head .si-tagline { margin: 0; }
 .ag-title { margin: 6px 0 0; font: 700 clamp(34px, 3.3cqi, 46px)/1.04 var(--font-display); letter-spacing: -0.03em; font-variation-settings: "opsz" 72; color: var(--fg); text-wrap: balance; }
-.ag-title span, .ag-bandhead b span { color: var(--amber-text); }
-[data-theme="dark"] .ag-title span, [data-theme="dark"] .ag-bandhead b span { color: var(--amber); }
+.ag-title span { color: var(--amber-text); }
+[data-theme="dark"] .ag-title span { color: var(--amber); }
 .ag-orbit { position: relative; display: grid; place-items: center; min-height: 0; }
 .ag-crew { position: absolute; inset: 0; pointer-events: none; }
 /* an agent: its tile and name, on glass; the name never fades (the secondary ink until it has worked) */
@@ -574,9 +574,6 @@ button.ag-chip.human[aria-pressed="true"] { box-shadow: var(--shadow-2), 0 0 0 2
 .ag-chip.now i { color: var(--primary-fg); background: var(--primary); }
 .ag-chip.human i { color: var(--amber-text); background: var(--amber-soft); }
 .ag-chip.human.now i, .ag-chip.human.done i { color: var(--amber-fg); background: var(--amber); }
-/* in the band, the agent at work is its tile, on its node */
-.ag-tile { position: absolute; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; translate: -50% -50%; color: var(--primary-fg); background: var(--primary); box-shadow: 0 0 0 2px var(--surface), var(--shadow-1); }
-.ag-tile.human { color: var(--amber-fg); background: var(--amber); }
 /* what the batch is doing, or the agent picked; in the orbit's middle on glass, so the threads never cut its words */
 .ag-caption { display: grid; gap: 3px; align-content: start; max-width: 46ch; }
 .ag-caption .n { font-size: 12.5px; font-weight: 650; letter-spacing: 0.02em; color: var(--fg-2); font-variant-numeric: tabular-nums; }
@@ -590,14 +587,37 @@ button.ag-chip.human[aria-pressed="true"] { box-shadow: var(--shadow-2), 0 0 0 2
 .ag-play { color: var(--fg-2); }
 .ag-foot .ag-play { margin-left: -10px; }
 .ag-hint { font-size: 13px; color: var(--fg-2); }
-/* phones and tablets: the stage is a band over the card */
-.ag-band { grid-row: 1; position: relative; z-index: 1; display: grid; gap: 8px; margin: calc(var(--safe-top) + 10px) 12px 0; padding: 10px 14px 12px; border-radius: 24px; background: color-mix(in oklab, var(--surface) 62%, transparent); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 0 0 var(--hair) var(--line-2); }
-.ag-bandhead { display: flex; align-items: center; gap: 8px; min-height: 32px; font-size: 14px; }
-.ag-bandhead b { font-weight: 700; letter-spacing: -0.01em; }
-.ag-bandhead .ag-play { margin: 0 -6px 0 auto; }
-.ag-orbit.band { display: block; height: 168px; }
-.ag-caption.band { min-height: 58px; }
-.ag-caption.band b { font-size: 14.5px; }
-.ag-caption.band .did { font-size: 12.5px; }
-@container app (min-width: 768px) { .ag-orbit.band { height: 220px; } .ag-band { max-width: 760px; width: calc(100% - 24px); justify-self: center; } }
+/* below desktops (SC-196, Around the card): the agents on a loop round the card's edges, each a tile on its node, the
+   tint over the surface so it stays opaque over the field's lit nodes; a pill at the top says who is at work, with the
+   nine stops as a rail (24 px to tap, a 4 px bar to see) and Pause */
+.ag-around { position: absolute; inset: 0; pointer-events: none; }
+.ag-ptile { position: absolute; translate: -50% -50%; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; color: var(--fg-3); background-color: var(--surface); box-shadow: 0 0 0 1.5px var(--line-2), var(--shadow-1); transition: scale 240ms var(--ease), background-color 240ms var(--ease), color 240ms var(--ease), box-shadow 240ms var(--ease); }
+.ag-ptile.done { color: var(--primary-text); background-image: linear-gradient(var(--primary-soft), var(--primary-soft)); box-shadow: 0 0 0 1.5px color-mix(in oklab, var(--primary) 35%, transparent), var(--shadow-1); }
+.ag-ptile.now { color: var(--primary-fg); background-color: var(--primary); background-image: none; box-shadow: 0 0 0 2px var(--surface), var(--shadow-2); scale: 1.14; }
+.ag-ptile.human { color: var(--amber-text); }
+.ag-ptile.human.done, .ag-ptile.human.now { color: var(--amber-fg); background-color: var(--amber); background-image: none; box-shadow: 0 0 0 2px var(--surface), var(--shadow-1); }
+.ag-ptile.held { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--primary), var(--shadow-2); }
+.ag-ptile.human.held { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--amber), var(--shadow-2); }
+.ag-pill { display: grid; gap: 4px; width: min(560px, calc(100% - 24px)); padding: 8px 12px 4px 14px; border-radius: 22px; background: color-mix(in oklab, var(--surface) 82%, transparent); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line-2); }
+.ag-pill-row { display: flex; align-items: center; gap: 8px; min-height: 32px; font-size: 14px; }
+.ag-pill-row b { font-weight: 700; letter-spacing: -0.01em; }
+.ag-pill-row b span { color: var(--amber-text); }
+[data-theme="dark"] .ag-pill-row b span { color: var(--amber); }
+.ag-pill-row .ag-play { margin: 0 -6px 0 auto; }
+.ag-pill-now { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; min-height: 26px; font-size: 13px; line-height: 1.35; }
+.ag-who { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px 2px 2px; border-radius: 99px; font-weight: 650; white-space: nowrap; color: var(--fg); background: var(--fill-2); }
+.ag-who i { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; color: var(--primary-fg); background: var(--primary); }
+.ag-who.human i { color: var(--amber-fg); background: var(--amber); }
+.ag-who.rest { padding-left: 9px; }
+.ag-did { color: var(--fg-2); }
+.ag-rail { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 4px; }
+.ag-rail button { display: grid; align-items: center; height: 24px; padding: 0; border: 0; border-radius: 6px; cursor: pointer; background: none; -webkit-tap-highlight-color: transparent; }
+.ag-rail button i { display: block; height: 4px; border-radius: 2px; background: var(--line-2); transition: background-color 240ms var(--ease), height 160ms var(--ease); }
+.ag-rail button.done i { background: var(--primary); }
+.ag-rail button.now i { background: color-mix(in oklab, var(--primary) 55%, var(--line-2)); }
+.ag-rail button.human.done i, .ag-rail button.human.now i { background: var(--amber); }
+.ag-rail button[aria-pressed="true"] i { height: 8px; }
+.ag-rail button:focus-visible { outline: 3px solid var(--ring); outline-offset: 1px; }
+@container app (min-width: 768px) { .ag-ptile { width: 34px; height: 34px; } }
+@media (prefers-reduced-motion: reduce) { .ag-ptile, .ag-rail button i { transition: none; } }
 @media (prefers-reduced-motion: reduce) { .ag-chip, .ag-chip i { transition: none; } }

@@ -229,7 +229,7 @@ Local pages:
   - the landing page's film and table: Pause, Play and Replay, the rail;
   - the workspace app's sign-in by keyboard, the one-time code's first box taking focus, its sheets and the users row menu (SC-65);
   - the guided demo's keys (→ ← 1–4 M P N), its route map and strip, the map as a dialog that gives focus back, the appearance menu, and the end, which keeps focus inside it while the stage behind is inert (SC-65, SC-167).
-  - the agents behind the sign-ins (the workspace app's and the console's): one stop in a tab, the arrows between them, Enter holding the walk on an agent and saying what it does, Escape letting it go, and Pause and Play (SC-195).
+  - the agents behind the sign-ins (the workspace app's and the console's): one stop in a tab, the arrows between them, Enter holding the walk on an agent and saying what it does, Escape letting it go, and Pause and Play (SC-195); below desktops the same on the pill's rail of the nine stops (SC-196).
 
   These criteria still need a manual pass: 2.4.11, 2.5.7, 3.2.6, 3.3.7 and 3.3.8.
 - Nothing loops forever, except the landing page's hero film, which loops under its Pause control (SC-78), and the agents at work behind the sign-ins (SC-195), which loop under their own Pause and Play, remembered in the browser, and rest under reduced motion: every other animation stops within five seconds (WCAG 2.2.2), and only loading indicators keep turning. `motion.a11y.spec.ts` fails on any endless CSS or web animation (the agents' field is a canvas, which it does not see).

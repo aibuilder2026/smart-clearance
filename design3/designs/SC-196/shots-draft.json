@@ -1,0 +1,98 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-196/option-a/workspace.html?shot=1",
+  "out": "option-a/workspace-390-light",
+  "width": 390,
+  "height": 844,
+  "theme": "light",
+  "wait": 3600
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-196/option-a/workspace.html?shot=1",
+  "out": "option-a/workspace-820-light",
+  "width": 820,
+  "height": 1180,
+  "theme": "light",
+  "wait": 3600
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-196/option-a/console.html?boot=0",
+  "out": "option-a/console-390-light",
+  "width": 390,
+  "height": 844,
+  "theme": "light",
+  "wait": 3600
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-196/option-a/console.html?boot=0",
+  "out": "option-a/console-820-light",
+  "width": 820,
+  "height": 1180,
+  "theme": "light",
+  "wait": 3600
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-196/option-b/workspace.html?shot=1",
+  "out": "option-b/workspace-390-light",
+  "width": 390,
+  "height": 844,
+  "theme": "light",
+  "wait": 3600
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-196/option-b/workspace.html?shot=1",
+  "out": "option-b/workspace-820-light",
+  "width": 820,
+  "height": 1180,
+  "theme": "light",
+  "wait": 3600
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-196/option-b/console.html?boot=0",
+  "out": "option-b/console-390-light",
+  "width": 390,
+  "height": 844,
+  "theme": "light",
+  "wait": 3600
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-196/option-b/console.html?boot=0",
+  "out": "option-b/console-820-light",
+  "width": 820,
+  "height": 1180,
+  "theme": "light",
+  "wait": 3600
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-196/option-c/workspace.html?shot=1",
+  "out": "option-c/workspace-390-light",
+  "width": 390,
+  "height": 844,
+  "theme": "light",
+  "wait": 3600
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-196/option-c/workspace.html?shot=1",
+  "out": "option-c/workspace-820-light",
+  "width": 820,
+  "height": 1180,
+  "theme": "light",
+  "wait": 3600
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-196/option-c/console.html?boot=0",
+  "out": "option-c/console-390-light",
+  "width": 390,
+  "height": 844,
+  "theme": "light",
+  "wait": 3600
+ },
+ {
+  "url": "http://127.0.0.1:8787/designs/SC-196/option-c/console.html?boot=0",
+  "out": "option-c/console-820-light",
+  "width": 820,
+  "height": 1180,
+  "theme": "light",
+  "wait": 3600
+ }
+]

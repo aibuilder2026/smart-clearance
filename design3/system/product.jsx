@@ -177,7 +177,8 @@
   // It loops, so it has Pause and Play (WCAG 2.2.2), remembered in the browser; under reduced motion it is drawn at rest,
   // every agent lit. It is live: the field gives way to the pointer and draws its links to it, a click or a tap sends a
   // ripple through it (and lets go of an agent), and each agent, pressed, holds the walk at its stop and says what it does.
-  // No client's data, so a live workspace shows it before anyone signs in. On a phone or a tablet it is a band over the card.
+  // No client's data, so a live workspace shows it before anyone signs in. Below desktops the agents stand round the card
+  // instead (SC-196, Around the card).
   const AG_STOPS = [
     { id: "connect", t: "Connect" }, { id: "detect", t: "Detect" }, { id: "verify", t: "Verify" }, { id: "value", t: "Value" },
     { id: "decide", t: "Decide" }, { id: "approve", t: "Approve", human: true }, { id: "execute", t: "Execute" }, { id: "settle", t: "Settle" },
@@ -322,15 +323,15 @@
     return s;
   }
   // the canvas: over the whole sign-in on a desktop (the named nodes where the stage's orbit is), or the band's own box
-  function AgentField({ w, stars, band, orbit, height }) {
+  function AgentField({ w, stars, band, orbit, height, local }) {
     const box = useRef(null), cv = useRef(null), size = useBox(box);
     const f = useRef({ nodes: [], ripples: [], pointer: null, stepAt: 0, resetAt: -1e9, raf: 0, last: 0, off: { x: 0, y: 0 } }).current;
     const prevK = useRef(w.k);
     if (prevK.current !== w.k) { if (w.k < 0 && prevK.current >= AG_N) f.resetAt = performance.now(); prevK.current = w.k; f.stepAt = performance.now(); }
-    // where the orbit sits in the canvas (the band's canvas is the orbit)
+    // where the orbit sits in the canvas (around the card the agents are placed in the canvas's own box)
     useEffect(() => {
       if (!size) return; f.nodes = agField(size.w, size.h, band);
-      if (!band && orbit.current && box.current) { const a = orbit.current.getBoundingClientRect(), b = box.current.getBoundingClientRect(), z = scaleOf(); f.off = { x: (a.left - b.left) / z, y: (a.top - b.top) / z }; }
+      if (!band && !local && orbit && orbit.current && box.current) { const a = orbit.current.getBoundingClientRect(), b = box.current.getBoundingClientRect(), z = scaleOf(); f.off = { x: (a.left - b.left) / z, y: (a.top - b.top) / z }; }
     }, [size && size.w, size && size.h, stars]);
     // a device preview scales the page (the guided demo): the screen's pixels are not the canvas's
     const scaleOf = () => { const el = box.current; return el && el.offsetWidth ? el.getBoundingClientRect().width / el.offsetWidth : 1; };
@@ -362,11 +363,12 @@
     const onUp = e => {
       const p = at(e), d = down.current; down.current = null; if (e.pointerType !== "mouse") f.pointer = null;
       if (!d || Math.hypot(p.x - d.x, p.y - d.y) > 10) { kick(); return; }
-      const hit = (f.stars || []).map(s => ({ s, d: Math.hypot(s.x - p.x, s.y - p.y) })).filter(x => x.d < (band ? 24 : 18)).sort((a, b) => a.d - b.d)[0];
+      const hit = (f.stars || []).map(s => ({ s, d: Math.hypot(s.x - p.x, s.y - p.y) })).filter(x => x.d < (band ? 24 : local ? 22 : 18)).sort((a, b) => a.d - b.d)[0];
       if (hit) w.pick(hit.s.c); else { if (!w.reduce) f.ripples.push({ x: p.x, y: p.y, born: performance.now(), t: 0, r: 6 }); w.release(); }
       kick();
     };
-    return <div ref={box} className={cx("ag-field", band && "band")} style={height ? { height } : undefined} aria-hidden="true" onPointerMove={onMove} onPointerLeave={onLeave} onPointerCancel={onLeave} onPointerDown={onDown} onPointerUp={onUp}>
+    // around the card the field takes no room in the sign-in's rows: an equal negative margin cancels its height
+    return <div ref={box} className={cx("ag-field", band && "band")} style={height ? (local ? { height, marginBottom: -height } : { height }) : undefined} aria-hidden="true" onPointerMove={onMove} onPointerLeave={onLeave} onPointerCancel={onLeave} onPointerDown={onDown} onPointerUp={onUp}>
       <canvas ref={cv} className="ag-canvas" />
     </div>;
   }
@@ -380,8 +382,7 @@
         : <><span className="n">9 of 9 · Report</span><b>Sold, not binned.</b><span className="did">Ten agents worked the batch. One person said yes.</span></>}
     </div>;
   }
-  // an agent's chip: its icon and name, lit once it has worked, wearing the aura while it works (in the band, the agent
-  // at work is its tile on its node, the caption naming it)
+  // an agent's chip: its icon and name, lit once it has worked, wearing the aura while it works
   const AgentChip = ({ c }) => <><i><Icon name={c.icon} size={14} stroke={2.2} /></i>{c.name}</>;
   // Pause and Play: the walk loops, so it can be stopped (WCAG 2.2.2); held on an agent, Play lets it go on
   function AgentPlay({ w, compact }) {
@@ -395,31 +396,21 @@
     <ol className="sr-only" aria-label="How Smart-Clearance's agents work a batch">{AG_STOPS.map((s, i) => <li key={s.id}>{s.t}: {agNames(i)}. {agAt(i).map(c => c.did).join(". ")}.</li>)}</ol>
     <p className="sr-only" role="status">{w.held ? `${w.held.name}, ${AG_STOPS[w.held.stop].t}: ${w.held.did}.` : ""}</p>
   </>;
-  // the stage: on a desktop, the head, the orbit with its chips (one stop in a tab, arrows between them) and the caption
-  // in its middle, and Pause; the field behind the whole sign-in. On a phone or a tablet, a band over the card
-  function AgentStage({ children, band }) {
-    const app = useApp(); const w = useAgentWalk(); const orbit = useRef(null);
-    const isBand = band != null ? band : app.bp !== "desktop"; const size = useBox(orbit, isBand);
-    const stars = useMemo(() => (size ? agOrbit(size.w, size.h, isBand) : []), [size && size.w, size && size.h, isBand]);
+  // the stage on a desktop: the head, the orbit with its chips (one stop in a tab, arrows between them) and the caption in
+  // its middle, and Pause; the field behind the whole sign-in
+  function AgentDesk({ w, children }) {
+    const orbit = useRef(null); const size = useBox(orbit);
+    const stars = useMemo(() => (size ? agOrbit(size.w, size.h, false) : []), [size && size.w, size && size.h]);
     const [rove, setRove] = useState(0); const chips = useRef([]);
-    // on a desktop the stage and the field keep to the sign-in's visible height, pinned while a long card scrolls by
+    // the stage and the field keep to the sign-in's visible height, pinned while a long card scrolls by
     const stage = useRef(null); const [height, setHeight] = useState(null);
-    useEffect(() => { const host = stage.current && stage.current.parentElement; if (!host) return; const f = () => setHeight(host.clientHeight); f(); const o = new ResizeObserver(f); o.observe(host); return () => o.disconnect(); }, [isBand]);
+    useEffect(() => { const host = stage.current && stage.current.parentElement; if (!host) return; const f = () => setHeight(host.clientHeight); f(); const o = new ResizeObserver(f); o.observe(host); return () => o.disconnect(); }, []);
     const key = e => {
       const n = AG_CREW.length, to = { ArrowRight: rove + 1, ArrowDown: rove + 1, ArrowLeft: rove - 1, ArrowUp: rove - 1, Home: 0, End: n - 1 }[e.key];
       if (e.key === "Escape" && w.held) { w.release(); return; }
       if (to == null) return; e.preventDefault(); const i = (to + n) % n; setRove(i); chips.current[i] && chips.current[i].focus();
     };
     const place = n => ({ left: n.x, top: n.y, transform: Math.abs(n.ox) < 0.2 ? (n.oy < 0 ? "translate(-50%, calc(-100% - 12px))" : "translate(-50%, 12px)") : n.ox < 0 ? "translate(calc(-100% - 12px), -50%)" : "translate(12px, -50%)" });
-    if (isBand) return <div className="ag-band">
-      <div className="ag-bandhead"><Mark size={22} still /><b>Ten agents. <span>One yes.</span></b><AgentPlay w={w} compact /></div>
-      <div ref={orbit} className="ag-orbit band" aria-hidden="true">
-        <AgentField w={w} stars={stars} band orbit={orbit} />
-        {size && stars.map(n => { const st = w.state(n.c); return (st === "now" || (w.done && !w.held && n.c.human)) && <span key={n.c.id} className={cx("ag-tile", n.c.human && "human", st, st === "now" && !w.reduce && "aura")} style={{ left: n.x, top: n.y }}><Icon name={n.c.icon} size={13} stroke={2.2} /></span>; })}
-      </div>
-      <AgentCaption w={w} className="band" />
-      <AgentWords w={w} />
-    </div>;
     return <Fragment>
       <AgentField w={w} stars={stars} orbit={orbit} height={height} />
       <div ref={stage} className="ag-stage" style={height ? { height } : undefined}>
@@ -437,6 +428,57 @@
         <AgentWords w={w} />
       </div>
     </Fragment>;
+  }
+
+  // below desktops, phones and tablets either way up (SC-196, option C, Around the card): the field behind the whole
+  // sign-in, as on a desktop, and the eleven on a loop round the card's edges, from the top, clockwise, the handoffs
+  // passing under its glass. A pill at the top says who is at work, with the nine stops as a rail and Pause. A tap on an
+  // agent's tile holds the walk on it; a tap on the field sends a ripple and lets go. By keyboard the rail's stops are one
+  // stop in a tab, the arrows between them, Enter holding the walk on a stop's agent
+  // the loop fills the sign-in's visible box below the pill (top: where the pill ends), clear of the edges
+  function agAround(w, h, tab, top) {
+    const t = top + (tab ? 30 : 26), b = h - (tab ? 34 : 28), rx = w / 2 - (tab ? 40 : 24), ry = (b - t) / 2, cxp = w / 2, cyp = (t + b) / 2;
+    return AG_CREW.map((c, i) => { const a = (-90 + (i * 360) / AG_CREW.length) * Math.PI / 180, ox = Math.cos(a), oy = Math.sin(a); return { c, x: cxp + rx * ox, y: cyp + ry * oy, ox, oy }; });
+  }
+  function AgentAround({ w }) {
+    const app = useApp(), tab = app.bp === "tablet", pill = useRef(null); const [host, setHost] = useState(null);
+    useEffect(() => {
+      const p = pill.current, el = p && p.parentElement; if (!el) return;
+      const f = () => setHost({ w: el.clientWidth, h: el.clientHeight, top: p.offsetTop + p.offsetHeight }); f();
+      const o = new ResizeObserver(f); o.observe(el); o.observe(p); return () => o.disconnect();
+    }, []);
+    const stars = useMemo(() => (host ? agAround(host.w, host.h, tab, host.top) : []), [host && host.w, host && host.h, host && host.top, tab]);
+    const now = w.held ? [w.held] : w.playing ? agAt(w.k) : [];
+    const k = w.held ? w.held.stop : w.done ? AG_N : w.k;
+    const [rove, setRove] = useState(0); const stops = useRef([]);
+    const key = e => {
+      const n = AG_N, to = { ArrowRight: rove + 1, ArrowDown: rove + 1, ArrowLeft: rove - 1, ArrowUp: rove - 1, Home: 0, End: n - 1 }[e.key];
+      if (e.key === "Escape" && w.held) { w.release(); return; }
+      if (to == null) return; e.preventDefault(); const i = (to + n) % n; setRove(i); stops.current[i] && stops.current[i].focus();
+    };
+    const did = w.held ? w.held.did : w.playing ? (now.length > 1 ? "Work the exits at once: the kiranas, the marketplace, a bid" : now[0].did) : w.k < 0 ? "Ten agents and one person take it from here." : "Ten agents worked the batch. One person said yes.";
+    return <Fragment>
+      <AgentField w={w} stars={stars} local height={host && host.h} />
+      <div className="ag-around" aria-hidden="true" style={host ? { height: host.h, marginBottom: -host.h } : undefined}>
+        {host && stars.map(n => { const st = w.state(n.c); return <span key={n.c.id} className={cx("ag-ptile", n.c.human && "human", st, w.held && w.held.id === n.c.id && "held", st === "now" && !w.reduce && "aura")} style={{ left: n.x, top: n.y }}><Icon name={n.c.icon} size={tab ? 15 : 13} stroke={2.2} /></span>; })}
+      </div>
+      <div ref={pill} className="ag-pill">
+        <div className="ag-pill-row"><Mark size={22} still /><b>Ten agents. <span>One yes.</span></b><AgentPlay w={w} compact /></div>
+        <div className="ag-pill-now" aria-hidden="true">
+          {now.length ? now.map(c => <span key={c.id} className={cx("ag-who", c.human && "human")}><i><Icon name={c.icon} size={12} stroke={2.2} /></i>{c.name}</span>) : <span className="ag-who rest">{w.k < 0 ? "A batch the gates will refuse" : "Sold, not binned"}</span>}
+          <span className="ag-did">{did}</span>
+        </div>
+        <div className="ag-rail" role="toolbar" aria-label="The nine stops" onKeyDown={key}>
+          {AG_STOPS.map((s, i) => <button key={s.id} type="button" ref={el => (stops.current[i] = el)} tabIndex={i === rove ? 0 : -1} aria-label={`${s.t}: ${agNames(i)}`} aria-pressed={!!w.held && w.held.stop === i} className={cx(i < k && "done", i === k && "now", s.human && "human")} onFocus={() => setRove(i)} onClick={() => w.pick(agAt(i)[0])}><i /></button>)}
+        </div>
+        <AgentWords w={w} />
+      </div>
+    </Fragment>;
+  }
+  // the stage: SC-195's on a desktop, the agents around the card below it (band: the one below desktops, whatever the size)
+  function AgentStage({ children, band }) {
+    const app = useApp(); const w = useAgentWalk();
+    return (band != null ? band : app.bp !== "desktop") ? <AgentAround w={w} /> : <AgentDesk w={w}>{children}</AgentDesk>;
   }
 
   Object.assign(window.SC3, { STAGE_TIMES, StatusBadge, TrackerCompact, TrackerCard, BatchRow, ChannelTable, SplitBar, MoneyPanel, DocCard, AgentStage });

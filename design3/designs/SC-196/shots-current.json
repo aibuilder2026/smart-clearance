@@ -1,0 +1,66 @@
+[
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "current/workspace-390-light",
+  "width": 390,
+  "height": 844,
+  "theme": "light",
+  "wait": 3000
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "current/workspace-390-dark",
+  "width": 390,
+  "height": 844,
+  "theme": "dark",
+  "wait": 3000
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "current/workspace-820-light",
+  "width": 820,
+  "height": 1180,
+  "theme": "light",
+  "wait": 3000
+ },
+ {
+  "url": "http://127.0.0.1:8787/app/Smart-Clearance%20app%20v3.html?live&state=signin&shot=1",
+  "out": "current/workspace-820-dark",
+  "width": 820,
+  "height": 1180,
+  "theme": "dark",
+  "wait": 3000
+ },
+ {
+  "url": "http://127.0.0.1:8787/console/Smart-Clearance%20console%20v3.html?boot=0",
+  "out": "current/console-390-light",
+  "width": 390,
+  "height": 844,
+  "theme": "light",
+  "wait": 3000
+ },
+ {
+  "url": "http://127.0.0.1:8787/console/Smart-Clearance%20console%20v3.html?boot=0",
+  "out": "current/console-390-dark",
+  "width": 390,
+  "height": 844,
+  "theme": "dark",
+  "wait": 3000
+ },
+ {
+  "url": "http://127.0.0.1:8787/console/Smart-Clearance%20console%20v3.html?boot=0",
+  "out": "current/console-820-light",
+  "width": 820,
+  "height": 1180,
+  "theme": "light",
+  "wait": 3000
+ },
+ {
+  "url": "http://127.0.0.1:8787/console/Smart-Clearance%20console%20v3.html?boot=0",
+  "out": "current/console-820-dark",
+  "width": 820,
+  "height": 1180,
+  "theme": "dark",
+  "wait": 3000
+ }
+]

@@ -1,0 +1,26 @@
+/* SC-196 option C · Around the card: the field and the agents behind the whole sign-in, a pill at the top */
+.signin > .ag-field, .signin > .pc-layer { position: sticky; inset: 0 auto auto; z-index: 0; grid-area: 1 / 1; align-self: start; }
+.signin > .pc-layer { pointer-events: none; }
+/* the pill sits over the top of the sign-in; the card below it */
+.signin:has(> .sv-pill) > .si-panel { grid-area: 1 / 1; pointer-events: none; padding-top: calc(var(--safe-top) + 124px); }
+.signin:has(> .sv-pill) .si-card { pointer-events: auto; }
+.signin > .sv-pill { position: absolute; z-index: 2; top: calc(var(--safe-top) + 10px); left: 50%; translate: -50% 0; display: grid; gap: 6px; width: min(560px, calc(100% - 24px)); padding: 9px 12px 10px 14px; border-radius: 22px; background: color-mix(in oklab, var(--surface) 80%, transparent); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: var(--shadow-1), 0 0 0 var(--hair) var(--line-2); }
+.pc-row { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.pc-row b { font-weight: 700; letter-spacing: -0.01em; }
+.pc-row b span { color: var(--amber-text); }
+[data-theme="dark"] .pc-row b span { color: var(--amber); }
+.pc-row .ag-play { margin: 0 -6px 0 auto; }
+.pc-now { display: flex; align-items: center; gap: 6px 8px; flex-wrap: wrap; min-height: 26px; font-size: 13px; }
+.pc-who { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px 2px 2px; border-radius: 99px; font-weight: 650; color: var(--fg); background: var(--fill-2); }
+.pc-who i { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; color: var(--primary-fg); background: var(--primary); }
+.pc-who.human i { color: var(--amber-fg); background: var(--amber); }
+.pc-who.rest { padding-left: 9px; }
+.pc-did { color: var(--fg-2); }
+.pc-rail { display: grid; grid-template-columns: repeat(9, 1fr); gap: 4px; }
+.pc-rail i { height: 4px; border-radius: 2px; background: var(--line-2); transition: background-color 240ms var(--ease); }
+.pc-rail i.done { background: var(--primary); }
+.pc-rail i.now { background: color-mix(in oklab, var(--primary) 55%, var(--line-2)); }
+.pc-rail i.human.done, .pc-rail i.human.now { background: var(--amber); }
+/* the card on its own surface over the field, on a phone too */
+@container app (max-width: 767px) { .signin:has(> .sv-pill) .si-card { padding: 22px 18px 18px; border-radius: 28px; background: color-mix(in oklab, var(--surface) 90%, transparent); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); box-shadow: var(--shadow-3), 0 0 0 var(--hair) var(--line); } .signin:has(> .sv-pill) > .si-panel { padding-left: 12px; padding-right: 12px; } }
+@media (prefers-reduced-motion: reduce) { .pc-rail i { transition: none; } }
