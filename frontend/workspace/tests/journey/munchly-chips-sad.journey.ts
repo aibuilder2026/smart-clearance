@@ -8,29 +8,31 @@ import { signCertificate } from './destruction.ts';
 import { AGENT_WAIT, begin, caseAs, inr, running, story, STORY, until, type Case } from './flow.ts';
 import { Stage } from './stage.ts';
 
-// Munchly Chips Sad Path E2E (SC-179): the Masala Chips batch (MF-2409-117, Rakesh Traders, Nagpur) from a fresh
-// journey, on three screens at once (stage.ts): Priya, Munchly's supply chain operator, and Rakesh, the distributor,
-// each on a tablet in landscape, signed in before the recording starts and online to the end; and a phone for everyone
-// else, signing in each kirana, Agrawal Wholesale on ExpireSoon, and Neha in the Smart-Clearance console as each is
-// needed. Every click shows: the cursor glides to it and ripples where it lands. The stage is recorded as one video.
+// Munchly Chips Sad Path E2E (SC-179, SC-184): the Masala Chips batch (MF-2409-117, Rakesh Traders, Nagpur) from a
+// fresh journey, on three screens at once (stage.ts): Priya, Munchly's supply chain operator, on a tablet in landscape,
+// and Rakesh, the distributor, on a tablet in portrait, each signing in on camera at the start and online to the end;
+// and a phone for everyone else, on which each kirana, Agrawal Wholesale on ExpireSoon and Neha in the Smart-Clearance
+// console sign in as they are needed, on the app's own sign-in screen (the password check answered with their own
+// session: no password is typed). Every click shows: the cursor glides to it and ripples where it lands. The stage is
+// recorded as one video.
 //
-// The sad path: of Rakesh's 38 kiranas offered the scheme, only E2E_BUYERS (2) order their share; every other shop that
-// has joined the app says Not this time. Agrawal Wholesale still wins the ExpireSoon lot; Neha closes the scheme's
-// window from the console, short of its packets, and they stay at the godown. Rakesh loads the buyer's truck, issues his
-// invoice and runs his van round to the shops that ordered. Neha fires expiry day: Munchly's policy destroys what is
-// left at Rakesh's godown (SC-139, route B). Rakesh sends the evidence (the photos before and after, made for the packs
-// left, the agency, its certificate number, the window the agency destroyed them in and the two witnesses who sign
-// with its officer, SC-174), the four signing the certificate in place on his tablet (SC-183), and Vision checks the
-// photos on live Gemini while his tablet shows it working. Priya reads Vision's checks one by one, with the certificate
-// as signed, and gives her second yes; Impact reports, and the agency's certificate of destruction is issued with the
-// four signatures as drawn: its officer's, the two witnesses' and Rakesh's for the packs he handed over. Then Priya
-// reads the certificate and its log, the Expiry credit note, glances at the kiranas' tax invoices, and reads the Impact
-// screens; Rakesh reads his batch and his signed certificate; the phone reads a shop's order and a declined offer.
+// The sad path: of Rakesh's 38 kiranas offered the scheme, only E2E_BUYERS (2) order their share, and Priya watches
+// each order arrive on her Execution screen as it is placed. Agrawal Wholesale wins the ExpireSoon lot; Neha closes the
+// scheme's window from the console on the rest, short of its packets, and they stay at the godown. Rakesh loads the
+// buyer's truck, issues his invoice and runs his van round to the shops that ordered. Neha fires expiry day: Munchly's
+// policy destroys what is left at Rakesh's godown (SC-139, route B). Rakesh sends the evidence (the photos before and
+// after, made for the packs left, the agency, its certificate number, the window the agency destroyed them in and the
+// two witnesses who sign with its officer, SC-174), the four signing the certificate in place on his tablet, each
+// signature drawn stroke by stroke (SC-183), and Vision validates the photos on live Gemini while his tablet shows it
+// checking. Priya reads Vision's checks one by one and the certificate as signed, and gives her second yes; Impact
+// reports, and the agency's certificate of destruction is issued with the four signatures as drawn. Then Priya reads
+// the certificate and its log, the Expiry credit note, glances at the kiranas' tax invoices, and reads the Impact
+// screens; Rakesh reads his batch and his signed certificate; the phone reads a buyer's order and a shop's closed offer.
 //
-// E2E_BUYERS (2): how many of the ordering kiranas order, the first in the story's order; every other kirana declines.
+// E2E_BUYERS (2): how many of the ordering kiranas order, the first in the story's order; the window closes on the rest.
 // E2E_DAY_MINUTES (60, Rehearsal): the journey day the reset starts.
-// E2E_FROM=<step id> resumes on the journey as it stands; E2E_UNTIL=<step id> stops after that step.
-// E2E_LIVE=0 hides the stage window (it is still recorded).
+// E2E_FROM=<step id> resumes on the journey as it stands (the sign-ins always run); E2E_UNTIL=<step id> stops after it.
+// E2E_LIVE=0 opens no monitor window (the stage is recorded all the same).
 
 const BUYERS = Number(process.env.E2E_BUYERS ?? 2);
 const DAY_MINUTES = Number(process.env.E2E_DAY_MINUTES ?? 60);
@@ -38,15 +40,17 @@ const PRESETS: Record<number, RegExp> = { 1440: /Real time/, 60: /Rehearsal/, 5:
 /** Rakesh's 38 kiranas, in the story's order: every one is offered the scheme */
 const OFFERED = STORY.kiranas.filter((k) => k.distributor === 'rakesh');
 const BUY = OFFERED.filter((k) => k.orders > 0).slice(0, BUYERS);
-/** a shop whose owner joined the app: one only invited (Shree Sai Kirana, in the story) cannot sign in to answer */
+/** a shop whose owner joined the app (one only invited, Shree Sai Kirana in the story, cannot sign in) */
 const joined = (k: (typeof OFFERED)[number]) =>
 	(STORY.members.find((m) => m.id === k.member) as { status?: string } | undefined)?.status === 'active';
-const DECLINE = OFFERED.filter((k) => !BUY.includes(k) && joined(k));
-/** the shops offered the scheme that never joined the app, so cannot answer it: the window closes on them */
-const SILENT = OFFERED.filter((k) => !BUY.includes(k) && !joined(k));
+/** every other shop: the window closes on them, unanswered */
+const REST = OFFERED.filter((k) => !BUY.includes(k));
+/** one of them reads its offer once the window has closed */
+const CLOSED_ON = REST.find(joined)!;
 const ORDERED = BUY.reduce((t, k) => t + k.orders, 0);
-if (!(BUYERS >= 1 && BUYERS < 31)) throw new Error('E2E_BUYERS must be 1 to 30: some kiranas order, the rest decline');
-const PEOPLE = ['neha', 'priya', 'rakesh', 'agrawal', ...[...BUY, ...DECLINE].map((k) => k.member)];
+if (!(BUYERS >= 1 && BUYERS < 31))
+	throw new Error('E2E_BUYERS must be 1 to 30: some kiranas order, the window closes on the rest');
+const PEOPLE = ['neha', 'priya', 'rakesh', 'agrawal', ...BUY.map((k) => k.member), CLOSED_ON.member];
 
 const REPO = (p: string) => fileURLToPath(new URL(`../../../../${p}`, import.meta.url));
 /** the label photo Rakesh sends: the story's own, with the statutory sticker (SC-147) */
@@ -59,14 +63,13 @@ const EVIDENCE = (which: 'before' | 'after', left: number) => {
 };
 
 type Step = { id: string; title: string; run: (s: Stage) => Promise<void> };
+/** how fast a signer's pen moves on the pad: milliseconds between its points */
+const PEN = 12;
 
 /** the packets the plan offers the kiranas, and those left at the godown once the window closes */
 let planned = 0;
 const left = () => planned - ORDERED;
 const plannedOf = (c: Case | null) => c?.plan?.lines.find((l) => l.id === 'kirana')?.units ?? 0;
-/** what the scheme's offer carries beyond the shared type: the shops that said not this time */
-type Offer = { status: string; declined?: Record<string, unknown> };
-const offerOf = (c: Case) => c.journey.offer as unknown as Offer | null;
 /** a screen's own content: the app's banners (a push arriving on a screen that stays signed in) sit outside it */
 const main = (page: Page) => page.locator('#main');
 // a signature on a paper: a specimen's image, or the ink drawn on the certificate at the facility (SC-183)
@@ -79,6 +82,18 @@ async function readEach(s: Stage, items: Locator, most = 8, rest = 450) {
 }
 
 const STEPS: Step[] = [
+	{
+		id: 'signin',
+		title: 'Priya signs in on her tablet, Rakesh on his, and Neha in the console on the phone',
+		async run(s) {
+			await s.open('priya', '/command', "signs in to Munchly's workspace on her tablet");
+			await running().done('Priya signed in: her Command Center');
+			await s.open('rakesh', '/home', "signs in to Munchly's workspace on his tablet");
+			await running().done('Rakesh signed in: his Today');
+			await s.open('neha', '/clients/munchly/agents', 'signs in to the Smart-Clearance console on the phone');
+			await running().done('Neha signed in: Munchly in the console');
+		}
+	},
 	{
 		id: 'reset',
 		title: "Neha starts Munchly's journey again from the console, on the phone",
@@ -221,40 +236,46 @@ const STEPS: Step[] = [
 	},
 	{
 		id: 'orders',
-		title: `${BUY.length} kiranas order their share; ${DECLINE.length} say Not this time${SILENT.length ? `; ${SILENT.length} never joined the app` : ''}`,
+		title: `${BUY.length} kiranas order their share on the phone, and Priya sees each order arrive live on Execution`,
 		async run(s) {
 			planned ||= plannedOf(await caseAs('priya'));
 			running().figure('Plan line kirana', `${planned} packets`);
-			const all = OFFERED.length;
+			// Priya's tablet stays on Execution: each order reaches it over the live stream, never by a reload
+			const priya = await s.open('priya', `/execution/${HERO}`, "watches the kiranas' scheme on Execution");
+			const count = main(priya).getByText('kiranas ordered').first();
+			await s.point(count, 500);
+			await running().done('Execution: the scheme sent, no order yet');
 			for (const [i, k] of BUY.entries()) {
-				const page = await s.open(k.member, `/offer/${HERO}`, `orders ${k.orders} packets (${i + 1} of ${all})`);
+				const page = await s.open(k.member, `/offer/${HERO}`, `orders ${k.orders} packets (${i + 1} of ${BUY.length})`);
 				const order = main(page).getByRole('button', { name: new RegExp(`· ${k.orders} packets`) });
 				const placed = main(page)
 					.getByText(/ऑर्डर हो गया|Ordered · \d+/)
 					.first();
-				await expect(order.or(placed)).toBeVisible();
+				await expect(order.or(placed).first()).toBeVisible();
 				if (await order.isVisible()) {
+					await s.point(main(page).getByText(/₹\d/).first(), 500);
 					await s.click(order);
 					await expect(placed).toBeVisible();
 				} else running().find('note', `/offer/${HERO}`, `${k.name} had already ordered`);
 				await s.stat('ordered', 'shops ordered', String(i + 1));
 				await running().done(`${k.name} ordered ${k.orders} packets`);
-			}
-			for (const [i, k] of DECLINE.entries()) {
-				const page = await s.open(
-					k.member,
-					'/home',
-					`reads the scheme and says Not this time (${BUY.length + i + 1} of ${all})`
-				);
-				const no = main(page).getByRole('button', { name: 'Not this time', exact: true });
-				const said = main(page).getByText('You said not this time');
-				await expect(no.or(said)).toBeVisible();
-				if (await no.isVisible()) {
-					await s.click(no, 150);
-					await expect(said).toBeVisible();
-				}
-				await s.stat('declined', 'said not this time', String(i + 1));
-				await running().done(`${k.name}: Not this time`, 300);
+				// on Priya's tablet, as it happens: the order in the scheme's latest orders, the count moved on
+				await s.run.act('Priya Deshmukh', 'Supply Chain', `sees ${k.name}'s order arrive live on Execution`);
+				await s.active('operator');
+				const row = main(priya).locator('.row.between', { hasText: k.name }).first();
+				const live = await row
+					.waitFor({ state: 'visible', timeout: 45_000 })
+					.then(() => true)
+					.catch(() => false);
+				if (!live)
+					running().find(
+						'error',
+						`/execution/${HERO}`,
+						`${k.name}'s order did not reach Priya's Execution screen within 45 s without a reload`
+					);
+				await s.point(row, 900);
+				await s.point(count, 600);
+				await running().done(`Live on Priya's tablet: ${k.name}, ${k.orders} packets (${i + 1} of 38 shops)`);
 			}
 			const c = await until(
 				`the ${BUY.length} orders are in`,
@@ -267,27 +288,9 @@ const STEPS: Step[] = [
 				`${c.journey.orders.length} shops, ${c.journey.orders.reduce((t, o) => t + o.units, 0)} packets`,
 				`${BUY.length} shops, ${ORDERED} packets`
 			);
-			const declined = Object.keys(offerOf(c)?.declined ?? {}).length;
-			story('Kiranas that said Not this time', declined, DECLINE.length);
-			for (const k of SILENT)
-				running().find(
-					'note',
-					`/offer/${HERO}`,
-					`${k.name} was offered the scheme but has not joined the app (its invitation is open), so it cannot answer: the window closes on it`
-				);
-			if (SILENT.length) {
-				running().figure('Never joined the app', SILENT.map((k) => k.name).join(', '));
-				await s.stat('silent', 'never joined the app', String(SILENT.length));
-			}
-			story('Scheme after the answers', c.journey.offer?.status, 'sent');
+			story('Scheme after the orders', c.journey.offer?.status, 'sent');
+			running().figure('Shops the window will close on', REST.length);
 			running().figure('Packets no shop took', left());
-			const page = await s.open('priya', `/execution/${HERO}`, 'reads the scheme: two orders, the rest declined');
-			await s.point(
-				main(page)
-					.getByText(/kiranas ordered/)
-					.first()
-			);
-			await running().done(`Execution: ${BUY.length} of 38 shops ordered ${ORDERED} of ${planned} packets`);
 		}
 	},
 	{
@@ -336,7 +339,7 @@ const STEPS: Step[] = [
 			const page = await s.open(
 				'neha',
 				'/clients/munchly/agents',
-				`closes the offer window now: ${BUY.length} shops ordered, ${DECLINE.length} said not this time${SILENT.length ? `, ${SILENT.length} never answered` : ''}`
+				`closes the offer window now: ${BUY.length} shops ordered, ${REST.length} did not`
 			);
 			const close = page.getByRole('button', { name: `Close now: Outreach, offer window closes, ${HERO}` });
 			await expect(close).toBeEnabled();
@@ -355,8 +358,15 @@ const STEPS: Step[] = [
 			// the lot was already won, so the shortfall does not move onto it: the packets stay at the godown
 			story('ExpireSoon lot after the window', c.journey.listing?.units, 772);
 			await s.stat('left', 'packets left at the godown', String(left()));
-			await s.open('priya', `/execution/${HERO}`, 'reads Execution once the scheme has closed short');
-			await running().done(`Execution: the scheme closed, ${left()} packets unordered`);
+			// Priya's tablet is still on Execution: the window's end reaches it live, and says where the packets stayed
+			const priya = await s.open('priya', `/execution/${HERO}`, 'sees the scheme close short on Execution');
+			const ended = main(priya)
+				.getByText(/The window ended/)
+				.first();
+			await expect(ended).toBeVisible({ timeout: 45_000 });
+			await expect(ended).toContainText(/stayed at Rakesh Traders' godown/);
+			await s.point(ended, 900);
+			await running().done(`Execution: the window ended, ${left()} packets stayed at the godown`);
 		}
 	},
 	{
@@ -453,11 +463,17 @@ const STEPS: Step[] = [
 			await s.point(body.getByLabel('Witness 1 · name'), 600);
 			await s.point(body.getByLabel('Witness 2 · name'), 600);
 			await running().done('The window and the two witnesses who sign the certificate with the agency’s officer');
-			// the certificate signed in place (SC-183): each of the four signs in their own place on his tablet
-			await signCertificate(page, body, (l) => s.click(l, 400));
+			// the certificate signed in place (SC-183): each of the four signs in their own place on his tablet, drawing
+			// their signature on the pad stroke by stroke
+			await s.point(body.getByText('Sign the certificate').first(), 700);
+			await running().done('The certificate to sign, laid out from what he entered, stamped TO SIGN');
+			await signCertificate(page, body, (l) => s.click(l, 400), PEN);
+			await s.point(body.getByText('4 of 4 signed').first(), 700);
 			await running().done('The certificate signed in place: the officer, both witnesses and Rakesh');
 			await s.click(body.getByRole('button', { name: /Send to .* for approval/ }), 150);
 			await expect(body.getByText(/Vision is checking/).first()).toBeVisible({ timeout: 15_000 });
+			// the photos stay in view while Vision checks them (SC-180)
+			await readEach(s, body.locator('.dz-slot img'), 2, 700);
 			await running().done('Vision is checking the two photos: the label, the count, the slate, the landfill', 200);
 			const c = await until("Vision checks the destruction's evidence", 'priya', (c) =>
 				['checked', 'approved'].includes(c.destruction?.status ?? '')
@@ -484,8 +500,13 @@ const STEPS: Step[] = [
 			await expect(sheet).toBeVisible();
 			await expect(sheet.locator('img.cam-feed')).toHaveCount(2);
 			await readEach(s, sheet.locator('img.cam-feed'), 2, 700);
-			for (const x of before.destruction?.checks ?? []) await s.point(sheet.getByText(x.label).first(), 500);
+			for (const x of before.destruction?.checks ?? []) await s.point(sheet.getByText(x.label).first(), 600);
 			await running().done('The review: both photos, and Vision’s four checks read one by one');
+			// the certificate as signed at the facility, each signature drawing itself as it was signed (SC-183)
+			await s.point(sheet.getByText('The certificate, as signed at the facility').first(), 600);
+			await readEach(s, sigs(sheet), 4, 900);
+			await s.point(sheet.getByText(/Four signatures on the certificate/).first(), 700);
+			await running().done('The certificate as signed: the officer, both witnesses and Rakesh, each in its place');
 			await s.point(sheet.getByText(/Expiry credit note to/).first(), 700);
 			await running().done('What her yes issues: the Expiry credit note and the agency’s certificate');
 			await s.click(sheet.getByRole('button', { name: 'Approve · issue the papers' }));
@@ -644,7 +665,7 @@ const STEPS: Step[] = [
 	},
 	{
 		id: 'shops',
-		title: 'On the phone: Shree Ganesh Kirana reads its order and invoice; a shop that declined reads its offer',
+		title: `On the phone: ${BUY[0]!.name} reads its order and tax invoice; ${CLOSED_ON.name} reads the offer the window closed on`,
 		async run(s) {
 			const buyer = BUY[0]!;
 			const page = await s.open(buyer.member, `/offer/${HERO}`, 'reads its order and its tax invoice');
@@ -653,11 +674,27 @@ const STEPS: Step[] = [
 					.getByText(/ऑर्डर हो गया|Ordered · \d+/)
 					.first()
 			).toBeVisible();
-			await running().done(`${buyer.name}: its order`);
-			const no = DECLINE[0]!;
-			const p2 = await s.open(no.member, '/home', 'reads the offer it said not this time to');
-			await expect(main(p2)).toContainText(/not this time|Declined/i);
-			await running().done(`${no.name}: the offer it declined`);
+			await s.point(
+				main(page)
+					.getByText(/Tax invoice/)
+					.first(),
+				700
+			);
+			await running().done(`${buyer.name}: its order and its tax invoice`);
+			const p2 = await s.open(CLOSED_ON.member, `/offer/${HERO}`, 'reads the offer it did not order on');
+			const over = main(p2)
+				.getByText(/closed|ended|Expired/i)
+				.first();
+			if (
+				await over
+					.waitFor({ state: 'visible', timeout: 10_000 })
+					.then(() => true)
+					.catch(() => false)
+			)
+				await s.point(over, 800);
+			else
+				running().find('warning', `/offer/${HERO}`, `${CLOSED_ON.name}'s offer does not say the window closed on it`);
+			await running().done(`${CLOSED_ON.name}: the window closed before it ordered`);
 		}
 	},
 	{
@@ -679,7 +716,7 @@ const STEPS: Step[] = [
 test.describe.configure({ mode: 'serial' });
 
 // eslint-disable-next-line no-empty-pattern
-test('Munchly Chips Sad Path E2E: two kiranas buy, the rest decline, the packs destroyed at the godown', async ({}, info) => {
+test('Munchly Chips Sad Path E2E: two kiranas buy, the window closes on the rest, the packs destroyed at the godown', async ({}, info) => {
 	test.setTimeout(90 * 60_000);
 	const video = info.outputPath('recording.mp4');
 	const s = await Stage.open(
@@ -694,16 +731,14 @@ test('Munchly Chips Sad Path E2E: two kiranas buy, the rest decline, the packs d
 	mint(PEOPLE);
 	let error: string | undefined;
 	try {
-		// the two tablets and the phone signed in and fully drawn before anything is recorded
-		await s.ready([
-			{ who: 'priya', path: '/command' },
-			{ who: 'rakesh', path: '/home' },
-			{ who: 'neha', path: '/clients/munchly/agents' }
-		]);
+		// the three screens on their apps' sign-in screens, fully drawn; the recording starts before anyone signs in
+		await s.ready({ operator: 'workspace', distributor: 'workspace', phone: 'console' });
 		await s.record();
-		const from = process.env.E2E_FROM ? STEPS.findIndex((x) => x.id === process.env.E2E_FROM) : 0;
-		const to = process.env.E2E_UNTIL ? STEPS.findIndex((x) => x.id === process.env.E2E_UNTIL) : STEPS.length - 1;
-		for (const step of STEPS.slice(from, to + 1)) {
+		const at = (id: string) => STEPS.findIndex((x) => x.id === id);
+		const from = process.env.E2E_FROM ? at(process.env.E2E_FROM) : 1;
+		const to = process.env.E2E_UNTIL ? at(process.env.E2E_UNTIL) : STEPS.length - 1;
+		// the sign-ins always run first: a resumed run starts signed out too
+		for (const step of [STEPS[0]!, ...STEPS.slice(Math.max(from, 1), to + 1)]) {
 			if (Date.now() - minted > 40 * 60_000) {
 				mint(PEOPLE);
 				minted = Date.now();

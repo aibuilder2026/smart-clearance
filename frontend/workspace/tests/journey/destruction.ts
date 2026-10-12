@@ -24,8 +24,9 @@ const SIGNS = new Map([...DATA.matchAll(/name: "([^"]+)"[^{}]*?sign: "([a-z0-9-]
 
 /** the four sign the certificate in place (SC-183, option B): each Sign here opens the sheet, and the signer draws
  *  their signature on the pad (their strokes on file, the mouse following the pen), or types their name when there are
- *  none; `press` is how a person presses a button (the stage's own, on the recorded run) */
-export async function signCertificate(page: Page, scope: Locator, press = (l: Locator) => l.click()) {
+ *  none; `press` is how a person presses a button (the stage's own, on the recorded run), and `pen` the milliseconds
+ *  between a pen's points, so a recording shows each signature drawn as a hand draws it (0: as fast as it goes) */
+export async function signCertificate(page: Page, scope: Locator, press = (l: Locator) => l.click(), pen = 0) {
 	for (let i = 0; i < 4; i++) {
 		const here = scope.locator('.dz-here').first();
 		if (!(await here.count())) break;
@@ -43,10 +44,16 @@ export async function signCertificate(page: Page, scope: Locator, press = (l: Lo
 			for (const st of ink.strokes) {
 				const [x, y] = at(st[0]);
 				await page.mouse.move(x, y);
+				if (pen) await page.waitForTimeout(pen * 6);
 				await page.mouse.down();
-				for (const p of st.slice(1)) await page.mouse.move(...(at(p) as [number, number]), { steps: 2 });
+				for (const p of st.slice(1)) {
+					await page.mouse.move(...(at(p) as [number, number]), { steps: 2 });
+					if (pen) await page.waitForTimeout(pen);
+				}
 				await page.mouse.up();
 			}
+			// the signer looks at what they drew before they sign with it
+			if (pen) await page.waitForTimeout(700);
 		} else {
 			await press(sheet.getByRole('button', { name: 'Type the name instead' }));
 			await sheet.getByLabel(`Type your name: ${name}`).fill(name);
