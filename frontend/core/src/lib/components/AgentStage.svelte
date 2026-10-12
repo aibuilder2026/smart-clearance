@@ -111,6 +111,8 @@
 	};
 
 	const isBand = $derived(band ?? app.bp !== 'desktop');
+	// none on a phone held upright (SC-198): too tight to see the agents at work, so the sign-in is the form alone
+	const none = $derived(band == null && app.bp === 'phone' && app.h > app.w);
 	let ow = $state(0);
 	let oh = $state(0);
 	const stars: Star[] = $derived(ow && oh && !isBand ? agOrbit(ow, oh, false) : []);
@@ -187,7 +189,9 @@
 	<p class="sr-only" role="status">{held ? `${held.name}, ${AG_STOPS[held.stop].t}: ${held.did}.` : ''}</p>
 {/snippet}
 
-{#if isBand}
+{#if none}
+	<!-- a phone held upright: the form alone -->
+{:else if isBand}
 	<AgentAround {walk} {play} {words} />
 {:else}
 	<AgentField {walk} {stars} {orbit} {height} />

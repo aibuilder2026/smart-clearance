@@ -71,8 +71,8 @@ describe('the stage', () => {
 			flushSync();
 		}
 	};
-	const show = (width = 1440) => {
-		const r = render(GoldenHost, { props: { component: AgentStage, props: {}, width } });
+	const show = (width = 1440, height = 900) => {
+		const r = render(GoldenHost, { props: { component: AgentStage, props: {}, width, height } });
 		flushSync();
 		return r;
 	};
@@ -107,8 +107,13 @@ describe('the stage', () => {
 		flushSync();
 		expect(getByRole('button', { name: 'Play the agents' })).toBeTruthy();
 	});
+	it('leaves a phone held upright to the form alone (SC-198)', () => {
+		const { container } = show(390, 844);
+		expect(container.querySelector('.ag-field, .ag-pill, .ag-stage, .ag-around')).toBeNull();
+	});
 	it('stands round the card below desktops: a pill with Pause, the stops as a rail, the agents hidden from a reader (SC-196)', async () => {
-		const { container, getByRole, getAllByRole } = show(390);
+		// a phone held sideways keeps them round the card
+		const { container, getByRole, getAllByRole } = show(700, 390);
 		expect(container.querySelector('.ag-pill')).toBeTruthy();
 		expect(container.querySelector('.ag-stage')).toBeNull();
 		expect(container.querySelector('.ag-around')!.getAttribute('aria-hidden')).toBe('true');
