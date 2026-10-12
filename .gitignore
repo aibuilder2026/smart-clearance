@@ -95,3 +95,8 @@ design3/designs/SC-187/src/*
 
 # SC-187: the YouTube package ships; the poster's PNG original stays local
 design3/designs/SC-187/youtube/src/
+
+# SC-193: local copies of large media. landing-demo/ is the demo film's copy (its README, from SC-187, stays tracked);
+# playwright-automation-videos/ holds the journey suites' recordings and the sample data they upload
+landing-demo/
+playwright-automation-videos/
