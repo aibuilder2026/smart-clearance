@@ -15,7 +15,8 @@
 	// Outreach's scheme to the kiranas (SC-156, option A; screens/brand.jsx SchemeCard): the scheme as the shops see it,
 	// the figures, the offer window as one line filled by the time gone, four stops with their times, the cluster map
 	// and the latest orders as before, and the one push every shop got behind a button. What no shop takes moves to
-	// ExpireSoon when the window ends (SC-86)
+	// ExpireSoon when the window ends while the lot is still live (SC-86), and otherwise stays at the distributor's
+	// godown (SC-185)
 	let {
 		h,
 		c,
@@ -36,6 +37,9 @@
 		closed ? (h.offer!.closedAt ?? (filled && last ? last.at : h.offer!.closesAt) ?? null) : null
 	);
 	const left = $derived(line.units - units);
+	// the lot grew past what the plan gave it: the window's shortfall moved onto it (backend-api's close)
+	const lot = $derived(c.plan.lines.find((l) => l.id === 'expiresoon')?.units ?? 0);
+	const moved = $derived(!!h.listing && h.listing.units > lot);
 	const delivered = $derived(h.van.status === 'done');
 	const vanDate = $derived(c.van.date);
 	// the share of the window gone, from two same-day times where the source has no clock (the stub)
@@ -58,7 +62,7 @@
 				? `Delivered on ${possessive(first(c.dist.name))} van round, ${vanDate}: ${fmt.num(units)} packets to ${ordered} shops.`
 				: filled
 					? `Filled at ${closedAt}: ${ordered} of ${c.offered} shops took every packet, before the window closed.`
-					: `The window ended ${closedAt} with ${ordered} of ${c.offered} shops ordering ${fmt.num(units)}; the ${fmt.num(left)} left moved to ExpireSoon.`
+					: `The window ended ${closedAt} with ${ordered} of ${c.offered} shops ordering ${fmt.num(units)}; the ${fmt.num(left)} left ${moved ? 'moved to ExpireSoon' : `stayed at ${possessive(c.dist.name)} godown`}.`
 	);
 	const steps = $derived<[string, string | null | undefined | false][]>([
 		['Sent', sent && h.offer!.at],
