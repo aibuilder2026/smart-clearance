@@ -156,8 +156,12 @@ type Pane = {
 	lastFrame: number;
 };
 
-/** the people who keep a screen of their own; everyone else takes the phone */
+/** the people who keep a screen of their own (the chips' distributor by default); everyone else takes the phone */
 const HOLDS: Record<string, PaneId> = { priya: 'operator', rakesh: 'distributor' };
+/** a flow's own cast for the stage: who holds the two tablets, and who the phone signs in, as its caption says */
+export type Cast = { holds?: Record<string, PaneId>; phone?: string };
+const PHONE_NOTE =
+	'Each kirana, Agrawal Wholesale on ExpireSoon and Neha in the console sign in here as they are needed.';
 
 const initials = (name: string) =>
 	name
@@ -233,6 +237,8 @@ export class Stage {
 	private ended: Promise<void> | null = null;
 	/** the note on the sign-ins has been shown */
 	private told = false;
+	/** who holds the two tablets */
+	private holds = HOLDS;
 
 	private constructor(
 		private stageBrowser: Browser,
@@ -247,12 +253,12 @@ export class Stage {
 	}
 
 	/** opens the stage and its three screens, each on its app's sign-in screen; the recording starts with record() */
-	static async open(info: TestInfo, about: About, video: string): Promise<Stage> {
+	static async open(info: TestInfo, about: About, video: string, cast: Cast = {}): Promise<Stage> {
 		const stageBrowser = await chromium.launch({ headless: true, args: KEEP_DRAWING });
 		const paneBrowser = await chromium.launch({ headless: true, args: KEEP_DRAWING });
 		const ctx = await stageBrowser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 2 });
 		const stage = await ctx.newPage();
-		await stage.setContent(STAGE_HTML(about));
+		await stage.setContent(STAGE_HTML(about, cast.phone ?? PHONE_NOTE));
 		await stage.evaluate(() => document.fonts.ready);
 		let monitor: Page | null = null;
 		if (LIVE) {
@@ -268,6 +274,7 @@ export class Stage {
 			);
 		}
 		const s = new Stage(stageBrowser, paneBrowser, monitor, stage, info, about, video);
+		s.holds = cast.holds ?? HOLDS;
 		for (const id of Object.keys(PANES) as PaneId[]) await s.addPane(id);
 		s.timers.push(setInterval(() => void s.pump(), 50));
 		s.timers.push(setInterval(() => void s.watchdog(), 3000));
@@ -423,7 +430,7 @@ export class Stage {
 
 	/** the screen a person acts on: their own, or the phone */
 	paneOf(who: string): PaneId {
-		return HOLDS[who] ?? 'phone';
+		return this.holds[who] ?? 'phone';
 	}
 
 	/** who holds a screen, as its label names them */
@@ -881,7 +888,7 @@ const scr = (id: PaneId) => ({
 	h: PANES[id].viewport.height * PANES[id].scale
 });
 
-function STAGE_HTML(about: About) {
+function STAGE_HTML(about: About, phoneNote: string) {
 	const O = scr('operator');
 	const opH = O.h + 2 * TAB_BEZEL;
 	const x = {
@@ -972,7 +979,7 @@ ${col('operator')}
 ${col('distributor')}
 ${col(
 	'phone',
-	`<div class="note" style="width:${px(PHONE_COL)}">Each kirana, Agrawal Wholesale on ExpireSoon and Neha in the console sign in here as they are needed.</div><div class="note" style="width:${px(PHONE_COL)}">Everyone signs in on the app's own screen. The password check is answered with that person's own session, so no password is typed: the field takes a stand-in.</div>`
+	`<div class="note" style="width:${px(PHONE_COL)}">${esc(phoneNote)}</div><div class="note" style="width:${px(PHONE_COL)}">Everyone signs in on the app's own screen. The password check is answered with that person's own session, so no password is typed: the field takes a stand-in.</div>`
 )}
 <div id="callouts"></div>
 <div id="narr"><div id="chapter"></div><div class="cap"><span id="cap-who"></span><span id="cap-role"></span></div><ol id="log"></ol><div id="cap-did"></div><div id="stats"></div></div>
