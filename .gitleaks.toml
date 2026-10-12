@@ -10,3 +10,13 @@ useDefault = true
 description = "the waste agencies' pollution-board authorisations"
 regexTarget = "secret"
 regexes = ['''^[A-Z]{1,5}PCB/SWM/[A-Z]{3}/\d{4}$''']
+
+# The demo film's keyframe names (SC-187, design3/designs/SC-187/src/film.json): a clip segment's `key` is the name of
+# the keyframe it was rendered from, such as "k51-brand-office". The generic-api-key rule reads a `key` field with a
+# value like that as a credential. Only on that file, and only values of that shape.
+[[allowlists]]
+description = "the demo film's keyframe names in its timeline"
+condition = "AND"
+regexTarget = "secret"
+regexes = ['''^k\d{2}-[a-z0-9-]+$''']
+paths = ['''film\.json$''']  # a path is relative to the scan's root, so the file's name alone
