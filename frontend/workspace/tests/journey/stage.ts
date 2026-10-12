@@ -116,7 +116,7 @@ const CURSOR = `(() => {
 		c = document.createElement('div');
 		c.id = 'e2e-cursor';
 		c.setAttribute('aria-hidden', 'true');
-		c.innerHTML = '<svg width="26" height="26" viewBox="0 0 26 26"><path d="M4 2.5v18.2l5-4.5 3.3 7.3 3.2-1.4-3.2-7.2 6.9-.3z" fill="#141a17" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>';
+		c.innerHTML = '<svg width="31" height="31" viewBox="0 0 26 26" style="transform-origin:4px 3px;transition:transform .14s ease"><path d="M4 2.5v18.2l5-4.5 3.3 7.3 3.2-1.4-3.2-7.2 6.9-.3z" fill="#141a17" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>';
 		c.style.cssText = 'position:fixed;left:0;top:0;z-index:2147483647;pointer-events:none;transition:transform ${GLIDE - 60}ms cubic-bezier(.25,.7,.2,1);filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))';
 		const p = at() || [innerWidth * 0.55, innerHeight * 0.62];
 		c.style.transform = 'translate(' + p[0] + 'px,' + p[1] + 'px)';
@@ -134,12 +134,17 @@ const CURSOR = `(() => {
 	addEventListener('mousedown', (e) => {
 		// no ripple for a pen touching a signature pad: it draws
 		if (e.target instanceof Element && e.target.closest('.signpad')) return;
-		const r = document.createElement('div');
-		r.setAttribute('aria-hidden', 'true');
-		r.style.cssText = 'position:fixed;left:' + (e.clientX - 22) + 'px;top:' + (e.clientY - 22) + 'px;width:44px;height:44px;border-radius:50%;border:3px solid #f5c542;background:rgba(245,197,66,.28);z-index:2147483646;pointer-events:none;transform:scale(.35);opacity:1;transition:transform .5s ease-out,opacity .6s ease-out';
-		document.documentElement.appendChild(r);
-		requestAnimationFrame(() => requestAnimationFrame(() => { r.style.transform = 'scale(1.5)'; r.style.opacity = '0'; }));
-		setTimeout(() => r.remove(), 800);
+		// the arrow dips as it presses, and two rings spread from where it landed
+		const arrow = make().firstChild;
+		if (arrow) { arrow.style.transform = 'scale(.82)'; setTimeout(() => (arrow.style.transform = ''), 170); }
+		[0, 130].forEach((delay, i) => setTimeout(() => {
+			const r = document.createElement('div');
+			r.setAttribute('aria-hidden', 'true');
+			r.style.cssText = 'position:fixed;left:' + (e.clientX - 26) + 'px;top:' + (e.clientY - 26) + 'px;width:52px;height:52px;border-radius:50%;border:3px solid #f5c542;background:' + (i ? 'transparent' : 'rgba(245,197,66,.32)') + ';z-index:2147483646;pointer-events:none;transform:scale(.3);opacity:1;transition:transform .55s ease-out,opacity .65s ease-out';
+			document.documentElement.appendChild(r);
+			requestAnimationFrame(() => requestAnimationFrame(() => { r.style.transform = 'scale(1.6)'; r.style.opacity = '0'; }));
+			setTimeout(() => r.remove(), 900);
+		}, delay));
 	}, true);
 })();`;
 
@@ -158,8 +163,21 @@ type Pane = {
 
 /** the people who keep a screen of their own (the chips' distributor by default); everyone else takes the phone */
 const HOLDS: Record<string, PaneId> = { priya: 'operator', rakesh: 'distributor' };
+/** someone on the stage who never signs in: a visitor reading the landing page (SC-191) */
+export type Guest = { name: string; role: string; org?: string };
 /** a flow's own cast for the stage: who holds the two tablets, and who the phone signs in, as its caption says */
-export type Cast = { holds?: Record<string, PaneId>; phone?: string };
+export type Cast = {
+	holds?: Record<string, PaneId>;
+	phone?: string;
+	/** people who never sign in, by id */
+	guests?: Record<string, Guest>;
+	/** the app a person works in, where it is not the workspace (Neha's is the console) */
+	apps?: Record<string, App>;
+	/** how the stage names a person's role, beside the journey's ROLES */
+	roles?: Record<string, string>;
+	/** the app whose address the stage's bar names as the one live (the workspace's by default) */
+	host?: App;
+};
 const PHONE_NOTE =
 	'Each kirana, Agrawal Wholesale on ExpireSoon and Neha in the console sign in here as they are needed.';
 
@@ -172,8 +190,6 @@ const initials = (name: string) =>
 		.map((w) => w[0]!.toUpperCase())
 		.join('');
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-const appOf = (who: string): App => (who === 'neha' ? 'console' : 'workspace');
-const roleOf = (who: string) => ROLES[who] ?? `Kirana · ${person(who).org}`;
 
 /** a run whose caption, step log and stills are the stage's */
 class StageRun extends Run {
@@ -221,6 +237,12 @@ export async function loaded(page: Page, timeout = 12_000) {
 		.catch(() => {});
 }
 
+/** the landing page's loader has lifted (SC-35, SC-131) and gone: the page is no longer busy behind it */
+export async function lifted(page: Page) {
+	await expect(page.locator('[data-loader-busy]')).toHaveCount(0, { timeout: 30_000 });
+	await page.waitForFunction(() => !document.querySelector('.loader'), null, { timeout: 15_000 }).catch(() => {});
+}
+
 export class Stage {
 	readonly run: Run;
 	private panes = {} as Record<PaneId, Pane>;
@@ -239,6 +261,8 @@ export class Stage {
 	private told = false;
 	/** who holds the two tablets */
 	private holds = HOLDS;
+	/** the flow's cast: its guests, the apps its people work in, their roles */
+	private crew: Cast = {};
 
 	private constructor(
 		private stageBrowser: Browser,
@@ -258,7 +282,7 @@ export class Stage {
 		const paneBrowser = await chromium.launch({ headless: true, args: KEEP_DRAWING });
 		const ctx = await stageBrowser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 2 });
 		const stage = await ctx.newPage();
-		await stage.setContent(STAGE_HTML(about, cast.phone ?? PHONE_NOTE));
+		await stage.setContent(STAGE_HTML(about, cast.phone ?? PHONE_NOTE, cast.host ?? 'workspace'));
 		await stage.evaluate(() => document.fonts.ready);
 		let monitor: Page | null = null;
 		if (LIVE) {
@@ -275,6 +299,7 @@ export class Stage {
 		}
 		const s = new Stage(stageBrowser, paneBrowser, monitor, stage, info, about, video);
 		s.holds = cast.holds ?? HOLDS;
+		s.crew = cast;
 		for (const id of Object.keys(PANES) as PaneId[]) await s.addPane(id);
 		s.timers.push(setInterval(() => void s.pump(), 50));
 		s.timers.push(setInterval(() => void s.watchdog(), 3000));
@@ -364,13 +389,17 @@ export class Stage {
 			.catch(() => {});
 	}
 
-	/** every screen on its app's sign-in screen, fully drawn, before anything is recorded */
+	/** every screen on its app's sign-in screen (the landing page with its loader lifted), fully drawn, before anything
+	 *  is recorded */
 	async ready(apps: Record<PaneId, App>) {
 		for (const id of Object.keys(apps) as PaneId[]) {
 			const page = this.panes[id].page;
 			await page.goto(ORIGIN[apps[id]] + '/');
-			await settled(page);
-			await expect(page.locator('#si-email')).toBeVisible({ timeout: 30_000 });
+			if (apps[id] === 'site') await lifted(page);
+			else {
+				await settled(page);
+				await expect(page.locator('#si-email')).toBeVisible({ timeout: 30_000 });
+			}
 			await loaded(page);
 			await this.address(id);
 		}
@@ -424,6 +453,22 @@ export class Stage {
 		return Object.values(this.panes).map((p) => p.page);
 	}
 
+	/** a person on the stage: a guest of the flow's, or someone with a session */
+	private personOf(who: string): { name: string; org: string } {
+		const g = this.crew.guests?.[who];
+		return g ? { name: g.name, org: g.org ?? '' } : person(who);
+	}
+
+	/** the app a person works in */
+	appOf(who: string): App {
+		return this.crew.apps?.[who] ?? (who === 'neha' ? 'console' : 'workspace');
+	}
+
+	/** how the stage names a person's role */
+	private roleOf(who: string) {
+		return this.crew.guests?.[who]?.role ?? this.crew.roles?.[who] ?? ROLES[who] ?? `Kirana · ${person(who).org}`;
+	}
+
 	pane(id: PaneId) {
 		return this.panes[id].page;
 	}
@@ -435,8 +480,13 @@ export class Stage {
 
 	/** who holds a screen, as its label names them */
 	private async hold(id: PaneId, who: string | null, app: App | null) {
-		const p = who ? person(who) : null;
-		const org = !p || who === 'neha' || ROLES[who!] === undefined || who === 'agrawal' ? '' : p.org;
+		const p = who ? this.personOf(who) : null;
+		const guest = who ? this.crew.guests?.[who] : undefined;
+		const org = guest
+			? (guest.org ?? '')
+			: !p || who === 'neha' || ROLES[who!] === undefined || who === 'agrawal'
+				? ''
+				: p.org;
 		await this.stage.evaluate(
 			([id, ini, name, sub]) => {
 				document.getElementById(`ini-${id}`)!.textContent = ini;
@@ -447,7 +497,10 @@ export class Stage {
 				id,
 				p ? initials(p.name) : '·',
 				p ? p.name : 'Signed out',
-				p ? [roleOf(who!), org].filter(Boolean).join(' · ') + (app === 'console' ? ' · console' : '') : PANES[id].label
+				p
+					? [this.roleOf(who!), org].filter(Boolean).join(' · ') +
+						(app === 'console' && !guest && !/console/.test(this.roleOf(who!)) ? ' · console' : '')
+					: PANES[id].label
 			] as const
 		);
 	}
@@ -465,15 +518,16 @@ export class Stage {
 	/** someone opens an app at a path on their screen, the caption naming them and what they are about to do. A screen
 	 *  already theirs moves within the app, as a click would; a phone handed over is signed out of the workspace by the
 	 *  one who had it, and the next person signs in on the app's own screen */
-	async open(who: string, path: string, did: string, app: App = appOf(who)) {
+	async open(who: string, path: string, did: string, app: App = this.appOf(who)) {
 		const id = this.paneOf(who);
 		const pane = this.panes[id];
-		const p = person(who);
-		await this.run.act(p.name, roleOf(who), did);
+		const p = this.personOf(who);
+		await this.run.act(p.name, this.roleOf(who), did);
 		await this.active(id);
 		if (pane.who !== who || pane.app !== app) await this.handOver(pane, who, app);
 		await this.go(pane.page, app, path);
-		await settled(pane.page);
+		if (app === 'site') await lifted(pane.page);
+		else await settled(pane.page);
 		if (app === 'workspace') await expect(pane.page.locator('#main')).toBeVisible();
 		await loaded(pane.page);
 		await this.address(id);
@@ -483,6 +537,13 @@ export class Stage {
 	/** the screen passes to someone: whoever is in the workspace on it signs out first, then the next person signs in
 	 *  to their app (or finds it still signed in, the console on a phone) */
 	private async handOver(pane: Pane, who: string, app: App) {
+		if (app === 'site') {
+			// the landing page: nobody signs in there, so nothing to hand over but the screen
+			pane.who = who;
+			pane.app = app;
+			await this.hold(pane.id, who, app);
+			return;
+		}
 		if (pane.signedIn.workspace && pane.signedIn.workspace !== who) await this.signOut(pane);
 		if (pane.signedIn[app] === who) {
 			// still signed in on that app's address: the phone switches to it
@@ -562,8 +623,12 @@ export class Stage {
 
 	/** moves within the app as a link would (SvelteKit's router takes the click), or loads the address if it does not */
 	private async go(page: Page, app: App, path: string) {
-		const want = (u: URL) => u.pathname + u.search === path;
+		const want = (u: URL) => u.origin === ORIGIN[app] && u.pathname + u.search === path;
 		if (want(new URL(page.url()))) return;
+		if (new URL(page.url()).origin !== ORIGIN[app]) {
+			await page.goto(ORIGIN[app] + path);
+			return;
+		}
 		await page.evaluate((p) => {
 			const a = document.createElement('a');
 			a.href = p;
@@ -667,8 +732,9 @@ export class Stage {
 		} else await page.waitForTimeout(GLIDE + rest);
 	}
 
-	/** an element read with a note: the screen scrolls to it, the rest of its screen dims, a ring lights it, and a card
-	 *  beside it says why (a tag, a title and a sentence or two), held long enough to read, then gone */
+	/** an element read with a note: the screen scrolls to it, the rest of its screen dims, a ring lights it, and a banner
+	 *  slides onto that screen, as a WhatsApp message arrives (SC-191), saying why (a tag, a title and a sentence or two),
+	 *  held long enough to read, then gone */
 	async spot(target: Locator, note: Note, hold?: number) {
 		const page = target.page();
 		if (!(await this.reveal(target))) return;
@@ -707,27 +773,31 @@ export class Stage {
 					fx.appendChild(ring);
 					requestAnimationFrame(() => ring.classList.add('on'));
 					if (!note) return;
-					// the card beside the element: under it where the stage has room, else over it, its arrow on the element
+					// the note arrives on that screen as a WhatsApp message does: a banner slides down from the screen's top, or
+					// up from its foot when what is read sits under the top, its message in a chat bubble with the time and ticks
 					const card = document.createElement('div');
-					card.className = 'callout';
+					card.className = 'wa';
 					card.innerHTML =
-						'<div class="co-head"><span class="co-tag"></span><b></b></div><p></p><i class="co-arrow"></i>';
-					card.querySelector('.co-tag')!.textContent = note.tag;
+						'<div class="wa-head"><span class="wa-ic"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M12 3.2a8.6 8.6 0 0 0-7.4 13l-1.2 4.4 4.5-1.2A8.6 8.6 0 1 0 12 3.2z" fill="#fff"/><path d="M9.2 7.9c.2-.4.5-.4.7-.4h.6c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.4.6c-.1.2-.2.3 0 .6.5.9 1.3 1.7 2.3 2.2.3.1.4.1.6-.1l.6-.7c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.2.4.4 0 .5-.2 1.3-1 1.7-.6.3-1.5.4-3.2-.3a8.4 8.4 0 0 1-3.9-3.6c-.7-1.2-.7-2.1-.4-2.8z" fill="#25d366"/></svg></span><span class="wa-app">Smart-Clearance</span><span class="wa-tag"></span><span class="wa-now">now</span></div>' +
+						'<div class="wa-bubble"><b></b><p></p><span class="wa-meta"><span class="wa-t"></span><svg viewBox="0 0 18 11" width="16" height="10"><path d="M1 5.6l3 3L11.4 1M6.6 8.6l.4.4L14.4 1.6" fill="none" stroke="#53bdeb" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>';
+					card.querySelector('.wa-tag')!.textContent = note.tag;
 					card.querySelector('b')!.textContent = note.title;
 					card.querySelector('p')!.textContent = note.text;
+					card.querySelector('.wa-t')!.textContent = new Date().toLocaleTimeString('en-GB', {
+						hour: '2-digit',
+						minute: '2-digit'
+					});
+					const bw = Math.min(scr.width - 20, 460);
+					card.style.width = `${bw}px`;
 					document.getElementById('callouts')!.appendChild(card);
-					const cw = card.offsetWidth,
-						ch = card.offsetHeight;
-					const ex = scr.left + x,
-						ey = scr.top + y;
-					const below = ey + h + 16 + ch < innerHeight - 10;
-					const top = below ? ey + h + 16 : Math.max(60, ey - ch - 16);
-					const left = Math.min(innerWidth - cw - 12, Math.max(12, ex + Math.min(w, 220) / 2 - 40));
+					const ch = card.offsetHeight;
+					const left = scr.left + (scr.width - bw) / 2;
+					// from the top, unless the banner would cover what is read and the foot has room
+					const fromTop = y > ch + 22 || scr.height - (y + h) < ch + 22;
+					const top = fromTop ? scr.top + 10 : scr.bottom - ch - 10;
 					Object.assign(card.style, { left: `${left}px`, top: `${top}px` });
-					card.classList.add(below ? 'below' : 'above');
-					const arrow = card.querySelector('.co-arrow') as HTMLElement;
-					arrow.style.left = `${Math.min(cw - 28, Math.max(16, ex + Math.min(w, 220) / 2 - left - 7))}px`;
-					requestAnimationFrame(() => card.classList.add('on'));
+					card.classList.add(fromTop ? 'down' : 'up');
+					requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('on')));
 				},
 				[pane.id, box, vp.width, note ?? null] as const
 			)
@@ -738,7 +808,7 @@ export class Stage {
 	private async unring() {
 		await this.stage
 			.evaluate(() => {
-				for (const el of document.querySelectorAll('.ring, .callout')) {
+				for (const el of document.querySelectorAll('.ring, .wa')) {
 					el.classList.remove('on');
 					setTimeout(() => el.remove(), 320);
 				}
@@ -888,7 +958,7 @@ const scr = (id: PaneId) => ({
 	h: PANES[id].viewport.height * PANES[id].scale
 });
 
-function STAGE_HTML(about: About, phoneNote: string) {
+function STAGE_HTML(about: About, phoneNote: string, host: App) {
 	const O = scr('operator');
 	const opH = O.h + 2 * TAB_BEZEL;
 	const x = {
@@ -962,18 +1032,22 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 .ring.dim{box-shadow:0 0 0 3px rgba(245,197,66,.2),0 0 22px rgba(245,197,66,.32),0 0 0 2400px rgba(7,12,10,.46)}
 .ring.on{opacity:1;transform:none}
 #callouts{position:absolute;inset:0;pointer-events:none;z-index:20}
-.callout{position:absolute;width:340px;background:rgba(13,21,18,.97);border:1px solid #3a5247;border-radius:14px;padding:13px 16px 14px;box-shadow:0 18px 44px rgba(0,0,0,.5),0 0 0 1px rgba(245,197,66,.06);opacity:0;transform:translateY(8px);transition:opacity .3s ease,transform .42s cubic-bezier(.22,1,.36,1)}
-.callout.above{transform:translateY(-8px)}
-.callout.on{opacity:1;transform:none}
-.co-head{display:flex;align-items:center;gap:9px;margin-bottom:7px}
-.co-tag{flex:none;font:600 10px/1 'Geist Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#13201a;background:#f5c542;border-radius:6px;padding:4px 7px 3px}
-.callout b{font:600 14.5px/1.25 Geist;color:#f2f6f3;letter-spacing:-.005em}
-.callout p{font:400 12.5px/1.5 Geist;color:#c3d3ca;margin:0}
-.co-arrow{position:absolute;width:13px;height:13px;background:rgba(13,21,18,.97);border-left:1px solid #3a5247;border-top:1px solid #3a5247;transform:rotate(45deg)}
-.callout.below .co-arrow{top:-7.5px}
-.callout.above .co-arrow{bottom:-7.5px;transform:rotate(225deg)}
+.wa{position:absolute;background:rgba(247,248,247,.97);border-radius:20px;padding:10px 12px 12px;color:#111b21;box-shadow:0 18px 46px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.18);opacity:0;transition:opacity .26s ease,transform .52s cubic-bezier(.2,1.25,.35,1)}
+.wa.down{transform:translateY(-26px) scale(.97)}
+.wa.up{transform:translateY(26px) scale(.97)}
+.wa.on{opacity:1;transform:none}
+.wa-head{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.wa-ic{flex:none;width:22px;height:22px;border-radius:6px;background:#25d366;display:grid;place-items:center}
+.wa-app{font:600 11px/1 Geist;color:#54656f;letter-spacing:.04em;text-transform:uppercase}
+.wa-tag{flex:none;font:600 9.5px/1 'Geist Mono',monospace;letter-spacing:.07em;text-transform:uppercase;color:#075e54;background:#d9fdd3;border:1px solid #b5e8ad;border-radius:5px;padding:3px 6px 2px}
+.wa-now{margin-left:auto;font:400 11px Geist;color:#667781}
+.wa-bubble{position:relative;margin-left:9px;background:#d9fdd3;border-radius:0 11px 11px 11px;padding:8px 11px 19px;box-shadow:0 1px .5px rgba(11,20,26,.13)}
+.wa-bubble::before{content:'';position:absolute;left:-8px;top:0;border-right:8px solid #d9fdd3;border-bottom:11px solid transparent}
+.wa-bubble b{display:block;font:600 14px/1.3 Geist;color:#111b21;letter-spacing:-.005em;margin-bottom:3px}
+.wa-bubble p{font:400 12.5px/1.48 Geist;color:#1f2c33;margin:0}
+.wa-meta{position:absolute;right:9px;bottom:4px;display:flex;align-items:center;gap:3px;font:400 10.5px Geist;color:#667781}
 </style></head><body>
-<div id="bar"><span class="mark">S</span><div><h1>${esc(about.flow)}</h1><p>${esc(about.batch)} · ${PROD ? `live on production: ${esc(new URL(ORIGIN.workspace).host)}` : "live on this machine's stack"}</p></div>
+<div id="bar"><span class="mark">S</span><div><h1>${esc(about.flow)}</h1><p>${esc(about.batch)} · ${PROD ? `live on production: ${esc(new URL(ORIGIN[host]).host)}` : "live on this machine's stack"}</p></div>
 <span class="grow"></span><span id="step"></span><span class="rec"><i></i>REC</span><span id="clock">00:00</span></div>
 ${col('operator')}
 ${col('distributor')}

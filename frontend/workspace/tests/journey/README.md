@@ -290,6 +290,51 @@ E2E_FROM=staff E2E_UNTIL=papers corepack pnpm test:journey:mango-stage   # part 
 
 Its run of 12 Oct on production is in `runs/2026-10-12-prod-mango/`.
 
+## Admin and console E2E
+
+The platform's own side, on the same stage (SC-191), `admin-console.journey.ts`: the landing page and the console, from
+a prospect's demo request to a configured client, and the dashboards. It touches no batch and never resets the journey,
+but **each run sets up a new client, which the console cannot delete**: the company is the first of the suite's
+`COMPANIES` that is not a client yet (`E2E_COMPANY` names one).
+
+**The screens:**
+
+- the landscape tablet: Neha Kulkarni, a Super admin, opens smartclearance.web.app, presses Console in its bar, and
+  signs in on the console's own screen;
+- the portrait tablet: a prospect, Ritu Malhotra, reading the landing page, who signs in nowhere (a guest of the stage's
+  cast, `Cast.guests`);
+- the phone: Megha Bava, in Support, signed in to the console. Her session is minted by address
+  (`sessions.sh megha=megha.bava@smartclearance.example`), as the synthetic world's staff have hydrate's uids.
+
+**The journey:**
+
+- the prospect reads the landing page (the statement, the agents at work, the ledger, the workspace, the plans) and
+  books a demo for the company;
+- the request reaches the console: Neha's Overview and Megha's phone both list it;
+- Neha presses Set up and walks New client's seven steps: the company, its address and staff domain, its supply chain
+  (through distributors, destroyed at the godown), its exits, the agents' first autonomy (Standard), its admin (the
+  prospect) and the plan (Pilot); the client opens on its Supply chain tab, its first stock export next, and Megha's
+  Clients lists it;
+- Neha configures its agents: the Watcher's quick-commerce gates, the Lister's reserve, the Negotiator on Act, the
+  approval always on; reads its channels and rules; invites its approver; moves it to Growth;
+- Megha tries Enterprise on her phone and is refused: only a Super admin changes a plan;
+- Neha reads the client's audit log, every line in her name;
+- Neha monitors the Overview: the figures, Food by day (90 days, a day's tooltip, the table), Agents at work (a stop
+  filtering the batches), every client's batches searched and paged, Needs attention; Megha follows them on her phone;
+  Munchly Foods' live agents with their scheduled runs (nothing is fired);
+- the new client among the clients.
+
+**The notes** arrive as WhatsApp-style banners on the screen being read (stage.ts `spot`, SC-191): the app's mark, its
+name and the note's tag, then the note in a chat bubble with the time and ticks, sliding down from the screen's top (or
+up from its foot when what is read sits under the top), while a ring lights what is read and the rest of that screen
+dims. Every click shows: the arrow dips and two rings spread where it lands.
+
+```sh
+corepack pnpm test:journey:admin                                   # on this machine's stack, with the landing page on :5173
+E2E_TARGET=prod corepack pnpm test:journey:admin                   # on production
+E2E_COMPANY="Nilgiri Foods" E2E_FROM=agents corepack pnpm test:journey:admin   # part of it, on a client already set up
+```
+
 ## Before a run
 
 - backend-api on :8000 (`backend-api/scripts/dev.sh`), on a world with Munchly's live workspace (`hydrate.sh --reset`,

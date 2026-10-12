@@ -6,8 +6,12 @@ app's own browser key and hands the session to the page, as the app's own sign-i
   password is handled, typed or printed. A token is good for an hour, and the session it starts refreshes itself.
 - The people are the journey's members (reference/journey.json) and Neha, the console's staff, by member id; the uids
   are the ones hydrate gives them (identity.synthetic_uid). Nothing reads the database.
+- Another of the console's staff is named as id=email (SC-191): the synthetic world's staff are hydrate's too, on the
+  staff email domain, so their uid follows from the address, and their name from its local part. Only an address on
+  the staff email domain is taken.
 
   backend-api/scripts/sessions.sh priya rakesh neha …     JSON on stdout: {id: {uid, email, name, role, token}}
+  backend-api/scripts/sessions.sh megha=megha.bava@smartclearance.example    a staff member by address
   backend-api/scripts/sessions.sh --all                    every member and Neha
 """
 
@@ -40,13 +44,25 @@ def people() -> dict[str, dict[str, str]]:
     return out
 
 
+def staff(arg: str) -> tuple[str, dict[str, str]] | None:
+    """a staff member named as id=email, on the staff email domain; None for anything else"""
+    who, _, email = arg.partition("=")
+    domain = get_settings().staff_email_domain
+    if not who or not email.lower().endswith("@" + domain.lower()):
+        return None
+    name = " ".join(part.capitalize() for part in email.split("@")[0].replace("-", ".").split(".") if part)
+    return who, {"email": email, "name": name, "role": "staff", "org": "Smart-Clearance", "uid": synthetic_uid(email)}
+
+
 def main(argv: list[str] | None = None) -> None:
     p = argparse.ArgumentParser(prog="sc-sessions", description=__doc__.split("\n\n")[0])
-    p.add_argument("who", nargs="*", help="member ids (neha for the console's staff)")
+    p.add_argument("who", nargs="*", help="member ids (neha for the console's staff), or id=email for other staff")
     p.add_argument("--all", action="store_true", help="every member and Neha")
     a = p.parse_args(argv)
     everyone = people()
-    who = list(everyone) if a.all else a.who
+    named = [s for s in (staff(w) for w in a.who if "=" in w) if s]
+    everyone.update(dict(named))
+    who = list(everyone) if a.all else [w.partition("=")[0] if "=" in w else w for w in a.who]
     unknown = [w for w in who if w not in everyone]
     if not who or unknown:
         raise SystemExit(f"sc-sessions: name people by member id ({', '.join(unknown) or 'none given'})")
