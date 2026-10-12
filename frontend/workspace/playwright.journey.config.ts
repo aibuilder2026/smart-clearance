@@ -19,10 +19,12 @@ import { defineConfig } from '@playwright/test';
 //   corepack pnpm test:journey:mango-stage          Munchly Mango E2E on three screens (SC-190): the Mango Drink's happy
 //                                                   path from a fresh journey, everyone signing in on screen, with the
 //                                                   stage's notes, recorded as one video (it resets the journey)
-//   corepack pnpm test:journey:admin                Admin and console E2E on three screens (SC-191): a prospect books a
-//                                                   demo on the landing page, Neha sets the company up as a client and
-//                                                   configures it, Support is refused a plan change, the dashboards
-//                                                   (each run adds a client; it never resets the journey)
+//   corepack pnpm test:journey:admin                Admin and console E2E on one laptop (SC-191, SC-197): the landing
+//                                                   page briefly, the dashboards, a company set up as a client from its
+//                                                   demo request and its agents configured (each run adds a client; it
+//                                                   never resets the journey)
+//   corepack pnpm test:journey:admin-tour           Admin and console tour (SC-199): the same in about a minute, with
+//                                                   green notes, on a client an earlier run set up (adds no client)
 //   corepack pnpm test:journey --headed             watch it run (E2E_SLOWMO=250 slows each action, in ms)
 //   corepack pnpm test:journey --ui                 Playwright's UI mode, step by step
 //
@@ -66,6 +68,7 @@ export default defineConfig({
 		{ name: 'Munchly Chips Sad Path E2E', testMatch: /munchly-chips-sad\.journey\.ts/ },
 		{ name: 'Munchly Mango Stage E2E', testMatch: /munchly-mango-stage\.journey\.ts/ },
 		// SC-191: the platform's own side, the landing page and the console, on the same stage
-		{ name: 'Admin Console E2E', testMatch: /admin-console\.journey\.ts/ }
+		{ name: 'Admin Console E2E', testMatch: /admin-console\.journey\.ts/ },
+		{ name: 'Admin Console Tour', testMatch: /admin-console-tour\.journey\.ts/ }
 	]
 });

@@ -387,6 +387,34 @@ Its one-laptop run on production (SC-197) is in `runs/2026-10-12-prod-admin-lapt
 up Shivalik Snacks (`runs/2026-10-12-prod-admin-detail/`), Nilgiri Foods (`runs/2026-10-12-prod-admin/`) and, on three
 screens, Aravalli Snacks.
 
+## Admin and console tour
+
+The same story in about a minute (SC-199), `admin-console-tour.journey.ts`, on one laptop. It covers:
+
+1. the landing page, briefly, and the bar's Console;
+2. the console's sign-in, its agents picked quickly, Neha signing in, and the Overview's figures;
+3. one client's agents configured:
+   - the pipeline;
+   - the Watcher's Blinkit gate;
+   - the Lister's reserve;
+   - the Negotiator's autonomy;
+   - the approval, always on.
+
+**The notes** are green cards beside what is read, with the tag and the title on one line and a caret pointing at it.
+The rings, numbers, clicks and the screen's outline are green too (the stage's `Cast.ink: 'green'` and
+`Cast.notes: 'card'`). Notes are held for about half as long (`Cast.pace`), and the sign-in's note on the password is
+left out (`Cast.quiet`).
+
+**What it changes:** it sets up no client. It configures one an earlier Admin and console E2E run set up (`E2E_CLIENT`,
+`kaveri` by default). Each setting moves between two values, so every run saves a change and writes its audit line.
+
+```sh
+corepack pnpm test:journey:admin-tour                       # on this machine's stack, with the landing page on :5173
+E2E_TARGET=prod corepack pnpm test:journey:admin-tour       # on production
+```
+
+Its run of 12 Oct on production is in `runs/2026-10-12-prod-admin-tour/`.
+
 ## Before a run
 
 - backend-api on :8000 (`backend-api/scripts/dev.sh`), on a world with Munchly's live workspace (`hydrate.sh --reset`,

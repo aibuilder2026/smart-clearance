@@ -46,6 +46,7 @@
 		"test:journey:sad": "corepack pnpm --filter @smart-clearance/workspace test:journey:sad",
 		"test:journey:mango-stage": "corepack pnpm --filter @smart-clearance/workspace test:journey:mango-stage",
 		"test:journey:admin": "corepack pnpm --filter @smart-clearance/workspace test:journey:admin",
+		"test:journey:admin-tour": "corepack pnpm --filter @smart-clearance/workspace test:journey:admin-tour",
 		"seed": "node scripts/seed.mjs",
 		"seed:check": "node scripts/seed.mjs --check",
 		"icons": "node scripts/icons.mjs",
