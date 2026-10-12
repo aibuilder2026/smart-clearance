@@ -1,0 +1,290 @@
+{
+  "note": "The nine voice-over lines of storyboard.md, one a scene, each split into its beats (the storyboard's sentences; a long sentence split at a colon). Each beat has the storyboard's `text` and the `tts` reading the voice gets: numbers in words, acronyms spelt where the voice would otherwise guess, ExpireSoon and Smart-Clearance as two words, a fragment cut at a colon given its own full stop. `at` is the scene's start in seconds, `length` its length. `voices` are the candidates vo.py synthesises, one folder each under vo/; a Gemini voice reads under `prompt` (the measured direction), or under `prompt_brisk` where its `prompt` says \"brisk\".",
+  "prompt": "Narrate as the voice of a polished corporate product film: warm, confident and measured, clear diction, a calm steady pace with natural pauses at commas and full stops, never sing-song, never rushed.",
+  "prompt_brisk": "Narrate as the voice of a polished corporate product film: warm, confident and assured, clear diction, a brisk but unhurried pace, light pauses at commas, never sing-song, never dragging.",
+  "voices": [
+    {
+      "id": "en-IN-Chirp3-HD-Kore",
+      "engine": "chirp",
+      "name": "en-IN-Chirp3-HD-Kore",
+      "rate": 1.0
+    },
+    {
+      "id": "en-IN-Chirp3-HD-Charon",
+      "engine": "chirp",
+      "name": "en-IN-Chirp3-HD-Charon",
+      "rate": 1.0
+    },
+    {
+      "id": "en-IN-Chirp3-HD-Kore-0.95",
+      "engine": "chirp",
+      "name": "en-IN-Chirp3-HD-Kore",
+      "rate": 0.95
+    },
+    {
+      "id": "en-IN-Chirp3-HD-Charon-0.95",
+      "engine": "chirp",
+      "name": "en-IN-Chirp3-HD-Charon",
+      "rate": 0.95
+    },
+    {
+      "id": "gemini-2.5-pro-tts-Kore",
+      "engine": "gemini",
+      "name": "Kore",
+      "model": "gemini-2.5-pro-tts",
+      "rate": 1.0
+    },
+    {
+      "id": "gemini-2.5-pro-tts-Kore-brisk",
+      "engine": "gemini",
+      "name": "Kore",
+      "model": "gemini-2.5-pro-tts",
+      "rate": 1.0,
+      "prompt": "brisk"
+    },
+    {
+      "id": "gemini-2.5-pro-tts-Kore-brisk-1.1",
+      "engine": "gemini",
+      "name": "Kore",
+      "model": "gemini-2.5-pro-tts",
+      "rate": 1.1,
+      "prompt": "brisk"
+    },
+    {
+      "id": "gemini-2.5-pro-tts-Charon",
+      "engine": "gemini",
+      "name": "Charon",
+      "model": "gemini-2.5-pro-tts",
+      "rate": 1.0
+    }
+  ],
+  "lines": [
+    {
+      "n": 1,
+      "scene": "The problem",
+      "at": 0,
+      "length": 11,
+      "beats": [
+        {
+          "id": "1a",
+          "text": "Every FMCG brand in India has stock going short-dated.",
+          "tts": "Every FMCG brand in India has stock going short-dated."
+        },
+        {
+          "id": "1b",
+          "text": "Once a batch crosses the quick-commerce gates, nobody wants it.",
+          "tts": "Once a batch crosses the quick-commerce gates, nobody wants it."
+        },
+        {
+          "id": "1c",
+          "text": "It is written off, its GST credit reversed, and the food goes to a landfill.",
+          "tts": "It is written off, its GST credit reversed, and the food goes to a landfill."
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "scene": "Smart-Clearance",
+      "at": 11,
+      "length": 17,
+      "beats": [
+        {
+          "id": "2a",
+          "text": "Smart-Clearance is a software-as-a-service platform for manufacturers.",
+          "tts": "Smart Clearance is a software as a service platform for manufacturers."
+        },
+        {
+          "id": "2b",
+          "text": "Every brand gets its own workspace, and ten AI agents on Gemini walk each short-dated batch through nine stops, across five exits.",
+          "tts": "Every brand gets its own workspace, and ten AI agents on Gemini walk each short-dated batch through nine stops, across five exits."
+        },
+        {
+          "id": "2c",
+          "text": "A person says yes once.",
+          "tts": "A person says yes once."
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "scene": "Detect",
+      "at": 28,
+      "length": 18,
+      "beats": [
+        {
+          "id": "3a",
+          "text": "Meet Priya, supply chain at Munchly Foods.",
+          "tts": "Meet Priya, supply chain at Munchly Foods."
+        },
+        {
+          "id": "3b",
+          "text": "This morning the Watcher flagged two batches: Masala Chips at Rakesh Traders, Nagpur, and Mango Drink at Lakshmi Agencies, Hyderabad.",
+          "tts": "This morning the Watcher flagged two batches: Masala Chips at Rakesh Traders, Nagpur, and Mango Drink at Lakshmi Agencies, Hyderabad."
+        },
+        {
+          "id": "3c",
+          "text": "1,360 packs of chips will not sell in time: a 26,000-rupee write-off.",
+          "tts": "One thousand three hundred and sixty packs of chips will not sell in time: a twenty-six-thousand-rupee write-off."
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "scene": "Verify",
+      "at": 46,
+      "length": 13,
+      "beats": [
+        {
+          "id": "4a",
+          "text": "Vision asks the distributor for one photo, reads the batch, the dates and the MRP from the label, with its barcode, QR code and FSSAI licence, and matches them to the stock export.",
+          "tts": "Vision asks the distributor for one photo, reads the batch, the dates and the M R P from the label, with its barcode, QR code and F S S A I licence, and matches them to the stock export."
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "scene": "Value, decide, approve",
+      "at": 59,
+      "length": 18,
+      "beats": [
+        {
+          "id": "5a",
+          "text": "The Valuer prices five exits: ExpireSoon, the kirana cluster, the staff sale, a food bank, and the quick-commerce gates it can still pass.",
+          "tts": "The Valuer prices five exits: Expire Soon, the kirana cluster, the staff sale, a food bank, and the quick-commerce gates it can still pass."
+        },
+        {
+          "id": "5b",
+          "text": "The Router splits each batch and explains why.",
+          "tts": "The Router splits each batch and explains why."
+        },
+        {
+          "id": "5c",
+          "text": "Priya says yes, once.",
+          "tts": "Priya says yes, once."
+        },
+        {
+          "id": "5d",
+          "text": "Nothing executes before it.",
+          "tts": "Nothing executes before it."
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "scene": "Execute: five channels",
+      "at": 77,
+      "length": 35,
+      "beats": [
+        {
+          "id": "6a",
+          "text": "Outreach sends every kirana the offer in Hindi: buy ten, get two free.",
+          "tts": "Outreach sends every kirana the offer in Hindi: buy ten, get two free."
+        },
+        {
+          "id": "6b",
+          "text": "Thirty-one shops order, each with its own tax invoice.",
+          "tts": "Thirty-one shops order, each with its own tax invoice."
+        },
+        {
+          "id": "6c",
+          "text": "The Lister puts the lot on ExpireSoon, the Negotiator counters at fourteen-twenty, and Agrawal Wholesale takes 784 packs.",
+          "tts": "The Lister puts the lot on Expire Soon, the Negotiator counters at fourteen rupees twenty, and Agrawal Wholesale takes seven hundred and eighty-four packs."
+        },
+        {
+          "id": "6d",
+          "text": "The staff sale is recorded on its UPI receipt, read by Vision.",
+          "tts": "The staff sale is recorded on its U P I receipt, read by Vision."
+        },
+        {
+          "id": "6e",
+          "text": "86 packs of Mango Drink go to Feeding India, who issue their own receipt.",
+          "tts": "Eighty-six packs of Mango Drink go to Feeding India, who issue their own receipt."
+        },
+        {
+          "id": "6f",
+          "text": "And the van round delivers the scheme.",
+          "tts": "And the van round delivers the scheme."
+        }
+      ]
+    },
+    {
+      "n": 7,
+      "scene": "The papers, GST",
+      "at": 112,
+      "length": 30,
+      "beats": [
+        {
+          "id": "7a",
+          "text": "Paperwork lays out every paper as a signed PDF:",
+          "tts": "Paperwork lays out every paper as a signed PDF."
+        },
+        {
+          "id": "7b",
+          "text": "the tax invoice with its e-invoice and QR code, the credit note that makes the distributor whole, and the GST memo:",
+          "tts": "The tax invoice with its e-invoice and QR code, the credit note that makes the distributor whole, and the GST memo."
+        },
+        {
+          "id": "7c",
+          "text": "input credit kept on every pack sold, reversed only on what was given away, under section 17(5)(h).",
+          "tts": "Input credit kept on every pack sold, reversed only on what was given away, under section seventeen, sub-section five, clause h."
+        },
+        {
+          "id": "7d",
+          "text": "When packs cannot sell, the distributor destroys them against evidence:",
+          "tts": "When packs cannot sell, the distributor destroys them against evidence."
+        },
+        {
+          "id": "7e",
+          "text": "two photos checked by Vision, a certificate signed in place by the agency and two witnesses, and Priya's second yes.",
+          "tts": "Two photos checked by Vision, a certificate signed in place by the agency and two witnesses, and Priya's second yes."
+        }
+      ]
+    },
+    {
+      "n": 8,
+      "scene": "The ledger, ESG",
+      "at": 142,
+      "length": 24,
+      "beats": [
+        {
+          "id": "8a",
+          "text": "Impact posts the ledger.",
+          "tts": "Impact posts the ledger."
+        },
+        {
+          "id": "8b",
+          "text": "Money: 21,323 rupees recovered on the chips, 16,888 on the Mango Drink.",
+          "tts": "Money: twenty-one thousand three hundred and twenty-three rupees recovered on the chips, sixteen thousand eight hundred and eighty-eight on the Mango Drink."
+        },
+        {
+          "id": "8c",
+          "text": "GST: credit kept and reversed, invoice by invoice.",
+          "tts": "GST: credit kept and reversed, invoice by invoice."
+        },
+        {
+          "id": "8d",
+          "text": "Impact: 565 kilos kept out of landfill across the two batches, 1.4 tonnes of CO₂e avoided, 86 meals, and BRSR Principle 6 with its evidence, exported in a click.",
+          "tts": "Impact: five hundred and sixty-five kilos kept out of landfill across the two batches, one point four tonnes of C O two e avoided, eighty-six meals, and B R S R Principle six with its evidence, exported in a click."
+        }
+      ]
+    },
+    {
+      "n": 9,
+      "scene": "Everyone ends whole",
+      "at": 166,
+      "length": 14,
+      "beats": [
+        {
+          "id": "9a",
+          "text": "The brand recovers, the distributor ends whole, the kiranas earn, and the food bank serves.",
+          "tts": "The brand recovers, the distributor ends whole, the kiranas earn, and the food bank serves."
+        },
+        {
+          "id": "9b",
+          "text": "Try the guided demo, or sign in to the live prototype: the credentials and steps are in the deck.",
+          "tts": "Try the guided demo, or sign in to the live prototype: the credentials and steps are in the deck."
+        }
+      ]
+    }
+  ]
+}

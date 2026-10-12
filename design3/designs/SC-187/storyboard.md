@@ -145,6 +145,41 @@ callouts, the statements, the title, two end cards); 31 spoken beats.
   clips $0.48 (the music under its $10 cap); the voice and the listening checks a few cents. `cost.py` reports $43.82
   because it also counts the sidecars copied into `media/`.
 
+## The film, cut 2 (12 Oct 2026)
+
+`media/smart-clearance-demo.mp4`: 6 min 5.4 s (365.42 s), 1920 × 1080, 24 fps, H.264 (crf 24, 94 MB; the crf-18 master stays local in
+`src/build/`), AAC stereo at −14.4 LUFS integrated. `media/smart-clearance-demo-720p.mp4` is the same cut at 1280 × 720
+(40 MB). 10 scenes, 75 segments: 19 live-action shots (12 on Veo 3.1 from labelled keyframes; 2 on LTX 2.5
+Fast locally once the Vertex cap was reached, the Tally desk and the closing lane; 2 keyframes on the cut's own slow
+push where neither model kept the frame clean, the food bank's van and the landfill; 3 reused from SC-154's landing-page
+film; each cut to its clean seconds), 45 recordings of the working app, 2 stills and 9 cards (seven of them
+chapter cards); 110 overlays; 52 spoken beats.
+
+- **The scenes land at** 0:00 the problem, 0:33 Smart-Clearance, 1:21 Connect and detect, 1:52 Verify, 2:12 Value, decide, approve, 2:52 Execute: five exits, 3:45 the paperwork, 4:24 when it does not go as planned, 5:09 the ledger and ESG, 5:42 the close.
+- **The voice** is Gemini-TTS Kore at 1.08, 337 s of speech over 884 words, trimmed from the storyboard's 977 so the cut
+  lands near six minutes.
+- **Every clip was reviewed** before it was cut in, twice over: its contact sheet at one frame a second, and Gemini
+  watching it as a VFX supervisor (`src/eyes.py`: people, anatomy, objects, text, physics, a severity and a verdict).
+  Veo's clips all carry something in their second half (fingers blending on a carton, a packet morphing as it enters
+  a crate, a background worker popping in, a phone's screen swapping), so each is cut to the window the review passed,
+  slowed to fill its share of the scene, and motion-interpolated (`minterpolate`, mci) so a clip at half speed plays
+  smoothly instead of stepping. Three were re-rendered with calmer action (the storeroom, the dark store, the van), and
+  the van hallucinated a packet into the coordinator's free hand on three Veo takes before it went to LTX.
+- **Checks:** every keyframe and every clip as above; the whole cut's contact sheet at one frame every six seconds;
+  `ffprobe`; `ebur128`; every take of the voice transcribed back and checked to end cleanly; Gemini listening to the
+  whole mix (narration clear, the bed right and never masking a word, no gaps, the lift near the end, the first,
+  middle and last sentences transcribed back word for word).
+- **Found on the way:** `clips.sh` picked a superseded `-cut1` keyframe ahead of the current one by `ls` order, and
+  five clips went to Veo from the wrong frames ($8); a zsh glob that matched nothing aborted a whole `rm`, so the
+  trimmed beats' old takes were still in place for one run; the first full render had no stand-ins only because the
+  tour's last recordings landed minutes before their segments; `assemble.py` named its segment files by index, so
+  dropping one clip shifted every segment it reused onto its neighbour's file (a 360 s cut with the voice a shot
+  out from 0:33), and the files now carry the segment's name and length; Gemini-TTS cut one take off mid-word
+  ("the batch is verifi-"), which the whole-mix listen caught at 1:54, so every one of the 52 takes was then checked
+  on its own (transcribed, "ends cleanly?") and four were synthesised again.
+- **The spend:** $72.92 against the $75 cap (Veo 3.1 clips, Nano Banana 2 keyframes and retakes, Lyria's bed under its
+  $10); the voice and the listening and watching checks a few cents; the four LTX clips and the app recordings free.
+
 ## Rebuilding the film from a fresh clone
 
 Everything the cut needs is tracked: the clips in `media/`, the keyframes in `img/`, the app screens in `screens/`,
@@ -172,3 +207,147 @@ tracked copy otherwise. The voice takes and the music clips are not tracked: a r
    a new keyframe comes from `keyframes.sh` (Nano Banana 2, about $0.10), which skips keyframes that exist.
 5. To capture the screens afresh (a new run of both journeys, so the figures change): the live stack as `director.sh`
    expects it, then `./director.sh`; it writes `screens/`, `pushes.json` and `figures.json`. Then `film.py` and on.
+
+---
+
+# Cut 2 (12 Oct 2026, the maintainer's second brief)
+
+The first cut was reviewed and sent back with a new brief: six minutes; generic storytelling for the portal, with no
+character names and no figures quoted from the example; the agentic ecosystem and its USP for manufacturers,
+distributors and super stockists, with no comparisons; the working app recorded and shown with motion, pointers and
+real scrolling (the zoom-and-light-sweep is out); phones and tablets in the live-action scenes showing real content;
+Munchly-labelled cartons; all five exits and every feature, told generically ("the Paperwork agent helps you file your
+GST invoices and credit notes"); the story of a week that does not go to plan; a warmer, more refined female narrator;
+the PwC product films as the register. The $50 cap stands ($27 of it left after cut 1; the music's $10 cap stands).
+
+## How cut 2 differs
+
+| | Cut 1 | Cut 2 |
+| --- | --- | --- |
+| Length | 2:58 | about 6:00 |
+| The people | named in lower thirds | roles only ("The brand's supply planner", "The distributor") |
+| The figures | the run's, in callouts and narration | none quoted; the screens carry their own |
+| The screens | screenshots in a window with a light sweep, close-ins | the app recorded on a walk of both journeys (`tour.mjs`): the pointer glides, scrolls and opens things; the window rises in on a clean studio ground; pointers and feature labels appear beside the elements the voice names |
+| The phones | plain white screens | the app's own screens on them (Nano Banana keyframes from the app's screenshots), Munchly cartons |
+| The exits | five, briefly | five, each with its screens and papers, and the week that does not go to plan |
+| The voice | Gemini-TTS Kore, brisk | Gemini-TTS, a female voice directed for warmth and engagement, measured pace, one file a sentence |
+
+## The voice-over, cut 2
+
+One voice, one file a sentence (the beats). Generic throughout: no names, no figures.
+
+1. **The problem.**
+   1a. Every day, across India, good products run out of time before they run out of demand.
+   1b. A batch waits in a distributor's godown as its best-before date draws closer.
+   1c. Once it crosses the quick-commerce gates, the modern-trade shelves close to it.
+   1d. What usually follows is a write-off: the stock destroyed, the GST credit reversed, and perfectly good food in a landfill.
+   1e. The brand loses, the distributor loses, and the people who would have bought it never get the chance.
+2. **Smart-Clearance.**
+   2a. Smart-Clearance changes that.
+   2b. It is a software-as-a-service platform for manufacturers, built around an ecosystem of AI agents.
+   2c. Every brand gets its own workspace, set up for its supply chain: its distributors and super stockists, its quick-commerce gates, its exits and its rules.
+   2d. Inside it, ten agents work together along nine stops.
+   2e. They detect, verify, value, decide, execute, settle and report.
+   2f. And at the one moment that matters, a person says yes. Nothing moves before that.
+   2g. A platform of its own kind: the whole chain on one system, from the manufacturer to the distributor, the kirana, the buyer and the food bank, each acting in their own name.
+3. **Connect and Detect.**
+   3a. It starts with the stock data the distributor already has.
+   3b. The Data agent maps the stock export field by field, so nothing is keyed in twice.
+   3c. Every morning, the Watcher checks every batch at every distributor against its sell-through and the quick-commerce gates.
+   3d. When a batch will not sell in time, the supply planner is told on her phone, in plain words, with the write-off it would mean.
+   3e. The batch gets a page of its own: where it stands, and what comes next.
+4. **Verify.**
+   4a. Before anything is priced, the batch is verified.
+   4b. Vision asks the distributor for one photo of the carton label.
+   4c. It reads the batch number, the dates and the MRP, checks the barcode and the FSSAI licence, and matches them to the stock record.
+   4d. One photo from a phone, and the batch is real.
+5. **Value, decide, approve.**
+   5a. Now the Valuer prices every exit: the kirana cluster, the marketplace, the staff sale, the food bank, and the quick-commerce channels the batch can still reach.
+   5b. Each one is priced per unit, after costs and GST, against what destroying the stock would cost.
+   5c. The Router then splits the batch across the exits, and explains its reasoning in plain language.
+   5d. The plan lands on the planner's desk with everything she needs to decide.
+   5e. She approves it once. The approval is logged, with who, when, and the device.
+   5f. The distributor is told the plan in his own language, with a pause button, and the agents set off.
+6. **Execute: five exits.**
+   6a. Outreach sends the kirana cluster its scheme, in Hindi, straight to each shop's phone.
+   6b. A shop sees the offer and its margin, and orders in a tap. Each order gets its own tax invoice, in the distributor's name.
+   6c. The Lister puts the rest on the near-expiry marketplace, hidden from the brand's own territories.
+   6d. When a buyer bids, the Negotiator answers in the distributor's name, holds the reserve, and closes the deal. The buyer pays the token; the truck is loaded.
+   6e. At the godown, the staff sale opens, recorded on one consolidated UPI receipt that Vision reads and reconciles.
+   6f. Packs with enough shelf life go to a food bank, as sealed cartons: the pickup booked, the FSSAI checklist drafted, and the food bank's own receipt issued.
+   6g. And the van round delivers the scheme to every shop that ordered.
+7. **Settle: the paperwork.**
+   7a. This is where most clearances fall apart: the paperwork. Here, it is automatic.
+   7b. The Paperwork agent drafts the whole pack: the distributor's tax invoice, ready to issue from Tally with its e-invoice; the brand's credit note, so the distributor ends whole; the GST memo, with the input credit kept and reversed under section 17(5)(h); the FSSAI checklist; and an invoice to every kirana.
+   7c. Every paper is laid out as a signed PDF with the firm's stamp, and reviewed by the planner.
+   7d. The distributor sees his own papers on his own portal, ready to download.
+8. **When it does not go as planned.**
+   8a. Sometimes it does not go as planned. Some shops do not order, and stock is still left at the godown on expiry day.
+   8b. Smart-Clearance handles that too, fully automated.
+   8c. The distributor is asked to destroy the expired packs through an authorised agency, with the evidence: a photo before, a photo after, and the agency's certificate.
+   8d. Vision checks the photos against the batch and the count.
+   8e. The certificate of destruction is signed in place, on the distributor's screen: the agency's officer, two independent witnesses, and the distributor.
+   8f. The planner reviews the evidence and gives her second yes. The expiry credit note and the destruction certificate are issued, and the batch closes, its record complete.
+9. **Report.**
+   9a. When a batch closes, Impact posts the ledger.
+   9b. Money: what was recovered against the write-off, batch by batch, quarter by quarter.
+   9c. GST: the input credit kept and reversed, invoice by invoice, ready for the accountant.
+   9d. Impact: the food kept out of landfill, the CO₂e avoided, the packs donated, and the BRSR line with its evidence.
+   9e. And every batch keeps its record: the photos, the approvals, and the audit trail of every agent and person.
+10. **The close.**
+   10a. The brand recovers. The distributor ends whole. The kiranas earn. The food bank receives.
+   10b. One platform. Ten agents. One yes.
+   10c. Try the guided demo, or sign in to the live prototype: the credentials and steps are in the deck.
+
+## The scenes, cut 2
+
+| # | Chapter | Live action | The app, recorded (tour.mjs) | Over it |
+| --- | --- | --- | --- | --- |
+| 1 | The problem | the distributor reading a Munchly carton's date; the Hyderabad godown; a dark-store shelf being cleared; the write-off | — | five statements |
+| 2 | Smart-Clearance | the bay at dawn (R1); a super stockist's depot; the hero film's chapters | the landing page; the console Overview with the agents at work; the system diagram; the nine stops; the ecosystem (client's supply chain, people, partners) | role cards, the stops lit one by one |
+| 3 | Connect and Detect | the planner's phone lighting up (the app on it) | Setup (the export mapped); the console's first stock export; the Command Center flagged; the batch's Journey page | pointers: the Watcher's push, the gates, the agent timeline |
+| 4 | Verify | the distributor photographing a Munchly carton | Today's request on the phone; the camera screen; Vision's read on the Route Room | pointers: barcode, QR, FSSAI, "matches the DMS record" |
+| 5 | Value, decide, approve | the planner's thumb on the approve button (the sheet on screen) | the five channels (chart and table); the split with its reasons; the alternative; the approve sheet pressed; Execution opening; the distributor's Today told | pointers: per unit after GST, "not chosen", the yes logged |
+| 6 | Five exits | the kirana reading the Hindi offer; the buyer with the lot on his tablet; the staff sale at the gate; the food bank's van (its keyframe, on a slow push); the godown counter (R2) | the offer and order on the phone, its tax invoice; the scheme card and cluster map; the Lister card, the marketplace, the chat with the Negotiator, the lot won, the truck; the staff-sale card, the receipt uploaded and read; the pickup, the collection, the receipt; Deliveries and the van round | pointers on each |
+| 7 | The paperwork | the distributor stamping and signing | the pack; the invoice issued with its e-invoice; the credit note; the ITC memo; the FSSAI checklist; the kirana invoices; Mark reviewed; the distributor's papers with Download PDF | pointers |
+| 8 | Not as planned | the landfill, the crew with the tablet (its keyframe, on a slow push) | the scheme card closing short; Left at the godown; the destruction request on Today; the photos taken; the certificate signed in place; the review sheet; the expiry credit note and the certificate | pointers |
+| 9 | Report | the office at the dashboard (R4) | the Ledger's Money, GST and Impact readings; the Impact dashboard; the BRSR line; the exports; the Record with photos and the audit trail; the distributor's and the kirana's portals | pointers |
+| 10 | The close | the lane at golden hour; the food bank's storeroom receiving the sealed cartons | the guided demo's route map; the workspace sign-in | the four role cards; the links |
+
+## Cut 2, how it is made
+
+- **The screens:** the working app recorded on a fresh walk of both journeys at 2-minute days (`src/tour.mjs`, the
+  shot list in `src/tour.json`, 71 shots): a CDP screencast at device pixels (desktop 3200 × 2000, phone 1170 × 2532)
+  written at 25 fps, a gliding pointer that scrolls as a person reads, hovers, opens tabs and sheets. The week that does
+  not go to plan is recorded on the stub's slow week. The recordings play in a window on the design system's own
+  ground (its page colour with the aurora tints), set to the right of the frame; the left carries a feature label (an
+  eyebrow and one line) and pointers (an amber dot, a leader and a label pill) beside the element the voice names. No
+  light sweep, no screenshot zoom; fades between shots; chapter cards between chapters. The walk behind the
+  recordings is `src/director.py --until STAGE`: it brings both journeys to a stage at 2-minute days, then puts the
+  day back to 24 hours so each stage holds still while it is recorded (the 48-hour offer window never closed under a
+  recording); `src/tour.md` indexes the 71 recordings.
+- **The people:** role cards ("The brand's supply planner", "The distributor") in place of names. The phones and
+  tablets show the app's own screens: each keyframe was made with the app's screenshot as a second reference, and the
+  clip prompt holds the screen still. Every carton carries Munchly's own printed label (the maroon band, the batch,
+  MFG and best-before boxes, the MRP, the barcode and the QR code, the FSSAI mark), and every packet is Munchly's own
+  pack: the label maker's `MF-2409-117` or `MF-2410-118` label photo and `pack-chips.webp` were given to Nano Banana as
+  references (`src/keyframes4.sh`, `keyframes5.sh`), after the maintainer found the first frames' plain MUNCHLY
+  lettering unrealistic ("show the munchly logo and product details and barcode labeling with best before dates").
+  Three frames were retaken for anatomy the maintainer caught or the review did: the food bank's coordinator had a
+  third hand holding her phone from behind; the planner's office grew a second phone in a stray hand; the kirana's
+  phone floated beside him. Each prompt now says one phone, two hands, and the clip is rendered only once the frame
+  is right.
+- **The donation:** the maintainer corrected the first donation scene, a community kitchen serving meals: a donation is
+  sealed cartons handed to a food bank such as Feeding India, not cooked food. The scene is now the food bank's
+  storeroom receiving the labelled cartons from the van, the coordinator reading the best-before date and her Pickups
+  screen (`k32-foodbank-store`); the kitchen keyframe and clip are set aside (`src/img/k32-kitchen-t1.png`,
+  `src/clips/old/`). The narration says "as sealed cartons" (6f), "the packs donated" (9d) and "the food bank
+  receives" (10a).
+- **The voice:** cut 2's lines on Gemini-TTS, four female voices (Kore, Aoede, Leda, Sulafat) and Kore at 1.08,
+  directed for warmth and engagement at a measured pace, one file a sentence. Auditioned through Gemini
+  (`src/ears.py`): Leda alternated two voices, Aoede slurred one word, Sulafat and Kore scored 8 and 8.5; the pick is
+  Kore, cut 1's voice refined, at 1.08 (a few mechanical pauses on acronyms are noted and lived with). The ten lines
+  were then trimmed from 977 to 884 words (22 beats re-voiced) so the cut lands near six minutes; the cut is laid out
+  on the measured beats (`src/film2.py`), and where a chapter's shots would outrun its narration they shrink in
+  proportion, so the voice leads every scene but the close.
+- **The music:** the same Lyria bed, looped for the length, the lift at the ledger (`src/bed-cut2.wav`).

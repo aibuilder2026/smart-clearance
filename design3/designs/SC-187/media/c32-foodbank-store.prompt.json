@@ -1,0 +1,39 @@
+{
+  "name": "c32-foodbank-store",
+  "model": "veo-3.1-generate-001",
+  "location": "us-central1",
+  "service": "Vertex AI",
+  "prompt": "Photorealistic cinematic live action, exactly as in the image: the woman in the green T-shirt keeps both hands on her phone exactly as they are and reads it, her eyes moving down the screen; she glances once at the labelled carton on the shelf beside her and back to the phone, and gives a small satisfied nod; behind her the volunteers carry sealed cartons in from the van, one setting his on the shelf, walking naturally. The camera holds with a very slow drift to the right. Every face, hand and arm keeps its form; no extra limbs appear and none vanish; nobody's face changes; nothing is handed from one person to another; no object appears, vanishes or changes shape. The printed Munchly product labels on the cartons (the maroon band, the batch and best-before boxes, the barcode and the QR code) and the Munchly packets stay exactly as they are, crisp and legible, and never change; the app screen on the phone stays exactly as it is, sharp and legible, and never changes to anything else. No other text, letters, logos or lettering appear anywhere. Natural light, 35 mm, shallow depth of field, no handheld shake.",
+  "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
+  "seed": 187232,
+  "enhance_prompt": true,
+  "resolution": "1080p",
+  "aspect": "16:9",
+  "duration_s": 8,
+  "fps": 24,
+  "generate_audio": false,
+  "person_generation": "allow_adult",
+  "inputs": [
+    {
+      "role": "first",
+      "file": "k32-foodbank-store.png",
+      "sha256": "6108adcefb097b09f9a32a02f2241a22c74a64a3077b1373f5a1b829cc1aee9c"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 1.6,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "use": "SC-187: a scene of the demo film, image to video from its keyframe",
+  "status": "done",
+  "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/f1552c24-276d-4a5c-abca-c29f6fe04430",
+  "latency_s": 131.5,
+  "rai_filtered": {
+    "count": 0,
+    "reasons": []
+  },
+  "files": [
+    "c32-foodbank-store.mp4"
+  ],
+  "probe": "{\n    \"programs\": [\n\n    ],\n    \"stream_groups\": [\n\n    ],\n    \"streams\": [\n        {\n            \"width\": 1920,\n            \"height\": 1080,\n            \"r_frame_rate\": \"24/1\",\n            \"nb_frames\": \"192\"\n        }\n    ],\n    \"format\": {\n        \"duration\": \"8.000000\",\n        \"size\": \"8775519\"\n    }\n}"
+}

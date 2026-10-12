@@ -1,0 +1,29 @@
+{
+  "name": "k29-lakshmi-godown",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "Mid-morning inside Begum Bazaar godown, Hyderabad: the distributor (the woman in the deep teal saree with a thin cream border, reading glasses on a beaded cord, a long plait) stands by a pallet of MUNCHLY cartons, one carton open at the top showing Mango Drink tetra packs, and reads the carton's label panel through her glasses, holding its edge; the godown's bright shutter light behind her. Medium shot, 50 mm, her face and the carton's MUNCHLY lettering sharp.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. The cartons are kraft-brown with a sage-green band and the word MUNCHLY printed once in bold dark-green capital letters on each carton's side, nothing else written on them; the snack packets are solid orange, green and red with no lettering; the Mango Drink packs are small plain yellow-orange tetra packs with a mango drawn on them and no lettering. No other text, letters, numbers, logos or watermarks anywhere. No number plate. No children.",
+  "seed": 187129,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-lakshmi.webp",
+      "sha256": "095316a76cb40bdbf74c54994b0ab3b8a2dba241a064719830eb0009a4edcb5c"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "latency_s": 14.8,
+  "use": "SC-187 cut 2 keyframe: the first frame of a Veo clip for the demo film; the app's own screen on the phone",
+  "model_text": null,
+  "status": "done",
+  "output": "k29-lakshmi-godown.webp 2752x1536",
+  "postprocess": "WebP q82 from k29-lakshmi-godown.png",
+  "derived_from": "k29-lakshmi-godown.png"
+}

@@ -1,0 +1,39 @@
+{
+  "name": "c30-depot",
+  "model": "veo-3.1-generate-001",
+  "location": "us-central1",
+  "service": "Vertex AI",
+  "prompt": "Photorealistic cinematic live action, exactly as in the image: in the depot, the forklift lifts the pallet of MUNCHLY cartons slowly and carries it a few metres along the aisle; the supervisor in the navy polo walks between the rows reading his tablet; dust turns in the shafts of light. The camera dollies slowly forward along the aisle, low and steady. Every face, hand and arm keeps its form; no extra limbs appear and none vanish; nobody's face changes. The printed Munchly product labels on the cartons (the maroon band, the batch and best-before boxes, the barcode and the QR code) and the Munchly packets stay exactly as they are, crisp and legible, and never change; the app screen on the phone stays exactly as it is, sharp and legible, and never changes to anything else. No other text, letters, logos or lettering appear anywhere. Natural light, 35 mm, shallow depth of field, no handheld shake.",
+  "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
+  "seed": 187230,
+  "enhance_prompt": true,
+  "resolution": "1080p",
+  "aspect": "16:9",
+  "duration_s": 8,
+  "fps": 24,
+  "generate_audio": false,
+  "person_generation": "allow_adult",
+  "inputs": [
+    {
+      "role": "first",
+      "file": "k30-depot.png",
+      "sha256": "c45e79aa98c17a85b6c721718aef553d4e3a782e6796c2d9ea9da5f512bb8e80"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 1.6,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "use": "SC-187: a scene of the demo film, image to video from its keyframe",
+  "status": "done",
+  "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/a4d052eb-46e5-40b5-9c2b-20a23d781bdf",
+  "latency_s": 131.5,
+  "rai_filtered": {
+    "count": 0,
+    "reasons": []
+  },
+  "files": [
+    "c30-depot.mp4"
+  ],
+  "probe": "{\n    \"programs\": [\n\n    ],\n    \"stream_groups\": [\n\n    ],\n    \"streams\": [\n        {\n            \"width\": 1920,\n            \"height\": 1080,\n            \"r_frame_rate\": \"24/1\",\n            \"nb_frames\": \"192\"\n        }\n    ],\n    \"format\": {\n        \"duration\": \"8.000000\",\n        \"size\": \"19909935\"\n    }\n}"
+}

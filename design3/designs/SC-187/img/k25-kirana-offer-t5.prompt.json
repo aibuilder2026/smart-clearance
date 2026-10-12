@@ -1,0 +1,44 @@
+{
+  "name": "k25-kirana-offer",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "A small kirana shop in Nagpur at mid-morning: the owner (a man in his forties, a cream half-sleeve shirt, a red tilak on his forehead, short neat hair, a moustache) stands behind his counter under hanging strips of Munchly snack packets, holding his one phone in both hands at chest height, its screen turned toward the camera and readable, and reads it with a slight smile; the phone's screen shows exactly the offer screen in the reference image (a white page with Hindi text, a large price, a green button at the bottom), sharp and upright. There is exactly one phone in the picture, in his hands, and no floating or inset screen anywhere; he has exactly two arms and two hands, both on the phone. Behind him shelves of jars and a few Munchly cartons, each with its printed product label; a customer's shoulder at the edge of the frame. Medium shot, daylight from the street, his face and the phone's screen sharp.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. The cartons are kraft-brown shipping cartons, each carrying one large printed product label exactly like the label in the reference photo: a white sticker with a maroon band reading MUNCHLY MASALA CHIPS (or MUNCHLY MANGO DRINK), the ingredients line, a boxed net quantity and MRP, a boxed BATCH NO, MFG and BEST BEFORE dates, the maker's address, the FSSAI mark, a barcode and a QR code, with a blue storage line at the foot; the label is crisp, straight and legible; no carton carries plain lettering, every carton carries this label. The snack packets are Munchly's own orange chips packets exactly like the reference pack: an orange-to-red gradient with the white MUNCHLY wordmark on a green swoosh and 'Masala Chips' beneath; the Mango Drink packs are small yellow-orange tetra packs with a mango and the word Munchly. No other text, letters, numbers, logos or watermarks anywhere. No number plate. No children.",
+  "seed": 187425,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-ganesh.png",
+      "sha256": "9d532af12b1bf985a37b5bd33c1c35202c5ed867f8f4903bffc6ddba5af90a34"
+    },
+    {
+      "role": "reference",
+      "file": "approve--kirana-ganesh-offer-phone.png",
+      "sha256": "39dc72a4bffeda75de7225cf7ce8f1e5b1cd2ff2c7b56a74ad227d535a941d43"
+    },
+    {
+      "role": "reference",
+      "file": "MF-2409-117.webp",
+      "sha256": "c90ee14fc19e4cd7948a04ce63db2e407614549403b1aa90fbca6c5a23841fca"
+    },
+    {
+      "role": "reference",
+      "file": "pack-chips.webp",
+      "sha256": "bd0e711bb4148b0626d58f6cef7adb98119f69d706a69d98b5167144b0a55396"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "latency_s": 21.7,
+  "use": "SC-187 cut 2 keyframe: one phone in hand, the real Munchly label and pack as references",
+  "model_text": null,
+  "status": "done",
+  "output": "k25-kirana-offer.webp 2752x1536",
+  "postprocess": "WebP q82 from k25-kirana-offer.png",
+  "derived_from": "k25-kirana-offer.png"
+}

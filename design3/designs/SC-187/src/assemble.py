@@ -16,6 +16,7 @@ src/music.wav. Intermediates go to src/build/.
 
 import argparse
 import json
+import re
 import os
 import subprocess
 import sys
@@ -43,11 +44,12 @@ def find(kind: str, name: str) -> Path | None:
     if kind == "clip" and name in SC154:
         p = REPO / "design3/designs/SC-154/media" / f"{SC154[name]}.mp4"
         return p if p.exists() else None
-    if kind == "clip" and name.startswith("ui-"):
-        for ext in ("mp4", "webm"):
-            p = CLIPS / f"{name}.{ext}"
-            if p.exists():
-                return p
+    if kind == "clip" and (name.startswith("ui-") or "--" in name):
+        for d in (HERE / "tour", CLIPS, HERE.parent / "media" / "tour", HERE.parent / "media"):
+            for ext in ("mp4", "webm"):
+                p = d / f"{name}.{ext}"
+                if p.exists():
+                    return p
         return None
     if kind == "diagram":
         p = REPO / "docs/architecture" / f"{name}.webp"
@@ -86,6 +88,28 @@ def silence(D: float) -> list[str]:
 
 # ---- the backdrops ------------------------------------------------------------------------------------------------
 
+def studio_ground(name: str, scale: int = S2) -> Path:
+    """the design system's ground: its page colour with the aurora tints breathing in from two corners, at 2x"""
+    import numpy as np
+
+    path = BUILD / "studio-ground.png"
+    if path.exists():
+        return path
+    w, h = W * scale, H * scale
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    base = np.array([242, 246, 243], dtype=np.float32)  # --bg
+    a1 = np.array([217, 240, 227], dtype=np.float32)  # --aurora-1
+    a2 = np.array([226, 238, 247], dtype=np.float32)  # --aurora-2
+    d1 = np.exp(-(((xx - w * 0.12) / (w * 0.55)) ** 2 + ((yy - h * 0.1) / (h * 0.7)) ** 2))
+    d2 = np.exp(-(((xx - w * 0.95) / (w * 0.5)) ** 2 + ((yy - h * 0.95) / (h * 0.6)) ** 2))
+    img = base[None, None, :] * (1 - d1[..., None] - d2[..., None]) + a1[None, None, :] * d1[..., None] + a2[None, None, :] * d2[..., None]
+    # a faint vignette so the window's shadow has something to sit on
+    v = 1 - 0.06 * ((xx - w / 2) ** 2 / (w / 2) ** 2 + (yy - h / 2) ** 2 / (h / 2) ** 2)
+    img = np.clip(img * v[..., None], 0, 255).astype(np.uint8)
+    Image.fromarray(img, "RGB").save(path)
+    return path
+
+
 def backdrops(key: str, name: str, scale: int = S2) -> tuple[Path, Path]:
     """the live scene behind a screen, sharp and then pulled out of focus as the window comes in"""
     src = find("img", key)
@@ -98,6 +122,14 @@ def backdrops(key: str, name: str, scale: int = S2) -> tuple[Path, Path]:
     sharp.save(a)
     blur.save(b)
     return a, b
+
+
+def grounds(seg: dict, name: str) -> tuple[Path, Path]:
+    """what a screen stands on: the studio ground (cut 2), or a keyframe pulled out of focus (cut 1)"""
+    if seg.get("ground", "studio") == "studio" or not seg.get("bg"):
+        g = studio_ground(name)
+        return g, g
+    return backdrops(seg["bg"], name)
 
 
 def sweep_plate(cw: int, ch: int, name: str) -> tuple[Path, int]:
@@ -119,23 +151,23 @@ def sweep_plate(cw: int, ch: int, name: str) -> tuple[Path, int]:
     return path, out.shape[1]
 
 
-def window_plates(phone: bool, shot_w: int, shot_h: int, name: str, url: str) -> dict:
+def window_plates(phone: bool, shot_w: int, shot_h: int, name: str, url: str, layout: str = "right") -> dict:
     """the window's chrome at 2x as its own transparent plate: the shadow, the bar or the bezel, a hole where the screen
     shows through; and where the canvas and the screenshot sit on the 2x frame"""
     import numpy as np
 
     pad = 70 * S2
     if phone:
-        h = 880 * S2
+        h = (900 if layout == "right" else 880) * S2
         scale = h / shot_h
         w = int(shot_w * scale)
-        x0, y0 = 640 * S2, 40 * S2
+        x0, y0 = ((W * S2 - w) // 2 - 60 * S2, 40 * S2) if layout == "right" else (640 * S2, 40 * S2)
         radius, bezel, bar = 54 * S2, 12 * S2, 0
     else:
-        w = 1500 * S2
+        w = (1250 if layout == "right" else 1500) * S2
         scale = w / shot_w
-        h = int(min(shot_h, 940 * S2 / scale) * scale)  # a tall page shows its top; a scroll moves it
-        x0, y0 = W * S2 - w - 110 * S2, 70 * S2
+        h = int(min(shot_h, (820 if layout == "right" else 940) * S2 / scale) * scale)  # a tall page shows its top; a scroll moves it
+        x0, y0 = (W * S2 - w - 80 * S2, 110 * S2) if layout == "right" else (W * S2 - w - 110 * S2, 70 * S2)
         radius, bezel, bar = 16 * S2, 0, 40 * S2
     cw, ch = w + 2 * bezel + 2 * pad, h + bar + 2 * bezel + 2 * pad
     sx, sy = pad + bezel, pad + bezel + bar
@@ -225,8 +257,8 @@ def render_screen(seg: dict, name: str, out: Path) -> None:
     use_full = (seg.get("scroll") or seg.get("focus")) and full_path is not None  # a focus rectangle is in the full page's pixels
     src = Image.open(full_path).convert("RGB") if use_full else shot
     D = seg["seconds"]
-    bg0, bg1 = backdrops(seg["bg"], name)
-    p = window_plates(seg.get("phone", False), shot.width, shot.height, name, url_for(seg))
+    bg0, bg1 = grounds(seg, name)
+    p = window_plates(seg.get("phone", False), shot.width, shot.height, name, url_for(seg), seg.get("layout", "right"))
     sw_, sh_ = int(src.width * p["scale"]), int(src.height * p["scale"])
     scaled = BUILD / f"{name}-shot.png"
     src.resize((sw_, sh_), Image.LANCZOS).save(scaled)
@@ -254,9 +286,9 @@ def render_screen(seg: dict, name: str, out: Path) -> None:
         f"color=c=black@0.0:s={p['cw']}x{p['ch']}:r={FPS}:d={D},format=rgba[cv];"
         f"[cv][page]overlay=x={p['sx']}:y={p['sy']}:format=auto[w1];"
         f"[w1][3:v]overlay=0:0:format=rgb[w2];"
-        f"[w2][4:v]overlay=x='-{sweep_w}+({p['cw']}+{sweep_w})*min(1,max(0,(t-0.45)/1.1))':y=0:format=rgb:enable='between(t,0.45,1.6)'[w3];"
-        f"[w3]format=rgba,scale=eval=frame:w='iw*(0.94+0.06*{enter})':h=-1,fade=t=in:st=0:d=0.5:alpha=1[w4];"
-        f"[bg][w4]overlay=x='{p['cx']}-w/2':y='{p['cy']}-h/2+{(90 if phone else 40) * S2}*(1-{enter})':format=auto[b]"
+        + (f"[w2][4:v]overlay=x='-{sweep_w}+({p['cw']}+{sweep_w})*min(1,max(0,(t-0.45)/1.1))':y=0:format=rgb:enable='between(t,0.45,1.6)'[w3];" if seg.get("sweep") else "[w2]null[w3];")
+        + f"[w3]format=rgba,scale=eval=frame:w='iw*(0.95+0.05*{enter})':h=-1,fade=t=in:st=0:d=0.6:alpha=1[w4];"
+        f"[bg][w4]overlay=x='{p['cx']}-w/2':y='{p['cy']}-h/2+{(70 if phone else 36) * S2}*(1-{enter})':format=auto[b]"
     )
     chain2, last = focus_chain(seg, p, D, "b")
     chain += chain2
@@ -282,8 +314,8 @@ def render_video(seg: dict, name: str, out: Path) -> None:
     seek = seg.get("seek", 0.0)  # where in the recording the segment starts
     wh = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height", "-of", "csv=p=0", str(src)], text=True, capture_output=True).stdout.strip().split(",")
     vw, vh = int(wh[0]), int(wh[1])
-    bg0, bg1 = backdrops(seg["bg"], name)
-    p = window_plates(seg.get("phone", False), vw, vh, name, url_for(seg))
+    bg0, bg1 = grounds(seg, name)
+    p = window_plates(seg.get("phone", False), vw, vh, name, url_for(seg), seg.get("layout", "right"))
     sweep, sweep_w = sweep_plate(p["cw"], p["ch"], name)
     enter = "(1-pow(1-min(1,t/0.6),3))"
     phone = seg.get("phone")
@@ -293,9 +325,9 @@ def render_video(seg: dict, name: str, out: Path) -> None:
         f"color=c=black@0.0:s={p['cw']}x{p['ch']}:r={FPS}:d={D},format=rgba[cv];"
         f"[cv][rec]overlay=x={p['sx']}:y={p['sy']}:format=rgb:eof_action=pass[w1];"
         f"[w1][3:v]overlay=0:0:format=rgb[w2];"
-        f"[w2][4:v]overlay=x='-{sweep_w}+({p['cw']}+{sweep_w})*min(1,max(0,(t-0.45)/1.1))':y=0:format=rgb:enable='between(t,0.45,1.6)'[w3];"
-        f"[w3]format=rgba,scale=eval=frame:w='iw*(0.94+0.06*{enter})':h=-1,fade=t=in:st=0:d=0.5:alpha=1[w4];"
-        f"[bg][w4]overlay=x='{p['cx']}-w/2':y='{p['cy']}-h/2+{(90 if phone else 40) * S2}*(1-{enter})':format=auto[b]"
+        + (f"[w2][4:v]overlay=x='-{sweep_w}+({p['cw']}+{sweep_w})*min(1,max(0,(t-0.45)/1.1))':y=0:format=rgb:enable='between(t,0.45,1.6)'[w3];" if seg.get("sweep") else "[w2]null[w3];")
+        + f"[w3]format=rgba,scale=eval=frame:w='iw*(0.95+0.05*{enter})':h=-1,fade=t=in:st=0:d=0.6:alpha=1[w4];"
+        f"[bg][w4]overlay=x='{p['cx']}-w/2':y='{p['cy']}-h/2+{(70 if phone else 36) * S2}*(1-{enter})':format=auto[b]"
     )
     chain2, last = focus_chain(seg, p, D, "b")
     chain += chain2
@@ -317,8 +349,11 @@ def render_clip(seg: dict, name: str, out: Path) -> None:
     D = seg["seconds"]
     hold = seg.get("hold", 0)
     if src:
-        chain = (f"[0:v]scale={W}:{H}:flags=lanczos,setpts=PTS/{speed},fps={FPS},tpad=stop_mode=clone:stop_duration={D}[v0]")
-        cmd = FFMPEG + ["-i", str(src)] + silence(D)
+        # a clip slowed below 0.85 is motion-interpolated to the frames it needs, so it plays smoothly instead of stepping
+        interp = f"minterpolate=fps={FPS / speed:.3f}:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1," if speed < 0.85 else ""
+        chain = (f"[0:v]scale={W}:{H}:flags=lanczos,setpts=PTS-STARTPTS,{interp}setpts=PTS/{speed},fps={FPS},tpad=stop_mode=clone:stop_duration={D}[v0]")
+        seek = float(seg.get("seek") or 0)
+        cmd = FFMPEG + (["-ss", f"{seek:.3f}"] if seek else []) + ["-i", str(src)] + silence(D)
         last, amap = "v0", "1:a"
         print(f"   clip {seg['name']}: {probe(src):.1f} s at {speed} -> {D:.1f} s" + (f" (held {hold:.1f} s)" if hold > 0.05 else ""))
     else:
@@ -341,21 +376,48 @@ def render_still(seg: dict, name: str, out: Path) -> None:
         raise SystemExit(f"no diagram {seg['name']}")
     D = seg["seconds"]
     im = Image.open(src).convert("RGB")
-    # on the design system's dark ground, the diagram fitted with a margin
-    ground = Image.new("RGB", (W * 2, H * 2), (16, 22, 19))
-    fit = min((W * 2 - 240) / im.width, (H * 2 - 420) / im.height)
-    im2 = im.resize((int(im.width * fit), int(im.height * fit)), Image.LANCZOS)
-    card = Image.new("RGB", (im2.width + 48, im2.height + 48), (255, 255, 255))
-    card.paste(im2, (24, 24))
-    ground.paste(card, ((W * 2 - card.width) // 2, (H * 2 - card.height) // 2 - 80))
     plate = BUILD / f"{name}-plate.png"
-    ground.save(plate)
+    if seg.get("layout", "right") == "right":
+        # on the studio ground, the diagram on a white card where a window would sit, the left free for the label
+        ground = Image.open(studio_ground(name)).convert("RGB")
+        bx, by, bw, bh = 590 * 2, 110 * 2, 1250 * 2, 820 * 2
+        fit = min((bw - 60) / im.width, (bh - 60) / im.height)
+        im2 = im.resize((int(im.width * fit), int(im.height * fit)), Image.LANCZOS)
+        card = Image.new("RGBA", (im2.width + 60, im2.height + 60), (255, 255, 255, 255))
+        card.paste(im2, (30, 30))
+        sh = Image.new("RGBA", (card.width + 200, card.height + 200), (0, 0, 0, 0))
+        ImageDraw.Draw(sh).rounded_rectangle([100, 130, 100 + card.width, 130 + card.height], radius=24, fill=(0, 0, 0, 120))
+        sh = sh.filter(ImageFilter.GaussianBlur(40))
+        cx_, cy_ = bx + (bw - card.width) // 2, by + (bh - card.height) // 2
+        ground.paste(sh, (cx_ - 100, cy_ - 100), sh)
+        ground.paste(card, (cx_, cy_))
+        ground.save(plate)
+    else:
+        ground = Image.new("RGB", (W * 2, H * 2), (16, 22, 19))
+        fit = min((W * 2 - 240) / im.width, (H * 2 - 420) / im.height)
+        im2 = im.resize((int(im.width * fit), int(im.height * fit)), Image.LANCZOS)
+        card = Image.new("RGB", (im2.width + 48, im2.height + 48), (255, 255, 255))
+        card.paste(im2, (24, 24))
+        ground.paste(card, ((W * 2 - card.width) // 2, (H * 2 - card.height) // 2 - 80))
+        ground.save(plate)
     zoom = seg.get("zoom", 1.08)
     ay = seg.get("anchor", 0.5)  # where the drift closes in: a fraction of the height
     cmd = FFMPEG + ["-loop", "1", "-framerate", str(FPS), "-t", str(D), "-i", str(plate)] + silence(D)
     ease = f"(1-cos(PI*min(1,t/{D})))/2"
     chain = (f"[0:v]scale=eval=frame:w='ceil(iw*(1+({zoom}-1)*{ease})/2)*2':h=-1,"
              f"crop={W * 2}:{H * 2}:'(iw-{W * 2})/2':'min(ih-{H * 2},max(0,ih*{ay}-{H * 2 * ay}))',scale={W}:{H}:flags=lanczos[v0]")
+    chain, last = add_overlays(seg, chain, "v0", D, cmd)
+    cmd += ["-filter_complex", chain, "-map", f"[{last}]", "-map", "1:a", "-t", str(D)] + ENC + AENC + [str(out)]
+    run(cmd)
+
+
+def render_card(seg: dict, name: str, out: Path) -> None:
+    """a card: the studio ground (or a keyframe out of focus) with its overlays and a slow drift"""
+    D = seg["seconds"]
+    g0, g1 = grounds(seg, name)
+    zoom = seg.get("zoom", 1.04)
+    cmd = FFMPEG + ["-loop", "1", "-framerate", str(FPS), "-t", str(D), "-i", str(g1)] + silence(D)
+    chain = f"[0:v]scale=eval=frame:w='ceil(iw*(1+({zoom}-1)*t/{D})/2)*2':h=-1,crop={W * 2}:{H * 2}:'(iw-{W * 2})/2':'(ih-{H * 2})/2',scale={W}:{H}:flags=lanczos[v0]"
     chain, last = add_overlays(seg, chain, "v0", D, cmd)
     cmd += ["-filter_complex", chain, "-map", f"[{last}]", "-map", "1:a", "-t", str(D)] + ENC + AENC + [str(out)]
     run(cmd)
@@ -405,13 +467,16 @@ def main() -> None:
     segs = FILM["segments"]
     parts: list[Path] = []
     for i, seg in enumerate(segs):
-        name = f"seg-{i:02d}"
+        # the file carries the segment's identity and length, so a segment reused from an earlier run is always this
+        # one at this length (dropping a segment once shifted every index onto a neighbour's file)
+        slug = re.sub(r"[^a-z0-9]+", "-", str(seg.get("name") or seg.get("shot") or seg.get("title") or seg["kind"]).lower())[:40].strip("-")
+        name = f"seg-{i:02d}-{slug}-{int(round(seg['seconds'] * 1000))}"
         out = BUILD / f"{name}.mp4"
         parts.append(out)
-        if only is not None and i not in only and out.exists():
+        if only is not None and i not in only and (out.exists() or a.no_concat):
             continue
         print(f"{name}: {seg['kind']} {seg.get('name') or seg.get('shot')} ({seg['seconds']:.1f} s)")
-        {"clip": render_clip, "screen": render_screen, "video": render_video, "still": render_still}[seg["kind"]](seg, name, out)
+        {"clip": render_clip, "screen": render_screen, "video": render_video, "still": render_still, "card": render_card}[seg["kind"]](seg, name, out)
     if a.no_concat:
         return
     durs = [probe(x) for x in parts]
@@ -426,7 +491,7 @@ def main() -> None:
     for i in range(1, len(parts)):
         off = cum - XF
         both = segs[i - 1]["kind"] in ("screen", "video") and segs[i]["kind"] in ("screen", "video")
-        kind = ("smoothleft" if i % 2 else "smoothup") if both else "fade"
+        kind = ("smoothleft" if i % 2 else "smoothup") if (both and FILM.get("wipes")) else "fade"
         chain += f"[{vprev}][{i}:v]xfade=transition={kind}:duration={XF}:offset={off:.3f}[v{i}];"
         vprev = f"v{i}"
         cum += durs[i] - XF

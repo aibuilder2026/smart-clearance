@@ -1,0 +1,44 @@
+{
+  "name": "k26-agrawal-tablet",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "A wholesale shop in Raipur's grain market, early afternoon: the wholesaler (a man in his forties, a grey safari shirt, a short beard, a gold ring) stands among stacked Munchly cartons, each with its printed label and jute sacks, holding a tablet in both hands with its screen turned clearly toward the camera so that the whole screen is visible; the tablet's screen shows exactly the marketplace listing in the reference image (a white page with a purple header, a product photo, a large price and a chat panel), sharp and legible, filling the screen; behind him in the lane a small blue truck's open rear with two workers in grey T-shirts loading Munchly cartons, each with its printed product label. Medium shot, hard afternoon light with soft shade under the awning.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. The cartons are kraft-brown shipping cartons, each carrying one large printed product label exactly like the label in the reference photo: a white sticker with a maroon band reading MUNCHLY MASALA CHIPS (or MUNCHLY MANGO DRINK), the ingredients line, a boxed net quantity and MRP, a boxed BATCH NO, MFG and BEST BEFORE dates, the maker's address, the FSSAI mark, a barcode and a QR code, with a blue storage line at the foot; the label is crisp, straight and legible; no carton carries plain lettering, every carton carries this label. The snack packets are Munchly's own orange chips packets exactly like the reference pack: an orange-to-red gradient with the white MUNCHLY wordmark on a green swoosh and 'Masala Chips' beneath; the Mango Drink packs are small yellow-orange tetra packs with a mango and the word Munchly. No other text, letters, numbers, logos or watermarks anywhere. No number plate. No children.",
+  "seed": 187326,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-agrawal.png",
+      "sha256": "8c1a3e31a7adb1ee2d590ec02f739438261e4af9558a5d1a8919b6b5c0a05f5b"
+    },
+    {
+      "role": "reference",
+      "file": "approve--agrawal-listing.png",
+      "sha256": "42d620d130154a2afa19d0b2e2a4450220180e39228609918609ef3f09372524"
+    },
+    {
+      "role": "reference",
+      "file": "MF-2409-117.webp",
+      "sha256": "c90ee14fc19e4cd7948a04ce63db2e407614549403b1aa90fbca6c5a23841fca"
+    },
+    {
+      "role": "reference",
+      "file": "pack-chips.webp",
+      "sha256": "bd0e711bb4148b0626d58f6cef7adb98119f69d706a69d98b5167144b0a55396"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "latency_s": 22.0,
+  "use": "SC-187 cut 2 keyframe: the real Munchly label and pack as references",
+  "model_text": null,
+  "status": "done",
+  "output": "k26-agrawal-tablet.webp 2752x1536",
+  "postprocess": "WebP q82 from k26-agrawal-tablet.png",
+  "derived_from": "k26-agrawal-tablet.png"
+}

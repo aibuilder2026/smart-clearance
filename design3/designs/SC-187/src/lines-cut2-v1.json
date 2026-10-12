@@ -1,0 +1,384 @@
+{
+  "note": "Cut 2 (SC-187, 12 Oct): the ten voice-over lines of storyboard.md's 'The voice-over, cut 2', one a chapter, each split into its beats exactly as written there (id, text), each with the `tts` reading the voice gets: Smart Clearance and software as a service as words, best before unhyphenated, FSSAI, MRP, UPI and BRSR spelt letter by letter, CO2e as 'C O two e', section 17(5)(h) read out; GST, QR code, e-invoice, kirana, Tally, PDF and AI as they are. Generic throughout: no names, no figures. Cut 2's scenes follow the narration (film.py lays each scene out on its spoken beats), so `at` and `length` are not scene timings: each line's `length` is the time it needs at a floor of 2.0 words a second (its words over 2.0, the 0.35 s between beats, and vo.py's 1.5 s slack), so a line vo.py reports as running over is one the voice read slower than that. The cut as a whole wants about 330 s of speech; all-cut2.md judges the voices against it. `voices` are the candidates vo.py synthesises, one folder each under vo/, named cut2-* so cut 1's takes (the same beat ids, other words) are left alone: four female Gemini-TTS voices under the same direction (`prompt`), and Kore at speakingRate 1.08 as a reserve. `prompt_brisk` is kept for the shape; no voice here reads under it.",
+  "prompt": "You are the narrator of a polished corporate product film, a warm, refined woman's voice with genuine engagement, telling a story you believe in. Speak with natural, varied intonation and clear diction at a calm, measured pace, with real pauses at commas and full stops: a quieter, storytelling warmth on the problem and the close, a clear, confident lift on each capability, and a sense of discovery as the story moves forward. Never flat, never robotic, never sing-song, never rushed.",
+  "prompt_brisk": "You are the narrator of a polished corporate product film, a warm, refined woman's voice with genuine engagement. Speak with natural, varied intonation and clear diction at a brisk but unhurried pace, light pauses at commas and real ones at full stops, a confident lift on each capability. Never flat, never robotic, never sing-song, never dragging.",
+  "voices": [
+    {
+      "id": "cut2-Kore",
+      "engine": "gemini",
+      "name": "Kore",
+      "model": "gemini-2.5-pro-tts",
+      "rate": 1.0
+    },
+    {
+      "id": "cut2-Aoede",
+      "engine": "gemini",
+      "name": "Aoede",
+      "model": "gemini-2.5-pro-tts",
+      "rate": 1.0
+    },
+    {
+      "id": "cut2-Leda",
+      "engine": "gemini",
+      "name": "Leda",
+      "model": "gemini-2.5-pro-tts",
+      "rate": 1.0
+    },
+    {
+      "id": "cut2-Sulafat",
+      "engine": "gemini",
+      "name": "Sulafat",
+      "model": "gemini-2.5-pro-tts",
+      "rate": 1.0
+    },
+    {
+      "id": "cut2-Kore-1.08",
+      "engine": "gemini",
+      "name": "Kore",
+      "model": "gemini-2.5-pro-tts",
+      "rate": 1.08
+    }
+  ],
+  "lines": [
+    {
+      "n": 1,
+      "scene": "The problem",
+      "at": 0,
+      "length": 46,
+      "beats": [
+        {
+          "id": "1a",
+          "text": "Every day, across India, good products run out of time before they run out of demand.",
+          "tts": "Every day, across India, good products run out of time before they run out of demand."
+        },
+        {
+          "id": "1b",
+          "text": "A batch of snacks, a crate of juice, waiting in a distributor's godown as its best-before date draws closer.",
+          "tts": "A batch of snacks, a crate of juice, waiting in a distributor's godown as its best before date draws closer."
+        },
+        {
+          "id": "1c",
+          "text": "Once it crosses the quick-commerce gates, the modern-trade shelves close to it.",
+          "tts": "Once it crosses the quick-commerce gates, the modern-trade shelves close to it."
+        },
+        {
+          "id": "1d",
+          "text": "What usually follows is a write-off: the stock destroyed, the GST credit reversed, and perfectly good food in a landfill.",
+          "tts": "What usually follows is a write-off: the stock destroyed, the GST credit reversed, and perfectly good food in a landfill."
+        },
+        {
+          "id": "1e",
+          "text": "The brand loses, the distributor loses, and the people who would have bought it never get the chance.",
+          "tts": "The brand loses, the distributor loses, and the people who would have bought it never get the chance."
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "scene": "Smart-Clearance",
+      "at": 46,
+      "length": 70,
+      "beats": [
+        {
+          "id": "2a",
+          "text": "Smart-Clearance changes that.",
+          "tts": "Smart Clearance changes that."
+        },
+        {
+          "id": "2b",
+          "text": "It is a software-as-a-service platform for manufacturers, built around an ecosystem of AI agents.",
+          "tts": "It is a software as a service platform for manufacturers, built around an ecosystem of AI agents."
+        },
+        {
+          "id": "2c",
+          "text": "Every brand gets its own workspace, set up for its supply chain: its distributors and super stockists, its quick-commerce gates, its exits and its rules.",
+          "tts": "Every brand gets its own workspace, set up for its supply chain: its distributors and super stockists, its quick-commerce gates, its exits and its rules."
+        },
+        {
+          "id": "2d",
+          "text": "Inside it, ten agents work together along nine stops, from the moment a batch is flagged to the day its ledger is posted.",
+          "tts": "Inside it, ten agents work together along nine stops, from the moment a batch is flagged to the day its ledger is posted."
+        },
+        {
+          "id": "2e",
+          "text": "They detect, verify, value, decide, execute, settle and report.",
+          "tts": "They detect, verify, value, decide, execute, settle and report."
+        },
+        {
+          "id": "2f",
+          "text": "And at the one moment that matters, a person says yes. Nothing moves before that.",
+          "tts": "And at the one moment that matters, a person says yes. Nothing moves before that."
+        },
+        {
+          "id": "2g",
+          "text": "It is a platform of its own kind: the whole chain on one system, the manufacturer, the distributor, the kirana, the marketplace buyer, the staff and the food bank, each with their own screen, each acting in their own name.",
+          "tts": "It is a platform of its own kind: the whole chain on one system, the manufacturer, the distributor, the kirana, the marketplace buyer, the staff and the food bank, each with their own screen, each acting in their own name."
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "scene": "Connect and Detect",
+      "at": 116,
+      "length": 51,
+      "beats": [
+        {
+          "id": "3a",
+          "text": "It starts with the stock data the distributor already has.",
+          "tts": "It starts with the stock data the distributor already has."
+        },
+        {
+          "id": "3b",
+          "text": "The Data agent maps the stock export field by field and loads the sell-through, so nothing is keyed in twice.",
+          "tts": "The Data agent maps the stock export field by field and loads the sell-through, so nothing is keyed in twice."
+        },
+        {
+          "id": "3c",
+          "text": "Every morning, the Watcher checks every batch at every distributor against its sell-through and the quick-commerce gates.",
+          "tts": "Every morning, the Watcher checks every batch at every distributor against its sell-through and the quick-commerce gates."
+        },
+        {
+          "id": "3d",
+          "text": "When a batch will not sell in time, it is flagged, and the supply planner is told on her phone, in plain words, with the write-off it would mean.",
+          "tts": "When a batch will not sell in time, it is flagged, and the supply planner is told on her phone, in plain words, with the write-off it would mean."
+        },
+        {
+          "id": "3e",
+          "text": "The batch gets a page of its own: where it stands, what each agent has done, and what comes next.",
+          "tts": "The batch gets a page of its own: where it stands, what each agent has done, and what comes next."
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "scene": "Verify",
+      "at": 167,
+      "length": 34,
+      "beats": [
+        {
+          "id": "4a",
+          "text": "Before anything is priced, the batch is verified.",
+          "tts": "Before anything is priced, the batch is verified."
+        },
+        {
+          "id": "4b",
+          "text": "Vision asks the distributor for one photo of the carton label.",
+          "tts": "Vision asks the distributor for one photo of the carton label."
+        },
+        {
+          "id": "4c",
+          "text": "It reads the batch number, the dates and the MRP, checks the barcode, the QR code and the FSSAI licence, and matches them to the stock record.",
+          "tts": "It reads the batch number, the dates and the M R P, checks the barcode, the QR code and the F S S A I licence, and matches them to the stock record."
+        },
+        {
+          "id": "4d",
+          "text": "One photo from a phone, and the batch is real.",
+          "tts": "One photo from a phone, and the batch is real."
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "scene": "Value, decide, approve",
+      "at": 201,
+      "length": 58,
+      "beats": [
+        {
+          "id": "5a",
+          "text": "Now the Valuer prices every exit: the kirana cluster, the marketplace, the staff sale, the food bank, and the quick-commerce channels the batch can still reach.",
+          "tts": "Now the Valuer prices every exit: the kirana cluster, the marketplace, the staff sale, the food bank, and the quick-commerce channels the batch can still reach."
+        },
+        {
+          "id": "5b",
+          "text": "Each one is priced per unit, after costs and GST, against what destroying the stock would cost.",
+          "tts": "Each one is priced per unit, after costs and GST, against what destroying the stock would cost."
+        },
+        {
+          "id": "5c",
+          "text": "The Router then splits the batch across the exits, and explains its reasoning in plain language, with the alternatives it considered.",
+          "tts": "The Router then splits the batch across the exits, and explains its reasoning in plain language, with the alternatives it considered."
+        },
+        {
+          "id": "5d",
+          "text": "The plan lands on the planner's desk with everything she needs to decide.",
+          "tts": "The plan lands on the planner's desk with everything she needs to decide."
+        },
+        {
+          "id": "5e",
+          "text": "She approves it once. The approval is logged, with who, when, and the device.",
+          "tts": "She approves it once. The approval is logged, with who, when, and the device."
+        },
+        {
+          "id": "5f",
+          "text": "The distributor is told the plan in his own language, with a pause button, and the agents set off.",
+          "tts": "The distributor is told the plan in his own language, with a pause button, and the agents set off."
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "scene": "Execute: five exits",
+      "at": 259,
+      "length": 86,
+      "beats": [
+        {
+          "id": "6a",
+          "text": "Outreach sends the kirana cluster its scheme, in Hindi, straight to each shop's phone.",
+          "tts": "Outreach sends the kirana cluster its scheme, in Hindi, straight to each shop's phone."
+        },
+        {
+          "id": "6b",
+          "text": "A shop sees the offer, its margin and its share, and orders in a tap. Each order gets its own tax invoice, issued in the distributor's name.",
+          "tts": "A shop sees the offer, its margin and its share, and orders in a tap. Each order gets its own tax invoice, issued in the distributor's name."
+        },
+        {
+          "id": "6c",
+          "text": "The Lister puts the rest on the near-expiry marketplace, hidden from the brand's own territories, with the label photo and the dates.",
+          "tts": "The Lister puts the rest on the near-expiry marketplace, hidden from the brand's own territories, with the label photo and the dates."
+        },
+        {
+          "id": "6d",
+          "text": "When a buyer bids, the Negotiator answers in the distributor's name, holds the reserve, and closes the deal. The buyer pays the token, and the distributor loads the truck.",
+          "tts": "When a buyer bids, the Negotiator answers in the distributor's name, holds the reserve, and closes the deal. The buyer pays the token, and the distributor loads the truck."
+        },
+        {
+          "id": "6e",
+          "text": "At the godown, the staff sale opens. The distributor records it on one consolidated UPI receipt, which Vision reads and reconciles.",
+          "tts": "At the godown, the staff sale opens. The distributor records it on one consolidated U P I receipt, which Vision reads and reconciles."
+        },
+        {
+          "id": "6f",
+          "text": "Packs with enough shelf life go to a food bank. The Donation agent books the pickup, drafts the FSSAI checklist, and the food bank issues its own receipt.",
+          "tts": "Packs with enough shelf life go to a food bank. The Donation agent books the pickup, drafts the F S S A I checklist, and the food bank issues its own receipt."
+        },
+        {
+          "id": "6g",
+          "text": "And the van round delivers the scheme to every shop that ordered, on the distributor's own route.",
+          "tts": "And the van round delivers the scheme to every shop that ordered, on the distributor's own route."
+        }
+      ]
+    },
+    {
+      "n": 7,
+      "scene": "Settle: the paperwork",
+      "at": 345,
+      "length": 59,
+      "beats": [
+        {
+          "id": "7a",
+          "text": "This is where most clearances fall apart: the paperwork. Here, it is automatic.",
+          "tts": "This is where most clearances fall apart: the paperwork. Here, it is automatic."
+        },
+        {
+          "id": "7b",
+          "text": "The Paperwork agent drafts the whole pack: the distributor's tax invoice, ready to issue from Tally with its e-invoice and QR code; the brand's credit note, so the distributor ends whole; the GST memo that shows the input credit kept and reversed under section 17(5)(h); the FSSAI checklist; and the invoices to every kirana.",
+          "tts": "The Paperwork agent drafts the whole pack: the distributor's tax invoice, ready to issue from Tally with its e-invoice and QR code; the brand's credit note, so the distributor ends whole; the GST memo that shows the input credit kept and reversed under section seventeen, sub-section five, clause h; the F S S A I checklist; and the invoices to every kirana."
+        },
+        {
+          "id": "7c",
+          "text": "Every paper is laid out as a signed PDF with the firm's stamp, and reviewed by the planner.",
+          "tts": "Every paper is laid out as a signed PDF with the firm's stamp, and reviewed by the planner."
+        },
+        {
+          "id": "7d",
+          "text": "The distributor sees his own papers on his own portal, with his copies of the receipts, ready to download.",
+          "tts": "The distributor sees his own papers on his own portal, with his copies of the receipts, ready to download."
+        }
+      ]
+    },
+    {
+      "n": 8,
+      "scene": "When it does not go as planned",
+      "at": 404,
+      "length": 62,
+      "beats": [
+        {
+          "id": "8a",
+          "text": "Sometimes it does not go as planned. Some shops do not order, and stock is still left at the godown on expiry day.",
+          "tts": "Sometimes it does not go as planned. Some shops do not order, and stock is still left at the godown on expiry day."
+        },
+        {
+          "id": "8b",
+          "text": "Smart-Clearance handles that too, fully automated.",
+          "tts": "Smart Clearance handles that too, fully automated."
+        },
+        {
+          "id": "8c",
+          "text": "The distributor is asked to destroy the expired packs through an authorised agency, and to send the evidence: a photo before, a photo after, and the agency's certificate.",
+          "tts": "The distributor is asked to destroy the expired packs through an authorised agency, and to send the evidence: a photo before, a photo after, and the agency's certificate."
+        },
+        {
+          "id": "8d",
+          "text": "Vision checks the photos against the batch and the count.",
+          "tts": "Vision checks the photos against the batch and the count."
+        },
+        {
+          "id": "8e",
+          "text": "The certificate of destruction is signed in place, on the distributor's screen: the agency's officer, two independent witnesses, and the distributor.",
+          "tts": "The certificate of destruction is signed in place, on the distributor's screen: the agency's officer, two independent witnesses, and the distributor."
+        },
+        {
+          "id": "8f",
+          "text": "The planner reviews the evidence and gives her second yes. The expiry credit note and the destruction certificate are issued, and the batch closes with its record complete.",
+          "tts": "The planner reviews the evidence and gives her second yes. The expiry credit note and the destruction certificate are issued, and the batch closes with its record complete."
+        }
+      ]
+    },
+    {
+      "n": 9,
+      "scene": "Report",
+      "at": 466,
+      "length": 48,
+      "beats": [
+        {
+          "id": "9a",
+          "text": "When a batch closes, Impact posts the ledger.",
+          "tts": "When a batch closes, Impact posts the ledger."
+        },
+        {
+          "id": "9b",
+          "text": "Money: what was recovered against what the write-off would have cost, batch by batch and quarter by quarter.",
+          "tts": "Money: what was recovered against what the write-off would have cost, batch by batch and quarter by quarter."
+        },
+        {
+          "id": "9c",
+          "text": "GST: the input credit kept and reversed, invoice by invoice, ready for the accountant.",
+          "tts": "GST: the input credit kept and reversed, invoice by invoice, ready for the accountant."
+        },
+        {
+          "id": "9d",
+          "text": "Impact: the food kept out of landfill, the CO₂e avoided, the meals served, and the BRSR line with its evidence, exportable in a click.",
+          "tts": "Impact: the food kept out of landfill, the C O two e avoided, the meals served, and the B R S R line with its evidence, exportable in a click."
+        },
+        {
+          "id": "9e",
+          "text": "And every batch keeps its record: the photos, the approvals, and an audit trail of every agent and every person.",
+          "tts": "And every batch keeps its record: the photos, the approvals, and an audit trail of every agent and every person."
+        }
+      ]
+    },
+    {
+      "n": 10,
+      "scene": "The close",
+      "at": 514,
+      "length": 22,
+      "beats": [
+        {
+          "id": "10a",
+          "text": "The brand recovers. The distributor ends whole. The kiranas earn. The food bank serves.",
+          "tts": "The brand recovers. The distributor ends whole. The kiranas earn. The food bank serves."
+        },
+        {
+          "id": "10b",
+          "text": "One platform. Ten agents. One yes.",
+          "tts": "One platform. Ten agents. One yes."
+        },
+        {
+          "id": "10c",
+          "text": "Try the guided demo, or sign in to the live prototype: the credentials and steps are in the deck.",
+          "tts": "Try the guided demo, or sign in to the live prototype: the credentials and steps are in the deck."
+        }
+      ]
+    }
+  ]
+}

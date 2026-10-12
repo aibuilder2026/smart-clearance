@@ -1,39 +1,18 @@
 {
-  "name": "c12-close-lane",
-  "model": "veo-3.1-generate-001",
-  "location": "us-central1",
-  "service": "Vertex AI",
-  "prompt": "Photorealistic cinematic live action, exactly as in the image: in the golden light, the man in the cream shirt with the red tilak hands the small snack packet across the counter to the young man in the checked shirt, who takes it with a smile and a nod of thanks; both keep smiling; the scooter passes softly behind them. The camera pulls back very slowly. Every face, hand and arm keeps its form; no extra limbs appear and none vanish; nobody's face changes. No text, no letters, no numbers, no logos, no lettering appears anywhere, on no carton, packet, screen, sign or vehicle. Natural light, 35 mm, shallow depth of field, no handheld shake.",
-  "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
-  "seed": 187212,
-  "enhance_prompt": true,
-  "resolution": "1080p",
-  "aspect": "16:9",
-  "duration_s": 8,
+  "prompt": "Exactly as in the image: in the golden light of the lane, the kirana owner in the cream shirt with the red tilak and the young man in the checked shirt both hold the one Munchly chips packet between them and keep smiling, the young man giving a small nod of thanks; the hanging packets sway very slightly; the scooter passes softly behind them; the labelled cartons stay as they are. The camera pulls back very slowly. Every face, hand and arm keeps its form; no extra limbs appear and none vanish; nobody's face changes; nothing is picked up, handed over or put down; no object appears, vanishes or changes shape. The printed Munchly product labels on the cartons and the Munchly packets stay exactly as they are, crisp and legible. Photorealistic live action, 35 mm, natural skin and fabric, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "720p",
+  "duration": 5,
   "fps": 24,
-  "generate_audio": false,
-  "person_generation": "allow_adult",
-  "inputs": [
-    {
-      "role": "first",
-      "file": "k12-close-lane.png",
-      "sha256": "62cfd3b42b5b01e0bcd7b5d3fcc70a2d96d999ce140b6f4402d02a40128f8c7e"
-    }
-  ],
-  "watermark": "SynthID",
-  "cost_usd": 1.6,
-  "price_table_date": "2026-10-10",
-  "created": "2026-10-12",
-  "use": "SC-187: a scene of the demo film, image to video from its keyframe",
-  "status": "done",
-  "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/81fabc1e-4439-449d-9660-52b382656883",
-  "latency_s": 131.1,
-  "rai_filtered": {
-    "count": 0,
-    "reasons": []
-  },
-  "files": [
-    "c12-close-lane.mp4"
-  ],
-  "probe": "{\n    \"programs\": [\n\n    ],\n    \"stream_groups\": [\n\n    ],\n    \"streams\": [\n        {\n            \"width\": 1920,\n            \"height\": 1080,\n            \"r_frame_rate\": \"24/1\",\n            \"nb_frames\": \"192\"\n        }\n    ],\n    \"format\": {\n        \"duration\": \"8.000000\",\n        \"size\": \"11356725\"\n    }\n}"
+  "aspectRatio": "16:9",
+  "cameraMotion": "dolly_out",
+  "audio": false,
+  "seed": 187703,
+  "loras": [],
+  "image": "/Users/arundutta/projects/smart-clearance/.claude/worktrees/console-ui-db-migration-b9ab01/design3/designs/SC-187/src/img/k12-close-lane.png",
+  "framed_first": "/Users/arundutta/ltx-video/frames/sc187-c12-close-lane.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 9.1,
+  "ltx_output": "/Users/arundutta/Library/Application Support/LTXDesktop/outputs/ltx2_video_20261012_091406_024c5b62.mp4",
+  "cost_usd": 0
 }

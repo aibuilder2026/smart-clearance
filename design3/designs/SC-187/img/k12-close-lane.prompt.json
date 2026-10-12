@@ -4,8 +4,8 @@
   "location": "global",
   "service": "Vertex AI",
   "kind": "still",
-  "prompt": "Golden hour in a narrow kirana lane in Nagpur: the kirana owner (the man in the cream half-sleeve shirt with a red tilak and a moustache) hands a small solid-colour snack packet across his counter to a young man in a checked shirt, both smiling; strings of unbranded packets above the counter, warm low sun flaring down the lane, a scooter passing soft in the background. Medium shot, backlit, the two of them sharp.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. Every pack and carton is unbranded: plain kraft-brown cartons with a sage-green band, solid-colour snack packets (amber, green, red) with no lettering, Mango Drink as small plain yellow-orange tetra packs with no lettering. No text, no letters, no numbers, no logos, no watermark, no number plate anywhere. No children.",
-  "seed": 187112,
+  "prompt": "Golden hour in a narrow kirana lane in Nagpur: the kirana owner (the man in the cream half-sleeve shirt with a red tilak and a moustache) hands one Munchly chips packet across his counter to a young man in a checked shirt, both smiling; strings of Munchly chips packets hang above the counter and a Munchly carton with its printed product label sits on the counter's end; warm low sun flaring down the lane, a scooter passing soft in the background. Each man has exactly two arms and two hands. Medium shot, backlit, the two of them sharp.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. The cartons are kraft-brown shipping cartons, each carrying one large printed product label exactly like the label in the reference photo: a white sticker with a maroon band reading MUNCHLY MASALA CHIPS (or MUNCHLY MANGO DRINK), the ingredients line, a boxed net quantity and MRP, a boxed BATCH NO, MFG and BEST BEFORE dates, the maker's address, the FSSAI mark, a barcode and a QR code, with a blue storage line at the foot; the label is crisp, straight and legible; no carton carries plain lettering, every carton carries this label. The snack packets are Munchly's own orange chips packets exactly like the reference pack: an orange-to-red gradient with the white MUNCHLY wordmark on a green swoosh and 'Masala Chips' beneath; the Mango Drink packs are small yellow-orange tetra packs with a mango and the word Munchly. Every person has exactly two arms and two hands. No other text, letters, numbers, logos or watermarks anywhere. No number plate. No children.",
+  "seed": 187612,
   "aspect": "16:9",
   "size": "2K",
   "inputs": [
@@ -13,14 +13,24 @@
       "role": "reference",
       "file": "cast-ganesh.png",
       "sha256": "9d532af12b1bf985a37b5bd33c1c35202c5ed867f8f4903bffc6ddba5af90a34"
+    },
+    {
+      "role": "reference",
+      "file": "MF-2409-117.webp",
+      "sha256": "c90ee14fc19e4cd7948a04ce63db2e407614549403b1aa90fbca6c5a23841fca"
+    },
+    {
+      "role": "reference",
+      "file": "pack-chips.webp",
+      "sha256": "bd0e711bb4148b0626d58f6cef7adb98119f69d706a69d98b5167144b0a55396"
     }
   ],
   "watermark": "SynthID",
   "cost_usd": 0.101,
   "price_table_date": "2026-10-10",
   "created": "2026-10-12",
-  "latency_s": 79.4,
-  "use": "SC-187 keyframe: the first frame of a Veo clip for the demo film",
+  "latency_s": 88.9,
+  "use": "SC-187 cut 2 keyframe: cut 1's scene with the real Munchly label and pack as references",
   "model_text": null,
   "status": "done",
   "output": "k12-close-lane.webp 2752x1536",

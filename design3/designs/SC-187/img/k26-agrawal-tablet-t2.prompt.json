@@ -1,0 +1,34 @@
+{
+  "name": "k26-agrawal-tablet",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "A wholesale shop in Raipur's grain market, early afternoon: the wholesaler (a man in his forties, a grey safari shirt, a short beard, a gold ring) stands among stacked MUNCHLY cartons and jute sacks, holding a tablet in both hands with its screen turned clearly toward the camera so that the whole screen is visible; the tablet's screen shows exactly the marketplace listing in the reference image (a white page with a purple header, a product photo, a large price and a chat panel), sharp and legible, filling the screen; behind him in the lane a small blue truck's open rear with two workers in grey T-shirts loading MUNCHLY cartons. Medium shot, hard afternoon light with soft shade under the awning.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. The cartons are kraft-brown with a sage-green band and the word MUNCHLY printed once in bold dark-green capital letters on each carton's side, nothing else written on them; the snack packets are plain solid orange, green and red foil packets with absolutely no printing, logos, brand names or pictures on them, not resembling any real brand; the Mango Drink packs are small plain yellow-orange tetra packs with a mango drawn on them and no lettering. No other text, letters, numbers, logos or watermarks anywhere. No number plate. No children.",
+  "seed": 187126,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-agrawal.png",
+      "sha256": "8c1a3e31a7adb1ee2d590ec02f739438261e4af9558a5d1a8919b6b5c0a05f5b"
+    },
+    {
+      "role": "reference",
+      "file": "approve--agrawal-listing.png",
+      "sha256": "42d620d130154a2afa19d0b2e2a4450220180e39228609918609ef3f09372524"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "latency_s": 19.8,
+  "use": "SC-187 cut 2 keyframe: the first frame of a Veo clip for the demo film; the app's own screen on the phone",
+  "model_text": null,
+  "status": "done",
+  "output": "k26-agrawal-tablet.webp 2752x1536",
+  "postprocess": "WebP q82 from k26-agrawal-tablet.png",
+  "derived_from": "k26-agrawal-tablet.png"
+}

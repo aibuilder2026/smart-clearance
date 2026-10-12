@@ -1,0 +1,23 @@
+{
+  "name": "k32-kitchen",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "Late afternoon in a community kitchen in Hyderabad: volunteers in plain green T-shirts serve meals from large steel vessels to a line of adults with steel plates at a long table, a stack of MUNCHLY cartons and Mango Drink packs on a side table, warm light through a doorway. Medium wide shot, 35 mm, warm and gentle.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. The cartons are kraft-brown with a sage-green band and the word MUNCHLY printed once in bold dark-green capital letters on each carton's side, nothing else written on them; the snack packets are solid orange, green and red with no lettering; the Mango Drink packs are small plain yellow-orange tetra packs with a mango drawn on them and no lettering. No other text, letters, numbers, logos or watermarks anywhere. No number plate. No children.",
+  "seed": 187132,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "latency_s": 37.4,
+  "use": "SC-187 cut 2 keyframe: the first frame of a Veo clip for the demo film; the app's own screen on the phone",
+  "model_text": null,
+  "status": "done",
+  "output": "k32-kitchen.webp 2752x1536",
+  "postprocess": "WebP q82 from k32-kitchen.png",
+  "derived_from": "k32-kitchen.png"
+}

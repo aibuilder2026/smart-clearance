@@ -1,0 +1,29 @@
+{
+  "name": "k21-godown-date",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "Noon inside a small distributor's godown in Nagpur: stacked MUNCHLY cartons on steel racks, a shaft of daylight from the open shutter. The distributor (the man in his mid-fifties with a trimmed grey moustache, a light blue checked short-sleeved shirt, reading glasses pushed up on his head, a steel kada on his right wrist) stands close in the foreground holding one MUNCHLY carton tilted up in both hands, reading the small printed label panel on its side with a concerned frown. Medium close shot, 50 mm, the carton's MUNCHLY lettering and his face sharp, the racks soft behind.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. The cartons are kraft-brown with a sage-green band and the word MUNCHLY printed once in bold dark-green capital letters on each carton's side, nothing else written on them; the snack packets are plain solid orange, green and red foil packets with absolutely no printing, logos, brand names or pictures on them, not resembling any real brand; the Mango Drink packs are small plain yellow-orange tetra packs with a mango drawn on them and no lettering. No other text, letters, numbers, logos or watermarks anywhere. No number plate. No children.",
+  "seed": 187121,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-distributor.webp",
+      "sha256": "dfba3af9f8788b96b8e641b99e173aa4bd294a03006b1dbd4cf6665a1e1d904d"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "latency_s": 16.2,
+  "use": "SC-187 cut 2 keyframe: the first frame of a Veo clip for the demo film; the app's own screen on the phone",
+  "model_text": null,
+  "status": "done",
+  "output": "k21-godown-date.webp 2752x1536",
+  "postprocess": "WebP q82 from k21-godown-date.png",
+  "derived_from": "k21-godown-date.png"
+}

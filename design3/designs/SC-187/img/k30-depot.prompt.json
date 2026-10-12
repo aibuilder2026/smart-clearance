@@ -1,0 +1,34 @@
+{
+  "name": "k30-depot",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "A super stockist's large depot on the edge of a city at mid-morning: long rows of pallets stacked high with MUNCHLY cartons under a high steel roof, a forklift lifting a pallet in the middle distance, a supervisor in a navy polo shirt with a tablet walking between the rows, dust in the shafts of light from the roof vents. Wide shot, 24 mm, deep focus.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. The cartons are kraft-brown shipping cartons, each carrying one large printed product label exactly like the label in the reference photo: a white sticker with a maroon band reading MUNCHLY MASALA CHIPS (or MUNCHLY MANGO DRINK), the ingredients line, a boxed net quantity and MRP, a boxed BATCH NO, MFG and BEST BEFORE dates, the maker's address, the FSSAI mark, a barcode and a QR code, with a blue storage line at the foot; the label is crisp, straight and legible. The snack packets are Munchly's own orange chips packets exactly like the reference pack: an orange-to-red gradient with the white MUNCHLY wordmark on a green swoosh and 'Masala Chips' beneath; the Mango Drink packs are small yellow-orange tetra packs with a mango and the word Munchly. No other text, letters, numbers, logos or watermarks anywhere. No number plate. No children.",
+  "seed": 187230,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "MF-2409-117.webp",
+      "sha256": "c90ee14fc19e4cd7948a04ce63db2e407614549403b1aa90fbca6c5a23841fca"
+    },
+    {
+      "role": "reference",
+      "file": "pack-chips.webp",
+      "sha256": "bd0e711bb4148b0626d58f6cef7adb98119f69d706a69d98b5167144b0a55396"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "latency_s": 39.3,
+  "use": "SC-187 cut 2 keyframe: the real Munchly label and pack as references",
+  "model_text": null,
+  "status": "done",
+  "output": "k30-depot.webp 2752x1536",
+  "postprocess": "WebP q82 from k30-depot.png",
+  "derived_from": "k30-depot.png"
+}

@@ -1,0 +1,3065 @@
+{
+ "quiet": [
+  {
+   "name": "site-hero",
+   "who": null,
+   "app": "site",
+   "path": "/",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 2500
+    },
+    {
+     "do": "scroll",
+     "by": 700,
+     "ms": 2600
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "scroll",
+     "by": 900,
+     "ms": 2800
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    }
+   ],
+   "lead": 400,
+   "tail": 600,
+   "shows": "the landing page: the hero film, then the agents on the table"
+  },
+  {
+   "name": "console-overview",
+   "who": "neha",
+   "app": "console",
+   "path": "/",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "move",
+     "at": "text=Agents at work",
+     "fx": 0.5,
+     "fy": 0.5
+    },
+    {
+     "do": "wait",
+     "ms": 1500
+    },
+    {
+     "do": "scroll",
+     "by": 520,
+     "ms": 2200
+    },
+    {
+     "do": "hover",
+     "at": "text=Agents at work",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 1200
+    },
+    {
+     "do": "scroll",
+     "by": 700,
+     "ms": 2400
+    },
+    {
+     "do": "wait",
+     "ms": 1000
+    }
+   ],
+   "shows": "the console's Overview: the figures, Agents at work, Food by day"
+  },
+  {
+   "name": "console-clients",
+   "who": "neha",
+   "app": "console",
+   "path": "/clients",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "hover",
+     "at": "text=Munchly Foods",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "press",
+     "at": "text=Munchly Foods",
+     "ms": 1200
+    },
+    {
+     "do": "settle",
+     "ms": 1200
+    },
+    {
+     "do": "scroll",
+     "by": 200,
+     "ms": 1400
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "the Clients list, Munchly Foods opened (its Agents tab)"
+  },
+  {
+   "name": "console-supply",
+   "who": "neha",
+   "app": "console",
+   "path": "/clients/munchly/supply",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "hover",
+     "at": "text=First stock export",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 500,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "scroll",
+     "by": 600,
+     "ms": 2200
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    }
+   ],
+   "shows": "Munchly's Supply chain tab: the first stock export, profile, distributors, SKUs"
+  },
+  {
+   "name": "console-rules",
+   "who": "neha",
+   "app": "console",
+   "path": "/clients/munchly/rules",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "hover",
+     "at": "text=Kirana scheme",
+     "ms": 900,
+     "fx": 0.3
+    },
+    {
+     "do": "wait",
+     "ms": 500
+    },
+    {
+     "do": "scroll",
+     "to": "text=Destroyed at the godown",
+     "offset": 120
+    },
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": "text=Vision checks the photos",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Munchly's Rules tab: the exits, the kirana scheme, Destroyed at the godown"
+  },
+  {
+   "name": "console-people",
+   "who": "neha",
+   "app": "console",
+   "path": "/clients/munchly/people",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "hover",
+     "at": "text=Invite a person",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "scroll",
+     "by": 400,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Munchly's People tab: the members, Invite a person"
+  },
+  {
+   "name": "console-agents",
+   "who": "neha",
+   "app": "console",
+   "path": "/clients/munchly/agents",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "hover",
+     "at": "text=Watcher",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "scroll",
+     "by": 500,
+     "ms": 2000
+    },
+    {
+     "do": "hover",
+     "at": "text=Run now",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 700,
+     "ms": 2400
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    }
+   ],
+   "shows": "Munchly's Agents tab: the pipeline, Run now, the Negotiator's settings"
+  },
+  {
+   "name": "setup",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/setup",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "hover",
+     "at": "text=Loaded into BigQuery",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 500,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "scroll",
+     "by": 600,
+     "ms": 2200
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Priya's Setup: the export mapped field by field, the floors, the allow-list, the guardrails"
+  },
+  {
+   "name": "signin",
+   "who": null,
+   "app": "workspace",
+   "path": "/signin",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 1200
+    },
+    {
+     "do": "move",
+     "at": "role=textbox|email",
+     "fx": 0.5,
+     "fy": 0.5
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "move",
+     "at": "role=button|Sign in",
+     "fx": 0.5,
+     "fy": 0.5
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "lead": 400,
+   "shows": "the workspace sign-in (desktop), the pointer on the email field and Sign in"
+  },
+  {
+   "name": "signin-phone",
+   "who": null,
+   "app": "workspace",
+   "path": "/signin",
+   "size": "phone",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 1500
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    }
+   ],
+   "shows": "the workspace sign-in on a phone"
+  }
+ ],
+ "detect": [
+  {
+   "name": "command-flagged",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/command",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": "text=Flagged batches",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "move",
+     "at": "text=At risk",
+     "fx": 0.5,
+     "fy": 0.5
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 380,
+     "ms": 1800
+    },
+    {
+     "do": "hover",
+     "at": "text=Agent activity",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 500,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    }
+   ],
+   "shows": "the Command Center with both batches flagged: the chips card, the write-off, Agent activity"
+  },
+  {
+   "name": "command-flagged-phone",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/command",
+   "size": "phone",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "scroll",
+     "by": 500,
+     "ms": 2200
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "scroll",
+     "by": 600,
+     "ms": 2200
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    }
+   ],
+   "shows": "the Command Center on a phone: Agent activity, Impact, the watchlist"
+  },
+  {
+   "name": "journey-flagged",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/journey/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": ".bh-tabs button:has-text(\"Journey\")",
+     "ms": 500
+    },
+    {
+     "do": "scroll",
+     "by": 420,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": "text=Watcher",
+     "ms": 800
+    },
+    {
+     "do": "scroll",
+     "by": 600,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "the chips' Journey page: the tracker at Verify, the Watcher and Vision in Agent activity"
+  },
+  {
+   "name": "rakesh-today-request",
+   "who": "rakesh",
+   "app": "workspace",
+   "path": "/home",
+   "size": "phone",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=Send one photo",
+     "ms": 900
+    },
+    {
+     "do": "hover",
+     "at": "role=button|Open camera",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 300,
+     "ms": 1500
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    }
+   ],
+   "shows": "Rakesh's Today on a phone: Vision's request for the label photo, Open camera"
+  },
+  {
+   "name": "rakesh-camera",
+   "who": "rakesh",
+   "app": "workspace",
+   "path": "/photo",
+   "size": "phone",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": "role=button|Take a photo",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "hover",
+     "at": "role=button|Upload a photo",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "the Label photo screen on a phone: the example label, Take a photo, Upload a photo"
+  }
+ ],
+ "plan": [
+  {
+   "name": "route-vision",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/route/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "scroll",
+     "to": "text=Label, read from the shelf",
+     "offset": 120,
+     "ms": 1600
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "hover",
+     "at": "text=Verified",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 1000
+    },
+    {
+     "do": "move",
+     "at": "text=^Best before$",
+     "fx": 0.5,
+     "fy": 0.5
+    },
+    {
+     "do": "wait",
+     "ms": 1200
+    }
+   ],
+   "shows": "the Route Room: Vision's read of the label, Verified, best before"
+  },
+  {
+   "name": "route-channels",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/route/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 400
+    },
+    {
+     "do": "scroll",
+     "to": "text=Five channels, priced",
+     "offset": 120,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "hover",
+     "at": "text=Kirana cluster",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "hover",
+     "at": "text=Write-off",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "press",
+     "at": "role=button|Table",
+     "ms": 1200,
+     "optional": true
+    },
+    {
+     "do": "wait",
+     "ms": 1200
+    }
+   ],
+   "shows": "the Route Room: the five channels priced, as a chart, then as the table"
+  },
+  {
+   "name": "route-split",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/route/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 400
+    },
+    {
+     "do": "scroll",
+     "to": "text=Recommended split",
+     "offset": 120,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "hover",
+     "at": "text=ExpireSoon",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 500,
+     "ms": 2000
+    },
+    {
+     "do": "hover",
+     "at": "text=Alternative considered",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 1000
+    },
+    {
+     "do": "scroll",
+     "by": 500,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 1000
+    }
+   ],
+   "shows": "the Route Room: the Router's recommended split, its reasons, the alternative considered"
+  },
+  {
+   "name": "route-plan-phone",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/route/MF-2409-117",
+   "size": "phone",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "scroll",
+     "by": 700,
+     "ms": 2400
+    },
+    {
+     "do": "wait",
+     "ms": 500
+    },
+    {
+     "do": "scroll",
+     "by": 900,
+     "ms": 2600
+    },
+    {
+     "do": "wait",
+     "ms": 500
+    },
+    {
+     "do": "scroll",
+     "by": 900,
+     "ms": 2600
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    }
+   ],
+   "shows": "the Route Room on a phone, scrolled through"
+  },
+  {
+   "name": "route-approve",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/route/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 400
+    },
+    {
+     "do": "scroll",
+     "to": "text=Recommended split",
+     "offset": 120
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "scroll",
+     "by": 500,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "press",
+     "at": "role=button|Review and approve",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=What happens the moment you tap",
+     "ms": 1200
+    },
+    {
+     "do": "press",
+     "at": "role=button|Approve · release the agents",
+     "ms": 600
+    },
+    {
+     "do": "settle",
+     "ms": 1000
+    },
+    {
+     "do": "wait",
+     "ms": 1800
+    },
+    {
+     "do": "hover",
+     "at": "role=button|Watch execution",
+     "ms": 1000
+    }
+   ],
+   "shows": "the approve sheet opened, Approve · release the agents pressed (the real yes), Plan placed"
+  }
+ ],
+ "approve": [
+  {
+   "name": "rakesh-today-plan",
+   "who": "rakesh",
+   "app": "workspace",
+   "path": "/home",
+   "size": "phone",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=Masala Chips",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 450,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Rakesh's Today on a phone after the yes: the chips' lines and his next steps"
+  },
+  {
+   "name": "execution-sent",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/execution/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "hover",
+     "at": "text=Lister",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=Outreach",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "scroll",
+     "by": 520,
+     "ms": 2200
+    },
+    {
+     "do": "hover",
+     "at": "text=Negotiator",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 500,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Priya's Execution for the chips: the Lister, Outreach and Negotiator cards"
+  },
+  {
+   "name": "kirana-offer",
+   "who": "ganesh",
+   "app": "workspace",
+   "path": "/offer/MF-2409-117",
+   "size": "phone",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 420,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "hover",
+     "at": "text=Margin today",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 1000
+    },
+    {
+     "do": "scroll",
+     "by": 300,
+     "ms": 1400
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    }
+   ],
+   "shows": "Ganesh ji's offer on a phone, in Hindi: the scheme, Margin today"
+  },
+  {
+   "name": "kirana-order",
+   "who": "jaidurga",
+   "app": "workspace",
+   "path": "/offer/MF-2409-117",
+   "size": "phone",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "scroll",
+     "by": 700,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 400
+    },
+    {
+     "do": "press",
+     "at": "role=button|ऑर्डर",
+     "ms": 900
+    },
+    {
+     "do": "settle",
+     "ms": 1000
+    },
+    {
+     "do": "wait",
+     "ms": 1500
+    },
+    {
+     "do": "press",
+     "at": ".tabbar :is(a,button):has-text(\"Orders\")",
+     "ms": 900
+    },
+    {
+     "do": "settle",
+     "ms": 900
+    },
+    {
+     "do": "press",
+     "at": "text=Masala Chips",
+     "ms": 900
+    },
+    {
+     "do": "settle",
+     "ms": 900
+    },
+    {
+     "do": "press",
+     "at": "text=Tax invoice",
+     "ms": 900
+    },
+    {
+     "do": "settle",
+     "ms": 800
+    },
+    {
+     "do": "wait",
+     "ms": 1800
+    }
+   ],
+   "shows": "Jai Durga Stores orders in a tap (the real order), then opens the order and its tax invoice"
+  },
+  {
+   "name": "agrawal-listing",
+   "who": "agrawal",
+   "app": "workspace",
+   "path": "/market",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "role=button|View lot",
+     "ms": 900
+    },
+    {
+     "do": "press",
+     "at": "role=button|View lot",
+     "ms": 900
+    },
+    {
+     "do": "settle",
+     "ms": 1000
+    },
+    {
+     "do": "hover",
+     "at": "text=Chat with the seller",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 450,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Agrawal's marketplace: View lot, the listing, the chat with the seller"
+  },
+  {
+   "name": "agrawal-bid",
+   "who": "agrawal",
+   "app": "workspace",
+   "path": "/market",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 500
+    },
+    {
+     "do": "press",
+     "at": "role=button|View lot",
+     "ms": 800
+    },
+    {
+     "do": "settle",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "to": "text=Chat with the seller",
+     "offset": 220
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "type",
+     "at": "role=textbox|Message",
+     "text": "Namaste. I can take the whole lot if the price works. Is ₹13 a packet possible?",
+     "ms": 400
+    },
+    {
+     "do": "press",
+     "at": "role=button|Send",
+     "ms": 1000
+    },
+    {
+     "do": "wait",
+     "ms": 5000
+    },
+    {
+     "do": "scroll",
+     "to": "role=button|^Bid ₹",
+     "offset": 360
+    },
+    {
+     "do": "wait",
+     "ms": 500
+    },
+    {
+     "do": "press",
+     "at": "role=button|^Bid ₹",
+     "ms": 1200
+    },
+    {
+     "do": "settle",
+     "ms": 800
+    },
+    {
+     "do": "wait",
+     "ms": 1800
+    }
+   ],
+   "tail": 1200,
+   "shows": "Agrawal writes to the seller (the Negotiator answers) and places his bid (the real bid)"
+  },
+  {
+   "name": "lakshmi-today-staff",
+   "who": "lakshmi-owner",
+   "app": "workspace",
+   "path": "/home",
+   "size": "phone",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=Staff sale",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 400,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Lakshmi Agencies' Today on a phone: the Mango Drink's steps, the staff sale"
+  },
+  {
+   "name": "meera-pickup",
+   "who": "meera",
+   "app": "workspace",
+   "path": "/pickups",
+   "size": "phone",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=Pickup",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 380,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Meera's pickups on a phone: the Mango Drink's pickup request"
+  }
+ ],
+ "orders": [
+  {
+   "name": "execution-scheme",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/execution/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 500
+    },
+    {
+     "do": "scroll",
+     "to": "text=Outreach",
+     "offset": 120,
+     "ms": 1600
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=kiranas ordered",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 450,
+     "ms": 2000
+    },
+    {
+     "do": "hover",
+     "at": "text=The push, as sent",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "press",
+     "at": "text=The push, as sent",
+     "ms": 1500,
+     "optional": true
+    },
+    {
+     "do": "wait",
+     "ms": 1200
+    }
+   ],
+   "shows": "Execution's Outreach card: the kiranas' orders, the window, The push as sent"
+  },
+  {
+   "name": "rakesh-orders",
+   "who": "rakesh",
+   "app": "workspace",
+   "path": "/orders",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "scroll",
+     "to": "text=31 kiranas",
+     "offset": 180
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "hover",
+     "at": "text=RT/26-27",
+     "ms": 900
+    },
+    {
+     "do": "press",
+     "at": "text=Show the 31 shops",
+     "ms": 900,
+     "optional": true
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "scroll",
+     "by": 420,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Rakesh's Orders: each shop's order on its tax invoice"
+  },
+  {
+   "name": "kirana-orders",
+   "who": "ganesh",
+   "app": "workspace",
+   "path": "/orders",
+   "size": "phone",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "scroll",
+     "by": 400,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Ganesh ji's Orders on a phone"
+  }
+ ],
+ "deal": [
+  {
+   "name": "agrawal-won",
+   "who": "agrawal",
+   "app": "workspace",
+   "path": "/market",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "press",
+     "at": "role=button|View lot",
+     "ms": 800
+    },
+    {
+     "do": "settle",
+     "ms": 900
+    },
+    {
+     "do": "hover",
+     "at": "text=Lot won",
+     "ms": 1000
+    },
+    {
+     "do": "scroll",
+     "by": 450,
+     "ms": 1800
+    },
+    {
+     "do": "hover",
+     "at": "text=Negotiator",
+     "ms": 1000
+    }
+   ],
+   "shows": "Agrawal's listing: Lot won, the Negotiator's thread"
+  },
+  {
+   "name": "execution-won",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/execution/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 500
+    },
+    {
+     "do": "hover",
+     "at": "text=Won",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "hover",
+     "at": "text=The API call",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "press",
+     "at": "text=The API call",
+     "ms": 1500,
+     "optional": true
+    },
+    {
+     "do": "wait",
+     "ms": 1500
+    }
+   ],
+   "shows": "Execution's Lister card: Won, The API call opened"
+  },
+  {
+   "name": "rakesh-deliveries-truck",
+   "who": "rakesh",
+   "app": "workspace",
+   "path": "/van/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": "text=buyer's truck",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 400,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Rakesh's Deliveries: the buyer's truck"
+  }
+ ],
+ "donation": [
+  {
+   "name": "lakshmi-staff-receipt",
+   "who": "lakshmi-owner",
+   "app": "workspace",
+   "path": "/van/MF-2410-118",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "scroll",
+     "to": "text=Staff sale",
+     "offset": 160
+    },
+    {
+     "do": "hover",
+     "at": "text=Staff sale",
+     "ms": 900
+    },
+    {
+     "do": "press",
+     "at": "text=Consolidated receipt",
+     "ms": 800
+    },
+    {
+     "do": "settle",
+     "ms": 800
+    },
+    {
+     "do": "wait",
+     "ms": 1500
+    },
+    {
+     "do": "scroll",
+     "by": 350,
+     "ms": 1600
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Lakshmi Agencies' Deliveries: the staff sale recorded, the consolidated receipt opened"
+  },
+  {
+   "name": "execution-staff",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/execution/MF-2410-118",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 500
+    },
+    {
+     "do": "scroll",
+     "to": "text=Staff sale",
+     "offset": 120,
+     "ms": 1600
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=Vision",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 1200
+    },
+    {
+     "do": "scroll",
+     "by": 400,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Priya's Execution for the Mango Drink: the staff sale card, Vision's read"
+  },
+  {
+   "name": "meera-collected",
+   "who": "meera",
+   "app": "workspace",
+   "path": "/pickups",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=Collected",
+     "ms": 900
+    },
+    {
+     "do": "press",
+     "at": "text=Donation receipt",
+     "ms": 900
+    },
+    {
+     "do": "settle",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 1200
+    },
+    {
+     "do": "scroll",
+     "by": 400,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    }
+   ],
+   "shows": "Meera's pickups: Collected, the donation receipt opened"
+  },
+  {
+   "name": "execution-foodbank",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/execution/MF-2410-118",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 500
+    },
+    {
+     "do": "scroll",
+     "to": "text=Donation ·",
+     "offset": 140
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "hover",
+     "at": "text=Feeding India",
+     "ms": 1000
+    },
+    {
+     "do": "hover",
+     "at": "text=collected",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    }
+   ],
+   "shows": "Priya's Execution: the Donation card, the FSSAI checklist"
+  }
+ ],
+ "settle": [
+  {
+   "name": "paperwork-pack",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/paperwork/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": "text=Document pack",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": "text=Tax invoice",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": "text=Price-support credit note",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": "text=GST ITC memo",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "scroll",
+     "by": 400,
+     "ms": 1800
+    },
+    {
+     "do": "hover",
+     "at": "text=Who keeps what",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 1000
+    }
+   ],
+   "shows": "Priya's Paperwork: the document pack and Who keeps what"
+  },
+  {
+   "name": "paper-invoice-draft",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/paperwork/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 500
+    },
+    {
+     "do": "press",
+     "at": "text=Tax invoice",
+     "ms": 600
+    },
+    {
+     "do": "settle",
+     "ms": 800
+    },
+    {
+     "do": "scroll",
+     "by": 520,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "scroll",
+     "by": 700,
+     "ms": 2200
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "the tax invoice, drafted (Tally layout), scrolled"
+  },
+  {
+   "name": "paper-credit-note",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/paperwork/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 500
+    },
+    {
+     "do": "press",
+     "at": "text=Price-support credit note",
+     "ms": 600
+    },
+    {
+     "do": "settle",
+     "ms": 800
+    },
+    {
+     "do": "scroll",
+     "by": 520,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "scroll",
+     "by": 600,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "the price-support credit note, scrolled"
+  },
+  {
+   "name": "paper-itc",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/paperwork/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 500
+    },
+    {
+     "do": "press",
+     "at": "text=GST ITC memo",
+     "ms": 1200,
+     "optional": false
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=ITC KEPT",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 500,
+     "ms": 2000
+    },
+    {
+     "do": "hover",
+     "at": "text=Section 17",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 1200
+    }
+   ],
+   "shows": "the GST ITC memo: ITC KEPT, section 17(5)(h)"
+  },
+  {
+   "name": "paper-fssai",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/paperwork/MF-2410-118",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 500
+    },
+    {
+     "do": "press",
+     "at": "text=FSSAI surplus-food checklist",
+     "ms": 1200,
+     "optional": false
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "scroll",
+     "by": 500,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "scroll",
+     "by": 600,
+     "ms": 2200
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "the Mango Drink's FSSAI surplus-food checklist"
+  },
+  {
+   "name": "paper-kiranas",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/paperwork/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 500
+    },
+    {
+     "do": "press",
+     "at": "text=Tax invoices to kiranas",
+     "ms": 1200,
+     "optional": false
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "scroll",
+     "by": 500,
+     "ms": 2000
+    },
+    {
+     "do": "hover",
+     "at": "text=RT/26-27",
+     "ms": 700
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "the tax invoices to kiranas and the sales register"
+  },
+  {
+   "name": "rakesh-today-tally",
+   "who": "rakesh",
+   "app": "workspace",
+   "path": "/home",
+   "size": "phone",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=Issue from Tally",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 1200
+    },
+    {
+     "do": "scroll",
+     "by": 300,
+     "ms": 1400
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    }
+   ],
+   "shows": "Rakesh's Today on a phone: Issue from Tally"
+  }
+ ],
+ "papers": [
+  {
+   "name": "paper-invoice-issued",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/paperwork/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 500
+    },
+    {
+     "do": "press",
+     "at": "text=Tax invoice",
+     "ms": 1200,
+     "optional": false
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "hover",
+     "at": "text=e-Invoice",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 1200
+    },
+    {
+     "do": "scroll",
+     "to": "text=Amount Chargeable",
+     "offset": 200,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "scroll",
+     "to": "text=Authorised Signatory",
+     "offset": 300,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 1400
+    }
+   ],
+   "shows": "the tax invoice issued: its e-Invoice block, the IRN, the amount in words, the signature"
+  },
+  {
+   "name": "paperwork-reviewed",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/paperwork/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "hover",
+     "at": "text=reviewed",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 1000
+    },
+    {
+     "do": "hover",
+     "at": "text=Export",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "the pack reviewed, Export"
+  },
+  {
+   "name": "rakesh-batch-papers",
+   "who": "rakesh",
+   "app": "workspace",
+   "path": "/batches/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "press",
+     "at": ".bh-tabs button:has-text(\"Papers\")",
+     "ms": 600
+    },
+    {
+     "do": "settle",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=Your papers",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": "text=Price-support credit note",
+     "ms": 700
+    },
+    {
+     "do": "press",
+     "at": "text=Tax invoice",
+     "ms": 800
+    },
+    {
+     "do": "settle",
+     "ms": 800
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "role=button|Download PDF",
+     "ms": 1200
+    },
+    {
+     "do": "key",
+     "key": "Escape",
+     "ms": 800
+    }
+   ],
+   "shows": "Rakesh's batch page, Papers tab: his own papers, the tax invoice opened with Download PDF"
+  },
+  {
+   "name": "rakesh-deliveries-van",
+   "who": "rakesh",
+   "app": "workspace",
+   "path": "/van/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": "text=van round",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 450,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Rakesh's Deliveries: the van round"
+  },
+  {
+   "name": "execution-van",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/execution/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 500
+    },
+    {
+     "do": "scroll",
+     "to": "text=Van round",
+     "offset": 120,
+     "ms": 1600
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 300,
+     "ms": 1400
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Execution's Outreach card: the van round delivered"
+  }
+ ],
+ "ledger": [
+  {
+   "name": "execution-cleared",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/execution/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": "text=cleared",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 500,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Execution once Impact posted: the batch cleared"
+  },
+  {
+   "name": "ledger-money",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/report?reading=money",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=recovered",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 450,
+     "ms": 2000
+    },
+    {
+     "do": "hover",
+     "at": "text=Sold through",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "scroll",
+     "by": 600,
+     "ms": 2200
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "the Ledger, Money reading: recovered, the outcomes, the batches"
+  },
+  {
+   "name": "ledger-gst",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/report?reading=gst",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=kept",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 450,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "scroll",
+     "by": 600,
+     "ms": 2200
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "the Ledger, GST reading: the input credit kept and reversed"
+  },
+  {
+   "name": "ledger-impact",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/report?reading=impact",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=kept out of landfill",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 420,
+     "ms": 1900
+    },
+    {
+     "do": "hover",
+     "at": "text=Food, by week",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 600,
+     "ms": 2200
+    },
+    {
+     "do": "hover",
+     "at": "text=Where the kilos went",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 600,
+     "ms": 2200
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "the Ledger, Impact reading: kept out of landfill, Food by week, Where the kilos went"
+  },
+  {
+   "name": "ledger-export",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/report?reading=impact",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "press",
+     "at": "role=button|^Export",
+     "ms": 1200
+    },
+    {
+     "do": "hover",
+     "at": "text=BRSR table",
+     "ms": 1200
+    },
+    {
+     "do": "key",
+     "key": "Escape",
+     "ms": 600
+    }
+   ],
+   "shows": "the Ledger's Export menu: the BRSR table and the other exports"
+  },
+  {
+   "name": "batch-impact",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/report/MF-2409-117?tab=impact",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": "text=BRSR line",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 1000
+    },
+    {
+     "do": "hover",
+     "at": "text=Evidence",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 1000
+    },
+    {
+     "do": "scroll",
+     "by": 300,
+     "ms": 1400
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "the chips' Impact tab: the BRSR line and its evidence"
+  },
+  {
+   "name": "batch-record",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/report/MF-2409-117?tab=record",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": "text=Photos sent",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "press",
+     "at": ".rec-shot",
+     "ms": 1500,
+     "optional": true
+    },
+    {
+     "do": "wait",
+     "ms": 1200
+    },
+    {
+     "do": "key",
+     "key": "Escape",
+     "ms": 600
+    },
+    {
+     "do": "scroll",
+     "to": "text=Audit trail",
+     "offset": 120,
+     "ms": 1600
+    },
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "scroll",
+     "by": 600,
+     "ms": 2200
+    },
+    {
+     "do": "hover",
+     "at": "text=The yeses",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 1000
+    }
+   ],
+   "shows": "the chips' Record: the photos sent (one opened), the audit trail, the yeses"
+  },
+  {
+   "name": "command-impact",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/command",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": "text=Impact",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 1000
+    },
+    {
+     "do": "scroll",
+     "by": 400,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "the Command Center's Impact card"
+  },
+  {
+   "name": "rakesh-batches",
+   "who": "rakesh",
+   "app": "workspace",
+   "path": "/batches",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": "text=credited",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 450,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Rakesh's Batches: what Munchly credited him, how it adds up"
+  },
+  {
+   "name": "rakesh-batch-money",
+   "who": "rakesh",
+   "app": "workspace",
+   "path": "/batches/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "press",
+     "at": ".bh-tabs button:has-text(\"Money\")",
+     "ms": 600
+    },
+    {
+     "do": "settle",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=You end whole",
+     "ms": 1200
+    },
+    {
+     "do": "scroll",
+     "by": 300,
+     "ms": 1500
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Rakesh's batch page, Money tab: You end whole"
+  },
+  {
+   "name": "kirana-orders-done",
+   "who": "ganesh",
+   "app": "workspace",
+   "path": "/orders",
+   "size": "phone",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "scroll",
+     "by": 400,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Ganesh ji's Orders on a phone, the batch cleared"
+  },
+  {
+   "name": "meera-pickups-done",
+   "who": "meera",
+   "app": "workspace",
+   "path": "/pickups",
+   "size": "phone",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "scroll",
+     "by": 400,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    }
+   ],
+   "shows": "Meera's pickups on a phone, the pickup collected"
+  },
+  {
+   "name": "console-food",
+   "who": "neha",
+   "app": "console",
+   "path": "/",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "scroll",
+     "to": "text=Food, by day",
+     "offset": 120,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "hover",
+     "at": "text=destroyed",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 1200
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    }
+   ],
+   "shows": "the console's Overview: Food by day, the kilos destroyed"
+  }
+ ],
+ "slow": [
+  {
+   "name": "slow-scheme-short",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/execution/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "scroll",
+     "to": "text=Outreach",
+     "offset": 140
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=window over",
+     "ms": 1000
+    },
+    {
+     "do": "scroll",
+     "by": 400,
+     "ms": 1800
+    },
+    {
+     "do": "hover",
+     "at": "text=stayed at",
+     "ms": 1200
+    }
+   ],
+   "stub": true,
+   "stubAt": {
+    "scenario": "slow",
+    "stage": 7
+   },
+   "shows": "(stub, the slow week) Execution's Outreach card: the window over, the packets that stayed at the godown"
+  },
+  {
+   "name": "slow-left-at-godown",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/execution/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "scroll",
+     "to": "text=Left at the godown",
+     "offset": 140
+    },
+    {
+     "do": "wait",
+     "ms": 1000
+    },
+    {
+     "do": "scroll",
+     "by": 400,
+     "ms": 1800
+    },
+    {
+     "do": "hover",
+     "at": "text=Expiry settlement",
+     "ms": 1200
+    }
+   ],
+   "stub": true,
+   "stubAt": {
+    "scenario": "slow",
+    "stage": 8,
+    "after": [
+     {
+      "fn": "run",
+      "args": [
+       "expire"
+      ]
+     }
+    ]
+   },
+   "shows": "(stub) Execution: Left at the godown, the Expiry settlement"
+  },
+  {
+   "name": "slow-rakesh-today-destroy",
+   "who": "rakesh",
+   "app": "workspace",
+   "path": "/home",
+   "size": "phone",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=Destroy",
+     "ms": 1000
+    },
+    {
+     "do": "scroll",
+     "by": 300,
+     "ms": 1500
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    }
+   ],
+   "stub": true,
+   "stubAt": {
+    "scenario": "slow",
+    "stage": 8,
+    "after": [
+     {
+      "fn": "run",
+      "args": [
+       "expire"
+      ]
+     }
+    ]
+   },
+   "shows": "(stub) Rakesh's Today on a phone: the request to destroy the expired packs"
+  },
+  {
+   "name": "slow-destroy-photos",
+   "who": "rakesh",
+   "app": "workspace",
+   "path": "/destroy/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": "text=Before",
+     "ms": 600
+    },
+    {
+     "do": "press",
+     "at": "role=button|Take the before photo",
+     "ms": 900,
+     "optional": true
+    },
+    {
+     "do": "hover",
+     "at": "text=After",
+     "ms": 600
+    },
+    {
+     "do": "press",
+     "at": "role=button|Take the after photo",
+     "ms": 900,
+     "optional": true
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "scroll",
+     "by": 450,
+     "ms": 1800
+    },
+    {
+     "do": "hover",
+     "at": "text=Agency",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 500,
+     "ms": 1800
+    },
+    {
+     "do": "hover",
+     "at": "text=witnesses",
+     "ms": 1000
+    }
+   ],
+   "stub": true,
+   "stubAt": {
+    "scenario": "slow",
+    "stage": 8,
+    "after": [
+     {
+      "fn": "run",
+      "args": [
+       "expire"
+      ]
+     }
+    ]
+   },
+   "shows": "(stub) Rakesh's destroy screen: the before and after photos taken, the agency, the witnesses"
+  },
+  {
+   "name": "slow-destroy-sign",
+   "who": "rakesh",
+   "app": "workspace",
+   "path": "/destroy/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 500
+    },
+    {
+     "do": "scroll",
+     "to": "text=Sign the certificate",
+     "offset": 120
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "hover",
+     "at": "text=Sign here",
+     "ms": 900
+    },
+    {
+     "do": "sign",
+     "times": 4,
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 1200
+    }
+   ],
+   "stub": true,
+   "stubAt": {
+    "scenario": "slow",
+    "stage": 8,
+    "after": [
+     {
+      "fn": "run",
+      "args": [
+       "expire"
+      ]
+     }
+    ]
+   },
+   "before": [
+    {
+     "do": "press",
+     "at": "role=button|Take the before photo",
+     "ms": 400,
+     "optional": true
+    },
+    {
+     "do": "press",
+     "at": "role=button|Take the after photo",
+     "ms": 400,
+     "optional": true
+    },
+    {
+     "do": "type",
+     "at": "#dz-cert",
+     "text": "OCE/DC/26-27/0219",
+     "ms": 300
+    }
+   ],
+   "shows": "(stub) the certificate signed in place: four signatures drawn on the pad"
+  },
+  {
+   "name": "slow-review",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/command",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 700
+    },
+    {
+     "do": "hover",
+     "at": "text=Review the destruction",
+     "ms": 800
+    },
+    {
+     "do": "press",
+     "at": "text=Review the destruction",
+     "ms": 900
+    },
+    {
+     "do": "settle",
+     "ms": 900
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "scroll",
+     "by": 400,
+     "ms": 1800
+    },
+    {
+     "do": "hover",
+     "at": "text=Vision",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 500,
+     "ms": 1800
+    },
+    {
+     "do": "wait",
+     "ms": 1000
+    }
+   ],
+   "stub": true,
+   "stubAt": {
+    "scenario": "slow",
+    "stage": 8,
+    "after": [
+     {
+      "fn": "run",
+      "args": [
+       "expire"
+      ]
+     },
+     {
+      "fn": "run",
+      "args": [
+       "sendDestruction"
+      ]
+     }
+    ]
+   },
+   "shows": "(stub) Priya's Command Center: Review the destruction, the sheet with both photos and Vision's checks"
+  },
+  {
+   "name": "slow-papers",
+   "who": "priya",
+   "app": "workspace",
+   "path": "/paperwork/MF-2409-117",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "hover",
+     "at": "text=Expiry credit note",
+     "ms": 800
+    },
+    {
+     "do": "press",
+     "at": "text=Destruction certificate",
+     "ms": 800
+    },
+    {
+     "do": "settle",
+     "ms": 800
+    },
+    {
+     "do": "hover",
+     "at": "text=Certificate of Destruction",
+     "ms": 900
+    },
+    {
+     "do": "scroll",
+     "by": 500,
+     "ms": 2000
+    },
+    {
+     "do": "wait",
+     "ms": 600
+    },
+    {
+     "do": "scroll",
+     "to": "text=Destruction log",
+     "offset": 120
+    },
+    {
+     "do": "hover",
+     "at": "text=Destruction log",
+     "ms": 1200
+    }
+   ],
+   "stub": true,
+   "stubAt": {
+    "scenario": "slow",
+    "stage": 9
+   },
+   "shows": "(stub) the pack with the expiry credit note and the destruction certificate opened"
+  }
+ ],
+ "demo": [
+  {
+   "name": "demo-map",
+   "who": null,
+   "app": "demo",
+   "path": "/",
+   "size": "desktop",
+   "actions": [
+    {
+     "do": "wait",
+     "ms": 1500
+    },
+    {
+     "do": "move",
+     "at": "text=Masala Chips",
+     "fx": 0.5,
+     "fy": 0.5
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "move",
+     "at": "text=Mango Drink",
+     "fx": 0.5,
+     "fy": 0.5
+    },
+    {
+     "do": "wait",
+     "ms": 900
+    },
+    {
+     "do": "move",
+     "at": "role=button|Play the whole route",
+     "fx": 0.5,
+     "fy": 0.5
+    },
+    {
+     "do": "wait",
+     "ms": 1200
+    }
+   ],
+   "lead": 500,
+   "shows": "the guided demo's route map (the live site)"
+  }
+ ]
+}

@@ -1,0 +1,34 @@
+{
+  "name": "k28-foodbank-van",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "Late afternoon at a godown's loading bay in Hyderabad: a white van with its rear doors open; the food bank's city lead (a woman in her early thirties, a plain green T-shirt, a lanyard, hair in a bun) holds her phone in her left hand, its screen showing exactly the app screen in the reference image (a white page with a pickup card and a green button), sharp and turned a little toward the camera, while a godown worker in a grey T-shirt hands her a MUNCHLY carton; a second worker brings another. Medium shot, golden light, the two of them and the phone sharp.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. The cartons are kraft-brown with a sage-green band and the word MUNCHLY printed once in bold dark-green capital letters on each carton's side, nothing else written on them; the snack packets are solid orange, green and red with no lettering; the Mango Drink packs are small plain yellow-orange tetra packs with a mango drawn on them and no lettering. No other text, letters, numbers, logos or watermarks anywhere. No number plate. No children.",
+  "seed": 187128,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-meera.webp",
+      "sha256": "b75cb1680cee1e445106a2c1c5236040bc8e2287c6fb622456b1a6e4cb461ffb"
+    },
+    {
+      "role": "reference",
+      "file": "approve--meera-pickups-phone.png",
+      "sha256": "049c480a58cc22380bebb11eb2b87a1e0ce850ebce4891f6c56bea1d1b653000"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "latency_s": 20.2,
+  "use": "SC-187 cut 2 keyframe: the first frame of a Veo clip for the demo film; the app's own screen on the phone",
+  "model_text": null,
+  "status": "done",
+  "output": "k28-foodbank-van.webp 2752x1536",
+  "postprocess": "WebP q82 from k28-foodbank-van.png",
+  "derived_from": "k28-foodbank-van.png"
+}

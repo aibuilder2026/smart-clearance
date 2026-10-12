@@ -5,7 +5,9 @@ backend-api composes for both batches are kept as the film's pop-ups (pushes.jso
 figures (both cases, the ledger, each batch's row) in figures.json. Run through director.sh, which sets the walk's
 environment (the main checkout's lib.sh, SC_REPO).
 
-  director.sh [--day-minutes 2] [--from STAGE] [--skip-captures]
+  director.sh [--day-minutes 2] [--from STAGE] [--until STAGE] [--skip-captures]
+  (--until: stop after that stage, with the day back at 24 hours and figures.json and pushes.json left alone, so the
+  stage holds while tour.mjs records it; the next run, --from the next stage, moves the walk on)
   director.sh --state                     # where both batches stand, and exit
   director.sh --capture STAGE [--only NAME]   # only the captures of one stage (after a failed shot)
   director.sh --dump-only                 # figures.json and pushes.json from the cases as they stand
@@ -132,11 +134,12 @@ async def preamble(d: Director) -> None:
             say(f"{who} gave the one-time permission")
 
 
-async def run(day_minutes: int, start: str, captures: bool) -> None:
+async def run(day_minutes: int, start: str, captures: bool, until: str | None = None) -> None:
     uids, w = world()
     hero = next(b["id"] for b in load("journey.json")["batches"] if b.get("hero"))
     mango = next(b["id"] for b in load("journey.json")["batches"] if b.get("second"))
     begin = STAGES.index(start)
+    end = STAGES.index(until) if until else len(STAGES) - 1
     async with httpx.AsyncClient(base_url=W.API, timeout=60) as http:
         walk = Walk(Tokens(uids), http)
         d = Director(walk, hero, mango, w)
@@ -144,7 +147,7 @@ async def run(day_minutes: int, start: str, captures: bool) -> None:
         await preamble(d)
 
         def at(stage: str) -> bool:
-            return begin <= STAGES.index(stage)
+            return begin <= STAGES.index(stage) <= end
 
         # 0. the quiet morning, before any batch is flagged
         if at("quiet"):
@@ -155,8 +158,9 @@ async def run(day_minutes: int, start: str, captures: bool) -> None:
                 say("quiet: a case is open already, skipped")
         # the compressed day only now: at 2 min a day, the tick's 09:00 check flags both batches within seconds of
         # Setup's confirmation, which would have spoilt the quiet captures
-        await walk.call("neha", "PUT", f"{C}/clock", {"dayMinutes": day_minutes})
-        say(f"Neha set Munchly's journey day to {day_minutes} min")
+        if end > STAGES.index("quiet"):
+            await walk.call("neha", "PUT", f"{C}/clock", {"dayMinutes": day_minutes})
+            say(f"Neha set Munchly's journey day to {day_minutes} min")
 
         # 1. detect: Run now starts the Watcher, which flags both batches; Vision asks for each label photo
         if at("detect"):
@@ -456,6 +460,9 @@ async def run(day_minutes: int, start: str, captures: bool) -> None:
 
         await walk.call("neha", "PUT", f"{C}/clock", {"dayMinutes": 1440})
         say("Neha set Munchly's journey day back to 24 hours")
+        if until:
+            say(f"stopped after {until}; the stage holds (figures.json and pushes.json left alone)")
+            return
         d.save_pushes()
         say(f"kept pushes for {list(d.pushes)} in pushes.json")
         await dump(d)
@@ -499,6 +506,7 @@ def main() -> None:
     p.add_argument("--only", help="with --capture: one capture by name")
     p.add_argument("--day-minutes", type=int, default=2)
     p.add_argument("--from", dest="start", choices=STAGES, default="quiet")
+    p.add_argument("--until", choices=STAGES, help="stop after this stage, so it holds for tour.mjs")
     p.add_argument("--skip-captures", action="store_true")
     a = p.parse_args()
     if a.state:
@@ -508,7 +516,7 @@ def main() -> None:
     elif a.capture:
         asyncio.run(standalone("capture", a.capture, a.only))
     else:
-        asyncio.run(run(a.day_minutes, a.start, not a.skip_captures))
+        asyncio.run(run(a.day_minutes, a.start, not a.skip_captures, a.until))
 
 
 if __name__ == "__main__":

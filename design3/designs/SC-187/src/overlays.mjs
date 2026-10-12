@@ -69,6 +69,30 @@ em { font-style: normal; color: var(--amber); font-weight: 700; }
 .callout .pill.violet { background: var(--violet); }
 .callout.card { background: rgb(7 38 26 / 0.78); backdrop-filter: blur(14px); padding: 18px 24px 20px; border-radius: 18px; }
 
+/* cut 2: a pointer beside a UI element: a dot with a soft ring, a short leader and a label pill */
+.pointer { position: absolute; display: flex; align-items: center; gap: 0; }
+.pointer .dot { width: 18px; height: 18px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 0 7px rgb(242 180 55 / 0.28), 0 0 0 14px rgb(242 180 55 / 0.12); flex: none; }
+.pointer .lead { width: 54px; height: 3px; background: var(--amber); flex: none; }
+.pointer .pill { font-size: 24px; font-weight: 600; color: var(--fg); background: rgb(255 255 255 / 0.96); border: 1px solid rgb(17 41 30 / 0.12); padding: 10px 18px; border-radius: 999px; box-shadow: 0 12px 30px -12px rgb(13 28 21 / 0.35); white-space: nowrap; }
+.pointer .pill b { color: var(--primary-text); }
+.pointer.left { flex-direction: row-reverse; }
+.pointer.green .dot { background: var(--green-500); box-shadow: 0 0 0 7px rgb(31 149 99 / 0.25), 0 0 0 14px rgb(31 149 99 / 0.1); }
+.pointer.green .lead { background: var(--green-500); }
+
+/* cut 2: a role card in place of a name: who this is, in the story */
+.role { position: absolute; left: 72px; bottom: 150px; display: flex; align-items: center; gap: 16px; background: rgb(7 38 26 / 0.74); backdrop-filter: blur(14px); padding: 14px 24px 14px 16px; border-radius: 999px; color: #fff; }
+.role .mark { width: 14px; height: 14px; border-radius: 50%; background: var(--amber); flex: none; }
+.role .who { font-size: 28px; font-weight: 700; }
+.role .where { font-size: 20px; color: var(--green-100); }
+
+/* cut 2: a feature label: an eyebrow and one line, top left under the chapter, for what a screen does */
+.feature { position: absolute; left: 72px; top: 120px; max-width: 620px; }
+.feature .eyebrow { font-size: 18px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber-text); background: var(--amber-soft); padding: 6px 12px; border-radius: 999px; display: inline-block; margin-bottom: 10px; }
+.feature .line { font-size: 30px; font-weight: 600; line-height: 1.25; color: var(--fg); text-wrap: balance; }
+.feature .line b { color: var(--primary-text); }
+.feature.dark .line { color: #fff; text-shadow: 0 2px 14px rgb(0 0 0 / 0.5); }
+.feature.dark .eyebrow { background: var(--amber); color: var(--amber-fg); }
+
 /* a ring that marks a UI element the camera has closed in on */
 .ring { position: absolute; border: 4px solid var(--amber); border-radius: 14px; box-shadow: 0 0 0 6px rgb(242 180 55 / 0.25), 0 10px 40px rgb(0 0 0 / 0.25); }
 
@@ -139,6 +163,12 @@ function html(o) {
       return `<div class="stage"><div class="callout${o.card ? " card" : ""}" style="${pos}">${o.pill ? `<span class="pill ${o.tone || ""}">${esc(o.pill)}</span>` : ""}<div class="fig display ${o.tone || ""}">${rich(o.fig)}</div>${o.what ? `<div class="what">${rich(o.what)}</div>` : ""}</div>
         ${o.ring ? `<div class="ring" style="left:${o.ring[0]}px;top:${o.ring[1]}px;width:${o.ring[2]}px;height:${o.ring[3]}px"></div>` : ""}</div>`;
     }
+    case "pointer":
+      return `<div class="stage"><div class="pointer${o.left ? " left" : ""}${o.tone === "green" ? " green" : ""}" style="left:${o.x}px;top:${o.y}px;transform:translate(${o.left ? "-100%" : "-9px"},-50%)"><span class="dot"></span><span class="lead"></span><span class="pill">${rich(o.text)}</span></div></div>`;
+    case "role":
+      return `<div class="stage"><div class="role"><span class="mark"></span><span class="who">${esc(o.who)}</span>${o.where ? `<span class="where">${esc(o.where)}</span>` : ""}</div></div>`;
+    case "feature":
+      return `<div class="stage"><div class="feature${o.dark ? " dark" : ""}">${o.eyebrow ? `<span class="eyebrow">${esc(o.eyebrow)}</span>` : ""}<div class="line">${rich(o.text)}</div></div></div>`;
     case "ring":
       return `<div class="stage"><div class="ring" style="left:${o.ring[0]}px;top:${o.ring[1]}px;width:${o.ring[2]}px;height:${o.ring[3]}px"></div></div>`;
     case "title":

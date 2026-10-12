@@ -1,0 +1,34 @@
+{
+  "name": "k27-staff-sale",
+  "model": "gemini-3.1-flash-image",
+  "location": "global",
+  "service": "Vertex AI",
+  "kind": "still",
+  "prompt": "Dusk at a godown's gate in Begum Bazaar, Hyderabad, a violet sky: a folding table under a tube light with neat rows of Mango Drink tetra packs and a MUNCHLY carton; the distributor (the woman in her late forties in a deep teal cotton saree with a thin cream border, reading glasses on a beaded cord, a long plait, a small gold nose pin) stands behind the table holding her phone up in one hand, its screen showing exactly the app screen in the reference image (a white page with a card, a stepper and a green button), sharp and turned a little toward the camera, while two godown workers in grey T-shirts buy packs, one holding his phone out toward a small white UPI stand on the table. Medium wide shot, warm tube light against the violet dusk.\n\nPhotorealistic cinematic film still, live action, 35 mm, eye level, shallow depth of field, natural light, real skin and fabric. The cartons are kraft-brown with a sage-green band and the word MUNCHLY printed once in bold dark-green capital letters on each carton's side, nothing else written on them; the snack packets are solid orange, green and red with no lettering; the Mango Drink packs are small plain yellow-orange tetra packs with a mango drawn on them and no lettering. No other text, letters, numbers, logos or watermarks anywhere. No number plate. No children.",
+  "seed": 187127,
+  "aspect": "16:9",
+  "size": "2K",
+  "inputs": [
+    {
+      "role": "reference",
+      "file": "cast-lakshmi.webp",
+      "sha256": "095316a76cb40bdbf74c54994b0ab3b8a2dba241a064719830eb0009a4edcb5c"
+    },
+    {
+      "role": "reference",
+      "file": "approve--lakshmi-today-phone.png",
+      "sha256": "4da75431d6d4cc65b2ad2597a5e323f99d7aa433bd58d110fa3964df731034bb"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 0.101,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-12",
+  "latency_s": 18.7,
+  "use": "SC-187 cut 2 keyframe: the first frame of a Veo clip for the demo film; the app's own screen on the phone",
+  "model_text": null,
+  "status": "done",
+  "output": "k27-staff-sale.webp 2752x1536",
+  "postprocess": "WebP q82 from k27-staff-sale.png",
+  "derived_from": "k27-staff-sale.png"
+}

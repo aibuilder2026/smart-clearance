@@ -5,7 +5,7 @@
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"; D="$(dirname "$HERE")"; V="$D/../../tools/vertex-media"
 for c in "$@"; do
-  k="k${c:1:2}"; key=$(ls "$HERE/img/$k"-*.png 2>/dev/null | grep -v -- '-t[0-9].png' | head -1)
+  key="$HERE/img/k${c:1}.png"   # the clip's own keyframe, never a retake (-t1) or a superseded one (-cut1)
   out="$HERE/clips/$c.mp4"
   [ -f "$out" ] && { echo "clip $c exists"; continue; }
   [ -f "$key" ] || { echo "no keyframe for $c"; continue; }

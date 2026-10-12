@@ -3,7 +3,7 @@
   "model": "veo-3.1-generate-001",
   "location": "us-central1",
   "service": "Vertex AI",
-  "prompt": "Photorealistic cinematic live action, exactly as in the image: the man in the light blue checked shirt steadies his phone with both hands, its back to the camera, lines it up on the plain white label panel of the carton and holds still for the shot, then lowers the phone a little and glances at its back. The camera holds, with the faintest drift; the phone's screen is never shown. Every face, hand and arm keeps its form; no extra limbs appear and none vanish; nobody's face changes. No text, no letters, no numbers, no logos, no lettering appears anywhere, on no carton, packet, screen, sign or vehicle. Natural light, 35 mm, shallow depth of field, no handheld shake.",
+  "prompt": "Photorealistic cinematic live action, exactly as in the image: the man in the light blue checked shirt steadies his phone with both hands, its back to the camera, lines it up on the printed Munchly label on the carton and holds still for the shot, then lowers the phone a little and glances at its back. The camera holds, with the faintest drift; the phone's screen is never shown. Every face, hand and arm keeps its form; no extra limbs appear and none vanish; nobody's face changes. The printed Munchly product labels on the cartons (the maroon band, the batch and best-before boxes, the barcode and the QR code) and the Munchly packets stay exactly as they are, crisp and legible, and never change. No other text, letters, logos or lettering appear anywhere. Natural light, 35 mm, shallow depth of field, no handheld shake.",
   "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
   "seed": 187203,
   "enhance_prompt": true,
@@ -17,7 +17,7 @@
     {
       "role": "first",
       "file": "k03-rakesh-label-photo.png",
-      "sha256": "519ebc6a7ba69d949359857184330b91423b433d4f15e40773f98c55821c6f3e"
+      "sha256": "2d5f834bf05ab1c8da0492135f8d22e952c84747a89b923d2af54573a4eac0a3"
     }
   ],
   "watermark": "SynthID",
@@ -26,8 +26,8 @@
   "created": "2026-10-12",
   "use": "SC-187: a scene of the demo film, image to video from its keyframe",
   "status": "done",
-  "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/9ef6a328-88fe-4f4b-adc6-7732136b81c1",
-  "latency_s": 114.3,
+  "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/e0c1f5e5-8197-47f9-b293-8a0e72ebb8cf",
+  "latency_s": 130.5,
   "rai_filtered": {
     "count": 0,
     "reasons": []
@@ -35,5 +35,5 @@
   "files": [
     "c03-rakesh-label-photo.mp4"
   ],
-  "probe": "{\n    \"programs\": [\n\n    ],\n    \"stream_groups\": [\n\n    ],\n    \"streams\": [\n        {\n            \"width\": 1920,\n            \"height\": 1080,\n            \"r_frame_rate\": \"24/1\",\n            \"nb_frames\": \"192\"\n        }\n    ],\n    \"format\": {\n        \"duration\": \"8.000000\",\n        \"size\": \"7562493\"\n    }\n}"
+  "probe": "{\n    \"programs\": [\n\n    ],\n    \"stream_groups\": [\n\n    ],\n    \"streams\": [\n        {\n            \"width\": 1920,\n            \"height\": 1080,\n            \"r_frame_rate\": \"24/1\",\n            \"nb_frames\": \"192\"\n        }\n    ],\n    \"format\": {\n        \"duration\": \"8.000000\",\n        \"size\": \"11242837\"\n    }\n}"
 }

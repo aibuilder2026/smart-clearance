@@ -25,7 +25,7 @@ def main():
     ask = o.ask or (ASK_VOICE if o.voice else ASK_MUSIC)
     tok = subprocess.run(["gcloud", "auth", "print-access-token"], text=True, capture_output=True, check=True).stdout.strip()
     body = {"contents": [{"role": "user", "parts": [{"inlineData": {"mimeType": mime, "data": data}}, {"text": ask}]}],
-            "generationConfig": {"temperature": 0.2, "maxOutputTokens": 800}}
+            "generationConfig": {"temperature": 0.2, "maxOutputTokens": 6000}}
     host = "aiplatform.googleapis.com" if LOC == "global" else f"{LOC}-aiplatform.googleapis.com"
     bf = pathlib.Path("/tmp") / (p.stem + ".ears.json"); bf.write_text(json.dumps(body))
     r = subprocess.run(["curl", "-s", "-X", "POST", "-H", f"Authorization: Bearer {tok}", "-H", "Content-Type: application/json",
