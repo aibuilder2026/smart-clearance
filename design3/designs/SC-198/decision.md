@@ -41,13 +41,16 @@ seen on the real sign-ins before the port.
 
 ## The port
 
-`frontend/core`: `components/agents/mesh.ts` (`agGround`, the posts, the clear ground for the words) and
+Every sign-in draws the same stage, so the one port reaches all of them: the workspace's (stub and live), the
+console's, and the guided demo's devices, which embed both. `frontend/core`: `components/agents/mesh.ts` (`agGround`, the posts, the clear ground for the words) and
 `components/AgentStage.svelte` (nothing on a phone held upright). The tests: a new one for the phone held upright, the
 SC-196 one now on a phone held sideways (700 × 390), and the two phone sign-in goldens lose the agents' words.
 
 ## Stills
 
 - `stills/`: design3's workspace and console at 1440 in light and dark, 820 × 1180, and 390 × 844 in light and dark.
-- `stills/build/`: the port's stub builds (`ws-`, `cs-`) at the same sizes, plus a phone held sideways (700 × 390).
+- `stills/build/`: the port's stub builds (`ws-`, `cs-`) at the same sizes, plus a phone held sideways (700 × 390); and
+  the guided demo's build (`demo-`): Neha's laptop at the console's sign-in, Priya's laptop at the workspace's sign-in,
+  and Rakesh's phone, the form alone.
 
 No page errors in any of them.
