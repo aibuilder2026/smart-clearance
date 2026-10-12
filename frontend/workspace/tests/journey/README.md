@@ -370,7 +370,7 @@ E2E_COMPANY="Nilgiri Foods" E2E_FROM=agents corepack pnpm test:journey:admin   #
 title, start and end), and `cut-chapters.mjs` cuts one clip per chapter, a quarter second either side, with the
 chapters in YouTube's form and as CSV:
 
-```sh
+````sh
 node tests/journey/cut-chapters.mjs <recording.mp4> [out-dir] [--1080]
 ``` Its run of 12 Oct on production is in
 `runs/2026-10-12-prod-admin/`: it set up Nilgiri Foods. The first run, on three screens, set up Aravalli Snacks.
@@ -391,7 +391,7 @@ Once a run is done, set Munchly's journey day back to 24 hours: the Chips suites
 
 ```sh
 backend-api/scripts/hydrate.sh --day-minutes munchly=1440
-```
+````
 
 From `frontend/`, on request only, like every browser suite (SC-55):
 

@@ -1356,7 +1356,11 @@ const STEPS: Step[] = [
 			await save('Approval');
 			// whoever the select holds now: the approver just invited when it offers him, else the workspace's admin
 			const chosen = (await hasField('gate-approver'))
-				? (await approver.locator('option:checked').innerText()).split(' · ')[0]
+				? (
+						(await approver
+							.evaluate((el) => (el as HTMLSelectElement).selectedOptions[0]?.text ?? '')
+							.catch(() => '')) || ''
+					).split(' · ')[0]
 				: '';
 			running().figure('Approver', chosen || 'the workspace admin');
 			await running().done(`The approval: always on, to ${chosen || 'the workspace admin'}`);
