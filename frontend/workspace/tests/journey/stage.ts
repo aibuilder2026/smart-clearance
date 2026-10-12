@@ -163,7 +163,7 @@ const CUT_SCREENS = 3;
 
 /** the cursor every screen draws: an arrow that follows the mouse, gliding, and a ripple where it presses. Its place
  *  is kept across a page's loads (sessionStorage), so it glides on from where it was */
-const CURSOR = `(() => {
+const CURSOR = (ink: Ink) => `(() => {
 	// the top page only: an embedded frame (YouTube's player, SC-197) has no cursor of its own, and may refuse markup
 	if (window.__e2eCursor || window.top !== window) return;
 	window.__e2eCursor = true;
@@ -199,7 +199,7 @@ const CURSOR = `(() => {
 		[0, 130].forEach((delay, i) => setTimeout(() => {
 			const r = document.createElement('div');
 			r.setAttribute('aria-hidden', 'true');
-			r.style.cssText = 'position:fixed;left:' + (e.clientX - 26) + 'px;top:' + (e.clientY - 26) + 'px;width:52px;height:52px;border-radius:50%;border:3px solid #f5c542;background:' + (i ? 'transparent' : 'rgba(245,197,66,.32)') + ';z-index:2147483646;pointer-events:none;transform:scale(.3);opacity:1;transition:transform .55s ease-out,opacity .65s ease-out';
+			r.style.cssText = 'position:fixed;left:' + (e.clientX - 26) + 'px;top:' + (e.clientY - 26) + 'px;width:52px;height:52px;border-radius:50%;border:3px solid ${INKS[ink].c};background:' + (i ? 'transparent' : 'rgba(${INKS[ink].rgb},.32)') + ';z-index:2147483646;pointer-events:none;transform:scale(.3);opacity:1;transition:transform .55s ease-out,opacity .65s ease-out';
 			document.documentElement.appendChild(r);
 			requestAnimationFrame(() => requestAnimationFrame(() => { r.style.transform = 'scale(1.6)'; r.style.opacity = '0'; }));
 			setTimeout(() => r.remove(), 900);
@@ -238,6 +238,20 @@ export type Cast = {
 	host?: App;
 	/** the screens: two tablets and a phone (the default), or a laptop and a tablet in portrait */
 	layout?: Layout;
+	/** the stage's ink for rings, numbers and clicks: amber (the default), or green (SC-199) */
+	ink?: Ink;
+	/** how a note shows: a chat bubble with a tail (the default, SC-197), or a card with a caret (SC-199) */
+	notes?: 'bubble' | 'card';
+	/** how long a note stays, against the default: 0.6 for a quick tour (SC-199) */
+	pace?: number;
+	/** leave out the note on the first sign-in, that no password is typed */
+	quiet?: boolean;
+};
+export type Ink = 'amber' | 'green';
+/** each ink: its colour, its colour as rgb for glows, a lighter one for the pulse, and the text on it */
+const INKS: Record<Ink, { c: string; rgb: string; hi: string; on: string }> = {
+	amber: { c: '#f5c542', rgb: '245,197,66', hi: '#ffe08a', on: '#1b1503' },
+	green: { c: '#22c26e', rgb: '34,194,110', hi: '#7ff0b0', on: '#04170d' }
 };
 const PHONE_NOTE =
 	'Each kirana, Agrawal Wholesale on ExpireSoon and Neha in the console sign in here as they are needed.';
@@ -346,7 +360,7 @@ export class Stage {
 		const ctx = await stageBrowser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 2 });
 		const stage = await ctx.newPage();
 		setLayout(cast.layout ?? 'three');
-		await stage.setContent(STAGE_HTML(about, cast.phone ?? PHONE_NOTE, cast.host ?? 'workspace'));
+		await stage.setContent(STAGE_HTML(about, cast.phone ?? PHONE_NOTE, cast.host ?? 'workspace', cast.ink ?? 'amber'));
 		await stage.evaluate(() => document.fonts.ready);
 		let monitor: Page | null = null;
 		if (LIVE) {
@@ -383,7 +397,7 @@ export class Stage {
 			serviceWorkers: 'block'
 		});
 		ctx.setDefaultTimeout(20_000);
-		await ctx.addInitScript(CURSOR);
+		await ctx.addInitScript(CURSOR(this.crew.ink ?? 'amber'));
 		const page = await ctx.newPage();
 		// a sign-in on the app's own screen, its password check answered with the person's session (auth.ts)
 		await signInOnScreen(page);
@@ -662,7 +676,7 @@ export class Stage {
 		await this.type(email, person(who).email);
 		await this.type(page.locator('#si-pw'), STAND_IN);
 		// said once, at the first sign-in: what the password field holds
-		if (!this.told) {
+		if (!this.told && !this.crew.quiet) {
 			this.told = true;
 			await this.spot(page.locator('#si-pw'), {
 				tag: 'Note',
@@ -900,7 +914,9 @@ export class Stage {
 		if (box) await page.mouse.move(box.x + box.width / 2, box.y + Math.min(box.height / 2, 24));
 		await page.waitForTimeout(GLIDE - 120);
 		await this.ring(target, note);
-		await page.waitForTimeout(hold ?? Math.min(8500, Math.max(4500, (note.title.length + note.text.length) * 34)));
+		await page.waitForTimeout(
+			hold ?? (this.crew.pace ?? 1) * Math.min(8500, Math.max(4500, (note.title.length + note.text.length) * 34))
+		);
 		await this.unring();
 		await page.waitForTimeout(300);
 	}
@@ -930,7 +946,7 @@ export class Stage {
 			: null;
 		await this.stage
 			.evaluate(
-				([id, b, vw, note, badge, quote, banner, ringless, around]) => {
+				([id, b, vw, note, badge, quote, banner, ringless, around, cardStyle]) => {
 					const fx = document.getElementById(`fx-${id}`)!;
 					const scr = document.getElementById(`scr-${id}`)!.getBoundingClientRect();
 					const k = scr.width / vw;
@@ -967,15 +983,25 @@ export class Stage {
 					// line naming the screen, then the note). No time, no ticks: it is not a chat
 					const card = document.createElement('div');
 					card.className = 'wa';
-					card.innerHTML =
-						'<div class="wa-head"><span class="wa-ic">S</span><span class="wa-app">Smart-Clearance</span><span class="wa-tag"></span></div>' +
-						'<div class="wa-q"><b class="wa-qw"></b><span class="wa-qa"></span></div>' +
-						'<b class="wa-t"></b><p></p>';
-					card.querySelector('.wa-tag')!.textContent = note.tag;
-					card.querySelector('.wa-qw')!.textContent = quote!.who;
-					card.querySelector('.wa-qa')!.textContent = quote!.where;
-					card.querySelector('.wa-t')!.textContent = note.title;
-					card.querySelector('p')!.textContent = note.text;
+					// a card (SC-199): the tag and the title on one line, the note under it, a caret pointing at what is read
+					if (cardStyle) {
+						card.className = 'cd';
+						card.innerHTML = '<div class="cd-h"><span class="cd-tag"></span><b class="cd-t"></b></div><p></p>';
+						card.querySelector('.cd-tag')!.textContent = note.tag;
+						card.querySelector('.cd-t')!.textContent = note.title;
+						card.querySelector('p')!.textContent = note.text;
+					} else
+						card.innerHTML =
+							'<div class="wa-head"><span class="wa-ic">S</span><span class="wa-app">Smart-Clearance</span><span class="wa-tag"></span></div>' +
+							'<div class="wa-q"><b class="wa-qw"></b><span class="wa-qa"></span></div>' +
+							'<b class="wa-t"></b><p></p>';
+					if (!cardStyle) {
+						card.querySelector('.wa-tag')!.textContent = note.tag;
+						card.querySelector('.wa-qw')!.textContent = quote!.who;
+						card.querySelector('.wa-qa')!.textContent = quote!.where;
+						card.querySelector('.wa-t')!.textContent = note.title;
+						card.querySelector('p')!.textContent = note.text;
+					}
 					if (note.points?.length) {
 						const ol = document.createElement('ol');
 						for (const t of note.points) {
@@ -985,7 +1011,7 @@ export class Stage {
 						}
 						card.appendChild(ol);
 					}
-					const wide = note.points?.length ? 372 : 336;
+					const wide = cardStyle ? (note.points?.length ? 420 : 400) : note.points?.length ? 372 : 336;
 					let bw = wide;
 					card.style.width = `${bw}px`;
 					document.getElementById('callouts')!.appendChild(card);
@@ -1040,15 +1066,16 @@ export class Stage {
 					// the tail: on the side facing what is read, pointing at its middle, as a chat bubble's tail does; at a corner
 					// the bubble squares off there, as WhatsApp's does
 					const tail = document.createElement('i');
-					tail.className = `tail ${side}`;
-					tail.innerHTML =
-						'<svg width="11" height="15" viewBox="0 0 11 15"><path d="M11 0 V15 C9 10 5 4.5 0.6 1.6 C-0.2 1 0.2 0 1.2 0 Z" fill="#f7f8f7"/></svg>';
+					tail.className = `${cardStyle ? 'caret' : 'tail'} ${side}`;
+					if (!cardStyle)
+						tail.innerHTML =
+							'<svg width="11" height="15" viewBox="0 0 11 15"><path d="M11 0 V15 C9 10 5 4.5 0.6 1.6 C-0.2 1 0.2 0 1.2 0 Z" fill="#f7f8f7"/></svg>';
 					if (side === 'right' || side === 'left') {
-						const ty = clamp(cy - top - 7, 0, ch - 15);
+						const ty = clamp(cy - top - 7, cardStyle ? 12 : 0, ch - (cardStyle ? 26 : 15));
 						tail.style.top = `${ty}px`;
-						if (ty < 6) card.classList.add(side === 'right' ? 'sq-tl' : 'sq-tr');
+						if (ty < 6 && !cardStyle) card.classList.add(side === 'right' ? 'sq-tl' : 'sq-tr');
 					} else {
-						const tx = clamp(cx - left - 7, 6, bw - 21);
+						const tx = clamp(cx - left - 7, cardStyle ? 16 : 6, bw - (cardStyle ? 30 : 21));
 						tail.style.left = `${tx}px`;
 					}
 					card.appendChild(tail);
@@ -1056,7 +1083,18 @@ export class Stage {
 					card.classList.add(`from-${side}`);
 					requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('on')));
 				},
-				[pane.id, box, vp.width, note ?? null, badge ?? 0, quote, banner, !!opts.ringless, opts.around ?? null] as const
+				[
+					pane.id,
+					box,
+					vp.width,
+					note ?? null,
+					badge ?? 0,
+					quote,
+					banner,
+					!!opts.ringless,
+					opts.around ?? null,
+					this.crew.notes === 'card'
+				] as const
 			)
 			.catch(() => {});
 	}
@@ -1105,7 +1143,7 @@ export class Stage {
 			around
 		});
 		const words = note.title.length + note.text.length + shown.reduce((n, [, l]) => n + l.length, 0);
-		await page.waitForTimeout(hold ?? Math.min(12_000, Math.max(5500, words * 34)));
+		await page.waitForTimeout(hold ?? (this.crew.pace ?? 1) * Math.min(12_000, Math.max(5500, words * 34)));
 		await this.unring();
 		await page.waitForTimeout(300);
 	}
@@ -1145,7 +1183,7 @@ export class Stage {
 	private async unring() {
 		await this.stage
 			.evaluate(() => {
-				for (const el of document.querySelectorAll('.ring, .wa, .dimmer')) {
+				for (const el of document.querySelectorAll('.ring, .wa, .cd, .dimmer')) {
 					el.classList.remove('on');
 					setTimeout(() => el.remove(), 320);
 				}
@@ -1222,7 +1260,7 @@ export class Stage {
 	}
 
 	/** the step under way, as the narrator heads it */
-	async chapter(title: string, card?: { n: number; of: number; title: string }) {
+	async chapter(title: string, card?: { n: number; of: number; title: string }, wait = 1600) {
 		await this.stage.evaluate((t) => (document.getElementById('chapter')!.textContent = t), title).catch(() => {});
 		if (this.recording && card)
 			this.chapters.push({ n: card.n, title: card.title, start: (Date.now() - this.recording) / 1000 });
@@ -1242,7 +1280,7 @@ export class Stage {
 				[card.n, card.of, card.title] as const
 			)
 			.catch(() => {});
-		await this.stage.waitForTimeout(1600);
+		await this.stage.waitForTimeout(wait);
 	}
 
 	/** a figure the narrator keeps in view (the scheme's orders, the packs left …) */
@@ -1325,7 +1363,8 @@ const scr = (id: PaneId) => ({
 	h: PANES[id].viewport.height * PANES[id].scale
 });
 
-function STAGE_HTML(about: About, phoneNote: string, host: App) {
+function STAGE_HTML(about: About, phoneNote: string, host: App, ink: Ink) {
+	const I = INKS[ink];
 	const O = scr('operator');
 	const laptop = LAYOUT === 'two' || LAYOUT === 'one';
 	const one = LAYOUT === 'one';
@@ -1358,6 +1397,7 @@ function STAGE_HTML(about: About, phoneNote: string, host: App) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=block">
 <style>
 *{box-sizing:border-box;margin:0}
+:root{--ink:${I.c};--ink-rgb:${I.rgb};--ink-hi:${I.hi};--ink-on:${I.on}}
 html,body{width:${W}px;height:${H}px;overflow:hidden;background:#0c1311;color:#e8efe9;font:400 13px/1.35 Geist,system-ui,sans-serif}
 body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 #bar{position:absolute;left:0;right:0;top:0;height:54px;display:flex;align-items:center;gap:14px;padding:0 18px;border-bottom:1px solid #1d2a25}
@@ -1365,7 +1405,7 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 #bar h1{font:600 16px/1.2 Geist;letter-spacing:-.01em}
 #bar p{font-size:12px;color:#9fb3a8}
 #bar .grow{flex:1}
-#step{font:600 13px Geist;color:#f5c542}
+#step{font:600 13px Geist;color:var(--ink)}
 #clock{font:500 13px 'Geist Mono',monospace;color:#cfdcd4;min-width:48px;text-align:right}
 .rec{display:flex;align-items:center;gap:6px;font:600 11px Geist;color:#ff7b6b;letter-spacing:.06em}
 .rec i{width:9px;height:9px;border-radius:50%;background:#ff5a47}
@@ -1379,7 +1419,7 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 .url{height:14px;padding-left:34px;font:400 10.5px/14px 'Geist Mono',monospace;color:#6f877c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dev{position:relative;margin-top:2px;background:#151d1a;border:1px solid #2b3933;transition:box-shadow .25s}
 .dev img{display:block;background:#fff}
-.dev.on{box-shadow:0 0 0 2px #f5c542,0 0 28px rgba(245,197,66,.25)}
+.dev.on{box-shadow:0 0 0 2px var(--ink),0 0 28px rgba(var(--ink-rgb),.25)}
 #dev-operator,#dev-distributor{padding:${px(TAB_BEZEL - 1)};border-radius:20px}
 #dev-operator.laptop{border-radius:14px 14px 4px 4px}
 #dev-operator.laptop img{border-radius:5px}
@@ -1388,7 +1428,7 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 #dev-phone{padding:${px(PHONE_BEZEL - 1)};border-radius:30px}
 #dev-phone img{border-radius:22px}
 #narr{position:absolute;left:${px(M)};top:${px(TOP + HEAD + opH + M)};width:${px(COL.operator)};bottom:${px(M)};border:1px solid #22312b;border-radius:12px;background:rgba(18,28,24,.86);padding:12px 16px;display:grid;grid-template-columns:1.1fr 1fr;grid-template-rows:auto auto auto 1fr;column-gap:18px;row-gap:7px;overflow:hidden}
-#chapter{grid-column:1/-1;font:600 12.5px Geist;color:#f5c542;letter-spacing:.01em}
+#chapter{grid-column:1/-1;font:600 12.5px Geist;color:var(--ink);letter-spacing:.01em}
 .cap{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 #cap-who{font:700 19px/1.2 Geist;letter-spacing:-.01em}
 #cap-role{font-size:12.5px;color:#9fb3a8}
@@ -1404,8 +1444,8 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 .note{margin-top:12px;font-size:11.5px;color:#8aa196;line-height:1.45}
 .fx{position:absolute;overflow:hidden;pointer-events:none;border-radius:9px}
 #dev-phone .fx{border-radius:22px}
-.ring{position:absolute;border-radius:10px;border:2px solid #f5c542;box-shadow:0 0 0 3px rgba(245,197,66,.2),0 0 22px rgba(245,197,66,.32);opacity:0;transform:scale(1.04);transition:opacity .25s ease,transform .4s cubic-bezier(.22,1,.36,1)}
-.ring.dim{box-shadow:0 0 0 3px rgba(245,197,66,.2),0 0 22px rgba(245,197,66,.32),0 0 0 2400px rgba(7,12,10,.46)}
+.ring{position:absolute;border-radius:10px;border:2px solid var(--ink);box-shadow:0 0 0 3px rgba(var(--ink-rgb),.2),0 0 22px rgba(var(--ink-rgb),.32);opacity:0;transform:scale(1.04);transition:opacity .25s ease,transform .4s cubic-bezier(.22,1,.36,1)}
+.ring.dim{box-shadow:0 0 0 3px rgba(var(--ink-rgb),.2),0 0 22px rgba(var(--ink-rgb),.32),0 0 0 2400px rgba(7,12,10,.46)}
 .ring.on{opacity:1;transform:none}
 .dip{position:absolute;inset:0;background:#0c1311;opacity:0;transition:opacity .22s ease;z-index:5}
 .dip.on{opacity:1}
@@ -1413,8 +1453,8 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 .dimmer.on{opacity:1}
 .dimmer svg{display:block}
 .ring.lit.on{animation:pulse 2.4s ease-in-out .5s 2}
-@keyframes pulse{50%{border-color:#ffe08a}}
-.bk{position:absolute;width:14px;height:14px;border:0 solid #f5c542;opacity:0;transition:all .5s cubic-bezier(.22,1,.36,1) .12s}
+@keyframes pulse{50%{border-color:var(--ink-hi)}}
+.bk{position:absolute;width:14px;height:14px;border:0 solid var(--ink);opacity:0;transition:all .5s cubic-bezier(.22,1,.36,1) .12s}
 .bk.tl{left:-12px;top:-12px;border-width:3px 0 0 3px;border-radius:6px 0 0 0}
 .bk.tr{right:-12px;top:-12px;border-width:3px 3px 0 0;border-radius:0 6px 0 0}
 .bk.bl{left:-12px;bottom:-12px;border-width:0 0 3px 3px;border-radius:0 0 0 6px}
@@ -1425,12 +1465,12 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 .ring .sweep::after{content:'';position:absolute;top:0;bottom:0;width:38%;left:-45%;background:linear-gradient(100deg,transparent,rgba(255,236,170,.32),transparent);transform:skewX(-14deg)}
 .ring.on .sweep::after{animation:sweep 1.1s cubic-bezier(.3,.6,.3,1) .25s 1 forwards}
 @keyframes sweep{to{left:115%}}
-.pin{position:absolute;left:-11px;top:-11px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#f5c542;color:#1b1503;font:700 12px/22px Geist;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.4);transform:scale(.4);opacity:0;transition:all .38s cubic-bezier(.34,1.56,.64,1) .1s}
+.pin{position:absolute;left:-11px;top:-11px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--ink);color:var(--ink-on);font:700 12px/22px Geist;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.4);transform:scale(.4);opacity:0;transition:all .38s cubic-bezier(.34,1.56,.64,1) .1s}
 .pin.in{top:3px;left:3px}
 .ring.on .pin{transform:none;opacity:1}
 #titlecard{position:absolute;left:50%;bottom:26px;transform:translate(-50%,24px);opacity:0;z-index:30;display:flex;flex-direction:column;gap:3px;padding:13px 26px 14px;border-radius:16px;background:rgba(12,19,17,.94);border:1px solid #2f4a3d;box-shadow:0 20px 50px rgba(0,0,0,.55);transition:opacity .35s ease,transform .6s cubic-bezier(.22,1,.36,1);max-width:900px;text-align:center}
 #titlecard.on{opacity:1;transform:translate(-50%,0)}
-#titlecard i{font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#f5c542;font-style:normal}
+#titlecard i{font:600 11px 'Geist Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);font-style:normal}
 #titlecard b{font:600 21px/1.25 Geist;letter-spacing:-.01em;color:#f3f7f4}
 #callouts{position:absolute;inset:0;pointer-events:none;z-index:20}
 .wa{position:absolute;background:#f7f8f7;border-radius:14px;padding:9px 12px 11px;color:#111b21;filter:drop-shadow(0 12px 26px rgba(0,0,0,.42)) drop-shadow(0 2px 4px rgba(0,0,0,.16));opacity:0;transition:opacity .24s ease,transform .5s cubic-bezier(.22,1,.36,1)}
@@ -1447,6 +1487,24 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 .wa .tail.left{right:-10px;transform:scaleX(-1)}
 .wa .tail.below{top:-12px;transform:rotate(90deg)}
 .wa .tail.above{bottom:-12px;transform:rotate(-90deg) scaleY(-1)}
+.cd{position:absolute;background:#12613d;border:1px solid #2a8a5c;border-radius:16px;padding:13px 18px 15px;color:#fff;filter:drop-shadow(0 14px 28px rgba(0,0,0,.45)) drop-shadow(0 2px 5px rgba(0,0,0,.2));opacity:0;transition:opacity .22s ease,transform .45s cubic-bezier(.22,1,.36,1)}
+.cd.from-right{transform:translateX(-12px)}
+.cd.from-left{transform:translateX(12px)}
+.cd.from-below{transform:translateY(-12px)}
+.cd.from-above{transform:translateY(12px)}
+.cd.on{opacity:1;transform:none}
+.cd-h{display:flex;align-items:center;gap:11px;margin-bottom:7px}
+.cd-tag{flex:none;font:700 11px/1 'Geist Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:#0b3f25;background:#c9f5dc;border-radius:6px;padding:5px 8px 4px}
+.cd-t{font:700 18px/1.25 Geist;letter-spacing:-.01em;color:#fff}
+.cd p{font:400 14.5px/1.5 Geist;color:#e3f5ea;margin:0}
+.cd ol{margin:9px 0 0;padding:0;list-style:none;counter-reset:pt;display:flex;flex-direction:column;gap:5px}
+.cd li{counter-increment:pt;display:flex;gap:9px;font:400 13.5px/1.45 Geist;color:#e3f5ea}
+.cd li::before{content:counter(pt);flex:none;width:20px;height:20px;border-radius:10px;background:var(--ink);color:var(--ink-on);font:700 11px/20px Geist;text-align:center}
+.cd .caret{position:absolute;width:14px;height:14px;background:#12613d;transform:rotate(45deg);border-radius:2px}
+.cd .caret.right{left:-8px;border-left:1px solid #2a8a5c;border-bottom:1px solid #2a8a5c}
+.cd .caret.left{right:-8px;border-right:1px solid #2a8a5c;border-top:1px solid #2a8a5c}
+.cd .caret.below{top:-8px;border-left:1px solid #2a8a5c;border-top:1px solid #2a8a5c}
+.cd .caret.above{bottom:-8px;border-right:1px solid #2a8a5c;border-bottom:1px solid #2a8a5c}
 .wa-head{display:flex;align-items:center;gap:7px;margin-bottom:7px}
 .wa-ic{flex:none;width:22px;height:22px;border-radius:6px;background:#1f6b45;display:grid;place-items:center;font:700 12.5px/1 Geist;color:#fff}
 .wa-app{font:600 11px/1 Geist;color:#54656f;letter-spacing:.04em;text-transform:uppercase}
@@ -1457,7 +1515,7 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 .wa-qa{font:400 10.5px/1.3 'Geist Mono',monospace;color:#5b6b64;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .wa ol{margin:8px 2px 0;padding:0;list-style:none;counter-reset:pt;display:flex;flex-direction:column;gap:4px}
 .wa li{counter-increment:pt;display:flex;gap:8px;font:400 12.3px/1.42 Geist;color:#33424a}
-.wa li::before{content:counter(pt);flex:none;width:19px;height:19px;border-radius:10px;background:#f5c542;color:#1b1503;font:700 11px/19px Geist;text-align:center;margin-top:1px}
+.wa li::before{content:counter(pt);flex:none;width:19px;height:19px;border-radius:10px;background:var(--ink);color:var(--ink-on);font:700 11px/19px Geist;text-align:center;margin-top:1px}
 .wa p{font:400 12.5px/1.48 Geist;color:#33424a;margin:0 2px}
 ${one ? `#narr{left:${px(narrX)};top:${px(TOP)};width:${px(W - narrX - M)};grid-template-columns:1fr;grid-template-rows:auto auto auto auto 1fr;padding:16px 18px}#log{grid-column:1;grid-row:5;border-left:0;padding-left:0;border-top:1px solid #22312b;padding-top:10px}#cap-did{font-size:16px}#log li{white-space:normal;overflow:visible}#log{gap:6px}` : ''}
 </style></head><body>
