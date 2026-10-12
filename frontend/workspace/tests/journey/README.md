@@ -183,6 +183,17 @@ opens its session with backend-api.
 
 A step ends only once every screen's photos and placeholders have landed.
 
+**Spotlights, notes and scrolling (SC-188):** a screen scrolls smoothly to what a person reads, sideways too inside a
+scroller, and a block wider than its screen (the Route Room's channel table) is panned across. What a person reads is
+ringed on the stage. At the moments a viewer would ask about, the rest of the screen dims and a card beside the element
+says why, in business terms: why Rehearsal (a small synthetic dataset on the story's calendar), why the Watcher, the
+window and expiry day are fired by hand in a demo, and what each moment is worth to Munchly, Rakesh and his shops, with
+the case's own figures (the risk, the split, the live orders, the counter, the second yes, the outcome). The notes are
+the stage's, drawn over the screens; the apps are unchanged.
+
+**On production** (`E2E_TARGET=prod`, SC-137): the suite runs on the deployed apps and Cloud Run, as Munchly Chips E2E
+does. It resets production's journey; afterwards put production's day back to 24 hours from the console's clock.
+
 **Every click shows:** each screen draws a cursor (an init script) that glides to its target and ripples where it
 presses, and a person reading glides it over what they read: Vision's checks, the certificate's signatures, the Impact
 tiles.

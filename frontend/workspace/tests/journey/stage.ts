@@ -8,7 +8,7 @@ import {
 	type TestInfo
 } from '@playwright/test';
 import { spawn, type ChildProcess } from 'node:child_process';
-import { ORIGIN, person, signInOnScreen, STAND_IN, type App } from './auth.ts';
+import { ORIGIN, person, PROD, signInOnScreen, STAND_IN, type App } from './auth.ts';
 import { ROLES, settled } from './flow.ts';
 import { Run, type About } from './record.ts';
 
@@ -34,6 +34,8 @@ import { Run, type About } from './record.ts';
 // E2E_LIVE=0 opens no monitor window (the stage is recorded all the same).
 
 export type PaneId = 'operator' | 'distributor' | 'phone';
+/** a note the stage shows beside what a person reads: why it is done this way in a demo, or what to see there */
+export type Note = { tag: string; title: string; text: string };
 
 type PaneSpec = {
 	label: string;
@@ -229,6 +231,8 @@ export class Stage {
 	private written = 0;
 	private recording = 0;
 	private ended: Promise<void> | null = null;
+	/** the note on the sign-ins has been shown */
+	private told = false;
 
 	private constructor(
 		private stageBrowser: Browser,
@@ -498,6 +502,15 @@ export class Stage {
 		await loaded(page);
 		await this.type(email, person(who).email);
 		await this.type(page.locator('#si-pw'), STAND_IN);
+		// said once, at the first sign-in: what the password field holds
+		if (!this.told) {
+			this.told = true;
+			await this.spot(page.locator('#si-pw'), {
+				tag: 'Note',
+				title: 'No password is typed',
+				text: "Each person signs in on the app's own sign-in screen. The password field takes a stand-in, and the suite answers Firebase's password check with that person's own session: no real password is typed or sent. Everything after it is the app's own."
+			});
+		}
 		await this.click(page.getByRole('button', { name: 'Sign in', exact: true }), 200);
 		await expect(page.getByRole('button', { name: /^Welcome, / }).or(page.locator('#main'))).toBeVisible({
 			timeout: 30_000
@@ -559,14 +572,171 @@ export class Stage {
 		if (!moved) await page.goto(ORIGIN[app] + path);
 	}
 
-	/** the cursor glides to an element, and rests on it: a person reading it, or about to press it */
+	/** the screen scrolls, smoothly, until an element is in view, sideways too inside a scroller; then waits for it to
+	 *  stop moving. A person scrolling to what they read, rather than the page jumping */
+	async reveal(target: Locator) {
+		// an element that is not there is passed over, rather than waited on
+		if (
+			!(await target
+				.first()
+				.waitFor({ state: 'attached', timeout: 3000 })
+				.then(() => true)
+				.catch(() => false))
+		)
+			return false;
+		await target
+			.evaluate(
+				(el) =>
+					new Promise<void>((done) => {
+						const r = el.getBoundingClientRect();
+						const shown = r.top >= 64 && r.bottom <= innerHeight - 8 && r.left >= 0 && r.right <= innerWidth;
+						if (!shown)
+							el.scrollIntoView({
+								behavior: 'smooth',
+								block: r.height > innerHeight * 0.7 ? 'start' : 'center',
+								inline: 'nearest'
+							});
+						let last = '',
+							still = 0;
+						const t0 = performance.now();
+						const tick = () => {
+							const b = el.getBoundingClientRect();
+							const at = `${Math.round(b.top)},${Math.round(b.left)}`;
+							still = at === last ? still + 1 : 0;
+							last = at;
+							if (still > 6 || performance.now() - t0 > 2000) done();
+							else requestAnimationFrame(tick);
+						};
+						requestAnimationFrame(tick);
+					})
+			)
+			.catch(() => {});
+		return true;
+	}
+
+	/** a block wider than its screen, read across: its scroller (the block or the nearest one round it) pans smoothly to
+	 *  its far side and back. Nothing happens to a block that fits */
+	async pan(target: Locator, rest = 900) {
+		const page = target.page();
+		const wide = await target
+			.evaluate((el) => {
+				let n: Element | null = el;
+				while (n && n !== document.body) {
+					const cs = getComputedStyle(n);
+					if (/(auto|scroll)/.test(cs.overflowX) && n.scrollWidth > n.clientWidth + 4) {
+						(n as HTMLElement).dataset.e2ePan = '1';
+						return true;
+					}
+					n = n.parentElement;
+				}
+				return false;
+			})
+			.catch(() => false);
+		if (!wide) return false;
+		const scroller = page.locator('[data-e2e-pan="1"]').first();
+		await this.ring(scroller);
+		await scroller.evaluate((el) => el.scrollTo({ left: el.scrollWidth, behavior: 'smooth' }));
+		await page.waitForTimeout(1200 + rest);
+		await scroller.evaluate((el) => el.scrollTo({ left: 0, behavior: 'smooth' }));
+		await page.waitForTimeout(900);
+		await scroller.evaluate((el) => delete (el as HTMLElement).dataset.e2ePan);
+		await this.unring();
+		return true;
+	}
+
+	/** the cursor glides to an element, and rests on it: a person reading it, or about to press it. A rest long enough to
+	 *  read lights the element with the stage's ring meanwhile */
 	async point(target: Locator, rest = 350) {
 		const page = target.page();
-		await target.scrollIntoViewIfNeeded().catch(() => {});
+		if (!(await this.reveal(target))) return;
 		const box = await target.boundingBox().catch(() => null);
 		if (!box) return;
 		await page.mouse.move(box.x + box.width / 2, box.y + Math.min(box.height / 2, 24));
-		await page.waitForTimeout(GLIDE + rest);
+		if (rest >= 400) {
+			await page.waitForTimeout(GLIDE - 120);
+			await this.ring(target);
+			await page.waitForTimeout(120 + rest);
+			await this.unring();
+		} else await page.waitForTimeout(GLIDE + rest);
+	}
+
+	/** an element read with a note: the screen scrolls to it, the rest of its screen dims, a ring lights it, and a card
+	 *  beside it says why (a tag, a title and a sentence or two), held long enough to read, then gone */
+	async spot(target: Locator, note: Note, hold?: number) {
+		const page = target.page();
+		if (!(await this.reveal(target))) return;
+		const box = await target.boundingBox().catch(() => null);
+		if (box) await page.mouse.move(box.x + box.width / 2, box.y + Math.min(box.height / 2, 24));
+		await page.waitForTimeout(GLIDE - 120);
+		await this.ring(target, note);
+		await page.waitForTimeout(hold ?? Math.min(8500, Math.max(4500, (note.title.length + note.text.length) * 34)));
+		await this.unring();
+		await page.waitForTimeout(300);
+	}
+
+	/** the ring round an element on the stage (and the dim and the card for a note), placed from where the element sits
+	 *  on its screen */
+	private async ring(target: Locator, note?: Note) {
+		const page = target.page();
+		const pane = Object.values(this.panes).find((p) => p.page === page);
+		const box = await target.boundingBox().catch(() => null);
+		if (!pane || !box) return;
+		const vp = PANES[pane.id].viewport;
+		await this.stage
+			.evaluate(
+				([id, b, vw, note]) => {
+					const fx = document.getElementById(`fx-${id}`)!;
+					const scr = document.getElementById(`scr-${id}`)!.getBoundingClientRect();
+					const k = scr.width / vw;
+					// the ring hugs the element, a few pixels out, kept inside the screen
+					const pad = 5;
+					const x = Math.max(2, b.x * k - pad),
+						y = Math.max(2, b.y * k - pad);
+					const w = Math.min(scr.width - x - 2, b.width * k + 2 * pad),
+						h = Math.min(scr.height - y - 2, b.height * k + 2 * pad);
+					const ring = document.createElement('div');
+					ring.className = note ? 'ring dim' : 'ring';
+					Object.assign(ring.style, { left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px` });
+					fx.appendChild(ring);
+					requestAnimationFrame(() => ring.classList.add('on'));
+					if (!note) return;
+					// the card beside the element: under it where the stage has room, else over it, its arrow on the element
+					const card = document.createElement('div');
+					card.className = 'callout';
+					card.innerHTML =
+						'<div class="co-head"><span class="co-tag"></span><b></b></div><p></p><i class="co-arrow"></i>';
+					card.querySelector('.co-tag')!.textContent = note.tag;
+					card.querySelector('b')!.textContent = note.title;
+					card.querySelector('p')!.textContent = note.text;
+					document.getElementById('callouts')!.appendChild(card);
+					const cw = card.offsetWidth,
+						ch = card.offsetHeight;
+					const ex = scr.left + x,
+						ey = scr.top + y;
+					const below = ey + h + 16 + ch < innerHeight - 10;
+					const top = below ? ey + h + 16 : Math.max(60, ey - ch - 16);
+					const left = Math.min(innerWidth - cw - 12, Math.max(12, ex + Math.min(w, 220) / 2 - 40));
+					Object.assign(card.style, { left: `${left}px`, top: `${top}px` });
+					card.classList.add(below ? 'below' : 'above');
+					const arrow = card.querySelector('.co-arrow') as HTMLElement;
+					arrow.style.left = `${Math.min(cw - 28, Math.max(16, ex + Math.min(w, 220) / 2 - left - 7))}px`;
+					requestAnimationFrame(() => card.classList.add('on'));
+				},
+				[pane.id, box, vp.width, note ?? null] as const
+			)
+			.catch(() => {});
+	}
+
+	/** the rings and cards fade away */
+	private async unring() {
+		await this.stage
+			.evaluate(() => {
+				for (const el of document.querySelectorAll('.ring, .callout')) {
+					el.classList.remove('on');
+					setTimeout(() => el.remove(), 320);
+				}
+			})
+			.catch(() => {});
 	}
 
 	/** a click as a person makes it: the cursor glides there, rests, presses (a ripple), and the screen answers */
@@ -728,7 +898,9 @@ function STAGE_HTML(about: About) {
 		<div class="url" id="url-${id}"></div>`;
 	const device = (id: PaneId) => {
 		const { w, h } = scr(id);
-		return `<div class="dev" id="dev-${id}"><img id="scr-${id}" src="${BLANK}" style="width:${px(w)};height:${px(h)}" alt=""></div>`;
+		const inset = (id === 'phone' ? PHONE_BEZEL : TAB_BEZEL) - 1;
+		// the stage's own layer over the screen: the rings round what is read, clipped to the screen
+		return `<div class="dev" id="dev-${id}"><img id="scr-${id}" src="${BLANK}" style="width:${px(w)};height:${px(h)}" alt=""><div class="fx" id="fx-${id}" style="left:${px(inset)};top:${px(inset)};width:${px(w)};height:${px(h)}"></div></div>`;
 	};
 	const col = (id: PaneId, extra = '') =>
 		`<div class="col" style="left:${px(x[id])};width:${px(COL[id])}">${label(id)}${device(id)}${extra}</div>`;
@@ -777,8 +949,24 @@ body{background:radial-gradient(1200px 600px at 30% 0%,#15231d 0%,#0c1311 60%)}
 #log li:first-child{color:#e8efe9}
 #log i{font:500 11px 'Geist Mono',monospace;color:#6f877c;font-style:normal;min-width:20px;text-align:right}
 .note{margin-top:12px;font-size:11.5px;color:#8aa196;line-height:1.45}
+.fx{position:absolute;overflow:hidden;pointer-events:none;border-radius:9px}
+#dev-phone .fx{border-radius:22px}
+.ring{position:absolute;border-radius:10px;border:2px solid #f5c542;box-shadow:0 0 0 3px rgba(245,197,66,.2),0 0 22px rgba(245,197,66,.32);opacity:0;transform:scale(1.04);transition:opacity .25s ease,transform .4s cubic-bezier(.22,1,.36,1)}
+.ring.dim{box-shadow:0 0 0 3px rgba(245,197,66,.2),0 0 22px rgba(245,197,66,.32),0 0 0 2400px rgba(7,12,10,.46)}
+.ring.on{opacity:1;transform:none}
+#callouts{position:absolute;inset:0;pointer-events:none;z-index:20}
+.callout{position:absolute;width:340px;background:rgba(13,21,18,.97);border:1px solid #3a5247;border-radius:14px;padding:13px 16px 14px;box-shadow:0 18px 44px rgba(0,0,0,.5),0 0 0 1px rgba(245,197,66,.06);opacity:0;transform:translateY(8px);transition:opacity .3s ease,transform .42s cubic-bezier(.22,1,.36,1)}
+.callout.above{transform:translateY(-8px)}
+.callout.on{opacity:1;transform:none}
+.co-head{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.co-tag{flex:none;font:600 10px/1 'Geist Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#13201a;background:#f5c542;border-radius:6px;padding:4px 7px 3px}
+.callout b{font:600 14.5px/1.25 Geist;color:#f2f6f3;letter-spacing:-.005em}
+.callout p{font:400 12.5px/1.5 Geist;color:#c3d3ca;margin:0}
+.co-arrow{position:absolute;width:13px;height:13px;background:rgba(13,21,18,.97);border-left:1px solid #3a5247;border-top:1px solid #3a5247;transform:rotate(45deg)}
+.callout.below .co-arrow{top:-7.5px}
+.callout.above .co-arrow{bottom:-7.5px;transform:rotate(225deg)}
 </style></head><body>
-<div id="bar"><span class="mark">S</span><div><h1>${esc(about.flow)}</h1><p>${esc(about.batch)} · live on this machine's stack</p></div>
+<div id="bar"><span class="mark">S</span><div><h1>${esc(about.flow)}</h1><p>${esc(about.batch)} · ${PROD ? `live on production: ${esc(new URL(ORIGIN.workspace).host)}` : "live on this machine's stack"}</p></div>
 <span class="grow"></span><span id="step"></span><span class="rec"><i></i>REC</span><span id="clock">00:00</span></div>
 ${col('operator')}
 ${col('distributor')}
@@ -786,6 +974,7 @@ ${col(
 	'phone',
 	`<div class="note" style="width:${px(PHONE_COL)}">Each kirana, Agrawal Wholesale on ExpireSoon and Neha in the console sign in here as they are needed.</div><div class="note" style="width:${px(PHONE_COL)}">Everyone signs in on the app's own screen. The password check is answered with that person's own session, so no password is typed: the field takes a stand-in.</div>`
 )}
+<div id="callouts"></div>
 <div id="narr"><div id="chapter"></div><div class="cap"><span id="cap-who"></span><span id="cap-role"></span></div><ol id="log"></ol><div id="cap-did"></div><div id="stats"></div></div>
 <script>
 let t0 = 0;

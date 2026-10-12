@@ -6,7 +6,7 @@ import { mint } from './auth.ts';
 import { HERO } from './chips.ts';
 import { signCertificate } from './destruction.ts';
 import { AGENT_WAIT, begin, caseAs, inr, running, story, STORY, until, type Case } from './flow.ts';
-import { Stage } from './stage.ts';
+import { Stage, type Note } from './stage.ts';
 
 // Munchly Chips Sad Path E2E (SC-179, SC-184): the Masala Chips batch (MF-2409-117, Rakesh Traders, Nagpur) from a
 // fresh journey, on three screens at once (stage.ts): Priya, Munchly's supply chain operator, on a tablet in landscape,
@@ -66,6 +66,140 @@ type Step = { id: string; title: string; run: (s: Stage) => Promise<void> };
 /** how fast a signer's pen moves on the pad: milliseconds between its points */
 const PEN = 12;
 
+/** what the stage says beside the moments a viewer would ask about (SC-188), in business terms: why the demo fires by
+ *  hand what a schedule or a timer would, and what each moment is worth to Munchly, its distributor and his shops */
+const WHY = {
+	rehearsal: {
+		tag: 'Why',
+		title: 'Rehearsal: a journey day in an hour',
+		text: "The demo runs on a small synthetic dataset: Munchly's nine batches, each with a fixed best-before date. Reset replays the story's calendar from day 0, and Rehearsal runs each journey day in an hour, so a 48-hour offer and expiry day fit in one sitting. A live client runs in real time."
+	},
+	setup: {
+		tag: 'Setup',
+		title: "Munchly's rules, set once",
+		text: "The stock export from the distributors' DMS is mapped once. Munchly's guardrails (price floors, the channels allowed, the territories its lots stay out of) bound every agent from here on."
+	},
+	permission: {
+		tag: 'Distributor',
+		title: 'One permission, then the legwork is done',
+		text: "Rakesh lets Smart-Clearance list his stock, send scheme offers to his kiranas, draft his invoices and book dispatch, inside Munchly's floors. Every action shows on his Today, and he can pause it at any time."
+	},
+	watcher: {
+		tag: 'Why',
+		title: 'A daily check, fired by hand',
+		text: "In production the Watcher checks every batch each morning at 09:00, against the quick-commerce gates and the sell-through. For the demo Neha runs this morning's check now from the console: the same run the schedule makes."
+	},
+	verified: {
+		tag: 'Trust',
+		title: 'Verified before any price',
+		text: "Vision reads the carton label from Rakesh's photo and matches the batch, the dates and the MRP to the DMS export. No match, no plan: nothing is priced or sold on a guess."
+	},
+	channels: {
+		tag: 'Valuer',
+		title: 'Every exit priced net',
+		text: "Each channel is priced after its own costs and its effect on GST, and set against what destroying the packs would cost. Nothing is offered below Munchly's floor for the category."
+	},
+	approve: {
+		tag: 'Control',
+		title: 'Nothing moves without a yes',
+		text: "The agents have prepared the listing, the kirana scheme and the paperwork. Priya's one tap releases them, and every step after it is logged in her name."
+	},
+	window: {
+		tag: 'Why',
+		title: 'Closing the offer window early',
+		text: `The kiranas' offer stays open 48 hours and closes on its own timer. In the demo Neha closes it now from the console: ${BUY.length} shops ordered, the other ${REST.length} did not, and the packets no shop took stay at Rakesh Traders' godown.`
+	},
+	invoice: {
+		tag: 'GST',
+		title: 'Invoiced from his own Tally',
+		text: "Rakesh issues the buyer's tax invoice from Tally, an e-invoice with its IRN. Paperwork has already drafted Munchly's credit notes and the GST memo to match."
+	},
+	report: {
+		tag: 'Why',
+		title: 'Expiry day, brought forward',
+		text: "The batch's report falls due on its best-before, 18 Nov, weeks away on the story's calendar. Report now treats today as expiry day: the journey closes as it stands, and the packs left at the godown follow Munchly's policy, destroyed there against evidence and Priya's second yes."
+	},
+	live: {
+		tag: 'Live',
+		title: 'Every order, as it lands',
+		text: "The kirana ordered on the phone a moment ago. It reaches Priya's screen at once, with its GST invoice from Rakesh already issued: no spreadsheet, no phone calls."
+	},
+	destroy: {
+		tag: 'Compliance',
+		title: 'Destroyed against evidence',
+		text: "Packs nobody bought are destroyed by an authorised agency. Munchly pays for them only against photos before and after, the agency's certificate, and its own approval."
+	},
+	sign: {
+		tag: 'Signed in place',
+		title: 'Four signatures, at the facility',
+		text: "The agency's officer, two independent witnesses and Rakesh sign the certificate where the destruction happens, on this tablet. The signatures travel with the papers to Munchly's review and the PDF."
+	},
+	vision: {
+		tag: 'Vision',
+		title: 'The evidence, checked by AI',
+		text: "Vision checks both photos: the batch on the carton label, the packs in view, the slate's batch, count and date, and the landfill. Priya sees every check before her yes."
+	},
+	certificate: {
+		tag: 'Audit',
+		title: 'Evidence an auditor accepts',
+		text: 'The certificate names the goods, batch, quantity and weight, the reason, the method and facility, the time window and three signatures, with a log from the godown to the landfill. One PDF, ready for the auditor.'
+	},
+	invoices: {
+		tag: 'GST',
+		title: 'An invoice for every shop',
+		text: "Every kirana's order carries its own GST invoice from Rakesh, in his series. Munchly sees the register and each invoice, with nothing to chase."
+	},
+	impact: {
+		tag: 'ESG',
+		title: 'Impact, from the ledger',
+		text: "Kilos kept out of landfill, kilos destroyed and CO₂e come from each batch's own ledger, not an estimate: ready for BRSR Principle 6 and Munchly's EPR reporting."
+	},
+	whole: {
+		tag: 'Distributor',
+		title: 'Rakesh ends whole',
+		text: "Every rupee Rakesh paid for the batch comes back to him: from his kiranas, the buyer, and Munchly's credit notes. Clearing it cost him nothing."
+	}
+} satisfies Record<string, Note>;
+/** the notes whose figures are the case's own */
+const NOTE = {
+	risk: (c: Case): Note => ({
+		tag: 'Risk',
+		title: `${inr(Math.round(c.writeOff?.total ?? 0))} at stake`,
+		text: `${(c.batch.assess?.atRisk ?? 0).toLocaleString('en-IN')} packs will not sell before quick-commerce stops taking them. Destroying them would cost Munchly ${inr(Math.round(c.writeOff?.total ?? 0))}: the stock, the GST credit reversed, disposal and EPR. The agents start on it at once.`
+	}),
+	lister: (units: number): Note => ({
+		tag: 'Marketplace',
+		title: "Sold where it won't undercut",
+		text: `${units.toLocaleString('en-IN')} packs listed on ExpireSoon, a B2B marketplace for short-dated stock, hidden from buyers in Munchly's own territories, so the lot never competes with its distributors. The reserve price stays private.`
+	}),
+	scheme: (shops: number, price?: number): Note => ({
+		tag: 'Kiranas',
+		title: 'Kept in the neighbourhood',
+		text: `Rakesh's own ${shops} kiranas are offered the packs${price ? ` at ₹${price} effective` : ''}, buy 10 get 2, in Hindi, each shop capped at what it can sell in 14 days. The packs sell through shelves their customers know.`
+	}),
+	counter: (offer: string): Note => ({
+		tag: 'Negotiator',
+		title: 'Countered, not undersold',
+		text: `Agrawal Wholesale bid ₹13 a pack. The Negotiator countered above Munchly's reserve, ${offer.replace(/^Accept /, '')}, and the buyer takes it with a 15% token to lock the lot. The reserve is never shown.`
+	}),
+	secondYes: (credit?: number | null): Note => ({
+		tag: 'Second yes',
+		title: 'Money moves only on proof',
+		text: `Priya's approval issues the expiry credit note to Rakesh${credit ? `, ${inr(credit)}` : ''}: the dealer price for the packs, the GST he reverses on them, and the agency's charges. Until she says yes, nothing is paid.`
+	}),
+	outcome: (c: Case): Note => {
+		const f = (c as Case & { ledger?: { figures?: { net: number; swing: number; units: number; kg: number } } | null })
+			.ledger?.figures;
+		return {
+			tag: 'Outcome',
+			title: f ? `${inr(Math.round(f.swing))} better than destroying` : 'Better than destroying',
+			text: f
+				? `Against destroying all ${f.units.toLocaleString('en-IN')} packs at risk, Munchly is ${inr(Math.round(f.swing))} better off: ${inr(f.net)} recovered, and ${f.kg.toLocaleString('en-IN')} kg of food sold on instead of sent to a landfill.`
+				: 'Munchly recovered what the channels took, and the packs nobody bought were destroyed against evidence.'
+		};
+	}
+};
+
 /** the packets the plan offers the kiranas, and those left at the godown once the window closes */
 let planned = 0;
 const left = () => planned - ORDERED;
@@ -106,7 +240,9 @@ const STEPS: Step[] = [
 			await s.click(page.getByRole('button', { name: 'Actions for Munchly Foods' }));
 			await s.click(page.getByRole('menuitem', { name: /Reset journey/ }));
 			const sheet = page.getByRole('dialog', { name: /journey again/ });
-			await s.click(sheet.getByRole('radio', { name: PRESETS[DAY_MINUTES] ?? /Rehearsal/ }));
+			const preset = sheet.getByRole('radio', { name: PRESETS[DAY_MINUTES] ?? /Rehearsal/ });
+			await s.spot(preset, WHY.rehearsal);
+			await s.click(preset);
 			await running().done('Reset journey: the day length');
 			await s.click(sheet.getByRole('button', { name: 'Reset journey' }));
 			await expect(sheet).toBeHidden();
@@ -128,7 +264,9 @@ const STEPS: Step[] = [
 			await s.click(page.getByRole('navigation', { name: 'Main' }).getByRole('button', { name: 'Setup', exact: true }));
 			await expect(main(page).getByText('Mapped · confirm below')).toBeVisible({ timeout: AGENT_WAIT });
 			await running().done('Setup: the export mapped');
-			await s.click(main(page).getByRole('button', { name: 'Confirm and start watching' }));
+			const confirm = main(page).getByRole('button', { name: 'Confirm and start watching' });
+			await s.spot(confirm, WHY.setup);
+			await s.click(confirm);
 			await expect(main(page).getByRole('button', { name: 'Open Command Center' })).toBeVisible();
 			await running().done('Setup confirmed: the Watcher starts at 09:00');
 			await s.click(main(page).getByRole('button', { name: 'Open Command Center' }));
@@ -140,6 +278,10 @@ const STEPS: Step[] = [
 		async run(s) {
 			const page = await s.open('rakesh', '/home', 'allows the agents to act for Rakesh Traders');
 			await expect(main(page).getByText('Let Smart-Clearance act for Rakesh Traders')).toBeVisible();
+			await s.spot(
+				main(page).locator('.card', { hasText: 'Let Smart-Clearance act for Rakesh Traders' }).first(),
+				WHY.permission
+			);
 			await s.click(main(page).getByRole('button', { name: 'Allow', exact: true }));
 			await expect(main(page).getByText('Smart-Clearance acts for you')).toBeVisible();
 			await running().done('Permission given');
@@ -153,6 +295,7 @@ const STEPS: Step[] = [
 				const page = await s.open('neha', '/clients/munchly/agents', "runs the Watcher's daily check now");
 				const go = page.getByRole('button', { name: 'Run now: Watcher, daily check' });
 				await expect(go).toBeEnabled();
+				await s.spot(go, WHY.watcher);
 				await s.click(go);
 				await running().done('Watcher run from the console');
 			}
@@ -163,10 +306,11 @@ const STEPS: Step[] = [
 			const page = await s.open('priya', `/command/${HERO}`, 'sees the chips flagged on the Command Center');
 			await expect(main(page).getByText('Masala Chips 150 g').first()).toBeVisible();
 			story('Write-off at Detect', c.writeOff?.total, 26329.6);
-			await s.point(
+			await s.spot(
 				main(page)
 					.getByText(/if destroyed/)
-					.first()
+					.first(),
+				NOTE.risk(c)
 			);
 			await running().done('Command Center: the chips at risk, −₹26,330 if destroyed');
 		}
@@ -181,10 +325,11 @@ const STEPS: Step[] = [
 			await s.click(main(page).getByRole('button', { name: 'Send photo', exact: true }), 150);
 			await running().done('Vision is reading the label', 200);
 			await expect(main(page).getByText(/Dhanyavaad/)).toBeVisible({ timeout: AGENT_WAIT });
-			await s.point(
+			await s.spot(
 				main(page)
 					.getByText(/Verified|matches your records/)
-					.first()
+					.first(),
+				WHY.verified
 			);
 			await running().done('Vision validated the label: the batch, its dates and MRP match the export');
 		}
@@ -200,15 +345,56 @@ const STEPS: Step[] = [
 			);
 			story('Plan net', c.plan?.net, 21770);
 			for (const l of c.plan?.lines ?? []) running().figure(`Plan line ${l.id}`, `${l.units} packs`);
-			const page = await s.open('priya', `/route/${HERO}`, 'reviews the plan in the Route Room and approves it');
-			const review = main(page).getByRole('button', { name: 'Review and approve', exact: true });
+			// the plan reaches her Command Center first, and she opens the Route Room from it: a screen opened in the moment
+			// the phase arrives before the plan does is what SC-189 fixes, not yet deployed on production
+			const cc = await s.open('priya', `/command/${HERO}`, 'sees the plan arrive on her Command Center');
+			await expect(main(cc).getByText(inr(c.plan?.net)).first()).toBeAttached({ timeout: 60_000 });
+			const card = main(cc).locator('.card', { hasText: 'Masala Chips' }).first();
+			await s.point(card, 1100);
+			await running().done(`Command Center: the plan ready, ${inr(c.plan?.net)}`);
+			const opener = main(cc)
+				.getByRole('button', { name: /Open Route Room/ })
+				.or(main(cc).getByRole('link', { name: /Open Route Room/ }))
+				.first();
+			if (await opener.isVisible().catch(() => false)) {
+				await s.click(opener, 600);
+				await expect(cc).toHaveURL(new RegExp(`/route/${HERO}`));
+			}
+			const page = await s.open('priya', `/route/${HERO}`, 'reads the Route Room down to its split, and approves it');
+			const body = main(page);
+			const review = body.getByRole('button', { name: 'Review and approve', exact: true });
 			await expect(review).toBeVisible();
-			await running().done('Route Room: the plan, waiting for a yes');
+			// down the Route Room as she reads it: the label Vision read, the five channels priced, the Router's split
+			await s.point(body.getByText('Label, read from the shelf').first(), 700);
+			await s.spot(body.locator('.chart').first(), WHY.channels);
+			// the chart: the cursor over each channel's bar brings up its price, capacity and time to clear
+			const bars = body.locator('.chart g');
+			for (let i = 0, n = Math.min(await bars.count(), 5); i < n; i++) await s.point(bars.nth(i), 650);
+			await running().done('Route Room: five channels priced, each bar read');
+			// the same as a table, read across where it is wider than the screen
+			await s.click(body.getByRole('group', { name: 'View' }).getByRole('button', { name: 'Table' }), 500);
+			const table = body.locator('.table-wrap').first();
+			await s.point(table, 600);
+			await s.pan(table.locator('table'));
+			await running().done('Route Room: the channels as a table');
+			// the split, with what it comes to
+			const lines = (c.plan?.lines ?? []) as { id: string; units: number; price?: number }[];
+			const k = lines.find((l) => l.id === 'kirana');
+			const es = lines.find((l) => l.id === 'expiresoon');
+			const split = body.locator('.card', { hasText: 'units at risk' }).first();
+			await s.spot(split, {
+				tag: 'Router',
+				title: 'The recommended split',
+				text: `${k?.units ?? 0} packets to Rakesh Traders' 38 kiranas${k?.price ? ` at ₹${k.price} effective` : ''}, as many as they can sell in 14 days; ${es?.units ?? 0} to ExpireSoon${es?.price ? ` at ₹${es.price}` : ''}. Net ${inr(c.plan?.net)}, where destroying them would cost ${inr(Math.round(c.writeOff?.total ?? 0))}.`
+			});
+			await running().done('Route Room: the recommended split, waiting for a yes');
 			await s.click(review);
 			const sheet = page.getByRole('dialog', { name: 'Approve the plan' });
 			await expect(sheet).toBeVisible();
 			await running().done('The approve sheet');
-			await s.click(sheet.getByRole('button', { name: 'Approve · release the agents' }));
+			const yes = sheet.getByRole('button', { name: 'Approve · release the agents' });
+			await s.spot(yes, WHY.approve);
+			await s.click(yes);
 			const placed = page.getByRole('dialog', { name: 'Plan placed' });
 			await expect(placed.getByRole('button', { name: 'Watch execution' })).toBeVisible();
 			await running().done('Plan placed');
@@ -227,7 +413,18 @@ const STEPS: Step[] = [
 			story('Kiranas offered the scheme', c.journey.offer?.shops, OFFERED.length);
 			story('ExpireSoon lot', `${c.journey.listing?.units} packs at ₹${c.journey.listing?.price}`, '772 packs at ₹15');
 			await s.stat('offered', 'kiranas offered', String(c.journey.offer?.shops ?? 0));
-			await s.open('priya', `/execution/${HERO}`, 'watches the agents carry out the plan');
+			const ex = await s.open('priya', `/execution/${HERO}`, 'watches the agents carry out the plan');
+			const kl = ((c.plan?.lines ?? []) as { id: string; price?: number }[]).find((l) => l.id === 'kirana');
+			await s.spot(
+				main(ex).locator('.card', { hasText: 'Lister · ExpireSoon' }).first(),
+				NOTE.lister(c.journey.listing?.units ?? 0)
+			);
+			await s.spot(
+				main(ex)
+					.locator('.card', { hasText: /Outreach · \d+ kiranas/ })
+					.first(),
+				NOTE.scheme(c.journey.offer?.shops ?? 0, kl?.price)
+			);
 			await running().done('Execution: the lot listed, the scheme sent');
 			const page = await s.open('rakesh', `/orders/${HERO}`, 'watches his kiranas answer the scheme on Orders');
 			await expect(main(page)).toContainText(/scheme/i);
@@ -273,7 +470,8 @@ const STEPS: Step[] = [
 						`/execution/${HERO}`,
 						`${k.name}'s order did not reach Priya's Execution screen within 45 s without a reload`
 					);
-				await s.point(row, 900);
+				if (i === 0) await s.spot(row, WHY.live);
+				else await s.point(row, 900);
 				await s.point(count, 600);
 				await running().done(`Live on Priya's tablet: ${k.name}, ${k.orders} packets (${i + 1} of 38 shops)`);
 			}
@@ -310,8 +508,10 @@ const STEPS: Step[] = [
 			await running().done('Bid ₹13 a packet');
 			const accept = main(page).getByRole('button', { name: /^Accept ₹/ });
 			await expect(accept).toBeVisible({ timeout: AGENT_WAIT });
-			running().figure('Counter', (await accept.innerText()).replace(/\s+/g, ' '));
+			const offer = (await accept.innerText()).replace(/\s+/g, ' ');
+			running().figure('Counter', offer);
 			await running().done('The Negotiator countered');
+			await s.spot(accept, NOTE.counter(offer));
 			await s.click(accept);
 			const c = await until('the lot is awarded', 'priya', (c) => Boolean(c.journey.award));
 			story(
@@ -343,6 +543,7 @@ const STEPS: Step[] = [
 			);
 			const close = page.getByRole('button', { name: `Close now: Outreach, offer window closes, ${HERO}` });
 			await expect(close).toBeEnabled();
+			await s.spot(close, WHY.window);
 			await s.click(close);
 			const alert = page.getByRole('alertdialog', { name: /Close the offer window now/ });
 			await expect(alert).toBeVisible();
@@ -396,6 +597,7 @@ const STEPS: Step[] = [
 			const sold = main(page).locator('.dist-order').filter({ hasText: invoiceNo });
 			await s.click(sold.getByRole('button', { name: 'Issue from Tally' }));
 			await expect(sold.getByText('issued from Tally', { exact: true })).toBeVisible();
+			await s.spot(sold, WHY.invoice);
 			await running().done(`Invoice ${invoiceNo} issued from Tally`);
 			const van = await s.open('rakesh', `/van/${HERO}`, `runs his van round to the ${BUY.length} shops that ordered`);
 			const round = main(van).getByRole('button', { name: 'Start the round', exact: true });
@@ -414,6 +616,7 @@ const STEPS: Step[] = [
 			const page = await s.open('neha', '/clients/munchly/agents', "fires expiry day's report for the chips");
 			const fire = page.getByRole('button', { name: `Report now: Impact, expiry day · report, ${HERO}` });
 			await expect(fire).toBeEnabled();
+			await s.spot(fire, WHY.report);
 			await s.click(fire);
 			const alert = page.getByRole('alertdialog', { name: /Expire it and report now/ });
 			await expect(alert).toBeVisible();
@@ -450,6 +653,7 @@ const STEPS: Step[] = [
 			await s.address('distributor');
 			const body = main(page);
 			await expect(body.getByRole('button', { name: /Send to .* for approval/ })).toBeDisabled();
+			await s.spot(body.locator('.dz-slot').first(), WHY.destroy);
 			await s.upload(body.getByRole('button', { name: 'Upload the before photo' }), EVIDENCE('before', units));
 			await s.upload(body.getByRole('button', { name: 'Upload the after photo' }), EVIDENCE('after', units));
 			await expect(body.locator('.dz-slot .cam-tag', { hasText: '1 · Before' })).toBeVisible();
@@ -465,7 +669,7 @@ const STEPS: Step[] = [
 			await running().done('The window and the two witnesses who sign the certificate with the agency’s officer');
 			// the certificate signed in place (SC-183): each of the four signs in their own place on his tablet, drawing
 			// their signature on the pad stroke by stroke
-			await s.point(body.getByText('Sign the certificate').first(), 700);
+			await s.spot(body.getByText('Sign the certificate').first(), WHY.sign);
 			await running().done('The certificate to sign, laid out from what he entered, stamped TO SIGN');
 			await signCertificate(page, body, (l) => s.click(l, 400), PEN);
 			await s.point(body.getByText('4 of 4 signed').first(), 700);
@@ -473,6 +677,7 @@ const STEPS: Step[] = [
 			await s.click(body.getByRole('button', { name: /Send to .* for approval/ }), 150);
 			await expect(body.getByText(/Vision is checking/).first()).toBeVisible({ timeout: 15_000 });
 			// the photos stay in view while Vision checks them (SC-180)
+			await s.spot(body.locator('.dz-slot').first(), WHY.vision);
 			await readEach(s, body.locator('.dz-slot img'), 2, 700);
 			await running().done('Vision is checking the two photos: the label, the count, the slate, the landfill', 200);
 			const c = await until("Vision checks the destruction's evidence", 'priya', (c) =>
@@ -500,16 +705,28 @@ const STEPS: Step[] = [
 			await expect(sheet).toBeVisible();
 			await expect(sheet.locator('img.cam-feed')).toHaveCount(2);
 			await readEach(s, sheet.locator('img.cam-feed'), 2, 700);
-			for (const x of before.destruction?.checks ?? []) await s.point(sheet.getByText(x.label).first(), 600);
+			for (const x of before.destruction?.checks ?? []) {
+				const line = sheet.getByText(x.label).first();
+				// a check Vision did not pass is read with what it means: one of four, and the yes stays hers
+				if (!x.ok)
+					await s.spot(line, {
+						tag: 'Vision',
+						title: 'A check not passed',
+						text: `${x.label}. Vision's count is an estimate from a photo of heaped crates, one of its four checks; the batch, the slate and the place are read separately. The yes stays Priya's, with the photos in front of her.`
+					});
+				else await s.point(line, 600);
+			}
 			await running().done('The review: both photos, and Vision’s four checks read one by one');
 			// the certificate as signed at the facility, each signature drawing itself as it was signed (SC-183)
 			await s.point(sheet.getByText('The certificate, as signed at the facility').first(), 600);
 			await readEach(s, sigs(sheet), 4, 900);
 			await s.point(sheet.getByText(/Four signatures on the certificate/).first(), 700);
 			await running().done('The certificate as signed: the officer, both witnesses and Rakesh, each in its place');
+			const issue = sheet.getByRole('button', { name: 'Approve · issue the papers' });
 			await s.point(sheet.getByText(/Expiry credit note to/).first(), 700);
+			await s.spot(issue, NOTE.secondYes(before.expiry?.amount));
 			await running().done('What her yes issues: the Expiry credit note and the agency’s certificate');
-			await s.click(sheet.getByRole('button', { name: 'Approve · issue the papers' }));
+			await s.click(issue);
 			const c = await until('Impact posts the ledger', 'priya', (c) => c.journey.posted);
 			story('Destruction', c.destruction?.status, 'approved');
 			const paper = c.docs.find((d) => d.id === 'expiry');
@@ -534,6 +751,7 @@ const STEPS: Step[] = [
 			const body = main(page);
 			await s.click(body.getByRole('button', { name: /Destruction certificate/ }).first(), 600);
 			await expect(body.getByText('Destruction log').first()).toBeVisible();
+			await s.spot(body.getByText(/certificate of destruction/i).first(), WHY.certificate);
 			await running().done('The certificate of destruction, page 1');
 			// the goods, the reason, the method and the facility, read down the page
 			for (const what of [/Reason/, /Method/, /Facility|facility/, /Date and time/])
@@ -572,6 +790,7 @@ const STEPS: Step[] = [
 			if (await register.count()) {
 				await s.click(register, 600);
 				await expect(body).toContainText('Sales Register');
+				await s.spot(body.getByText('Sales Register').first(), WHY.invoices);
 				await running().done(`The sales register: ${BUY.length} tax invoices to the kiranas`);
 				const numbers = (c.journey.orders ?? [])
 					.map((o) => o.invoice?.no)
@@ -606,6 +825,7 @@ const STEPS: Step[] = [
 			const page = await s.open('priya', '/report?reading=impact', 'reads the Impact dashboard for the quarter');
 			const body = main(page);
 			await expect(body).toContainText('Food, by week');
+			await s.spot(body.getByText(/Kept out of landfill/).first(), WHY.impact);
 			await readEach(s, body.getByText(/Kept out of landfill|Destroyed|CO₂e avoided/), 3, 600);
 			await running().done('Impact: kept out of landfill, destroyed, CO₂e avoided');
 			await s.point(body.getByText('Food, by week').first(), 600);
@@ -642,7 +862,7 @@ const STEPS: Step[] = [
 			await running().done('His batch: what happened');
 			await s.click(page.locator('.bh-tabs').getByRole('button', { name: 'Money' }));
 			await expect(body).toContainText('You end whole');
-			await s.point(body.getByText('You end whole').first(), 600);
+			await s.spot(body.getByText('You end whole').first(), WHY.whole);
 			await running().done('His batch: he ends whole');
 			await s.click(page.locator('.bh-tabs').getByRole('button', { name: 'Papers' }));
 			await expect(body).toContainText('Your papers');
@@ -705,7 +925,9 @@ const STEPS: Step[] = [
 			const page = await s.open('priya', `/execution/${HERO}`, 'reads what was left at the godown and how it settled');
 			await s.point(main(page).getByText('Expiry settlement', { exact: true }), 800);
 			await running().done(`Execution: ${left()} packs left at the godown, destroyed there`);
-			await s.open('priya', `/report/${HERO}`, "reads the batch's money in the ledger");
+			const ledger = await s.open('priya', `/report/${HERO}`, "reads the batch's money in the ledger");
+			const done = await caseAs('priya');
+			if (done) await s.spot(main(ledger).locator('.card').first(), NOTE.outcome(done));
 			await running().done("The ledger: the batch's money");
 			await s.open('priya', '/command', 'sees the Command Center at the end');
 			await running().done('Command Center at the end');
