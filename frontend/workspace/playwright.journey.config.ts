@@ -26,6 +26,9 @@ import { defineConfig } from '@playwright/test';
 //                                                   never resets the journey)
 //   corepack pnpm test:journey:admin-tour           Admin and console tour (SC-199): the same in about a minute, with
 //                                                   green notes, on a client an earlier run set up (adds no client)
+//   corepack pnpm test:journey:admin-walk           Admin and console walkthrough (SC-204): the landing page scrolled
+//                                                   over, the console's monitoring, a client's data and people, and its
+//                                                   agents configured, briefly, with green notes (adds no client)
 //   corepack pnpm test:journey --headed             watch it run (E2E_SLOWMO=250 slows each action, in ms)
 //   corepack pnpm test:journey --ui                 Playwright's UI mode, step by step
 //
@@ -70,6 +73,8 @@ export default defineConfig({
 		{ name: 'Munchly Mango Stage E2E', testMatch: /munchly-mango-stage\.journey\.ts/ },
 		// SC-191: the platform's own side, the landing page and the console, on the same stage
 		{ name: 'Admin Console E2E', testMatch: /admin-console\.journey\.ts/ },
-		{ name: 'Admin Console Tour', testMatch: /admin-console-tour\.journey\.ts/ }
+		{ name: 'Admin Console Tour', testMatch: /admin-console-tour\.journey\.ts/ },
+		// SC-204: between the two, a walkthrough of a few minutes
+		{ name: 'Admin Console Walkthrough', testMatch: /admin-console-walk\.journey\.ts/ }
 	]
 });

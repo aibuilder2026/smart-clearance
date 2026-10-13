@@ -431,6 +431,38 @@ E2E_TARGET=prod corepack pnpm test:journey:admin-tour       # on production
 
 Its run of 12 Oct on production is in `runs/2026-10-12-prod-admin-tour/`.
 
+## Admin and console walkthrough
+
+Between the tour and the detailed run (SC-204), `admin-console-walk.journey.ts`: about three minutes on one laptop,
+brief and high level, in green cards and a chapter card for each of six parts.
+
+1. The landing page, scrolled over quickly with nothing on it ringed, then the bar's Console, ringed and pressed.
+2. Neha Kulkarni, a Super admin, signs in on the console's own screen.
+3. Monitoring: the Overview's four figures, read live; Agents at work, every batch at its stop (one stop listed);
+   Needs attention, demo requests and the runs today; the platform's agents across every client.
+4. A SaaS client, configured: every client, and where New client starts; then a client an earlier run set up
+   (`E2E_CLIENT`, `kaveri` by default): its first stock export mapped by the Data agent and its supply chain (the data),
+   and its people with the invitation (the users).
+5. Quick-commerce gates by SKU and by batch, read on a client with its own (`E2E_GATES_CLIENT`, `munchly` by default,
+   never changed): the SKU table with each SKU's Blinkit and Zepto, Instamart gates; the Mango Drink's own gates and
+   its batch checked against them; Choco Cream Biscuits' batch MF-2409-204 overridden to 30% with its reason, and the
+   override's form opened, then cancelled.
+6. The first client's agents: the pipeline, the Watcher's Blinkit gate changed and saved, the Negotiator on Act, the
+   approval always on.
+
+**What it changes:** it adds no client. The Watcher's gate moves between 60 and 65 days, so every run saves a change and
+writes its audit line, as the tour does.
+
+**The stage's cards** (SC-204): where what is read nearly fills its screen, so no side has room for the card, the card
+sits inside the screen at its foot's right corner, with no caret, rather than past the screen's edge.
+
+```sh
+E2E_TARGET=prod corepack pnpm test:journey:admin-walk        # on production
+E2E_KEEP='../../playwright-automation-videos/admin-console-walk-prod-{stamp}.mp4' E2E_TARGET=prod corepack pnpm test:journey:admin-walk
+```
+
+Its run of 13 Oct on production is in `runs/2026-10-13-prod-admin-walk/`.
+
 ## Before a run
 
 - backend-api on :8000 (`backend-api/scripts/dev.sh`), on a world with Munchly's live workspace (`hydrate.sh --reset`,

@@ -23,7 +23,8 @@
 		"test:journey:sad": "playwright test -c playwright.journey.config.ts --project=\"Munchly Chips Sad Path E2E\"",
 		"test:journey:mango-stage": "playwright test -c playwright.journey.config.ts --project=\"Munchly Mango Stage E2E\"",
 		"test:journey:admin": "playwright test -c playwright.journey.config.ts --project=\"Admin Console E2E\"",
-		"test:journey:admin-tour": "playwright test -c playwright.journey.config.ts --project=\"Admin Console Tour\""
+		"test:journey:admin-tour": "playwright test -c playwright.journey.config.ts --project=\"Admin Console Tour\"",
+		"test:journey:admin-walk": "playwright test -c playwright.journey.config.ts --project=\"Admin Console Walkthrough\""
 	},
 	"dependencies": {
 		"@smart-clearance/api": "workspace:*",

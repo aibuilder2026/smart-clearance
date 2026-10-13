@@ -1090,7 +1090,13 @@ export class Stage {
 						} else side = (Object.keys(room) as Side[]).sort((p, q) => room[q] - room[p])[0];
 					}
 					let left: number, top: number;
-					if (side === 'right' || side === 'left') {
+					// what is read nearly fills its screen, so no side has room (SC-204: the card went past the screen's edge,
+					// cut off): the card sits inside the screen at its foot's right corner, over what is read, with no tail
+					const over = room[side] < (side === 'right' || side === 'left' ? bw : ch);
+					if (over) {
+						left = B.r - bw;
+						top = B.b - ch;
+					} else if (side === 'right' || side === 'left') {
 						left = side === 'right' ? R.r + G : R.l - G - bw;
 						top = clamp(cy - 20, B.t, B.b - ch);
 					} else {
@@ -1112,9 +1118,9 @@ export class Stage {
 						const tx = clamp(cx - left - 7, cardStyle ? 16 : 6, bw - (cardStyle ? 30 : 21));
 						tail.style.left = `${tx}px`;
 					}
-					card.appendChild(tail);
+					if (!over) card.appendChild(tail);
 					Object.assign(card.style, { left: `${left}px`, top: `${top}px` });
-					card.classList.add(`from-${side}`);
+					card.classList.add(`from-${over ? 'above' : side}`);
 					requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('on')));
 				},
 				[

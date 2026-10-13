@@ -2602,4 +2602,18 @@
   - **The fix** (design3 `components.css` and `world.jsx` Roll first, then core's `Roll.svelte` and `components.css`, verbatim): rows a whole number of pixels tall (`round(0.98em, 1px)`, with `0.98em` before it for a browser without `round()`), the strip moved a tenth of its own height a step, and the separators on the same line. Every rolled figure shares it: the console's Overview, Money and DaysNum in the workspace, the landing page's ledger.
   - **Checks:** the console's Overview on its mock build and design3's specimen, measured character by character against plain text at 1× and 2×: every digit and comma now lands where plain text puts it. The frontend gate passes (api 83, core 408, admin 22, console 2, demo 9, workspace 115).
   - **Hosting:** design3's `dist/` is rebuilt. The hosted pages stay on their pinned commits; production follows on the merge to `main`.
+- **SC-204** (In Review, branch `SC-204-admin-console-walk`): Admin and console walkthrough, a few minutes on one laptop on production, recorded, asked for by the maintainer.
+  - **The request:** start on the production landing page, scroll over it quickly, then highlight and click Console; sign in as a Super admin; show, brief and high level, how admins track the Overview's dashboards and the agents running, how SaaS clients are configured with their data and user setup, and how agents are configured per client, with the green notes of the other journeys. Then, mid-run: "dont highlight/bix anything on landing screen, except for console button"; and "show how Blinkit Zepto deadlines can be customized at SKU and batch level".
+  - **The suite** (`admin-console-walk.journey.ts`, `corepack pnpm test:journey:admin-walk`, its own Playwright project), between the one-minute tour (SC-199) and the detailed run (SC-197), in green cards and a chapter card for each of six parts:
+    1. the landing page, scrolled over with nothing ringed but the bar's Console, pressed;
+    2. Neha, a Super admin, signs in on the console's screen;
+    3. monitoring: the Overview's figures read live, Agents at work, what waits on a person and the runs today, the platform's agents;
+    4. every client and where New client starts; Kaveri Foods' first stock export mapped and its supply chain, its people;
+    5. quick-commerce gates by SKU and batch on Munchly Foods, read and never changed (`E2E_GATES_CLIENT`): the SKU table, the Mango Drink's own gates, MF-2409-204's override with its reason, the override's form opened and cancelled;
+    6. Kaveri Foods' agents: the pipeline, the Watcher's gate saved, the Negotiator on Act, the approval always on.
+
+    It adds no client; Kaveri's Watcher gate moves between 60 and 65 days each run, with its audit line, as the tour's does.
+  - **The stage** (`stage.ts`): a note card with no room beside, under or over what it reads sits inside the screen at its foot's right corner, with no caret; the first take's cards went past the screen's edge, cut off.
+  - **The run of 13 Oct on production** (`runs/2026-10-13-prod-admin-walk/REPORT.md`): passed, 15 steps in 3 min 40 s, against `730f90c0`, with no finding. The recording (2560 × 1440) and its 720p copy are `playwright-automation-videos/admin-console-walk-prod-2026-10-13_12-16-11*.mp4`, local; two earlier takes are kept as `…-superseded.mp4`. Munchly's gates read back unchanged afterwards.
+  - **Checks:** the frontend gate passes (api 83, core 408, admin 22, console 2, demo 9, workspace 115).
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
