@@ -1,4 +1,4 @@
-import { expect, test, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { api, mint } from './auth.ts';
 import { AGENT_WAIT, begin, caseAs, inr, running, story, until, WS, type Case } from './flow.ts';
 import { DIST, HERO, KIRANAS, orderPlan, past, printed, STEP } from './mango.ts';
+import { closeSheet, readPaper, showSwing } from './read.ts';
 import { loaded, Stage, type Note } from './stage.ts';
 
 // Munchly Mango E2E on three screens (SC-190, SC-201): the Mango Drink 200 ml batch (MF-2410-118, Lakshmi Agencies,
@@ -63,35 +64,6 @@ const num = (n: number | undefined) => (n ?? 0).toLocaleString('en-IN');
 type Figures = { net: number; swing: number; pnl?: number; units: number; kg: number; meals: number };
 const figuresOf = (c: Case | null) => (c as (Case & { ledger?: { figures?: Figures } | null }) | null)?.ledger?.figures;
 
-/** the sheet open on a screen, closed as a person closes it */
-async function closeSheet(s: Stage, page: Page) {
-	const d = page.getByRole('dialog').last();
-	if (!(await d.isVisible().catch(() => false))) return;
-	const close = d.getByRole('button', { name: 'Close', exact: true }).first();
-	if (await close.isVisible().catch(() => false)) await s.click(close, 400);
-	else await page.keyboard.press('Escape');
-	await expect(d)
-		.toBeHidden({ timeout: 10_000 })
-		.catch(() => {});
-}
-
-/** a paper opened from its card and read top to bottom, in its sheet or beside the pack, ending on who signed it. A
- *  note, where the paper has one, sits beside its head first. The sheet stays open with `keep` */
-async function readPaper(s: Stage, page: Page, opener: Locator, note?: Note, keep = false) {
-	await s.click(opener, 700);
-	const d = page.getByRole('dialog').last();
-	const inSheet = await d.isVisible().catch(() => false);
-	const paper = (inSheet ? d : main(page)).locator('.paper').first();
-	await expect(paper).toBeVisible({ timeout: 20_000 });
-	await loaded(page, 8000);
-	if (note) await s.spot(paper.locator('.tl-title, .pp-head').first(), note);
-	await s.read(paper);
-	const sig = paper.locator('img[alt^="Signed by"]').last();
-	if (await sig.isVisible().catch(() => false)) await s.point(sig, 900);
-	if (inSheet && !keep) await closeSheet(s, page);
-	return { paper, inSheet };
-}
-
 /** the green cards: only the major moments of the flow, in business terms */
 const WHY = {
 	verified: {
@@ -143,11 +115,6 @@ const WHY = {
 		tag: 'Distributor',
 		title: 'Lakshmi Agencies ends whole',
 		text: "Every rupee Lakshmi Agencies paid for the batch comes back: from her kiranas, her staff and Munchly's credit note. Clearing it cost her nothing."
-	},
-	sum: {
-		tag: 'The swing',
-		title: "The plan's P&L, less the bin's",
-		text: 'Destroying every pack at risk would have cost the stock, the GST credit reversed, disposal and EPR. The swing is how much better the plan did than that: what was recovered, plus the costs nobody had to pay.'
 	}
 } satisfies Record<string, Note>;
 /** the cards whose figures are the case's own */
@@ -795,34 +762,9 @@ const STEPS: Step[] = [
 		card: 'The swing, worked out',
 		async run(s) {
 			const done = await caseAs('priya');
-			const page = await s.open('priya', `/journey/${HERO}`, 'opens the Mango Drink to show its swing');
-			const note = main(page).locator('button.sw-note').first();
-			await expect(note).toBeVisible({ timeout: 30_000 });
-			await s.point(note, 1200);
-			await s.click(note, 700);
-			const sheet = page.getByRole('dialog', { name: 'How the swing adds up' });
-			await expect(sheet).toBeVisible();
-			await s.spot(sheet.locator('.sw-hero'), NOTE.swing(done));
-			await running().done('How the swing adds up: the swing, in words');
-			await s.point(sheet.locator('.sw-bridge'), 2200);
-			await running().done("The bridge: from the bin's P&L to the plan's");
-			const section = (h: string) => sheet.locator('section', { has: page.getByRole('heading', { name: h }) });
-			await s.read(section('If it were destroyed'), 1500);
-			await s.point(section('If it were destroyed').locator('.sw-row.strong').last(), 1800);
-			await running().done('If it were destroyed: the stock, the GST credit, disposal and EPR');
-			await s.read(section('What the plan did'), 1500);
-			await s.point(section('What the plan did').locator('.sw-row.strong').last(), 1800);
-			await running().done('What the plan did: each exit, what was recovered, the P&L with the plan');
-			await s.spot(sheet.locator('.sw-sum'), WHY.sum);
-			await running().done("The swing: the plan's P&L less the bin's");
-			await s.read(section('How the loss was kept small'), 1800);
-			await s.point(section('How the loss was kept small').locator('.sw-why'), 2600);
-			await running().done('How the loss was kept small');
+			await showSwing(s, HERO, 'Mango Drink', NOTE.swing(done));
 			const f = figuresOf(done);
 			if (f) running().figure('Swing', inr(f.swing));
-			// the last frame rests on the swing
-			await s.reveal(sheet.locator('.sw-hero'));
-			await page.waitForTimeout(2500);
 		}
 	}
 ];
