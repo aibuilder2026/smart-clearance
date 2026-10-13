@@ -1,0 +1,16 @@
+{
+  "name": "g04-town-network",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "prompt": "A tilt-shift photograph of a handcrafted miniature diorama of an Indian town at dawn, seen from above at a gentle angle: a small factory with a chimney, a warehouse godown with two tiny trucks, a lane of tiny kirana shops with colourful cloth awnings, a small white van, and a highway curving into the distance. Thin glowing emerald-green threads of light run along the roads and connect every building like a living network, with small bright points of light along them. Soft morning mist and warm sunrise light, magical and highly detailed. Surreal, dreamlike yet photorealistic, cinematic, 35 mm film look, soft volumetric light, shallow depth of field, a warm palette of gold, sand and deep emerald green. No text, no numbers, no lettering, no logos, no signs anywhere in the picture.",
+  "condition_images": [],
+  "seed": 200004,
+  "size": [
+    1376,
+    768
+  ],
+  "aspect": "16:9",
+  "created": "2026-10-13",
+  "use": "SC-200 film: Smart-Clearance: the town and its agents' network; the intro's plate",
+  "cost_usd": 0,
+  "postprocess": "webp q88"
+}

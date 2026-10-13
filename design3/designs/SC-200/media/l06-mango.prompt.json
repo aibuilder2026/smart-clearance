@@ -1,0 +1,17 @@
+{
+  "prompt": "Exactly as in the image: above the sunlit bazaar lane the Munchly Mango carton floats in mid-air, bobbing gently up and down, its printed label unchanged and legible; the ripe mangoes around it drift slowly at different depths; warm golden haze and dust glow in the light. A slow push in toward the carton. Everything keeps its form; no object appears, vanishes or changes shape; no text or lettering appears. Cinematic, photorealistic, smooth and slow, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "720p",
+  "duration": 6,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "dolly_in",
+  "audio": false,
+  "seed": 200704,
+  "loras": [],
+  "image": "g06w-mango.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 8.9,
+  "cost_usd": 0,
+  "use": "SC-200 film"
+}

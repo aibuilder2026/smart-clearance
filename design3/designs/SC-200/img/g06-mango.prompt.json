@@ -1,0 +1,18 @@
+{
+  "name": "g06-mango",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "prompt": "The exact Mango Drink carton from the reference image, with its label exactly as printed, floats gently in mid-air in the centre of the frame above a sunlit Hyderabad bazaar lane at golden hour. A few ripe yellow-orange mangoes float around it at different depths. Behind, out of focus, the warm lane with cloth awnings and the soft silhouette of old stone arches in the haze. Surreal and dreamlike, photorealistic, shallow depth of field, warm golden light. Keep the carton's printed label exactly as in the reference; nothing else carries any text. Surreal, dreamlike yet photorealistic, cinematic, 35 mm film look, soft volumetric light, shallow depth of field, a warm palette of gold, sand and deep emerald green. No text, no numbers, no lettering, no logos, no signs anywhere in the picture.",
+  "condition_images": [
+    "system/img/pack-mango.webp"
+  ],
+  "seed": 200006,
+  "size": [
+    1024,
+    1024
+  ],
+  "aspect": "1:1",
+  "created": "2026-10-13",
+  "use": "SC-200 film: condition image for g06w",
+  "cost_usd": 0,
+  "postprocess": "webp q88"
+}

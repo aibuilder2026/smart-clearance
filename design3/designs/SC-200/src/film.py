@@ -97,7 +97,7 @@ ov("ch-loss", "chips", items=["Written off", "Tax credit reversed", "Landfill"],
 clip(0.0, "l01-hourglass", speed=0.72, zoom=(1.0, 1.10), focus=(0.52, 0.5), kind="fadeblack",
      ov=[("st-1", a("p1", -0.3), e("p2", -0.6))])
 clip(a("p2", 1.6), "l02-pages", speed=0.75, zoom=(1.02, 1.12), ov=[("st-2", 0.0, 2.4), ("st-3", a("p3", -0.2) - a("p2", 1.6), 99)])
-clip(a("p4", -0.4), "l03-landfill", speed=0.7, zoom=(1.0, 1.12), focus=(0.4, 0.75), grade="muted",
+clip(a("p4", -0.4), "l03-landfill", speed=0.7, zoom=(1.0, 1.06), focus=(0.4, 0.9), grade="muted",
      ov=[("ch-loss#0", 1.6, 99), ("ch-loss#1", 2.6, 99), ("ch-loss#2", 3.9, 99)])
 
 # 2 · Smart-Clearance
@@ -153,7 +153,7 @@ ov("m-fill", "callout", kicker="THE KIRANA SCHEME", fig="52 shops", cap="1,372 p
 ov("m-staff", "kicker", kicker="STAFF SALE", head="Checked against one UPI receipt.", x=96, y=360, w=860)
 ov("m-upi", "callout", kicker="VISION READ", fig="18 payments", cap="₹1,200 — matches the count", x=96, y=670, w=860)
 ov("m-donate", "kicker", kicker="DONATION", head="58 packs to Feeding India, receipted.", x=96, y=360, w=860)
-ov("m-paper", "kicker", kicker="SETTLE · PAPERWORK", head="Every paper signed and stamped.", x=96, y=360, w=440)
+ov("m-paper", "kicker", kicker="SETTLE · PAPERWORK", head="Every paper prepared, signed and stamped.", x=96, y=360, w=440)
 ov("m-ledger", "kicker", kicker="REPORT · IMPACT", head="The ledger, posted.", x=96, y=360, w=440)
 ov("m-whole", "callout", kicker="RECOVERED", fig="₹16,917", cap="distributor ends whole: ₹0 loss", x=96, y=670, w=860)
 CAMS_DIST = lambda *k: {"dist": cam(*k)}  # noqa: E731
@@ -193,7 +193,7 @@ screen(a("m6", 2.5), "mango", 593.4, "P", "mango", speed=1.0,
 screen(a("m6", 4.6), "mango", 628.6, "PH", "mango", speed=1.0, enter=True,
        cams={"phone": cam((0, 1.0, 0.5, 0.5), (1.6, 1.0, 0.5, 0.5), (3.0, 1.2, 0.5, 0.42))},
        ov=[("tag-meera", 0.2, 99), ("m-donate", 0.3, 99)])
-screen(a("m7", -0.3), "mango", 685.6, "L", "mango", speed=1.0,
+screen(a("m7", -0.3), "mango", 685.6, "L", "mango", speed=0.5,
        cams=CAMS_P((0, 1.0, 0.5, 0.5), (0.6, 1.0, 0.5, 0.5), (2.0, 1.55, 0.7, 0.45)),
        ov=[("tag-priya", 0.2, 99), ("m-paper", 0.2, 99)])
 screen(a("m7", 2.6), "mango", 755.4, "L", "mango", speed=1.0,
@@ -266,8 +266,8 @@ screen(a("k6", 3.8), "chips", 616.4, "P", "chips", speed=1.0,
 screen(a("k7", -0.3), "chips", 664.6, "L", "chips", speed=0.42, enter=True,
        cams=CAMS_P((0, 1.0, 0.5, 0.5), (0.6, 1.0, 0.5, 0.5), (2.2, 1.35, 0.72, 0.62)),
        ov=[("tag-priya", 0.2, 99), ("k-second", 0.2, 99)])
-screen(a("k7", 3.3), "chips", 687.4, "L", "chips", speed=0.2,
-       cams=CAMS_P((0, 1.0, 0.5, 0.5), (0.4, 1.0, 0.5, 0.5), (1.8, 1.5, 0.25, 0.66)),
+screen(a("k7", 3.3), "chips", 686.0, "L", "chips", speed=0.35,
+       cams=CAMS_P((0, 1.0, 0.5, 0.5), (0.4, 1.0, 0.5, 0.5), (1.8, 1.3, 0.56, 0.62)),
        ov=[("tag-priya", 0.0, 99), ("k-second", 0.0, 99), ("k-cn", 0.3, 99)])
 screen(a("k7", 6.4), "chips", 806.4, "P", "chips", speed=0.9, enter=True,
        cams=CAMS_DIST((0, 1.0, 0.5, 0.5), (0.8, 1.0, 0.5, 0.5), (2.4, 1.4, 0.5, 0.36), (9, 1.45, 0.5, 0.38)),

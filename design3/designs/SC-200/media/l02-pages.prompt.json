@@ -1,0 +1,17 @@
+{
+  "prompt": "Exactly as in the image: down the long aisle between towering racks of brown cartons, loose blank white pages float and drift slowly through the air like autumn leaves, turning as they fall and catching the warm golden light from the open shutter at the far end. A slow, steady dolly forward along the aisle. The racks and the cartons stay still. Everything keeps its form; no object appears, vanishes or changes shape; no text or lettering appears. Cinematic, photorealistic, smooth and slow, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "720p",
+  "duration": 6,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "dolly_in",
+  "audio": false,
+  "seed": 200702,
+  "loras": [],
+  "image": "g02-calendar-aisle.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 9.0,
+  "cost_usd": 0,
+  "use": "SC-200 film"
+}

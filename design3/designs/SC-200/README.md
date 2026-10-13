@@ -62,6 +62,38 @@ Gotchas on the way: espeak-ng ignores a data path longer than 160 characters and
 worktree's path is longer), so its data is copied to `~/.cache/sc200-espeak/`; misaki needs spaCy's `en_core_web_sm`
 installed up front; Chatterbox's watermarker needs `setuptools<81` for `pkg_resources`.
 
+## The film (13 Oct 2026)
+
+`media/smart-clearance-e2e-film.mp4`: **3 min 30.8 s (210.8 s)**, 1920 × 1080, 25 fps, H.264 (crf 21, 72 MB; the crf-17
+master, 139 MB, stays local in `src/build/` and in the main checkout's `playwright-automation-videos/`), AAC stereo
+48 kHz at −14.0 LUFS integrated, −1.4 dBFS true peak. `media/smart-clearance-e2e-film-720p.mp4` is the same cut at
+1280 × 720 (33 MB), for phones and messaging; `media/smart-clearance-e2e-film.srt` carries the narration as captions.
+44 shots: 7 LTX clips, 36 stretches of the recordings as floating screens, 1 title; 58 overlays; 26 spoken lines.
+
+| When | Part | Pictures |
+| --- | --- | --- |
+| 0:00 | The problem | an hourglass whose sand is snack packets; blank pages drifting down a godown aisle; the landfill, with "Written off · Tax credit reversed · Landfill" |
+| 0:21 | Smart-Clearance | the town at dawn, its roads lit as the agents' network; the mark draws its route; "Software as a service · Ten AI agents on Gemini · One human yes"; then the console's sign-in, its ten agents walking a batch to "one person says yes" |
+| 0:43 | 01 · Admin and console | the landing page; Neha signs in; the Overview (every client, live); Kaveri Foods' agents configured: the Watcher's 60-day gate, the Negotiator on Act, the approval always on |
+| 1:12 | 02 · The happy path, Munchly Mango Drink | the carton over a Hyderabad bazaar; ₹22,657 at stake; Lakshmi Agencies' label photo verified; five exits priced, the split, the one yes; the Hindi offer on a kirana's phone and the order landing on Priya's screen; 52 shops, 1,372 packets; the staff sale's UPI receipt read (18 payments, ₹1,200); Meera collects 58 packs; the signed, stamped papers; the ledger; ₹16,917 recovered, Lakshmi Agencies at ₹0 |
+| 2:13 | 03 · The sad path, Munchly Masala Chips | the packet beside a spent hourglass; 2 of 38 kiranas buy; Agrawal bids ₹13, the Negotiator counters ₹14.20, 772 packs sold; Neha closes the window, 540 packets left; expiry day: before and after photos, Vision 4 of 4; the certificate signed in place by the officer, two witnesses and Rakesh; Priya's second yes; CN/0118 for ₹13,284; ₹11,702 recovered, Rakesh whole |
+| 3:12 | Everyone ends whole | the town at sunrise; the end card: smartclearance.web.app, the guided demo at smartclearance-demo.web.app |
+
+Every figure is the production runs' own (`runs/2026-10-12-prod-mango/REPORT.md`, `runs/2026-10-12-prod-sad/REPORT.md`,
+`runs/2026-10-12-prod-admin-tour/REPORT.md`). Every person and company is fictional.
+
+- **Checks:** a contact sheet of every keyframe and clip, of every shot of the cut and of its transitions; every screen
+  window's device crops at its start, middle and end (four moved off a stage note cut at a device's edge, one off a
+  page that scrolled from the credit note it was meant to show); a frame at full resolution inside a zoomed screen;
+  `ffprobe`; `ebur128`; the narration transcribed back from the final mix, under the music, word for word, each line
+  heard on its mark.
+- **Found on the way:** Qwen edits follow the first condition image's shape, so the two product frames came out square
+  and were widened by a second edit of themselves on a blurred 16:9 canvas; the local LTX backend was stopped from
+  outside between clips (another session's LTX server and its shared pid file, most likely), so `gen-ltx.py` restarts it
+  and retries; the local ffmpeg has no `drawtext`, so every word is a Pillow overlay; the design system's font subsets
+  lack ₹ and →, drawn in SF Pro beside them.
+- **The spend:** nothing. Qwen, LTX and Kokoro ran on this Mac; the music is SC-187's, already made.
+
 ## Rebuild
 
 From `src/` (the recordings are read from the main checkout, where they are git-ignored):
