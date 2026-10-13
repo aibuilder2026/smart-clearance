@@ -2582,7 +2582,7 @@
     - A first attempt stopped at ESG: the suite changed the address to the ledger's Impact reading, which the ledger reads only as it opens; it now presses the reading. Its partial video is kept as `…_08-49-53-incomplete.mp4`.
   - **After it:** production's journey day is back at 24 hours; the Mango cleared, the chips at day 0.
   - **Checks:** the frontend gate passes (api 83, core 408, admin 22, console 2, demo 9, workspace 115).
-- **SC-202** (In Review, branch `SC-202-chips-sad-prod-recorded`, stacked on SC-201): Munchly Chips Sad Path E2E on production from a journey reset, recorded and shown live, told as SC-201 tells the Mango Drink, asked for by the maintainer.
+- **SC-202** (PR #183, merged; Done): Munchly Chips Sad Path E2E on production from a journey reset, recorded and shown live, told as SC-201 tells the Mango Drink, asked for by the maintainer.
   - **The request:** as SC-201's, with the kiranas: "only 2 should accept and rest reject, show only 2 accepts and 1 rejects and rest rejection do from backend". The chips' plan has no staff sale or food bank (its lines are the kiranas' scheme and the ExpireSoon lot), so Priya's Execution follows the orders, the lot and the destruction instead.
   - **The suite** (`munchly-chips-sad.journey.ts`, evolved):
     - green rings, clicks and cards on the major moments, and a chapter card for each of 14 chapters;
