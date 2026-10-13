@@ -372,7 +372,7 @@ export class Stage {
 			monitor = await (await mb.newContext({ viewport: null })).newPage();
 			// the stage's own dark ground until its first frame arrives
 			await monitor.setContent(
-				`<!doctype html><title>Munchly Chips Sad Path E2E · the stage, live</title><style>html,body{margin:0;height:100%;background:#0c1311}img{width:100vw;height:100vh;object-fit:contain;display:block}</style><img id="m" src="${WAITING}" alt="The stage, as it is recorded">`
+				`<!doctype html><title>${esc(about.flow)} · the stage, live</title><style>html,body{margin:0;height:100%;background:#0c1311}img{width:100vw;height:100vh;object-fit:contain;display:block}</style><img id="m" src="${WAITING}" alt="The stage, as it is recorded">`
 			);
 		}
 		const s = new Stage(stageBrowser, paneBrowser, monitor, stage, info, about, video);
@@ -850,6 +850,39 @@ export class Stage {
 		await this.stage.waitForTimeout(down ? 240 : 260);
 	}
 
+	/** a block taller than its screen read top to bottom (SC-201: a paper read in full): the screen comes to its top,
+	 *  rests, then glides down part of a screen at a time, resting on each, until its foot is in view */
+	async read(target: Locator, rest = 1300) {
+		const page = target.page();
+		if (!(await this.reveal(target))) return;
+		const box = await target.boundingBox().catch(() => null);
+		if (box) await page.mouse.move(box.x + Math.min(box.width - 12, 40), box.y + 30);
+		for (let i = 0; i < 14; i++) {
+			await page.waitForTimeout(rest);
+			const to = await target
+				.evaluate((el) => {
+					let n: Element | null = el.parentElement;
+					while (n && n !== document.body) {
+						const cs = getComputedStyle(n);
+						if (/(auto|scroll)/.test(cs.overflowY) && n.scrollHeight > n.clientHeight + 4) break;
+						n = n.parentElement;
+					}
+					const sc = (n && n !== document.body ? n : document.scrollingElement) as HTMLElement;
+					const view = sc === document.scrollingElement ? { top: 0, height: innerHeight } : sc.getBoundingClientRect();
+					// how much of it is still under the fold
+					const below = el.getBoundingClientRect().bottom - (view.top + view.height) + 20;
+					if (below <= 4) return null;
+					const to = Math.min(sc.scrollHeight - sc.clientHeight, sc.scrollTop + Math.min(below, view.height * 0.55));
+					if (to - sc.scrollTop < 4) return null;
+					sc.dataset.e2eScroll = '1';
+					return to;
+				})
+				.catch(() => null);
+			if (to == null) break;
+			await this.glide(page, to, false);
+		}
+	}
+
 	/** the screen back at the top of its page, as reveal() moves it */
 	async top(page: Page) {
 		const y = await page.evaluate(() => document.scrollingElement?.scrollTop ?? 0).catch(() => 0);
@@ -1012,7 +1045,8 @@ export class Stage {
 						card.appendChild(ol);
 					}
 					const wide = cardStyle ? (note.points?.length ? 420 : 400) : note.points?.length ? 372 : 336;
-					let bw = wide;
+					// never wider than the screen it is about (SC-201: a card is wider than a phone's screen)
+					let bw = Math.min(wide, scr.width - 16);
 					card.style.width = `${bw}px`;
 					document.getElementById('callouts')!.appendChild(card);
 					let ch = card.offsetHeight;

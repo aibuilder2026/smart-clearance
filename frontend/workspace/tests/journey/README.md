@@ -252,15 +252,21 @@ hour.
 
 ## Munchly Mango E2E on three screens
 
-The Mango Drink's happy path on the sad path's stage (SC-190), `munchly-mango-stage.journey.ts` with `stage.ts`, for a
-recording that tells the journey from a reset to Impact's report. Munchly Mango E2E (SC-104) stays the one that takes
+The Mango Drink's happy path on the sad path's stage (SC-190, SC-201), `munchly-mango-stage.journey.ts` with `stage.ts`,
+for a recording that tells the journey from a reset to the swing. Munchly Mango E2E (SC-104) stays the one that takes
 the batch on from where it stands; this one resets.
 
 **The screens:** Priya on the tablet in landscape and Lakshmi Agencies on the tablet in portrait, each signing in on
-camera and online to the end, and the phone, on which Neha signs in to the console, and three kiranas and Meera of
-Feeding India sign in to the workspace as each is needed. The sign-ins, the cursor, the scrolling, the spotlights and the
-business notes are the sad path's (SC-184, SC-188); `Stage.open` takes the cast (`holds`: who keeps a tablet; `phone`:
-the note under the phone).
+camera and online to the end, and the phone, on which Neha signs in to the console, and two kiranas and Meera of
+Feeding India sign in to the workspace as each is needed. The sign-ins, the cursor and the scrolling are the sad path's
+(SC-184, SC-188); `Stage.open` takes the cast (`holds`: who keeps a tablet; `phone`: the note under the phone).
+
+**The telling (SC-201):** as the admin tour (SC-199): green rings and clicks (`ink: 'green'`), a green card beside only
+the major moments (`notes: 'card'`: the risk, Vision's check, the split, the yes, a live order, the scheme filling, the
+staff sale's UPI receipt, the food bank's receipt, the price support, the invoices, the report, GST, ESG, Lakshmi
+Agencies ending whole, the swing), and a chapter card as each of its 13 chapters opens (written to
+`recording.chapters.json`, which `cut-chapters.mjs` cuts into clips). Every paper is read top to bottom
+(`Stage.read`), ending on who signed it.
 
 **The journey:**
 
@@ -270,25 +276,31 @@ the note under the phone).
   export on its tablet.
 - Priya opens the plan from her Command Center: the Route Room's channels read bar by bar, as a table panned sideways,
   and the split (₹16,917: 1,372 packets to the kiranas, 150 to the staff sale, 58 to a food bank; no ExpireSoon lot, at
-  22 days left). She approves it.
-- The first `E2E_SHOWN` (3) ordering kiranas sign in on the phone and order their story's share, each order checked
+  22 days left). She approves it, and keeps Execution open from there.
+- The first `E2E_SHOWN` (2) ordering kiranas sign in on the phone and order their story's share, each order checked
   live on Priya's Execution. The other ordering kiranas order as themselves through backend-api, each with its own
   session, meanwhile, and a note says so; Priya watches the scheme fill (52 shops, 1,372 packets).
 - Lakshmi Agencies records the staff sale on its consolidated receipt (`design3/system/img/receipts/MF-2410-118.webp`),
-  which Vision reads on its tablet. Meera confirms and collects Feeding India's pickup on the phone.
+  which Vision reads on its tablet; the sale lands on Priya's Execution, where she opens its UPI references and the
+  receipt whole. Meera confirms and collects Feeding India's pickup on the phone, each seen live on Priya's Execution,
+  and reads the receipt she issued.
 - Paperwork drafts the pack, and Lakshmi Agencies runs the van round from its Today.
-- Priya reads every paper and the sales register, with a glance at each kirana's tax invoice, and marks the pack
-  reviewed. Neha fires Report now.
-- Priya reads the Impact screens and the batch's BRSR line; Lakshmi Agencies reads its batch (what happened, ending
-  whole, its papers) and its Orders; Priya ends on Execution, the ledger and the Command Center, with the outcome.
+- Priya reads every paper in the pack (the price-support credit note, the staff sale's receipt, the donation receipt,
+  the ITC memo, the FSSAI checklist), the sales register and one kirana's tax invoice, and marks the pack reviewed.
+  Neha fires Report now.
+- Priya reads the ledger's Money and GST readings, the Impact dashboard and the batch's BRSR line; Lakshmi Agencies
+  reads its batch (what happened, ending whole, every one of its papers) and its Orders; last, Priya opens the
+  batch's swing and reads how it adds up, section by section.
 
 ```sh
 corepack pnpm test:journey:mango-stage                            # the stage on screen, recorded
 E2E_TARGET=prod corepack pnpm test:journey:mango-stage            # on production
 E2E_FROM=staff E2E_UNTIL=papers corepack pnpm test:journey:mango-stage   # part of it, on the journey as it stands
+E2E_KEEP='../../playwright-automation-videos/munchly-mango-e2e-prod-{stamp}.mp4'   # a copy, named for the run's start
 ```
 
-Its run of 12 Oct on production is in `runs/2026-10-12-prod-mango/`.
+Its run of 12 Oct on production is in `runs/2026-10-12-prod-mango/`, and its run of 13 Oct, told with the green
+cards (SC-201), in `runs/2026-10-13-prod-mango/`.
 
 ## Admin and console E2E
 
