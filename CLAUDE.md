@@ -2582,4 +2582,17 @@
     - A first attempt stopped at ESG: the suite changed the address to the ledger's Impact reading, which the ledger reads only as it opens; it now presses the reading. Its partial video is kept as `…_08-49-53-incomplete.mp4`.
   - **After it:** production's journey day is back at 24 hours; the Mango cleared, the chips at day 0.
   - **Checks:** the frontend gate passes (api 83, core 408, admin 22, console 2, demo 9, workspace 115).
+- **SC-202** (PR #183, merged; Done): Munchly Chips Sad Path E2E on production from a journey reset, recorded and shown live, told as SC-201 tells the Mango Drink, asked for by the maintainer.
+  - **The request:** as SC-201's, with the kiranas: "only 2 should accept and rest reject, show only 2 accepts and 1 rejects and rest rejection do from backend". The chips' plan has no staff sale or food bank (its lines are the kiranas' scheme and the ExpireSoon lot), so Priya's Execution follows the orders, the lot and the destruction instead.
+  - **The suite** (`munchly-chips-sad.journey.ts`, evolved):
+    - green rings, clicks and cards on the major moments, and a chapter card for each of 14 chapters;
+    - two kiranas order on the phone; Om Sai Provision presses Not this time on the phone, and the other 34 shops that joined the app say no through backend-api as themselves (`POST …/offer/decline`; Shree Sai Kirana, only invited, cannot answer). A no does not close the scheme (the shop keeps its 48 hours), so Neha still closes the window;
+    - Priya keeps Execution open from her yes: each order, the lot awarded and collected (read from the card's badge: its four stops name Won and Collected all along), the window ending short, the destruction asked for, checked and approved; she gives her second yes from Execution's destruction card;
+    - every paper read top to bottom: Priya's pack (the certificate and its log, both credit notes, the tax invoice with its e-invoice, the GST memo, the register and both kiranas' invoices), Rakesh's papers, a kirana's invoice on the phone; then the ledger's Money and GST, the Impact dashboard and the BRSR line; last, the swing.
+  - **Shared with the Mango suite** (`read.ts`): `readPaper` (every page of a paper, in its sheet or beside the pack, ending on its signature), `closeSheet`, `sigs` and `showSwing`.
+  - **The run of 13 Oct on production** (`runs/2026-10-13-prod-sad/REPORT.md`): passed on the first attempt, 87 steps in 17 min 48 s, against `5070e166`. The recording (17 min 38 s, 2560 × 1440) and its 1080p and 720p copies are `playwright-automation-videos/munchly-chips-sad-e2e-prod-2026-10-13_11-07-40*.mp4`, local.
+    - Plan ₹21,770; 2 shops, 48 packets; 35 said no; 772 at ₹14.20 (token ₹1,644); 540 left at the godown; Vision 4 of 4; CN/0118 ₹13,284 and OCE/DC/26-27/0219 for 540 packs, signed by four; actual net ₹11,702.40; the swing ₹14,868; Rakesh ends whole.
+    - The only finding: Shree Sai Kirana cannot answer, being only invited.
+  - **After it:** production's journey day is back at 24 hours; the chips cleared, the Mango Drink at day 0.
+  - **Checks:** the frontend gate passes (api 83, core 408, admin 22, console 2, demo 9, workspace 115).
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
