@@ -115,3 +115,18 @@ landing-demo/
 # SC-200: working-demo/ holds a local copy of the E2E film (its 1080p master, 720p copy and captions)
 working-demo/
 playwright-automation-videos/
+
+# SC-205: the working-demo film's pipeline ships (scripts, the voice lines); keyframe PNGs, clips, captures, voice takes,
+# the venv, fonts and the build stay local
+!design3/designs/SC-205/src/
+design3/designs/SC-205/src/*
+!design3/designs/SC-205/src/*.py
+!design3/designs/SC-205/src/*.sh
+!design3/designs/SC-205/src/*.mjs
+!design3/designs/SC-205/src/*.js
+!design3/designs/SC-205/src/lines.json
+!design3/designs/SC-205/src/pushes.json
+!design3/designs/SC-205/src/prompts/
+!design3/designs/SC-205/src/tts/
+design3/designs/SC-205/src/tts/*
+!design3/designs/SC-205/src/tts/*.py

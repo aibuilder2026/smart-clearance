@@ -1,0 +1,12 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "text-to-image",
+  "condition_images": [],
+  "seed": 205204,
+  "aspect": "16:9",
+  "size": 1024,
+  "original": "1376x768 PNG, local in src/img/",
+  "prompt": "At an authorised municipal landfill near Nagpur in the late afternoon: a man in his forties in a checked shirt holds a tablet flat with its screen facing up and away from the camera, while an officer in a navy uniform shirt and a reflective vest signs on it with his fingertip; two witnesses, a woman in a simple salwar kameez and an older man in a white shirt, stand beside them watching; the dusty landfill and a parked yellow excavator softly out of focus behind them. Photorealistic documentary photograph for a professional corporate film, 35 mm lens, realistic Indian setting and people with natural faces and hands, true-to-life colours, soft natural light, calm composition, sharp focus on the subject. Every carton is plain brown kraft with no printing. Every phone and tablet screen faces away from the camera or is too small to read. No text, no numbers, no lettering, no logos, no signs, no labels anywhere in the picture.",
+  "post": "resized to 1376 wide (lanczos), WebP q88",
+  "cost_usd": 0
+}

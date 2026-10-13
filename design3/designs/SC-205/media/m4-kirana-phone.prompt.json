@@ -1,0 +1,17 @@
+{
+  "prompt": "A locked-off tripod shot: the camera does not move, pan or zoom. Exactly as in the image: the shopkeeper in the maroon saree behind the counter looks down at the phone in her hand, reads it, and taps the screen once with her thumb, smiling. Only her face and hands move a little; the shelves stay still. Everything keeps its form; no object appears, vanishes or changes shape; faces, hands and packets stay natural; no text or lettering appears. Photorealistic documentary footage, natural motion, smooth and slow, steady camera, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "540p",
+  "duration": 5,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "static",
+  "audio": false,
+  "seed": 205802,
+  "loras": [],
+  "image": "m4-kirana-phone.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 8.0,
+  "cost_usd": 0,
+  "post": "in the cut: the gentle stretch kept (clipcheck.py), a person's clip locked to a tripod frame (stab.py), then retimed to its shot (slow.sh, motion-interpolated to 25 fps)"
+}

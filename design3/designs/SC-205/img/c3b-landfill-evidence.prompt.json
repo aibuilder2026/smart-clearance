@@ -1,0 +1,15 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "edit",
+  "condition_images": [
+    "c3-landfill-evidence",
+    "n3-chips-godown-dusk"
+  ],
+  "seed": 20531,
+  "aspect": "16:9",
+  "size": 1024,
+  "original": "1376x768 PNG, local in src/img/",
+  "prompt": "In the first image, replace only the man in the checked shirt photographing the pit with the man from the second image: the same face, hair, moustache and the same brown-and-cream checked shirt, still seen from slightly behind holding up his phone with its back to the camera. Keep the workers, the officer, the pit, the cartons and the landfill exactly as they are. Photorealistic documentary photograph for a professional corporate film, 35 mm lens, realistic Indian setting and people with natural faces and hands, true-to-life colours, soft natural light, calm composition, sharp focus on the subject. Every carton is plain brown kraft with no printing. Every phone and tablet screen faces away from the camera or is too small to read. No text, no numbers, no lettering, no logos, no signs, no labels anywhere in the picture.",
+  "post": "resized to 1376 wide (lanczos), WebP q88",
+  "cost_usd": 0
+}

@@ -1,0 +1,17 @@
+{
+  "prompt": "A locked-off tripod shot: the camera does not move, pan or zoom. Exactly as in the image: the supervisor in the yellow vest looks from the tablet to the tagged stack of cartons and frowns slightly; the red tag stirs a little in the breeze from the open shutter. Everything keeps its form; no object appears, vanishes or changes shape; faces, hands and packets stay natural; no text or lettering appears. Photorealistic documentary footage, natural motion, smooth and slow, steady camera, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "1080p",
+  "duration": 5,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "static",
+  "audio": false,
+  "seed": 205814,
+  "loras": [],
+  "image": "i2-hold.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 13.2,
+  "cost_usd": 0,
+  "post": "in the cut: the gentle stretch kept (clipcheck.py), a person's clip locked to a tripod frame (stab.py), then retimed to its shot (slow.sh, motion-interpolated to 25 fps)"
+}

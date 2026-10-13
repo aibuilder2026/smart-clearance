@@ -1,0 +1,12 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "text-to-image",
+  "condition_images": [],
+  "seed": 205100,
+  "aspect": "16:9",
+  "size": 1024,
+  "original": "1376x768 PNG, local in src/img/",
+  "prompt": "A modern software company office in Pune in the late afternoon: a woman in her late twenties with shoulder-length black hair and black-framed glasses, wearing a crisp white shirt, sits at a clean white desk working on an open silver laptop seen from its back and side so its screen is not visible; a coffee mug beside it; large windows with soft city light behind her; she is focused and relaxed, typing. Photorealistic documentary photograph for a professional corporate film, 35 mm lens, realistic Indian setting and people with natural faces and hands, true-to-life colours, soft natural light, calm composition, sharp focus on the subject. Every carton is plain brown kraft with no printing. Every phone and tablet screen faces away from the camera or is too small to read. No text, no numbers, no lettering, no logos, no signs, no labels anywhere in the picture.",
+  "post": "resized to 1376 wide (lanczos), WebP q88",
+  "cost_usd": 0
+}

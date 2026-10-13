@@ -1,0 +1,14 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "edit",
+  "condition_images": [
+    "m4-kirana-phone"
+  ],
+  "seed": 205107,
+  "aspect": "16:9",
+  "size": 1024,
+  "original": "1376x768 PNG, local in src/img/",
+  "prompt": "The same shop and the same woman behind the counter: a young delivery man in a blue shirt stands at the counter on the street side and hands her a sealed plain brown carton; she reaches out to take it with both hands, smiling. Keep the same woman, her face, hair and clothes, and the same room exactly. Photorealistic documentary photograph for a professional corporate film, 35 mm lens, realistic Indian setting and people with natural faces and hands, true-to-life colours, soft natural light, calm composition, sharp focus on the subject. Every carton is plain brown kraft with no printing. Every phone and tablet screen faces away from the camera or is too small to read. No text, no numbers, no lettering, no logos, no signs, no labels anywhere in the picture.",
+  "post": "resized to 1376 wide (lanczos), WebP q88",
+  "cost_usd": 0
+}

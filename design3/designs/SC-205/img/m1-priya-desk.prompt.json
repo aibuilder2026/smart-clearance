@@ -1,0 +1,12 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "text-to-image",
+  "condition_images": [],
+  "seed": 205101,
+  "aspect": "16:9",
+  "size": 1024,
+  "original": "1376x768 PNG, local in src/img/",
+  "prompt": "A bright modern office of an Indian food company in the morning: a woman in her early thirties with her black hair tied in a neat low bun, wearing a navy blue pinstripe kurta and a lanyard with a plain white card, sits at a white desk with a closed silver laptop beside her; she holds a black smartphone in both hands with its back to the camera and looks down at it attentively; large windows and green plants behind her; medium shot from the side-front. Photorealistic documentary photograph for a professional corporate film, 35 mm lens, realistic Indian setting and people with natural faces and hands, true-to-life colours, soft natural light, calm composition, sharp focus on the subject. Every carton is plain brown kraft with no printing. Every phone and tablet screen faces away from the camera or is too small to read. No text, no numbers, no lettering, no logos, no signs, no labels anywhere in the picture.",
+  "post": "resized to 1376 wide (lanczos), WebP q88",
+  "cost_usd": 0
+}

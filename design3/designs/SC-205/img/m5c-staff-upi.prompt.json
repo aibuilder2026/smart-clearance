@@ -1,0 +1,15 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "edit",
+  "condition_images": [
+    "m5b-staff-upi",
+    "n2-mango-godown"
+  ],
+  "seed": 205116,
+  "aspect": "16:9",
+  "size": 1024,
+  "original": "1376x768 PNG, local in src/img/",
+  "prompt": "In the first image, replace only the woman behind the table holding out the white card with the woman from the second image: the same face, hair, brown cardigan and saree, still holding out the small plain white card toward the young worker. Keep the young worker, the other workers, the table, the plain yellow cartons, the wall and the dusk light exactly as they are. Photorealistic documentary photograph for a professional corporate film, 35 mm lens, realistic Indian setting and people with natural faces and hands, true-to-life colours, soft natural light, calm composition, sharp focus on the subject. Every carton is plain brown kraft with no printing. Every phone and tablet screen faces away from the camera or is too small to read. No text, no numbers, no lettering, no logos, no signs, no labels anywhere in the picture.",
+  "post": "resized to 1376 wide (lanczos), WebP q88",
+  "cost_usd": 0
+}
