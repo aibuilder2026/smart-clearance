@@ -1,0 +1,12 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "text-to-image",
+  "condition_images": [],
+  "seed": 205125,
+  "aspect": "16:9",
+  "size": 1024,
+  "original": "1376x768 PNG, local in src/img/",
+  "prompt": "Early evening outside a distributor's godown in Hyderabad, in front of a plain whitewashed wall with a closed grey rolling shutter: a folding wooden table under a warm hanging bulb holds neat rows of small plain yellow drink cartons with no printing on them at all; a young warehouse worker in a grey T-shirt holds one smartphone in his right hand, its back to the camera, pointing it at a small plain white card that a woman in her fifties in a brown cardigan over a saree holds out to him across the table; his left hand rests on the table and holds nothing; two other workers wait behind him; violet dusk sky above the wall. Nothing written anywhere, no signboards, no posters. Photorealistic documentary photograph for a professional corporate film, 35 mm lens, realistic Indian setting and people with natural faces and hands, true-to-life colours, soft natural light, calm composition, sharp focus on the subject. Every carton is plain brown kraft with no printing. Every phone and tablet screen faces away from the camera or is too small to read. No text, no numbers, no lettering, no logos, no signs, no labels anywhere in the picture.",
+  "post": "resized to 1376 wide (lanczos), WebP q88",
+  "cost_usd": 0
+}

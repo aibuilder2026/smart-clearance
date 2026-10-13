@@ -125,6 +125,7 @@ design3/designs/SC-205/src/*
 !design3/designs/SC-205/src/*.mjs
 !design3/designs/SC-205/src/*.js
 !design3/designs/SC-205/src/lines.json
+!design3/designs/SC-205/src/pushes.json
 !design3/designs/SC-205/src/prompts/
 !design3/designs/SC-205/src/tts/
 design3/designs/SC-205/src/tts/*

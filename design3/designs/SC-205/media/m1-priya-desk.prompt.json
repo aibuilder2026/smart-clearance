@@ -1,0 +1,17 @@
+{
+  "prompt": "A locked-off tripod shot: the camera does not move, pan or zoom. Exactly as in the image: the woman in the navy pinstripe kurta sits at her desk looking down at the smartphone in her hands; she reads it, her eyebrows lift slightly, and she gives a small nod. Only her eyes, head and hands move a little. Everything keeps its form; no object appears, vanishes or changes shape; faces, hands and packets stay natural; no text or lettering appears. Photorealistic documentary footage, natural motion, smooth and slow, steady camera, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "720p",
+  "duration": 8,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "static",
+  "audio": false,
+  "seed": 205800,
+  "loras": [],
+  "image": "m1-priya-desk.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 12.7,
+  "cost_usd": 0,
+  "post": "in the cut: the gentle stretch kept (clipcheck.py), a person's clip locked to a tripod frame (stab.py), then retimed to its shot (slow.sh, motion-interpolated to 25 fps)"
+}

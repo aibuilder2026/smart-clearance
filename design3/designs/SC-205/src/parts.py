@@ -11,7 +11,7 @@ from kit import *
 # ---------------------------------------------------------------- the voice's timeline
 
 LINES = json.loads((HERE / 'lines.json').read_text())['lines']
-TAKE = HERE / 'tts' / 'vo' / 'af_heart-0.94'
+TAKE = HERE / 'tts' / 'vo2' / 'af_heart-0.94'
 DUR = json.loads((TAKE / 'durations.json').read_text())
 ASR = json.loads((TAKE / 'asr.json').read_text())
 LEAD, HOLD = 0.9, 3.4
@@ -131,7 +131,7 @@ def bar_sprite(width, url, bh=44, r=16, light=False):
 @lru_cache(maxsize=None)
 def avatar_img(path_or_initials, size):
     S = 3
-    if path_or_initials.endswith('.webp'):
+    if path_or_initials.endswith(('.webp', '.png')):
         src = Image.open(path_or_initials).convert('RGB')
         w_, h_ = src.size; m = min(w_, h_)
         src = src.crop(((w_ - m) // 2, 0, (w_ - m) // 2 + m, m)).resize((size * S, size * S), Image.LANCZOS)
@@ -153,9 +153,15 @@ def avatar_img(path_or_initials, size):
 
 PEOPLE = REPO / 'design3' / 'system' / 'img' / 'people'
 
+FACES = HERE / 'build' / 'faces'
+# each name's face, cut from the person's own keyframe (faces.py), so a tag always shows the person the film shows
+FACE_OF = {'Priya Deshmukh': 'priya', 'Lakshmi Agencies': 'lakshmi', 'Rakesh Traders': 'rakesh', 'Neha Kulkarni': 'neha',
+           'Sri Lakshmi Ganapathi Kirana': 'lakshmi-ganapathi', 'Agrawal Wholesale': 'agrawal', 'Meera': 'meera'}
+
 @lru_cache(maxsize=None)
-def tag_sprite(name, role, avatar):
-    av = avatar_img(str(PEOPLE / f'p-{avatar}.webp') if avatar and (PEOPLE / f'p-{avatar}.webp').exists() else (avatar or name[:2].upper()), 46)
+def tag_sprite(name, role, avatar=None):
+    face = FACES / f'{FACE_OF.get(name, "")}.png'
+    av = avatar_img(str(face) if face.exists() else (avatar or ''.join(p[0] for p in name.split()[:2]).upper()), 46)
     S = 2
     w = int(max(text_w(name, 'g', 22, 620), text_w(role, 'g', 16, 420))) + 46 + 14 + 8
     im = Image.new('RGBA', (w * S, 50 * S), (0, 0, 0, 0))
@@ -725,3 +731,116 @@ def url_line(url, what):
     draw_text(d, (26 * S, 0), url, 'g', 22 * S, (240, 246, 242, 255), 560)
     draw_text(d, (26 * S, 30 * S), what, 'g', 17 * S, (150, 172, 160, 255), 420)
     return to_sprite(im.resize((w, 60), Image.LANCZOS))
+
+# ---------------------------------------------------------------- cut 2: the people at work, and their pushes
+
+CLIPDIR = HERE / 'build' / 'slow'
+
+class Character:
+    """a person at work: their LTX clip (retimed to the shot by slow.sh) in a rounded panel at its own pixel size, with
+    their name above it; until the clip exists, the keyframe on a slow push"""
+    def __init__(self, key, x, y, w, h, name, role, u0=0.0, u1=None, kf=None, enter=True, fade_out=None):
+        self.key, self.x, self.y, self.w, self.h, self.u0, self.u1, self.enter, self.fade_out = key, x, y, w, h, u0, u1, enter, fade_out
+        clip = CLIPDIR / f'{key}.mp4'
+        self.src = FrameSource(clip, size=(w, h)) if clip.exists() else None
+        if self.src is None:
+            path = HERE / 'img' / f'{kf or key}.png'
+            im = cv2.imread(str(path)) if path.exists() else np.full((h, w, 3), 40, np.uint8)
+            k = max(w / im.shape[1], h / im.shape[0])
+            self.kf, self.kk = im, k
+        self.tag = tag_sprite(name, role)
+    def draw(self, f, u, L):
+        u1 = self.u1 if self.u1 is not None else L
+        if u < self.u0 or u > u1: return
+        a = clamp((u - self.u0) / 0.35) if self.enter else 1.0
+        dy = 18 * (1 - ease_out((u - self.u0) / 0.6)) if self.enter else 0.0
+        if self.fade_out: a *= 1 - ramp(u, u1 - self.fade_out, u1)
+        x0, y0 = self.x, self.y + dy
+        shadow(f, x0, y0, x0 + self.w, y0 + self.h, 18, alpha=0.6 * a)
+        if self.src is not None:
+            img = self.src.get(max(0.0, u - self.u0))
+            ix0, iy0, patch = place(img, 1.0, x0, y0, (x0, y0, x0 + self.w, y0 + self.h), rest=1.0, view=(0, 0, self.w, self.h))
+        else:
+            z = 1.0 + 0.05 * ease_in_out((u - self.u0) / max(1.0, u1 - self.u0))
+            s = self.kk * z
+            tx, ty = x0 + self.w / 2 - self.kf.shape[1] * s / 2, y0 + self.h / 2 - self.kf.shape[0] * s / 2
+            ix0, iy0, patch = place(self.kf, s, tx, ty, (x0, y0, x0 + self.w, y0 + self.h))
+        if patch is None: return
+        mx0, my0, m = rrect_alpha(x0, y0, x0 + self.w, y0 + self.h, 18, pad=0)
+        hh, ww = patch.shape[:2]
+        m = m[iy0 - my0: iy0 - my0 + hh, ix0 - mx0: ix0 - mx0 + ww]
+        if m.shape != patch.shape[:2]: m = cv2.resize(m, (ww, hh), interpolation=cv2.INTER_NEAREST)
+        over(f, ix0, iy0, patch, m * a)
+        blit(f, self.tag, x0, y0 - 62, a)
+
+@lru_cache(maxsize=None)
+def push_sprite(key, width):
+    """the push banner rendered by render-pushes.mjs at 2x (CSS 380 or 460 wide), area-resized once to `width` px"""
+    css = 380 if width <= 400 else 460
+    im = cv2.imread(str(HERE / 'build' / 'push' / f'{key}-{css}.png'), cv2.IMREAD_UNCHANGED)
+    k = width / (css + 44)
+    im = cv2.resize(im, (round(im.shape[1] * k / 2), round(im.shape[0] * k / 2)), interpolation=cv2.INTER_AREA)
+    a = im.astype(np.float32) / 255.0
+    a[..., :3] *= a[..., 3:4]
+    return np.ascontiguousarray(a)
+
+class Push:
+    """a push landing on a device window: it drops in at the top of the screen with a spring, holds, and lifts away"""
+    def __init__(self, win, key, u0, u1, width=None, dy=10):
+        self.win, self.key, self.u0, self.u1, self.dy = win, key, u0, u1, dy
+        self.width = width or min(win.w - 4, 470)
+    def draw(self, f, u, L):
+        if u < self.u0 or u > self.u1: return
+        (x0, y0, x1, y1), sc, tx, ty, wa, k = self.win.transform(u, L)
+        spr = push_sprite(self.key, self.width)
+        p = spring(u - self.u0, zeta=0.78, w=10)
+        a = clamp((u - self.u0) / 0.2) * (1 - ramp(u, self.u1 - 0.35, self.u1)) * wa
+        lift = 40 * ramp(u, self.u1 - 0.35, self.u1)
+        x = x0 + (x1 - x0) / 2 - spr.shape[1] / 2
+        y = y0 + self.dy - 60 * (1 - p) - lift
+        blit(f, spr, x, y, a)
+
+class Inset:
+    """a sharp still (the label photo as sent) in a rounded frame with a caption, rising in"""
+    def __init__(self, path, x, y, w, u0, u1, caption=None):
+        im = Image.open(path).convert('RGB')
+        h = round(w * im.height / im.width)
+        im = im.resize((w, h), Image.LANCZOS)
+        S = 1
+        card = Image.new('RGBA', (w + 16, h + 16 + (40 if caption else 0)), (0, 0, 0, 0))
+        d = ImageDraw.Draw(card)
+        d.rounded_rectangle([0, 0, card.width - 1, card.height - 1], radius=14, fill=(250, 252, 251, 255))
+        mask = Image.new('L', (w, h), 0); ImageDraw.Draw(mask).rounded_rectangle([0, 0, w - 1, h - 1], radius=8, fill=255)
+        card.paste(im, (8, 8), mask)
+        if caption: draw_text(d, (12, h + 18), caption, 'g', 17, (30, 50, 40, 255), 600)
+        self.spr, self.x, self.y, self.u0, self.u1 = to_sprite(card), x, y, u0, u1
+    def draw(self, f, u, L=None):
+        a = fade(u, self.u0, self.u1, 0.4, 0.3)
+        if a <= 0: return
+        e = ease_out((u - self.u0) / 0.6)
+        shadow(f, self.x, self.y + 14 * (1 - e), self.x + self.spr.shape[1], self.y + self.spr.shape[0] + 14 * (1 - e), 14, alpha=0.55 * a)
+        blit(f, self.spr, self.x, self.y + 14 * (1 - e), a)
+
+@lru_cache(maxsize=None)
+def live_sprite():
+    S = 2
+    t = 'LIVE ON PRODUCTION · CLOUD RUN · GEMINI'
+    w = int(text_w(t, 'g', 14, 680, 0.12) + 44); h = 32
+    im = Image.new('RGBA', (w * S, h * S), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    d.rounded_rectangle([0, 0, w * S - 1, h * S - 1], radius=h * S / 2, fill=(8, 20, 14, 225), outline=(63, 176, 123, 150), width=int(1.3 * S))
+    d.ellipse([12 * S, 11 * S, 22 * S, 21 * S], fill=(239, 68, 68, 255))
+    draw_text(d, (30 * S, 7.5 * S), t, 'g', 14 * S, (225, 240, 232, 255), 680, 0.12)
+    return to_sprite(im.resize((w, h), Image.LANCZOS))
+
+class LiveTag:
+    """a steady tag in the top-right corner through the live part of the film; it fades only where the live part
+    starts and ends (fin/fout), so it stays still through the dissolves between shots"""
+    def __init__(self, fin=False, fout=False):
+        self.fin, self.fout = fin, fout
+    def draw(self, f, u, L):
+        a = 1.0
+        if self.fin: a *= clamp(u / 0.5)
+        if self.fout: a *= 1 - ramp(u, L - 0.9, L - 0.4)
+        spr = live_sprite()
+        blit(f, spr, W - 40 - spr.shape[1], 36, a)

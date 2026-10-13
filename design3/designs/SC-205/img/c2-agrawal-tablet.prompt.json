@@ -1,0 +1,12 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "text-to-image",
+  "condition_images": [],
+  "seed": 205202,
+  "aspect": "16:9",
+  "size": 1024,
+  "original": "1376x768 PNG, local in src/img/",
+  "prompt": "A wholesale warehouse in Raipur in the morning: a man in his fifties with greying hair and a grey moustache, wearing a light grey shirt, stands between stacks of plain brown cartons holding a tablet in both hands with its back to the camera; he looks at it thoughtfully, about to tap; a forklift in the soft-focus background; even warehouse light. Photorealistic documentary photograph for a professional corporate film, 35 mm lens, realistic Indian setting and people with natural faces and hands, true-to-life colours, soft natural light, calm composition, sharp focus on the subject. Every carton is plain brown kraft with no printing. Every phone and tablet screen faces away from the camera or is too small to read. No text, no numbers, no lettering, no logos, no signs, no labels anywhere in the picture.",
+  "post": "resized to 1376 wide (lanczos), WebP q88",
+  "cost_usd": 0
+}

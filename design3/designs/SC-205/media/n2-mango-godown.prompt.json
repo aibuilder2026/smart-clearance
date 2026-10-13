@@ -13,5 +13,5 @@
   "ltx_desktop": "1.2.7",
   "minutes": 13.5,
   "cost_usd": 0,
-  "post": "retimed to its shot by src/slow.sh (motion-interpolated to 25 fps) in the cut"
+  "post": "in the cut: the gentle stretch kept (clipcheck.py), a person's clip locked to a tripod frame (stab.py), then retimed to its shot (slow.sh, motion-interpolated to 25 fps)"
 }

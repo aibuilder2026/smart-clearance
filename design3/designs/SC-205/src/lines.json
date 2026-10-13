@@ -1,24 +1,18 @@
 {
- "note": "SC-205 voice-over, one beat a line; gap = silence after it (s). Figures are the 13 Oct production runs' own (runs/2026-10-13-prod-mango and -prod-sad REPORT.md). Numbers written as spoken; 'say' carries Kokoro's inline phonemes for names it misreads.",
+ "note": "SC-205 cut 2: one beat a line; gap = silence after it (s). Figures are the 13 Oct production runs' own. 'say' carries Kokoro's phonemes where it misreads.",
  "lines": [
   {
    "id": "i01",
    "sec": "intro",
-   "gap": 0.4,
-   "text": "Every day, India's food brands ship millions of packs to their distributors."
+   "gap": 0.3,
+   "text": "Every day, India's food brands write off stock that sells too slowly."
   },
   {
    "id": "i02",
    "sec": "intro",
-   "gap": 0.3,
-   "text": "But some batches don't sell in time."
-  },
-  {
-   "id": "i03",
-   "sec": "intro",
-   "gap": 0.6,
-   "text": "Weeks before expiry, quick commerce turns them away. The stock is written off, the GST credit reversed, and good food goes to landfill.",
-   "say": "Weeks before expiry, quick commerce turns them away. The stock is written off, the G S T credit reversed, and good food goes to landfill."
+   "gap": 0.5,
+   "text": "Too close to expiry for quick commerce, it is destroyed, and its GST credit reversed.",
+   "say": "Too close to expiry for quick commerce, it is destroyed, and its G S T credit reversed."
   },
   {
    "id": "i04",
@@ -59,134 +53,136 @@
    "say": "Outreach, the Lister and the Negotiator sell. Paperwork files the G S T papers, and Impact posts the ledger."
   },
   {
-   "id": "i10",
-   "sec": "intro",
+   "id": "k01",
+   "sec": "console",
+   "gap": 0.2,
+   "text": "In the console, Neha brings a brand on in minutes: its stock export mapped by the Data agent, and its people invited."
+  },
+  {
+   "id": "k02",
+   "sec": "console",
    "gap": 0.6,
-   "text": "And from one console, the team watches every client live, and tunes each brand's agents."
+   "text": "Each SKU gets its own quick-commerce gates, and every agent is set to act, ask, or only suggest."
+  },
+  {
+   "id": "l01",
+   "sec": "live",
+   "gap": 0.3,
+   "text": "What follows is live, on production. Everyone signs in on their own device, to the real apps."
+  },
+  {
+   "id": "l02",
+   "sec": "live",
+   "gap": 0.6,
+   "text": "The API and the agents run on Cloud Run, and every agent reasons with Gemini."
   },
   {
    "id": "m01",
    "sec": "mango",
    "gap": 0.3,
-   "text": "Now, Munchly Foods, live on production. First, the demo setup."
+   "text": "For the demo, Neha switches Munchly to Rehearsal: a journey day passes in an hour, so the real best-before dates still hold."
   },
   {
    "id": "m02",
    "sec": "mango",
-   "gap": 0.4,
-   "text": "Neha resets the journey from the console and picks Rehearsal: one journey day passes in an hour, so the story's real best-before dates still hold."
+   "gap": 0.3,
+   "text": "Priya, in supply chain, gets the Watcher's alert. Munchly's Mango Drink, in Hyderabad: twenty-two days left, twenty-two thousand rupees at stake.",
+   "say": "[Priya](/pɹˈijə/), in supply chain, gets the Watcher's alert. Munchly's Mango Drink, in Hyderabad: twenty-two days left, twenty-two thousand rupees at stake."
   },
   {
    "id": "m03",
    "sec": "mango",
-   "gap": 0.4,
-   "text": "She can also run any agent by hand. The Watcher flags the Mango Drink at Lakshmi Agencies in Hyderabad: twenty-two days left, and twenty-two thousand rupees at stake."
+   "gap": 0.3,
+   "text": "Lakshmi Agencies, the distributor, is asked for one photo. Vision matches the carton's label to the stock export."
   },
   {
    "id": "m04",
    "sec": "mango",
-   "gap": 0.4,
-   "text": "Lakshmi Agencies photographs the carton. Vision matches its batch, dates and price to the stock export."
+   "gap": 0.3,
+   "text": "The Valuer prices every exit, and the Router splits the batch. Priya approves the plan with one tap.",
+   "say": "The Valuer prices every exit, and the Router splits the batch. [Priya](/pɹˈijə/) approves the plan with one tap."
   },
   {
    "id": "m05",
    "sec": "mango",
    "gap": 0.3,
-   "text": "The Valuer prices five exits, and the Router recommends a split: kiranas, a staff sale and a food bank."
+   "text": "Outreach sends the offer to fifty-eight kiranas in their own language: in this demo, Hindi. A shopkeeper orders on her phone, and the order lands on Priya's screen, live.",
+   "say": "Outreach sends the offer to fifty-eight kiranas in their own language: in this demo, Hindi. A shopkeeper orders on her phone, and the order lands on [Priya's](/pɹˈijəz/) screen, live."
+  },
+  {
+   "id": "m05b",
+   "sec": "mango",
+   "gap": 0.3,
+   "text": "Next on the roadmap: more Indian languages, and WhatsApp, to reach kiranas in every remote region."
   },
   {
    "id": "m06",
    "sec": "mango",
-   "gap": 0.5,
-   "text": "Priya approves it with one tap. Nothing moves before her yes.",
-   "say": "[Priya](/pɹˈijə/) approves it with one tap. Nothing moves before her yes."
+   "gap": 0.3,
+   "text": "Fifty-two shops take thirteen hundred and seventy-two packets, each with its own tax invoice."
   },
   {
    "id": "m07",
    "sec": "mango",
-   "gap": 0.4,
-   "text": "Outreach sends a Hindi offer to fifty-eight kiranas. As each shop orders on its phone, the order lands on Priya's screen, live.",
-   "say": "Outreach sends a Hindi offer to fifty-eight kiranas. As each shop orders on its phone, the order lands on [Priya's](/pɹˈijəz/) screen, live."
+   "gap": 0.3,
+   "text": "The godown's staff buy a hundred and fifty packs, paying by UPI, and Vision checks the receipt against the count.",
+   "say": "The godown's staff buy a hundred and fifty packs, paying by U P I, and Vision checks the receipt against the count."
   },
   {
    "id": "m08",
    "sec": "mango",
-   "gap": 0.4,
-   "text": "Fifty-two shops take thirteen hundred and seventy-two packets, each with its own tax invoice."
+   "gap": 0.3,
+   "text": "Feeding India collects the last fifty-eight packs, and the Saturday van delivers every shop's order."
   },
   {
    "id": "m09",
    "sec": "mango",
-   "gap": 0.4,
-   "text": "The distributor's staff buy a hundred and fifty packs. Vision checks the UPI receipt against the count.",
-   "say": "The distributor's staff buy a hundred and fifty packs. Vision checks the U P I receipt against the count."
-  },
-  {
-   "id": "m10",
-   "sec": "mango",
-   "gap": 0.4,
-   "text": "Feeding India collects the last fifty-eight, and issues its receipt."
-  },
-  {
-   "id": "m11",
-   "sec": "mango",
-   "gap": 0.4,
-   "text": "Paperwork drafts every paper: the price-support credit note, the GST memo and an invoice for every shop.",
-   "say": "Paperwork drafts every paper: the price-support credit note, the G S T memo and an invoice for every shop."
-  },
-  {
-   "id": "m12",
-   "sec": "mango",
-   "gap": 1.0,
-   "text": "Munchly recovers nearly seventeen thousand rupees instead of losing twenty-two thousand. Lakshmi Agencies ends whole, and three hundred and forty kilos stay out of landfill."
+   "gap": 0.9,
+   "text": "Paperwork drafts every paper. Munchly recovers nearly seventeen thousand rupees, and Lakshmi Agencies ends whole."
   },
   {
    "id": "s01",
    "sec": "sad",
-   "gap": 0.4,
-   "text": "But not every batch sells. Munchly's Masala Chips at Rakesh Traders in Nagpur go to thirty-eight kiranas.",
-   "say": "But not every batch sells. Munchly's Masala Chips at [Rakesh](/ɹˈɑkAʃ/) Traders in Nagpur go to thirty-eight kiranas."
+   "gap": 0.3,
+   "text": "But not every batch sells. Munchly's Masala Chips go to Rakesh Traders' thirty-eight kiranas in Nagpur, and just two of them order.",
+   "say": "But not every batch sells. Munchly's Masala Chips go to [Rakesh](/ɹˈɑkAʃ/) Traders' thirty-eight kiranas in Nagpur, and just two of them order."
   },
   {
    "id": "s02",
    "sec": "sad",
-   "gap": 0.4,
-   "text": "This time, just two of them order. Thirty-five say, not this time."
+   "gap": 0.3,
+   "text": "On Expire Soon, a wholesaler in Raipur bids thirteen rupees. The Negotiator counters at fourteen twenty, and seven hundred and seventy-two packs are sold.",
+   "say": "On Expire Soon, a wholesaler in [Raipur](/ɹɑˈipʊɹ/) bids thirteen rupees. The Negotiator counters at fourteen twenty, and seven hundred and seventy-two packs are sold."
   },
   {
    "id": "s03",
    "sec": "sad",
-   "gap": 0.4,
-   "text": "On Expire Soon, a wholesaler bids thirteen rupees. The Negotiator counters at fourteen twenty, and seven hundred and seventy-two packs are sold."
+   "gap": 0.3,
+   "text": "Five hundred and forty packets are still left when the offer window closes."
   },
   {
    "id": "s04",
    "sec": "sad",
-   "gap": 0.4,
-   "text": "In the demo, Neha closes the offer window early from the console. Five hundred and forty packets are left at the godown."
+   "gap": 0.3,
+   "text": "On expiry day, Rakesh is asked to destroy them through an authorised agency, and to prove it.",
+   "say": "On expiry day, [Rakesh](/ɹˈɑkAʃ/) is asked to destroy them through an authorised agency, and to prove it."
   },
   {
    "id": "s05",
    "sec": "sad",
-   "gap": 0.4,
-   "text": "On expiry day, they are destroyed, against evidence. Rakesh sends photos from before and after, and the agency's officer, two witnesses and Rakesh sign the certificate on his tablet.",
-   "say": "On expiry day, they are destroyed, against evidence. [Rakesh](/ɹˈɑkAʃ/) sends photos from before and after, and the agency's officer, two witnesses and [Rakesh](/ɹˈɑkAʃ/) sign the certificate on his tablet."
+   "gap": 0.3,
+   "text": "At the landfill, he photographs the destruction. Then the agency's officer, two witnesses and Rakesh sign the certificate on his tablet.",
+   "say": "At the landfill, he photographs the destruction. Then the agency's officer, two witnesses and [Rakesh](/ɹˈɑkAʃ/) sign the certificate on his tablet."
   },
   {
    "id": "s06",
    "sec": "sad",
-   "gap": 0.4,
-   "text": "Vision checks the label, the count and the slate at the landfill. Then Priya gives a second yes.",
-   "say": "Vision checks the label, the count and the slate at the landfill. Then [Priya](/pɹˈijə/) gives a second yes."
+   "gap": 0.3,
+   "text": "Vision checks the photos. Only on Priya's second yes are the certificate and the credit note issued.",
+   "say": "Vision checks the photos. Only on [Priya's](/pɹˈijəz/) second yes are the certificate and the credit note issued."
   },
   {
    "id": "s07",
-   "sec": "sad",
-   "gap": 0.4,
-   "text": "Only then are the destruction certificate and the expiry credit note issued."
-  },
-  {
-   "id": "s08",
    "sec": "sad",
    "gap": 0.9,
    "text": "Even here, Munchly recovers eleven thousand seven hundred rupees against a twenty-six thousand rupee write-off, and Rakesh ends whole.",
@@ -196,7 +192,7 @@
    "id": "e01",
    "sec": "end",
    "gap": 0.0,
-   "text": "Smart-Clearance. Ten agents, one yes, and nothing good goes to waste."
+   "text": "Smart-Clearance. Live on Cloud Run, reasoning with Gemini. Ten agents, one yes, and nothing good goes to waste."
   }
  ]
 }

@@ -19,7 +19,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import parts as P_
 B = HERE / "build"
-VO = HERE / "tts" / "vo" / "af_heart-0.94"
+VO = HERE / "tts" / "vo2" / "af_heart-0.94"
 MUS = Path("/Users/arundutta/projects/smart-clearance/design3/designs/SC-187/media")
 SR = 48000
 END = P_.END
@@ -91,7 +91,7 @@ def whooshes():
     out = np.zeros((N, 2), dtype=np.float32); rnd = np.random.default_rng(205)
     import shots as S_
     sh = {s.name: s for s in S_.build()}
-    marks = [sh["brand"].t0 + 0.3, sh["agents"].t0 + 1.6, sh["mango-title"].t0 + 0.25, sh["chips-title"].t0 + 0.25]
+    marks = [sh["brand"].t0 + 0.3, sh["agents"].t0 + 1.6, sh["signins"].t0 + 0.25, sh["chips"].t0 + 0.25]
     for t in marks:
         d = int(1.6 * SR); n = rnd.standard_normal(d).astype(np.float32)
         b, a = [0.049922035, -0.095993537, 0.050612699, -0.004408786], [1, -2.494956002, 2.017265875, -0.522189400]
