@@ -6,29 +6,33 @@ import { fileURLToPath } from 'node:url';
 import { api, mint } from './auth.ts';
 import { AGENT_WAIT, begin, caseAs, inr, running, story, until, WS, type Case } from './flow.ts';
 import { DIST, HERO, KIRANAS, orderPlan, past, printed, STEP } from './mango.ts';
-import { Stage, type Note } from './stage.ts';
+import { loaded, Stage, type Note } from './stage.ts';
 
-// Munchly Mango E2E on three screens (SC-190): the Mango Drink 200 ml batch (MF-2410-118, Lakshmi Agencies, Hyderabad)
-// from a fresh journey to Impact's report, on the happy path, as Munchly Chips Sad Path E2E plays the chips (stage.ts):
-// Priya, Munchly's supply chain operator, on a tablet in landscape, and Lakshmi Agencies, the distributor, on a tablet
-// in portrait, each signing in on camera and online to the end; and a phone on which Neha in the console, the kiranas
-// and Meera of Feeding India sign in as each is needed, on the app's own sign-in screen (no password typed). Every click
-// shows, every screen scrolls to what is read, and the moments a viewer would ask about carry a note in business terms.
+// Munchly Mango E2E on three screens (SC-190, SC-201): the Mango Drink 200 ml batch (MF-2410-118, Lakshmi Agencies,
+// Hyderabad) from a fresh journey to Impact's report, on the happy path, as Munchly Chips Sad Path E2E plays the chips
+// (stage.ts): Priya, Munchly's supply chain operator, on a tablet in landscape, and Lakshmi Agencies, the distributor, on
+// a tablet in portrait, each signing in on camera and online to the end; and a phone on which Neha in the console, the
+// kiranas and Meera of Feeding India sign in as each is needed, on the app's own sign-in screen (no password typed).
+//
+// SC-201 tells it as the admin tour does (SC-199): green rings and clicks, and a green card beside only the major moments
+// of the flow, with a chapter card as each part opens. Priya keeps Execution open while the kiranas order, the staff sale
+// is recorded and the food bank collects, and sees each land live. Every paper is read top to bottom: Priya's pack (the
+// credit note, the staff sale's UPI receipt, the food bank's receipt, the GST memo, the FSSAI checklist, the sales
+// register and a kirana's invoice), Meera's receipt and Lakshmi Agencies' own papers. Then the ledger's Money, GST and
+// Impact readings, Lakshmi Agencies ending whole, and last the swing, worked out line by line.
 //
 // The happy path: the Mango's plan has three lines and no ExpireSoon lot (22 days left is under ExpireSoon's 30): the
-// kiranas' scheme, the staff sale at Lakshmi Agencies' godown, and the food bank's donation. The first E2E_SHOWN (3)
+// kiranas' scheme, the staff sale at Lakshmi Agencies' godown, and the food bank's donation. The first E2E_SHOWN (2)
 // ordering kiranas sign in on the phone and order; the other ordering kiranas order as themselves through backend-api,
-// their own sessions, meanwhile (a sign-in on camera for each of 52 shops would take twenty minutes), and Priya watches
-// the scheme fill on her Execution. Lakshmi Agencies records the staff sale on its consolidated receipt, Meera collects
-// the donation, Paperwork drafts the pack and Lakshmi runs the van round; Priya reviews the pack, Neha fires the report,
-// Priya reads the impact, and Lakshmi reads her portal.
+// their own sessions, meanwhile (a sign-in on camera for each of 52 shops would take twenty minutes).
 //
-// E2E_SHOWN (3): how many of the ordering kiranas order on the phone.
+// E2E_SHOWN (2): how many of the ordering kiranas order on the phone.
 // E2E_DAY_MINUTES (60, Rehearsal): the journey day the reset starts.
 // E2E_FROM=<step id> resumes on the journey as it stands (the sign-ins always run); E2E_UNTIL=<step id> stops after it.
+// E2E_KEEP=<path> copies the recording there; `{stamp}` in it becomes the run's start, as 2026-10-13_09-15-42.
 // E2E_LIVE=0 opens no monitor window (the stage is recorded all the same).
 
-const SHOWN = Number(process.env.E2E_SHOWN ?? 3);
+const SHOWN = Number(process.env.E2E_SHOWN ?? 2);
 const DAY_MINUTES = Number(process.env.E2E_DAY_MINUTES ?? 60);
 const PRESETS: Record<number, RegExp> = { 1440: /Real time/, 60: /Rehearsal/, 5: /Demo/, 1: /Fast/ };
 const PEOPLE = ['neha', 'priya', DIST, 'meera', ...KIRANAS.map((k) => k.member)];
@@ -36,50 +40,64 @@ const REPO = (p: string) => fileURLToPath(new URL(`../../../../${p}`, import.met
 /** the label photo Lakshmi Agencies sends, and the staff sale's consolidated receipt (SC-147, SC-174) */
 const LABEL = REPO('agents/evals/vision/images/mango.webp');
 const RECEIPT = REPO(`design3/system/img/receipts/${HERO}.webp`);
+/** when the run started: in the recording's name, and on the stage's bar */
+const STARTED = new Date();
+const pad = (n: number) => String(n).padStart(2, '0');
+const STAMP = `${STARTED.getFullYear()}-${pad(STARTED.getMonth() + 1)}-${pad(STARTED.getDate())}_${pad(STARTED.getHours())}-${pad(STARTED.getMinutes())}-${pad(STARTED.getSeconds())}`;
+const WHEN = new Intl.DateTimeFormat('en-GB', {
+	day: 'numeric',
+	month: 'short',
+	year: 'numeric',
+	hour: '2-digit',
+	minute: '2-digit',
+	timeZoneName: 'short'
+}).format(STARTED);
 
-type Step = { id: string; title: string; run: (s: Stage) => Promise<void> };
+/** a step of the flow; `card` opens a chapter of the recording with a title card */
+type Step = { id: string; title: string; card?: string; run: (s: Stage) => Promise<void> };
 const main = (page: Page) => page.locator('#main');
-/** the cursor reads down a list of things on screen, resting on each */
-async function readEach(s: Stage, items: Locator, most = 8, rest = 450) {
-	const n = Math.min(await items.count(), most);
-	for (let i = 0; i < n; i++) await s.point(items.nth(i), rest);
-	return n;
-}
+const re = (s: string) => new RegExp(s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
 type Line = { id: string; units: number; price?: number };
 const lineOf = (c: Case | null, id: string) => ((c?.plan?.lines ?? []) as Line[]).find((l) => l.id === id);
 const num = (n: number | undefined) => (n ?? 0).toLocaleString('en-IN');
+type Figures = { net: number; swing: number; pnl?: number; units: number; kg: number; meals: number };
+const figuresOf = (c: Case | null) => (c as (Case & { ledger?: { figures?: Figures } | null }) | null)?.ledger?.figures;
 
-/** what the stage says beside the moments a viewer would ask about, in business terms (SC-188) */
+/** the sheet open on a screen, closed as a person closes it */
+async function closeSheet(s: Stage, page: Page) {
+	const d = page.getByRole('dialog').last();
+	if (!(await d.isVisible().catch(() => false))) return;
+	const close = d.getByRole('button', { name: 'Close', exact: true }).first();
+	if (await close.isVisible().catch(() => false)) await s.click(close, 400);
+	else await page.keyboard.press('Escape');
+	await expect(d)
+		.toBeHidden({ timeout: 10_000 })
+		.catch(() => {});
+}
+
+/** a paper opened from its card and read top to bottom, in its sheet or beside the pack, ending on who signed it. A
+ *  note, where the paper has one, sits beside its head first. The sheet stays open with `keep` */
+async function readPaper(s: Stage, page: Page, opener: Locator, note?: Note, keep = false) {
+	await s.click(opener, 700);
+	const d = page.getByRole('dialog').last();
+	const inSheet = await d.isVisible().catch(() => false);
+	const paper = (inSheet ? d : main(page)).locator('.paper').first();
+	await expect(paper).toBeVisible({ timeout: 20_000 });
+	await loaded(page, 8000);
+	if (note) await s.spot(paper.locator('.tl-title, .pp-head').first(), note);
+	await s.read(paper);
+	const sig = paper.locator('img[alt^="Signed by"]').last();
+	if (await sig.isVisible().catch(() => false)) await s.point(sig, 900);
+	if (inSheet && !keep) await closeSheet(s, page);
+	return { paper, inSheet };
+}
+
+/** the green cards: only the major moments of the flow, in business terms */
 const WHY = {
-	rehearsal: {
-		tag: 'Why',
-		title: 'Rehearsal: a journey day in an hour',
-		text: "The demo runs on a small synthetic dataset: Munchly's nine batches, each with a fixed best-before date. Reset replays the story's calendar from day 0, and Rehearsal runs each journey day in an hour, so a 48-hour offer and the days after it fit in one sitting. A live client runs in real time."
-	},
-	setup: {
-		tag: 'Setup',
-		title: "Munchly's rules, set once",
-		text: "The stock export from the distributors' DMS is mapped once. Munchly's guardrails (price floors, the channels allowed, the territories its lots stay out of) bound every agent from here on."
-	},
-	permission: {
-		tag: 'Distributor',
-		title: 'One permission, then the legwork is done',
-		text: "Lakshmi Agencies lets Smart-Clearance send scheme offers to its kiranas, draft its invoices and book its van and pickups, inside Munchly's floors. Every action shows on its Today, and it can pause them at any time."
-	},
-	watcher: {
-		tag: 'Why',
-		title: 'A daily check, fired by hand',
-		text: "In production the Watcher checks every batch each morning at 09:00, against the quick-commerce gates and the sell-through. For the demo Neha runs this morning's check now from the console: the same run the schedule makes."
-	},
 	verified: {
 		tag: 'Trust',
 		title: 'Verified before any price',
-		text: "Vision reads the carton label from Lakshmi Agencies' photo and matches the batch, the dates and the MRP to the DMS export. No match, no plan: nothing is priced or sold on a guess."
-	},
-	channels: {
-		tag: 'Valuer',
-		title: 'Every exit priced net',
-		text: 'Each channel is priced after its own costs and its effect on GST, and set against what destroying the packs would cost. With 22 days left the Mango Drink is too close to its date for ExpireSoon, so the Router looks closer to home.'
+		text: "Vision reads the carton label in Lakshmi Agencies' photo and matches its batch, dates and MRP to the DMS export. No match, no plan: nothing is priced or sold on a guess."
 	},
 	approve: {
 		tag: 'Control',
@@ -89,50 +107,55 @@ const WHY = {
 	live: {
 		tag: 'Live',
 		title: 'Every order, as it lands',
-		text: "The kirana ordered on the phone a moment ago. It reaches Priya's screen at once, with its GST invoice from Lakshmi Agencies already issued: no spreadsheet, no phone calls."
+		text: "The kirana ordered on the phone a moment ago. It reaches Priya's Execution at once, with its GST invoice from Lakshmi Agencies already issued: no spreadsheet, no phone calls."
 	},
 	staff: {
 		tag: 'Staff sale',
-		title: 'Sold to staff, on one receipt',
-		text: 'Lakshmi Agencies sells packs to its own staff at the godown, every payment by its UPI reference on one consolidated receipt. Vision reads it, and the sale records only when the payments come to the count.'
-	},
-	van: {
-		tag: 'Delivery',
-		title: "Delivered on Lakshmi's own round",
-		text: "The kiranas' packets ride Lakshmi Agencies' usual van round, every shop's order on it in the order they came in. Munchly's credit note covers the van, so the delivery costs her nothing."
+		title: 'Sold to staff, proven by UPI',
+		text: 'Lakshmi Agencies sold packs to its own staff at the godown. Its consolidated receipt lists every payment by its UPI reference; Vision read it, and the sale recorded only because the payments came to the count.'
 	},
 	support: {
 		tag: 'Distributor',
 		title: 'The gap, made good',
-		text: 'The price-support credit note pays Lakshmi Agencies the gap between what she paid for the packs and what each channel fetched, plus her van, so clearing the batch costs her nothing.'
+		text: "Munchly's price-support credit note pays Lakshmi Agencies the gap between what she paid for the packs and what each channel fetched, plus her van, so clearing the batch costs her nothing."
 	},
 	invoices: {
 		tag: 'GST',
 		title: 'An invoice for every shop',
-		text: "Every kirana's order carries its own GST invoice from Lakshmi Agencies, in her series. Munchly sees the register and each invoice, with nothing to chase."
+		text: "Every kirana's order carries its own GST invoice from Lakshmi Agencies, in her own series, issued as the shop ordered and kept in one sales register."
 	},
 	report: {
-		tag: 'Why',
-		title: 'The report, brought forward',
-		text: "The Mango Drink's report falls due on its best-before, 24 Oct, on the story's calendar. Report now posts it today: every line is done, nothing is left at the godown, and Impact posts the batch to the ledger."
+		tag: 'Close',
+		title: 'The journey closes',
+		text: "Every line is done and nothing is left at the godown. Report now posts the batch to Munchly's ledger today rather than on its best-before, 24 Oct on the story's calendar."
+	},
+	gst: {
+		tag: 'Finance',
+		title: 'GST, accounted for',
+		text: 'Input credit is kept on every pack sold and reversed only on the packs given away, as section 17(5)(h) requires. Every invoice and credit note is counted from the papers themselves.'
 	},
 	impact: {
 		tag: 'ESG',
 		title: 'Impact, from the ledger',
-		text: "Kilos kept out of landfill, the meals the donation made and CO₂e come from each batch's own ledger, not an estimate: ready for BRSR Principle 6 and Munchly's EPR reporting."
+		text: "Kilos kept out of landfill, the meals the donation made and the CO₂e avoided come from each batch's own ledger, not an estimate: ready for BRSR Principle 6 and Munchly's EPR reporting."
 	},
 	whole: {
 		tag: 'Distributor',
 		title: 'Lakshmi Agencies ends whole',
 		text: "Every rupee Lakshmi Agencies paid for the batch comes back: from her kiranas, her staff and Munchly's credit note. Clearing it cost her nothing."
+	},
+	sum: {
+		tag: 'The swing',
+		title: "The plan's P&L, less the bin's",
+		text: 'Destroying every pack at risk would have cost the stock, the GST credit reversed, disposal and EPR. The swing is how much better the plan did than that: what was recovered, plus the costs nobody had to pay.'
 	}
 } satisfies Record<string, Note>;
-/** the notes whose figures are the case's own */
+/** the cards whose figures are the case's own */
 const NOTE = {
 	risk: (c: Case): Note => ({
 		tag: 'Risk',
 		title: `${inr(Math.round(c.writeOff?.total ?? 0))} at stake`,
-		text: `${num(c.batch.assess?.atRisk)} packs of Mango Drink will not sell before quick-commerce stops taking them. Destroying them would cost Munchly ${inr(Math.round(c.writeOff?.total ?? 0))}: the stock, the GST credit reversed, disposal and EPR. The agents start on it at once.`
+		text: `${num(c.batch.assess?.atRisk)} packs of Mango Drink will not sell before quick-commerce stops taking them. Destroying them would cost Munchly ${inr(Math.round(c.writeOff?.total ?? 0))}: the stock, the GST credit reversed, disposal and EPR.`
 	}),
 	split: (c: Case): Note => {
 		const k = lineOf(c, 'kirana');
@@ -140,37 +163,28 @@ const NOTE = {
 		const fb = lineOf(c, 'foodbank');
 		return {
 			tag: 'Router',
-			title: 'The recommended split',
-			text: `${num(k?.units)} packets to Lakshmi Agencies' kiranas${k?.price ? ` at ₹${k.price} effective` : ''}, ${num(st?.units)} to her staff${st?.price ? ` at ₹${st.price}` : ''}, and ${num(fb?.units)} to a food bank. Net ${inr(Math.round(c.plan?.net ?? 0))}, where destroying them would cost ${inr(Math.round(c.writeOff?.total ?? 0))}.`
+			title: 'Every exit priced, one split',
+			text: `With 22 days left the Mango Drink is too close to its date for ExpireSoon. The Router sends ${num(k?.units)} packets to Lakshmi Agencies' kiranas, ${num(st?.units)} to her staff and ${num(fb?.units)} to a food bank: ${inr(Math.round(c.plan?.net ?? 0))} net, where the bin would cost ${inr(Math.round(c.writeOff?.total ?? 0))}.`
 		};
 	},
-	scheme: (shops: number, price?: number): Note => ({
-		tag: 'Kiranas',
-		title: 'Kept in the neighbourhood',
-		text: `Lakshmi Agencies' own ${shops} kiranas in Hyderabad are offered the packs${price ? ` at ₹${price} effective` : ''}, buy 10 get 2, each shop capped at what it can sell in 14 days. The packs sell through shelves their customers know.`
-	}),
 	filled: (shops: number, packets: number): Note => ({
 		tag: 'Live',
 		title: 'The scheme fills',
-		text: `The other shops ordered from their own phones meanwhile; the recording shows ${SHOWN}. Their orders reached Priya's screen as they landed, and the scheme closed the moment it filled: ${num(packets)} packets to ${shops} shops.`
+		text: `The other shops ordered from their own phones meanwhile; the recording shows ${SHOWN}. Each order reached Priya's screen as it landed, and the scheme closed the moment it filled: ${num(packets)} packets to ${shops} shops.`
 	}),
 	donation: (units: number, partner: string): Note => ({
 		tag: 'Food bank',
 		title: 'Food, not landfill',
-		text: `${num(units)} packs go to ${partner}: an FSSAI checklist with the batch, a receipt in the food bank's own series, and the meals counted for Munchly's ESG report.`
+		text: `${partner} collected ${num(units)} packs and issued its receipt in its own series, counting the meals for Munchly's ESG report. Meera sees it here; Munchly and Lakshmi Agencies each keep a copy.`
 	}),
-	outcome: (c: Case): Note => {
-		const f = (
-			c as Case & {
-				ledger?: { figures?: { net: number; swing: number; units: number; kg: number; meals: number } } | null;
-			}
-		).ledger?.figures;
+	swing: (c: Case | null): Note => {
+		const f = figuresOf(c);
 		return {
 			tag: 'Outcome',
-			title: f ? `${inr(Math.round(f.swing))} better than destroying` : 'Better than destroying',
+			title: f ? `${inr(Math.round(f.swing))} better than destroying it` : 'Better than destroying it',
 			text: f
-				? `Against destroying all ${num(f.units)} packs at risk, Munchly is ${inr(Math.round(f.swing))} better off: ${inr(Math.round(f.net))} recovered, ${num(f.kg)} kg of food sold or given instead of sent to a landfill, and ${num(f.meals)} meals.`
-				: 'Every line done as planned: the packs sold to shops and staff, and the rest given to a food bank.'
+				? `${inr(Math.round(f.net))} recovered and ${num(f.kg)} kg of food sold or given instead of sent to a landfill. Below, every figure behind the swing: what the bin would have cost, what each exit made, and the P&L with the plan.`
+				: 'Below, every figure behind the swing: what the bin would have cost, what each exit made, and the P&L with the plan.'
 		};
 	}
 };
@@ -179,6 +193,7 @@ const STEPS: Step[] = [
 	{
 		id: 'signin',
 		title: 'Priya signs in on her tablet, Lakshmi Agencies on its, and Neha in the console on the phone',
+		card: 'Everyone signs in',
 		async run(s) {
 			await s.open('priya', '/command', "signs in to Munchly's workspace on her tablet");
 			await running().done('Priya signed in: her Command Center');
@@ -190,7 +205,8 @@ const STEPS: Step[] = [
 	},
 	{
 		id: 'reset',
-		title: "Neha starts Munchly's journey again from the console, on the phone",
+		title: "Neha starts Munchly's journey again from the console, a journey day an hour",
+		card: 'A fresh journey',
 		async run(s) {
 			const page = await s.open(
 				'neha',
@@ -201,7 +217,7 @@ const STEPS: Step[] = [
 			await s.click(page.getByRole('menuitem', { name: /Reset journey/ }));
 			const sheet = page.getByRole('dialog', { name: /journey again/ });
 			const preset = sheet.getByRole('radio', { name: PRESETS[DAY_MINUTES] ?? /Rehearsal/ });
-			await s.spot(preset, WHY.rehearsal);
+			await s.point(preset, 600);
 			await s.click(preset);
 			await running().done('Reset journey: the day length');
 			await s.click(sheet.getByRole('button', { name: 'Reset journey' }));
@@ -221,7 +237,7 @@ const STEPS: Step[] = [
 			await expect(main(page).getByText('Mapped · confirm below')).toBeVisible({ timeout: AGENT_WAIT });
 			await running().done('Setup: the export mapped');
 			const confirm = main(page).getByRole('button', { name: 'Confirm and start watching' });
-			await s.spot(confirm, WHY.setup);
+			await s.point(confirm, 700);
 			await s.click(confirm);
 			await expect(main(page).getByRole('button', { name: 'Open Command Center' })).toBeVisible();
 			await running().done('Setup confirmed: the Watcher starts at 09:00');
@@ -237,25 +253,25 @@ const STEPS: Step[] = [
 			const given = main(page).getByText('Smart-Clearance acts for you').first();
 			await expect(ask.or(given).first()).toBeVisible();
 			if (await ask.isVisible()) {
-				await s.spot(ask, WHY.permission);
+				await s.point(ask, 900);
 				await s.click(main(page).getByRole('button', { name: 'Allow', exact: true }));
 				await expect(given).toBeVisible();
 				await running().done('Permission given');
 			} else {
-				await s.spot(given, WHY.permission);
+				await s.point(given, 700);
 				await running().done('Permission given before: Smart-Clearance acts for Lakshmi Agencies');
 			}
 		}
 	},
 	{
 		id: 'detect',
-		title: 'The Watcher flags the Mango Drink: Neha runs it from the console',
+		title: "The Watcher flags the Mango Drink: Neha runs this morning's check from the console",
+		card: 'The Watcher finds the risk',
 		async run(s) {
 			if (!(await caseAs('priya'))) {
 				const page = await s.open('neha', '/clients/munchly/agents', "runs the Watcher's daily check now");
 				const go = page.getByRole('button', { name: 'Run now: Watcher, daily check' });
 				await expect(go).toBeEnabled();
-				await s.spot(go, WHY.watcher);
 				await s.click(go);
 				await running().done('Watcher run from the console');
 			}
@@ -277,6 +293,7 @@ const STEPS: Step[] = [
 	{
 		id: 'photo',
 		title: "Lakshmi Agencies sends the Mango Drink's label photo, and Vision validates it",
+		card: 'Vision checks the label',
 		async run(s) {
 			await until('Vision asks Lakshmi Agencies for the label photo', DIST, (c) =>
 				['requested', 'reading', 'verified'].includes(c.journey.photo.status)
@@ -305,6 +322,7 @@ const STEPS: Step[] = [
 	{
 		id: 'approve',
 		title: 'The Valuer prices it, the Router plans it, and Priya approves the plan',
+		card: 'The plan, and one yes',
 		async run(s) {
 			const c = await until('the Valuer and the Router plan the Mango Drink', 'priya', (c) => past(c, 'valued'));
 			running().figure('Plan net', inr(c.plan?.net));
@@ -328,9 +346,9 @@ const STEPS: Step[] = [
 			const review = body.getByRole('button', { name: 'Review and approve', exact: true });
 			await expect(review).toBeVisible();
 			await s.point(body.getByText('Label, read from the shelf').first(), 700);
-			await s.spot(body.locator('.chart').first(), WHY.channels);
 			const bars = body.locator('.chart g');
-			for (let i = 0, n = Math.min(await bars.count(), 5); i < n; i++) await s.point(bars.nth(i), 650);
+			await s.point(body.locator('.chart').first(), 900);
+			for (let i = 0, n = Math.min(await bars.count(), 5); i < n; i++) await s.point(bars.nth(i), 550);
 			await running().done('Route Room: five channels priced, each bar read');
 			await s.click(body.getByRole('group', { name: 'View' }).getByRole('button', { name: 'Table' }), 500);
 			const table = body.locator('.table-wrap').first();
@@ -356,22 +374,28 @@ const STEPS: Step[] = [
 	{
 		id: 'execute',
 		title: 'Outreach sends the Hyderabad kiranas their scheme, and Donation books a food bank',
+		card: 'The kiranas order, live',
 		async run(s) {
 			const c = await until('Outreach sends the scheme and Donation books the food bank', 'priya', (c) =>
 				Boolean(c.journey.offer && c.donation)
 			);
 			story('Kiranas offered the scheme', c.journey.offer?.shops, 58);
 			await s.stat('offered', 'kiranas offered', String(c.journey.offer?.shops ?? 0));
-			const ex = await s.open('priya', `/execution/${HERO}`, 'watches the agents carry out the plan');
-			await s.spot(
+			const ex = await s.open(
+				'priya',
+				`/execution/${HERO}`,
+				'keeps Execution open to watch the agents carry out the plan'
+			);
+			await s.point(
 				main(ex)
 					.locator('.card', { hasText: /Outreach · \d+ kiranas/ })
 					.first(),
-				NOTE.scheme(c.journey.offer?.shops ?? 0, lineOf(c, 'kirana')?.price)
+				1400
 			);
 			await running().done('Execution: the scheme sent, the staff sale open, the donation booked');
 			const page = await s.open(DIST, `/orders/${HERO}`, 'watches its kiranas answer the scheme on Orders');
 			await expect(main(page)).toContainText(/scheme/i);
+			await s.point(main(page).locator('.card').first(), 900);
 			await running().done("Lakshmi Agencies' Orders: the scheme sent to its kiranas");
 		}
 	},
@@ -409,7 +433,7 @@ const STEPS: Step[] = [
 				const order = main(page).getByRole('button', { name: /· \d+ packets/ });
 				await expect(order.or(placed).first()).toBeVisible();
 				if (await order.isVisible()) {
-					await s.point(main(page).getByText(/₹\d/).first(), 500);
+					await s.point(main(page).getByText(/₹\d/).first(), 700);
 					for (let n = p.cap; n > p.units; n -= STEP)
 						await s.click(main(page).getByRole('button', { name: 'Fewer Packets' }), 150);
 					await s.click(main(page).getByRole('button', { name: new RegExp(`· ${p.units} packets`) }));
@@ -431,7 +455,7 @@ const STEPS: Step[] = [
 						`${p.k.name}'s order did not reach Priya's Execution within 45 s`
 					);
 				if (i === 0) await s.spot(row, WHY.live);
-				else await s.point(row, 900);
+				else await s.point(row, 1200);
 				await running().done(`Live on Priya's tablet: ${p.k.name}, ${p.units} packets`);
 			}
 			// the rest order from their own phones meanwhile, as themselves, while Priya's tablet counts them in
@@ -471,66 +495,126 @@ const STEPS: Step[] = [
 	},
 	{
 		id: 'staff',
-		title: 'Lakshmi Agencies records the staff sale at its godown, on its consolidated receipt',
+		title: "Lakshmi Agencies records the staff sale on its UPI receipt; it lands on Priya's Execution",
+		card: 'The staff sale, on UPI',
 		async run(s) {
 			const c = await until('the staff sale is open', DIST, (c) => Boolean(c.journey.staff));
-			if (c.journey.staff?.status === 'recorded')
-				return void running().find('note', HERO, 'the staff sale was recorded');
-			const page = await s.open(DIST, '/home', `records the staff sale: ${c.journey.staff?.units} packs at the godown`);
-			const card = main(page).locator(`#batch-${HERO}`);
-			await expect(card).toContainText('Record the staff sale');
-			await s.point(card, 900);
-			await running().done('Today: the staff sale asked for on the batch');
-			await s.click(card.getByRole('button', { name: 'Record what sold', exact: true }));
-			await expect(page).toHaveURL(new RegExp(`/van/${HERO}`));
-			const sale = main(page).locator('.card', { hasText: 'Staff sale ·' }).first();
-			await s.spot(sale, WHY.staff);
-			const record = sale.getByRole('button', { name: 'Record the sale' });
-			const match = sale.getByText(/matches your count/).first();
-			// the consolidated receipt first, read by Vision on live Gemini (a receipt already read is not sent again)
-			if (!(await match.isVisible().catch(() => false))) {
-				await expect(record).toBeDisabled();
-				await s.upload(sale.getByRole('button', { name: /Upload/ }).first(), RECEIPT);
-				await expect(sale.getByText('Vision is reading the receipt').first()).toBeVisible();
-				await running().done('The consolidated receipt sent: Vision is reading it');
+			if (c.journey.staff?.status !== 'recorded') {
+				const page = await s.open(
+					DIST,
+					'/home',
+					`records the staff sale: ${c.journey.staff?.units} packs at the godown`
+				);
+				const card = main(page).locator(`#batch-${HERO}`);
+				await expect(card).toContainText('Record the staff sale');
+				await s.point(card, 900);
+				await running().done('Today: the staff sale asked for on the batch');
+				await s.click(card.getByRole('button', { name: 'Record what sold', exact: true }));
+				await expect(page).toHaveURL(new RegExp(`/van/${HERO}`));
+				const sale = main(page).locator('.card', { hasText: 'Staff sale ·' }).first();
+				await s.point(sale, 900);
+				const record = sale.getByRole('button', { name: 'Record the sale' });
+				const match = sale.getByText(/matches your count/).first();
+				// the consolidated receipt first, read by Vision on live Gemini (a receipt already read is not sent again)
+				if (!(await match.isVisible().catch(() => false))) {
+					await expect(record).toBeDisabled();
+					await s.upload(sale.getByRole('button', { name: /Upload/ }).first(), RECEIPT);
+					await expect(sale.getByText('Vision is reading the receipt').first()).toBeVisible();
+					await running().done('The consolidated receipt sent: Vision is reading it');
+				}
+				await expect(match).toBeVisible({ timeout: AGENT_WAIT });
+				await s.point(match, 1100);
+				await running().done('Vision read the receipt: its UPI payments match the count');
+				await s.click(record);
+				const r = await until(
+					'the staff sale is recorded',
+					DIST,
+					(c) => c.journey.staff?.status === 'recorded',
+					60_000
+				);
+				story('Staff sale', r.journey.staff?.sold ?? undefined, 150);
+				await running().done(`Staff sale recorded: ${r.journey.staff?.sold} packs, with its receipt`);
+			} else running().find('note', HERO, 'the staff sale was recorded');
+			// Priya's Execution, open all along: the sale arrives with what Vision read of its receipt
+			const ex = await s.open('priya', `/execution/${HERO}`, 'sees the staff sale land on Execution, with its receipt');
+			const card = main(ex).locator('.card', { hasText: 'Staff sale ·' }).first();
+			const live = await expect(card)
+				.toContainText('recorded', { timeout: 45_000 })
+				.then(() => true)
+				.catch(() => false);
+			if (!live)
+				running().find('error', `/execution/${HERO}`, "the staff sale did not reach Priya's Execution within 45 s");
+			await s.spot(card, WHY.staff);
+			const refs = card.getByRole('button', { name: /Show the \d+ UPI references/ });
+			if (await refs.isVisible().catch(() => false)) {
+				await s.click(refs, 500);
+				await s.read(card.locator('.rcpt-refs'), 900);
+				await running().done("Priya's Execution: the receipt's UPI references");
 			}
-			await expect(match).toBeVisible({ timeout: AGENT_WAIT });
-			await s.point(match, 900);
-			await running().done('Vision read the receipt: its UPI payments match the count');
-			await s.click(record);
-			const r = await until('the staff sale is recorded', DIST, (c) => c.journey.staff?.status === 'recorded', 60_000);
-			story('Staff sale', r.journey.staff?.sold ?? undefined, 150);
-			await running().done(`Staff sale recorded: ${r.journey.staff?.sold} packs, with its receipt`);
+			const thumb = card.locator('button.rcpt-thumb');
+			if (await thumb.isVisible().catch(() => false)) {
+				await s.click(thumb, 800);
+				const big = ex.getByRole('dialog', { name: /^Receipt / });
+				await expect(big).toBeVisible();
+				await loaded(ex, 8000);
+				await s.read(big.locator('img').first(), 1200);
+				await running().done("Priya's Execution: the staff sale's receipt, whole");
+				await closeSheet(s, ex);
+			}
 		}
 	},
 	{
 		id: 'donation',
-		title: 'Meera of Feeding India confirms the pickup and collects the donation, on the phone',
+		title: "Meera of Feeding India confirms the pickup and collects on the phone; Priya's Execution follows it",
+		card: 'The donation',
 		async run(s) {
 			const c = await until('the donation is booked', 'meera', (c) => Boolean(c.donation));
-			if (['collected', 'declined'].includes(c.donation!.status))
-				return void running().find('note', HERO, `the donation was ${c.donation!.status}`);
-			const page = await s.open('meera', '/pickups', 'confirms the pickup at the Begum Bazaar godown');
-			const pickup = main(page).locator('.card', { hasText: 'Mango Drink' }).first();
-			await s.spot(pickup, NOTE.donation(c.donation!.units, c.donation!.partner ?? 'the food bank'));
-			if (c.donation!.status === 'booked') {
-				await s.click(main(page).getByRole('button', { name: /^Confirm / }));
-				await until('the pickup is confirmed', 'meera', (c) => c.donation?.status === 'confirmed', 60_000);
-				await running().done('Pickup confirmed');
-			}
-			await s.click(main(page).getByRole('button', { name: 'Mark collected' }));
-			const r = await until('the donation is collected', 'meera', (c) => c.donation?.status === 'collected', 60_000);
-			story(
-				'Donation',
-				`${r.donation?.units} packs ${r.donation?.status}`,
-				`${lineOf(await caseAs('priya'), 'foodbank')?.units} packs collected`
-			);
-			await running().done(`Donation collected: ${r.donation?.units} packs`);
+			const watch = async (status: RegExp, did: string, rest: number) => {
+				const ex = await s.open('priya', `/execution/${HERO}`, did);
+				const card = main(ex).locator('.card', { hasText: 'Donation ·' }).first();
+				const live = await expect(card)
+					.toContainText(status, { timeout: 45_000 })
+					.then(() => true)
+					.catch(() => false);
+				if (!live)
+					running().find('error', `/execution/${HERO}`, `the pickup did not reach Priya's Execution as ${status}`);
+				await s.point(card, rest);
+			};
+			if (!['collected', 'declined'].includes(c.donation!.status)) {
+				let page = await s.open('meera', '/pickups', 'confirms the pickup at the Begum Bazaar godown');
+				await s.point(main(page).locator('.card', { hasText: 'Mango Drink' }).first(), 1100);
+				if (c.donation!.status === 'booked') {
+					await s.click(main(page).getByRole('button', { name: /^Confirm / }));
+					await until('the pickup is confirmed', 'meera', (c) => c.donation?.status === 'confirmed', 60_000);
+					await running().done('Pickup confirmed');
+					await watch(/pickup confirmed/, 'sees the pickup confirmed on Execution', 1300);
+					await running().done("Live on Priya's tablet: the pickup confirmed");
+					page = await s.open('meera', '/pickups', 'collects the packs, and the receipt is issued');
+				}
+				await s.click(main(page).getByRole('button', { name: 'Mark collected' }));
+				const r = await until('the donation is collected', 'meera', (c) => c.donation?.status === 'collected', 60_000);
+				story(
+					'Donation',
+					`${r.donation?.units} packs ${r.donation?.status}`,
+					`${lineOf(await caseAs('priya'), 'foodbank')?.units} packs collected`
+				);
+				await running().done(`Donation collected: ${r.donation?.units} packs`);
+			} else running().find('note', HERO, `the donation was ${c.donation!.status}`);
+			// Meera's receipt, issued as she collected
+			const page = await s.open('meera', '/pickups', 'reads the receipt Feeding India issued for the packs');
+			const row = main(page).locator('button.receipt-row').first();
+			await expect(row).toBeVisible({ timeout: 60_000 });
+			const d = (await caseAs('meera'))?.donation;
+			await readPaper(s, page, row, NOTE.donation(d?.units ?? 0, d?.partner ?? 'The food bank'));
+			await running().done("Meera's donation receipt, read top to bottom");
+			await watch(/collected/, 'sees the donation collected on Execution', 1600);
+			await running().done("Live on Priya's tablet: the donation collected");
 		}
 	},
 	{
 		id: 'papers',
 		title: 'Paperwork drafts the pack, with its PDFs; Lakshmi Agencies runs the van round',
+		card: 'The papers',
 		async run(s) {
 			const c = await until('Paperwork drafts the papers', DIST, (c) => past(c, 'dispatched') && c.docs.length > 0);
 			const pdfs = await until(
@@ -550,7 +634,7 @@ const STEPS: Step[] = [
 			await expect(page).toHaveURL(new RegExp(`/van/${HERO}`));
 			const round = main(page).getByRole('button', { name: 'Start the round' });
 			await expect(round).toBeEnabled();
-			await s.spot(round, WHY.van);
+			await s.point(round, 600);
 			await s.click(round);
 			await until('the van round is done', 'priya', (c) => c.journey.van.status === 'done', 60_000);
 			await running().done('The van round run: every shop delivered');
@@ -559,25 +643,33 @@ const STEPS: Step[] = [
 	{
 		id: 'review',
 		title:
-			"Priya reads the pack (the credit note, the GST memo, the FSSAI checklist, the receipt, the kiranas' invoices) and marks it reviewed",
+			"Priya reads every paper in the pack (the credit note, the receipts, the GST memo, the FSSAI checklist, the kiranas' invoices) and marks it reviewed",
 		async run(s) {
 			const c = (await caseAs('priya'))!;
-			const page = await s.open('priya', `/paperwork/${HERO}`, 'reads each paper, then marks the pack reviewed');
+			const page = await s.open('priya', `/paperwork/${HERO}`, 'reads every paper in the pack, then marks it reviewed');
 			const body = main(page);
-			for (const d of c.docs.filter((d) => d.status !== 'not required')) {
-				const card = body.getByRole('button', { name: new RegExp(d.type) }).first();
+			await expect(body.locator('.docgrid')).toBeVisible();
+			await s.point(body.locator('.docgrid'), 1300);
+			// the credit note first, then the receipts, then Munchly's own memos
+			const rank = (id: string) => ['support', 'staff', 'receipt', 'itc', 'fssai'].indexOf(id) + 1 || 9;
+			const docs = c.docs.filter((d) => d.status !== 'not required').sort((a, b) => rank(a.id) - rank(b.id));
+			for (const d of docs) {
+				const card = body.getByRole('button', { name: re(d.type) }).first();
 				if (!(await card.count())) continue;
-				await s.click(card, 600);
-				if (d.id === 'support') await s.spot(body.getByText(/credit note/i).first(), WHY.support);
-				else await s.point(body.locator('img[alt^="Signed by"]').first(), 500);
-				await running().done(`Paper: ${d.type}${d.no ? ` ${d.no}` : ''}`, 500);
+				await readPaper(s, page, card, d.id === 'support' ? WHY.support : undefined);
+				await running().done(`Paper: ${d.type}${d.no ? ` ${d.no}` : ''}, read in full`, 300);
 			}
+			// the sales register, and one kirana's tax invoice from it
 			const register = body.getByRole('button', { name: /Tax invoices to kiranas/ }).first();
 			if (await register.count()) {
-				await s.click(register, 600);
-				await expect(body).toContainText('Sales Register');
-				await s.spot(body.getByText('Sales Register').first(), WHY.invoices);
+				const { paper, inSheet } = await readPaper(s, page, register, WHY.invoices, true);
 				await running().done('The sales register: a tax invoice for every kirana order');
+				const first = paper.locator('button.tl-link').first();
+				if (await first.isVisible().catch(() => false)) {
+					await readPaper(s, page, first, undefined, true);
+					await running().done("A kirana's tax invoice, read in full");
+				}
+				if (inSheet) await closeSheet(s, page);
 			}
 			const mark = body.getByRole('button', { name: 'Mark reviewed', exact: true });
 			if (await mark.isVisible().catch(() => false)) {
@@ -590,6 +682,7 @@ const STEPS: Step[] = [
 	{
 		id: 'report',
 		title: 'Neha fires the report from the console; Impact posts the ledger',
+		card: 'Impact posts the ledger',
 		async run(s) {
 			const before = (await caseAs('priya'))!;
 			if (!before.journey.posted) {
@@ -608,63 +701,128 @@ const STEPS: Step[] = [
 			story('Actual net', c.actual?.net, c.plan?.net ?? 0);
 			story('Left at the godown', c.realised?.godown, 0);
 			running().figure('Actual net', inr(c.actual?.net));
+			const ex = await s.open('priya', `/execution/${HERO}`, 'sees every line done on Execution');
+			await s.point(main(ex).locator('.card').first(), 1000);
 			await running().done(`Impact posted the ledger: ${inr(c.actual?.net)} recovered`);
 		}
 	},
 	{
-		id: 'esg',
-		title: "Priya reads the Impact screens: the quarter, and the batch's BRSR line",
+		id: 'finance',
+		title: "Priya reads Finance in the ledger: the year's money, then its GST",
+		card: 'Finance and ESG',
 		async run(s) {
-			const page = await s.open('priya', '/report?reading=impact', 'reads the Impact dashboard for the quarter');
+			const page = await s.open('priya', '/report', 'opens the ledger: one ledger, three readings');
 			const body = main(page);
+			const head = body.locator('.lg-head').first();
+			await expect(head).toBeVisible();
+			await s.point(head, 1800);
+			await s.point(body.locator('.lg-strip').first(), 1400);
+			await running().done("The ledger's Money: recovered this year so far, batch by batch");
+			const readings = body.getByRole('group', { name: 'Reading' });
+			await s.click(readings.getByRole('button', { name: 'GST' }), 800);
+			await s.spot(head, WHY.gst);
+			await s.point(body.locator('.lg-working').first(), 1600);
+			await running().done("The ledger's GST: the input credit kept and reversed, the invoices and credit notes");
+			const row = body.getByRole('button', { name: /Mango Drink/ }).first();
+			if (await row.isVisible().catch(() => false)) await s.point(row, 1200);
+		}
+	},
+	{
+		id: 'esg',
+		title: "Priya reads ESG: the Impact dashboard, and the batch's BRSR line",
+		async run(s) {
+			// the ledger stays open from Finance: its Impact reading, pressed (the reading is read from the address only as
+			// the ledger opens)
+			const page = await s.open('priya', '/report', 'reads the Impact dashboard for the year so far');
+			const body = main(page);
+			const impact = body.getByRole('group', { name: 'Reading' }).getByRole('button', { name: 'Impact' });
+			if ((await impact.getAttribute('aria-pressed')) !== 'true') await s.click(impact, 800);
 			await expect(body).toContainText('Food, by week');
-			await s.spot(body.getByText(/Kept out of landfill/).first(), WHY.impact);
-			await readEach(s, body.getByText(/Kept out of landfill|Destroyed|CO₂e avoided/), 3, 600);
+			await s.spot(body.locator('.im-tiles').first(), WHY.impact);
 			await running().done('Impact: kept out of landfill, destroyed, CO₂e avoided');
-			await s.point(body.getByText('Food, by week').first(), 600);
-			await s.point(body.getByText('Where the kilos went').first(), 700);
-			await running().done('Impact: food by week, and where the kilos went');
+			await s.point(body.locator('.fw-card').first(), 1800);
+			await s.point(body.getByText('Where the kilos went').first(), 1500);
+			await s.point(body.getByText(/^By /).first(), 1300);
+			await running().done('Impact: food by week, where the kilos went, by distributor and product');
 			const bp = await s.open('priya', `/report/${HERO}`, "reads the batch's own impact: its BRSR line and meals");
 			await s.click(bp.locator('.bh-tabs').getByRole('button', { name: 'Impact' }), 700);
 			await expect(main(bp)).toContainText(/BRSR/);
-			await s.point(main(bp).getByText(/BRSR/).first(), 900);
+			await s.point(main(bp).getByText(/BRSR/).first(), 1800);
 			await running().done("The batch's Impact: its BRSR line, the meals and the evidence");
 		}
 	},
 	{
 		id: 'distributor',
-		title: 'Lakshmi Agencies reads its batch on its tablet: what happened, its money, its papers',
+		title: 'Lakshmi Agencies reads its batch on its tablet: what happened, how it ends whole, every paper',
+		card: "Lakshmi Agencies' side",
 		async run(s) {
 			const page = await s.open(DIST, `/batches/${HERO}`, 'reads the Mango Drink: what happened, its money and papers');
 			const body = main(page);
 			await expect(body).toContainText('You sent the label photo');
-			await s.point(body.getByText('You sent the label photo').first(), 600);
+			await s.point(body.getByText('You sent the label photo').first(), 1000);
 			await running().done('Its batch: what happened');
-			await s.click(page.locator('.bh-tabs').getByRole('button', { name: 'Money' }));
+			const tabs = page.locator('.bh-tabs');
+			await s.click(tabs.getByRole('button', { name: 'Money' }));
 			await expect(body).toContainText('You end whole');
 			await s.spot(body.getByText('You end whole').first(), WHY.whole);
 			await running().done('Its batch: it ends whole');
-			await s.click(page.locator('.bh-tabs').getByRole('button', { name: 'Papers' }));
+			await s.click(tabs.getByRole('button', { name: 'Papers' }));
 			await expect(body).toContainText('Your papers');
-			await readEach(s, body.getByRole('button', { name: /credit note|receipt/i }), 3, 600);
-			await running().done('Its papers: the credit note, and its copy of the food bank receipt');
+			const papers = body.locator('button.pt-paper');
+			const n = await papers.count();
+			for (let i = 0; i < n; i++) {
+				const name = (
+					(await papers
+						.nth(i)
+						.innerText()
+						.catch(() => '')) || ''
+				).split('\n')[0];
+				const { paper, inSheet } = await readPaper(s, page, papers.nth(i), undefined, true);
+				// the register opens on its list: one invoice from it, read in full
+				const inv = paper.locator('button.tl-link').first();
+				if (await inv.isVisible().catch(() => false)) await readPaper(s, page, inv, undefined, true);
+				if (inSheet) await closeSheet(s, page);
+				await running().done(`Its paper: ${name}`, 300);
+			}
 			const orders = await s.open(DIST, '/orders', 'reads its orders: the scheme, the staff sale and the food bank');
-			await s.point(main(orders).locator(`#batch-${HERO}, .card`).first(), 900);
+			await s.point(main(orders).locator(`#batch-${HERO}, .card`).first(), 1300);
 			await running().done('Orders: the scheme, the staff sale and the food bank, under the batch');
 		}
 	},
 	{
-		id: 'close',
-		title: 'Priya sees the Mango Drink through, and the batch in the ledger',
+		id: 'swing',
+		title: 'Priya shows the swing on the Mango Drink, and how it is worked out',
+		card: 'The swing, worked out',
 		async run(s) {
-			await s.open('priya', `/execution/${HERO}`, 'sees every line done on Execution');
-			await running().done('Execution: every line done');
-			const ledger = await s.open('priya', `/report/${HERO}`, "reads the batch's money in the ledger");
 			const done = await caseAs('priya');
-			if (done) await s.spot(main(ledger).locator('.card').first(), NOTE.outcome(done));
-			await running().done("The ledger: the batch's money");
-			await s.open('priya', '/command', 'sees the Command Center at the end');
-			await running().done('Command Center at the end');
+			const page = await s.open('priya', `/journey/${HERO}`, 'opens the Mango Drink to show its swing');
+			const note = main(page).locator('button.sw-note').first();
+			await expect(note).toBeVisible({ timeout: 30_000 });
+			await s.point(note, 1200);
+			await s.click(note, 700);
+			const sheet = page.getByRole('dialog', { name: 'How the swing adds up' });
+			await expect(sheet).toBeVisible();
+			await s.spot(sheet.locator('.sw-hero'), NOTE.swing(done));
+			await running().done('How the swing adds up: the swing, in words');
+			await s.point(sheet.locator('.sw-bridge'), 2200);
+			await running().done("The bridge: from the bin's P&L to the plan's");
+			const section = (h: string) => sheet.locator('section', { has: page.getByRole('heading', { name: h }) });
+			await s.read(section('If it were destroyed'), 1500);
+			await s.point(section('If it were destroyed').locator('.sw-row.strong').last(), 1800);
+			await running().done('If it were destroyed: the stock, the GST credit, disposal and EPR');
+			await s.read(section('What the plan did'), 1500);
+			await s.point(section('What the plan did').locator('.sw-row.strong').last(), 1800);
+			await running().done('What the plan did: each exit, what was recovered, the P&L with the plan');
+			await s.spot(sheet.locator('.sw-sum'), WHY.sum);
+			await running().done("The swing: the plan's P&L less the bin's");
+			await s.read(section('How the loss was kept small'), 1800);
+			await s.point(section('How the loss was kept small').locator('.sw-why'), 2600);
+			await running().done('How the loss was kept small');
+			const f = figuresOf(done);
+			if (f) running().figure('Swing', inr(f.swing));
+			// the last frame rests on the swing
+			await s.reveal(sheet.locator('.sw-hero'));
+			await page.waitForTimeout(2500);
 		}
 	}
 ];
@@ -672,16 +830,22 @@ const STEPS: Step[] = [
 test.describe.configure({ mode: 'serial' });
 
 // eslint-disable-next-line no-empty-pattern
-test('Munchly Mango E2E on three screens: the Mango Drink from a fresh journey to its report', async ({}, info) => {
-	test.setTimeout(90 * 60_000);
+test('Munchly Mango E2E on three screens: the Mango Drink from a fresh journey to its swing', async ({}, info) => {
+	test.setTimeout(100 * 60_000);
 	const video = info.outputPath('recording.mp4');
 	const s = await Stage.open(
 		info,
-		{ flow: 'Munchly Mango E2E', batch: 'MF-2410-118 · Mango Drink 200 ml · Lakshmi Agencies, Hyderabad' },
+		{
+			flow: 'Munchly Mango E2E',
+			batch: `MF-2410-118 · Mango Drink 200 ml · Lakshmi Agencies, Hyderabad · recorded ${WHEN}`
+		},
 		video,
 		{
 			holds: { priya: 'operator', [DIST]: 'distributor' },
-			phone: 'Neha in the console, the kiranas and Meera of Feeding India sign in here as they are needed.'
+			phone: 'Neha in the console, the kiranas and Meera of Feeding India sign in here as they are needed.',
+			ink: 'green',
+			notes: 'card',
+			quiet: true
 		}
 	);
 	const run = s.run;
@@ -689,6 +853,7 @@ test('Munchly Mango E2E on three screens: the Mango Drink from a fresh journey t
 	let minted = Date.now();
 	mint(PEOPLE);
 	let error: string | undefined;
+	const cards = STEPS.filter((x) => x.card);
 	try {
 		await s.ready({ operator: 'workspace', distributor: 'workspace', phone: 'console' });
 		await s.record();
@@ -701,7 +866,11 @@ test('Munchly Mango E2E on three screens: the Mango Drink from a fresh journey t
 				minted = Date.now();
 			}
 			run.stage = `${STEPS.indexOf(step) + 1}/${STEPS.length}`;
-			await s.chapter(`${STEPS.indexOf(step) + 1} · ${step.title}`);
+			const n = cards.indexOf(step) + 1;
+			await s.chapter(
+				`${STEPS.indexOf(step) + 1} · ${step.title}`,
+				step.card ? { n, of: cards.length, title: step.card } : undefined
+			);
 			await test.step(step.title, () => step.run(s));
 		}
 	} catch (e) {
@@ -711,10 +880,12 @@ test('Munchly Mango E2E on three screens: the Mango Drink from a fresh journey t
 		const md = run.write(error ? 'failed' : 'passed', error);
 		await info.attach('report.md', { body: md, contentType: 'text/markdown' });
 		await s.close();
-		const keep = process.env.E2E_KEEP;
+		const keep = process.env.E2E_KEEP?.replaceAll('{stamp}', STAMP);
 		if (keep && existsSync(video)) {
 			mkdirSync(dirname(keep), { recursive: true });
 			copyFileSync(video, keep);
+			const chapters = video.replace(/\.mp4$/, '.chapters.json');
+			if (existsSync(chapters)) copyFileSync(chapters, keep.replace(/\.mp4$/, '.chapters.json'));
 		}
 	}
 });

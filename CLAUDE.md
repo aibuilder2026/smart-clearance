@@ -2567,4 +2567,19 @@
   - **The voice:** Kokoro-82M `af_heart` at 0.94, picked by a bake-off scored with UTMOS (4.54, highest) and a Whisper read-back against Chatterbox and five other Kokoro voices; two names given phonemes (Rakesh, Priya). espeak-ng ignores a data path over 160 characters, so its data is copied to `~/.cache/sc200-espeak/`.
   - **Where:** `design3/designs/SC-200/` (`README.md` has the scene list, the checks and the rebuild); `media/smart-clearance-e2e-film.mp4` (1080p, 72 MB), a 720p copy and an `.srt`; the crf-17 master stays local, also in `playwright-automation-videos/`.
   - **Checks:** every shot's frame, every screen window's crops (four moved off stage notes cut at a device's edge), the narration transcribed back from the final mix and heard on its marks, −14.0 LUFS, −1.4 dBFS peak.
+- **SC-201** (PR #182, merged; Done): Munchly Mango E2E on production from a journey reset, recorded and shown live, told as the admin tour tells it, asked for by the maintainer.
+  - **The request:** Supply Chain on a tablet in landscape, the distributor on a tablet in portrait, everyone else on a phone; clicks shown; sign-ins from the sign-in page, Priya and Lakshmi Agencies signed in throughout; green notes and green highlights on the major parts only, "professional and should not look too flashy"; two kiranas on the phone, the rest from the backend, Priya's Execution open for the kiranas, the staff sale and the pickup; every paper shown clearly; Finance and ESG; the swing and how it is worked out, last; the recording saved with a date-time stamp.
+  - **The suite** (`munchly-mango-stage.journey.ts`, SC-190's, evolved):
+    - the admin tour's green rings, clicks and cards (`ink: 'green'`, `notes: 'card'`), on 15 major moments instead of 22 notes, and a chapter card for each of 13 chapters (`recording.chapters.json`);
+    - `E2E_SHOWN` 2; Priya keeps Execution open, and the staff sale (with its 18 UPI references and the receipt whole) and Feeding India's pickup (confirmed, then collected) are each checked landing live there;
+    - every paper read top to bottom, ending on who signed it: Priya's pack, the sales register and a kirana's invoice, Meera's receipt, Lakshmi Agencies' own papers;
+    - the ledger's Money and GST readings, the Impact dashboard and the batch's BRSR line; last, the batch's swing sheet (SC-195) read section by section;
+    - `E2E_KEEP` takes `{stamp}`, the run's start; the stage's bar says when it was recorded.
+  - **The stage** (`stage.ts`): `read()`, a tall block read top to bottom a part of a screen at a time; a note card never wider than its screen (a phone's); the monitor window named for the flow.
+  - **The run of 13 Oct on production** (`runs/2026-10-13-prod-mango/REPORT.md`): passed, 69 steps in 14 min 19 s, against `5070e166`. The recording (14 min 9 s, 2560 × 1440) and its 1080p copy are `playwright-automation-videos/munchly-mango-e2e-prod-2026-10-13_09-09-12*.mp4`, local.
+    - Plan and actual ₹16,917.10; 52 shops, 1,372 packets (two on the phone); 150 to staff on LA/SR/26-27/0002 (18 UPI payments, ₹1,200); 58 to Feeding India, FI/HYD/26-27/0417; CN/0117 ₹5,932; the swing ₹22,194.30; Lakshmi Agencies ends whole.
+    - Findings: one console resource that failed to load once; the known twelves on the offer screen.
+    - A first attempt stopped at ESG: the suite changed the address to the ledger's Impact reading, which the ledger reads only as it opens; it now presses the reading. Its partial video is kept as `…_08-49-53-incomplete.mp4`.
+  - **After it:** production's journey day is back at 24 hours; the Mango cleared, the chips at day 0.
+  - **Checks:** the frontend gate passes (api 83, core 408, admin 22, console 2, demo 9, workspace 115).
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
