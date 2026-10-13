@@ -1,0 +1,17 @@
+{
+  "prompt": "Exactly as in the image: on the old wooden table in the dim godown, the Munchly Masala Chips packet stands still, its printed design unchanged; in the brass hourglass beside it the last thin trickle of sand runs out; dust drifts slowly through the cool blue moonlight from the high window. A slow, steady push in toward the packet and the hourglass. Nothing else moves. Everything keeps its form; no object appears, vanishes or changes shape; no text or lettering appears. Cinematic, photorealistic, smooth and slow, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "720p",
+  "duration": 6,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "dolly_in",
+  "audio": false,
+  "seed": 200705,
+  "loras": [],
+  "image": "g07w-chips.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 8.9,
+  "cost_usd": 0,
+  "use": "SC-200 film"
+}

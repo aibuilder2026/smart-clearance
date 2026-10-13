@@ -1,0 +1,166 @@
+{
+  "note": "SC-200 voice-over, one beat a line; gap = silence after it (s). Figures are the 12 Oct production runs' own (REPORT.md of 2026-10-12-prod-mango and -prod-sad). Numbers are written out as spoken. 'say' carries Kokoro's inline phonemes where a name is misread (Rakesh, Priya).",
+  "lines": [
+    {
+      "id": "p1",
+      "sec": "problem",
+      "gap": 0.6,
+      "text": "Every day in India, good food runs out of time."
+    },
+    {
+      "id": "p2",
+      "sec": "problem",
+      "gap": 0.5,
+      "text": "Not because it has spoiled, but because it is short-dated."
+    },
+    {
+      "id": "p3",
+      "sec": "problem",
+      "gap": 0.5,
+      "text": "Once a batch slips past the quick-commerce cut-off, nobody will take it."
+    },
+    {
+      "id": "p4",
+      "sec": "problem",
+      "gap": 1.4,
+      "text": "So it is written off, its tax credit is reversed, and perfectly good food ends up in a landfill."
+    },
+    {
+      "id": "i1",
+      "sec": "intro",
+      "gap": 0.7,
+      "text": "Smart-Clearance gives every one of those cartons a second chance."
+    },
+    {
+      "id": "i2",
+      "sec": "intro",
+      "gap": 0.5,
+      "text": "It is software as a service for manufacturers. Every brand gets its own workspace, where ten AI agents, built on Gemini, walk each short-dated batch to the exits that recover the most."
+    },
+    {
+      "id": "i3",
+      "sec": "intro",
+      "gap": 1.3,
+      "text": "And a person says yes, just once."
+    },
+    {
+      "id": "c1",
+      "sec": "console",
+      "gap": 0.5,
+      "text": "It all begins in the console, where the Smart-Clearance team runs the platform."
+    },
+    {
+      "id": "c2",
+      "sec": "console",
+      "gap": 0.5,
+      "text": "One overview shows every client at a glance: what has been recovered, what is in flight, and what is waiting for a yes."
+    },
+    {
+      "id": "c3",
+      "sec": "console",
+      "gap": 1.4,
+      "text": "Each client's agents are tuned to its own supply chain: the Watcher's quick-commerce gates, how far the Negotiator may bargain, and the one approval that is never switched off."
+    },
+    {
+      "id": "m1",
+      "sec": "mango",
+      "gap": 0.6,
+      "text": "Now, two batches from Munchly Foods, live in production."
+    },
+    {
+      "id": "m2",
+      "sec": "mango",
+      "gap": 0.5,
+      "text": "First, the Mango Drink at Lakshmi Agencies in Hyderabad. The Watcher flags it: twenty-two days left, and over twenty-two thousand rupees about to be written off."
+    },
+    {
+      "id": "m3",
+      "sec": "mango",
+      "gap": 0.5,
+      "text": "Vision reads the carton's label from a single photo, and matches it to the stock export."
+    },
+    {
+      "id": "m4",
+      "sec": "mango",
+      "gap": 0.5,
+      "text": "The Valuer prices every exit, the Router splits the batch, and Priya, in supply chain, approves the plan with one yes.",
+      "say": "The Valuer prices every exit, the Router splits the batch, and [Priya](/pɹˈijə/), in supply chain, approves the plan with one yes."
+    },
+    {
+      "id": "m5",
+      "sec": "mango",
+      "gap": 0.5,
+      "text": "Fifty-two kiranas take the scheme. Every order lands live on her screen, each with its own tax invoice."
+    },
+    {
+      "id": "m6",
+      "sec": "mango",
+      "gap": 0.5,
+      "text": "The staff sale is checked against its U P I receipt, and Feeding India collects fifty-eight packs, with a donation receipt of its own."
+    },
+    {
+      "id": "m7",
+      "sec": "mango",
+      "gap": 1.5,
+      "text": "Paperwork prepares every paper, Impact posts the ledger, and Lakshmi Agencies ends whole. Nearly seventeen thousand rupees recovered, and nothing left to waste."
+    },
+    {
+      "id": "k1",
+      "sec": "chips",
+      "gap": 0.6,
+      "text": "But not every batch goes to plan."
+    },
+    {
+      "id": "k2",
+      "sec": "chips",
+      "gap": 0.5,
+      "text": "The Masala Chips at Rakesh Traders in Nagpur are offered to thirty-eight kiranas. Just two of them buy.",
+      "say": "The Masala Chips at [Rakesh](/ɹˈɑkAʃ/) Traders in Nagpur are offered to thirty-eight kiranas. Just two of them buy."
+    },
+    {
+      "id": "k3",
+      "sec": "chips",
+      "gap": 0.5,
+      "text": "On Expire Soon, a wholesaler bids thirteen rupees a pack. The Negotiator counters at fourteen rupees twenty, and seven hundred and seventy-two packs are sold."
+    },
+    {
+      "id": "k4",
+      "sec": "chips",
+      "gap": 0.6,
+      "text": "Still, when the window closes, five hundred and forty packets are left at the godown."
+    },
+    {
+      "id": "k5",
+      "sec": "chips",
+      "gap": 0.5,
+      "text": "On expiry day, nothing is hidden. Rakesh sends two photos, before and after, and Vision checks the label, the count, the slate and the landfill.",
+      "say": "On expiry day, nothing is hidden. [Rakesh](/ɹˈɑkAʃ/) sends two photos, before and after, and Vision checks the label, the count, the slate and the landfill."
+    },
+    {
+      "id": "k6",
+      "sec": "chips",
+      "gap": 0.5,
+      "text": "The agency's officer, two witnesses and Rakesh sign the certificate in place, right on his screen.",
+      "say": "The agency's officer, two witnesses and [Rakesh](/ɹˈɑkAʃ/) sign the certificate in place, right on his screen."
+    },
+    {
+      "id": "k7",
+      "sec": "chips",
+      "gap": 1.5,
+      "text": "Only after Priya's second yes is the credit note issued. Even now, nearly twelve thousand rupees are recovered, the distributor ends whole, and every kilo is on the record.",
+      "say": "Only after [Priya's](/pɹˈijəz/) second yes is the credit note issued. Even now, nearly twelve thousand rupees are recovered, the distributor ends whole, and every kilo is on the record."
+    },
+    {
+      "id": "f1",
+      "sec": "close",
+      "gap": 0.8,
+      "text": "The brand recovers. The distributor ends whole. Kiranas earn, food banks receive, and less food goes to waste."
+    },
+    {
+      "id": "f2",
+      "sec": "close",
+      "gap": 0.0,
+      "text": "Smart-Clearance. Every near-expiry carton, a second chance."
+    }
+  ]
+}

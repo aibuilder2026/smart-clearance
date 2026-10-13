@@ -1,0 +1,16 @@
+{
+  "name": "g01-hourglass",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "prompt": "Inside a dim, vast Indian warehouse godown at dusk, a colossal glass hourglass taller than a person stands on the concrete floor between tall steel racks stacked with plain brown cardboard cartons. Instead of sand, a slow stream of small bright red snack packets falls through its narrow waist and piles up in the lower bulb, while the upper bulb is almost empty. Shafts of warm golden light pour through high windows and catch floating dust. Surreal, dreamlike yet photorealistic, cinematic, 35 mm film look, soft volumetric light, shallow depth of field, a warm palette of gold, sand and deep emerald green. No text, no numbers, no lettering, no logos, no signs anywhere in the picture.",
+  "condition_images": [],
+  "seed": 200001,
+  "size": [
+    1376,
+    768
+  ],
+  "aspect": "16:9",
+  "created": "2026-10-13",
+  "use": "SC-200 film: the problem: an hourglass of snack packets",
+  "cost_usd": 0,
+  "postprocess": "webp q88"
+}

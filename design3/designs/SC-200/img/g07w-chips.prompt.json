@@ -1,0 +1,18 @@
+{
+  "name": "g07w-chips",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "prompt": "Widen this picture into a full 16:9 frame: keep the centre exactly as it is, the Munchly Masala Chips packet with its printed design unchanged standing on the old wooden table beside the brass hourglass, and continue the dim godown naturally to the left and right: more of the long wooden table, stacks of plain brown cartons fading into darkness, cool blue moonlight from the high window and floating dust. Remove the blurred bands at the sides; the whole frame is one continuous photograph. Surreal, dreamlike yet photorealistic, cinematic, 35 mm film look, soft volumetric light, shallow depth of field, a warm palette of gold, sand and deep emerald green. Only the product keeps its printed label; nothing else carries text.",
+  "condition_images": [
+    "g07-chips, centred on a blurred 16:9 canvas of itself"
+  ],
+  "seed": 200007,
+  "size": [
+    1376,
+    768
+  ],
+  "aspect": "16:9",
+  "created": "2026-10-13",
+  "use": "SC-200 film: the Masala Chips chapter; its plate",
+  "cost_usd": 0,
+  "postprocess": "webp q88"
+}

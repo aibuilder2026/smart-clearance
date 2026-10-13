@@ -1,0 +1,17 @@
+{
+  "prompt": "Exactly as in the image: in the dim warehouse godown a colossal glass hourglass stands on the concrete floor between tall racks of brown cartons; a slow, steady stream of small red snack packets trickles down through its narrow waist and settles gently on the pile in the lower bulb; golden dust drifts slowly through the shafts of light from the high windows. A slow, smooth push in toward the hourglass. The hourglass, the racks and the cartons keep their shape. Everything keeps its form; no object appears, vanishes or changes shape; no text or lettering appears. Cinematic, photorealistic, smooth and slow, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "720p",
+  "duration": 6,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "dolly_in",
+  "audio": false,
+  "seed": 200700,
+  "loras": [],
+  "image": "g01-hourglass.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 9.1,
+  "cost_usd": 0,
+  "use": "SC-200 film"
+}

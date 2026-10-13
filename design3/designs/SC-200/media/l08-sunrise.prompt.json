@@ -1,0 +1,17 @@
+{
+  "prompt": "Exactly as in the image: the town in full golden sunrise, every emerald-green thread of light along the roads glowing and pulsing gently, a few small birds rising slowly into the clear sky, warm light spreading across the rooftops. A slow, smooth pull back that reveals more of the town. The buildings keep their shape. Everything keeps its form; no object appears, vanishes or changes shape; no text or lettering appears. Cinematic, photorealistic, smooth and slow, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "720p",
+  "duration": 6,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "dolly_out",
+  "audio": false,
+  "seed": 200706,
+  "loras": [],
+  "image": "g08-town-sunrise.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 9.0,
+  "cost_usd": 0,
+  "use": "SC-200 film"
+}

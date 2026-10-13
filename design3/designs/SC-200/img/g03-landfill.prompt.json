@@ -1,0 +1,16 @@
+{
+  "name": "g03-landfill",
+  "model": "Qwen-Image-2.1 (bf16, local)",
+  "prompt": "A vast municipal landfill under a hazy, overcast, pale sky. In the foreground, in sharp focus, a heap of sealed bright red snack packets and torn plain brown cardboard cartons lies on the grey churned earth. Far behind, out of focus, a yellow excavator and a few birds circling in the haze. Melancholy, muted colours with the red packets the only saturated colour. Surreal, dreamlike yet photorealistic, cinematic, 35 mm film look, soft volumetric light, shallow depth of field, a warm palette of gold, sand and deep emerald green. No text, no numbers, no lettering, no logos, no signs anywhere in the picture.",
+  "condition_images": [],
+  "seed": 200003,
+  "size": [
+    1376,
+    768
+  ],
+  "aspect": "16:9",
+  "created": "2026-10-13",
+  "use": "SC-200 film: the problem: the landfill",
+  "cost_usd": 0,
+  "postprocess": "webp q88"
+}

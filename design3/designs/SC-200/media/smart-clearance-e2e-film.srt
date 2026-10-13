@@ -1,0 +1,103 @@
+1
+00:00:02,200 --> 00:00:05,264
+Every day in India, good food runs out of time.
+
+2
+00:00:05,614 --> 00:00:09,022
+Not because it has spoiled, but because it is short-dated.
+
+3
+00:00:09,272 --> 00:00:13,516
+Once a batch slips past the quick-commerce cut-off, nobody will take it.
+
+4
+00:00:13,766 --> 00:00:19,843
+So it is written off, its tax credit is reversed, and perfectly good food ends up in a landfill.
+
+5
+00:00:21,993 --> 00:00:25,886
+Smart-Clearance gives every one of those cartons a second chance.
+
+6
+00:00:26,336 --> 00:00:38,873
+It is software as a service for manufacturers. Every brand gets its own workspace, where ten AI agents, built on Gemini, walk each short-dated batch to the exits that recover the most.
+
+7
+00:00:39,123 --> 00:00:41,494
+And a person says yes, just once.
+
+8
+00:00:45,544 --> 00:00:50,200
+It all begins in the console, where the Smart-Clearance team runs the platform.
+
+9
+00:00:50,650 --> 00:00:58,137
+One overview shows every client at a glance: what has been recovered, what is in flight, and what is waiting for a yes.
+
+10
+00:00:58,587 --> 00:01:09,397
+Each client's agents are tuned to its own supply chain: the Watcher's quick-commerce gates, how far the Negotiator may bargain, and the one approval that is never switched off.
+
+11
+00:01:13,147 --> 00:01:16,638
+Now, two batches from Munchly Foods, live in production.
+
+12
+00:01:17,338 --> 00:01:27,892
+First, the Mango Drink at Lakshmi Agencies in Hyderabad. The Watcher flags it: twenty-two days left, and over twenty-two thousand rupees about to be written off.
+
+13
+00:01:28,492 --> 00:01:33,914
+Vision reads the carton's label from a single photo, and matches it to the stock export.
+
+14
+00:01:34,514 --> 00:01:42,219
+The Valuer prices every exit, the Router splits the batch, and Priya, in supply chain, approves the plan with one yes.
+
+15
+00:01:42,819 --> 00:01:49,679
+Fifty-two kiranas take the scheme. Every order lands live on her screen, each with its own tax invoice.
+
+16
+00:01:50,279 --> 00:01:58,516
+The staff sale is checked against its UPI receipt, and Feeding India collects fifty-eight packs, with a donation receipt of its own.
+
+17
+00:01:59,116 --> 00:02:10,164
+Paperwork prepares every paper, Impact posts the ledger, and Lakshmi Agencies ends whole. Nearly seventeen thousand rupees recovered, and nothing left to waste.
+
+18
+00:02:14,364 --> 00:02:16,542
+But not every batch goes to plan.
+
+19
+00:02:17,242 --> 00:02:23,668
+The Masala Chips at Rakesh Traders in Nagpur are offered to thirty-eight kiranas. Just two of them buy.
+
+20
+00:02:24,268 --> 00:02:35,019
+On ExpireSoon, a wholesaler bids thirteen rupees a pack. The Negotiator counters at fourteen rupees twenty, and seven hundred and seventy-two packs are sold.
+
+21
+00:02:35,619 --> 00:02:40,779
+Still, when the window closes, five hundred and forty packets are left at the godown.
+
+22
+00:02:41,479 --> 00:02:50,851
+On expiry day, nothing is hidden. Rakesh sends two photos, before and after, and Vision checks the label, the count, the slate and the landfill.
+
+23
+00:02:51,451 --> 00:02:57,714
+The agency's officer, two witnesses and Rakesh sign the certificate in place, right on his screen.
+
+24
+00:02:58,314 --> 00:03:09,879
+Only after Priya's second yes is the credit note issued. Even now, nearly twelve thousand rupees are recovered, the distributor ends whole, and every kilo is on the record.
+
+25
+00:03:13,079 --> 00:03:20,561
+The brand recovers. The distributor ends whole. Kiranas earn, food banks receive, and less food goes to waste.
+
+26
+00:03:21,111 --> 00:03:25,040
+Smart-Clearance. Every near-expiry carton, a second chance.

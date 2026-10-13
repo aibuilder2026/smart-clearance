@@ -93,10 +93,25 @@ design3/designs/SC-187/src/*
 !design3/designs/SC-187/src/*.txt
 !design3/designs/SC-187/src/*.md
 
+# SC-200: the E2E film's pipeline ships (scripts, prompts, timeline, voice lines); keyframe PNGs, clips, voice takes,
+# venvs, fonts and the build stay local
+!design3/designs/SC-200/src/
+design3/designs/SC-200/src/*
+!design3/designs/SC-200/src/*.py
+!design3/designs/SC-200/src/*.sh
+!design3/designs/SC-200/src/*.json
+!design3/designs/SC-200/src/prompts/
+!design3/designs/SC-200/src/tts/
+design3/designs/SC-200/src/tts/*
+!design3/designs/SC-200/src/tts/*.py
+!design3/designs/SC-200/src/tts/*.sh
+
 # SC-187: the YouTube package ships; the poster's PNG original stays local
 design3/designs/SC-187/youtube/src/
 
 # SC-193: local copies of large media. landing-demo/ is the demo film's copy (its README, from SC-187, stays tracked);
 # playwright-automation-videos/ holds the journey suites' recordings and the sample data they upload
 landing-demo/
+# SC-200: working-demo/ holds a local copy of the E2E film (its 1080p master, 720p copy and captions)
+working-demo/
 playwright-automation-videos/
