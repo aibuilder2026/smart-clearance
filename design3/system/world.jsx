@@ -18,7 +18,7 @@
       const key = n - i;
       if (!/\d/.test(ch)) return <span key={"s" + key} aria-hidden="true">{ch}</span>;
       const d = armed ? +ch : 0;
-      return <span key={"d" + key} className="rd" aria-hidden="true"><span className="ghost">{ch}</span><span className="rs" style={{ transform: `translateY(${-d * 0.98}em)`, transitionDelay: reduce ? "0ms" : `${(n - i) * stagger}ms` }}>{[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(k => <span key={k}>{k}</span>)}</span></span>;
+      return <span key={"d" + key} className="rd" aria-hidden="true"><span className="ghost">{ch}</span><span className="rs" style={{ transform: `translateY(${-d * 10}%)`, transitionDelay: reduce ? "0ms" : `${(n - i) * stagger}ms` }}>{[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(k => <span key={k}>{k}</span>)}</span></span>;
     })}</span>;
   }
   // Monzo-style money: the rupee sign and paise set small beside heavy numerals
