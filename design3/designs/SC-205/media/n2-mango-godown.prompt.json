@@ -1,0 +1,17 @@
+{
+  "prompt": "Exactly as in the image: in the distributor's godown the woman in the saree holds her smartphone steady over the open carton of small mango drink cartons and taps the screen to photograph the label, then lowers the phone a little and looks at it; behind her the young helper lifts a carton onto a rack; warm light falls through the half-open shutter. A slow, gentle push in toward the woman and the carton. Everything keeps its form; no object appears, vanishes or changes shape; faces, hands and packets stay natural; no text or lettering appears. Photorealistic documentary footage, natural motion, smooth and slow, steady camera, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "1080p",
+  "duration": 5,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "dolly_in",
+  "audio": false,
+  "seed": 205701,
+  "loras": [],
+  "image": "n2-mango-godown.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 13.5,
+  "cost_usd": 0,
+  "post": "retimed to its shot by src/slow.sh (motion-interpolated to 25 fps) in the cut"
+}

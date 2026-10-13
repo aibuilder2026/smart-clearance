@@ -16,6 +16,6 @@ for sh in S_.build():
                 f = np.frombuffer(p[k * n:(k + 1) * n], np.uint8).reshape(h // 2, w // 2, 3).astype(int)
                 m = (f[..., 0] > 45) & (f[..., 0] < 75) & (f[..., 1] > 84) & (f[..., 1] < 110) & (f[..., 2] < 34)
                 fr = m.mean()
-                if fr > 0.02: hits.append((sh.name, it.rec, it.dev, round(a + k / 10, 1), round(fr, 3)))
+                if fr > 0.003: hits.append((sh.name, it.rec, it.dev, round(a + k / 10, 1), round(fr, 3)))
 for h_ in hits: print(h_)
 print(len(hits), 'frames with a card')

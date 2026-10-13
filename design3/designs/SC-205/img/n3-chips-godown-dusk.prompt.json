@@ -1,0 +1,10 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "seed": 205003,
+  "aspect": "16:9",
+  "size": 2048,
+  "original": "2752x1536 PNG, local in src/img/",
+  "prompt": "A distributor's godown in Nagpur, India, at dusk: a stack of plain brown cartons of orange snack packets sits apart from the racks near the wall, one carton open showing the packets, a red paper tag tied to the top carton; a man in his forties in a checked shirt stands beside the stack looking at it, a phone in his hand, thoughtful; cool blue evening light from a high window mixes with the warm glow of a single bulb; quiet, documentary realism. Photorealistic documentary photograph for a professional corporate film, 35 mm lens, realistic Indian setting and people, true-to-life colours, soft natural light, calm composition, sharp focus on the subject. No text, no numbers, no lettering, no logos, no signs, no screens with writing anywhere in the picture.",
+  "post": "downscaled to 1920 wide (lanczos), WebP q88",
+  "cost_usd": 0
+}

@@ -45,7 +45,7 @@ frames, `Date`, `performance.now` and the Web Animations all follow it), at devi
 | 0:30 | The agentic architecture | the production console's sign-in opening into the agents' orbit; each agent lights as it is named; "How the agents sit": ADK pipelines on Cloud Run, Pub/Sub events, Gemini on Vertex AI, backend-api as the system of record, one human yes |
 | 0:53 | The console | the Overview's figures, agents at work, each client's agents tuned |
 | 0:59 | 02 · The happy path | the Mango Drink at a Hyderabad godown (new); **demo setup: Reset journey at Rehearsal, 1 day = 1 hour**; the Watcher run by hand from the console; Vision's label check; five exits priced; Priya's one yes; a kirana's Hindi offer and order beside Priya's Execution, live; the scheme filling (fast-forward); the staff sale on UPI beside Priya's screen; Feeding India's receipt; the papers; the result |
-| 2:28 | 03 · When not everything sells | the chips at a Nagpur godown at dusk (new); the plan; two orders, thirty-five noes; the Negotiator's counter; **demo control: the offer window closed early**; **expiry day called**; the destruction against evidence, signed in place; Vision's checks and the second yes; the certificate and the credit note; the result |
+| 2:28 | 03 · When not everything sells | the chips at a Nagpur godown at dusk (a new keyframe); the plan; two orders, thirty-five noes; the Negotiator's counter; **demo control: the offer window closed early**; **expiry day called**; the destruction against evidence, signed in place; Vision's checks and the second yes; the certificate and the credit note; the result |
 | 3:31 | The end | the four production addresses |
 
 Every figure is the production runs' own. Every person and company is fictional.
@@ -55,7 +55,7 @@ Every figure is the production runs' own. Every person and company is fictional.
 | Part | Tool | Where |
 | --- | --- | --- |
 | Three new keyframes: a packing line, a distributor photographing a mango carton, a distributor by an unsold stack at dusk | Qwen-Image 2.1 (bf16, local), 16:9 at 2048 | `img/*.webp` with `.prompt.json`; `src/gen-qwen.sh`, `src/prompts/` |
-| Three clips from them, 1080p, 5 s | LTX 2.5 Fast (local) | `media/n*.mp4` with `.prompt.json`; `src/gen-ltx.py` |
+| Two clips from them, 1080p, 5 s; the chips' title is its keyframe on a slow push, since both LTX takes of it jolted and changed perspective mid-clip (no stabilizer could lock them) | LTX 2.5 Fast (local) | `media/n1-*.mp4`, `media/n2-*.mp4` with `.prompt.json`; `src/gen-ltx.py` |
 | Reused clips | SC-187's dock and landfill (LTX 720p, sharpened), SC-154's dawn bay (Veo 3.1, already made) | read in place |
 | Retiming | ffmpeg `minterpolate` (motion-compensated) to each shot's length at 25 fps: no blended ghosts | `src/slow.sh` |
 | The voice-over | Kokoro-82M `af_heart` at 0.94 (free, local); 31 lines, each read back with Whisper | `src/lines.json`, `src/tts/` |
@@ -78,6 +78,19 @@ Every figure is the production runs' own. Every person and company is fictional.
   spotlights; `spots.py` and `cardscan.py` found every one, and every window was cut round them (the apps' own
   sheets and alerts are kept).
 
+## The result (13 Oct 2026)
+
+`media/smart-clearance-working-demo.mp4`: **3 min 39.5 s (219.5 s)**, 1920 × 1080, 25 fps, H.264 crf 21 (48 MB), AAC
+48 kHz at −14.0 LUFS integrated, −1.2 dBFS peak; a 720p copy (24 MB) and the narration as `.srt`. The crf-17 master
+(78 MB) is in the repository root's `working-demo/` (git-ignored), with the 720p copy and the captions; SC-200's cut is
+kept beside it in `working-demo/previous-SC-200/`.
+
+- **Checks:** contact sheets of every shot and stills at every ring; `cardscan.py` over every frame each window shows
+  (only the apps' own green buttons remain); `jitter.py` on resting windows of the master (at most 0.13 px between
+  frames, codec noise); frame differences through the one camera move (smooth, no spikes); the narration transcribed
+  back from the final mix, every line present and in order.
+- **The spend:** nothing. Qwen, LTX, Kokoro and Whisper ran on this Mac; the music is SC-187's, already made.
+
 ## Rebuild
 
 From `src/` (the recordings are read from the main checkout):
@@ -89,11 +102,12 @@ nohup ./after-qwen.sh > gen-ltx.log 2>&1 &                    # the clips, once 
 node capture-agents.mjs build/agents 42 0.2 dark              # the agents at work, from production
 node capture-landing.mjs build/landing                        # the landing page, from production
 node mark.mjs                                                 # the brand mark
-./slow.sh clips/n1-factory-line.mp4 build/slow/n1.mp4 0.78    # and n2 0.85, n3 0.77; c53, c54 0.9 with 720; f1 0.95
+./slow.sh clips/n1-factory-line.mp4 build/slow/n1.mp4 0.78    # n2: 0.68 "" 4.0; c53, c54: 0.9 720; f1: 0.95
 <kokoro venv>/bin/python tts/vo.py af_heart 0.94              # the voice-over (SC-200's venvs)
 <asr venv>/bin/python tts/asr.py tts/vo/af_heart-0.94         # word timings, which the shots are laid on
 .venv/bin/python render.py && .venv/bin/python mix.py         # the picture (about 90 s), then the sound
 .venv/bin/python sidecars.py                                  # the shipped keyframes and clips with their sidecars
+./export.sh                                                   # the master, the 1080p and 720p copies, the captions
 ```
 
 `still.py` renders single frames, `cardscan.py` lists any stage note a window would show, and `jitter.py` measures

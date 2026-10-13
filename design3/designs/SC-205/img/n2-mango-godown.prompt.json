@@ -1,0 +1,10 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "seed": 205002,
+  "aspect": "16:9",
+  "size": 2048,
+  "original": "2752x1536 PNG, local in src/img/",
+  "prompt": "Inside a distributor's godown in Hyderabad, India, late morning: tall grey steel racks stacked with plain brown cartons; in the foreground one carton stands open on a wooden table, full of small plain yellow-and-orange mango drink cartons with straws; a woman in her forties, a distributor, in a cotton saree and a cardigan, holds a smartphone up to photograph the carton's label, focused; a young helper stacks cartons in the background; warm light through a half-open rolling shutter; documentary realism. Photorealistic documentary photograph for a professional corporate film, 35 mm lens, realistic Indian setting and people, true-to-life colours, soft natural light, calm composition, sharp focus on the subject. No text, no numbers, no lettering, no logos, no signs, no screens with writing anywhere in the picture.",
+  "post": "downscaled to 1920 wide (lanczos), WebP q88",
+  "cost_usd": 0
+}

@@ -9,21 +9,26 @@ CLIP = {
     'c53': D3 / 'designs' / 'SC-187' / 'media' / 'c53-qc-dock.mp4', 'c54': D3 / 'designs' / 'SC-187' / 'media' / 'c54-write-off.mp4',
     'f1': D3 / 'designs' / 'SC-154' / 'media' / 'final-1-bay-dawn-v3.mp4',
 }
-# each clip retimed to its shot by slow.sh (motion-interpolated to 25 fps): speed, and whether it is a 720p source
-SLOW = {'n1': (0.78, ''), 'n2': (0.85, ''), 'n3': (0.77, ''), 'c53': (0.9, '720'), 'c54': (0.9, '720'), 'f1': (0.95, '')}
+# each clip retimed to its shot by slow.sh (motion-interpolated to 25 fps): speed, and whether it is a 720p source.
+# n2 keeps its first 4 s, before its push speeds up; the chips' title is its keyframe on a slow push (both LTX takes
+# of it jolted and changed perspective mid-clip)
+SLOW = {'n1': (0.78, ''), 'n2': (0.68, ''), 'c53': (0.9, '720'), 'c54': (0.9, '720'), 'f1': (0.95, '')}
 STILL = {'n1': HERE / 'img' / 'n1-factory-line.png', 'n2': HERE / 'img' / 'n2-mango-godown.png', 'n3': HERE / 'img' / 'n3-chips-godown-dusk.png'}
 XF = 0.45  # the dissolve between shots
 
 class Still:
-    """a keyframe as the frame, pushed in slowly in float pixels (a stand-in until its clip lands)"""
-    def __init__(self, path, z0=1.0, z1=1.05, dur=6.0, scrim=None):
+    """a keyframe as the frame, pushed in slowly about a focus point, in float pixels"""
+    def __init__(self, path, z0=1.0, z1=1.06, dur=6.0, scrim=None, focus=(0.5, 0.5)):
         im = cv2.imread(str(path))
         k = max(W / im.shape[1], H / im.shape[0])
-        self.img, self.k, self.z0, self.z1, self.dur, self.scrim = im, k, z0, z1, dur, scrim
+        self.img, self.k, self.z0, self.z1, self.dur, self.scrim, self.focus = im, k, z0, z1, dur, scrim, focus
     def draw(self, f, u, L=None):
         z = self.z0 + (self.z1 - self.z0) * ease_in_out(u / self.dur)
         s = self.k * z
-        tx, ty = W / 2 - self.img.shape[1] * s / 2, H / 2 - self.img.shape[0] * s / 2
+        fx, fy = self.focus[0] * W, self.focus[1] * H
+        # the focus point stays where the fitted image puts it; everything else grows away from it
+        bx, by = W / 2 - self.img.shape[1] * self.k / 2, H / 2 - self.img.shape[0] * self.k / 2
+        tx, ty = fx - (fx - bx) * z, fy - (fy - by) * z
         _, _, p = place(self.img, s, tx, ty, (0, 0, W, H))
         f[:] = p
         if self.scrim: scrim(f, self.scrim)
@@ -31,7 +36,7 @@ class Still:
 def clip_or_still(key, start=0.0, scrim=None, dur=6.0):
     slow = HERE / 'build' / 'slow' / f'{key}.mp4'
     if slow.exists(): return Clip(slow, start=start, speed=1.0, fps=FPS, scrim=scrim)
-    if key in STILL: return Still(STILL[key], dur=dur, scrim=scrim)
+    if key in STILL: return Still(STILL[key], dur=dur + XF, scrim=scrim, focus=(0.8, 0.42))
     return Clip(CLIP[key], start=start, speed=SLOW[key][0], fps=24, scrim=scrim)
 
 class Shot:
@@ -146,7 +151,7 @@ def build():
 
     t0, t1 = t1, T['m01'][0] - PRE['m01']
     L_ = t1 - t0
-    ov = A1([(55.0, 58.4), (63.6, 65.4), (85.6, 88.6)], 'smartclearance-console.web.app')
+    ov = A1([(55.0, 57.8), (64.0, 66.0), (85.6, 88.8)], 'smartclearance-console.web.app')
     q1, q2 = ov.seg_start(1, L_ + XF), ov.seg_start(2, L_ + XF)
     add('console', t0, t1, Studio(), [
         head(84, 300, 0.2, L_ + 0.3, 'THE CONSOLE', 'Every client, watched live.', sub='Batches in flight, agents at work, the yeses waiting.', width=380, hsize=46),

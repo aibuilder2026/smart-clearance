@@ -1,0 +1,17 @@
+{
+  "prompt": "Exactly as in the image: in the bright snack-food factory the stainless-steel packing line moves steadily, carrying the rows of sealed orange snack packets forward; the two workers in white coats, blue hairnets and blue gloves calmly pick up packets and place them neatly into the open brown cartons; in the background a forklift drives slowly across the hall. A slow, smooth dolly forward along the line. Everything keeps its form; no object appears, vanishes or changes shape; faces, hands and packets stay natural; no text or lettering appears. Photorealistic documentary footage, natural motion, smooth and slow, steady camera, no handheld shake.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "1080p",
+  "duration": 5,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "dolly_in",
+  "audio": false,
+  "seed": 205700,
+  "loras": [],
+  "image": "n1-factory-line.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 13.3,
+  "cost_usd": 0,
+  "post": "retimed to its shot by src/slow.sh (motion-interpolated to 25 fps) in the cut"
+}
