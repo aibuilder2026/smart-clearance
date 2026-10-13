@@ -67,6 +67,7 @@ corepack pnpm test:journey:sad            # Munchly Chips Sad Path E2E: 2 kirana
 corepack pnpm test:journey:mango-stage    # Munchly Mango E2E on three screens: the happy path with Lakshmi Agencies, sign-ins on screen, green notes on the major moments, every paper read, Finance and ESG, the swing, one recording (SC-190, SC-201)
 corepack pnpm test:journey:admin          # Admin and console E2E: a demo request to a configured client, the console in full; the landing page briefly, the sign-in's agents, the dashboards, New client step by step, the first export, all eleven agents; one laptop, notes as bubbles beside what they point at, one recording cut into a clip a chapter (SC-191, SC-197; adds a client each run)
 corepack pnpm test:journey:admin-tour     # Admin and console tour: the same in about a minute, green notes beside what they point at, on a client an earlier run set up (SC-199; adds no client)
+corepack pnpm test:journey:admin-walk     # Admin and console walkthrough: the landing page to the console, monitoring, a client's data and people, quick-commerce gates by SKU and batch, its agents configured, in a few minutes, green notes (SC-204; adds no client)
 corepack pnpm seed && corepack pnpm icons # regenerate from design3 after it changes
 ```
 

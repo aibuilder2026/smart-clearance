@@ -1,0 +1,38 @@
+[
+	{
+		"n": 1,
+		"title": "The landing page, then the console",
+		"start": 0.002,
+		"end": 26.666
+	},
+	{
+		"n": 2,
+		"title": "A Super admin signs in",
+		"start": 26.666,
+		"end": 43.821
+	},
+	{
+		"n": 3,
+		"title": "Monitoring the platform",
+		"start": 43.821,
+		"end": 91.169
+	},
+	{
+		"n": 4,
+		"title": "A SaaS client: Kaveri Foods",
+		"start": 91.169,
+		"end": 133.776
+	},
+	{
+		"n": 5,
+		"title": "Blinkit and Zepto gates, by SKU and batch",
+		"start": 133.776,
+		"end": 183.993
+	},
+	{
+		"n": 6,
+		"title": "Kaveri Foods' agents, configured",
+		"start": 183.993,
+		"end": 219.984
+	}
+]

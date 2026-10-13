@@ -1,0 +1,148 @@
+{
+	"flow": "Admin and console walkthrough",
+	"status": "passed",
+	"took": 222,
+	"steps": [
+		{
+			"n": 1,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "The landing page, scrolled over",
+			"at": "2026-10-13T11:16:35.222Z",
+			"ms": 19903,
+			"shot": "steps/01-The-landing-page-scrolled-over.png"
+		},
+		{
+			"n": 2,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "The bar's Console: the console's sign-in",
+			"at": "2026-10-13T11:16:46.184Z",
+			"ms": 10962,
+			"shot": "steps/02-The-bar-s-Console-the-console-s-sign-in.png"
+		},
+		{
+			"n": 3,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Neha signed in: the Overview",
+			"at": "2026-10-13T11:17:03.343Z",
+			"ms": 17159,
+			"shot": "steps/03-Neha-signed-in-the-Overview.png"
+		},
+		{
+			"n": 4,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "The Overview: every client at a glance, read live",
+			"at": "2026-10-13T11:17:17.479Z",
+			"ms": 14136,
+			"shot": "steps/04-The-Overview-every-client-at-a-glance-read-live.png"
+		},
+		{
+			"n": 5,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Agents at work: every batch at its stop",
+			"at": "2026-10-13T11:17:30.169Z",
+			"ms": 12690,
+			"shot": "steps/05-Agents-at-work-every-batch-at-its-stop.png"
+		},
+		{
+			"n": 6,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Needs attention, demo requests and the runs today",
+			"at": "2026-10-13T11:17:40.454Z",
+			"ms": 10285,
+			"shot": "steps/06-Needs-attention-demo-requests-and-the-runs-today.png"
+		},
+		{
+			"n": 7,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "The platform's agents, across every client",
+			"at": "2026-10-13T11:17:50.690Z",
+			"ms": 10236,
+			"shot": "steps/07-The-platform-s-agents-across-every-client.png"
+		},
+		{
+			"n": 8,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Every client, and New client",
+			"at": "2026-10-13T11:18:03.840Z",
+			"ms": 13150,
+			"shot": "steps/08-Every-client-and-New-client.png"
+		},
+		{
+			"n": 9,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Kaveri Foods' data: its first stock export, mapped, and its supply chain",
+			"at": "2026-10-13T11:18:23.934Z",
+			"ms": 20094,
+			"shot": "steps/09-Kaveri-Foods-data-its-first-stock-export-mapped-.png"
+		},
+		{
+			"n": 10,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Kaveri Foods' people, and the invitation",
+			"at": "2026-10-13T11:18:33.298Z",
+			"ms": 9364,
+			"shot": "steps/10-Kaveri-Foods-people-and-the-invitation.png"
+		},
+		{
+			"n": 11,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Munchly Foods' SKUs: each one's Blinkit and Zepto, Instamart gates",
+			"at": "2026-10-13T11:18:44.876Z",
+			"ms": 11578,
+			"shot": "steps/11-Munchly-Foods-SKUs-each-one-s-Blinkit-and-Zepto-.png"
+		},
+		{
+			"n": 12,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "The Mango Drink: its own gates, and its batch checked against them",
+			"at": "2026-10-13T11:18:58.921Z",
+			"ms": 14045,
+			"shot": "steps/12-The-Mango-Drink-its-own-gates-and-its-batch-chec.png"
+		},
+		{
+			"n": 13,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Choco Cream Biscuits: MF-2409-204 overridden for Zepto and Instamart, with its reason",
+			"at": "2026-10-13T11:19:22.217Z",
+			"ms": 23296,
+			"shot": "steps/13-Choco-Cream-Biscuits-MF-2409-204-overridden-for-.png"
+		},
+		{
+			"n": 14,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "The Watcher's gate, saved: 65 days",
+			"at": "2026-10-13T11:19:41.985Z",
+			"ms": 19768,
+			"shot": "steps/14-The-Watcher-s-gate-saved-65-days.png"
+		},
+		{
+			"n": 15,
+			"who": "Neha Kulkarni",
+			"role": "Smart-Clearance staff · console",
+			"did": "Kaveri Foods' agents configured",
+			"at": "2026-10-13T11:19:54.815Z",
+			"ms": 12830,
+			"shot": "steps/15-Kaveri-Foods-agents-configured.png"
+		}
+	],
+	"figures": {
+		"Target": "production",
+		"Watcher": "Blinkit takes stock with at least 65 days",
+		"Negotiator": "Act"
+	},
+	"findings": []
+}
