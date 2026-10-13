@@ -2595,7 +2595,7 @@
     - The only finding: Shree Sai Kirana cannot answer, being only invited.
   - **After it:** production's journey day is back at 24 hours; the chips cleared, the Mango Drink at day 0.
   - **Checks:** the frontend gate passes (api 83, core 408, admin 22, console 2, demo 9, workspace 115).
-- **SC-203** (In Review, branch `SC-203-roll-digits-aligned`; bug found by the maintainer): rolled figures sat off a straight line.
+- **SC-203** (PR #184, merged; Done; bug found by the maintainer): rolled figures sat off a straight line.
   - **Found:** on the console's Overview, "The numbers look and feel is misaligned not in straight line" (₹64,79,201, 39, 12, 41).
   - **Measured** against the same digits set as plain text: at 1× a rolled digit could sit a pixel above the rest (the 4 and the 9 at 30 px; the 1 of 21,770 in the design system's specimen), at 2× a device pixel, and a comma 2 px from where plain text puts it.
   - **The causes:** each digit is a strip of ten rows `0.98em` tall (29.39 px at 30 px), so each row started at a different fraction of a pixel and the browser snapped each glyph to a whole pixel on its own; the strip moved by `digit × 0.98em`, a hair off the rows as laid out; the separators sat in the figure's own line height (1.1), not the digit cell's.
