@@ -14,7 +14,8 @@
 	};
 	let { value, format, from, class: className, stagger = 40, hidden = false }: Props = $props();
 
-	// odometer digits: each digit is a strip of 0-9 that rolls to its place when the value changes (--t-roll)
+	// odometer digits: each digit is a strip of 0-9 that rolls to its place when the value changes (--t-roll), a tenth
+	// of the strip a step: its rows are whole pixels tall, so every digit lands on the same pixel row (SC-203)
 	const reduce = prefersReducedMotion.current;
 	// svelte-ignore state_referenced_locally (a roll from a starting figure arms once, after mount)
 	let armed = $state(from == null || reduce);
@@ -35,7 +36,7 @@
 				aria-hidden="true"
 				><span class="ghost">{ch}</span><span
 					class="rs"
-					style:transform="translateY({-(armed ? +ch : 0) * 0.98}em)"
+					style:transform="translateY({-(armed ? +ch : 0) * 10}%)"
 					style:transition-delay={reduce ? '0ms' : `${(chars.length - i) * stagger}ms`}
 					>{#each DIGITS as k (k)}<span>{k}</span>{/each}</span
 				></span

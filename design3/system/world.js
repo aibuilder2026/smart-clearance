@@ -20,7 +20,7 @@
       const key = n - i;
       if (!/\d/.test(ch)) return /* @__PURE__ */ React.createElement("span", { key: "s" + key, "aria-hidden": "true" }, ch);
       const d = armed ? +ch : 0;
-      return /* @__PURE__ */ React.createElement("span", { key: "d" + key, className: "rd", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("span", { className: "ghost" }, ch), /* @__PURE__ */ React.createElement("span", { className: "rs", style: { transform: `translateY(${-d * 0.98}em)`, transitionDelay: reduce ? "0ms" : `${(n - i) * stagger}ms` } }, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((k) => /* @__PURE__ */ React.createElement("span", { key: k }, k))));
+      return /* @__PURE__ */ React.createElement("span", { key: "d" + key, className: "rd", "aria-hidden": "true" }, /* @__PURE__ */ React.createElement("span", { className: "ghost" }, ch), /* @__PURE__ */ React.createElement("span", { className: "rs", style: { transform: `translateY(${-d * 10}%)`, transitionDelay: reduce ? "0ms" : `${(n - i) * stagger}ms` } }, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((k) => /* @__PURE__ */ React.createElement("span", { key: k }, k))));
     }));
   }
   function Money({ value, size, roll, from, decimals, tone, className, style, showSign = true }) {

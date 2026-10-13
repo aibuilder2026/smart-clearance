@@ -421,11 +421,14 @@ button.list-row:hover, a.list-row:hover { background: var(--fill); }
 .tile .tl-value { font-size: 34px; color: var(--fg); }
 .tile .tl-foot { font-size: 12.5px; color: var(--fg-3); }
 .tile.live { box-shadow: var(--shadow-1), 0 0 0 1.5px color-mix(in oklab, var(--primary) 45%, transparent); }
+/* a rolled figure: each digit a strip of 0-9 moved a tenth of its height a step. Its rows are whole pixels tall and its
+   separators share their line, so every digit and comma lands on the same pixel row as plain text would (SC-203) */
 .roll { display: inline-flex; align-items: flex-start; }
-.roll .rd { position: relative; display: inline-block; height: 0.98em; overflow: hidden; }
+.roll .rd { position: relative; display: inline-block; height: 0.98em; height: round(0.98em, 1px); overflow: hidden; }
 .roll .rs { display: flex; flex-direction: column; transition: transform var(--t-roll) var(--ease); }
-.roll .rs > span { display: block; height: 0.98em; line-height: 0.98; text-align: center; }
-.roll .rd .ghost { visibility: hidden; display: block; line-height: 0.98; }
+.roll .rs > span { display: block; height: 0.98em; height: round(0.98em, 1px); line-height: 0.98; line-height: round(0.98em, 1px); text-align: center; }
+.roll .rd .ghost { visibility: hidden; display: block; line-height: 0.98; line-height: round(0.98em, 1px); }
+.roll > span:not(.rd) { line-height: 0.98; line-height: round(0.98em, 1px); }
 .roll .rs { position: absolute; left: 0; right: 0; top: 0; }
 
 /* the map */

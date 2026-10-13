@@ -2595,4 +2595,11 @@
     - The only finding: Shree Sai Kirana cannot answer, being only invited.
   - **After it:** production's journey day is back at 24 hours; the chips cleared, the Mango Drink at day 0.
   - **Checks:** the frontend gate passes (api 83, core 408, admin 22, console 2, demo 9, workspace 115).
+- **SC-203** (PR #184, merged; Done; bug found by the maintainer): rolled figures sat off a straight line.
+  - **Found:** on the console's Overview, "The numbers look and feel is misaligned not in straight line" (₹64,79,201, 39, 12, 41).
+  - **Measured** against the same digits set as plain text: at 1× a rolled digit could sit a pixel above the rest (the 4 and the 9 at 30 px; the 1 of 21,770 in the design system's specimen), at 2× a device pixel, and a comma 2 px from where plain text puts it.
+  - **The causes:** each digit is a strip of ten rows `0.98em` tall (29.39 px at 30 px), so each row started at a different fraction of a pixel and the browser snapped each glyph to a whole pixel on its own; the strip moved by `digit × 0.98em`, a hair off the rows as laid out; the separators sat in the figure's own line height (1.1), not the digit cell's.
+  - **The fix** (design3 `components.css` and `world.jsx` Roll first, then core's `Roll.svelte` and `components.css`, verbatim): rows a whole number of pixels tall (`round(0.98em, 1px)`, with `0.98em` before it for a browser without `round()`), the strip moved a tenth of its own height a step, and the separators on the same line. Every rolled figure shares it: the console's Overview, Money and DaysNum in the workspace, the landing page's ledger.
+  - **Checks:** the console's Overview on its mock build and design3's specimen, measured character by character against plain text at 1× and 2×: every digit and comma now lands where plain text puts it. The frontend gate passes (api 83, core 408, admin 22, console 2, demo 9, workspace 115).
+  - **Hosting:** design3's `dist/` is rebuilt. The hosted pages stay on their pinned commits; production follows on the merge to `main`.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
