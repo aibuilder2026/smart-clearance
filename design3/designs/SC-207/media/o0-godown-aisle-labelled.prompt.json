@@ -1,0 +1,11 @@
+{
+  "source": "design3/designs/SC-206/media/o0-godown-aisle.mp4 (LTX 2.5 Fast, local; its own sidecar holds the prompt and seed), stretched 1.2x by motion interpolation as in cut 4",
+  "model": "none: no image or video model was run for this clip",
+  "made_by": "design3/designs/SC-207/src/cartons.py",
+  "what": "every carton's blank label in the godown aisle printed with a Munchly shipper label: the brand's band and mark, the product and pack count, the batch and its best-before in a box, and the carton's ITF-14 (design3/system/labels/codes.py). The cartons on the right of the aisle carry the Mango Drink (MF-2410-118, best before 24 Oct 2026, 27 a carton), those on the left the Instant Poha (MF-2410-402, best before 20 Apr 2027, 20 a carton): Lakshmi Agencies' two batches in the story. Every figure is fictional.",
+  "post": "each blank label found in every frame (pale, unsaturated, set in cardboard; a relative and an absolute saturation test, the cardboard round it checked), followed through the dolly by its centroid, its corners smoothed by a robust polynomial fit with outliers dropped and carried on along their tangent past the frame's edge; the label's ink multiplied into the patch and masked to its pale pixels, so it takes the patch's light, haze and softness and never lands on a worker passing in front; written at crf 10 for the cut, shipped here at crf 20",
+  "resolution": "1920x1088",
+  "fps": 24,
+  "frames": 143,
+  "cost_usd": 0
+}
