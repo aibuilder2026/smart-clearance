@@ -2623,13 +2623,35 @@
   - **Nothing invented:** every keyframe checked at full size and every clip by contact sheet before use. Rejected: a landfill heap with tablets, then lettering on the excavator and brand-like printing on packets; a worker with two phones; a tablet turned into a folder; a destruction clip whose falling packets glowed like flames; the chips' godown clip twice. The only label in the film is the real label photo Lakshmi Agencies sent.
   - **Steady:** LTX pushes in even when told to hold still and the push can change a face. `clipcheck.py` measures each clip's gentle stretch, `stab.py` locks it to a tripod frame, `deflash.py` removes one-frame flashes, `prep-clips.py` retimes it to its shot, and `breathe.py` plays a short clip forward and back with eased turns where a shot is longer. Resting screens hold to the sub-pixel; every window plays between 0.55× and 1.25× (the labelled fast-forward aside).
   - **Where:** `working-demo/smart-clearance-working-demo-2026-10-13_18-52-26.mp4` (crf 17), its 720p copy and captions, beside cut 1 (`…_14-11-48`) and SC-200's cut (`previous-SC-200/`); the crf-21 1080p, 720p and captions, every keyframe and clip with its sidecar, in `design3/designs/SC-205/`. −14.0 LUFS. The spend: nothing (Qwen, LTX, Kokoro and Whisper locally; SC-187's music reused).
-- **SC-206** (In Review, branch `SC-206-working-demo-film-v3`): cut 3 of the working demo, on the maintainer's ten notes on cut 2, at most 240 seconds.
-  - **The notes:** the app's own faces; a human Indian female voice, in English only; a livelier brand scene over the landing page; context before the console (the console, a happy path, a sad path); each person seen at work, then their device brought into focus; results with punch; no glitches in the clips; labels that read; the donation receipt and the GST invoices highlighted; the UPI scan made clear. Then: every device the right way round, its screen towards its user.
-  - **The people:** 18 Qwen-Image edits, each on the cast sheet the app's portrait was cut from (SC-194), a face shot and an over-the-shoulder each; eight first keyframes rejected for a screen turned to the camera. The batch's own label (SC-147's maker) printed on every carton's sticker in perspective.
-  - **Into the device:** the face shot (the device's back to us), a whip pan over the shoulder where the live app plays in the screen (found and followed frame by frame, `track3.py`; fingers kept over it), then a push into the screen or the screen lifting out (`vfx.py`, `parts3.DeviceShot`).
-  - **The clips:** 16 LTX 1080p clips, each used only for its steady first seconds at its own speed (`clipcheck.py`, `deflash.py`); the UPI phone lifts at 1.5 s, the landfill frame is held and racked at 2.5 s. Agrawal's and Neha's clips failed twice (the phone turned to the camera; a look into the lens), so their face shots are their keyframes in 2.5D on a depth map (`StillFace`).
-  - **The voice:** Maya1 (local, Apache-2.0), described as an Indian woman; it won a bake-off of the free Indian English voices on UTMOS (4.43 to 4.49, against Veena's 3.28 to 3.61 and Svara's 4.25) and an accent classifier (11 of 12 segments Indian). Every line read back word for word by Whisper before the cut (`tts/pick.py`); "Munchly" respelled "Munch-lee" where the voice said "Munkli" (`tts/brand.py`).
-  - **Also new:** the brand mark over the live landing page with a VFX reveal (`BrandScene`); the route map of the three journeys (`Agenda`); results with the swing, a bar a channel and the facts (`ResultPunch`); the production PDFs with one highlight each (`PaperShow`); the UPI scan, the payment and all 18 payments adding up (`UpiScene`); sound design synthesised from noise and tones (whooshes, swells, low hits, a shutter, a payment's chime).
-  - **Checks:** 238.96 s, −14.0 LUFS, −1.5 dBTP; every window between 0.63× and 1.23×; resting windows still from frame to frame; `cardscan.py`'s hits all the app's own pressed buttons; the label's QR read back from the film's own frames; 26 of 30 lines word for word from the final mix (the other four one word each under the music: the brand as "Manchali", "router" as "rotor").
-  - **Where:** `working-demo/smart-clearance-working-demo-2026-10-14_01-31-38.mp4` (crf 17), its 720p copy and captions, beside cuts 1 and 2; the crf-21 1080p, 720p and captions, the keyframes and clips with their sidecars, the pipeline and its README in `design3/designs/SC-206/`. The spend: nothing (Qwen-Image, LTX, Maya1, Depth Anything, Whisper and UTMOS locally; SC-187's music reused).
+- **SC-206** (In Review, branch `SC-206-working-demo-film-v3`): cuts 3 and 4 of the working demo, each at most 240 seconds.
+  - **Cut 3**, on the maintainer's ten notes on cut 2:
+    - the app's own faces, cut from its cast sheets (SC-194);
+    - an Indian English woman's voice (Maya1, local), every line read back word for word;
+    - each person seen at work, then their device brought into focus (a whip pan, then a push into the screen or the screen lifting out);
+    - the batch's own labels on the cartons, the papers highlighted, the UPI scan made clear;
+    - every device the right way round, its screen towards its user.
+
+    3 min 59.0 s (`working-demo/…_2026-10-14_01-31-38.mp4`).
+  - **Cut 4**, on five notes on cut 3 ("This looks really really good"), with the smooth motion of the film on spoileralert.com (studied frame by frame in the browser; nothing downloaded) as its model:
+    - **The opening:** a distributor's godown at dawn (Qwen, then LTX, stretched 1.2× by motion interpolation), the words landing as the voice says them; then the camera rushes into one carton's label: its best-before ringed, 22 days left counted down. The second shot, a worker lifting a carton, was rejected: its clip crumpled the carton.
+    - **The agents in 5.9 s** (`parts4.ArchScene`): five layers rise onto a platform in depth (Firebase Hosting, backend-api on Cloud Run with Cloud SQL, Pub/Sub and Scheduler, the ten agents on Google ADK, Gemini on Vertex AI); routes draw on with packets; the camera dives into the agents' layer, and their walk runs through the nine stops to the amber yes.
+    - **Rehearsal** is gone.
+    - **New beats:**
+      - the console's live Overview;
+      - the Router's split drawn as routes (`PlanFlow`);
+      - Lakshmi Agencies' own portal: she ends whole, every step, every paper, ticked as said (`Checklist`, `TiltIn`);
+      - Impact's ledger, the year so far (2.30 t kept out of landfill, 930 meals), and the batch's BRSR line.
+    - **The close** is 7.0 s: the mark draws its route as the design system plays it.
+    - **Smoother:** the LTX clips play frame for frame at 25 fps (cut 3 showed one frame twice a second), and the stage's note cards no longer show through three segment joins (`cardscan.py` scans the dissolves now).
+  - **Checks (cut 4):**
+    - 230.80 s, −14.0 LUFS, −1.5 dBTP;
+    - windows between 0.46× and 1.29× (the labelled fast-forward aside);
+    - `cardscan.py`'s hits all the app's own green buttons;
+    - the label's QR read back from the film's own frames;
+    - 23 of 29 lines word for word from the final mix (the rest a word under the music, or a figure written differently).
+  - **Where:**
+    - `working-demo/smart-clearance-working-demo-2026-10-14_11-16-06.mp4` (crf 17), its 720p copy and captions;
+    - the crf-21 1080p, 720p and captions, the keyframes and clips with their sidecars, the pipeline and its README in `design3/designs/SC-206/`.
+
+    The spend: nothing (Qwen-Image, LTX, Maya1, Whisper and UTMOS locally; SC-187's music reused).
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

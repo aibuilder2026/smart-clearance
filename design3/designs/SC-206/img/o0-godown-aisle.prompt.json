@@ -1,0 +1,12 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "text-to-image",
+  "condition_images": [],
+  "seed": 206501,
+  "aspect": "16:9",
+  "size": 2048,
+  "prompt": "A large distributor's warehouse in Hyderabad at dawn, seen from low down at the end of a long central aisle: towering grey steel racks on both sides, stacked high with sealed brown kraft cartons on wooden pallets; in the middle of the aisle a yellow forklift carries a pallet of cartons across from left to right, and two workers in orange reflective safety vests walk beside it; tall windows high on the left wall let long shafts of golden morning light cut diagonally through fine dust in the air; the polished concrete floor catches the light; a sense of great scale and busy order. Every carton is plain brown kraft with one blank white rectangular label sticker on its side and no other printing. Photorealistic cinematic still from a professional corporate film, full-frame cinema camera, 35 mm lens, gentle shallow depth of field, realistic Indian setting, natural faces and natural hands with five fingers, true-to-life colours, motivated natural light, calm composition. Physically correct: a person always looks at the front of the screen they are using. Any screen we can see is a plain, evenly lit, blank white display with nothing on it. No text, no numbers, no lettering, no logos, no signs anywhere in the picture.",
+  "original": "2752x1536 PNG, local in src/img/",
+  "post": "two specks of pseudo-lettering on the forklift's back painted out (OpenCV inpaint, Telea, 6 px), so no lettering shows; the raw keyframe kept locally as o0-godown-aisle-raw.png; then resized to 1920 wide (lanczos), WebP q88",
+  "cost_usd": 0
+}

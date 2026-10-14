@@ -1,6 +1,7 @@
 """SC-206: the best take of each narration line. Every take is read back by Whisper (large-v3-turbo, mlx) and scored:
 a take that drops, adds or garbles a word loses to one that reads back word for word; between equals, the higher
-predicted naturalness (UTMOS22, mos.json from mos.py) wins. The chosen takes are copied to vo3/<voice>/<id>.wav, with
+predicted naturalness (UTMOS22, mos.json from mos.py) wins. A line may name its take instead (lines.json "take"),
+where the read-back's own pauses show the winner ran its phrases together (cut 4's close). The chosen takes are copied to vo3/<voice>/<id>.wav, with
 durations.json and asr.json (each word's start and end) for the cut.
 
    <asr venv>/bin/python pick.py vo3/<model>-<voice>"""
@@ -95,6 +96,7 @@ if __name__ == '__main__':
             cands.append((round(e, 3), -brand.get(p.name, 0), -mos.get(p.name, 0.0), p.name))
         if not cands: report.append(f'{lid}: NO TAKES'); continue
         cands.sort()
+        if ln.get('take'): cands.sort(key=lambda c: c[3] != ln['take'])   # the named take first
         e, _, negm, name = cands[0]
         chosen[lid] = name
         shutil.copy2(takes / name, root / f'{lid}.wav')

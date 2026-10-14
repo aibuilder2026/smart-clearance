@@ -1,10 +1,105 @@
-# SC-206 · The working demo, cut 3
+# SC-206 · The working demo, cuts 3 and 4
 
-A demo film of at most 240 seconds, made again from the three production recordings of 13 Oct 2026 (as SC-205's cuts
-1 and 2), on the maintainer's ten notes on cut 2. It joins cut 1 and cut 2 in the repository root's `working-demo/`
-folder, carrying its export's date and time in its name.
+A demo film of at most 240 seconds, made from the three production recordings of 13 Oct 2026 (as SC-205's cuts 1 and
+2): cut 3 on the maintainer's ten notes on cut 2, then cut 4 on five notes on cut 3. Each joins the earlier cuts in the
+repository root's `working-demo/` folder, carrying its export's date and time in its name.
 
-## The brief
+## Cut 4 (14 Oct 2026)
+
+### The brief
+
+**The maintainer's notes on cut 3** ("This looks really really good"):
+
+1. Open on a distributor's factory scene, then the carton showing its best-before. More engaging.
+2. The agentic AI graph looks great, but condense it: the architecture and the process flow, animated and cinematic,
+   in about 5 to 6 seconds.
+3. No need to show Rehearsal set to 60-minute demo mode.
+4. Use the time to show other parts of the application's flow, in a more cinematic way.
+5. Condense the last 10 seconds a bit.
+
+Under 240 seconds, smooth and crystal clear; Qwen, LTX, ffmpeg and the voice tools. Then, while it was being made: take
+inspiration from the smooth motion in the film embedded on spoileralert.com. That film (a 24 s Wistia embed) was
+studied frame by frame in the browser, and nothing was downloaded. Its moves:
+
+- things spring in, then keep drifting;
+- one shot turns into the next, for example the whole frame pulling back into a tilted window;
+- route lines draw on, with packs running along them;
+- words land on the beat, and a list ticks as it is said;
+- the mark draws itself at the close.
+
+### What changed
+
+| Part | Cut 3 | Cut 4 |
+| --- | --- | --- |
+| The opening | a carton's label in macro, a pallet, the bin | a distributor's godown at dawn (LTX, a slow push along the aisle, the forklift crossing), the words landing as the voice says them; then the camera rushes into one carton's label (`parts4.Dive`): the best-before ringed, its days counting down to 22, "too close for Blinkit, Zepto and Instamart"; the bin |
+| The agents | 24.7 s: the sign-in's agents lit one by one beside how they sit | 5.9 s (`parts4.ArchScene`): five layers rise onto a platform in depth (the apps on Firebase Hosting, backend-api on Cloud Run with Cloud SQL, the events on Pub/Sub and Cloud Scheduler, the ten agents on Google ADK with their own walk on the layer's face, Gemini on Vertex AI); routes draw on with packets running along them; the camera dives into the agents' layer, and the walk itself runs through the nine stops to the amber yes: "Nine stops." "One human yes." |
+| Rehearsal | a shot of Neha setting it | gone; the happy path opens on Priya |
+| The console | the setup | the setup, then the live Overview: batches in flight, the agents at work, ₹64,79,201 recovered in 30 days (`k03`) |
+| The Router's split | rings on the Route Room | the split drawn as routes beside it (`parts4.PlanFlow`): 1,580 packs at risk to 1,372 for 52 kiranas, 150 for the staff sale and 58 for Feeding India, packs running along each route and the counts rolling up |
+| The distributor | her label photo and staff sale | also her own portal (`m09b`): she ends whole, what happened step by step, every paper, ticked as it is said (`parts4.Checklist`), the window swinging in (`parts4.TiltIn`) |
+| The report | none | Impact's ledger, the year so far (`m10`): 2.30 t kept out of landfill, 930 meals, 68 kg destroyed, 5.75 t CO₂e avoided; then the batch's own BRSR line |
+| The close | 11.4 s | 7.0 s (`parts4.EndCard4`): the mark draws its route as the design system plays it (the squircle springs in, the godown dot pops, the S draws, the amber pin lands and pings); the name slides out from behind it, and the line lands word by word |
+
+### The film
+
+| When | Part |
+| --- | --- |
+| 0:00 | A distributor's godown at dawn; the dive into a carton's label: its best-before, 22 days left; the bin |
+| 0:13 | Smart-Clearance, over the live landing page (as cut 3) |
+| 0:27 | The architecture in depth, then the agents' walk to the one human yes |
+| 0:33 | What you'll see: the SaaS console, a happy path, a sad path |
+| 0:40 | The console: a brand set up in minutes (every client, its export, its people, its gates, its agents), then every client live |
+| 1:02 | Live on production: everyone signs in |
+| 1:10 | The Mango Drink: Priya's alert, the label photo, the plan priced and split, the yes, the offer in Hindi, the orders live, the scheme filling, the UPI staff sale, Feeding India and its receipt, the papers, the result |
+| 2:26 | Lakshmi Agencies' own portal: she ends whole, every step, every paper |
+| 2:33 | The Masala Chips: two shops order, the lot countered and sold, 540 left, destroyed on evidence, the certificate signed, Priya's second yes, the papers, the result |
+| 3:35 | Impact's ledger, the year so far, and the batch's BRSR line |
+| 3:43 | The end |
+
+### How cut 4 is made
+
+| Part | Tool | Where |
+| --- | --- | --- |
+| The godown keyframe, at dawn | Qwen-Image 2.1 (bf16, local), at 2048; two specks of pseudo-lettering on the forklift painted out | `img/o0-godown-aisle.webp` with its sidecar; `src/gen-qwen3.sh`, `src/prompts/o0-godown-aisle.txt` |
+| Its clip | LTX 2.5 Fast (local), 1080p, 5 s, a slow push in; stretched 1.2× by ffmpeg's motion interpolation, so it keeps moving until the dive | `media/o0-godown-aisle.mp4` with its sidecar; `src/gen-ltx4.py` |
+| The new lines | Maya1 (local), the same voice; six takes each, scored by UTMOS and read back by Whisper | `src/lines.json` (`g01`, `k03`, `m09b`, `m10`, `e02`), `src/tts/` |
+| The new scenes | the frame compositor | `src/parts4.py` (`Dive`, `Kinetic`, `Countdown`, `Shade`, `ArchScene`, `PlanFlow`, `TiltIn`, `Checklist`, `MarkDraw`, `EndCard4`), `src/shots4.py` |
+
+- **Rejected:** a second shot, a worker lifting a carton toward the camera (`src/prompts/rejected/o0b-carton-lift.txt`).
+  Its clip crumpled and spun the carton at 1.8 s, so the film dives from the aisle into the label instead.
+- **Smoother:**
+  - the LTX clips now play frame for frame at the film's 25 fps; cut 3 played them at their own 24, which showed one
+    frame twice every second;
+  - the close's ground drifts slowly instead of standing still.
+- **The stage's own notes:** a window's segment plays on for 0.3 s into the dissolve to the next, and at three joins
+  that let a stage note card show through. Each segment now ends that much before the card, and `cardscan.py` scans the
+  dissolves too. One of the stage's own rings, on Vision's checks, is skipped as well.
+- **The close's line:** the best-scoring take of `e02` ran its phrases together, so `lines.json` names the take with
+  its pauses (`take`, honoured by `tts/pick.py`).
+
+### The result
+
+`media/smart-clearance-working-demo.mp4`: **3 min 50.8 s (230.80 s)**, under the 240 s cap. It is 1920 × 1080 at 25 fps,
+H.264 crf 21, with AAC 48 kHz audio at −14.0 LUFS integrated and −1.5 dBTP true peak; beside it, a 720p copy and the
+narration as `.srt`. The crf-17 master is `working-demo/smart-clearance-working-demo-2026-10-14_11-16-06.mp4`
+(git-ignored), beside cut 3 (`…_01-31-38`), cut 2 (`…_18-52-26`) and cut 1 (`…_14-11-48`).
+
+- **Checks:**
+  - the godown keyframe at full size; its clip as a contact sheet and frame by frame (the second worker walks behind
+    the moving pallet); the stretched clip's in-between frames; every new scene as stills;
+  - no frame repeats in the opening's footage, and the close never stands still;
+  - every window plays between 0.46× and 1.29× (the scheme's labelled fast-forward aside);
+  - `cardscan.py`, now with the dissolves: its 87 hits are all the app's own green buttons, checked by eye;
+  - the label's QR code reads back from the film's own frames (`https://id.munchly.example/01/18900000001061/10/MF-2410-118?17=261024`);
+  - the narration read back from the final mix, a slice a line: 23 of 29 lines word for word. The others differ by a
+    word under the music ("Neha" as "Meha", "Hyderabad" spelled "Hydaabad", "router" as "rotor", the brand as
+    "Manchali" twice) or by how a figure is written ("2.3 tons"); each take reads word for word on its own;
+  - −14.0 LUFS, −1.5 dBTP.
+- **The spend:** nothing. Qwen-Image, LTX, Maya1, Whisper and UTMOS ran on this Mac; the music is SC-187's.
+
+## Cut 3 (14 Oct 2026)
+
+### The brief
 
 **The maintainer's notes on cut 2 (13 Oct 2026):**
 
@@ -24,7 +119,7 @@ Then, while it was being made: English only (no Hindi in the voice); and every d
 towards the person using it ("the images I see being generated with screen on opposite side and looks really bad and
 unreal"). Tools: Qwen, LTX, DaVinci (the plugin's checks) and ffmpeg; at most 240 seconds.
 
-## The sources
+### The sources
 
 | Source | Used for |
 | --- | --- |
@@ -35,7 +130,7 @@ unreal"). Tools: Qwen, LTX, DaVinci (the plugin's checks) and ffmpeg; at most 24
 | The label maker (`design3/system/labels`, SC-147) | the Mango Drink's and the Masala Chips' own labels on the cartons |
 | The destruction's evidence and the staff sale's receipt (`playwright-automation-videos/sampleData/`) | the photos Rakesh sent, the UPI payments |
 
-## The film (cut 3)
+### The film
 
 | When | Part | What is on screen |
 | --- | --- | --- |
@@ -51,7 +146,7 @@ unreal"). Tools: Qwen, LTX, DaVinci (the plugin's checks) and ffmpeg; at most 24
 
 Every figure is the production runs' own. Every person and company is fictional.
 
-## The ten notes, answered
+### The ten notes, answered
 
 1. **The app's own faces.** Every person is a Qwen-Image edit whose one condition image is the cast sheet the app's
    portrait was cut from (`gen-qwen.sh`), checked against the portrait; each name tag is the app's own portrait.
@@ -91,7 +186,7 @@ Every figure is the production runs' own. Every person and company is fictional.
     Agencies' tablet; his phone's screen rises out of his hand, scans, and pays ₹96 for 12 packs with its UPI
     reference; then all 18 payments arrive and add up to the receipt's ₹1,200 for 150 packs, beside Vision's check.
 
-## How it is made
+### How it is made
 
 | Part | Tool | Where |
 | --- | --- | --- |
@@ -101,10 +196,10 @@ Every figure is the production runs' own. Every person and company is fictional.
 | Depth for the stills' 2.5D moves | Depth Anything V2 Small (local) | `src/depth.py`, `parts3.Still25D` |
 | The screens: found, followed, the app set in | OpenCV | `src/screens.py`, `src/build/screens.json` (corners, some set by eye), `src/track3.py`, `src/vfx.py` |
 | The voice-over | Maya1 (local), Whisper large-v3-turbo (mlx), UTMOS22 | `src/lines.json`, `src/tts/` |
-| The cut | a frame compositor in numpy and OpenCV, 1920 × 1080, 25 fps | `src/kit.py`, `src/parts.py`, `src/parts3.py`, `src/shots3.py`, `src/render.py` |
+| The cut | a frame compositor in numpy and OpenCV, 1920 × 1080, 25 fps | `src/kit.py`, `src/parts.py`, `src/parts3.py`, `src/render.py`; cut 3's timeline was `src/shots3.py`, which cut 4 renamed `src/shots4.py` |
 | The sound | the voice through one chain; SC-187's felt-piano bed looped and ducked; sound design synthesised from noise and sine tones (whooshes on the whip pans, swells as devices come into focus, a riser and low hits under the mark and the results, a shutter, a payment's chime); −14 LUFS | `src/mix.py` |
 
-### Nothing invented, every device the right way round
+#### Nothing invented, every device the right way round
 
 Every keyframe was looked at full size. Rejected and redone, each with the device's screen turned to the camera while
 its user looked at it (`src/img/rejected/`, `src/prompts/rejected/`): Rakesh in the godown, Agrawal's phone, the
@@ -114,7 +209,7 @@ camera) and Neha's (she looked up into the lens); each retaken with a firmer pro
 failed the same way. Their 1.4 s and 1.6 s face shots are their keyframes instead, moved through in 2.5D on a depth map
 (`parts3.StillFace`): every other person's face shot is their clip.
 
-### Each clip, for as long as it holds
+#### Each clip, for as long as it holds
 
 - The UPI clip holds the scan for 1.5 s, then the worker lowers his phone: his phone's screen rises out at 1.5 s, and
   its window scans until the voice says "scanning".
@@ -122,7 +217,7 @@ failed the same way. Their 1.4 s and 1.6 s face shots are their keyframes instea
 - A hand over a screen's edge (Lakshmi Agencies tapping) would pull a followed edge in: that screen is followed by its
   three clear edges and its own shape (`track3.follow_hidden`).
 
-## The result (cut 3, 14 Oct 2026)
+### The result
 
 `media/smart-clearance-working-demo.mp4`: **3 min 59.0 s (238.96 s)**, under the 240 s cap, 1920 × 1080, 25 fps, H.264
 crf 21, AAC 48 kHz at −14.0 LUFS integrated and −1.5 dBTP true peak; a 720p copy and the narration as `.srt`. The crf-17
@@ -153,10 +248,13 @@ From `src/` (the recordings are read from the main checkout):
 ```sh
 uv venv --python 3.12 .venv && uv pip install --python .venv/bin/python numpy opencv-python-headless pillow scipy soundfile pymupdf
 nohup ./gen-qwen.sh > gen-qwen.log 2>&1 &            # the people (cast-sheet edits) and the places; gen-qwen2.sh, the retake
-.venv/bin/python prep-keys.py && .venv/bin/python prep-opening.py o1b && .venv/bin/python prep-opening.py o1 3 4 5 6 7 8 9 10 13 14 15 16 17 18 21 22 23 24 25 26
-tts/.venv-snac/bin/python depth.py img/i3-landfill.png img/o1b-carton-macro-L.png img/o1-godown-stack-L.png
+nohup ./gen-qwen3.sh > gen-qwen3.log 2>&1 &          # cut 4: the godown at dawn (then paint out the forklift's two specks)
+.venv/bin/python prep-keys.py && .venv/bin/python prep-opening.py o1b
+tts/.venv-snac/bin/python depth.py img/i3-landfill.png img/o1b-carton-macro-L.png
 nohup ~/.local/bin/uv run --python 3.12 --script gen-ltx.py > gen-ltx.log 2>&1 &   # then ./retakes.sh f-agrawal-b f-neha-b
+nohup ~/.local/bin/uv run --python 3.12 --script gen-ltx4.py > gen-ltx4.log 2>&1 & # cut 4: the godown's clip
+ffmpeg -i clips/o0-godown-aisle.mp4 -vf "setpts=1.2*PTS,minterpolate=fps=24:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1" -c:v libx264 -crf 12 clips/o0-godown-aisle-slow.mp4
 .venv/bin/python track3.py                           # every over-the-shoulder screen, followed
-(cd tts && ./setup.sh && .venv-snac/bin/python vo3.py maya1b brisk 2)                # then mos.py and pick.py
-.venv/bin/python render.py && .venv/bin/python mix.py && ./export.sh && .venv/bin/python sidecars3.py
+(cd tts && ./setup.sh && .venv-snac/bin/python vo3.py maya1b brisk 6)                # then mos.py and pick.py
+.venv/bin/python render.py && .venv/bin/python mix.py && ./export.sh && .venv/bin/python sidecars4.py
 ```

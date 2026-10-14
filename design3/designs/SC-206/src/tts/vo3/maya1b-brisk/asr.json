@@ -329,298 +329,78 @@
    }
   ]
  },
- "i05": {
-  "text": "10 Agents on Gemini Built with Google's Agent Development Kit Walk every batch through 9 stops.",
+ "g01": {
+  "text": "10 agents on Gemini walk every batch through 9 stops. To one human yes.",
   "words": [
    {
     "w": "10",
     "s": 0.0,
-    "e": 0.22
+    "e": 0.24
    },
    {
-    "w": "Agents",
-    "s": 0.22,
-    "e": 0.7
-   },
-   {
-    "w": "on",
-    "s": 0.7,
-    "e": 0.94
-   },
-   {
-    "w": "Gemini",
-    "s": 0.94,
-    "e": 1.5
-   },
-   {
-    "w": "Built",
-    "s": 1.5,
-    "e": 2.16
-   },
-   {
-    "w": "with",
-    "s": 2.16,
-    "e": 2.42
-   },
-   {
-    "w": "Google's",
-    "s": 2.42,
-    "e": 2.96
-   },
-   {
-    "w": "Agent",
-    "s": 2.96,
-    "e": 3.3
-   },
-   {
-    "w": "Development",
-    "s": 3.3,
-    "e": 3.9
-   },
-   {
-    "w": "Kit",
-    "s": 3.9,
-    "e": 4.38
-   },
-   {
-    "w": "Walk",
-    "s": 4.38,
-    "e": 5.08
-   },
-   {
-    "w": "every",
-    "s": 5.08,
-    "e": 5.4
-   },
-   {
-    "w": "batch",
-    "s": 5.4,
-    "e": 5.78
-   },
-   {
-    "w": "through",
-    "s": 5.78,
-    "e": 6.04
-   },
-   {
-    "w": "9",
-    "s": 6.04,
-    "e": 6.3
-   },
-   {
-    "w": "stops.",
-    "s": 6.3,
-    "e": 6.78
-   }
-  ]
- },
- "i06": {
-  "text": "The watcher spots the risk. Vision verifies the label. The valuer and the router price every exit.",
-  "words": [
-   {
-    "w": "The",
-    "s": 0.0,
-    "e": 0.2
-   },
-   {
-    "w": "watcher",
-    "s": 0.2,
+    "w": "agents",
+    "s": 0.24,
     "e": 0.66
    },
    {
-    "w": "spots",
+    "w": "on",
     "s": 0.66,
-    "e": 0.98
-   },
-   {
-    "w": "the",
-    "s": 0.98,
-    "e": 1.24
-   },
-   {
-    "w": "risk.",
-    "s": 1.24,
-    "e": 1.56
-   },
-   {
-    "w": "Vision",
-    "s": 1.78,
-    "e": 2.3
-   },
-   {
-    "w": "verifies",
-    "s": 2.3,
-    "e": 2.96
-   },
-   {
-    "w": "the",
-    "s": 2.96,
-    "e": 3.2
-   },
-   {
-    "w": "label.",
-    "s": 3.2,
-    "e": 3.52
-   },
-   {
-    "w": "The",
-    "s": 3.74,
-    "e": 4.1
-   },
-   {
-    "w": "valuer",
-    "s": 4.1,
-    "e": 4.62
-   },
-   {
-    "w": "and",
-    "s": 4.62,
-    "e": 4.9
-   },
-   {
-    "w": "the",
-    "s": 4.9,
-    "e": 5.06
-   },
-   {
-    "w": "router",
-    "s": 5.06,
-    "e": 5.32
-   },
-   {
-    "w": "price",
-    "s": 5.32,
-    "e": 5.8
-   },
-   {
-    "w": "every",
-    "s": 5.8,
-    "e": 6.2
-   },
-   {
-    "w": "exit.",
-    "s": 6.2,
-    "e": 6.58
-   }
-  ]
- },
- "i07": {
-  "text": "Then one person says yes.",
-  "words": [
-   {
-    "w": "Then",
-    "s": 0.0,
-    "e": 0.28
-   },
-   {
-    "w": "one",
-    "s": 0.28,
-    "e": 0.56
-   },
-   {
-    "w": "person",
-    "s": 0.56,
     "e": 0.96
    },
    {
-    "w": "says",
+    "w": "Gemini",
     "s": 0.96,
-    "e": 1.34
-   },
-   {
-    "w": "yes.",
-    "s": 1.34,
-    "e": 1.7
-   }
-  ]
- },
- "i08": {
-  "text": "outreach, the lister and the negotiator sell. Paperwork files the GST papers, and impact posts the ledger.",
-  "words": [
-   {
-    "w": "outreach,",
-    "s": 0.0,
-    "e": 0.58
-   },
-   {
-    "w": "the",
-    "s": 0.8,
-    "e": 1.08
-   },
-   {
-    "w": "lister",
-    "s": 1.08,
     "e": 1.46
    },
    {
-    "w": "and",
+    "w": "walk",
     "s": 1.46,
-    "e": 1.76
+    "e": 1.78
    },
    {
-    "w": "the",
-    "s": 1.76,
-    "e": 1.92
+    "w": "every",
+    "s": 1.78,
+    "e": 2.12
    },
    {
-    "w": "negotiator",
-    "s": 1.92,
-    "e": 2.7
+    "w": "batch",
+    "s": 2.12,
+    "e": 2.5
    },
    {
-    "w": "sell.",
-    "s": 2.7,
-    "e": 3.04
+    "w": "through",
+    "s": 2.5,
+    "e": 2.76
    },
    {
-    "w": "Paperwork",
-    "s": 3.28,
-    "e": 4.0
+    "w": "9",
+    "s": 2.76,
+    "e": 2.98
    },
    {
-    "w": "files",
-    "s": 4.0,
-    "e": 4.42
+    "w": "stops.",
+    "s": 2.98,
+    "e": 3.52
    },
    {
-    "w": "the",
-    "s": 4.42,
-    "e": 4.64
+    "w": "To",
+    "s": 3.72,
+    "e": 3.94
    },
    {
-    "w": "GST",
-    "s": 4.64,
-    "e": 5.18
+    "w": "one",
+    "s": 3.94,
+    "e": 4.18
    },
    {
-    "w": "papers,",
-    "s": 5.18,
-    "e": 5.78
+    "w": "human",
+    "s": 4.18,
+    "e": 4.5
    },
    {
-    "w": "and",
-    "s": 5.96,
-    "e": 6.32
-   },
-   {
-    "w": "impact",
-    "s": 6.32,
-    "e": 6.74
-   },
-   {
-    "w": "posts",
-    "s": 6.74,
-    "e": 7.24
-   },
-   {
-    "w": "the",
-    "s": 7.24,
-    "e": 7.48
-   },
-   {
-    "w": "ledger.",
-    "s": 7.48,
-    "e": 7.9
+    "w": "yes.",
+    "s": 4.5,
+    "e": 4.8
    }
   ]
  },
@@ -889,6 +669,101 @@
    }
   ]
  },
+ "k03": {
+  "text": "Then she watches every client live. The batches in flight, the agents at work, and what they recover.",
+  "words": [
+   {
+    "w": "Then",
+    "s": 0.0,
+    "e": 0.24
+   },
+   {
+    "w": "she",
+    "s": 0.24,
+    "e": 0.46
+   },
+   {
+    "w": "watches",
+    "s": 0.46,
+    "e": 0.88
+   },
+   {
+    "w": "every",
+    "s": 0.88,
+    "e": 1.36
+   },
+   {
+    "w": "client",
+    "s": 1.36,
+    "e": 1.8
+   },
+   {
+    "w": "live.",
+    "s": 1.8,
+    "e": 2.24
+   },
+   {
+    "w": "The",
+    "s": 2.46,
+    "e": 2.78
+   },
+   {
+    "w": "batches",
+    "s": 2.78,
+    "e": 3.28
+   },
+   {
+    "w": "in",
+    "s": 3.28,
+    "e": 3.46
+   },
+   {
+    "w": "flight,",
+    "s": 3.46,
+    "e": 3.84
+   },
+   {
+    "w": "the",
+    "s": 4.08,
+    "e": 4.38
+   },
+   {
+    "w": "agents",
+    "s": 4.38,
+    "e": 4.82
+   },
+   {
+    "w": "at",
+    "s": 4.82,
+    "e": 5.1
+   },
+   {
+    "w": "work,",
+    "s": 5.1,
+    "e": 5.46
+   },
+   {
+    "w": "and",
+    "s": 5.58,
+    "e": 5.92
+   },
+   {
+    "w": "what",
+    "s": 5.92,
+    "e": 6.14
+   },
+   {
+    "w": "they",
+    "s": 6.14,
+    "e": 6.32
+   },
+   {
+    "w": "recover.",
+    "s": 6.32,
+    "e": 6.64
+   }
+  ]
+ },
  "l01": {
   "text": "Everyone signs in on their own device to the real apps on Cloud Run, with agents reasoning on Gemini.",
   "words": [
@@ -986,111 +861,6 @@
     "w": "Gemini.",
     "s": 6.46,
     "e": 6.98
-   }
-  ]
- },
- "m01": {
-  "text": "For the demo, Neha sets Munchly to rehearsal. A journey day passes in an hour, against real best before dates.",
-  "words": [
-   {
-    "w": "For",
-    "s": 0.0,
-    "e": 0.18
-   },
-   {
-    "w": "the",
-    "s": 0.18,
-    "e": 0.32
-   },
-   {
-    "w": "demo,",
-    "s": 0.32,
-    "e": 0.68
-   },
-   {
-    "w": "Neha",
-    "s": 1.0,
-    "e": 1.36
-   },
-   {
-    "w": "sets",
-    "s": 1.36,
-    "e": 1.76
-   },
-   {
-    "w": "Munchly",
-    "s": 1.76,
-    "e": 2.26
-   },
-   {
-    "w": "to",
-    "s": 2.26,
-    "e": 2.46
-   },
-   {
-    "w": "rehearsal.",
-    "s": 2.46,
-    "e": 3.0
-   },
-   {
-    "w": "A",
-    "s": 3.32,
-    "e": 3.6
-   },
-   {
-    "w": "journey",
-    "s": 3.6,
-    "e": 3.94
-   },
-   {
-    "w": "day",
-    "s": 3.94,
-    "e": 4.22
-   },
-   {
-    "w": "passes",
-    "s": 4.22,
-    "e": 4.68
-   },
-   {
-    "w": "in",
-    "s": 4.68,
-    "e": 5.0
-   },
-   {
-    "w": "an",
-    "s": 5.0,
-    "e": 5.14
-   },
-   {
-    "w": "hour,",
-    "s": 5.14,
-    "e": 5.34
-   },
-   {
-    "w": "against",
-    "s": 5.54,
-    "e": 6.04
-   },
-   {
-    "w": "real",
-    "s": 6.04,
-    "e": 6.38
-   },
-   {
-    "w": "best",
-    "s": 6.38,
-    "e": 6.72
-   },
-   {
-    "w": "before",
-    "s": 6.72,
-    "e": 7.02
-   },
-   {
-    "w": "dates.",
-    "s": 7.02,
-    "e": 7.42
    }
   ]
  },
@@ -1929,6 +1699,81 @@
    }
   ]
  },
+ "m09b": {
+  "text": "Lakshmi Agencies sees it all on her own portal. Every step and every paper.",
+  "words": [
+   {
+    "w": "Lakshmi",
+    "s": 0.0,
+    "e": 0.56
+   },
+   {
+    "w": "Agencies",
+    "s": 0.56,
+    "e": 1.26
+   },
+   {
+    "w": "sees",
+    "s": 1.26,
+    "e": 1.56
+   },
+   {
+    "w": "it",
+    "s": 1.56,
+    "e": 1.82
+   },
+   {
+    "w": "all",
+    "s": 1.82,
+    "e": 2.16
+   },
+   {
+    "w": "on",
+    "s": 2.16,
+    "e": 2.42
+   },
+   {
+    "w": "her",
+    "s": 2.42,
+    "e": 2.6
+   },
+   {
+    "w": "own",
+    "s": 2.6,
+    "e": 2.9
+   },
+   {
+    "w": "portal.",
+    "s": 2.9,
+    "e": 3.4
+   },
+   {
+    "w": "Every",
+    "s": 3.62,
+    "e": 4.14
+   },
+   {
+    "w": "step",
+    "s": 4.14,
+    "e": 4.58
+   },
+   {
+    "w": "and",
+    "s": 4.58,
+    "e": 5.1
+   },
+   {
+    "w": "every",
+    "s": 5.1,
+    "e": 5.48
+   },
+   {
+    "w": "paper.",
+    "s": 5.48,
+    "e": 5.92
+   }
+  ]
+ },
  "s01": {
   "text": "But not every batch sells. Munchly's masala chips go to Rakesh Traders Kiranas in Nagpur. And just two of them order.",
   "words": [
@@ -2559,103 +2404,173 @@
    }
   ]
  },
- "e01": {
-  "text": "Smart Clearance Live on Cloud Run Reasoning with Gemini 10 Agents, 1 Yes, and Nothing Good Goes to Waste",
+ "m10": {
+  "text": "Impact posts it to the ledger. 2.3 tons of food kept out of landfill this year, ready for BRSR.",
+  "words": [
+   {
+    "w": "Impact",
+    "s": 0.0,
+    "e": 0.44
+   },
+   {
+    "w": "posts",
+    "s": 0.44,
+    "e": 0.86
+   },
+   {
+    "w": "it",
+    "s": 0.86,
+    "e": 1.1
+   },
+   {
+    "w": "to",
+    "s": 1.1,
+    "e": 1.26
+   },
+   {
+    "w": "the",
+    "s": 1.26,
+    "e": 1.42
+   },
+   {
+    "w": "ledger.",
+    "s": 1.42,
+    "e": 1.78
+   },
+   {
+    "w": "2",
+    "s": 1.96,
+    "e": 2.26
+   },
+   {
+    "w": ".3",
+    "s": 2.26,
+    "e": 2.84
+   },
+   {
+    "w": "tons",
+    "s": 2.84,
+    "e": 3.08
+   },
+   {
+    "w": "of",
+    "s": 3.08,
+    "e": 3.36
+   },
+   {
+    "w": "food",
+    "s": 3.36,
+    "e": 3.66
+   },
+   {
+    "w": "kept",
+    "s": 3.66,
+    "e": 3.96
+   },
+   {
+    "w": "out",
+    "s": 3.96,
+    "e": 4.22
+   },
+   {
+    "w": "of",
+    "s": 4.22,
+    "e": 4.42
+   },
+   {
+    "w": "landfill",
+    "s": 4.42,
+    "e": 4.94
+   },
+   {
+    "w": "this",
+    "s": 4.94,
+    "e": 5.22
+   },
+   {
+    "w": "year,",
+    "s": 5.22,
+    "e": 5.48
+   },
+   {
+    "w": "ready",
+    "s": 5.68,
+    "e": 6.02
+   },
+   {
+    "w": "for",
+    "s": 6.02,
+    "e": 6.3
+   },
+   {
+    "w": "BRSR.",
+    "s": 6.3,
+    "e": 7.12
+   }
+  ]
+ },
+ "e02": {
+  "text": "Smart clearance. 10 agents, 1 yes, and nothing good goes to waste.",
   "words": [
    {
     "w": "Smart",
     "s": 0.0,
-    "e": 0.36
+    "e": 0.44
    },
    {
-    "w": "Clearance",
-    "s": 0.36,
-    "e": 1.14
-   },
-   {
-    "w": "Live",
-    "s": 1.14,
-    "e": 1.72
-   },
-   {
-    "w": "on",
-    "s": 1.72,
-    "e": 2.0
-   },
-   {
-    "w": "Cloud",
-    "s": 2.0,
-    "e": 2.24
-   },
-   {
-    "w": "Run",
-    "s": 2.24,
-    "e": 2.58
-   },
-   {
-    "w": "Reasoning",
-    "s": 2.58,
-    "e": 3.44
-   },
-   {
-    "w": "with",
-    "s": 3.44,
-    "e": 3.62
-   },
-   {
-    "w": "Gemini",
-    "s": 3.62,
-    "e": 4.18
+    "w": "clearance.",
+    "s": 0.44,
+    "e": 0.86
    },
    {
     "w": "10",
-    "s": 4.18,
-    "e": 4.74
+    "s": 1.3,
+    "e": 1.68
    },
    {
-    "w": "Agents,",
-    "s": 4.74,
-    "e": 5.32
+    "w": "agents,",
+    "s": 1.68,
+    "e": 2.32
    },
    {
     "w": "1",
-    "s": 5.52,
-    "e": 5.9
+    "s": 2.6,
+    "e": 2.96
    },
    {
-    "w": "Yes,",
-    "s": 5.9,
-    "e": 6.28
+    "w": "yes,",
+    "s": 2.96,
+    "e": 3.36
    },
    {
     "w": "and",
-    "s": 6.54,
-    "e": 6.84
+    "s": 3.56,
+    "e": 3.94
    },
    {
-    "w": "Nothing",
-    "s": 6.84,
-    "e": 7.18
+    "w": "nothing",
+    "s": 3.94,
+    "e": 4.28
    },
    {
-    "w": "Good",
-    "s": 7.18,
-    "e": 7.44
+    "w": "good",
+    "s": 4.28,
+    "e": 4.56
    },
    {
-    "w": "Goes",
-    "s": 7.44,
-    "e": 7.78
+    "w": "goes",
+    "s": 4.56,
+    "e": 4.88
    },
    {
     "w": "to",
-    "s": 7.78,
-    "e": 7.94
+    "s": 4.88,
+    "e": 5.06
    },
    {
-    "w": "Waste",
-    "s": 7.94,
-    "e": 8.36
+    "w": "waste.",
+    "s": 5.06,
+    "e": 5.44
    }
   ]
  }

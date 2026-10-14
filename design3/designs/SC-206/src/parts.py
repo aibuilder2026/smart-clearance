@@ -1,4 +1,4 @@
-"""SC-205, SC-206 (cut 3: the chosen take's timings, pauses inside a line): the film's building blocks: the voice's timeline, backgrounds, browser windows over the recordings, rings,
+"""SC-205, SC-206 (cut 3: the chosen take's timings, pauses inside a line; cut 4: the shorter close): the film's building blocks: the voice's timeline, backgrounds, browser windows over the recordings, rings,
 cards, words and the stop rail. Each part draws itself into a float BGR frame at a local time u (seconds)."""
 import json, math, re
 from functools import lru_cache
@@ -37,15 +37,15 @@ for _l in LINES:
             _cut = None
         PAUSE.setdefault(_l['id'], []).append((_cut, _add))
         DUR[_l['id']] = DUR[_l['id']] + _add
-LEAD, HOLD = 0.9, 3.0
-PRE = {'i03': 1.0, 'k01': 0.5, 'm01': 1.1, 's01': 1.1}  # a beat before the brand, the console and each journey
+LEAD, HOLD = 0.9, 1.5   # cut 4: the close held 1.5 s after its last word (3.0 in cut 3)
+PRE = {'i03': 1.0, 'k01': 0.5, 'm02': 1.1, 's01': 1.1}  # a beat before the brand, the console and each journey
 T = {}
 _t = LEAD
 for _l in LINES:
     _t += PRE.get(_l['id'], 0)
     T[_l['id']] = (_t, _t + DUR[_l['id']])
     _t += DUR[_l['id']] + _l['gap']
-END = round(T['e01'][1] + HOLD, 2)
+END = round(T[LINES[-1]['id']][1] + HOLD, 2)
 
 def norm(w):
     return re.sub(r"[^a-z0-9]", '', w.lower())

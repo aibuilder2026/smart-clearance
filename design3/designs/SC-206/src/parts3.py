@@ -190,7 +190,7 @@ import vfx
 TRACK = HERE / 'build' / 'track'
 
 class Footage:
-    """a person's shot as the whole frame: their LTX clip played frame for frame at its own 24 fps (never slowed,
+    """a person's shot as the whole frame: their LTX clip played frame for frame (at the film's 25 fps; never slowed,
     reversed or looped while it is seen sharp; behind a blur it may hold its last frame), or, until the clip exists,
     the keyframe on a slow push. Knows where its screen is in every frame (build/track/<key>.json, or the keyframe's)."""
     def __init__(self, key, hint=None, push=0.025):
@@ -203,7 +203,7 @@ class Footage:
                          '-show_entries', 'stream=nb_read_packets', '-of', 'csv=p=0', str(clip)], capture_output=True, text=True).stdout or 120)))
         p = HERE / 'img' / f'{key}-L.png'
         if not p.exists(): p = HERE / 'img' / f'{key}.png'
-        img = cv2.imread(str(p))
+        img = cv2.imread(str(p)) if p.exists() else None   # a derived clip (cut 4's stretched godown) has no keyframe of its own
         self.still = cv2.resize(img, (W, H), interpolation=cv2.INTER_AREA if img.shape[1] > W else cv2.INTER_CUBIC) if img is not None else np.zeros((H, W, 3), np.uint8)
         self.quads = None
         tj = TRACK / f'{key}.json'
@@ -220,8 +220,10 @@ class Footage:
         self.cache = (None, None)
 
     def index(self, u):
+        # cut 4: frame for frame at the film's 25 fps (4% quicker than the clip's own 24), so no frame shows twice a
+        # second; at 24 fps on the 25 fps timeline every 25th frame repeated, a judder in every moving shot
         if not self.clip: return 0
-        return int(clamp(math.floor(max(0.0, u) * 24 + 1e-6), 0, self.n - 1))
+        return int(clamp(math.floor(max(0.0, u) * FPS + 1e-6), 0, self.n - 1))
 
     def frame(self, u):
         """(uint8 BGR frame, its screen quad or None) at local time u"""

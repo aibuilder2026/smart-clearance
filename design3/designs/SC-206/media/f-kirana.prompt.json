@@ -13,5 +13,5 @@
   "ltx_desktop": "1.2.7",
   "minutes": 12.7,
   "cost_usd": 0,
-  "post": "the face shot: played at its own speed from its first frame until the whip pan; measured steady first (clipcheck.py), with no one-frame flash (deflash.py)"
+  "post": "the face shot: played frame for frame (at the film's 25 fps) from its first frame until the whip pan; measured steady first (clipcheck.py), with no one-frame flash (deflash.py)"
 }

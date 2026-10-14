@@ -1,4 +1,4 @@
-"""SC-206 (cut 3, shots3): render the film's picture, frame by frame, in parallel ranges, then join them.
+"""SC-206 (cut 4, shots4): render the film's picture, frame by frame, in parallel ranges, then join them.
   .venv/bin/python render.py [--preview] [--from S] [--to S] [--workers N] [--out build/film-silent.mp4]
 Each worker renders a contiguous range of frames (its own sources, read forward) to an x264 part at crf 12; the parts
 are joined without re-encoding. --preview renders 960 x 540 for a quick look."""
@@ -10,7 +10,7 @@ import kit
 from kit import W, H, FPS, HERE
 
 def render_range(a, b, path, preview):
-    import shots3 as S_
+    import shots4 as S_
     shots = S_.build()
     ow, oh = (960, 540) if preview else (W, H)
     enc = subprocess.Popen(['ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'bgr24', '-s', f'{ow}x{oh}', '-r', str(FPS), '-i', '-',
@@ -49,7 +49,7 @@ def main():
     ap.add_argument('--workers', type=int, default=8)
     ap.add_argument('--out', default=None)
     args = ap.parse_args()
-    import shots3 as S_
+    import shots4 as S_
     end = args.t1 if args.t1 is not None else S_.END
     n0, n1 = round(args.t0 * FPS), round(end * FPS)
     parts_dir = HERE / 'build' / ('parts-preview' if args.preview else 'parts')

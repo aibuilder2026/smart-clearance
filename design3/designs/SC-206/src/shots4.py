@@ -1,9 +1,12 @@
-"""SC-206 cut 3: the film's shots, laid on the voice. Times come from the voice-over's own word timings (at()), so each
+"""SC-206 cut 4: the film's shots, laid on the voice. Times come from the voice-over's own word timings (at()), so each
 person, screen, ring and paper lands on the words that name it. Screen rects are in the device's own pixels (measured on
-the production recordings, cut 2's, unchanged)."""
+the production recordings, cut 2's, unchanged). Cut 4 opens in a distributor's godown that dives into its carton's
+label, condenses the agents into six seconds of architecture in depth, drops Rehearsal, adds the console's live view,
+the Router's split as routes, the distributor's own portal and Impact's ledger, and closes shorter."""
 import json
 from parts import *
 from parts3 import *
+from parts4 import *
 import fx, labels as LB
 
 XF = 0.45  # the dissolve between shots
@@ -173,26 +176,36 @@ def build():
         S.append(Shot(name, t0, t1 + XF, bg, items))
     def a(lid, word=None, k=0): return at(lid, word, k)
 
-    # ======================================================== 0 · the problem: a label, a stack, the bin
-    t0, t1 = 0.0, a('i02') - 0.2
+    # ======================================================== 0 · the problem: a distributor's godown, a carton's date, the bin
+    t0, t1 = 0.0, a('i02') - 0.6
     L_ = t1 - t0
-    lab = Still25D('o1b-carton-macro', z=(1.0, 1.42), pan=((0, 0), (0, 0)), dur=L_ + XF, focus=(0.49, 0.47), depth_k=0.35)
-    boxes = json.loads((HERE / 'build' / 'labels' / 'MF-2410-118.boxes.json').read_text())
-    LM = np.float32(json.loads((HERE / 'build' / 'labels' / 'o1b.json').read_text())['H']) if (HERE / 'build' / 'labels' / 'o1b.json').exists() else None
-    items = [Blackout(0.0, 0.9)]
-    if LM is not None:
-        items.append(LabelRings(lab, LM, boxes, [
-            ('bb', 0.9, 2.6, card('Best before 24 Oct 2026', 'Every carton carries its batch and its date.', ('proof', 'THE LABEL'), 400, 'a')),
-            ('lic', 2.7, L_ + 0.2, card('FSSAI licence · barcode · batch QR', 'Real, and readable: scan the code on screen.', ('proof', 'THE LABEL'), 400, 'a'))]))
-    add('open-label', t0, t1, Layered(lab, [(fx.Dust(n=120, seed=21, strength=0.45), 0.8), (fx.Rays(1700, -140, strength=0.22, turn=0.015), 0.9)], vign=0.3),
-        items + [head(64, 72, 0.6, L_ + 0.3, "INDIA'S FOOD BRANDS", 'Every carton has a date.', width=900, hsize=50)])
+    PT = (1772, 577)   # a carton's label on the near stack, in the clip's last frames: the camera rushes into it
+    # the clip stretched 1.2x by motion interpolation (o0-godown-aisle-slow.mp4, ffmpeg minterpolate), so it keeps moving
+    # until the dive instead of holding its last frame
+    god = Dive(ClipBG('o0-godown-aisle-slow'), L_ - 0.45, L_ + XF, PT, z=3.4, mode='in')
+    add('open-godown', t0, t1, Layered(god, [], vign=0.22), [
+        Shade(0, 0, 1500, 560, 0.68, u0=0.5),
+        Blackout(0.0, 1.0),
+        Kinetic(64, 66, [[(w_, a('i01', k_) - t0) for w_, k_ in [('Every', 'Every'), ('day,', 'day'), ("India's", 'India'), ('food', 'food'),
+                                                                   ('brands', 'brands'), ('write', 'write'), ('off', 'off')]]],
+                size=40, kind='g', wght=600, rgb=(214, 228, 220)),
+        Kinetic(64, 122, [[(w_, a('i01', k_) - t0) for w_, k_ in [('stock', 'stock'), ('that', 'that'), ('sells', 'sells'), ('too', 'too'), ('slowly.', 'slowly')]]],
+                size=78)])
 
     t0, t1 = t1, a('i02', 'destroyed') - 0.2
     L_ = t1 - t0
-    stack = Still25D('o1-godown-stack', z=(1.0, 1.09), pan=((0, 0), (30, -8)), dur=L_ + XF, focus=(0.45, 0.55), depth_k=0.8)
-    add('open-stack', t0, t1, Layered(stack, [(fx.Rays(1500, -200, strength=0.30, turn=0.02), 0.9), (fx.Dust(n=160, seed=22, strength=0.55), 0.9)], vign=0.35), [
-        head(64, 72, 0.2, L_ + 0.3, 'NEAR EXPIRY', "Some batches don't sell in time.", width=900, hsize=50),
-        Sprite(chip_sprite('Too close to expiry for quick commerce', 'bad', 28), 64, 880, a('i02', 'quick') - t0, L_ + 0.3)])
+    lab = Still25D('o1b-carton-macro', z=(1.0, 1.28), pan=((0, 0), (0, 0)), dur=L_ + XF, focus=(0.49, 0.47), depth_k=0.35)
+    boxes = json.loads((HERE / 'build' / 'labels' / 'MF-2410-118.boxes.json').read_text())
+    LM = np.float32(json.loads((HERE / 'build' / 'labels' / 'o1b.json').read_text())['H']) if (HERE / 'build' / 'labels' / 'o1b.json').exists() else None
+    u_bb = a('i02', 'date') - t0 - 0.35
+    items = []
+    if LM is not None:
+        items.append(LabelRings(lab, LM, boxes, [
+            ('bb', u_bb, L_ + 0.2, card('Best before 24 Oct 2026', 'Every carton carries its batch and its date.', ('proof', 'THE LABEL'), 400, 'a'))], card_at=(64, 560)))
+    add('open-label', t0, t1, Dive(Layered(lab, [(fx.Dust(n=120, seed=21, strength=0.45), 0.8), (fx.Rays(1700, -140, strength=0.22, turn=0.015), 0.9)], vign=0.3),
+                                   0.0, 0.85, (W * 0.49, H * 0.47), z=2.3, mode='out'), items + [
+        Countdown(64, 712, u_bb + 0.55, L_ + 0.3, 60, 22),
+        Sprite(chip_sprite('Too close for Blinkit, Zepto and Instamart', 'bad', 26), 64, 800, a('i02', 'quick') - t0, L_ + 0.3)])
 
     t0, t1 = t1, T['i03'][0] - 1.15
     L_ = t1 - t0
@@ -202,43 +215,43 @@ def build():
         Sprite(chip_sprite('GST input credit reversed', 'bad', 28), 64, 880, a('i02', 'GST') - t0, L_ + 0.3)])
 
     # ======================================================== 1 · the brand, over the live landing page
-    t0, t1 = t1, a('i05') - 0.3
+    t0, t1 = t1, a('g01') - 0.4
     L_ = t1 - t0
     brand = BrandScene(t_strike=a('i03', 'write') - t0, t_recovery=a('i03', 'recovery') - t0, t_fly=T['i03'][1] - t0 + 0.25,
                        t_teams=a('i04', 'each') - t0, L=L_)
     add('brand', t0, t1, brand, [])
 
-    # ======================================================== 2 · the agents (unchanged from cut 2)
+    # ======================================================== 2 · the architecture in depth, then the agents' own walk (6 s)
     t0, t1 = t1, a('a01') - 0.45
     L_ = t1 - t0
-    s0 = t0
-    def u(lid, word=None, k=0): return a(lid, word, k) - s0 - 0.45   # each agent lit just before the voice names it
-    warp = [(0.0, 0), (u('i05', 'walk'), 71), (u('i06', 'Watcher'), 124), (u('i06', 'Vision'), 176), (u('i06', 'Valuer'), 229),
-            (u('i06', 'Router'), 281), (u('i07', 'one'), 334), (u('i08', 'Outreach'), 434), (u('i08', 'Paperwork'), 546),
-            (u('i08', 'Impact'), 599), (T['i08'][1] - s0 + 0.3, 651)]
-    add('agents', t0, t1, AgentsScene(warp, open_at=(1.5, 3.5)), [
-        head(60, 34, 2.9, L_ + 0.3, 'AGENTIC ARCHITECTURE', 'Ten agents. Nine stops. One human yes.', width=1200, hsize=42),
-        Arch(3.6, L_ + 0.3)])
+    def u(lid, word=None): return a(lid, word) - t0
+    arch = ArchScene(L_, d0=u('g01', 'batch'), d1=u('g01', '9'), u_yes=u('g01', 'yes'), glow_at=[('agents', u('g01', 'agents')), ('gemini', u('g01', 'Gemini'))])
+    add('agents', t0, t1, arch, [
+        Sprite(words_sprite(kicker='THE ARCHITECTURE', width=600), 64, 60, 0.15, arch.d0 + 0.1),
+        Kinetic(64, 100, [[('Ten', u('g01', '10')), ('agents', u('g01', 'agents'))], [('on', u('g01', 'on')), ('Gemini.', u('g01', 'Gemini'))]], size=64, u1=arch.d0 + 0.1),
+        Kinetic(935, 534, [[('Nine', u('g01', '9')), ('stops.', u('g01', 'stops'))]], size=76, align='center', u1=u('g01', 'one') - 0.02, fout=0.22),
+        Kinetic(935, 534, [[('One', u('g01', 'one')), ('human', u('g01', 'human')), ('yes.', u('g01', 'yes'), (247, 192, 74))]], size=76, align='center')])
 
     # ======================================================== 3 · the agenda
     t0, t1 = t1, T['k01'][0] - PRE['k01'] - 0.2
     L_ = t1 - t0
     add('agenda', t0, t1, Agenda([a('a01', 'SaaS') - t0 - 0.6, a('a01', 'happy') - t0 - 0.6, a('a01', 'sad') - t0 - 0.6], L_), [])
 
-    # ======================================================== 4 · the console: a brand set up in minutes
-    t0, t1 = t1, a('l01') - 0.3
+    # ======================================================== 4 · the console: a brand set up in minutes, then every client live
+    # (a segment plays on 0.3 s into the dissolve to the next: each ends that much before a stage card fades in, cardscan.py)
+    t0, t1 = t1, a('k03') - 0.3
     L_ = t1 - t0
-    segs = [(55.4, 57.2), (107.2, 108.1), (113.8, 115.2), (130.8, 132.4), (143.9, 145.6), (154.2, 156.3), (199.6, 202.0), (214.0, 216.1)]
+    segs = [(103.0, 104.6), (107.2, 107.8), (113.8, 115.2), (130.8, 132.4), (143.9, 145.6), (154.2, 156.3), (199.6, 202.0), (214.0, 216.1)]
     go = 2.5
-    cw = A3(segs, 'smartclearance-console.web.app', u0=go + 1.15, enter=False)
+    cw = A3(segs, 'smartclearance-console.web.app/clients', u0=go + 1.15, enter=False)
     st = [cw.seg_start(i, L_ + XF) for i in range(len(segs))]
     neha = DeviceShot(StillFace('f-neha', focus=(0.45, 0.40)), Footage('s-neha'), cw, t_whip=1.6, t_go=go, mode='push', who=NEHA)
     add('console', t0, t1, neha, [
         cw,
         head(64, 60, go + 1.3, L_ + 0.3, '01 · THE CONSOLE', 'A brand, set up in minutes.', width=500, hsize=44),
-        Steps(['Every client, live', 'Stock export, mapped', 'People, invited', 'SKU gates, per SKU', 'Agents, tuned'],
+        Steps(['Every client, one console', 'Stock export, mapped', 'People, invited', 'SKU gates, per SKU', 'Agents, tuned'],
               [go + 1.3, st[1], st[3], st[4], st[6]], 64, 330, u0=go + 1.3),
-        Ring(cw, (360, 265, 1545, 205), go + 1.5, st[1] - 0.05),
+        Ring(cw, (365, 650, 1545, 78), go + 1.5, st[1] - 0.05),
         Ring(cw, (365, 235, 1540, 690), st[1] + 0.1, st[3] - 0.05),
         Ring(cw, (360, 495, 1090, 225), st[3] + 0.1, st[4] - 0.05),
         Ring(cw, (360, 812, 1545, 72), st[4] + 0.1, st[5] - 0.05),
@@ -246,8 +259,22 @@ def build():
         Ring(cw, (1450, 540, 440, 230), st[6] + 0.1, st[7] - 0.05),
         Ring(cw, (1450, 355, 440, 235), st[7] + 0.1, L_ + 0.3)])
 
+    t0, t1 = t1, a('l01') - 0.3
+    L_ = t1 - t0
+    # three clean spans of the Overview (no stage note, ring or chapter card), at about half speed
+    ow = Window('admin', 'A', [(56.8, 58.2), (63.4, 65.0), (43.0, 44.0)], 584, 236, 0.66, 'smartclearance-console.web.app', who=who(NEHA), enter=False)
+    add('monitor', t0, t1, Room('f-neha', 16, 0.55), [
+        ow,
+        head(64, 60, 0.2, L_ + 0.3, '01 · THE CONSOLE · LIVE', 'Every client, live.', width=500, hsize=44),
+        Ring(ow, (755, 268, 370, 202), a('k03', 'batches') - t0 - 0.1, a('k03', 'agents') - t0 - 0.15,
+             card=card('39 batches in flight', 'Across 5 live clients, read again every 30 seconds.', ('live', 'OVERVIEW'), 420), at=(64, 330)),
+        Ring(ow, (380, 585, 1510, 305), a('k03', 'agents') - t0 - 0.05, a('k03', 'recover') - t0 - 0.2,
+             card=card('Agents at work', "Each mark is a client's batch, moving along the nine stops as the agents finish.", ('agent', 'NINE STOPS'), 420), at=(64, 330)),
+        Ring(ow, (365, 268, 370, 202), a('k03', 'recover') - t0 - 0.1, L_ + 0.3, accent='a',
+             card=card('₹64,79,201 recovered', 'In 30 days, across every client: 52 times the 30 days before.', ('result', 'RECOVERED'), 420, 'a'), at=(64, 330))])
+
     # ======================================================== 5 · live: everyone signs in
-    t0, t1 = t1, T['m01'][0] - PRE['m01'] - 0.2
+    t0, t1 = t1, T['m02'][0] - PRE['m02'] - 0.2
     L_ = t1 - t0
     sp = Window('mango', 'P', [(2.6, 5.4), (8.4, 13.0), (15.6, 18.6)], 150, 380, 0.66, WS, who=who(PRIYA))
     sl = Window('mango', 'L', [(19.6, 21.6), (23.4, 25.6), (29.4, 31.6), (35.6, 38.0)], 930, 330, 0.50, WS, who=who(LAKSHMI))
@@ -257,23 +284,13 @@ def build():
         sp, sl, sh])
 
     # ======================================================== 6 · the happy path: Munchly Mango Drink, Lakshmi Agencies
-    t0, t1 = t1, a('m02') - 0.3
-    L_ = t1 - t0
-    ph = H3('mango', [(47.9, 47.9 + L_ + XF)], CON, NEHA, speed=1.0)
-    add('rehearsal', t0, t1, Room('f-neha', 16, 0.55), [
-        head(64, 250, 0.2, L_ + 0.3, '02 · HAPPY PATH · MUNCHLY MANGO DRINK 200 ML', 'Rehearsal: a journey day passes in an hour.',
-             sub="The batches keep their real best-before dates, so the whole journey plays in minutes.", width=760, hsize=48, kcolor='a'),
-        ph,
-        Ring(ph, (18, 367, 416, 80), a('m01', 'Rehearsal') - t0, 6.45, accent='a',
-             card=card('Rehearsal · 1 day = 1 hour', "Real time, Rehearsal, Demo or Fast: the journey clock is the console's to set.", ('demo', 'DEMO SETUP'), 400, 'a'), at=(64, 640)),
-        Ring(ph, (14, 814, 424, 74), 6.65, L_ + 0.3, card=card('Journey reset to day 0', "Every open batch starts again from the story's first morning.", None, 400), at=(64, 820))])
-
     t0, t1 = t1, a('m03') - 0.3
     L_ = t1 - t0
-    go = 2.6
-    pw = P3('mango', [(88.4, 97.8)], WS + '/command', u0=go + 1.15, enter=False)
-    add('detect', t0, t1, DeviceShot(Footage('f-priya'), Footage('s-priya'), pw, t_whip=1.7, t_go=go, mode='push', who=PRIYA), [
+    go = 2.6 + 1.1
+    pw = P3('mango', [(88.4, 97.2)], WS + '/command', u0=go + 1.15, enter=False)
+    add('detect', t0, t1, DeviceShot(Footage('f-priya'), Footage('s-priya'), pw, t_whip=1.7 + 1.1, t_go=go, mode='push', who=PRIYA), [
         pw,
+        Sprite(words_sprite(kicker='02 · HAPPY PATH', head='Munchly Mango Drink 200 ml', width=900, hsize=40, kcolor='a'), 64, 64, 0.25, 1.7 + 1.1),
         head(64, 60, go + 1.2, L_ + 0.3, 'DETECT', "Priya gets the Watcher's alert.", width=640, hsize=44, stop=1),
         Ring(pw, (714, 56, 350, 112), go + 1.5, go + 3.6, card=card('A push, from the Watcher', 'MF-2410-118: 1,580 units will not sell before 24 Oct.', ('agent', 'WATCHER'), 400), at=(64, 600)),
         Ring(pw, (268, 420, 222, 68), go + 3.8, L_ + 0.3, card=card('₹22,657 at stake', '22 days left: too close for Blinkit, Zepto and Instamart.', ('live', 'WATCHER'), 400), at=(64, 600))])
@@ -291,17 +308,21 @@ def build():
 
     t0, t1 = t1, a('m05') - 0.3
     L_ = t1 - t0
-    pw = P3('mango', [(176.2, 178.8), (201.0, 202.5), (209.2, 212.0)], WS + '/route/MF-2410-118')
+    pw = P3('mango', [(176.2, 178.8), (201.0, 202.15), (209.2, 212.0)], WS + '/route/MF-2410-118')   # 202.15: the stage's note card fades in from 202.4
+    r_split, r_yes = a('m04', 'router') - t0 - 0.15, a('m04', 'approves') - t0 - 0.2
     add('approve', t0, t1, Room('s-priya', 16, 0.5), [
         head(64, 60, 0.2, L_ + 0.3, 'VALUE · APPROVE', 'Every exit priced. One yes.', width=640, hsize=44, stop=5),
         pw, Push(pw, 'plan', 0.2, 2.6),
-        Ring(pw, (245, 196, 495, 300), 0.4, pw.seg_start(1, L_ + XF) - 0.05, card=card('The Valuer and the Router', 'Every exit priced; the batch split between them.', ('agent', 'VALUER · ROUTER'), 400), at=(64, 600)),
-        Ring(pw, (660, 574, 398, 52), pw.seg_start(1, L_ + XF) + 0.1, L_ + 0.3, accent='a', card=card('Approve · release the agents', '₹16,917 net, against −₹22,657 in the bin.', ('result', 'ONE TAP'), 400, 'a'), at=(64, 600))])
+        Ring(pw, (245, 196, 495, 300), 0.4, r_split + 0.6),
+        PlanFlow(70, 268, r_split, L_ + 0.3, 'packs at risk', 1580,
+                 [('52 kiranas', 'the scheme', 1372, (52, 211, 128)), ('Staff sale', 'at the godown', 150, (115, 201, 157)),
+                  ('Feeding India', 'donated', 58, (247, 192, 74))], w=640, h=400),
+        Ring(pw, (660, 574, 398, 52), r_yes, L_ + 0.3, accent='a', card=card('Approve · release the agents', '₹16,917 net, against −₹22,657 in the bin.', ('result', 'ONE TAP'), 400, 'a'), at=(64, 790))])
 
     t0, t1 = t1, a('m05', 'A') - 0.3
     L_ = t1 - t0
     go = 2.2
-    kw_ = H3('mango', [(245.4, 248.0)], WS + '/offer/MF-2410-118', KIRANA, u0=go + 1.15, enter=False)
+    kw_ = H3('mango', [(245.4, 247.5)], WS + '/offer/MF-2410-118', KIRANA, u0=go + 1.15, enter=False)
     add('offer', t0, t1, DeviceShot(Footage('f-kirana'), Footage('s-kirana'), kw_, t_whip=1.4, t_go=go, mode='push', who=KIRANA), [
         kw_,
         head(64, 60, go + 1.2, L_ + 0.3, 'EXECUTE', 'The offer, in her own language.', width=700, hsize=44, stop=6),
@@ -310,7 +331,7 @@ def build():
     t0, t1 = t1, a('m06') - 0.3
     L_ = t1 - t0
     h = Window('mango', 'H', [(249.4, 249.4 + L_ + XF)], 250, 236, 0.76, WS + '/offer/MF-2410-118', who=who(KIRANA), speed=1.0)
-    p = Window('mango', 'P', [(249.4, 252.1), (259.6, 259.6 + L_ + XF - 2.7)], 760, 316, 0.98, WS + '/execution/MF-2410-118', who=who(PRIYA))
+    p = Window('mango', 'P', [(249.4, 251.9), (259.6, 259.6 + L_ + XF - 2.5)], 760, 316, 0.98, WS + '/execution/MF-2410-118', who=who(PRIYA))
     nx = a('m05b') - t0
     add('orders', t0, t1, Split(Room('s-kirana', 18, 0.55), Room('s-priya', 18, 0.55), seam=0.36), [
         head(64, 40, 0.2, L_ + 0.3, 'EXECUTE', "An order on her phone. Live on Priya's screen.", width=1500, hsize=44, stop=6),
@@ -338,9 +359,9 @@ def build():
     vis = a('m07', 'receipt') - t0 - 0.3   # Vision's read once the payments have added up, as the voice reaches the receipt
     lw = L3('mango', [(470.6, 470.6 + 6.0)], WS + '/home', LAKSHMI, u0=vis, speed=1.0)
     sc = a('m07', 'scanning') - t0
-    # the clip holds the scan for 1.5 s, then he lowers the phone to pay: its screen rises out while it is still up, and
-    # the phone's window scans until the voice says it, then pays
-    upi = UpiScene(t_lift=1.5, t_pay=sc + 0.3, t_paid=a('m07', 'UPI') - t0 + 0.2, t_list=a('m07', 'UPI') - t0 + 0.6,
+    # the clip holds the scan for 1.5 s (1.44 s of film, played at 25 fps), then he lowers the phone to pay: its screen
+    # rises out while it is still up, and the phone's window scans until the voice says it, then pays
+    upi = UpiScene(t_lift=1.44, t_pay=sc + 0.3, t_paid=a('m07', 'UPI') - t0 + 0.2, t_list=a('m07', 'UPI') - t0 + 0.6,
                    t_vision=vis, lwin=lw, L=L_)
     add('upi', t0, t1, upi, [
         head(64, 60, 0.2, vis, 'EXECUTE · STAFF SALE', 'Paid by UPI, one scan each.', width=900, hsize=44, stop=6),
@@ -363,7 +384,7 @@ def build():
         PaperShow([rcpt, cn], cx=1040, zx=1030),
         head(64, 60, cn_t, L_ + 0.3, 'SETTLE', 'Every paper, drafted and signed.', width=520, hsize=44, stop=7)])
 
-    t0, t1 = t1, T['s01'][0] - PRE['s01']
+    t0, t1 = t1, a('m09b') - 0.3
     L_ = t1 - t0
     res = ResultPunch(0.15, L_ + 0.4, 'THE MANGO DRINK · THE RESULT', 'mango', 'MF-2410-118 · Lakshmi Agencies, Hyderabad',
                       16917.10, -22657.20, 22194.30,
@@ -374,6 +395,23 @@ def build():
                       [a('m09', 'Lakshmi') - t0, a('m09', 'Lakshmi') - t0 + 0.6, a('m09', 'Lakshmi') - t0 + 1.2],
                       bg=Room('f-lakshmi-L', 14, 0.6).img)
     add('mango-result', t0, t1, res, [])
+
+    # her own portal: that she ends whole, what happened step by step, and her papers
+    t0, t1 = t1, T['s01'][0] - PRE['s01']
+    L_ = t1 - t0
+    u_step, u_paper = a('m09b', 'step') - t0, a('m09b', 'paper') - t0
+    dA = u_step - 0.35; dB = (u_paper - 0.3) - dA
+    # Money once the stage's note has gone (747.4), What happened before the stage clicks Money (740.7), then Papers
+    lw = Window('mango', 'L', [(747.6, 750.6, dA), (738.7, 740.3, dB), (765.95, 768.2)], 1170, 150, 0.74, WS + '/batches/MF-2410-118', who=who(LAKSHMI))
+    add('portal', t0, t1, Room('f-lakshmi-L', 16, 0.55), [
+        TiltIn(lw, 0.15, side=-1),
+        head(64, 60, 0.25, L_ + 0.3, "THE DISTRIBUTOR'S PORTAL", 'Her own view of the batch.', width=760, hsize=44),
+        Checklist(70, 330, [('She ends whole', 'what she paid, all back: ₹0 gained or lost', 1.05),
+                            ('What happened', 'every step, as it was done: 2 Oct, 08:14 to 12:11', u_step - 0.2),
+                            ('Every paper', 'the credit note, the staff receipt, 52 tax invoices', u_paper - 0.2)], L_ + 0.3),
+        Ring(lw, (95, 262, 735, 336), 1.1, dA - 0.05),
+        Ring(lw, (100, 268, 728, 728), dA + 0.1, dA + dB - 0.05),
+        Ring(lw, (95, 255, 735, 520), dA + dB + 0.15, dA + dB + (767.15 - 765.95) * (L_ + XF - dA - dB) / (768.2 - 765.95))])   # until the register's sheet opens
 
     # ======================================================== 7 · the sad path: Munchly Masala Chips, Rakesh Traders
     t0, t1 = t1, a('s02') - 0.3
@@ -390,7 +428,7 @@ def build():
     L_ = t1 - t0
     go = 2.2
     d0 = a('s02', 'counters') - 0.3 - t0 - (go + 1.15)   # the counter on screen as the voice says it
-    aw = H3('sad', [(441.0, 444.6, d0), (448.6, 451.4), (460.0, 463.4)], WS + '/market/ES-24117', AGRAWAL, u0=go + 1.15, enter=False)
+    aw = H3('sad', [(441.0, 444.2, d0), (448.6, 451.1), (460.0, 463.4)], WS + '/market/ES-24117', AGRAWAL, u0=go + 1.15, enter=False)
     q1, q2 = aw.seg_start(1, L_ + XF), aw.seg_start(2, L_ + XF)
     add('lot', t0, t1, DeviceShot(StillFace('f-agrawal'), Footage('s-agrawal'), aw, t_whip=1.4, t_go=go, mode='push', who=AGRAWAL), [
         aw,
@@ -415,7 +453,7 @@ def build():
 
     t0, t1 = t1, a('s05', 'and') - 0.25
     L_ = t1 - t0
-    shot_at = 1.9
+    shot_at = 1.9 * 24 / 25    # the clip's own 1.9 s, played at 25 fps
     after = cv2.imread(str(EVID / 'destruction-after-540-packs.webp'))
     add('landfill', t0, t1, CamView('s-landfill-photo', screen_of('s-landfill-photo'), shot_at, photo=after, hold=shot_at + 0.6), [
         Flash(shot_at),
@@ -435,7 +473,7 @@ def build():
     t0, t1 = t1, a('s06', 'Every') - 0.2
     L_ = t1 - t0
     go = 1.1
-    pw = P3('sad', [(695.0, 697.4), (720.8, 722.8), (751.0, 752.6)], WS + '/execution/MF-2409-117', u0=go + 1.15, enter=False)
+    pw = P3('sad', [(696.8, 698.4), (720.8, 722.8), (751.0, 752.6)], WS + '/execution/MF-2409-117', u0=go + 1.15, enter=False)   # 696.8: past the stage's own ring on Vision's checks
     y1, y2 = pw.seg_start(1, L_ + XF), pw.seg_start(2, L_ + XF)
     add('second-yes', t0, t1, DeviceShot(None, Footage('s-priya-eve'), pw, t_whip=0.0, t_go=go, mode='push', who=None), [
         pw,
@@ -454,7 +492,7 @@ def build():
     add('chips-papers', t0, t1, Room('s-priya-eve', 18, 0.6), [PaperShow([cert, inv], cx=1040, zx=1030),
         head(64, 60, 0.2, L_ + 0.3, 'SETTLE', 'Every paper, signed.', width=520, hsize=44, stop=7)])
 
-    t0, t1 = t1, T['e01'][0] - 0.35
+    t0, t1 = t1, a('m10') - 0.3
     L_ = t1 - t0
     res = ResultPunch(0.15, L_ + 0.4, 'THE MASALA CHIPS · THE RESULT', 'chips', 'MF-2409-117 · Rakesh Traders, Nagpur',
                       11702.40, -26329.60, 14868.00,
@@ -466,13 +504,34 @@ def build():
                       bg=Room('f-rakesh-L', 14, 0.6).img, accent=(247, 192, 74))
     add('chips-result', t0, t1, res, [])
 
+    # ======================================================== 8 · Impact's ledger: the year so far, then the batch's BRSR line
+    t0, t1 = t1, T['e02'][0] - 0.35
+    L_ = t1 - t0
+    u_br = a('m10', 'ready') - t0 - 0.25
+    # the headline (720.05), the dashboard scrolled (three clean spans between the stage's rings), the batch's BRSR line (734.0)
+    iw = Window('mango', 'P', [(720.05, 721.45, 3.05), (721.95, 722.6), (724.8, 725.3), (728.6, 730.0), (734.0, 735.8, L_ + XF - u_br)],
+                770, 250, 1.0, WS + '/report', who=who(PRIYA))
+    add('impact', t0, t1, Room('s-priya-eve', 16, 0.55), [
+        TiltIn(iw, 0.1),
+        head(64, 60, 0.25, L_ + 0.3, 'REPORT · IMPACT', 'The ledger, the year so far.', width=640, hsize=44, stop=8),
+        Ring(iw, (240, 248, 420, 74), 0.95, 3.1,
+             card=card('2.30 t kept out of landfill', 'FY 2026-27 so far: 2.07 t resold, 224.6 kg donated, 930 meals.', ('result', 'IMPACT'), 420), at=(64, 330)),
+        Ring(iw, (265, 74, 783, 112), 3.3, u_br - 0.1,
+             card=card('68 kg destroyed · 5.75 t CO₂e avoided', '97.1% of the food saved, every batch on the record.', ('result', 'IMPACT'), 420), at=(64, 330)),
+        Ring(iw, (252, 237, 765, 186), u_br + 0.15, L_ + 0.3, accent='a',
+             card=card('Ready for BRSR', "The batch's own BRSR line: 339.7 kg diverted, 58 meals, with its evidence.", ('proof', 'BRSR'), 420, 'a'), at=(64, 330))])
+
     live = [x.name for x in S]
-    a0, a1 = live.index('signins'), live.index('chips-result')
+    a0, a1 = live.index('signins'), live.index('impact')
     for i in range(a0, a1 + 1):
         S[i].items.append(LiveTag(fin=(i == a0), fout=(i == a1)))
 
+    # ======================================================== 9 · the close
     t0, t1 = t1, END
-    add('end', t0, t1 - XF, EndCard(0.0, t1 - t0), [Blackout(t1 - t0 - 1.2, t1 - t0 - 0.05, into=True)])
+    words = [('Ten', a('e02', '10') - t0), ('agents,', a('e02', 'agents') - t0), ('one', a('e02', '1') - t0), ('yes,', a('e02', 'yes') - t0, (247, 192, 74)),
+             ('and', a('e02', 'and') - t0), ('nothing', a('e02', 'nothing') - t0), ('good', a('e02', 'good') - t0), ('goes', a('e02', 'goes') - t0),
+             ('to', a('e02', 'to') - t0), ('waste.', a('e02', 'waste') - t0)]
+    add('end', t0, t1 - XF, EndCard4(t1 - t0, words), [Blackout(t1 - t0 - 1.0, t1 - t0 - 0.05, into=True)])
     S[-1].t1 = END
     return S
 

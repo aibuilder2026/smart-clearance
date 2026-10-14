@@ -1,7 +1,8 @@
-"""SC-206 (cut 3): the shipped copies of the generated media, each with its .prompt.json: the Qwen keyframes the film
-uses as WebP in ../img/ (where a batch's real label was printed on the cartons, the labelled frame, as the film shows
-it), the LTX clips in ../media/ (their sidecars written by gen-ltx.py, the use in the cut added). Parameters are those
-of gen-qwen.sh and gen-qwen2.sh; the cast sheets are SC-154's, SC-158's and SC-187's.   .venv/bin/python sidecars3.py"""
+"""SC-206 (cuts 3 and 4): the shipped copies of the generated media, each with its .prompt.json: the Qwen keyframes the
+film uses as WebP in ../img/ (where a batch's real label was printed on the cartons, the labelled frame, as the film
+shows it), the LTX clips in ../media/ (their sidecars written by gen-ltx.py and gen-ltx4.py, the use in the cut added).
+Parameters are those of gen-qwen.sh, gen-qwen2.sh and gen-qwen3.sh; the cast sheets are SC-154's, SC-158's and
+SC-187's.   .venv/bin/python sidecars4.py"""
 import json, shutil
 from pathlib import Path
 from PIL import Image
@@ -24,7 +25,10 @@ PEOPLE = {
     's-meera': ('meera', 206313, CART), 'f-meera': ('meera', 206314, CART), 's-upi': ('lakshmi', 206315, CART),
     's-landfill-photo': ('rakesh', 206316, ''), 's-landfill-sign': ('rakesh', 206317, ''), 's-priya-eve': ('priya', 206318, OFF),
 }
-PLACES = {'o1b-carton-macro': 206012, 'o1-godown-stack': 206011}
+PLACES = {'o1b-carton-macro': 206012, 'o0-godown-aisle': 206501}   # cut 4: the godown aisle opens the film; the stack is gone
+# keyframes touched after Qwen, before LTX
+PLACE_POST = {'o0-godown-aisle': "two specks of pseudo-lettering on the forklift's back painted out (OpenCV inpaint, Telea, 6 px), "
+                                 "so no lettering shows; the raw keyframe kept locally as o0-godown-aisle-raw.png"}
 # faces the film moves through in 2.5D (parts3.StillFace: Still25D on depth.py's map) instead of a clip, since no clip
 # held: LTX turned Agrawal's phone to the camera (two takes) and had Neha look into the lens (two takes)
 STILL = {'f-agrawal': 'the face shot, the keyframe moved through in 2.5D (StillFace), as both LTX takes turned the phone to the camera',
@@ -43,6 +47,7 @@ def ship(k, meta):
     im.resize((w, round(w * im.height / im.width)), Image.LANCZOS).save(IMG / f'{k}.webp', quality=88, method=6)
     post = f'resized to {w} wide (lanczos), WebP q88'
     if lab.exists(): post = LABEL + '; then ' + post
+    if k in PLACE_POST: post = PLACE_POST[k] + '; then ' + post
     meta.update({'original': f'{im.width}x{im.height} PNG, local in src/img/', 'post': post, 'cost_usd': 0})
     if k in STILL: meta['in_the_film'] = STILL[k]
     (IMG / f'{k}.prompt.json').write_text(json.dumps(meta, indent=2, ensure_ascii=False))
@@ -63,9 +68,15 @@ for c in sorted((HERE / 'clips').glob('*.mp4')):
     side = c.with_suffix('.prompt.json')
     if side.exists():
         d = json.loads(side.read_text())
-        d['post'] = (("the face shot: played at its own speed from its first frame until the whip pan" if c.stem.startswith('f-') else
-                      "over the shoulder: played at its own speed from its first frame, the live app set into its screen frame "
-                      "by frame (track3.py follows the screen; vfx.insert keeps any finger over it), until the device comes "
-                      "into focus") + "; measured steady first (clipcheck.py), with no one-frame flash (deflash.py)")
+        if c.stem == 'o0-godown-aisle':
+            d['post'] = ("the opening: stretched 1.2x by motion interpolation (ffmpeg setpts=1.2*PTS, minterpolate=fps=24:"
+                         "mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1) into o0-godown-aisle-slow.mp4, so it moves until "
+                         "the camera rushes into a carton's label (parts4.Dive); played frame for frame at 25 fps; looked at "
+                         "as a contact sheet first (the second worker walks behind the moving pallet)")
+        else:
+            d['post'] = (("the face shot: played frame for frame (at the film's 25 fps) from its first frame until the whip pan" if c.stem.startswith('f-') else
+                          "over the shoulder: played frame for frame (at the film's 25 fps) from its first frame, the live app set "
+                          "into its screen frame by frame (track3.py follows the screen; vfx.insert keeps any finger over it), "
+                          "until the device comes into focus") + "; measured steady first (clipcheck.py), with no one-frame flash (deflash.py)")
         (MEDIA / side.name).write_text(json.dumps(d, indent=2, ensure_ascii=False))
 print('sidecars written')

@@ -13,5 +13,5 @@
   "ltx_desktop": "1.2.7",
   "minutes": 13.7,
   "cost_usd": 0,
-  "post": "over the shoulder: played at its own speed from its first frame, the live app set into its screen frame by frame (track3.py follows the screen; vfx.insert keeps any finger over it), until the device comes into focus; measured steady first (clipcheck.py), with no one-frame flash (deflash.py)"
+  "post": "over the shoulder: played frame for frame (at the film's 25 fps) from its first frame, the live app set into its screen frame by frame (track3.py follows the screen; vfx.insert keeps any finger over it), until the device comes into focus; measured steady first (clipcheck.py), with no one-frame flash (deflash.py)"
 }

@@ -2,7 +2,7 @@
    .venv/bin/python sheet3.py out.jpg [shot names…]"""
 import sys, time
 import numpy as np, cv2
-import shots3 as S
+import shots4 as S
 
 out = sys.argv[1]; only = set(sys.argv[2:])
 rows = []

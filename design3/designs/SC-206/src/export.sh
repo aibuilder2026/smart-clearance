@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SC-206 (cut 3): the deliverables from build/film-silent.mp4 (crf-12 picture) and build/mix.wav:
+# SC-206 (cuts 3 and 4): the deliverables from build/film-silent.mp4 (crf-12 picture) and build/mix.wav:
 # a crf-17 master and a 720p copy for working-demo/ at the repository root, a crf-21 1080p copy and the captions for
 # design3/designs/SC-206/media/. The copies in working-demo/ carry the export's date and time in their names.
 set -eu
