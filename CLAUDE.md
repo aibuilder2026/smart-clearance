@@ -2616,11 +2616,42 @@
   - **The stage** (`stage.ts`): a note card with no room beside, under or over what it reads sits inside the screen at its foot's right corner, with no caret; the first take's cards went past the screen's edge, cut off.
   - **The run of 13 Oct on production** (`runs/2026-10-13-prod-admin-walk/REPORT.md`): passed, 15 steps in 3 min 40 s, against `730f90c0`, with no finding. The recording (2560 × 1440) and its 720p copy are `playwright-automation-videos/admin-console-walk-prod-2026-10-13_12-16-11*.mp4`, local; two earlier takes are kept as `…-superseded.mp4`. Munchly's gates read back unchanged afterwards.
   - **Checks:** the frontend gate passes (api 83, core 408, admin 22, console 2, demo 9, workspace 115).
-- **SC-205** (In Review, branch `SC-205-working-demo-film-v2`): the working demo made again from the three production recordings of 13 Oct (SC-204's admin and console walkthrough, SC-201's Mango Drink, SC-202's chips sad path), asked for by the maintainer, in two cuts.
+- **SC-205** (PR #186, merged): the working demo made again from the three production recordings of 13 Oct (SC-204's admin and console walkthrough, SC-201's Mango Drink, SC-202's chips sad path), asked for by the maintainer, in two cuts.
   - **Cut 1** (3 min 39.5 s): the problem, the product and the agents' animation (the production console's sign-in, captured frame-exact at 2x on a virtual clock, `vclock.js`), the console, the Mango Drink from Rehearsal, the chips' sad path. A frame compositor that never scales a screen on screen (rings with cards, never zooms) cured SC-200's shake and blur; the stage's own green note cards were cut round in every window.
   - **Cut 2** (3 min 39.2 s, under the 235 s cap), on the maintainer's notes: no Report now; the people as characters at work beside their own live device, the app's real pushes popping up on it (backend-api's own words, `src/pushes.json`; the Hindi offer shaped by Chromium); the console setting a brand up quickly (stock export mapped, people invited, gates per SKU, agents tuned); quick sign-ins on production; a "live on production · Cloud Run · Gemini" tag, and the voice says so; kiranas offered in their own language, more Indian languages and WhatsApp on the roadmap; the opening condensed to 11 s; the agents' animation untouched.
   - **The people:** Priya, Lakshmi Agencies, a kirana shopkeeper, the staff paying by UPI, Meera loading the food bank's van, the Saturday van delivering, Agrawal on his tablet, Rakesh by the stack and at the landfill (photographing, then signing with the agency's officer and two witnesses), Neha at the console. Qwen keyframes, then edits of the same frame where a person returns, so each face stays the same; every name tag's face cut from the person's own keyframe (`faces.py`); LTX 540p clips.
   - **Nothing invented:** every keyframe checked at full size and every clip by contact sheet before use. Rejected: a landfill heap with tablets, then lettering on the excavator and brand-like printing on packets; a worker with two phones; a tablet turned into a folder; a destruction clip whose falling packets glowed like flames; the chips' godown clip twice. The only label in the film is the real label photo Lakshmi Agencies sent.
   - **Steady:** LTX pushes in even when told to hold still and the push can change a face. `clipcheck.py` measures each clip's gentle stretch, `stab.py` locks it to a tripod frame, `deflash.py` removes one-frame flashes, `prep-clips.py` retimes it to its shot, and `breathe.py` plays a short clip forward and back with eased turns where a shot is longer. Resting screens hold to the sub-pixel; every window plays between 0.55× and 1.25× (the labelled fast-forward aside).
   - **Where:** `working-demo/smart-clearance-working-demo-2026-10-13_18-52-26.mp4` (crf 17), its 720p copy and captions, beside cut 1 (`…_14-11-48`) and SC-200's cut (`previous-SC-200/`); the crf-21 1080p, 720p and captions, every keyframe and clip with its sidecar, in `design3/designs/SC-205/`. −14.0 LUFS. The spend: nothing (Qwen, LTX, Kokoro and Whisper locally; SC-187's music reused).
+- **SC-206** (In Review, branch `SC-206-working-demo-film-v3`): cuts 3 and 4 of the working demo, each at most 240 seconds.
+  - **Cut 3**, on the maintainer's ten notes on cut 2:
+    - the app's own faces, cut from its cast sheets (SC-194);
+    - an Indian English woman's voice (Maya1, local), every line read back word for word;
+    - each person seen at work, then their device brought into focus (a whip pan, then a push into the screen or the screen lifting out);
+    - the batch's own labels on the cartons, the papers highlighted, the UPI scan made clear;
+    - every device the right way round, its screen towards its user.
+
+    3 min 59.0 s (`working-demo/…_2026-10-14_01-31-38.mp4`).
+  - **Cut 4**, on five notes on cut 3 ("This looks really really good"), with the smooth motion of the film on spoileralert.com (studied frame by frame in the browser; nothing downloaded) as its model:
+    - **The opening:** a distributor's godown at dawn (Qwen, then LTX, stretched 1.2× by motion interpolation), the words landing as the voice says them; then the camera rushes into one carton's label: its best-before ringed, 22 days left counted down. The second shot, a worker lifting a carton, was rejected: its clip crumpled the carton.
+    - **The agents in 5.9 s** (`parts4.ArchScene`): five layers rise onto a platform in depth (Firebase Hosting, backend-api on Cloud Run with Cloud SQL, Pub/Sub and Scheduler, the ten agents on Google ADK, Gemini on Vertex AI); routes draw on with packets; the camera dives into the agents' layer, and their walk runs through the nine stops to the amber yes.
+    - **Rehearsal** is gone.
+    - **New beats:**
+      - the console's live Overview;
+      - the Router's split drawn as routes (`PlanFlow`);
+      - Lakshmi Agencies' own portal: she ends whole, every step, every paper, ticked as said (`Checklist`, `TiltIn`);
+      - Impact's ledger, the year so far (2.30 t kept out of landfill, 930 meals), and the batch's BRSR line.
+    - **The close** is 7.0 s: the mark draws its route as the design system plays it.
+    - **Smoother:** the LTX clips play frame for frame at 25 fps (cut 3 showed one frame twice a second), and the stage's note cards no longer show through three segment joins (`cardscan.py` scans the dissolves now).
+  - **Checks (cut 4):**
+    - 230.80 s, −14.0 LUFS, −1.5 dBTP;
+    - windows between 0.46× and 1.29× (the labelled fast-forward aside);
+    - `cardscan.py`'s hits all the app's own green buttons;
+    - the label's QR read back from the film's own frames;
+    - 23 of 29 lines word for word from the final mix (the rest a word under the music, or a figure written differently).
+  - **Where:**
+    - `working-demo/smart-clearance-working-demo-2026-10-14_11-16-06.mp4` (crf 17), its 720p copy and captions;
+    - the crf-21 1080p, 720p and captions, the keyframes and clips with their sidecars, the pipeline and its README in `design3/designs/SC-206/`.
+
+    The spend: nothing (Qwen-Image, LTX, Maya1, Whisper and UTMOS locally; SC-187's music reused).
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

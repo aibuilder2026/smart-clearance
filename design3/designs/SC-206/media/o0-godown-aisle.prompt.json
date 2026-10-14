@@ -1,0 +1,17 @@
+{
+  "prompt": "A vast distributor's warehouse at dawn: towering grey steel racks stacked high with brown kraft cartons on wooden pallets line a long aisle, and long shafts of golden morning light fall through the high windows on the left, full of slowly drifting dust. The yellow forklift in the middle of the aisle drives slowly to the right with its pallet of cartons, and the two workers in orange reflective vests walk slowly towards the camera. The camera glides slowly forward along the aisle. Everything keeps its form; no object appears, vanishes or changes shape; people keep their faces, hands and bodies natural; every carton stays plain brown kraft with one blank white label sticker and no printing; no text, numbers or lettering appear anywhere. Photorealistic cinematic footage, natural motion, smooth and slow.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "1080p",
+  "duration": 5,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "dolly_in",
+  "audio": false,
+  "seed": 206901,
+  "loras": [],
+  "image": "o0-godown-aisle.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 11.4,
+  "cost_usd": 0,
+  "post": "the opening: stretched 1.2x by motion interpolation (ffmpeg setpts=1.2*PTS, minterpolate=fps=24:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1) into o0-godown-aisle-slow.mp4, so it moves until the camera rushes into a carton's label (parts4.Dive); played frame for frame at 25 fps; looked at as a contact sheet first (the second worker walks behind the moving pallet)"
+}

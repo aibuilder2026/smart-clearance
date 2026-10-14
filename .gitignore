@@ -130,3 +130,29 @@ design3/designs/SC-205/src/*
 !design3/designs/SC-205/src/tts/
 design3/designs/SC-205/src/tts/*
 !design3/designs/SC-205/src/tts/*.py
+
+# SC-206: cut 3's pipeline ships (scripts, prompts, the voice lines, the screens' corners and the chosen takes' timings);
+# keyframe PNGs, clips, depth maps, captures, voice takes, the venvs and the build stay local
+!design3/designs/SC-206/src/
+design3/designs/SC-206/src/*
+!design3/designs/SC-206/src/*.py
+!design3/designs/SC-206/src/*.sh
+!design3/designs/SC-206/src/*.mjs
+!design3/designs/SC-206/src/*.js
+!design3/designs/SC-206/src/lines.json
+!design3/designs/SC-206/src/pushes.json
+!design3/designs/SC-206/src/prompts/
+!design3/designs/SC-206/src/build/
+design3/designs/SC-206/src/build/*
+!design3/designs/SC-206/src/build/screens.json
+!design3/designs/SC-206/src/tts/
+design3/designs/SC-206/src/tts/*
+!design3/designs/SC-206/src/tts/*.py
+!design3/designs/SC-206/src/tts/*.sh
+!design3/designs/SC-206/src/tts/sample.txt
+!design3/designs/SC-206/src/tts/voice.txt
+!design3/designs/SC-206/src/tts/vo3/
+design3/designs/SC-206/src/tts/vo3/*
+!design3/designs/SC-206/src/tts/vo3/maya1b-brisk/
+design3/designs/SC-206/src/tts/vo3/maya1b-brisk/*
+!design3/designs/SC-206/src/tts/vo3/maya1b-brisk/*.json

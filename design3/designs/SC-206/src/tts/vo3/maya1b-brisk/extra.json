@@ -1,0 +1,55 @@
+{
+ "s07-6.wav": {
+  "say": "Even here, Munch-lee recovers eleven thousand seven hundred rupees against a twenty-six thousand rupee write-off, and Rakesh ends whole.",
+  "seed": 575,
+  "why": "six takes of the line as written said 'Munkli', 'Mankli' or 'monthly'; the brand respelled as 'Munch-lee' reads back as 'Munchly'"
+ },
+ "s01-2.wav": {
+  "say": "But not every batch sells. Munch-lee's Masala Chips go to Rakesh Traders' kiranas in Nagpur, and just two of them order.",
+  "seed": 2212
+ },
+ "s01-3.wav": {
+  "say": "But not every batch sells. Munch-lee's Masala Chips go to Rakesh Traders' kiranas in Nagpur, and just two of them order.",
+  "seed": 3212
+ },
+ "s01-4.wav": {
+  "say": "But not every batch sells. Munch-lee's Masala Chips go to Rakesh Traders' kiranas in Nagpur, and just two of them order.",
+  "seed": 4212
+ },
+ "s01-5.wav": {
+  "say": "But not every batch sells. Munch-lee's Masala Chips go to Rakesh Traders' kiranas in Nagpur, and just two of them order.",
+  "seed": 5212
+ },
+ "m01-2.wav": {
+  "say": "(the brand respelled 'Munch-lee'; not chosen: read back as 'Manchali' or 'Munch Lee')",
+  "seed": 2206
+ },
+ "m01-3.wav": {
+  "say": "(the brand respelled 'Munch-lee'; not chosen: read back as 'Manchali' or 'Munch Lee')",
+  "seed": 3206
+ },
+ "m01-4.wav": {
+  "say": "(the brand respelled 'Munch-lee'; not chosen: read back as 'Manchali' or 'Munch Lee')",
+  "seed": 4206
+ },
+ "m01-5.wav": {
+  "say": "(the brand respelled 'Munch-lee'; not chosen: read back as 'Manchali' or 'Munch Lee')",
+  "seed": 5206
+ },
+ "m09-2.wav": {
+  "say": "(the brand respelled 'Munch-lee'; not chosen: read back as 'Manchali' or 'Munch Lee')",
+  "seed": 2214
+ },
+ "m09-3.wav": {
+  "say": "(the brand respelled 'Munch-lee'; not chosen: read back as 'Manchali' or 'Munch Lee')",
+  "seed": 3214
+ },
+ "m09-4.wav": {
+  "say": "(the brand respelled 'Munch-lee'; not chosen: read back as 'Manchali' or 'Munch Lee')",
+  "seed": 4214
+ },
+ "m09-5.wav": {
+  "say": "(the brand respelled 'Munch-lee'; not chosen: read back as 'Manchali' or 'Munch Lee')",
+  "seed": 5214
+ }
+}

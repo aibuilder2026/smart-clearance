@@ -1,0 +1,14 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "edit",
+  "condition_images": [
+    "design3/designs/SC-187/img/cast-agrawal.webp (the cast sheet the app's portrait was cut from, SC-194)"
+  ],
+  "seed": 206312,
+  "size": 1024,
+  "prompt": "Show the person from the reference image exactly once, in a new photograph, keeping their face, hair, skin tone, age, build, clothes and accessories exactly as in the reference: he sits at the desk of his wholesale shop in a busy grain market in Raipur, jute sacks of grain and stacked sealed brown cartons behind him, daylight from the street; he holds one smartphone in his right hand in front of his chest, its plain dark back towards the camera and its screen facing him, and smiles shrewdly as he reads it; his left hand rests on the desk and holds nothing; only one phone in the picture. Medium shot from the front. Every carton is plain brown kraft with one blank white rectangular label sticker on its side and no other printing. Photorealistic cinematic still from a professional corporate film, full-frame cinema camera, 35 mm lens, gentle shallow depth of field, realistic Indian setting, natural faces and natural hands with five fingers, true-to-life colours, motivated natural light, calm composition. Physically correct: a person always looks at the front of the screen they are using. Any screen we can see is a plain, evenly lit, blank white display with nothing on it. No text, no numbers, no lettering, no logos, no signs anywhere in the picture.",
+  "original": "1920x1080 PNG, local in src/img/",
+  "post": "the Mango Drink's or the Masala Chips' own label (design3/system/labels, the batch's record: batch, dates, MRP, the FSSAI licence, its EAN-13 and QR code) printed onto each carton's blank sticker in perspective, lit and softened to the sticker's own focus (labels.py, prep-keys.py / prep-opening.py); every code read back; then resized to 1920 wide (lanczos), WebP q88",
+  "cost_usd": 0,
+  "in_the_film": "the face shot, the keyframe moved through in 2.5D (StillFace), as both LTX takes turned the phone to the camera"
+}

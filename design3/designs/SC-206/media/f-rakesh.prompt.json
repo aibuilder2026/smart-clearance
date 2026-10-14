@@ -1,0 +1,17 @@
+{
+  "prompt": "A locked-off tripod shot: the camera does not move, pan, tilt or zoom. Exactly as in the image: in the dim godown the grey-haired man in the light blue checked shirt reads the tablet in his hands, frowns slightly and slowly lets out a breath. Only his face moves a little; the tablet and the cartons stay exactly where they are. Everything keeps its form; no object appears, vanishes or changes shape; faces and hands stay natural, with five fingers; every screen stays a plain, evenly lit white display with nothing on it; no text or lettering appears. Photorealistic cinematic footage, natural motion, smooth and slow.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "1080p",
+  "duration": 5,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "static",
+  "audio": false,
+  "seed": 206804,
+  "loras": [],
+  "image": "f-rakesh-L.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 12.5,
+  "cost_usd": 0,
+  "post": "the face shot: played frame for frame (at the film's 25 fps) from its first frame until the whip pan; measured steady first (clipcheck.py), with no one-frame flash (deflash.py)"
+}
