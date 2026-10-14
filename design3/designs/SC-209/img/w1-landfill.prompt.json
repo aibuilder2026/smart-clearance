@@ -1,0 +1,12 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "generate",
+  "seed": 209001,
+  "aspect": "16:9",
+  "size": 2048,
+  "prompt": "A vast municipal landfill on the edge of an Indian city at dusk, a low wide shot from the foot of a fresh heap: a plain white dump truck with no markings has just tipped its load, and a fresh slide of brown cartons, many still sealed, crushed small orange drink cartons and spilled food packets pours down the heap toward the camera; further back a yellow tracked excavator pushes waste with its bucket raised; a flock of black kites circles in a hazy orange evening sky; thin grey smoke rises from the far end of the dump and drifts across the light; dust hangs in the low warm sunlight; sombre, cinematic, muted earthy palette with warm orange light. Every carton is plain brown kraft with one blank white rectangular label sticker on its side and no other printing. Photorealistic cinematic still from a professional corporate film, full-frame cinema camera, 35 mm lens, gentle shallow depth of field, realistic Indian setting, natural faces and natural hands with five fingers, true-to-life colours, motivated natural light, calm composition. Physically correct: a person always looks at the front of the screen they are using. Any screen we can see is a plain, evenly lit, blank white display with nothing on it. No text, no numbers, no lettering, no logos, no signs anywhere in the picture.",
+  "original": "2752x1536 PNG, local in src/img/",
+  "post": "the Mango Drink's own label (design3/system/labels, the batch's record: batch, dates, MRP, the FSSAI licence, its EAN-13 and QR code) printed onto 22 carton stickers in perspective, each boxed by eye on a gridded crop (labels.in_box, prep-keys.py BOXES), lit and softened to the sticker's own focus; then resized to 1920 wide (lanczos), WebP q88",
+  "in_the_film": "the bin (i02): the landfill at dusk, the batch's cartons tipped from a dump truck (the clip composited from it, landfill-comp.py), what destroying costs Munchly and the planet beside it",
+  "cost_usd": 0
+}

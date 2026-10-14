@@ -1,0 +1,12 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "generate",
+  "seed": 209003,
+  "aspect": "16:9",
+  "size": 2048,
+  "prompt": "A biscuit baking line in a clean Indian food factory: rows of golden round biscuits come out of a long stainless-steel tunnel oven on a wide steel-mesh conveyor; a worker in a white coat, blue hairnet and blue gloves inspects them; warm light and a little steam above the belt; a wide shot along the line with gentle depth of field. Photorealistic cinematic still from a professional corporate film, full-frame cinema camera, 35 mm lens, gentle shallow depth of field, realistic Indian setting, natural faces and natural hands with five fingers, true-to-life colours, motivated natural light, calm composition. Physically correct: a person always looks at the front of the screen they are using. Any screen we can see is a plain, evenly lit, blank white display with nothing on it. No text, no numbers, no lettering, no logos, no signs anywhere in the picture.",
+  "original": "2752x1536 PNG, local in src/img/",
+  "post": "resized to 1920 wide (lanczos), WebP q88",
+  "in_the_film": "the brand scene (i04): Kaveri Foods, a biscuit line, its own workspace sliding in (2.5D from its depth map)",
+  "cost_usd": 0
+}

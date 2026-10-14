@@ -1,0 +1,1 @@
+Show the person from the reference image exactly once, in a new photograph, keeping their face, hair, skin tone, age, build, clothes and accessories exactly as in the reference:
