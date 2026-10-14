@@ -2623,7 +2623,7 @@
   - **Nothing invented:** every keyframe checked at full size and every clip by contact sheet before use. Rejected: a landfill heap with tablets, then lettering on the excavator and brand-like printing on packets; a worker with two phones; a tablet turned into a folder; a destruction clip whose falling packets glowed like flames; the chips' godown clip twice. The only label in the film is the real label photo Lakshmi Agencies sent.
   - **Steady:** LTX pushes in even when told to hold still and the push can change a face. `clipcheck.py` measures each clip's gentle stretch, `stab.py` locks it to a tripod frame, `deflash.py` removes one-frame flashes, `prep-clips.py` retimes it to its shot, and `breathe.py` plays a short clip forward and back with eased turns where a shot is longer. Resting screens hold to the sub-pixel; every window plays between 0.55× and 1.25× (the labelled fast-forward aside).
   - **Where:** `working-demo/smart-clearance-working-demo-2026-10-13_18-52-26.mp4` (crf 17), its 720p copy and captions, beside cut 1 (`…_14-11-48`) and SC-200's cut (`previous-SC-200/`); the crf-21 1080p, 720p and captions, every keyframe and clip with its sidecar, in `design3/designs/SC-205/`. −14.0 LUFS. The spend: nothing (Qwen, LTX, Kokoro and Whisper locally; SC-187's music reused).
-- **SC-206** (In Review, branch `SC-206-working-demo-film-v3`): cuts 3 and 4 of the working demo, each at most 240 seconds.
+- **SC-206** (PR #187, merged; Done): cuts 3 and 4 of the working demo, each at most 240 seconds.
   - **Cut 3**, on the maintainer's ten notes on cut 2:
     - the app's own faces, cut from its cast sheets (SC-194);
     - an Indian English woman's voice (Maya1, local), every line read back word for word;
@@ -2654,4 +2654,38 @@
     - the crf-21 1080p, 720p and captions, the keyframes and clips with their sidecars, the pipeline and its README in `design3/designs/SC-206/`.
 
     The spend: nothing (Qwen-Image, LTX, Maya1, Whisper and UTMOS locally; SC-187's music reused).
+- **SC-207** (In Review, branch `SC-207-working-demo-film-v5`): cut 5 of the working demo, 3 min 56.2 s, under the maintainer's 238 s cap.
+  - **The request:** ten notes on cut 4 ("take it to the next level"), then labels on the opening's cartons, Google Cloud narrated "subtle and techno functional", and a more human voice.
+  - **The opening:** the sentence printed on a shipping label as the voice says it, stamped WRITTEN OFF on "slowly" (`LabelPrint`). Every carton in the godown carries a printed Munchly shipper label (`cartons.py`): Lakshmi Agencies' Mango Drink and Instant Poha, tracked through the dolly and taking the clip's light.
+  - **The agents' walk in full** (`AgentsWalk`): all nine stops, a sound each, the yes, the three exits, Paperwork, Impact.
+  - **Munchly's supply chain** (`MunchlyMap`): the brand, four distributors and their kiranas, the exits, then the happy path (the Mango Drink) and the sad path (the Masala Chips).
+  - **New beats:**
+    - Priya's sign-in in dark mode, captured frame-exact on production with the Firebase request held;
+    - the workspace installed as a PWA on a laptop, a tablet and a phone, its pushes landing on all three;
+    - how the swing adds up for each batch, bar by bar beside the app's own sheet (`SwingResult`);
+    - "What comes next": WhatsApp, more Indian languages, native iOS and Android apps;
+    - the guided demo's landing page, its URL and a QR code that opens it.
+  - **Also:**
+    - each Google Cloud service named as it is said (`TechTag`);
+    - the packs' edges clean;
+    - the end card aligned on one edge;
+    - the voice Maya1 as a warm storytelling narrator, chosen by a bake-off and spoken a line at a time;
+    - the bed about 12 dB under the voice.
+  - **Found on the way:**
+    - eight windows trimmed to play under 1.3×;
+    - three of the stage's chapter cards and one ring kept out (`kit.RETOUCH`);
+    - the walk's caption ghosting;
+    - word cues preferring the exact word;
+    - the subscript ₂;
+    - a renderer crash on a tiny bar.
+  - **Checks:**
+    - 236.20 s, −14.0 LUFS, −1.5 dBTP;
+    - windows between 0.46× and 1.30× (the labelled fast-forward aside);
+    - both QR codes read back from the film's own frames;
+    - 24 of 30 lines word for word from the final mix (the rest a figure or URL written differently, the brand spelled "Munchli", or one word heard differently from one slice, which reads right from another).
+  - **Where:**
+    - `working-demo/smart-clearance-working-demo-2026-10-14_13-46-56.mp4` (crf 17), its 720p copy and captions;
+    - the crf-21 1080p, 720p and captions, the labelled godown clip with its sidecar, the pipeline and its README in `design3/designs/SC-207/`.
+
+    The spend: nothing (Maya1, Whisper, UTMOS and Playwright locally; no image or video model run; SC-187's music reused).
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

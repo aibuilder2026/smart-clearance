@@ -1,0 +1,4 @@
+Every day, India's food brands write off stock that sells too slowly.
+Under the hood, ten agents built with Google's ADK run on Cloud Run, and think with Gemini.
+From the sell-through in BigQuery, the Watcher alerts Priya: Munchly's Mango Drink won't sell in its twenty-two days.
+Paperwork files every paper in Cloud Storage, and Lakshmi Agencies ends whole.
