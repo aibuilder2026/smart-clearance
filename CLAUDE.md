@@ -2654,7 +2654,7 @@
     - the crf-21 1080p, 720p and captions, the keyframes and clips with their sidecars, the pipeline and its README in `design3/designs/SC-206/`.
 
     The spend: nothing (Qwen-Image, LTX, Maya1, Whisper and UTMOS locally; SC-187's music reused).
-- **SC-207** (In Review, branch `SC-207-working-demo-film-v5`): cut 5 of the working demo, 3 min 56.2 s, under the maintainer's 238 s cap.
+- **SC-207** (PR #188, merged; Done): cut 5 of the working demo, 3 min 56.2 s, under the maintainer's 238 s cap.
   - **The request:** ten notes on cut 4 ("take it to the next level"), then labels on the opening's cartons, Google Cloud narrated "subtle and techno functional", and a more human voice.
   - **The opening:** the sentence printed on a shipping label as the voice says it, stamped WRITTEN OFF on "slowly" (`LabelPrint`). Every carton in the godown carries a printed Munchly shipper label (`cartons.py`): Lakshmi Agencies' Mango Drink and Instant Poha, tracked through the dolly and taking the clip's light.
   - **The agents' walk in full** (`AgentsWalk`): all nine stops, a sound each, the yes, the three exits, Paperwork, Impact.
@@ -2688,4 +2688,28 @@
     - the crf-21 1080p, 720p and captions, the labelled godown clip with its sidecar, the pipeline and its README in `design3/designs/SC-207/`.
 
     The spend: nothing (Maya1, Whisper, UTMOS and Playwright locally; no image or video model run; SC-187's music reused).
+- **SC-208** (In Review, branch `SC-208-working-demo-film-v6`): cut 6 of the working demo, 3 min 57.0 s, under the maintainer's 238 s cap.
+  - **The request:** ten notes on cut 5, then "I need realistic photos and videos, not cartoon" (a clay first try at the new imagery was dropped unused).
+  - **The opening:** no words on screen. Red WRITTEN OFF stamps thump onto the Mango Drink's cartons as the voice says "write off": two big ones on the near pallet, with a jolt, then a run down the stack's side. Each is tracked through the dolly, and a tally rolls up to −₹22,657 on 1,580 packs (`StampedGodown`, `WriteOffTally`).
+  - **The bin:** what destroying costs, row by row from money.js: stock, disposal, EPR, and the GST input credit, shown kept, struck out and taken back (s.17(5)(h)), to −₹22,657 (`CostStack`).
+  - **The people:** as the voice turns to them, Munchly's map docks into a card and the cast stands beside it with their roles, grouped by batch: Neha and Priya; Lakshmi Agencies, Sri Lakshmi Ganapathi Kirana and Meera on the happy path; Rakesh Traders and Agrawal Wholesale on the sad path (`MunchlyCast`).
+  - **The agents at work:** wherever an agent works, its orb (icon, turning ring, pulse, sparks) stands where the tracker stood, with its name, stop and real tool calls typed under the headline (`AgentHead`).
+  - **Phones held back to the camera:** the app's own push for the moment pops out of the device (`PhonePop`): the Watcher's alert, Vision's photo request, the Hindi offer, the pickup request and the counter-offer.
+  - **The split:** "from the batch's sales history and Munchly's own rules". Cards for BigQuery's sales history and the console's rules land as it is said (`SplitWhy`); the amber ring on Approve ends as the sheet turns to Plan placed.
+  - **The deliveries:** two photoreal LTX clips. Rakesh's van hands a labelled carton over a Nagpur kirana's counter; the wholesaler's truck loads the lot while Agrawal watches. A route inset draws both (`TwoClips`, `RouteInset`).
+  - **On the record:** Priya's Record tab, captured read-only on production. Its audit trail in Cloud SQL is ringed; then "Sent the label photo" leads to its real production trace from Cloud Trace (232 spans, 34.1 s), played as a waterfall, with the same trace's Cloud Logging lines (`TracePanel`, `TraceLink`, `LogPanel`; `fetch-trace.sh`, `capture-record.mjs`).
+  - **What comes next:** three photo cards on a colourful ground: WhatsApp (a shopkeeper's clip with the chat), six shopkeepers greeting in their own scripts, and the app in two phones on a counter (`NextScene6`).
+  - **The close:** condensed. The tagline is on the card, not said, and the voice ends on "Sign-ins for the live app on Google Cloud are in our deck; the sample data is on GitHub", both shown as pills (`EndCard6`).
+  - **Photoreal media:** 7 Qwen-Image keyframes (one an edit on Agrawal's cast sheet), the batch's real label printed on every carton sticker (upright on a shop's taller stickers), and 3 LTX clips, each reviewed full size and by contact sheet. Five lines re-voiced with Maya1, each read back word for word.
+  - **Checks:**
+    - 237.04 s, −14.0 LUFS, −1.5 dBTP;
+    - windows between 0.47× and 1.26× (the labelled fast-forward aside);
+    - `cardscan.py`'s hits are all the app's own green buttons, and the ring scan's runs are the spans cut 5 carried;
+    - both QR codes read back from the film's own frames;
+    - 26 of 31 lines word for word from the final mix (the rest one word heard differently in its slice, the brand as "Munchli", or a figure or URL written differently).
+  - **Where:**
+    - `working-demo/smart-clearance-working-demo-2026-10-14_19-41-20.mp4` (crf 17), its 720p copy and captions;
+    - the crf-21 1080p, 720p and captions, the new keyframes and clips with their sidecars, the pipeline and its README in `design3/designs/SC-208/`.
+
+    The spend: nothing (Qwen-Image, LTX, Maya1, Whisper, UTMOS and Playwright locally; SC-187's music reused).
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

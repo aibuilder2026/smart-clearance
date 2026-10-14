@@ -1,0 +1,12 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "generate",
+  "seed": 208211,
+  "aspect": "16:9",
+  "size": 2048,
+  "prompt": "An Indian kirana shopkeeper in his fifties with a grey moustache and a white kurta stands behind the wooden counter of his small, colourful neighbourhood grocery shop, its shelves packed with bright snack packets, spice jars and biscuit boxes; he holds a smartphone up in his right hand in front of him, its plain dark back towards the camera and its screen facing him, and smiles as he reads it. Medium shot from the front, slightly to his left, with the right third of the frame open on the softly focused shelves. Every carton is plain brown kraft with one blank white rectangular label sticker on its side and no other printing. Photorealistic cinematic still from a professional corporate film, full-frame cinema camera, 35 mm lens, gentle shallow depth of field, realistic Indian setting, natural faces and natural hands with five fingers, true-to-life colours, motivated natural light, calm composition. Physically correct: a person always looks at the front of the screen they are using. Any screen we can see is a plain, evenly lit, blank white display with nothing on it. No text, no numbers, no lettering, no logos, no signs anywhere in the picture.",
+  "original": "2752x1536 PNG, local in src/img/",
+  "post": "the Mango Drink's or the Masala Chips' own label (design3/system/labels, the batch's record: batch, dates, MRP, the FSSAI licence, its EAN-13 and QR code) printed onto each carton's blank sticker in perspective, lit and softened to the sticker's own focus (labels.py, prep-keys.py; on a shop's taller stickers kept the right way up, centred on the sticker's white); then resized to 1920 wide (lanczos), WebP q88",
+  "in_the_film": "what comes next: WhatsApp, a shopkeeper reading his phone (an LTX clip from it)",
+  "cost_usd": 0
+}

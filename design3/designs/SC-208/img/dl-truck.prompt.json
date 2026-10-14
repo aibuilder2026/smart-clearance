@@ -1,0 +1,15 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "edit",
+  "seed": 208202,
+  "aspect": "16:9",
+  "size": 1024,
+  "condition_images": [
+    "design3/designs/SC-187/img/cast-agrawal.webp (the cast sheet the app's portrait was cut from, SC-194)"
+  ],
+  "prompt": "Show the person from the reference image exactly once, in a new photograph, keeping their face, hair, skin tone, age, build, clothes and accessories exactly as in the reference: he stands at the loading bay of a distributor's godown in Nagpur at dusk, beside a medium white goods truck, plain with no markings, backed up to the bay with its tailgate down; two workers in plain shirts lift sealed brown cartons from a stack on a wooden pallet and place them in the truck's cargo bed, already a third full of neatly stacked cartons; he watches the loading, pleased, a smartphone held at his side; blue evening light outside, warm bulbs inside the godown. Medium wide shot from the side of the bay. Every carton is plain brown kraft with one blank white rectangular label sticker on its side and no other printing. Photorealistic cinematic still from a professional corporate film, full-frame cinema camera, 35 mm lens, gentle shallow depth of field, realistic Indian setting, natural faces and natural hands with five fingers, true-to-life colours, motivated natural light, calm composition. Physically correct: a person always looks at the front of the screen they are using. Any screen we can see is a plain, evenly lit, blank white display with nothing on it. No text, no numbers, no lettering, no logos, no signs anywhere in the picture.",
+  "original": "1376x768 PNG, local in src/img/",
+  "post": "the Mango Drink's or the Masala Chips' own label (design3/system/labels, the batch's record: batch, dates, MRP, the FSSAI licence, its EAN-13 and QR code) printed onto each carton's blank sticker in perspective, lit and softened to the sticker's own focus (labels.py, prep-keys.py; on a shop's taller stickers kept the right way up, centred on the sticker's white); then resized to 1920 wide (lanczos), WebP q88",
+  "in_the_film": "the deliveries: Agrawal Wholesale's truck loading the lot (an LTX clip from it)",
+  "cost_usd": 0
+}

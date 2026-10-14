@@ -1,0 +1,123 @@
+1
+00:00:00,900 --> 00:00:06,293
+Every day, India's food brands write off stock that sells too slowly.
+
+2
+00:00:07,443 --> 00:00:13,754
+Too close to its date for quick commerce, it's destroyed, and its GST credit reversed.
+
+3
+00:00:15,904 --> 00:00:19,278
+Smart-Clearance turns that write-off into recovery.
+
+4
+00:00:19,328 --> 00:00:26,684
+Each brand gets its own workspace, where AI agents find the best exit for every pack at risk.
+
+5
+00:00:26,934 --> 00:00:37,621
+Ten agents, built with Google's ADK, run on Cloud Run and think with Gemini. They walk every batch through nine stops, to one human yes.
+
+6
+00:00:39,571 --> 00:00:48,440
+Meet Munchly Foods, our imaginary client: its distributors, kiranas, food banks and a marketplace.
+
+7
+00:00:48,490 --> 00:00:54,542
+And the people you'll meet, as we follow two batches: one happy, one sad.
+
+8
+00:00:55,292 --> 00:01:04,057
+In the console, Neha sets up a brand in minutes: its stock export, its people, its gates, its agents.
+
+9
+00:01:04,007 --> 00:01:07,894
+Everyone signs in with Firebase, on their own device.
+
+10
+00:01:08,244 --> 00:01:15,509
+The workspace installs as an app on any phone, tablet or laptop, so alerts reach everyone live.
+
+11
+00:01:16,459 --> 00:01:25,365
+From the sell-through in BigQuery, the Watcher alerts Priya: Munchly's Mango Drink won't sell in its twenty-two days.
+
+12
+00:01:25,415 --> 00:01:32,824
+Lakshmi Agencies photographs the label, and Vision, on Gemini Flash, matches it to the stock export.
+
+13
+00:01:32,874 --> 00:01:44,632
+From the batch's sales history and Munchly's own rules, the Valuer prices each exit and the Router splits it. Priya approves with one tap.
+
+14
+00:01:44,682 --> 00:01:53,014
+Outreach offers the packs to fifty-eight kiranas in their own language; each order lands on Priya's screen, live.
+
+15
+00:01:53,064 --> 00:02:00,112
+Fifty-two shops take thirteen hundred and seventy-two packets, each with its own GST invoice.
+
+16
+00:02:00,162 --> 00:02:07,538
+The godown's staff buy a hundred and fifty packs by UPI, and Vision checks the receipt against the count.
+
+17
+00:02:07,588 --> 00:02:12,800
+Feeding India collects the last fifty-eight packs, and issues a donation receipt.
+
+18
+00:02:12,750 --> 00:02:18,791
+Paperwork files every paper in Cloud Storage, and Lakshmi Agencies ends whole.
+
+19
+00:02:20,941 --> 00:02:29,071
+But not every batch sells. Munchly's Masala Chips go to Rakesh Traders' kiranas in Nagpur, and just two order.
+
+20
+00:02:29,121 --> 00:02:36,570
+On ExpireSoon, the Negotiator counters a wholesaler's bid, and seven hundred and seventy-two packs sell.
+
+21
+00:02:36,620 --> 00:02:40,697
+Five hundred and forty packets are left when the window closes.
+
+22
+00:02:41,247 --> 00:02:47,852
+Rakesh's van delivers the two shops' orders, and the wholesaler's truck collects the lot.
+
+23
+00:02:47,902 --> 00:02:54,127
+On expiry day, Rakesh must destroy them through an authorised agency, and prove it.
+
+24
+00:02:54,177 --> 00:03:02,432
+At the landfill he photographs it, and the officer, two witnesses and Rakesh sign the certificate.
+
+25
+00:03:02,682 --> 00:03:09,451
+Vision checks the photos; only on Priya's second yes are the certificate and credit note issued.
+
+26
+00:03:10,101 --> 00:03:19,893
+Every step is on the record: an append-only audit trail in Cloud SQL, and requests traced end to end in Cloud Trace, with OpenTelemetry.
+
+27
+00:03:20,043 --> 00:03:29,527
+Even here, Munchly recovers eleven thousand seven hundred rupees, fourteen thousand better than destroying it, and Rakesh ends whole.
+
+28
+00:03:29,577 --> 00:03:39,072
+Impact posts every batch to its ledger in BigQuery: two point three tonnes kept from landfill this year, ready for BRSR.
+
+29
+00:03:39,222 --> 00:03:44,909
+Next: WhatsApp, more Indian languages, and native iOS and Android apps.
+
+30
+00:03:44,859 --> 00:03:49,351
+Try the guided demo at smartclearance-demo dot web dot app.
+
+31
+00:03:50,401 --> 00:03:56,274
+Sign-ins for the live app on Google Cloud are in our deck; the sample data is on GitHub.

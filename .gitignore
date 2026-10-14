@@ -189,4 +189,36 @@ design3/designs/SC-207/src/tts/vo3/*
 !design3/designs/SC-207/src/tts/vo3/maya1w-warm/
 design3/designs/SC-207/src/tts/vo3/maya1w-warm/*
 !design3/designs/SC-207/src/tts/vo3/maya1w-warm/*.json
+# SC-208: cut 6's pipeline ships (scripts, prompts, the voice lines, the screens' corners, the voice bake-off's scores and
+# the chosen takes' timings);
+# keyframe PNGs, clips, depth maps, captures, voice takes, the venvs and the build stay local
+!design3/designs/SC-208/src/
+design3/designs/SC-208/src/*
+!design3/designs/SC-208/src/*.py
+!design3/designs/SC-208/src/*.sh
+!design3/designs/SC-208/src/*.mjs
+!design3/designs/SC-208/src/*.js
+!design3/designs/SC-208/src/lines.json
+!design3/designs/SC-208/src/pushes.json
+!design3/designs/SC-208/src/prompts/
+!design3/designs/SC-208/src/build/
+design3/designs/SC-208/src/build/*
+!design3/designs/SC-208/src/build/screens.json
+!design3/designs/SC-208/src/tts/
+design3/designs/SC-208/src/tts/*
+!design3/designs/SC-208/src/tts/*.py
+!design3/designs/SC-208/src/tts/*.sh
+!design3/designs/SC-208/src/tts/sample*.txt
+!design3/designs/SC-208/src/tts/voice.txt
+!design3/designs/SC-208/src/tts/bake5/
+design3/designs/SC-208/src/tts/bake5/*
+!design3/designs/SC-208/src/tts/bake5/score.json
+!design3/designs/SC-208/src/tts/bake5w/
+design3/designs/SC-208/src/tts/bake5w/*
+!design3/designs/SC-208/src/tts/bake5w/score.json
+!design3/designs/SC-208/src/tts/vo3/
+design3/designs/SC-208/src/tts/vo3/*
+!design3/designs/SC-208/src/tts/vo3/maya1w-warm/
+design3/designs/SC-208/src/tts/vo3/maya1w-warm/*
+!design3/designs/SC-208/src/tts/vo3/maya1w-warm/*.json
 
