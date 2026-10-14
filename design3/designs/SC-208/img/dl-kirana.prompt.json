@@ -1,0 +1,12 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "generate",
+  "seed": 208201,
+  "aspect": "16:9",
+  "size": 2048,
+  "prompt": "A narrow, busy market lane in Nagpur in the warm late afternoon: a small white delivery pickup van, plain with no markings, stands at the kerb outside a family kirana shop with its rolling shutter open; the shop's counter faces the lane and its shelves behind are packed with colourful snack packets, biscuit boxes and jars; a delivery man in a plain light grey t-shirt carries one sealed brown carton in both hands from the van's open cargo bed towards the counter, and the shopkeeper, an Indian man in his forties with a moustache and a cream kurta, leans over the counter with both hands out to take it, smiling. Medium wide shot from across the lane, at eye level. Every carton is plain brown kraft with one blank white rectangular label sticker on its side and no other printing. Photorealistic cinematic still from a professional corporate film, full-frame cinema camera, 35 mm lens, gentle shallow depth of field, realistic Indian setting, natural faces and natural hands with five fingers, true-to-life colours, motivated natural light, calm composition. Physically correct: a person always looks at the front of the screen they are using. Any screen we can see is a plain, evenly lit, blank white display with nothing on it. No text, no numbers, no lettering, no logos, no signs anywhere in the picture.",
+  "original": "2752x1536 PNG, local in src/img/",
+  "post": "the Mango Drink's or the Masala Chips' own label (design3/system/labels, the batch's record: batch, dates, MRP, the FSSAI licence, its EAN-13 and QR code) printed onto each carton's blank sticker in perspective, lit and softened to the sticker's own focus (labels.py, prep-keys.py; on a shop's taller stickers kept the right way up, centred on the sticker's white); then resized to 1920 wide (lanczos), WebP q88",
+  "in_the_film": "the deliveries: Rakesh Traders' van round at a Nagpur kirana (an LTX clip from it)",
+  "cost_usd": 0
+}

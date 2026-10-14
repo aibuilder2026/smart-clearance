@@ -1,0 +1,17 @@
+{
+  "prompt": "A locked-off tripod shot: the camera does not move, pan, tilt or zoom. Exactly as in the image: the two workers lift one sealed brown carton each from the stack and set them down in the truck's cargo bed, one after the other, while the man in the grey shirt in the foreground glances towards the loading and nods, his phone held at his side. Slow, natural movements; the truck and the stacked cartons stay still. Everything keeps its form; no object appears, vanishes or changes shape; faces and hands stay natural, with five fingers; every screen stays a plain, evenly lit white display with nothing on it; no text or lettering appears. Photorealistic cinematic footage, natural motion, smooth and slow.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "1080p",
+  "duration": 5,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "static",
+  "audio": false,
+  "seed": 208801,
+  "loras": [],
+  "image": "dl-truck-L.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 11.7,
+  "cost_usd": 0,
+  "in_the_film": "the deliveries (v01), its second part: the lot loaded into the buyer's truck, frame for frame at 25 fps"
+}

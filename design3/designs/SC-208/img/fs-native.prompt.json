@@ -1,0 +1,12 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "generate",
+  "seed": 208212,
+  "aspect": "16:9",
+  "size": 2048,
+  "prompt": "Two modern smartphones stand upright side by side on small clear stands on a polished wooden kirana shop counter, their screens facing the camera: one with a slim white frame and one with a slim black frame, both screens plain, evenly lit, blank white displays; behind them, softly out of focus, colourful shelves of snack packets and jars in warm daylight. Seen straight on from in front of the counter, the two phones sharp in the middle of the frame. Every carton is plain brown kraft with one blank white rectangular label sticker on its side and no other printing. Photorealistic cinematic still from a professional corporate film, full-frame cinema camera, 35 mm lens, gentle shallow depth of field, realistic Indian setting, natural faces and natural hands with five fingers, true-to-life colours, motivated natural light, calm composition. Physically correct: a person always looks at the front of the screen they are using. Any screen we can see is a plain, evenly lit, blank white display with nothing on it. No text, no numbers, no lettering, no logos, no signs anywhere in the picture.",
+  "original": "2752x1536 PNG, local in src/img/",
+  "post": "the Mango Drink's or the Masala Chips' own label (design3/system/labels, the batch's record: batch, dates, MRP, the FSSAI licence, its EAN-13 and QR code) printed onto each carton's blank sticker in perspective, lit and softened to the sticker's own focus (labels.py, prep-keys.py; on a shop's taller stickers kept the right way up, centred on the sticker's white); then resized to 1920 wide (lanczos), WebP q88",
+  "in_the_film": "what comes next: native iOS and Android apps, the app set into the two phones' screens; the two phones' blank screens found (vfx.screen_quad) and the live workspace set into them from the Mango Drink's production recording: the kirana's offer in Hindi (245.5 s) and the order placed (249.6 s)",
+  "cost_usd": 0
+}

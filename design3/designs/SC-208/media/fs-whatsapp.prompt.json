@@ -1,0 +1,17 @@
+{
+  "prompt": "A locked-off tripod shot: the camera does not move, pan, tilt or zoom. Exactly as in the image: the shopkeeper reads the phone in his hand, smiles, and types a short reply with his thumb. Only his face and thumb move a little; the phone's dark back stays towards the camera and the shelves stay still. Everything keeps its form; no object appears, vanishes or changes shape; faces and hands stay natural, with five fingers; every screen stays a plain, evenly lit white display with nothing on it; no text or lettering appears. Photorealistic cinematic footage, natural motion, smooth and slow.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "1080p",
+  "duration": 5,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "static",
+  "audio": false,
+  "seed": 208802,
+  "loras": [],
+  "image": "fs-whatsapp-L.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 12.2,
+  "cost_usd": 0,
+  "in_the_film": "what comes next (f01): the WhatsApp card, with the offer and the reply as chat bubbles over it"
+}

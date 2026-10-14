@@ -1,0 +1,17 @@
+{
+  "prompt": "A locked-off tripod shot: the camera does not move, pan, tilt or zoom. Exactly as in the image: the delivery man in the grey t-shirt hands the sealed brown carton across the steel counter; the shopkeeper in the cream kurta takes it in both hands, sets it down on the counter and nods to him with a smile. Slow, natural movements; the van, the lane, the shop and its shelves stay still. Everything keeps its form; no object appears, vanishes or changes shape; faces and hands stay natural, with five fingers; every screen stays a plain, evenly lit white display with nothing on it; no text or lettering appears. Photorealistic cinematic footage, natural motion, smooth and slow.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "1080p",
+  "duration": 5,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "static",
+  "audio": false,
+  "seed": 208800,
+  "loras": [],
+  "image": "dl-kirana-L.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 12.9,
+  "cost_usd": 0,
+  "in_the_film": "the deliveries (v01), its first part: the van's carton handed over the counter, frame for frame at 25 fps"
+}
