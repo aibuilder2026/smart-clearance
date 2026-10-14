@@ -1,0 +1,12 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "generate",
+  "seed": 209011,
+  "aspect": "16:9",
+  "size": 1024,
+  "prompt": "A straight-down aerial drone photograph at golden hour over a dark earthen landfill pit on the edge of an Indian city: a long sweeping trail of brown cartons and small orange drink cartons spills across the dark soil in one graceful curve, low sunlight raking across it so every carton throws a long shadow, the shadows of a few black kites on the ground, fine dust drifting; a striking graphic composition, deep contrast, muted earthy palette with warm amber highlights. Every carton is plain brown kraft with one blank white rectangular label sticker on its side and no other printing. Photorealistic cinematic still from a professional corporate film, full-frame cinema camera, 35 mm lens, gentle shallow depth of field, realistic Indian setting, natural faces and natural hands with five fingers, true-to-life colours, motivated natural light, calm composition. Physically correct: a person always looks at the front of the screen they are using. Any screen we can see is a plain, evenly lit, blank white display with nothing on it. No text, no numbers, no lettering, no logos, no signs anywhere in the picture.",
+  "original": "1376x768 PNG, local in src/img/",
+  "post": "WebP q88",
+  "in_the_film": "the bin (i02): the maintainer's pick (A) of three concepts for a background \"unique and aesthetic\" in place of the landfill; its clip, the drone slowly descending over the trail, is made from this preview as picked",
+  "cost_usd": 0
+}

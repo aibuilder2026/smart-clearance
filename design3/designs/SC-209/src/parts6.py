@@ -58,14 +58,26 @@ AGENT = {   # name, icon, its stop (0-based), ink
 }
 
 
+# SC-209 cut 7b: the Google model each agent thinks with, as agents/src/sc_agents/agents/*.py set its tier and
+# infra/prod/variables.tf names the tiers (gemini-3.1-pro-preview, gemini-3.8-flash); the Watcher runs rules on
+# BigQuery's sell-through and calls no model
+MODEL = {'data': 'Gemini 3.8 Flash', 'watcher': 'rules on BigQuery', 'vision': 'Gemini 3.8 Flash', 'valuer': 'Gemini 3.1 Pro',
+         'router': 'Gemini 3.1 Pro', 'outreach': 'Gemini 3.8 Flash', 'lister': 'Gemini 3.8 Flash', 'negotiator': 'Gemini 3.1 Pro',
+         'paperwork': 'Gemini 3.8 Flash', 'impact': 'Gemini 3.8 Flash'}
+
+
 @lru_cache(maxsize=None)
 def agent_label(key, size=21):
-    """'WATCHER · at work' over 'Detect · stop 2 of 9' and the nine stops, lit to this one"""
+    """'VISION · agent · Gemini 3.8 Flash' over 'Verify · stop 3 of 9' and the nine stops, lit to this one"""
     name, _, stop, ink = AGENT[key]
-    S = 2; w, h = 560, 62
+    S = 2; w, h = 620, 62
     im = Image.new('RGBA', (w * S, h * S), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
     x = draw_text(d, (0, 2 * S), name.upper(), 'g', size * S, ink + (255,), 720, 0.14)
-    draw_text(d, (x + 12 * S, 5 * S), 'person' if key == 'you' else 'agent · at work', 'g', 16 * S, MUTED + (255,), 520, 0.06)
+    if key == 'you':
+        draw_text(d, (x + 12 * S, 5 * S), 'person', 'g', 16 * S, MUTED + (255,), 520, 0.06)
+    else:
+        x2 = draw_text(d, (x + 12 * S, 5 * S), 'agent ·', 'g', 16 * S, MUTED + (255,), 520, 0.06)
+        draw_text(d, (x2 + 8 * S, 5 * S), MODEL[key], 'g', 16 * S, (255, 214, 140, 255) if 'Pro' in MODEL[key] else (170, 236, 200, 255), 680, 0.02)
     sx = draw_text(d, (0, 34 * S), f'{STOPS[stop]} · stop {stop + 1} of 9', 'g', 16 * S, (190, 208, 198, 255), 520)
     x0, cy = sx + 16 * S, (34 + 10) * S
     for i in range(9):

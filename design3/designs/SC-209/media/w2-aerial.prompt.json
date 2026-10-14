@@ -1,0 +1,18 @@
+{
+  "prompt": "Exactly as in the image, a straight-down drone view at golden hour: the camera descends slowly and steadily toward the long curving trail of cartons, drifting a little along its curve. The shadows of a few black kites glide slowly across the dark earth, and fine dust drifts through the low sunlight. The cartons and the earth stay completely still: nothing on the ground moves. Everything keeps its form; no object appears, vanishes or changes shape; every carton keeps its one blank white sticker; no text or lettering appears. Photorealistic cinematic footage, natural motion, smooth and slow.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "1080p",
+  "duration": 5,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "dolly_in",
+  "audio": false,
+  "seed": 209803,
+  "loras": [],
+  "image": "w2-aerial-p.png (the preview as picked)",
+  "ltx_desktop": "1.2.7",
+  "minutes": 11.8,
+  "cost_usd": 0,
+  "post": "eased 1.3x by motion interpolation (ffmpeg setpts=1.3*PTS, minterpolate=fps=24:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1), so the descent is gentler; played frame for frame at 25 fps; shipped at crf 18",
+  "in_the_film": "the bin (i02), with no push of its own; what destroying costs Munchly and the planet in two panels on the bare earth either side of the trail"
+}

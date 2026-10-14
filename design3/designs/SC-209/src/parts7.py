@@ -257,28 +257,6 @@ class ClipPush:
         f[:] = _zoom(img.astype(np.float32) / 255, z, self.pt)
 
 
-class Smoke:
-    """thin grey smoke rising off the heap and drifting with the wind: soft blobs that grow and fade as they climb"""
-    def __init__(self, x0, x1, y, n=46, seed=209, strength=0.3, wind=60):
-        rng = np.random.default_rng(seed)
-        self.p = [(rng.uniform(x0, x1), y + rng.uniform(-30, 30), rng.uniform(0, 3.2), rng.uniform(0.7, 1.3)) for _ in range(n)]
-        self.strength, self.wind = strength, wind
-        r = 64
-        yy, xx = np.mgrid[-r:r + 1, -r:r + 1].astype(np.float32)
-        g = np.exp(-(xx ** 2 + yy ** 2) / (2 * (r / 2.4) ** 2))
-        blob = np.zeros((2 * r + 1, 2 * r + 1, 4), np.float32)
-        c = col((150, 146, 140))
-        blob[..., :3] = c * g[..., None]; blob[..., 3] = g
-        self.blob = blob
-    def draw(self, f, u, L=None):
-        for x, y, ph, sp in self.p:
-            t = (u * 0.32 * sp + ph / 3.2) % 1.0
-            a = math.sin(math.pi * t) * self.strength
-            yy = y - 330 * t
-            xx = x + self.wind * t + 18 * math.sin(6 * t + ph)
-            blit(f, self.blob, xx, yy, a, scale=0.6 + 2.2 * t, ox=64, oy=64)
-
-
 @lru_cache(maxsize=None)
 def esg_row(icon, big, label, w=560):
     """one of the bin's costs to the planet: an icon in its red disc, the figure, what it is"""
@@ -410,8 +388,8 @@ class ExitFlow:
         self.jit = rng.uniform(0, 1, 400)
     def draw(self, f, u, L=None):
         u = u - self.u0
-        if u < -0.4: return
-        a = clamp((u + 0.4) / 0.4)
+        if u < 0: return
+        a = clamp(u / 0.35)
         blit(f, self.head, 96, 70, a)
         # the source: the batch's packs at risk
         sp = fm_spring(u, 300, 22)
@@ -464,7 +442,7 @@ class ExitFlow:
                     if u < 1.0 + k * 0.05: continue
                     p = pa[int(ph * (len(pa) - 1))]
                     _dot(f, p, 3.4, G, 0.9 * ea * clamp(min(ph, 1 - ph) * 10), glow=5)
-                c = units * ease_out(clamp((u - 1.2) / 2.2))
+                c = units * ease_out(clamp((u - 1.1) / 1.6))   # cut 7b: landed sooner, so it holds before the cut
                 blit(f, TX(f'{n0(c)} packs', 'b', 30, 780, G), ex + 330, ey - 34, ea * clamp((u - 1.1) / 0.3))
 
 
@@ -476,9 +454,10 @@ class BrandScene7:
         self.base, self.t_fly, self.t_where, self.L, self.morph = base, t_fly, t_where, L, morph
         n = len(BRANDS)
         self.cut = [t_fly + (t_where - t_fly) * i / n for i in range(n)] + [t_where]
-        self.stills = [Still25D(k, z=(1.0, 1.10), pan=((0, 0), (-24 + 24 * i, -6)), dur=(t_where - t_fly) / n + 0.6, focus=(0.5, 0.55), depth_k=0.7) for i, (k, *_r) in enumerate(BRANDS)]
+        # cut 7b: a slow, gentle push on each (less depth, less travel), each held 1.75 s
+        self.stills = [Still25D(k, z=(1.0, 1.06), pan=((0, 0), (-14 + 14 * i, -4)), dur=(t_where - t_fly) / n + 0.8, focus=(0.5, 0.55), depth_k=0.45) for i, (k, *_r) in enumerate(BRANDS)]
         self.cards = [workspace_card(name, slug, what, tile) for _, name, slug, what, tile in BRANDS]
-        self.flow = ExitFlow(t_where + 0.15)
+        self.flow = ExitFlow(t_where + 0.4)   # cut 7b: after the cross-fade from the last factory, never over it
         self.studio = studio()
         self.kick = kicker_sprite('SOFTWARE AS A SERVICE · EVERY BRAND, ITS OWN WORKSPACE', (232, 242, 236), 17)
         self.top = (0.42 + 0.58 * np.linspace(0, 1, 190, dtype=np.float32) ** 1.4)[:, None, None]
@@ -493,20 +472,22 @@ class BrandScene7:
             self.base.draw(f, u, L)
             self.morph.draw(f, u, L)
             return
-        # the scenes after the line, each cut in on a whip
+        # the scenes after the line, each cross-faded in (cut 7b; cut 7 whipped)
         i = min(len(BRANDS), int(sum(1 for c in self.cut[1:] if u >= c)))
         if i < len(BRANDS):
             self.stage(i, f, u)
         else:
             f[:] = self.studio
         t_in = self.cut[i] if i < len(self.cut) else self.t_where
-        if u - t_in < 0.28:
+        XD = 0.6 if i == 0 else 0.5   # cut 7b: a soft cross-fade from one to the next, where cut 7 whipped
+        if u - t_in < XD:
             prev = np.empty_like(f)
             if i == 0:
-                self.base.draw(prev, self.t_fly - 1 / FPS, L); self.morph.draw(prev, self.t_fly - 1 / FPS, L)
+                self.base.draw(prev, u, L); self.morph.draw(prev, u, L)
             else:
                 self.stage(i - 1, prev, u)
-            f[:] = fx.whip(prev, f.copy(), clamp((u - t_in) / 0.28), dir=1)
+            e = ease_in_out(clamp((u - t_in) / XD))
+            f[:] = prev * (1 - e) + f * e
         # the workspace cards: the brand's own sliding in; the earlier ones stacked to the left, smaller
         if i < len(BRANDS) or u < self.t_where + 0.3:
             out = 1 - clamp((u - self.t_where) / 0.3)
@@ -516,17 +497,17 @@ class BrandScene7:
             blit(f, self.kick, 96, 70, ka)
             for j in range(min(i, len(BRANDS) - 1) + 1):
                 c = self.cards[j]
-                tj = self.cut[j] + 0.18
+                tj = self.cut[j] + 0.35
                 if u < tj: continue
-                sp = fm_spring(u - tj, 260, 22)
+                sp = fm_spring(u - tj, 150, 22)   # cut 7b: a gentler slide
                 if j < i:   # stacked
                     k = i - j
                     x, y, sc = 96 + 40 * (k - 1), 860 - 40 * (k - 1), 0.5
                     blit(f, c, x, y, out * 0.85, scale=sc)
                 else:
-                    x = 1220 + 300 * (1 - sp)
-                    blit(f, c, x, 640, out * clamp((u - tj) / 0.15), scale=0.92 + 0.08 * sp)
-        if u >= self.t_where - 0.1:
+                    x = 1220 + 160 * (1 - sp)
+                    blit(f, c, x, 640, out * clamp((u - tj) / 0.35), scale=0.95 + 0.05 * sp)
+        if u >= self.t_where + 0.05:
             self.flow.draw(f, u)
 
 

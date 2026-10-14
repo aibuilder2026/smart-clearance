@@ -332,7 +332,7 @@ class ArchScene:
         ('api', (0, -250), (560, 315), 'backend-api', 'Cloud Run · Cloud SQL', 'db'),
         ('events', (720, -250), (560, 315), 'Events', 'Pub/Sub · Scheduler', 'pubsub'),
         ('agents', (720, 300), (640, 360), None, None, None),
-        ('gemini', (0, 300), (560, 315), 'Gemini', 'Vertex AI · Pro, Flash', 'orb'),
+        ('gemini', (0, 300), (560, 315), 'Gemini', '3.1 Pro · 3.8 Flash · Vertex AI', 'orb'),   # cut 7b: the models named
     ]
     ROUTES = [  # (from, to) world points on the platform, and when they draw
         ('apps-api', [(-440, -250), (-280, -250)]),

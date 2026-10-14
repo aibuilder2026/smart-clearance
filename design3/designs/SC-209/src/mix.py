@@ -359,7 +359,7 @@ def sfx():
     lay(boom(level=-18), b.t0 + 0.6)                      # the mark lands
     lay(whoosh(rnd, 0.7, 0.4, -27, 0.05, 0.35), b.t0 + base_.t_strike, pan=0.35, anchor=0.25)   # 'write-offs' struck out
     lay(glint(), b.t0 + base_.t_recovery + 0.1, pan=0.62)   # 'recovery' lights
-    lay(whoosh(rnd, 1.3, 0.5, -25), b.t0 + bs.t_fly, anchor=0.6)   # the first factory comes in
+    lay(whoosh(rnd, 1.3, 0.5, -29), b.t0 + bs.t_fly, anchor=0.6)   # the first factory fades in (cut 7b: softer)
     for s in shots:
         g = s.bg
         if isinstance(g, P3_.DeviceShot):
@@ -409,7 +409,7 @@ def sfx():
         m_ = bs.morph
         lay(riser(rnd, 0.75, -31), b.t0 + m_.ur + 0.75, anchor=0.75)
         lay(chime(-27, notes=((1046.5, 0.0), (1568.0, 0.1))), b.t0 + m_.ur + 0.75, pan=0.6)
-        for i in range(1, len(bs.cut) - 1): lay(whoosh(rnd, 0.5, 0.4, -26, 0.04, 0.45), b.t0 + bs.cut[i], pan=0.55, anchor=0.2)
+        for i in range(1, len(bs.cut) - 1): lay(whoosh(rnd, 0.9, 0.5, -31, 0.03, 0.3), b.t0 + bs.cut[i], pan=0.55, anchor=0.35)   # a soft swell a cross-fade
         for i in range(len(P7_.BRANDS)): lay(tick(-31, 988 + 90 * i), b.t0 + bs.cut[i] + 0.2, pan=0.7)
         fl = bs.flow
         lay(whoosh(rnd, 0.7, 0.45, -26, 0.04, 0.4), b.t0 + bs.t_where, anchor=0.3)

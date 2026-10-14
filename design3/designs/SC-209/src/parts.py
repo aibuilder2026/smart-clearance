@@ -37,7 +37,7 @@ for _l in LINES:
         PAUSE.setdefault(_l['id'], []).append((_cut, _add))
         DUR[_l['id']] = DUR[_l['id']] + _add
 LEAD, HOLD = 0.9, 1.0   # cut 4: the close held 1.5 s after its last word (3.0 in cut 3)
-PRE = {'i03': 0.8, 'k01': 0.5, 'm02': 0.7, 's01': 1.0, 'v01': 0.5, 'r01': 0.4}  # a beat before the brand, the console, each journey, the deliveries and the record
+PRE = {'i03': 0.8, 'k01': 0.4, 'm02': 0.5, 's01': 1.0, 'v01': 0.4, 'r01': 0.3}   # cut 7b: 0.6 s given back to the brand's factories  # a beat before the brand, the console, each journey, the deliveries and the record
 T = {}
 _t = LEAD
 for _l in LINES:

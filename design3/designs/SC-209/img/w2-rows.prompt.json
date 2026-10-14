@@ -1,0 +1,12 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "generate",
+  "seed": 209013,
+  "aspect": "16:9",
+  "size": 1024,
+  "prompt": "A vast flat plain of dry cracked earth at dusk under an enormous violet and amber sky: hundreds of small unopened orange drink cartons stand in long neat rows stretching away to the horizon like a land-art installation, each throwing a long soft shadow; a lone plain white dump truck tiny in the far distance; minimalist, haunting, beautifully composed. Every drink carton is plain orange with no printing. Photorealistic cinematic still from a professional corporate film, full-frame cinema camera, 35 mm lens, gentle shallow depth of field, realistic Indian setting, natural faces and natural hands with five fingers, true-to-life colours, motivated natural light, calm composition. Physically correct: a person always looks at the front of the screen they are using. Any screen we can see is a plain, evenly lit, blank white display with nothing on it. No text, no numbers, no lettering, no logos, no signs anywhere in the picture.",
+  "original": "1376x768 PNG, local in src/img/",
+  "post": "WebP q88",
+  "in_the_film": "a concept for the bin (C, the packs in rows on cracked earth), not picked",
+  "cost_usd": 0
+}

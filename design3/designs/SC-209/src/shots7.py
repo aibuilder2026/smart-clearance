@@ -244,19 +244,24 @@ def build():
     L_ = t1 - t0
     # cut 7: the landfill re-shot at dusk (a photoreal clip of the batch's cartons sliding off a dump truck, kites and
     # smoke), with what the bin costs the planet beside what it costs Munchly
-    # (landfill-comp.py: the clip's sky, kites, smoke, excavator and tipping truck over its first frame's heap, which
-    # holds still with the cartons' printed labels crisp)
-    if (HERE / 'clips' / 'w1-landfill-comp.mp4').exists():
-        bin_ = ClipPush('w1-landfill-comp', z=(1.0, 1.07), pt=(W * 0.52, H * 0.42), dur=L_ + XF)
+    # cut 7b: the maintainer found the composite's motion unrealistic. One real camera glide over a still heap now, its
+    # stickers printed with the Mango Drink's shipper label through the move (landfill-labels.py), with no push of our own
+    # then the maintainer asked for "something unique and aesthetic" and picked, from three concepts, A: the batch's
+    # cartons in one long curving trail across dark earth, seen straight down at golden hour, the drone slowly descending
+    # (gen-ltx9.py w2-aerial)
+    if (HERE / 'img' / 'w2-aerial.png').exists():
+        bin_ = ClipPush('w2-aerial-slow' if (HERE / 'clips' / 'w2-aerial-slow.mp4').exists() else 'w2-aerial', z=(1.0, 1.0), pt=(W * 0.5, H * 0.5), dur=L_ + XF)
+    elif (HERE / 'clips' / 'w1-landfill-b-labelled.mp4').exists():
+        bin_ = ClipPush('w1-landfill-b-labelled', z=(1.0, 1.0), pt=(W * 0.5, H * 0.5), dur=L_ + XF)
     else:
         bin_ = Still25D('i3-landfill', z=(1.0, 1.10), pan=((0, 0), (-30, 6)), dur=L_ + XF, focus=(0.55, 0.55), depth_k=0.9)
     u_d, u_g = a('i02', 'destroyed') - t0, a('i02', 'GST') - t0
     e0 = u_d + 0.3
-    add('open-landfill', t0, t1, Layered(bin_, [(fx.Dust(n=140, seed=23, color=(220, 210, 190), strength=0.45), 0.9)], vign=0.3), [
-        Smoke(820, 1460, 560, n=36, seed=2091, strength=0.14),
-        # both panels low on the dark ground either side of the carton stream, so the sky's motion stays in view
-        CostStack(64, 560, [max(0.15, u_d + 0.05), u_g - 0.1, u_g + 0.7, u_g + 1.0], u_g + 1.3, L_ + 0.3, w=560),
-        ESGPanel(1300, 520, [('trash-2', lambda u, e0=e0: f'{roll(u, e0, e0 + 0.6, 0, 339.7):.1f} kg', 'of food, buried in landfill', e0),
+    add('open-landfill', t0, t1, Layered(bin_, [], vign=0.22), [   # cut 7b: the clip's own smoke and air, nothing laid over them
+        # the panels on the bare earth either side of the trail: the cost to Munchly above its loop, the planet's below
+        # its far bend, so the trail itself stays in view
+        CostStack(64, 64, [max(0.15, u_d + 0.05), u_g - 0.1, u_g + 0.55, u_g + 0.8], u_g + 1.05, L_ + 0.3, w=560),
+        ESGPanel(1300, 560, [('trash-2', lambda u, e0=e0: f'{roll(u, e0, e0 + 0.6, 0, 339.7):.1f} kg', 'of food, buried in landfill', e0),
                              ('cloud', lambda u, e0=e0: f'{roll(u, e0 + 0.4, e0 + 1.0, 0, 849.25):,.0f} kg CO₂e', 'for food no one eats (indicative)', e0 + 0.4),
                              ('recycle', '3.2 kg', 'of plastic packaging, to EPR', e0 + 0.8),
                              ('ban', '1,580 packs', 'that never reach anyone', e0 + 1.2)],
@@ -271,7 +276,9 @@ def build():
     # cut 7: under the line the write-off rolls into what the plan recovered; then three brands' factories, each with its
     # own workspace, and the best exit for every pack, flowing
     morph = RecoveryMorph(636, 560, a('i03', 'write') - t0, a('i03', 'into') - t0, t_fly)
-    brand = BrandScene7(base, t_fly, a('i04', 'where') - t0 - 0.15, L_, morph)
+    # cut 7b: the maintainer found the factories rushed (0.7 s each): 1.75 s each now, cross-faded, the best exit
+    # coming in as the voice reaches 'exit' (the brand's line has 2 s more after it, given from small pauses elsewhere)
+    brand = BrandScene7(base, t_fly, a('i04', 'every') - t0 - 0.25, L_, morph)
     add('brand', t0, t1, brand, [])
 
     # ======================================================== 2 · the architecture in depth, then the agents' walk in full
@@ -286,7 +293,7 @@ def build():
         Sprite(words_sprite(kicker='UNDER THE HOOD', width=600), 64, 60, 0.15, d0 + 0.1),
         Kinetic(64, 100, [[('Ten', u('g01', '10')), ('agents', u('g01', 'agents'))], [('on', u('g01', 'Google')), ('Google', u('g01', 'Google')), ('Cloud.', u('g01', 'Cloud'))]], size=64, u1=d0 + 0.1),
         TechTag('Google ADK', 'ten agents, one job each', u('g01', 'ADK') - 0.1, d0 + 0.2),
-        TechTag('Gemini on Vertex AI', 'Pro decides the words, Flash reads', u('g01', 'Gemini') - 0.1, d0 + 0.2, y=H - 122)])
+        TechTag('Gemini 3.1 Pro · Gemini 3.8 Flash', 'on Vertex AI: Pro decides, Flash reads', u('g01', 'Gemini') - 0.1, d0 + 0.2, y=H - 122)])
 
     # ======================================================== 3 · Munchly Foods, its supply chain, and the two batches
     t0, t1 = t1, T['k01'][0] - PRE['k01'] - 0.2
@@ -339,7 +346,7 @@ def build():
     t0, t1 = t1, a('m03') - 0.3
     L_ = t1 - t0
     go = 2.4 + 1.0
-    pw = P3('mango', [(89.9, 96.8)], WS + '/command', u0=go + 1.15, enter=False)   # cut 6: trimmed so it plays under 1.3x
+    pw = P3('mango', [(89.9, 96.5)], WS + '/command', u0=go + 1.15, enter=False)   # cut 6, 7b: trimmed so it plays under 1.3x
     add('detect', t0, t1, DeviceShot(Footage('f-priya'), Footage('s-priya'), pw, t_whip=1.5 + 1.0, t_go=go, mode='push', who=PRIYA), [
         pw,
         Sprite(words_sprite(kicker='02 · HAPPY PATH', head='Munchly Mango Drink 200 ml', width=900, hsize=40, kcolor='a'), 64, 64, 0.25, 1.5 + 1.0),
@@ -365,7 +372,7 @@ def build():
                   'One photo of the label.', width=420, call_gap=1.2),
         PhonePop((500, 640), 0.35, 1.5 - 0.05, push='verify', width=420, side=-1, rise=-200),
         lab_inset,
-        TechTag('Gemini Flash', 'reads the printed label', a('m03', 'Gemini') - t0 - 0.1, L_ + 0.3, x=64),   # her tablet fills the right
+        TechTag('Gemini 3.8 Flash', 'reads the printed label', a('m03', 'Gemini') - t0 - 0.1, L_ + 0.3, x=64),   # her tablet fills the right
         Ring(lw, (190, 760, 550, 160), lw.seg_start(3, L_ + XF) + 0.1, L_ + 0.3, card=card('Vision: it matches the export', 'MF-2410-118 · best before 24 Oct 2026 · MRP ₹20', ('agent', 'VISION'), 400), at=(64, 860))])
 
     t0, t1 = t1, a('m05') - 0.3

@@ -176,6 +176,22 @@ WALK = [   # (first frame, stop, agents at work, their places)
     (651, 'Report', 'Sold, not binned.', []),
 ]
 CAPTION = _at(561.3, 622.5)     # the walk's own caption card, in the middle of the orbit
+# cut 7b: the model each agent at work thinks with (agents/src/sc_agents/agents/*.py's tiers, infra/prod's model ids)
+_F, _P = 'Gemini 3.8 Flash', 'Gemini 3.1 Pro'
+WALK_MODELS = [[_F], ['rules on BigQuery'], [_F], [_P], [_P], [None], [_F, _F, _P], [_F], [_F], []]
+
+
+@lru_cache(maxsize=None)
+def model_chip(text):
+    """a small dark pill naming a model, its ink amber for Pro, green for Flash"""
+    S = 2
+    ink = (255, 214, 140) if 'Pro' in text else (170, 236, 200) if 'Gemini' in text else (200, 214, 206)
+    w = int(text_w(text, 'g', 16, 680) + 40); h = 30
+    im = Image.new('RGBA', (w * S, h * S), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+    d.rounded_rectangle([0, 0, w * S - 1, h * S - 1], radius=15 * S, fill=(12, 24, 18, 236), outline=ink + (200,), width=int(1.2 * S))
+    d.ellipse([12 * S, 11 * S, 20 * S, 19 * S], fill=ink + (255,))
+    draw_text(d, (28 * S, 5 * S), text, 'g', 16 * S, ink + (255,), 680)
+    return to_sprite(im.resize((w, h), Image.LANCZOS))
 
 
 class AgentsWalk(ArchScene):
@@ -233,6 +249,16 @@ class AgentsWalk(ArchScene):
             sp = cv2.resize(sp / max(1e-6, sp.max()), (W, H), interpolation=cv2.INTER_LINEAR)
             f *= (1 - 0.22 * e * (1 - sp))[..., None]
             f += (0.06 * e * sp)[..., None] * col((52, 211, 128))
+        # cut 7b: the Google model each agent thinks with, beside it as its stop is reached, and kept there, so the walk
+        # ends with every agent named by its model (the person and the result have none)
+        for j in range(min(k, len(WALK_MODELS) - 1) + 1):
+            if u < self.starts[j]: break
+            e = ease_out(clamp((u - self.starts[j] - 0.1) / 0.3))
+            for (px, py), m in zip(WALK[j][3], WALK_MODELS[j]):
+                if not m: continue
+                qx, qy = cx + (px - cx) * z, cy + (py - cy) * z
+                yy = qy - 58 if qy - 58 > 14 else qy + 24   # under the agent where the push has carried it to the top
+                blit(f, model_chip(m), qx + 34, yy + 8 * (1 - e), e * (1.0 if j == k else 0.8))
         # the yes: an amber ping round the person's stop
         for d_ in (0.0, 0.22):
             q = (u - self.starts[5] - d_) / 0.9

@@ -10,7 +10,7 @@
    "id": "i02",
    "sec": "intro",
    "text": "Too close to its date for quick commerce, it's destroyed, and its GST credit reversed.",
-   "gap": 1.6
+   "gap": 1.1
   },
   {
    "id": "i03",
@@ -22,13 +22,13 @@
    "id": "i04",
    "sec": "brand",
    "text": "Each brand gets its own workspace, where AI agents find the best exit for every pack at risk.",
-   "gap": 0.5
+   "gap": 2.5
   },
   {
    "id": "g01",
    "sec": "agents",
    "text": "Ten agents, built with Google's ADK, run on Cloud Run and think with Gemini. They walk every batch through nine stops, to one human yes.",
-   "gap": 2.2
+   "gap": 2.0
   },
   {
    "id": "a01",
@@ -41,7 +41,7 @@
    "id": "a02",
    "sec": "munchly",
    "text": "And the people you'll meet, as we follow two batches: one happy, one sad.",
-   "gap": 0.4
+   "gap": 0.3
   },
   {
    "id": "k01",
@@ -109,7 +109,7 @@
    "id": "m09",
    "sec": "mango",
    "text": "Paperwork files every paper in Cloud Storage, and Lakshmi Agencies ends whole.",
-   "gap": 1.4
+   "gap": 1.3
   },
   {
    "id": "s01",
@@ -148,7 +148,7 @@
    "id": "s05",
    "sec": "sad",
    "text": "At the landfill he photographs it, and the officer, two witnesses and Rakesh sign the certificate.",
-   "gap": 0.5,
+   "gap": 0.4,
    "pause": [
     [
      "it",
@@ -191,7 +191,7 @@
    "id": "d01",
    "sec": "next",
    "text": "Try the guided demo at smartclearance-demo dot web dot app.",
-   "gap": 1.0,
+   "gap": 0.7,
    "say": "Try the guided demo at smart clearance demo dot web dot app."
   },
   {
