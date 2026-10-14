@@ -222,3 +222,36 @@ design3/designs/SC-208/src/tts/vo3/*
 design3/designs/SC-208/src/tts/vo3/maya1w-warm/*
 !design3/designs/SC-208/src/tts/vo3/maya1w-warm/*.json
 
+# SC-209: cut 7's pipeline ships as cut 6's did, with the kirana clusters the maps draw (kiranas.json, from design3's
+# world by dump-kiranas.mjs); keyframe PNGs, clips, depth maps, captures, voice takes, the venvs and the build stay local
+!design3/designs/SC-209/src/
+design3/designs/SC-209/src/*
+!design3/designs/SC-209/src/*.py
+!design3/designs/SC-209/src/*.sh
+!design3/designs/SC-209/src/*.mjs
+!design3/designs/SC-209/src/*.js
+!design3/designs/SC-209/src/lines.json
+!design3/designs/SC-209/src/pushes.json
+!design3/designs/SC-209/src/kiranas.json
+!design3/designs/SC-209/src/prompts/
+!design3/designs/SC-209/src/build/
+design3/designs/SC-209/src/build/*
+!design3/designs/SC-209/src/build/screens.json
+!design3/designs/SC-209/src/tts/
+design3/designs/SC-209/src/tts/*
+!design3/designs/SC-209/src/tts/*.py
+!design3/designs/SC-209/src/tts/*.sh
+!design3/designs/SC-209/src/tts/sample*.txt
+!design3/designs/SC-209/src/tts/voice.txt
+!design3/designs/SC-209/src/tts/bake5/
+design3/designs/SC-209/src/tts/bake5/*
+!design3/designs/SC-209/src/tts/bake5/score.json
+!design3/designs/SC-209/src/tts/bake5w/
+design3/designs/SC-209/src/tts/bake5w/*
+!design3/designs/SC-209/src/tts/bake5w/score.json
+!design3/designs/SC-209/src/tts/vo3/
+design3/designs/SC-209/src/tts/vo3/*
+!design3/designs/SC-209/src/tts/vo3/maya1w-warm/
+design3/designs/SC-209/src/tts/vo3/maya1w-warm/*
+!design3/designs/SC-209/src/tts/vo3/maya1w-warm/*.json
+

@@ -1,0 +1,123 @@
+1
+00:00:00,900 --> 00:00:06,293
+Every day, India's food brands write off stock that sells too slowly.
+
+2
+00:00:07,443 --> 00:00:13,754
+Too close to its date for quick commerce, it's destroyed, and its GST credit reversed.
+
+3
+00:00:15,404 --> 00:00:18,778
+Smart-Clearance turns that write-off into recovery.
+
+4
+00:00:18,828 --> 00:00:26,184
+Each brand gets its own workspace, where AI agents find the best exit for every pack at risk.
+
+5
+00:00:28,434 --> 00:00:39,121
+Ten agents, built with Google's ADK, run on Cloud Run and think with Gemini. They walk every batch through nine stops, to one human yes.
+
+6
+00:00:40,871 --> 00:00:49,740
+Meet Munchly Foods, our imaginary client: its distributors, kiranas, food banks and a marketplace.
+
+7
+00:00:49,790 --> 00:00:55,842
+And the people you'll meet, as we follow two batches: one happy, one sad.
+
+8
+00:00:56,292 --> 00:01:05,057
+In the console, Neha sets up a brand in minutes: its stock export, its people, its gates, its agents.
+
+9
+00:01:05,007 --> 00:01:08,894
+Everyone signs in with Firebase, on their own device.
+
+10
+00:01:09,144 --> 00:01:16,409
+The workspace installs as an app on any phone, tablet or laptop, so alerts reach everyone live.
+
+11
+00:01:17,059 --> 00:01:25,965
+From the sell-through in BigQuery, the Watcher alerts Priya: Munchly's Mango Drink won't sell in its twenty-two days.
+
+12
+00:01:26,015 --> 00:01:33,424
+Lakshmi Agencies photographs the label, and Vision, on Gemini Flash, matches it to the stock export.
+
+13
+00:01:33,474 --> 00:01:45,232
+From the batch's sales history and Munchly's own rules, the Valuer prices each exit and the Router splits it. Priya approves with one tap.
+
+14
+00:01:45,282 --> 00:01:53,614
+Outreach offers the packs to fifty-eight kiranas in their own language; each order lands on Priya's screen, live.
+
+15
+00:01:53,664 --> 00:02:00,712
+Fifty-two shops take thirteen hundred and seventy-two packets, each with its own GST invoice.
+
+16
+00:02:00,762 --> 00:02:08,138
+The godown's staff buy a hundred and fifty packs by UPI, and Vision checks the receipt against the count.
+
+17
+00:02:08,188 --> 00:02:13,400
+Feeding India collects the last fifty-eight packs, and issues a donation receipt.
+
+18
+00:02:13,350 --> 00:02:19,391
+Paperwork files every paper in Cloud Storage, and Lakshmi Agencies ends whole.
+
+19
+00:02:21,441 --> 00:02:29,571
+But not every batch sells. Munchly's Masala Chips go to Rakesh Traders' kiranas in Nagpur, and just two order.
+
+20
+00:02:29,621 --> 00:02:39,456
+On ExpireSoon, an imaginary near-expiry marketplace, the Negotiator counters a bid, and seven hundred and seventy-two packs sell.
+
+21
+00:02:39,506 --> 00:02:43,583
+Five hundred and forty packets are left when the window closes.
+
+22
+00:02:44,033 --> 00:02:50,638
+Rakesh's van delivers the two shops' orders, and the wholesaler's truck collects the lot.
+
+23
+00:02:50,688 --> 00:02:56,913
+On expiry day, Rakesh must destroy them through an authorised agency, and prove it.
+
+24
+00:02:56,963 --> 00:03:05,218
+At the landfill he photographs it, and the officer, two witnesses and Rakesh sign the certificate.
+
+25
+00:03:05,368 --> 00:03:12,137
+Vision checks the photos; only on Priya's second yes are the certificate and credit note issued.
+
+26
+00:03:12,587 --> 00:03:22,379
+Every step is on the record: an append-only audit trail in Cloud SQL, and requests traced end to end in Cloud Trace, with OpenTelemetry.
+
+27
+00:03:22,429 --> 00:03:31,913
+Even here, Munchly recovers eleven thousand seven hundred rupees, fourteen thousand better than destroying it, and Rakesh ends whole.
+
+28
+00:03:31,963 --> 00:03:41,458
+Impact posts every batch to its ledger in BigQuery: two point three tonnes kept from landfill this year, ready for BRSR.
+
+29
+00:03:41,508 --> 00:03:47,195
+Next: WhatsApp, more Indian languages, and native iOS and Android apps.
+
+30
+00:03:47,145 --> 00:03:51,637
+Try the guided demo at smartclearance-demo dot web dot app.
+
+31
+00:03:52,087 --> 00:03:57,960
+Sign-ins for the live app on Google Cloud are in our deck; the sample data is on GitHub.
