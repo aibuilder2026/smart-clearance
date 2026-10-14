@@ -1,0 +1,12 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "mode": "text-to-image",
+  "condition_images": [],
+  "seed": 206011,
+  "aspect": "16:9",
+  "size": 2048,
+  "prompt": "A distributor's godown at dawn: in the foreground, a tall, neat stack of identical sealed brown kraft cartons on a wooden pallet, every carton's side facing the camera with one blank white rectangular label sticker; shafts of morning light through a high window with fine dust in the air; steel racks of more cartons fading into the dim background; no people. Every carton is plain brown kraft with one blank white rectangular label sticker on its side and no other printing. Photorealistic cinematic still from a professional corporate film, full-frame cinema camera, 35 mm lens, gentle shallow depth of field, realistic Indian setting, natural faces and natural hands with five fingers, true-to-life colours, motivated natural light, calm composition. Physically correct: a person always looks at the front of the screen they are using. Any screen we can see is a plain, evenly lit, blank white display with nothing on it. No text, no numbers, no lettering, no logos, no signs anywhere in the picture.",
+  "original": "2752x1536 PNG, local in src/img/",
+  "post": "the Mango Drink's or the Masala Chips' own label (design3/system/labels, the batch's record: batch, dates, MRP, the FSSAI licence, its EAN-13 and QR code) printed onto each carton's blank sticker in perspective, lit and softened to the sticker's own focus (labels.py, prep-keys.py / prep-opening.py); every code read back; then resized to 1920 wide (lanczos), WebP q88",
+  "cost_usd": 0
+}

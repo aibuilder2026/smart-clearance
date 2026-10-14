@@ -1,0 +1,17 @@
+{
+  "prompt": "A locked-off tripod shot: the camera does not move, pan, tilt or zoom. Exactly as in the image: the helper slides the sealed carton into the van while the young woman in the green T-shirt reads the phone in her hand and taps it once. Slow, natural movements; the van stays still. Everything keeps its form; no object appears, vanishes or changes shape; faces and hands stay natural, with five fingers; every screen stays a plain, evenly lit white display with nothing on it; no text or lettering appears. Photorealistic cinematic footage, natural motion, smooth and slow.",
+  "model": "LTX 2.5 Fast (local)",
+  "resolution": "1080p",
+  "duration": 5,
+  "fps": 24,
+  "aspectRatio": "16:9",
+  "cameraMotion": "static",
+  "audio": false,
+  "seed": 206806,
+  "loras": [],
+  "image": "f-meera-L.png",
+  "ltx_desktop": "1.2.7",
+  "minutes": 14.0,
+  "cost_usd": 0,
+  "post": "the face shot: played at its own speed from its first frame until the whip pan; measured steady first (clipcheck.py), with no one-frame flash (deflash.py)"
+}

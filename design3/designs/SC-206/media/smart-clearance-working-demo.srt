@@ -1,0 +1,119 @@
+1
+00:00:00,900 --> 00:00:06,347
+Every day, India's food brands write off stock that sells too slowly.
+
+2
+00:00:06,347 --> 00:00:12,704
+Too close to its date for quick commerce, it is destroyed, and its GST credit reversed.
+
+3
+00:00:14,054 --> 00:00:17,535
+Smart-Clearance turns that write-off into recovery.
+
+4
+00:00:17,585 --> 00:00:27,094
+It is software as a service for FMCG brands: each gets its own workspace, where AI agents find the best exit for every pack at risk.
+
+5
+00:00:27,344 --> 00:00:34,587
+Ten agents on Gemini, built with Google's Agent Development Kit, walk every batch through nine stops.
+
+6
+00:00:34,637 --> 00:00:41,673
+The Watcher spots the risk. Vision verifies the label. The Valuer and the Router price every exit.
+
+7
+00:00:41,623 --> 00:00:43,756
+Then one person says yes.
+
+8
+00:00:43,706 --> 00:00:51,951
+Outreach, the Lister and the Negotiator sell. Paperwork files the GST papers, and Impact posts the ledger.
+
+9
+00:00:52,201 --> 00:00:59,372
+Here's what you'll see, live on production: the SaaS console, a happy path, and a sad path.
+
+10
+00:01:00,122 --> 00:01:06,969
+In the console, Neha sets up a brand in minutes: its stock export mapped, its people invited.
+
+11
+00:01:06,919 --> 00:01:14,255
+Each SKU gets its own quick-commerce gates, and every agent acts, asks, or only suggests.
+
+12
+00:01:14,505 --> 00:01:21,879
+Everyone signs in on their own device, to the real apps on Cloud Run, with agents reasoning on Gemini.
+
+13
+00:01:23,229 --> 00:01:31,095
+For the demo, Neha sets Munchly to Rehearsal: a journey day passes in an hour, against real best-before dates.
+
+14
+00:01:31,145 --> 00:01:41,596
+Priya, in supply chain, gets the Watcher's alert: Munchly's Mango Drink in Hyderabad, twenty-two days left, twenty-two thousand rupees at stake.
+
+15
+00:01:41,646 --> 00:01:52,634
+At the godown, Lakshmi Agencies photographs the label. Vision reads its batch, dates and FSSAI licence, and matches them to the stock export.
+
+16
+00:01:52,684 --> 00:01:59,949
+The Valuer prices every exit, and the Router splits the batch. Priya approves the plan with one tap.
+
+17
+00:01:59,999 --> 00:02:09,665
+Outreach offers the packs to fifty-eight kiranas in their own language. A shopkeeper orders on her phone, and it lands on Priya's screen, live.
+
+18
+00:02:09,715 --> 00:02:14,293
+Next on our roadmap: more Indian languages, and WhatsApp.
+
+19
+00:02:14,343 --> 00:02:21,778
+Fifty-two shops take thirteen hundred and seventy-two packets, and every order gets its own GST invoice.
+
+20
+00:02:21,828 --> 00:02:31,630
+The godown's staff buy a hundred and fifty packs, each paying by scanning Lakshmi Agencies' UPI code, and Vision checks the receipt against the count.
+
+21
+00:02:31,680 --> 00:02:37,106
+Feeding India collects the last fifty-eight packs, and issues a donation receipt.
+
+22
+00:02:37,556 --> 00:02:45,659
+Paperwork drafts every paper. Munchly recovers nearly seventeen thousand rupees, and Lakshmi Agencies ends whole.
+
+23
+00:02:47,309 --> 00:02:55,911
+But not every batch sells. Munchly's Masala Chips go to Rakesh Traders' kiranas in Nagpur, and just two of them order.
+
+24
+00:02:55,961 --> 00:03:06,563
+On ExpireSoon, a wholesaler in Raipur bids thirteen rupees; the Negotiator counters at fourteen twenty, and seven hundred and seventy-two packs sell.
+
+25
+00:03:06,613 --> 00:03:10,759
+Five hundred and forty packets are left when the window closes.
+
+26
+00:03:10,809 --> 00:03:17,012
+On expiry day, Rakesh must destroy them through an authorised agency, and prove it.
+
+27
+00:03:17,062 --> 00:03:26,128
+At the landfill he photographs it, and the agency's officer, two witnesses and Rakesh sign the certificate on his tablet.
+
+28
+00:03:26,778 --> 00:03:34,870
+Vision checks the photos; only on Priya's second yes are the certificate and credit note issued, every paper signed.
+
+29
+00:03:37,620 --> 00:03:46,900
+Even here, Munchly recovers eleven thousand seven hundred rupees against a twenty-six thousand rupee write-off, and Rakesh ends whole.
+
+30
+00:03:47,450 --> 00:03:56,214
+Smart-Clearance. Live on Cloud Run, reasoning with Gemini. Ten agents, one yes, and nothing good goes to waste.
