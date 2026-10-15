@@ -58,7 +58,7 @@
     font-optical-sizing: auto;
   }
   header { margin-bottom: 22px; }
-  .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--primary-text); }
+  .eyebrow { font-size: 13.5px; font-weight: 650; color: var(--primary-text); }
   h1 { font-size: 34px; line-height: 1.08; font-weight: 750; letter-spacing: -0.02em; margin-top: 6px; }
   .lede { margin-top: 10px; font-size: 15px; line-height: 1.5; color: var(--fg-2); max-width: 860px; }
 
@@ -101,8 +101,7 @@
   .flow.split > div { display: flex; align-items: center; justify-content: center; gap: 10px; }
 
   /* the distributors */
-  .dist { padding: 16px 16px 16px 18px; display: grid; grid-template-columns: 1fr 112px; gap: 10px; position: relative; overflow: hidden; }
-  .dist::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 5px; background: var(--j); }
+  .dist { padding: 16px; display: grid; grid-template-columns: 1fr 112px; gap: 10px; }
   .dist-art { width: 112px; height: 112px; object-fit: contain; align-self: center; }
   .tag { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 650; color: var(--jt); }
   .tag::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--j); }
@@ -119,10 +118,10 @@
   .col h3::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--j); }
   .col h3 small { font: 500 13px "Geist", sans-serif; color: var(--fg-3); }
   .exits-list { display: grid; gap: 12px; }
-  .exit { padding: 14px 14px 14px 12px; display: grid; grid-template-columns: 84px 1fr; gap: 12px; align-items: center; position: relative; overflow: hidden; }
-  .exit::after { content: ""; position: absolute; inset: 0 0 0 auto; width: 5px; background: var(--c); }
+  .exit { padding: 14px 14px 14px 12px; display: grid; grid-template-columns: 84px 1fr; gap: 12px; align-items: center; }
   .exit-art { width: 84px; height: 84px; object-fit: contain; }
-  .kind { font-size: 12px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--ct); }
+  .kind { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 650; color: var(--ct); }
+  .kind::before { content: ""; width: 12px; height: 8px; border-radius: 3px; background: var(--c); flex: none; }
   .exit .person { grid-template-columns: 44px 1fr; gap: 10px; margin-top: 6px; }
   .exit .face { width: 44px; height: 44px; }
   .exit .name { font-size: 14.5px; }

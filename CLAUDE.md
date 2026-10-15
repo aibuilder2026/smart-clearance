@@ -2797,12 +2797,12 @@
     - every other Claude Design reference. The design prototypes' row now points at `design3/`, served locally; the design3 README's row, the `dist.sh` line and the design-first rule no longer name Claude Design or its hosted copies.
   - **Checks:** every relative link and anchor in README.md resolves.
 - **SC-214** (In Review, branch `SC-214-demo-cast`): DEMO.md pictures the cast, asked for by the maintainer ("pictorially can we portrait all the demo characters, the Munchly company and its retail and supply chain and what each role is").
-  - **The picture** (`docs/demo/cast-and-supply-chain.webp`, 2000 × 2660, 382 KB), drawn from the app's own portraits and 3D renders in design system v3's light colours and type, three tiers top to bottom:
+  - **The picture** (`docs/demo/cast-and-supply-chain.webp`, 2000 × 2626), drawn from the app's own portraits and 3D renders in design system v3's light colours and type, three tiers top to bottom:
     - **the organisations:** Munchly Foods (the brand, Pune) with Priya, supply chain operator, and Arjun, workspace admin; beside it Smart-Clearance with Neha in the console, and the agents in the order they work, Priya's yes among them;
     - **the distributors:** Lakshmi Agencies (Hyderabad, the Mango Drink, journey 1) and Rakesh Traders (Nagpur, the Masala Chips, journey 2), each with its godown, its batch and its owner's part;
     - **each journey's exits,** in the app's channel colours: the kiranas, the staff sale and Feeding India's Meera for the Mango Drink; the kiranas, Agrawal Wholesale on ExpireSoon and the authorised waste agency for the chips.
 
-    Text in a channel colour takes its darker ink, 5.8:1 or better on white (the impeccable hook flagged the green, orange and green tag at first). Its source is `docs/demo/source/cast-and-supply-chain.html`, rendered in Chrome at 1000 px and a device scale factor of 2.
+    Text in a channel colour takes its darker ink, 5.8:1 or better on white (the impeccable hook flagged the green, orange and green tag at first). The labels are in sentence case with a small colour chip, and the cards carry no side stripe (the hook's all-caps and side-tab findings). Its source is `docs/demo/source/cast-and-supply-chain.html`, rendered in Chrome at 1000 px and a device scale factor of 2.
   - **DEMO.md:** a new section, "Meet the cast", after the data set: the picture, a who's-who table with each person's portrait (from `design3/system/img/people/`, in place), organisation, role and journey, and the agents in order.
   - **Checks:** every link, anchor and image in DEMO.md resolves, and all 67 images in `docs/demo/` are used. AGENTS.md's layout names the picture.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
