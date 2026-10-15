@@ -34,9 +34,10 @@
   .lines div { display: grid; grid-template-columns: 14px 1fr auto; gap: 10px; align-items: baseline; font-size: 13.5px; }
   .lines div .num { font-size: 14.5px; }
   .lines .tot { border-top: 1px solid var(--line-2); padding-top: 8px; font-weight: 650; }
-  .why { display: grid; gap: 6px; align-content: start; }
-  .why .ic { width: 34px; height: 34px; border-radius: 11px; background: var(--sunken); display: grid; place-items: center; }
-  .why .ic svg { width: 19px; height: 19px; stroke: var(--fg-2); }
+  .why { display: grid; grid-template-columns: 30px 1fr; gap: 6px 10px; align-content: start; align-items: center; }
+  .why p { grid-column: 1 / -1; }
+  .why .ic { display: grid; place-items: center; }
+  .why .ic svg { width: 24px; height: 24px; stroke: var(--red-text); }
   .why p { font-size: 12.8px; color: var(--fg-2); }
   .kg { display: flex; gap: 14px; align-items: center; background: var(--surface-2); border-radius: 14px; padding: 10px 12px; }
   .kg .big { font-size: 26px; font-weight: 720; color: var(--clay); white-space: nowrap; }
@@ -45,8 +46,7 @@
 <body>
 <div class="poster">
   <header>
-    <span class="eyebrow red"><i>1</i>The problem</span>
-    <h1>A near-expiry batch has one easy exit today: <span class="red">the bin</span>.</h1>
+    <h1 style="margin-top:0">A near-expiry batch has one easy exit today: <span class="red">the bin</span>.</h1>
     <p class="lede">Packaged food that quick-commerce will no longer take still has days, sometimes weeks, of life. In India it mostly waits at the distributor's godown, comes back as an expiry claim, and is destroyed. The brand pays for the stock, the disposal, the EPR, and loses the GST input credit on top.</p>
   </header>
 
