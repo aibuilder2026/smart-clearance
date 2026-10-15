@@ -8,6 +8,7 @@ Every company, person, batch and figure is fictional. Munchly Foods is the story
 distributors hold two batches that won't sell before their best-before date.
 
 - [Start here: the demo data set](#start-here-the-demo-data-set)
+- [Meet the cast: Munchly Foods and its supply chain](#meet-the-cast-munchly-foods-and-its-supply-chain)
 - [Pick a way in](#pick-a-way-in)
 - [The guided demo, in five minutes](#the-guided-demo-in-five-minutes)
 - [The live apps: before you start](#the-live-apps-before-you-start)
@@ -37,6 +38,33 @@ landfill, and the signatures. Download it, or open each file on GitHub as the st
 
 The `signatures-on-its-papers/` folders are for reading, not uploading: the signatures and stamps that every paper and
 PDF of the batch prints.
+
+## Meet the cast: Munchly Foods and its supply chain
+
+<img src="docs/demo/cast-and-supply-chain.webp" width="880" alt="Munchly Foods' supply chain and who's who. At the top, Munchly Foods with Priya Deshmukh, supply chain operator, and Arjun Nair, workspace admin; beside it Smart-Clearance with Neha Kulkarni, staff, and its agents. In the middle, two distributors: Lakshmi Agencies in Hyderabad, holding the Mango Drink for journey 1, and Rakesh Traders in Nagpur, holding the Masala Chips for journey 2. At the bottom, where each batch goes: for the Mango Drink, the Hyderabad kiranas, a staff sale and Feeding India; for the chips, the Nagpur kiranas, the ExpireSoon buyer Agrawal Wholesale, and destruction by an authorised waste agency">
+
+Munchly Foods makes snacks and drinks in Pune. It sells them through four distributors, who supply the kiranas, India's
+corner shops. Two of its batches won't sell before their best-before date. Smart-Clearance's agents plan where each
+one goes, and Munchly's supply chain operator says yes.
+
+| Person | Organisation | Role in the demo | Journey |
+| --- | --- | --- | --- |
+| <img src="design3/system/img/people/p-priya.webp" width="56" alt="Priya Deshmukh"><br>**Priya Deshmukh** | Munchly Foods, the brand | Supply chain operator. Gives the one yes on each plan and the second yes on a destruction, reviews the papers, reads the ledger. | 1 and 2 |
+| <img src="design3/system/img/people/p-arjun.webp" width="56" alt="Arjun Nair"><br>**Arjun Nair** | Munchly Foods | Workspace admin. Looks after Munchly's people and the agents' guardrails. | not in the journeys |
+| <img src="design3/system/img/people/p-neha.webp" width="56" alt="Neha Kulkarni"><br>**Neha Kulkarni** | Smart-Clearance, the platform | Staff, Super admin, in the console. Sets clients up; in the demo she resets the journey and fires the agents' timers. | 1 and 2 |
+| <img src="design3/system/img/people/p-lakshmi.webp" width="56" alt="Lakshmi Agencies' owner"><br>**Lakshmi Agencies**, its owner | Distributor, Begum Bazaar godown, Hyderabad | Holds the Mango Drink batch. Sends the label photo, records the staff sale on its UPI receipt, runs the van round. | 1 |
+| <img src="design3/system/img/people/p-rakesh.webp" width="56" alt="Rakesh bhai"><br>**Rakesh bhai** | Rakesh Traders, distributor, Kalamna Market godown, Nagpur | Holds the Masala Chips batch. Sends the label photo, loads the buyer's truck, issues the invoice from Tally, sends the destruction's evidence. | 2 |
+| <img src="design3/system/img/people/p-lakshmi-ganapathi.webp" width="56" alt="Sri Lakshmi Ganapathi Kirana's owner"><br>**Sri Lakshmi Ganapathi Kirana** | A kirana among Lakshmi Agencies' 58, Hyderabad | Orders from the Hindi scheme on the phone. Al-Noor Provision Store orders too. | 1 |
+| <img src="design3/system/img/people/p-ganesh.webp" width="56" alt="Ganesh ji"><br>**Ganesh ji** | Shree Ganesh Kirana, among Rakesh Traders' 38, Nagpur | Orders 24 packets, as does Jai Durga Stores. Om Sai Provision says not this time. | 2 |
+| <img src="design3/system/img/people/p-meera.webp" width="56" alt="Meera"><br>**Meera** | Feeding India, a food bank, Hyderabad | City lead. Confirms and collects the donation; the app issues her donation receipt. | 1 |
+| <img src="design3/system/img/people/p-agrawal.webp" width="56" alt="Agrawal ji"><br>**Agrawal ji** | Agrawal Wholesale, Raipur | A buyer on ExpireSoon, the near-expiry marketplace. Bids on the lot, takes the Negotiator's counter, sends his truck. | 2 |
+| **Lakshmi Agencies' staff** | Distributor's own staff | Buy 150 packs at the staff sale, paying by UPI. | 1 |
+| **Orange City Enviro Services** | An authorised waste agency, Nagpur | Destroys the packets nobody bought at a landfill. Its officer Sachin Bhoyar and two witnesses sign the certificate with Rakesh. | 2 |
+
+And the agents, on Gemini, act for Munchly inside its guardrails. In the order they work: Data, Watcher, Vision,
+Valuer, Router, then Priya's yes, then Lister, Outreach, Negotiator, Paperwork and Impact. Patil Distributors (Pune)
+and Gupta & Sons (Indore) hold more of Munchly's batches. The Watcher reads every distributor's stock each morning,
+but nobody acts on theirs in the demo.
 
 ## Pick a way in
 
