@@ -20,7 +20,7 @@ web
   workspace app's screens and the console's screens through `core`.
 - **backend-api**, the system of record: FastAPI on PostgreSQL 18 (Cloud Run and Cloud SQL), Firebase Authentication,
   every secret in Secret Manager, every change with its audit line, every request traced.
-- **The agents**: Google ADK pipelines on Gemini through Vertex AI (Pro where a person decides on the words, Flash for
+- **The agents**: Google ADK pipelines on Gemini through Agent Platform (Pro where a person decides on the words, Flash for
   reading and drafting), one run a Pub/Sub event, on Cloud Run; Cloud Scheduler ticks the journey clock; BigQuery holds
   the sell-through and the agents' runs; Cloud Storage the photos, papers and exports. The Paperwork agent lays out
   every paper as a PDF (WeasyPrint).

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Smart-Clearance Architecture</title>
-<meta name="description" content="How Smart-Clearance is built on Google Cloud: Firebase, Cloud Run, Gemini on Vertex AI, Pub/Sub, Cloud SQL and BigQuery, delivered by GitHub Actions and Cloud Build.">
+<meta name="description" content="How Smart-Clearance is built on Google Cloud: Firebase, Cloud Run, Gemini on Agent Platform, Pub/Sub, Cloud SQL and BigQuery, delivered by GitHub Actions and Cloud Build.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Geist:wght@300..800&family=Geist+Mono:wght@400..600&display=swap">
@@ -495,7 +495,7 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
       </div>
       <p class="eyebrow">Google AI Hackathon 2026 · Retail &amp; Commerce · Technical architecture</p>
       <h1>Every near-expiry carton gets a second chance, <em>routed by agents on Google Cloud.</em></h1>
-      <p class="lede">Smart-Clearance finds an FMCG brand's stock that will not sell before its date, reads the carton's label, prices every way out, and waits for one person's yes. Then agents list the lot, offer it to kiranas, answer buyers, draft the GST papers and post the impact ledger. This page shows how it is built: Firebase at the edge, Cloud Run for the API and the agents, Gemini on Vertex AI for the words, Pub/Sub for the events, Cloud SQL as the system of record and BigQuery for the analytics.</p>
+      <p class="lede">Smart-Clearance finds an FMCG brand's stock that will not sell before its date, reads the carton's label, prices every way out, and waits for one person's yes. Then agents list the lot, offer it to kiranas, answer buyers, draft the GST papers and post the impact ledger. This page shows how it is built: Firebase at the edge, Cloud Run for the API and the agents, Gemini on Agent Platform for the words, Pub/Sub for the events, Cloud SQL as the system of record and BigQuery for the analytics.</p>
       <div class="hero-links">
         <a href="https://smartclearance.web.app" target="_blank" rel="noopener"><span class="dot"></span>Landing page</a>
         <a href="https://munchly-smartclearance.web.app" target="_blank" rel="noopener"><span class="dot"></span>Workspace app</a>
@@ -513,7 +513,7 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
       </div>
       <div class="layer"><span>Experience</span><div class="chips"><span class="chip ours">SvelteKit apps</span><span class="chip g">Firebase Hosting</span><span class="chip g">Firebase Auth</span><span class="chip g">Cloud Messaging</span></div></div>
       <div class="layer"><span>Services</span><div class="chips"><span class="chip ours">backend-api · FastAPI</span><span class="chip g">Cloud Run</span><span class="chip g">Cloud Run jobs</span></div></div>
-      <div class="layer"><span>Intelligence</span><div class="chips"><span class="chip ai">Gemini on Vertex AI</span><span class="chip ai">Agent Development Kit</span><span class="chip ours">agents service</span></div></div>
+      <div class="layer"><span>Intelligence</span><div class="chips"><span class="chip ai">Gemini on Agent Platform</span><span class="chip ai">Agent Development Kit</span><span class="chip ours">agents service</span></div></div>
       <div class="layer"><span>Events</span><div class="chips"><span class="chip g">Pub/Sub</span><span class="chip g">Cloud Scheduler</span><span class="chip ours">transactional outbox</span><span class="chip ours">SSE stream</span></div></div>
       <div class="layer"><span>Data</span><div class="chips"><span class="chip g">Cloud SQL · PostgreSQL</span><span class="chip g">BigQuery</span><span class="chip g">Cloud Storage</span></div></div>
       <div class="layer"><span>Trust</span><div class="chips"><span class="chip g">Secret Manager</span><span class="chip g">IAM, no keys</span><span class="chip g">Workload Identity Federation</span></div></div>
@@ -535,7 +535,7 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
     <figure class="fig">
       <p class="scroll-hint">Scroll sideways to see the whole diagram</p>
       <div class="fig-scroll">
-      <svg class="d" viewBox="0 0 1400 760" role="img" aria-label="Architecture: browsers and phones load four apps from Firebase Hosting, sign in with Firebase Authentication and call backend-api on Cloud Run with an ID token. backend-api writes to Cloud SQL, reads Secret Manager, signs Cloud Storage URLs, sends pushes through Firebase Cloud Messaging and publishes events to Pub/Sub after commit. Pub/Sub pushes to the agents service on Cloud Run, which calls Gemini on Vertex AI, reads and writes BigQuery and Cloud Storage, and reports back to backend-api. Cloud Scheduler ticks backend-api.">
+      <svg class="d" viewBox="0 0 1400 760" role="img" aria-label="Architecture: browsers and phones load four apps from Firebase Hosting, sign in with Firebase Authentication and call backend-api on Cloud Run with an ID token. backend-api writes to Cloud SQL, reads Secret Manager, signs Cloud Storage URLs, sends pushes through Firebase Cloud Messaging and publishes events to Pub/Sub after commit. Pub/Sub pushes to the agents service on Cloud Run, which calls Gemini on Agent Platform, reads and writes BigQuery and Cloud Storage, and reports back to backend-api. Cloud Scheduler ticks backend-api.">
         <defs>
           <marker id="o-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ah"/></marker>
           <marker id="o-ahg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ahg"/></marker>
@@ -594,7 +594,7 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
         <rect class="row" x="1206" y="244" width="148" height="28" rx="8"/><text class="r" x="1218" y="263">stateless, idempotent</text>
         <rect class="row" x="1206" y="278" width="148" height="28" rx="8"/><text class="r" x="1218" y="297">words, never figures</text>
         <rect class="gem" x="1190" y="350" width="180" height="88" rx="14" stroke="url(#o-aura)"/>
-        <text class="hb" x="1208" y="378">Gemini</text><text class="s" x="1208" y="396">Vertex AI, global</text><text class="s" x="1208" y="413">Pro and Flash tiers</text>
+        <text class="hb" x="1208" y="378">Gemini</text><text class="s" x="1208" y="396">Agent Platform, global</text><text class="s" x="1208" y="413">Pro and Flash tiers</text>
 
         <!-- data row -->
         <rect class="ng" x="290" y="500" width="200" height="80" rx="14"/>
@@ -700,12 +700,12 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
       <article class="sp">
         <div class="sp-head">
           <span class="gl ai"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.6 4.8 3.2 7.4 8 8-4.8.6-7.4 3.2-8 8-.6-4.8-3.2-7.4-8-8 4.8-.6 7.4-3.2 8-8z"/><circle cx="19" cy="19" r="1.6"/></svg></span>
-          <div><h3>Gemini on Vertex AI</h3><p>Two tiers, through the Agent Development Kit</p></div>
+          <div><h3>Gemini on Agent Platform</h3><p>Two tiers, through the Agent Development Kit</p></div>
         </div>
         <ul>
           <li><span><b>Gemini Pro</b> (<code>gemini-3.1-pro-preview</code>) writes where judgement shows: the Valuer's note on each exit, the Router's explanation of the split, the Negotiator's reply to a bid, and the evals' judge.</span></li>
           <li><span><b>Gemini Flash</b> (<code>gemini-3.8-flash</code>) reads and drafts: Vision reads the printed label from a distributor's photo, the Data agent maps an unfamiliar DMS export, and the Lister, Outreach (offers in Hindi, English and Marathi), Paperwork and Impact write their copy.</span></li>
-          <li><span>Called through <code>google-genai</code> on Vertex AI's global endpoint with the service account's own credentials: no API key exists. Every call asks for structured output against a schema.</span></li>
+          <li><span>Called through <code>google-genai</code> on Agent Platform's global endpoint with the service account's own credentials: no API key exists. Every call asks for structured output against a schema.</span></li>
           <li><span>Gemini supplies words only. backend-api computes every rupee, the words are checked against those figures, and a template stands in for any reply that fails.</span></li>
         </ul>
         <p class="why"><b>Why</b>A multimodal model reads a crumpled carton label as printed, writes fluent shop offers in Indian languages, and runs under the project's own IAM, quotas and audit logs.</p>
@@ -768,7 +768,7 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
       <div class="cat-group">
         <div class="cat-label"><b>Intelligence</b><span>Gemini writes; the rules decide</span></div>
         <div class="cards">
-          <div class="card"><div class="card-head"><span class="gl ai"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.6 4.8 3.2 7.4 8 8-4.8.6-7.4 3.2-8 8-.6-4.8-3.2-7.4-8-8 4.8-.6 7.4-3.2 8-8z"/></svg></span><b>Vertex AI, Gemini</b></div>
+          <div class="card"><div class="card-head"><span class="gl ai"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.6 4.8 3.2 7.4 8 8-4.8.6-7.4 3.2-8 8-.6-4.8-3.2-7.4-8-8 4.8-.6 7.4-3.2 8-8z"/></svg></span><b>Agent Platform, Gemini</b></div>
             <p>Pro for the Valuer, Router, Negotiator's bids and the evals' judge; Flash for Vision's multimodal label read, the Data agent's column mapping, the Lister, Outreach, Paperwork and Impact. Global endpoint, structured output, retries with backoff on quota and server errors.</p>
             <p class="w">Multimodal reading, Indian-language copy, and enterprise IAM and quotas in the same project.</p></div>
           <div class="card"><div class="card-head"><span class="gl ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="8.5" y="14" width="7" height="7" rx="2"/><path d="M6.5 10v2h11v-2M12 12v2"/></svg></span><b>Agent Development Kit</b></div>
@@ -1023,7 +1023,7 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
       <div class="kl kl-head"><div>Who acts</div><span></span><div>Signs as</div><span></span><div>May</div></div>
       <div class="kl"><div><b>A member in an app</b>Firebase email and password</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div class="sa"><b>Firebase ID token</b>verified by backend-api</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div><b>See a view cut to their role</b>a buyer never sees the reserve, a kirana sees its own offer, partners never see the brand's margins</div></div>
       <div class="kl"><div><b>Cloud Scheduler, Pub/Sub</b>the clock and the event bus</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div class="sa"><b>sc-invoker</b>OIDC token for a fixed audience</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div><b>Call the tick and the agents</b>Cloud Run's IAM lets nobody else into the agents service</div></div>
-      <div class="kl"><div><b>The agents service</b>on Cloud Run</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div class="sa"><b>sc-agents</b>Google ID token to backend-api</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div><b>Read facts, report words</b>Vertex AI, BigQuery, Cloud Storage and <span class="mono">/internal</span>; never the database</div></div>
+      <div class="kl"><div><b>The agents service</b>on Cloud Run</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div class="sa"><b>sc-agents</b>Google ID token to backend-api</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div><b>Read facts, report words</b>Agent Platform, BigQuery, Cloud Storage and <span class="mono">/internal</span>; never the database</div></div>
       <div class="kl"><div><b>backend-api and its jobs</b>Cloud Run service and jobs</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div class="sa"><b>sc-api, sc-migrator</b>IAM database logins</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div><b>Write the record</b>data access as the app, schema changes only as the migrator; the audit log refuses edits even to its owner</div></div>
       <div class="kl"><div><b>GitHub Actions</b>on <span class="mono">main</span>, environment <span class="mono">prod</span></div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div class="sa"><b>github-backend, github-deployer</b>Workload Identity Federation</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div><b>Start Cloud Build as sc-builder, release Hosting</b>nothing else</div></div>
       <div class="kl"><div><b>A developer's laptop</b>their own gcloud login</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div class="sa"><b>sc-api-local, sc-agents-local</b>impersonated in code</div><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 7H22" stroke="currentColor" stroke-width="1.6"/><path d="M21 3l6 4-6 4z" fill="currentColor"/></svg><div><b>Run the real stack locally</b>the same Firebase pool, secrets, topics and buckets, on a local PostgreSQL</div></div>
@@ -1292,14 +1292,14 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
     { id: 'sql', name: 'Cloud SQL', sub: 'PostgreSQL', k: 'g' },
     { id: 'ps', name: 'Pub/Sub', sub: 'and Scheduler', k: 'g' },
     { id: 'ag', name: 'Agents', sub: 'ADK, Cloud Run', k: 'ai' },
-    { id: 'gem', name: 'Gemini', sub: 'Vertex AI', k: 'ai' },
+    { id: 'gem', name: 'Gemini', sub: 'Agent Platform', k: 'ai' },
     { id: 'dat', name: 'BigQuery', sub: 'and Cloud Storage', k: 'g' }
   ];
   // [from, to, label, kind]: kind is call (default), ret, evt, ai or yes
   var STAGES = [
     { id: 'loop', name: 'The core loop', group: 'How every step runs', cls: 'loop',
       lead: 'Every stop of the journey runs on this loop. A person acts in an app or the clock ticks; backend-api checks who it is, commits the change with its audit line and its outgoing events in one transaction, streams the change to every member, and publishes the events once the commit has landed. An agent picks the event up, gathers facts, asks Gemini for words, and reports back; the report is itself a change, so the loop turns again.',
-      gcp: ['Firebase Authentication', 'Cloud Run', 'Cloud SQL', 'Pub/Sub', 'Vertex AI', 'BigQuery', 'Cloud Messaging'],
+      gcp: ['Firebase Authentication', 'Cloud Run', 'Cloud SQL', 'Pub/Sub', 'Agent Platform', 'BigQuery', 'Cloud Messaging'],
       note: 'Each report names the event it answers. A redelivered event finds its work done, and backend-api answers the repeat with a no-op.',
       msgs: [
         ['app', 'api', 'an action, with ID token, idempotency key and traceparent'],
@@ -1336,7 +1336,7 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
       ] },
     { id: 'connect', name: 'Connect', group: 'A batch’s journey', agent: 'Data agent',
       lead: 'The brand’s distributor management system exports stock and secondary sales as CSV. The file goes straight from the browser to Cloud Storage on a signed URL, never through the API. The Data agent reads it, maps its columns (with a saved layout, or Gemini Flash for headers it has not seen), and loads it into BigQuery with a load job.',
-      gcp: ['Cloud Storage', 'Pub/Sub', 'Cloud Run', 'Vertex AI', 'BigQuery'],
+      gcp: ['Cloud Storage', 'Pub/Sub', 'Cloud Run', 'Agent Platform', 'BigQuery'],
       note: 'A load job never loads the same file twice. Staff can map a client’s first export from the console, so the workspace opens already connected.',
       msgs: [
         ['app', 'api', 'ask for an upload link for the export'],
@@ -1372,7 +1372,7 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
       ] },
     { id: 'verify', name: 'Verify', group: 'A batch’s journey', agent: 'Vision',
       lead: 'Before anything is priced, the batch is checked on the shelf. Vision asks the distributor for one photo of the carton’s label; the phone uploads it straight to Cloud Storage; Gemini Flash reads what is printed, without being shown the record it is checked against. backend-api compares the read with the batch.',
-      gcp: ['Cloud Messaging', 'Cloud Storage', 'Pub/Sub', 'Vertex AI', 'Cloud Run', 'Cloud SQL'],
+      gcp: ['Cloud Messaging', 'Cloud Storage', 'Pub/Sub', 'Agent Platform', 'Cloud Run', 'Cloud SQL'],
       note: 'A label that cannot be read, or reads differently from the record, asks for another photo with the reason. A read Vision could not make is retried by Pub/Sub before it gives up.',
       msgs: [
         ['ps', 'ag', 'batch at risk, push to Vision', 'evt'],
@@ -1392,7 +1392,7 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
       ] },
     { id: 'value', name: 'Value', group: 'A batch’s journey', agent: 'Valuer',
       lead: 'backend-api prices every way out for the batch with the money rules: kiranas, the quick-commerce marketplace, a staff sale, a food bank, or the bin. The Valuer reads that table and the SKU’s recent prices in BigQuery, and Gemini Pro writes one note per exit saying why it suits this batch now.',
-      gcp: ['Pub/Sub', 'Cloud Run', 'BigQuery', 'Vertex AI', 'Cloud SQL'],
+      gcp: ['Pub/Sub', 'Cloud Run', 'BigQuery', 'Agent Platform', 'Cloud SQL'],
       note: 'The table comes from backend-api, never from the model. A note that quotes a figure not in the table is dropped, and the template stands in.',
       msgs: [
         ['ps', 'ag', 'push to the Valuer', 'evt'],
@@ -1406,7 +1406,7 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
       ] },
     { id: 'decide', name: 'Decide', group: 'A batch’s journey', agent: 'Router',
       lead: 'backend-api splits the batch across the exits by the client’s gates and guardrails. The Router reads the plan and Gemini Pro explains it in plain words for the approver, quoting only the plan’s own figures. The plan then waits for a person.',
-      gcp: ['Pub/Sub', 'Cloud Run', 'Vertex AI', 'Cloud SQL', 'Cloud Messaging'],
+      gcp: ['Pub/Sub', 'Cloud Run', 'Agent Platform', 'Cloud SQL', 'Cloud Messaging'],
       note: 'If the explanation fails a check, the approver still sees the plan, explained by the template.',
       msgs: [
         ['ps', 'ag', 'push to the Router', 'evt'],
@@ -1433,7 +1433,7 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
       ] },
     { id: 'execute', name: 'Execute', group: 'A batch’s journey', agent: 'Lister, Outreach, Donation, Negotiator',
       lead: 'One event starts three agents at once in an ADK ParallelAgent: the Lister writes the marketplace listing, Outreach writes the kiranas’ offer in Hindi, English and Marathi, and Donation books the food bank. Kiranas order in the app; a buyer bids, backend-api decides the counter, and the Negotiator words the reply.',
-      gcp: ['Pub/Sub', 'Cloud Run', 'Vertex AI', 'Cloud Messaging', 'BigQuery', 'Cloud SQL'],
+      gcp: ['Pub/Sub', 'Cloud Run', 'Agent Platform', 'Cloud Messaging', 'BigQuery', 'Cloud SQL'],
       note: 'The reserve price never reaches a prompt, and a buyer’s message is quoted between delimiters as data. A reply to a bid must state the decided price and nothing else.',
       msgs: [
         ['ps', 'ag', 'execute, push to the pipeline', 'evt'],
@@ -1453,7 +1453,7 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
       ] },
     { id: 'settle', name: 'Settle', group: 'A batch’s journey', agent: 'Paperwork',
       lead: 'Once every line of the plan is done, backend-api drafts the papers, numbered in their series: the tax invoice, the credit notes, the GST input-credit memo, the food bank’s receipt. Paperwork renders each as a PDF with WeasyPrint into Cloud Storage, and members open them through short-lived signed links.',
-      gcp: ['Cloud SQL', 'Pub/Sub', 'Cloud Run', 'Vertex AI', 'Cloud Storage'],
+      gcp: ['Cloud SQL', 'Pub/Sub', 'Cloud Run', 'Agent Platform', 'Cloud Storage'],
       note: 'The figures on every paper are backend-api’s. Gemini Flash may add a one-line cover note; if it fails, the paper ships without it.',
       msgs: [
         ['api', 'sql', 'draft the papers, numbered in series'],
@@ -1593,7 +1593,7 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
     title.textContent = s.agent ? s.name + ' · ' + s.agent : s.name;
     lead.textContent = s.lead;
     gcp.innerHTML = '';
-    s.gcp.forEach(function (n) { var c = document.createElement('span'); c.className = 'chip ' + (/Vertex|Gemini/.test(n) ? 'ai' : 'g'); c.textContent = n; gcp.appendChild(c); });
+    s.gcp.forEach(function (n) { var c = document.createElement('span'); c.className = 'chip ' + (/Agent Platform|Gemini/.test(n) ? 'ai' : 'g'); c.textContent = n; gcp.appendChild(c); });
     note.textContent = s.note || '';
     render(s);
   }
@@ -1607,7 +1607,7 @@ footer p { font-size: 14px; color: var(--fg-3); max-width: 60ch; }
       var h = document.createElement('h3'); h.textContent = s.agent ? s.name + ' \u00b7 ' + s.agent : s.name; pf.appendChild(h);
       var lp = document.createElement('p'); lp.textContent = s.lead; pf.appendChild(lp);
       var chips = document.createElement('div'); chips.className = 'gcp-used';
-      s.gcp.forEach(function (n) { var c = document.createElement('span'); c.className = 'chip ' + (/Vertex|Gemini/.test(n) ? 'ai' : 'g'); c.textContent = n; chips.appendChild(c); });
+      s.gcp.forEach(function (n) { var c = document.createElement('span'); c.className = 'chip ' + (/Agent Platform|Gemini/.test(n) ? 'ai' : 'g'); c.textContent = n; chips.appendChild(c); });
       pf.appendChild(chips);
       var fig = document.createElement('figure'); fig.className = 'fig';
       var copy = svg.cloneNode(true), suf = '-p' + s.id; copy.removeAttribute('id');

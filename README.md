@@ -19,7 +19,7 @@ from a console.
 | Munchly Foods' workspace | [munchly-smartclearance.web.app](https://munchly-smartclearance.web.app) | backend-api and the agents, live |
 | The guided demo | [smartclearance-demo.web.app](https://smartclearance-demo.web.app) | the workspace app's stub, in the browser |
 | backend-api, the platform API | Cloud Run in `asia-south1`, Cloud SQL for PostgreSQL 18 | live |
-| The agents service | Cloud Run, Gemini on Vertex AI, Pub/Sub | live |
+| The agents service | Cloud Run, Gemini on Agent Platform, Pub/Sub | live |
 | The design prototypes | [`design3/`](design3/README.md), served locally | in-browser mocks |
 
 Every company, person and figure in the product is fictional. Munchly Foods is the story's client.
@@ -62,7 +62,7 @@ Every company, person and figure in the product is fictional. Munchly Foods is t
 | `design3/` | The current design and the source of truth for every design: the design system, the guided demo, the workspace app prototype, the landing page and the console, as React pages on in-browser mocks; every design review in `designs/SC-<n>/`. |
 | `frontend/` | The production frontend, a SvelteKit 3 pnpm workspace: four apps (`admin`, the landing page; `console`; `workspace`, a client's workspace; `demo`, the guided demo) over three shared packages (`core`, design system v3 with the workspace's and console's screens; `api`, the contract and the in-browser mocks; `testing`). |
 | `backend-api/` | The platform API: FastAPI on PostgreSQL 18, Firebase Authentication, Secret Manager; the journey's steps and clock; the hydrate step that builds a synthetic world through the API's own services. |
-| `agents/` | The agents service: Google ADK pipelines on Gemini through Vertex AI, one run a Pub/Sub event, reporting to backend-api; the eval sets. |
+| `agents/` | The agents service: Google ADK pipelines on Gemini through Agent Platform, one run a Pub/Sub event, reporting to backend-api; the eval sets. |
 | `infra/` | Terraform for the Google Cloud project, and the scripts that run it. |
 | `.github/` | GitHub Actions: the gates on every pull request, the deploys from `main`. |
 | `docs/`, `video/` | The story pages and the narrated walkthrough. |
