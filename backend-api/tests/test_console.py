@@ -144,17 +144,17 @@ async def test_the_audit_log_newest_first(api, neha):
 
 
 async def test_an_agents_autonomy_and_nothing_when_unchanged(api, neha):
-    r = await api.patch(f"{C}/munchly/agents/negotiator", json={"autonomy": "act"}, headers=neha)
+    r = await api.patch(f"{C}/munchly/agents/negotiator", json={"autonomy": "ask"}, headers=neha)
     assert r.status_code == 200, r.text
     line = await last_audit(api, neha)
     assert {k: line[k] for k in ("at", "who", "client", "text")} == {
         "at": "Today, 12:00",
         "who": "Neha Kulkarni",
         "client": "munchly",
-        "text": "Set the Negotiator agent to Act for Munchly Foods (was Ask)",
+        "text": "Set the Negotiator agent to Ask for Munchly Foods (was Act)",
     }
     n = len((await api.get("/v1/console/audit", headers=neha)).json())
-    await api.patch(f"{C}/munchly/agents/negotiator", json={"autonomy": "act"}, headers=neha)
+    await api.patch(f"{C}/munchly/agents/negotiator", json={"autonomy": "ask"}, headers=neha)
     assert len((await api.get("/v1/console/audit", headers=neha)).json()) == n
 
 

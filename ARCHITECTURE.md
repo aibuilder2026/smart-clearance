@@ -5,11 +5,9 @@ the parts fit and why they were chosen, follows one batch through the whole syst
 performs on production. [README.md](README.md) is the guide to running and operating it, [TESTING.md](TESTING.md) to
 testing it, and [AGENTS.md](AGENTS.md) holds the rules it is worked on by.
 
-**The diagrams.** The pictures are exports of four Lucidchart documents. They are kept in
-[`docs/architecture/`](docs/architecture/), and each one links to the document it came from. Mermaid, which GitHub
-renders, draws what Lucid does not: the code's own structure, how the agents are orchestrated, the data model, the
-case's states and the destruction at the godown. [The diagrams' sources](#23-the-diagrams-sources) says how to refresh
-them.
+**The diagrams.** Every picture is an export of a Lucidchart document, drawn with Google Cloud's own icons wherever
+a Google Cloud service appears. They are kept in [`docs/architecture/`](docs/architecture/), and each one links to
+the document it came from. [The diagrams' sources](#23-the-diagrams-sources) says how to refresh them.
 
 **Agent Platform.** In April 2026 Google renamed Vertex AI to Gemini Enterprise Agent Platform, and its Agent Engine to
 Agent Runtime. This document uses the new names. Nothing in the build changed with them: Gemini is still reached at
@@ -258,63 +256,19 @@ BigQuery and Cloud Storage](docs/architecture/flow-batch-journey.webp)](https://
 A batch in a journey moves through ten phases. `domain/journey.py` maps each phase to the stop it shows, as `flow.js` does in the
 prototype:
 
-```mermaid
-stateDiagram-v2
-  [*] --> watching: a batch in view, no case yet
-  watching --> at_risk: the Watcher opens a case (Detect)
-  at_risk --> verified: the label read matches (Verify)
-  at_risk --> valued: no photo needed
-  verified --> valued: the Valuer's notes (Value)
-  valued --> planned: the Router's plan (Decide)
-  planned --> approved: a person's yes (Approve)
-  approved --> executing: listing, offers, food bank (Execute)
-  executing --> dispatched: the buyer's truck loaded
-  executing --> settled: no lot, or expiry day
-  dispatched --> settled: the papers drafted (Settle)
-  settled --> cleared: the ledger posted (Report)
-  cleared --> [*]
-```
+[![A case's ten phases, from watching to cleared: Detect, Verify (or no photo needed), Value, Decide, a person's Approve, Execute, the buyer's truck or straight to Settle, then Report; Cloud Scheduler, Pub/Sub, Agent Platform and Cloud SQL move it on](docs/architecture/case-phases.webp)](https://lucid.app/lucidchart/2605b0cc-b62e-4e50-8844-c788931a94db/view)
+
+*Lucid: Smart-Clearance · A case's phases.*
 
 ### Destroyed at the godown, against evidence and a second yes
 
 When packs are still at the godown on expiry day and the client's policy is `godown`, nothing closes until
-the distributor has shown the destruction and the operator has approved it. Lucid's journey ends at the report, so
-this path is drawn here:
+the distributor has shown the destruction and the operator has approved it. The journey's diagram ends at the report,
+so this path has a sequence of its own:
 
-```mermaid
-sequenceDiagram
-  autonumber
-  participant T as Cloud Scheduler / console
-  participant A as backend-api
-  participant D as Distributor (workspace)
-  participant S as Cloud Storage (photos)
-  participant V as Vision (agents, Flash)
-  participant P as Priya (operator)
-  participant W as Paperwork, Impact (agents)
+[![The destruction at the godown as a sequence: the report's timer or Report now, the distributor's two photos to Cloud Storage and four signatures, Vision's read on Gemini, Priya's review, and on her yes the papers and the ledger; else she asks again](docs/architecture/destruction-at-the-godown.webp)](https://lucid.app/lucidchart/08863960-0759-4e8b-8e46-69137532ad9a/view)
 
-  T->>A: report.due, or Report now
-  A->>A: expire: open lines close as they stand
-  A-->>D: push: destroy N expired packs at your godown
-  D->>A: ask for two upload links
-  A-->>D: signed URLs
-  D->>S: before (godown, batch label) and after (landfill, slate)
-  D->>A: the agency from the client's list, its certificate number
-  A->>V: journey.step destruction
-  V->>S: read both photos
-  V->>A: the batch, the count, the slate, the landfill
-  A->>A: hold the read to the batch, the packs left and the day
-  A-->>P: Review the destruction (Command Center)
-  alt Priya approves
-    P->>A: Approve · issue the papers
-    A->>A: the expiry credit note and the agency's certificate issued
-    A->>W: journey.step timer report.due
-    W->>A: the papers' PDFs, then Impact's report
-    A->>A: the ledger posted, the case clears
-  else Priya asks again
-    P->>A: ask again, with a reason
-    A-->>D: push with the reason, the reminder re-armed
-  end
-```
+*Lucid: Smart-Clearance · Destroyed at the godown, against evidence and a second yes.*
 
 ## 6. The agents
 
@@ -347,27 +301,9 @@ reported) ends as a no-op, so redelivery is safe.
 
 Code decides what runs, at every level; a model only writes words inside a step.
 
-```mermaid
-flowchart LR
-  subgraph api["backend-api: the orchestrator"]
-    sm["the journey's state machine<br/>domain/journey.py, steps.py"]
-    gate["two people's gates<br/>the plan's approval,<br/>a destruction's second yes"]
-    ob["the outbox"]
-  end
-  ps["Pub/Sub<br/>ordered by batch"]
-  subgraph ag["the agents on Cloud Run: a dispatcher"]
-    disp["dispatch.py, pipelines.build()<br/>a fixed table: event to pipeline"]
-    pipe["an ADK workflow<br/>SequentialAgent, ParallelAgent"]
-    step["steps: read and report<br/>BaseAgent, no model"]
-    writer["writers: LlmAgent and a schema<br/>no transfer, bounded"]
-  end
-  gem["Gemini on Agent Platform<br/>Pro and Flash"]
-  sm --> ob --> ps --> disp --> pipe
-  pipe --> step
-  pipe --> writer --> gem
-  step -- "/internal report" --> sm
-  gate --> sm
-```
+[![backend-api on Cloud Run orchestrates: the state machine, two people's gates and the outbox; Pub/Sub pushes each event to the agents on Cloud Run, where dispatch.py picks an ADK workflow of steps and bounded writers, the writers calling Gemini on Agent Platform; steps report to /internal, and the record lives in Cloud SQL](docs/architecture/agents-orchestration.webp)](https://lucid.app/lucidchart/78ca2917-3019-4930-b162-7c8f6671bf68/view)
+
+*Lucid: Smart-Clearance · How the agents are orchestrated.*
 
 1. **backend-api is the orchestrator.** The journey is a state machine in code: `domain/journey.py` says which moves
    each phase allows, and `services/journey/steps.py` applies every person's move and every agent's report in one
@@ -476,44 +412,9 @@ to its template. Every pull request replays each writer's recorded answers on th
 
 One FastAPI application, layered so that only the services write.
 
-```mermaid
-flowchart TB
-  subgraph routers["routers/"]
-    pub["public.py<br/>healthz, readyz, showcase, catalog,<br/>workspace lookup, demo requests"]
-    con["console.py<br/>/v1/console: session, overview, dashboard,<br/>clients, gates, people, agents, journey controls,<br/>stand-ins"]
-    ws["workspace.py<br/>/v1/workspaces/{ws}: session, snapshot, case,<br/>record, ledger, partner, every person's move,<br/>events and events/stream"]
-    int["internal.py<br/>/internal: the agents' reads and reports,<br/>pubsub/notify, jobs/tick, jobs/journey-reset"]
-  end
-  deps["deps.py<br/>Public, StaffCtx, MemberCtx, InternalCtx"]
-  identity["identity.py<br/>Firebase ID tokens; GoogleCallers<br/>verifies /internal's Google ID tokens"]
-  subgraph services["services/"]
-    plat["clients, people, staff, users, supply,<br/>agents, dashboard, site, exports,<br/>presenter, reference, audit, context"]
-    subgraph journey["services/journey/"]
-      steps["steps.py: every move and every agent result,<br/>one transaction each"]
-      tick["tick.py: daily runs, timers, stalls"]
-      ev["events.py: clock, feed, notify, emit, publish"]
-      outbox["outbox.py: publish after commit"]
-      notifier["notifier.py: FCM"]
-      views["views.py: role-cut snapshot, case, events"]
-      more["ledger, partners, record, history, reset,<br/>controls, admin, dms, identity, previews, world"]
-    end
-  end
-  domain["domain/<br/>money.py, journey.py, gates.py, copy.py,<br/>clock.py, rules.py, mirrors.py, display.py"]
-  cloud["cloud.py<br/>Publisher (Pub/Sub), Storage (signed URLs),<br/>Messenger (FCM); fakes for tests"]
-  stream["stream.py: Hub<br/>LISTEN sc_stream"]
-  db["db.py, models.py<br/>asyncpg locally, the Cloud SQL connector in the cloud"]
-  cli["cli/<br/>sc-admin, sc-hydrate, sc-walk,<br/>story, live, synth, sessions, sync"]
-  ref["reference/*.json<br/>from design3"]
+[![backend-api's layers: four routers, deps.py and identity.py (Identity Platform), stream.py, the services with services/journey/, domain, cli and the reference data, db.py to Cloud SQL, and cloud.py to Pub/Sub, Cloud Storage and Firebase Cloud Messaging](docs/architecture/backend-api-layers.webp)](https://lucid.app/lucidchart/150c62da-d469-4561-b174-202f85d143fa/view)
 
-  routers --> deps --> services
-  deps --> identity
-  services --> domain
-  services --> db
-  journey --> cloud
-  ws --> stream --> db
-  cli --> services
-  ref --> services
-```
+*Lucid: Smart-Clearance · backend-api's layers.*
 
 - **Four routers.** `public.py` serves the landing page. `console.py` serves staff under `/v1/console`. `workspace.py`
   serves a client's members under `/v1/workspaces/{ws}`. `internal.py` serves the agents, Pub/Sub's notify push and
@@ -616,147 +517,15 @@ TRUNCATE by trigger, even to the owner.
 
 The platform and its clients:
 
-```mermaid
-erDiagram
-  plans ||--o{ clients : "on plan"
-  clients ||--o{ client_members : has
-  clients ||--o{ client_exits : enables
-  clients ||--o{ client_agents : configures
-  clients ||--o{ distributors : has
-  clients ||--o{ skus : sells
-  clients ||--o{ client_integrations : connects
-  clients ||--o{ batches : owns
-  clients ||--o{ agent_runs : runs
-  clients ||--o{ invitations : invites
-  clients ||--o{ audit_log : "is the subject of"
-  distributors ||--o{ kiranas : serves
-  distributors ||--o{ batches : holds
-  skus ||--o{ batches : "of SKU"
-  agents ||--o{ client_agents : "is the agent"
-  exits ||--o{ client_exits : "is the exit"
-  connectors ||--o{ client_integrations : "is the connector"
-  users ||--o{ staff_members : "is staff"
-  users ||--o{ client_members : "is a member"
-  users ||--o{ audit_log : acted
-  roles ||--o{ role_permissions : grants
-  permissions ||--o{ role_permissions : "is granted"
-  roles ||--o{ staff_members : "has role"
-  roles ||--o{ client_members : "access role"
-  demo_requests |o--o| clients : became
+[![Entity relationship diagram of the platform's tables in Cloud SQL: plans, clients, members, exits, agents, integrations, distributors, kiranas, SKUs, batches, agent runs, invitations, the audit log, users, staff, roles and permissions, demo requests](docs/architecture/data-platform.webp)](https://lucid.app/lucidchart/13537dc0-591f-486a-a0d6-e326cf875e3a/view)
 
-  clients {
-    text id
-    text domain
-    text status
-    int day_minutes
-    timestamptz journey_day0
-    bigint stream_seq
-    jsonb workspace_doc
-    jsonb destruction
-    text expiry
-  }
-  client_members {
-    text client_id
-    text ref
-    text workspace_role
-    text member_class
-    text org_ref
-  }
-  distributors {
-    text id
-    text gstin
-    text upi
-    jsonb details
-  }
-  skus {
-    text id
-    int life_days
-    numeric kg_per_unit
-    numeric pack_kg
-    int gate_blinkit_days
-    int gate_qcom_pct
-  }
-  batches {
-    text ref
-    date best_before
-    int units
-    int stage_current
-    timestamptz stage_at
-    int destroyed
-    bool history
-  }
-  audit_log {
-    bigint id
-    timestamptz at
-    uuid actor_user_id
-    text client_id
-    text action
-    text text
-    jsonb details
-  }
-```
+*Lucid: Smart-Clearance · The data: the platform's tables.*
 
 A batch's journey:
 
-```mermaid
-erDiagram
-  batches ||--o{ cases : "is worked in"
-  cases ||--o{ case_orders : "kiranas order"
-  cases ||--o{ case_bids : "buyers bid"
-  cases ||--o{ case_messages : "buyers ask"
-  cases ||--o{ case_photos : "label and evidence"
-  cases ||--o{ timers : "falls due"
-  cases ||--o{ feed_events : "its timeline"
-  cases ||--o{ notifications : "tells members"
-  clients ||--o{ stream : "one sequence"
-  feed_events |o--o{ stream : carries
-  notifications |o--o{ stream : carries
-  users ||--o{ devices : "registers"
-  clients ||--o{ partners : "food banks, buyers"
-  clients ||--o{ document_numbers : "numbers papers"
-  clients ||--o{ idempotency_keys : remembers
+[![Entity relationship diagram of the journey's tables in Cloud SQL: cases with their orders, bids, messages, photos, timers, feed and notifications, the stream, devices, partners, document numbers, idempotency keys and the outbox](docs/architecture/data-journey.webp)](https://lucid.app/lucidchart/97c4c4bb-b174-4608-b5ce-25d4dd660ce4/view)
 
-  cases {
-    text id
-    text batch_ref
-    text phase
-    int stage
-    jsonb assess
-    jsonb photo
-    jsonb valuation
-    jsonb plan
-    jsonb approval
-    jsonb listing
-    jsonb offer
-    jsonb award
-    jsonb docs
-    jsonb ledger
-    jsonb donation
-    jsonb staff
-    jsonb destruction
-    timestamptz expired_at
-    bool history
-  }
-  case_orders {
-    text kirana_id
-    int units
-    jsonb invoice
-  }
-  timers {
-    text kind
-    timestamptz due_at
-    timestamptz fired_wall
-  }
-  outbox {
-    bigint id
-    text topic
-    text ordering_key
-    jsonb attributes
-    jsonb payload
-    timestamptz published_wall
-    int attempts
-  }
-```
+*Lucid: Smart-Clearance · The data: the journey's tables.*
 
 | Group | Tables | Notes |
 | --- | --- | --- |
@@ -827,32 +596,9 @@ checked the member may see it.
 Four apps, each built and deployed on its own, over three shared packages. What the apps share lives in a package,
 never in a copy.
 
-```mermaid
-flowchart TB
-  admin["@smart-clearance/admin<br/>the landing page, prerendered<br/>(+ /ds, a dev route)"]
-  console["@smart-clearance/console<br/>a thin host: sign-in, splash,<br/>Firebase, core's ConsoleApp"]
-  workspace["@smart-clearance/workspace<br/>a thin host: routes, the live source,<br/>pushes, the service worker"]
-  demo["@smart-clearance/demo<br/>the route map, the story, the devices"]
-  core["@smart-clearance/core<br/>design system v3: 69 components, patterns,<br/>motion, icons, styles<br/>/workspace: every role's screens, the stub<br/>/console: every console screen, the demo world"]
-  api["@smart-clearance/api<br/>the contract (types), transport()<br/>site, console and workspace clients,<br/>the mocks, firebase, the seed"]
-  testing["@smart-clearance/testing<br/>axe scan, coverage, pixel compare"]
-  d3["design3<br/>CSS verbatim, seeds, icons,<br/>images in place"]
+[![The frontend's packages: the four apps over core and api, core depending on api, testing for every app, and design3 feeding core and api through seed.mjs, icons.mjs and drift tests](docs/architecture/frontend-packages.webp)](https://lucid.app/lucidchart/dea5e30f-002c-430f-93b0-0c00b1f66895/view)
 
-  admin --> core
-  admin --> api
-  console --> core
-  console --> api
-  workspace --> core
-  workspace --> api
-  demo --> core
-  core --> api
-  admin -. tests .-> testing
-  console -. tests .-> testing
-  workspace -. tests .-> testing
-  demo -. tests .-> testing
-  d3 -- "seed.mjs, icons.mjs, drift tests" --> core
-  d3 -- "seed.mjs" --> api
-```
+*Lucid: Smart-Clearance · The frontend's packages.*
 
 | Package | What it holds |
 | --- | --- |
@@ -866,29 +612,9 @@ flowchart TB
 
 ### Rendering and data
 
-```mermaid
-flowchart LR
-  subgraph build["At build time"]
-    env["PUBLIC_API_BASE<br/>PUBLIC_FIREBASE_*"]
-    pre["the landing page prerendered<br/>with the showcase and catalog"]
-    alias["live workspace build:<br/>the stub aliased away,<br/>no-seed.mjs checks"]
-  end
-  subgraph browser["In the browser"]
-    flip{"PUBLIC_API_BASE set?"}
-    http["siteHttp, consoleHttp, workspaceHttp<br/>JSON over fetch,<br/>Bearer ID token, traceparent"]
-    sse["workspaceEvents<br/>SSE, polling when idle"]
-    mock["siteMock, consoleMock<br/>design3's seed in localStorage"]
-    stub["the workspace stub<br/>flow.ts runs the journey in the browser"]
-  end
-  apiNode["backend-api"]
-  env --> pre
-  env --> alias
-  pre --> flip
-  flip -- yes --> http --> apiNode
-  flip -- yes --> sse --> apiNode
-  flip -- no --> mock
-  flip -- no --> stub
-```
+[![Rendering and data: PUBLIC_API_BASE at build time; in the browser, with it the HTTP clients and the event stream reach backend-api on Cloud Run, without it the mocks and the workspace stub run](docs/architecture/frontend-rendering.webp)](https://lucid.app/lucidchart/d7a7eca7-4e9c-4d7b-bf2f-7bbc4f9ea07c/view)
+
+*Lucid: Smart-Clearance · Rendering and data.*
 
 - **The landing page** is prerendered with its data, so it is complete without JavaScript. It names no client
  ; the demo film plays only when Watch is pressed, from YouTube.
@@ -914,48 +640,9 @@ design3 is the source of truth for every design. Its pages are the design system
 the landing page and the console, all built from one kit and one dataset. `demo/`, `app/`, `console/` and `site/`
 reach `core/`, `screens/` and `system/` through symlinks, so a change there affects every page.
 
-```mermaid
-flowchart TB
-  subgraph core["design3/core"]
-    money["money.js<br/>every figure, from Journey Map v4.1"]
-    data["data.js<br/>the dataset, the parties' identities"]
-    world["world.js<br/>addresses, kiranas, numbering"]
-    platform["platform.js<br/>the console's mock backend,<br/>the rules of record"]
-    flow["flow.js<br/>the journey as actions,<br/>an agent reconciler"]
-    ledger["ledger.js<br/>history, ledger, partners, record"]
-    papers["papers.js<br/>e-invoice, amounts in words"]
-    store["store.js"]
-  end
-  subgraph system["design3/system"]
-    tokens["tokens.css, base.css,<br/>components.css"]
-    kit["kit.jsx, product.jsx"]
-    labels["labels/: the label maker"]
-    img["img/, media/"]
-  end
-  screens["design3/screens<br/>auth, brand, trade, finance,<br/>admin, live, common, roles"]
-  demo["demo/ story.jsx, director.jsx"]
-  app["app/ (PWA)"]
-  site["site/ + loader.js"]
-  console["console/ + splash.js"]
-  tools["tools/vertex-media, capture.mjs"]
-  designs["designs/<br/>every review: options, boards, picks"]
+[![design3's structure: core (money, data, world, store, flow, ledger, papers, platform) and system (tokens, kit, labels, images) feed the screens, which serve the demo and the app; the kit also serves the console and the landing page](docs/architecture/design3-structure.webp)](https://lucid.app/lucidchart/11c44a73-6506-48ab-adfb-98338cb9af35/view)
 
-  money --> data
-  money --> ledger
-  world --> data
-  data --> screens
-  flow --> screens
-  ledger --> screens
-  papers --> screens
-  platform --> console
-  kit --> screens
-  kit --> site
-  kit --> console
-  tokens --> kit
-  screens --> demo
-  screens --> app
-  img --> site
-```
+*Lucid: Smart-Clearance · design3's structure.*
 
 Three things flow from design3 into production, and tests hold them there:
 
@@ -1096,45 +783,9 @@ frontend, design3 (not its `designs/`), `infra/`, `backend-api/`, `agents/` or t
 
 ## 15. Local development
 
-```mermaid
-flowchart LR
-  subgraph machine["The developer's machine"]
-    d3["design3<br/>python3 -m http.server :8787"]
-    admin["admin dev :5173<br/>preview :4173"]
-    console["console dev :5174<br/>preview :4176, mock :4196"]
-    workspace["workspace dev :5175<br/>preview :4177"]
-    demo["demo dev :5176<br/>preview :4178"]
-    api["backend-api :8000<br/>scripts/dev.sh, its own tick<br/>and notify puller"]
-    worker["agents worker<br/>agents/scripts/dev.sh"]
-    pg[("Docker postgres:18 :5432<br/>smart_clearance,<br/>smart_clearance_test")]
-    envl[".env.local per app<br/>app-env.sh"]
-  end
-  subgraph cloud["Google Cloud, local resources"]
-    fa["Firebase Auth<br/>the one user pool"]
-    ps["Pub/Sub local.* topics,<br/>pull subscriptions"]
-    gcs["local buckets"]
-    bq["BigQuery smartclearance_local"]
-    vx["Gemini on Agent Platform"]
-    sm["Secret Manager"]
-  end
-  envl --> admin
-  envl --> console
-  envl --> workspace
-  admin -- "PUBLIC_API_BASE" --> api
-  console -- "PUBLIC_API_BASE" --> api
-  workspace -- "PUBLIC_API_BASE" --> api
-  console --> fa
-  workspace --> fa
-  api --> pg
-  api -- "as sc-api-local" --> ps
-  api --> gcs
-  api --> sm
-  ps -- "pull, as sc-agents-local" --> worker
-  worker -- "/internal" --> api
-  worker --> bq
-  worker --> gcs
-  worker --> vx
-```
+[![Local development: the apps' dev servers, backend-api on Postgres in Docker and the agents worker on the developer's machine, reaching Firebase Auth, Secret Manager, Pub/Sub, the local buckets, BigQuery and Gemini on Agent Platform](docs/architecture/local-development.webp)](https://lucid.app/lucidchart/a4d19edf-22c8-4f09-9754-5e0510a9a242/view)
+
+*Lucid: Smart-Clearance · Local development.*
 
 - **Without Google**, every app runs on its mocks or the stub, seeded from design3; nothing else is needed.
 - **The real stack locally** is the same code against a local PostgreSQL and the `local` resources in the cloud: the
@@ -1228,25 +879,9 @@ Every API call the apps make starts a trace. Cloud Run keeps its id, backend-api
 carries it into Pub/Sub's attributes, and the agents continue it again, so one tap can be followed from the browser to
 Gemini and back.
 
-```mermaid
-flowchart LR
-  app["An app<br/>transport(): traceparent"] --> cr["Cloud Run<br/>keeps the trace id"]
-  cr --> api["backend-api<br/>a span for the route"]
-  api --> tok["verify ID token<br/>Firebase's HTTP calls"]
-  api --> sql["a span a SQL statement"]
-  api --> logs["log lines<br/>logging.googleapis.com/trace"]
-  api --> audit[("audit row<br/>details.trace")]
-  api --> ob["outbox row<br/>attributes.traceparent"]
-  ob --> ps["Pub/Sub"]
-  ps --> ag["agents<br/>a CONSUMER span a run"]
-  ag --> gem["ADK and Gemini spans"]
-  ag --> back["/internal reports<br/>httpx injects traceparent"]
-  ag --> runs[("BigQuery agent_runs<br/>trace id")]
-  tok --> trace["Cloud Trace"]
-  sql --> trace
-  gem --> trace
-  back --> trace
-```
+[![One request, one trace: an app's traceparent through Cloud Run into backend-api's spans, log lines, audit row and outbox, through Pub/Sub to the agents, their Gemini spans, /internal reports and agent_runs in BigQuery, all joined in Cloud Trace](docs/architecture/one-trace.webp)](https://lucid.app/lucidchart/d33fb84b-b1ec-4745-bd55-8ed880e80e91/view)
+
+*Lucid: Smart-Clearance · One request, one trace.*
 
 A request Cloud Run sampled is always traced; of the rest, a quarter (`trace_sample_rate`). An unsampled request still
 has its trace id in its log lines, audit rows and agent runs. Spans go over OTLP to the Telemetry API
@@ -1352,8 +987,8 @@ Motion is prototyped in Framer Motion in design3 and shipped in Svelte with `mot
 
 ## 23. The diagrams' sources
 
-The twelve pictures above are exports of four Lucidchart documents. They open in Lucid for anyone the documents are
-shared with.
+The twenty-three pictures above are exports of fifteen Lucidchart documents. They open in Lucid for anyone the
+documents are shared with.
 
 | File | Lucid document | Page |
 | --- | --- | --- |
@@ -1369,6 +1004,17 @@ shared with.
 | [`model-call.webp`](docs/architecture/model-call.webp) | Google Cloud and AI | 7, A model call, bounded |
 | [`flow-core-loop.webp`](docs/architecture/flow-core-loop.webp) | [Application Flow · the core loop](https://lucid.app/lucidchart/2965aa52-3190-4d68-8791-9c95c8fd7bbc/view) | 1 |
 | [`flow-batch-journey.webp`](docs/architecture/flow-batch-journey.webp) | [Application Flow · a batch's journey](https://lucid.app/lucidchart/c2efb94b-7aa2-4cc1-a6cc-af4980ff255f/view) | 1 |
+| [`case-phases.webp`](docs/architecture/case-phases.webp) | [A case's phases](https://lucid.app/lucidchart/2605b0cc-b62e-4e50-8844-c788931a94db/view) | 1 |
+| [`destruction-at-the-godown.webp`](docs/architecture/destruction-at-the-godown.webp) | [Destroyed at the godown, against evidence and a second yes](https://lucid.app/lucidchart/08863960-0759-4e8b-8e46-69137532ad9a/view) | 1 |
+| [`agents-orchestration.webp`](docs/architecture/agents-orchestration.webp) | [How the agents are orchestrated](https://lucid.app/lucidchart/78ca2917-3019-4930-b162-7c8f6671bf68/view) | 1 |
+| [`backend-api-layers.webp`](docs/architecture/backend-api-layers.webp) | [backend-api's layers](https://lucid.app/lucidchart/150c62da-d469-4561-b174-202f85d143fa/view) | 1 |
+| [`data-platform.webp`](docs/architecture/data-platform.webp) | [The data: the platform's tables](https://lucid.app/lucidchart/13537dc0-591f-486a-a0d6-e326cf875e3a/view) | 1 |
+| [`data-journey.webp`](docs/architecture/data-journey.webp) | [The data: the journey's tables](https://lucid.app/lucidchart/97c4c4bb-b174-4608-b5ce-25d4dd660ce4/view) | 1 |
+| [`frontend-packages.webp`](docs/architecture/frontend-packages.webp) | [The frontend's packages](https://lucid.app/lucidchart/dea5e30f-002c-430f-93b0-0c00b1f66895/view) | 1 |
+| [`frontend-rendering.webp`](docs/architecture/frontend-rendering.webp) | [Rendering and data](https://lucid.app/lucidchart/d7a7eca7-4e9c-4d7b-bf2f-7bbc4f9ea07c/view) | 1 |
+| [`design3-structure.webp`](docs/architecture/design3-structure.webp) | [design3's structure](https://lucid.app/lucidchart/11c44a73-6506-48ab-adfb-98338cb9af35/view) | 1 |
+| [`local-development.webp`](docs/architecture/local-development.webp) | [Local development](https://lucid.app/lucidchart/a4d19edf-22c8-4f09-9754-5e0510a9a242/view) | 1 |
+| [`one-trace.webp`](docs/architecture/one-trace.webp) | [One request, one trace](https://lucid.app/lucidchart/d33fb84b-b1ec-4745-bd55-8ed880e80e91/view) | 1 |
 
 **To refresh one**, edit it in Lucid, export the page as PNG (Lucid's export, or the Lucid connector's
 `lucid_export_document_as_PNG`), and convert it losslessly under the same name:

@@ -1,0 +1,133 @@
+/* The Technical Design Document's own pages, laid over the architecture page's print styles
+   (docs/smart-clearance-architecture.html). Design system v3's tokens, which the page defines on :root:
+   green = Smart-Clearance's own code, blue = a managed Google service, teal = AI, amber = a person's yes. */
+
+@page { size: A4 landscape; margin: 17mm 13mm 15mm; }
+@page full { margin: 0; }
+
+.tdd-only { display: none; }
+
+@media print {
+  .tdd-only { display: block; }
+  :root, html, body { background: #fff; }
+  .hero { break-before: page; }
+
+  /* the numbered section mark beside each section's eyebrow */
+  .tdd-n {
+    display: inline-grid; place-items: center; min-width: 30px; height: 30px; padding: 0 8px; margin-right: 10px;
+    border-radius: 9px; background: var(--primary); color: #fff; font: 700 15px/1 var(--font-display);
+    vertical-align: middle;
+  }
+  .tdd-n.app { background: var(--amber-line); }
+  .sec-head .eyebrow { display: flex; align-items: center; }
+
+  /* ---------- the cover and the back cover ---------- */
+  .tdd-full { page: full; break-before: page; break-after: page; height: 210mm; width: 297mm; position: relative;
+    overflow: hidden; background: #071711; color: #fff; padding: 0 !important; }
+  .tdd-full + section { break-before: page; }
+  .tdd-plate { position: absolute; inset: 0 0 auto 0; height: 132mm; width: 100%; object-fit: cover; object-position: 50% 62%; }
+  .tdd-shade { position: absolute; inset: 0; background:
+    linear-gradient(180deg, rgb(7 23 17 / 0) 0%, rgb(7 23 17 / 0.05) 34%, rgb(7 23 17 / 0.82) 58%, #071711 66%); }
+  .tdd-cover-body { position: absolute; left: 18mm; right: 18mm; bottom: 15mm; display: grid; gap: 7mm; }
+  .tdd-brand { display: flex; align-items: center; gap: 12px; }
+  .tdd-brand .wordmark { color: #fff; font-size: 24px; }
+  .tdd-kind { font: 600 13px/1 var(--font-ui); letter-spacing: 0.14em; text-transform: uppercase; color: #8fe0b4; }
+  .tdd-title { font: 750 44px/1.04 var(--font-display); letter-spacing: -0.02em; max-width: 22ch; margin: 0; color: #fff; }
+  .tdd-title em { font-style: normal; color: #f2b437; }
+  .tdd-sub { font-size: 16px; color: #c9d8d0; max-width: 92ch; margin: 0; }
+  .tdd-meta { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; border-top: 1px solid rgb(255 255 255 / 0.18); padding-top: 5mm; }
+  .tdd-meta div { display: grid; gap: 4px; }
+  .tdd-meta span { font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #8aa597; }
+  .tdd-meta b { font: 600 14px/1.3 var(--font-ui); color: #fff; }
+  .tdd-band { position: absolute; left: 0; right: 0; bottom: 0; height: 5mm; display: grid; grid-template-columns: 3fr 2fr 2fr 1fr; }
+  .tdd-band i:nth-child(1) { background: var(--primary); }
+  .tdd-band i:nth-child(2) { background: var(--g); }
+  .tdd-band i:nth-child(3) { background: var(--ai); }
+  .tdd-band i:nth-child(4) { background: var(--amber); }
+  .tdd-back .tdd-plate { height: 210mm; object-position: 50% 50%; }
+  .tdd-back .tdd-shade { background: linear-gradient(90deg, rgb(7 23 17 / 0.94) 0%, rgb(7 23 17 / 0.82) 42%, rgb(7 23 17 / 0.08) 70%); }
+  .tdd-back .tdd-cover-body { top: 22mm; bottom: auto; max-width: 128mm; right: auto; }
+  .tdd-back .tdd-title { font-size: 34px; }
+  .tdd-links { display: grid; gap: 6px; font-size: 13.5px; color: #c9d8d0; }
+  .tdd-links b { color: #fff; font-weight: 600; }
+
+  /* ---------- document control and the contents ---------- */
+  .tdd-page .wrap { display: grid; gap: 7mm; }
+  .tdd-h { font: 750 30px/1.1 var(--font-display); letter-spacing: -0.015em; margin: 0; color: var(--fg); }
+  .tdd-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 9mm; align-items: start; }
+  .tdd-cols.three { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6mm; }
+  .tdd-index { width: 100%; border-collapse: collapse; font-size: 11.5px; columns: 1; }
+  .tdd-index td { padding: 4px 10px; border-top: 1px solid var(--line); color: var(--fg-2); }
+  .tdd-index td:first-child { font: 700 12px/1 var(--font-display); color: var(--amber-text); width: 40px; }
+  .tdd-index td:nth-child(2) { color: var(--fg); font-weight: 600; }
+  .tdd-index-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 0 9mm; }
+  .tdd-box { border: 1px solid var(--line-2); border-radius: 12px; overflow: hidden; background: #fff; break-inside: avoid; }
+  .tdd-box h3 { margin: 0; padding: 9px 14px; font: 650 14px/1.2 var(--font-ui); color: #fff; background: var(--primary); }
+  .tdd-box.blue h3 { background: var(--g-text); }
+  .tdd-box.teal h3 { background: var(--ai); }
+  .tdd-box.amber h3 { background: var(--amber-line); }
+  .tdd-box table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .tdd-box th, .tdd-box td { text-align: left; vertical-align: top; padding: 7px 14px; border-top: 1px solid var(--line); }
+  .tdd-box tr:first-child th, .tdd-box tr:first-child td { border-top: 0; }
+  .tdd-box th { width: 34%; color: var(--fg-3); font-weight: 600; }
+  .tdd-box thead th { background: var(--surface-2); color: var(--fg-2); width: auto; }
+  .tdd-box p, .tdd-box ul { margin: 0; padding: 10px 14px; font-size: 12.5px; color: var(--fg-2); }
+  .tdd-box ul { padding-left: 30px; display: grid; gap: 5px; }
+  .tdd-key { display: grid; gap: 7px; padding: 10px 14px; font-size: 12.5px; color: var(--fg-2); }
+  .tdd-key span { display: flex; align-items: center; gap: 9px; }
+  .tdd-key i { width: 22px; height: 12px; border-radius: 4px; flex: none; }
+
+  .tdd-toc { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 12mm; }
+  .tdd-toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2.4mm; align-content: start; }
+  .tdd-toc li { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: baseline; gap: 10px;
+    padding-bottom: 2.4mm; border-bottom: 1px dotted var(--line-2); }
+  .tdd-toc .no { font: 700 15px/1 var(--font-display); color: var(--primary-text); }
+  .tdd-toc li.app .no { color: var(--amber-text); }
+  .tdd-toc .t { display: grid; gap: 2px; }
+  .tdd-toc .t b { font: 650 14.5px/1.25 var(--font-ui); color: var(--fg); }
+  .tdd-toc .t span { font-size: 11.5px; color: var(--fg-3); }
+  .tdd-toc .pg { font: 600 14px/1 var(--font-mono, ui-monospace); color: var(--fg-2); }
+
+  /* ---------- the introduction ---------- */
+  .tdd-principles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .tdd-principles div { border: 1px solid var(--line-2); border-left: 0; border-radius: 12px; padding: 12px 14px; background: var(--surface-2); display: grid; gap: 5px; }
+  .tdd-principles div:nth-child(3n+1) { background: var(--primary-soft); }
+  .tdd-principles div:nth-child(3n+2) { background: var(--g-soft); }
+  .tdd-principles div:nth-child(3n) { background: var(--ai-soft); }
+  .tdd-principles b { font: 650 13.5px/1.25 var(--font-ui); color: var(--fg); }
+  .tdd-principles p { margin: 0; font-size: 12.5px; color: var(--fg-2); }
+
+  /* ---------- the back matter from ARCHITECTURE.md ---------- */
+  .tdd-md { display: grid; gap: 3.5mm; font-size: 11.5px; color: var(--fg-2); }
+  .tdd-md p { margin: 0; max-width: 150ch; }
+  .tdd-md p strong { color: var(--fg); }
+  .tdd-md table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--line-2); border-radius: 12px; overflow: hidden; break-inside: auto; }
+  .tdd-md thead th { background: var(--primary); color: #fff; font-weight: 650; text-align: left; padding: 8px 12px; }
+  .tdd-md td { padding: 5px 12px; border-top: 1px solid var(--line); vertical-align: top; }
+  .tdd-md tr { break-inside: avoid; }
+  .tdd-md tbody tr:nth-child(even) td { background: var(--surface-2); }
+  .tdd-md td:first-child { color: var(--fg); font-weight: 600; width: 26%; }
+  .tdd-md code { font-family: var(--font-mono, ui-monospace); font-size: 0.92em; background: var(--sunken); padding: 1px 5px; border-radius: 5px; }
+  .tdd-md ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; columns: 2; column-gap: 9mm; }
+  .tdd-md li { break-inside: avoid; }
+  .tdd-md a { color: var(--g-text); text-decoration: none; }
+  #tdd-gaps .tdd-md ul li::marker { color: var(--amber-line); }
+
+  /* ---------- appendix A: the diagrams ---------- */
+  .tdd-fig { break-before: page; break-inside: avoid; display: block; }
+  .tdd-fig .fh { display: flex; align-items: baseline; gap: 12px; margin-bottom: 2mm; }
+  .tdd-fig .fh b { font: 700 14px/1 var(--font-display); color: #fff; background: var(--amber-line); padding: 6px 9px; border-radius: 8px; }
+  .tdd-fig h3 { margin: 0; font: 700 21px/1.15 var(--font-display); color: var(--fg); }
+  .tdd-fig .cap { margin: 0 0 3mm; font-size: 12.5px; color: var(--fg-2); max-width: 150ch; }
+  .tdd-fig .img { height: 136mm; display: flex; align-items: center; justify-content: center; overflow: hidden;
+    border: 1px solid var(--line-2); border-radius: 12px; background: #fff; padding: 4mm; box-sizing: border-box; }
+  .tdd-fig img { display: block; width: auto; height: auto; max-width: 100%; max-height: 100%; object-fit: contain; }
+  .tdd-fig .src { margin: 2mm 0 0; font-size: 11px; color: var(--fg-3); }
+  .tdd-fig .src span { color: var(--g-text); }
+
+  /* ---------- appendix B: the glossary ---------- */
+  .tdd-gloss { columns: 3; column-gap: 9mm; margin: 0; }
+  .tdd-gloss div { break-inside: avoid; padding: 0 0 3.2mm; }
+  .tdd-gloss dt { font: 650 13px/1.25 var(--font-ui); color: var(--primary-text); }
+  .tdd-gloss dd { margin: 2px 0 0; font-size: 12px; color: var(--fg-2); }
+}

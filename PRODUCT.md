@@ -5,7 +5,120 @@
 Written from the brief, the journey map (docs/dobara-journey-map.html, v4.1), the illustrated story
 (docs/smart-clearance-story.html, v6) and what has been built since (CLAUDE.md records every change by issue); facts
 marked *(inferred)* were not confirmed by the maintainer. Brought up to date on 11 Oct 2026 (SC-170), when the
-original plan of 2 Oct (PLAN.md) was retired and its market reasoning folded into Positioning below.
+original plan of 2 Oct (PLAN.md) was retired and its market reasoning folded into Positioning below. The problem, the
+USP and the agentic answer, in pictures, were added on 15 Oct 2026 (SC-224).
+
+## Why Smart-Clearance: the problem, the USP and the agentic answer
+
+**In one line:** Smart-Clearance turns a near-expiry batch from a write-off into money recovered. Ten agents on Google
+Cloud find it in time, check it on the shelf, price every exit including the bin, and split it across them. One person
+says yes with the money in front of them. Then the agents do the running around in the distributor's name, and they
+draw every paper and post every rupee and kilo to one ledger.
+
+The four pictures below tell it with the story's own figures, each worked out by `design3/core/money.js` and the ledger.
+Their sources are in `docs/product/source/` (`node docs/product/source/render.mjs` draws them again).
+
+### 1. The problem: a near-expiry batch has one easy exit, the bin
+
+![The problem: what happens to a short-dated batch today, what the bin costs the brand for the Mango Drink (₹22,657.20 on 1,580 packs, 339.7 kg to landfill), and why nobody fixes it](docs/product/problem.webp)
+
+Packaged food that quick commerce will no longer take still has days, sometimes weeks, of life. Blinkit wants 90 days
+or more; Zepto and Instamart want 60% of the shelf life left. What they turn away waits at the distributor's godown.
+Normal sales cannot move it in time, and nobody decides batch by batch where else it could go. It comes back as an
+expiry claim and is destroyed. The bin is far dearer than it looks. For the Mango Drink's 1,580 packs, Munchly loses
+the stock at its cost (₹17,380). Under CGST s.17(5)(h) it must reverse the GST input credit (₹869). It pays the agency
+for disposal (₹2,370) and the EPR on the packaging (₹2,038.20). That is ₹22,657.20 in all, and 339.7 kg of food in a
+landfill and on the BRSR report.
+
+It stays unsolved because Indian recovery demand is fragmented: millions of kiranas, about a lakh of distributors,
+young clearance marketplaces and licensed food banks, and none of them takes a truckload. Every exit has its own rules:
+the quick-commerce gates, the brand's territory, what each shop can sell in a fortnight, the days a food bank needs. The
+decision has to be made in days, not at a month-end review. And every move needs its paper: GST invoices, credit notes,
+the input credit kept or reversed, the FSSAI checklist, receipts, a destruction certificate, the BRSR line.
+
+### 2. The USP: it decides where every pack earns the most, and then it does the running around
+
+![The USP: what a distributor management system, a clearance marketplace and Smart-Clearance each do with a short-dated batch; agents decide, one person says yes, agents execute; the five exits and what happens to what none of them takes](docs/product/usp.webp)
+
+A distributor management system records the write-off, and a clearance marketplace wants a listing at its own price.
+Smart-Clearance does what neither can, for each batch:
+
+- **It sees the risk early.** It reads sell-through every morning, before the quick-commerce gates close, and checks
+  the shelf through the label photo, not the spreadsheet.
+- **It prices every exit, the bin included,** and splits one batch across them within each exit's caps, the
+  quick-commerce gates and the brand's territory. The five exits are a Hindi kirana scheme from the distributor, a
+  clearance marketplace outside the territory, a staff sale at the godown, a licensed food bank, and the brand's own
+  D2C store for warehouse stock.
+- **It asks for one yes,** with the money worked out in front of the supply chain lead. Nothing is listed, offered or
+  shipped before it, and nothing happens in the distributor's name before his permission.
+- **It executes every channel at once, in the distributor's name.** It lists the lot, sends every shop its offer,
+  counters the buyer's bid without ever showing a model the reserve, books the food bank's pickup, and records the staff
+  sale.
+- **It proves it.** Every paper is drawn and signed, and every rupee, credit and kilo posts to one ledger with its BRSR
+  line.
+- **It closes out what no exit takes.** On expiry day, an authorised agency destroys the leftover packs at the godown,
+  on two photos, four signatures and a second yes.
+
+It is software as a service: each manufacturer gets its own workspace, set up for its own supply chain.
+
+### 3. How the agentic infrastructure solves it
+
+![How the agentic infrastructure solves it: the event loop (an event, an agent woken by Pub/Sub, facts read, Gemini's words checked, backend-api deciding), each of the nine stops with the hard part, the agent and its Gemini tier, and the Google Cloud services, and the four guardrails](docs/product/agentic.webp)
+
+Each hard part of the problem is a stop on a batch's journey, and each stop is one agent's job.
+
+| Stop | The hard part | Who does it | On Google Cloud |
+| --- | --- | --- | --- |
+| Connect | Every distributor's export has its own layout | Data agent, Gemini Flash maps the columns | Cloud Storage, BigQuery |
+| Detect | Nobody notices in time | the Watcher, rules on sell-through, every morning | Cloud Scheduler, BigQuery |
+| Verify | The spreadsheet can be wrong | Vision, Gemini Flash reads the label photo | Cloud Storage, Gemini |
+| Value | Every exit pays differently; the bin's cost is hidden | the Valuer, Gemini Pro writes a note on each exit | Cloud Run, Cloud SQL, BigQuery |
+| Decide | Gates, territory and caps | the Router, Gemini Pro explains the split | Gemini on Agent Platform |
+| Approve | Someone owns the decision | the supply chain lead, one tap | Firebase Auth, Cloud Messaging |
+| Execute | Many channels at once, in the distributor's name | the Lister, Outreach and the Negotiator, in parallel | Pub/Sub, ADK, Cloud Run |
+| Settle | Every move needs its paper | Paperwork, signed PDFs | Cloud Storage |
+| Report | The board needs proof | Impact, the ledger and the BRSR row | BigQuery, Cloud SQL |
+
+Why it is built this way:
+
+- **Agents fit the shape of the problem.** The work is many small judgements about scattered batches, made in days and
+  then carried out across channels that each have their own rules. That is too much for people to do batch by batch,
+  and too varied for a fixed script. Each agent does one step well, and they run in parallel where the work allows,
+  as the Execute stop does.
+- **Event-driven and stateless.** A morning tick from Cloud Scheduler, a photo sent, a yes or a bid is an event.
+  backend-api records it with its outbox, and Pub/Sub pushes it to the agents on Cloud Run. They run one Google ADK
+  pipeline, read the facts from backend-api, BigQuery and Cloud Storage, think with Gemini on Agent Platform, report
+  back, and keep nothing. backend-api is the orchestrator and the system of record: it moves the journey on and tells
+  every screen over the live stream and a push.
+- **The money is never a model's guess.** Every figure is worked out by the money rules in backend-api (the same rules
+  as `money.js`). Gemini writes words, in structured output, and a note that quotes a figure not in the facts is
+  dropped. A call gets 30 seconds and three tries, a run has a budget of calls, and past that a template stands in. The
+  Negotiator's reserve price never reaches a prompt.
+- **People keep the yeses.** The plan's approval, the distributor's one-time permission and the second yes on a
+  destruction are a person's, in amber, on their own screen.
+- **Every step is on the record.** Each step writes an append-only audit line in the actor's name. One trace runs from
+  the tap through backend-api and Pub/Sub to Gemini in Cloud Trace.
+- **It costs little when idle.** Cloud Run scales to zero, and the prototype runs at about GBP 9 a month before Gemini.
+
+Pro is Gemini 3.1 Pro, used where a person decides on the words: the Valuer, the Router and the Negotiator's replies.
+Flash is Gemini 3.8 Flash, used for reading and drafting. ARCHITECTURE.md has the detail, and the Technical Design
+Documentation (`docs/smart-clearance-tdd.pdf`) the printed account.
+
+### 4. What it changes
+
+![What it changes: the Mango Drink, from −₹22,657.20 in the bin to −₹462.90 (₹22,194.30 better); the Masala Chips, from −₹26,329.60 to +₹10 (₹26,339.60 better); and Munchly's pilot quarter of twelve batches](docs/product/outcome.webp)
+
+| | In the bin | With Smart-Clearance | Better by | Where it went |
+| --- | --- | --- | --- | --- |
+| Mango Drink, 1,580 packs, 22 days left | −₹22,657.20 | −₹462.90 (₹16,917.10 recovered) | ₹22,194.30 | 1,372 to 52 kiranas, 150 at the staff sale, 58 to Feeding India; 339.7 kg kept out of landfill, 58 meals |
+| Masala Chips, 1,360 packets at risk, 47 days left | −₹26,329.60 | +₹10 (₹21,770 recovered) | ₹26,339.60 | 588 to 31 kiranas, 772 on the clearance marketplace; ₹1,224 of GST credit kept |
+
+In both, the distributor ends whole: Munchly's price support makes up what his stock fetched below its cost. Munchly's
+pilot quarter (Q2 FY27) cleared twelve batches: 7 sold through, 3 destroyed at the godown and 2 donated. It recovered
+₹2,20,383.58 against a would-be write-off of ₹3,04,503.55, ₹2,65,263.05 better than the bin. 96.4% of the 10,569 packs
+at risk were sold or donated. It kept ₹16,184.29 of GST input credit and reversed ₹1,652.42. It kept 1,959.51 kg of
+food out of landfill (about 4.9 t of CO₂e, indicative) and made 872 meals through the food banks. Every batch's papers
+were drawn, signed and reviewed.
 
 ## Platform
 
@@ -190,7 +303,7 @@ changes them. Soft 3D renders and live-action film (Qwen-Image, LTX, Veo 3.1, ea
 imagery. DESIGN.md records the system.
 
 Earlier identities remain for reference only: v2 (design2/, Sivakasi matchbox chromolithography) and v1 (design/, and
-the journey map, story and walkthrough video).
+the journey map, story and walkthrough page).
 
 ## Evidence on Hand
 

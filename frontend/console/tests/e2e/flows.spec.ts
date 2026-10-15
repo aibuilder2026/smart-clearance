@@ -24,8 +24,8 @@ test('flows · signing in with a work email and a password, then out', async ({ 
 test("flows · an agent's autonomy and settings, saved and logged", async ({ page }) => {
 	await openConsole(page, '/clients/munchly/agents');
 	const negotiator = page.getByRole('group', { name: 'Negotiator: autonomy' }).first();
-	await negotiator.getByRole('button', { name: 'Act' }).click();
-	await expect(page.locator('.toast')).toHaveText('Negotiator: Act, for Munchly Foods');
+	await negotiator.getByRole('button', { name: 'Ask' }).click();
+	await expect(page.locator('.toast')).toHaveText('Negotiator: Ask, for Munchly Foods');
 	await page.getByLabel('Never accepts below, per pack').fill('14');
 	await page.getByLabel('Never accepts below, per pack').blur();
 	await page.locator('.cs-inspector').getByRole('button', { name: 'Save' }).click();
@@ -36,7 +36,7 @@ test("flows · an agent's autonomy and settings, saved and logged", async ({ pag
 		'Changed the Negotiator agent for Munchly Foods: floor ₹13.50 to ₹14.00'
 	);
 	await expect(page.locator('.list-row').nth(1)).toContainText(
-		'Set the Negotiator agent to Act for Munchly Foods (was Ask)'
+		'Set the Negotiator agent to Ask for Munchly Foods (was Act)'
 	);
 	await expect(page.locator('.list-row').first()).toContainText('Neha Kulkarni · Today');
 });

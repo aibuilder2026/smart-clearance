@@ -40,11 +40,12 @@ Every company, person and figure in the product is fictional. Munchly Foods is t
 
 | Document | What it covers |
 | --- | --- |
-| [PRODUCT.md](PRODUCT.md) | The product: who uses it and for what, the story's batches and their figures, every surface, the principles and positioning. |
+| [PRODUCT.md](PRODUCT.md) | Why Smart-Clearance exists, in four pictures: the problem (a near-expiry batch has one easy exit, the bin, and what it really costs the brand), the USP (it prices every exit for each batch, the bin included, splits the batch across them, asks one person for one yes, then executes every channel in the distributor's name with the papers and the ledger to prove it), how ten agents on Google Cloud solve it stop by stop with the money never a model's guess, and what it changes in the story's own figures. Then the product itself: who uses it and for what, the story's batches, every surface, the principles and positioning. |
 | [DEMO.md](DEMO.md) | How a judge tries it: the guided demo, then the live apps step by step with screenshots from the production recordings (`docs/demo/`): the Mango Drink's happy path, the Masala Chips' sad path destroyed against evidence, and the console. Each step says which file of the demo data set to use. |
 | [demoDataSet/README.md](demoDataSet/README.md) | The demo data set, by journey: the carton label photos with their barcodes and QR codes, the staff sale's UPI receipt, the destruction's photos at the godown and the landfill, the certificate's signatures, and a first stock export for a new client. |
 | [TESTING.md](TESTING.md) | How every test is run: the gates, the a11y, e2e and parity suites, the live tests, the journey suites and the agents' evals, with the scripts, what each needs first, and which journeys to cover. |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | How it is built: the system on Google Cloud, every service and technology with its version, a batch's journey request by request, the agents and their Gemini models, backend-api, events and the live stream, the data, identity, the cloud, delivery, testing, decisions and known gaps. Its pictures are the Lucidchart diagrams (`docs/architecture/`), with Mermaid for the code's own structure. |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | How it is built: the system on Google Cloud, every service and technology with its version, a batch's journey request by request, the agents and their Gemini models, backend-api, events and the live stream, the data, identity, the cloud, delivery, testing, decisions and known gaps. Every picture is a Lucidchart diagram (`docs/architecture/`), with Google Cloud's icons for its services. |
+| [Technical Design Documentation](docs/smart-clearance-tdd.pdf) | The architecture as a printed Technical Design Document (PDF, A4 landscape): document control and contents, the system on Google Cloud, Firebase, Cloud Run and Gemini, every service, the agents, the application flow, identity, delivery, testing, observability, performance and cost, decisions, known gaps and the roadmap, with every Lucidchart diagram in its appendix and a glossary. `docs/tdd/build.sh` rebuilds it from the architecture page and ARCHITECTURE.md. |
 | [DESIGN.md](DESIGN.md) | Design system v3: tokens, type, colour, components, motion and imagery. |
 | [AGENTS.md](AGENTS.md) | The repository's layout, commands, rules and tooling, for people and coding agents. |
 | [design3/README.md](design3/README.md) | The prototypes and their build. |
@@ -52,7 +53,7 @@ Every company, person and figure in the product is fictional. Munchly Foods is t
 | [backend-api/README.md](backend-api/README.md) | The API, its database, sign-in and roles, the journey, the contract, the synthetic world, the cloud. |
 | [agents/README.md](agents/README.md) | The agents: their pipelines, models, events, PDFs, tests and evals. |
 | [infra/README.md](infra/README.md) | Every cloud resource, its cost and what protects it; CI's keyless deploy. |
-| `docs/` | Journey Map v4.1 (`dobara-journey-map.html`, the source of every figure), the story (v6), the architecture as built (HTML, PDF and draw.io), the walkthrough. |
+| `docs/` | Journey Map v4.1 (`dobara-journey-map.html`, the source of every figure), the story (v6), the architecture as built (HTML, PDF and draw.io), the Technical Design Documentation (`smart-clearance-tdd.pdf`, built by `tdd/build.sh`), the walkthrough. |
 | Jira | project SC on [duttaarun2015.atlassian.net](https://duttaarun2015.atlassian.net) |
 
 ## What is in the repository
@@ -65,7 +66,7 @@ Every company, person and figure in the product is fictional. Munchly Foods is t
 | `agents/` | The agents service: Google ADK pipelines on Gemini through Agent Platform, one run a Pub/Sub event, reporting to backend-api; the eval sets. |
 | `infra/` | Terraform for the Google Cloud project, and the scripts that run it. |
 | `.github/` | GitHub Actions: the gates on every pull request, the deploys from `main`. |
-| `docs/`, `video/` | The story pages and the narrated walkthrough. |
+| `docs/` | The story pages, the walkthrough page, and PRODUCT.md's pictures with their sources (`docs/product/`). |
 | `design/`, `design2/` | Earlier design rounds. Reference only. |
 
 ## Prerequisites
@@ -77,7 +78,7 @@ macOS or Linux. Nothing is installed globally except these tools.
 | Git | recent | everything | |
 | Node.js | 22.17 or later (CI uses 24) | design3's build, the frontend, the Hosting deploy | `brew install node` |
 | corepack | ships with Node | pnpm, pinned by `frontend/package.json` | `corepack enable` once, if needed |
-| Python 3 | 3.9 or later | serving design3 (`http.server`), `video/` | ships with macOS |
+| Python 3 | 3.9 or later | serving design3 (`http.server`) | ships with macOS |
 | uv | 0.12 or later | backend-api and the agents (uv fetches Python 3.14 itself) | `brew install uv` |
 | Docker | recent, running | the local PostgreSQL 18 | Docker Desktop, OrbStack or Colima |
 | Google Cloud CLI | current | backend-api and the agents locally, every cloud operation | `brew install --cask google-cloud-sdk` |

@@ -1,0 +1,116 @@
+<!doctype html>
+<!--
+  PRODUCT.md, "The USP" (SC-224): what a distributor management system, a clearance marketplace and Smart-Clearance each
+  do with a short-dated batch, and the exits Smart-Clearance chooses between. Rendered by render.mjs.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=1000">
+<title>The USP: it decides, and it does</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Geist:wght@300..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="product.css">
+<style>
+  table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13.5px; }
+  th, td { padding: 9px 12px; text-align: left; vertical-align: middle; border-top: 1px solid var(--line); }
+  thead th { border-top: 0; font-size: 13px; color: var(--fg-2); font-weight: 650; padding-bottom: 10px; }
+  thead th.sc { color: #fff; background: var(--primary); border-radius: 12px 12px 0 0; }
+  td.sc { background: var(--primary-soft); }
+  tr:last-child td.sc { border-radius: 0 0 12px 12px; }
+  td:first-child { font-weight: 600; color: var(--fg); width: 38%; }
+  .y, .n, .p { display: inline-flex; align-items: center; gap: 6px; font-size: 12.8px; }
+  .y svg, .n svg, .p svg { width: 17px; height: 17px; flex: none; }
+  .y { color: var(--primary-text); } .n { color: var(--fg-3); } .p { color: var(--amber-text); }
+  .flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 10px; align-items: stretch; }
+  .flow .arrow { display: grid; place-items: center; color: var(--fg-3); }
+  .stage { border-radius: 16px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .stage.ai { background: var(--ai-soft); } .stage.yes { background: var(--amber-soft); } .stage.go { background: var(--primary-soft); }
+  .stage .big { font-size: 22px; font-weight: 720; letter-spacing: -0.01em; }
+  .stage.ai .big { color: var(--ai-text); } .stage.yes .big { color: var(--amber-text); } .stage.go .big { color: var(--primary-text); }
+  .stage p { font-size: 13px; }
+  .stage.ai p { color: #134f49; } .stage.yes p { color: #5c3d00; } .stage.go p { color: #0e4a32; }
+  .exits { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .exit { border-radius: 14px; background: var(--surface-2); padding: 12px; display: grid; gap: 6px; align-content: start;
+    box-shadow: inset 0 3px 0 var(--c); }
+  .exit img { width: 56px; height: 56px; object-fit: contain; }
+  .exit b { font-size: 14px; }
+  .exit p { font-size: 12.5px; color: var(--fg-2); }
+  .last { display: flex; gap: 12px; align-items: center; background: var(--red-soft); border-radius: 14px; padding: 10px 14px; font-size: 13px; color: var(--red-text); }
+</style>
+</head>
+<body>
+<div class="poster">
+  <header>
+    <h1 style="margin-top:0">It decides where every pack earns the most, <em>and then it does the running around</em>.</h1>
+    <p class="lede">A distributor management system records the write-off. A clearance marketplace wants a listing. Smart-Clearance prices every exit for each batch, the bin included, splits the batch across them, asks one person for one yes, and then executes every channel in the distributor's name, with the papers and the ledger to prove it.</p>
+  </header>
+
+  <section class="card">
+    <table>
+      <thead><tr><th></th><th>A distributor management system</th><th>A clearance marketplace</th><th class="sc">Smart-Clearance</th></tr></thead>
+      <tbody>
+        <tr><td>Sees the risk before quick commerce's gates close</td>
+          <td><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h12"/></svg>Stock on hand only</span></td>
+          <td><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h12"/></svg>Once listed</span></td>
+          <td class="sc"><span class="y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>Every morning, by sell-through</span></td></tr>
+        <tr><td>Checks the shelf, not the spreadsheet</td>
+          <td><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h12"/></svg>No</span></td>
+          <td><span class="p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/></svg>Seller's photos</span></td>
+          <td class="sc"><span class="y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>The label photo, read by AI</span></td></tr>
+        <tr><td>Prices every exit, including the true cost of the bin</td>
+          <td><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h12"/></svg>No</span></td>
+          <td><span class="p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/></svg>Its own price</span></td>
+          <td class="sc"><span class="y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>Five exits and the bin</span></td></tr>
+        <tr><td>Splits one batch across exits, within each one's caps</td>
+          <td><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h12"/></svg>No</span></td>
+          <td><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h12"/></svg>One exit</span></td>
+          <td class="sc"><span class="y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>Under gates, territory and caps</span></td></tr>
+        <tr><td>Executes, in the distributor's name</td>
+          <td><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h12"/></svg>No</span></td>
+          <td><span class="p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/></svg>Its own buyers</span></td>
+          <td class="sc"><span class="y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>List, offer, negotiate, book</span></td></tr>
+        <tr><td>Draws the GST, FSSAI and destruction papers</td>
+          <td><span class="p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/></svg>By hand</span></td>
+          <td><span class="p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/></svg>Its invoice</span></td>
+          <td class="sc"><span class="y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>Every paper, signed</span></td></tr>
+        <tr><td>Proves the money, the GST credit and the waste avoided</td>
+          <td><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h12"/></svg>No</span></td>
+          <td><span class="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 12h12"/></svg>No</span></td>
+          <td class="sc"><span class="y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>One ledger and a BRSR line</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="flow">
+    <div class="stage ai"><span class="chip ai">Ten agents</span><span class="big">Agents decide</span><p>They watch every batch, read its label, price every exit and propose a split, with the money worked out in front of the person who decides.</p></div>
+    <div class="arrow"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    <div class="stage yes"><span class="chip amber">One person</span><span class="big">One yes</span><p>Munchly's supply chain lead approves the plan with one tap. Nothing is listed, offered or shipped before it.</p></div>
+    <div class="arrow"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    <div class="stage go"><span class="chip green">Every channel at once</span><span class="big">Agents execute</span><p>The lot is listed, the kiranas get a Hindi offer, the buyer's bid is countered, the food bank is booked, and every paper is drafted.</p></div>
+  </section>
+
+  <section class="card">
+    <h2 style="margin-bottom: 12px;">The exits it chooses between, for each batch</h2>
+    <div class="exits">
+      <div class="exit" style="--c: var(--kirana)"><img src="../../../design3/system/img/kirana-plain.webp" alt=""><b>Kirana scheme</b><p>An offer in Hindi pushed to the distributor's own shops, packs free with every ten, a tax invoice for each order.</p></div>
+      <div class="exit" style="--c: var(--expiresoon)"><img src="../../../design3/system/img/marketplace-bag.webp" alt=""><b>Clearance marketplace</b><p>Listed in the distributor's name outside the brand's territory, a reserve price no model ever sees.</p></div>
+      <div class="exit" style="--c: var(--staff)"><img src="../../../design3/system/img/godown-plain.webp" alt=""><b>Staff sale</b><p>Sold at the godown to the distributor's staff, paid by UPI, recorded on one receipt.</p></div>
+      <div class="exit" style="--c: var(--foodbank)"><img src="../../../design3/system/img/donation-crate.webp" alt=""><b>Food bank</b><p>Donated before the date through a licensed food bank, with the FSSAI checklist and a receipt in meals.</p></div>
+      <div class="exit" style="--c: var(--d2c)"><img src="../../../design3/system/img/van.webp" alt=""><b>D2C discount</b><p>Only for stock still in the brand's own warehouse, sold on its own store.</p></div>
+    </div>
+    <div class="last" style="margin-top: 12px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      <span>What no exit takes by expiry day is destroyed at the godown by an authorised agency, on two photos, four signatures and a second yes, with the credit note and the certificate drawn to match.</span>
+    </div>
+  </section>
+
+  <div class="foot">
+    <span class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g" x1="8" y1="4" x2="58" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#2fbf7f"/><stop offset=".55" stop-color="#178258"/><stop offset="1" stop-color="#0d5a3e"/></linearGradient></defs><path d="M32 2C9.5 2 2 9.5 2 32s7.5 30 30 30 30-7.5 30-30S54.5 2 32 2Z" fill="url(#g)"/><path d="M43.5 19H27a7 7 0 0 0 0 14h10a7 7 0 0 1 0 14H20.5" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="43.5" cy="19" r="3.4" fill="#0d5a3e" stroke="#fff" stroke-width="2.6"/><circle cx="20.5" cy="47" r="4" fill="#f7c04a"/></svg>Smart-Clearance</span>
+    <span>One workspace for each manufacturer, set up for its own supply chain. The marketplace in the prototype, ExpireSoon, is mocked.</span>
+  </div>
+</div>
+</body>
+</html>

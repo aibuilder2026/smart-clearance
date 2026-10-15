@@ -535,7 +535,7 @@
 					},
 					"vision": {
 						"on": true,
-						"autonomy": "ask",
+						"autonomy": "act",
 						"settings": {
 							"confidence": 0.9
 						},
@@ -591,7 +591,7 @@
 					},
 					"negotiator": {
 						"on": true,
-						"autonomy": "ask",
+						"autonomy": "act",
 						"settings": {
 							"floor": 13.5,
 							"counters": 2,
@@ -602,7 +602,7 @@
 					},
 					"paperwork": {
 						"on": true,
-						"autonomy": "ask",
+						"autonomy": "act",
 						"settings": {
 							"draftsOnly": true
 						},

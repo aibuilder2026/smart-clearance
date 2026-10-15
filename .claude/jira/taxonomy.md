@@ -28,7 +28,7 @@ Where a change goes, by path (fill this in as the repo's shape settles):
 | `agents/**` | |
 | `design3/**` (the designs: the source of truth) | |
 | `infra/**` | |
-| `video/**`, `docs/**` | |
+| `docs/**` | |
 | `.github/**`, `.claude/**`, repo docs | |
 
 ## Labels

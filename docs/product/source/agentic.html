@@ -1,0 +1,124 @@
+<!doctype html>
+<!--
+  PRODUCT.md, "How the agentic infrastructure solves it" (SC-224): each of the nine stops, the hard part it answers, the
+  agent that does it (its Gemini tier as agents/src/sc_agents/agents/*.py sets it) and what it runs on in Google Cloud.
+  Rendered by render.mjs.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=1000">
+<title>How the agentic infrastructure solves it</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Geist:wght@300..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="product.css">
+<style>
+  .loop { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; align-items: stretch; }
+  .loop > div { border-radius: 14px; padding: 12px 13px; display: grid; gap: 4px; align-content: start; }
+  .loop b { font-size: 14px; }
+  .loop p { font-size: 12.5px; }
+  .l1 { background: var(--blue-soft); } .l1 p { color: #163f6e; }
+  .l2 { background: var(--ai-soft); } .l2 p { color: #134f49; }
+  .l3 { background: var(--sunken); } .l3 p { color: #2c3a33; }
+  .l4 { background: var(--amber-soft); } .l4 p { color: #5c3d00; }
+  .l5 { background: var(--primary-soft); } .l5 p { color: #0e4a32; }
+  .loop .k { font: 650 11.5px/1 "Geist", sans-serif; letter-spacing: 0.08em; text-transform: uppercase; }
+  .l1 .k { color: var(--blue-text); } .l2 .k { color: var(--ai-text); } .l3 .k { color: var(--fg-2); } .l4 .k { color: var(--amber-text); } .l5 .k { color: var(--primary-text); }
+
+  table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+  th, td { padding: 8px 10px; text-align: left; vertical-align: top; border-top: 1px solid var(--line); }
+  thead th { border-top: 0; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-2); font-weight: 650; }
+  td.stop { width: 112px; }
+  td.stop span { display: inline-flex; align-items: center; gap: 8px; font-weight: 650; }
+  td.stop i { width: 24px; height: 24px; border-radius: 8px; display: grid; place-items: center; font-style: normal;
+    background: var(--sunken); color: var(--fg-2); font: 700 12.5px/1 "Bricolage Grotesque", sans-serif; }
+  tr.yes td { background: var(--amber-soft); }
+  tr.yes td.stop i { background: var(--amber); color: #3b2a00; }
+  tr.yes td.pain, tr.yes td.agent span { color: #5c3d00; }
+  td.pain { color: var(--fg-2); width: 24%; }
+  td.agent b { display: block; font-size: 13.5px; }
+  td.agent span { color: var(--fg-2); font-size: 12.5px; }
+  td.gcp { width: 27%; }
+  td.gcp .chip { margin: 0 4px 4px 0; }
+  .tier { display: inline-block; font-size: 11.5px; font-weight: 650; padding: 1px 7px; border-radius: 999px; margin-left: 6px; vertical-align: 1px; }
+  .tier.pro { background: #e9e3fb; color: #4b2fa8; }
+  .tier.flash { background: var(--ai-soft); color: var(--ai-text); }
+  .tier.rules { background: var(--sunken); color: var(--fg-2); }
+  .tier.person { background: var(--amber); color: #3b2a00; }
+
+  .guards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .guard { border-radius: 14px; background: var(--surface-2); padding: 11px 12px; display: grid; gap: 4px; align-content: start; }
+  .guard b { font-size: 13.5px; }
+  .guard p { font-size: 12.5px; color: var(--fg-2); }
+  .guard svg { width: 20px; height: 20px; stroke: var(--primary-text); }
+</style>
+</head>
+<body>
+<div class="poster">
+  <header>
+    <h1 style="margin-top:0">Ten agents on Google Cloud do the deciding and the running around, <em>and the money is never a model's guess</em>.</h1>
+    <p class="lede">Each hard part of the problem is a stop on a batch's journey, and each stop is one agent's job. The agents are stateless pipelines on Google's Agent Development Kit, woken by an event, thinking with Gemini on Agent Platform. backend-api, the system of record, works out every figure, keeps the journey's state and holds every yes.</p>
+  </header>
+
+  <section class="loop">
+    <div class="l1"><span class="k">1 · Event</span><b>Something happens</b><p>A morning tick from Cloud Scheduler, a photo sent, a yes, a bid. backend-api records it with its outbox.</p></div>
+    <div class="l2"><span class="k">2 · Agent</span><b>Pub/Sub wakes one</b><p>The event is pushed to the agents on Cloud Run, which run its ADK pipeline once and keep nothing.</p></div>
+    <div class="l3"><span class="k">3 · Facts</span><b>It reads, never writes</b><p>The case from backend-api, sell-through from BigQuery, the photo from Cloud Storage.</p></div>
+    <div class="l4"><span class="k">4 · Words</span><b>Gemini writes, checked</b><p>Structured output, every figure held to the facts, three tries, else a template stands in.</p></div>
+    <div class="l5"><span class="k">5 · Report</span><b>backend-api decides</b><p>It moves the journey on, writes the audit line and tells every screen over the live stream and a push.</p></div>
+  </section>
+
+  <section class="card" style="padding: 10px 14px 6px;">
+    <table>
+      <thead><tr><th>The stop</th><th>The hard part</th><th>Who does it</th><th>On Google Cloud</th></tr></thead>
+      <tbody>
+        <tr><td class="stop"><span><i>1</i>Connect</span></td><td class="pain">Every distributor's stock export comes in its own layout</td>
+          <td class="agent"><b>Data agent <span class="tier flash">Flash</span></b><span>maps the columns once, then loads every export</span></td>
+          <td class="gcp"><span class="chip blue">Cloud Storage</span><span class="chip blue">BigQuery</span></td></tr>
+        <tr><td class="stop"><span><i>2</i>Detect</span></td><td class="pain">Nobody notices until it is too late</td>
+          <td class="agent"><b>Watcher <span class="tier rules">rules</span></b><span>sell-through against the gates and the date, every morning</span></td>
+          <td class="gcp"><span class="chip blue">Cloud Scheduler</span><span class="chip blue">BigQuery</span></td></tr>
+        <tr><td class="stop"><span><i>3</i>Verify</span></td><td class="pain">The spreadsheet can be wrong about the shelf</td>
+          <td class="agent"><b>Vision <span class="tier flash">Flash</span></b><span>reads the carton's label photo: batch, dates, MRP</span></td>
+          <td class="gcp"><span class="chip blue">Cloud Storage</span><span class="chip ai">Gemini</span></td></tr>
+        <tr><td class="stop"><span><i>4</i>Value</span></td><td class="pain">Every exit pays differently, and the bin's cost is hidden</td>
+          <td class="agent"><b>Valuer <span class="tier pro">Pro</span></b><span>a note on each exit; backend-api prices them by the rules</span></td>
+          <td class="gcp"><span class="chip blue">Cloud Run</span><span class="chip blue">Cloud SQL</span><span class="chip blue">BigQuery</span></td></tr>
+        <tr><td class="stop"><span><i>5</i>Decide</span></td><td class="pain">Gates, territory and what each channel can take</td>
+          <td class="agent"><b>Router <span class="tier pro">Pro</span></b><span>explains the split backend-api works out under the caps</span></td>
+          <td class="gcp"><span class="chip ai">Gemini on Agent Platform</span></td></tr>
+        <tr class="yes"><td class="stop"><span><i>6</i>Approve</span></td><td class="pain">Someone has to own the decision</td>
+          <td class="agent"><b>Supply chain lead <span class="tier person">a person</span></b><span>one tap, the money in front of her</span></td>
+          <td class="gcp"><span class="chip blue">Firebase Auth</span><span class="chip blue">Cloud Messaging</span></td></tr>
+        <tr><td class="stop"><span><i>7</i>Execute</span></td><td class="pain">Many channels, all at once, in the distributor's name</td>
+          <td class="agent"><b>Lister, Outreach, Negotiator <span class="tier flash">Flash</span><span class="tier pro">Pro</span></b><span>the listing, a Hindi offer to every shop, the food bank booked, the counter-offer; the reserve never reaches a model</span></td>
+          <td class="gcp"><span class="chip blue">Pub/Sub</span><span class="chip ai">ADK, in parallel</span><span class="chip blue">Cloud Run</span></td></tr>
+        <tr><td class="stop"><span><i>8</i>Settle</span></td><td class="pain">Every move needs its paper</td>
+          <td class="agent"><b>Paperwork <span class="tier flash">Flash</span></b><span>invoices, credit notes, ITC memo, FSSAI, receipts, certificate, as signed PDFs</span></td>
+          <td class="gcp"><span class="chip blue">Cloud Storage</span></td></tr>
+        <tr><td class="stop"><span><i>9</i>Report</span></td><td class="pain">The board needs proof, not a promise</td>
+          <td class="agent"><b>Impact <span class="tier flash">Flash</span></b><span>the ledger: money, GST credit, kilos, CO₂e, meals, the BRSR row</span></td>
+          <td class="gcp"><span class="chip blue">BigQuery</span><span class="chip blue">Cloud SQL</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2 style="margin-bottom: 12px;">Why it can be trusted with money</h2>
+    <div class="guards">
+      <div class="guard"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M8 15l3-4 3 2 5-6"/></svg><b>Code does the arithmetic</b><p>Every figure comes from the money rules in backend-api. Gemini writes words, and a note that quotes a wrong number is dropped.</p></div>
+      <div class="guard"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg><b>People keep the yeses</b><p>Nothing moves before the plan's approval or the distributor's permission; a destruction waits for a second yes on its evidence.</p></div>
+      <div class="guard"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><b>Bounded and safe to retry</b><p>Thirty seconds a call, three tries, a budget of calls a run, then a template. A redelivered event changes nothing twice.</p></div>
+      <div class="guard"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="2"/></svg><b>Every step on the record</b><p>An append-only audit line in the actor's name, and one trace from the tap to Gemini in Cloud Trace.</p></div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <span class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g" x1="8" y1="4" x2="58" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#2fbf7f"/><stop offset=".55" stop-color="#178258"/><stop offset="1" stop-color="#0d5a3e"/></linearGradient></defs><path d="M32 2C9.5 2 2 9.5 2 32s7.5 30 30 30 30-7.5 30-30S54.5 2 32 2Z" fill="url(#g)"/><path d="M43.5 19H27a7 7 0 0 0 0 14h10a7 7 0 0 1 0 14H20.5" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="43.5" cy="19" r="3.4" fill="#0d5a3e" stroke="#fff" stroke-width="2.6"/><circle cx="20.5" cy="47" r="4" fill="#f7c04a"/></svg>Smart-Clearance</span>
+    <span>Pro: Gemini 3.1 Pro, where a person decides on the words. Flash: Gemini 3.8 Flash, for reading and drafting. ARCHITECTURE.md has the detail.</span>
+  </div>
+</div>
+</body>
+</html>
