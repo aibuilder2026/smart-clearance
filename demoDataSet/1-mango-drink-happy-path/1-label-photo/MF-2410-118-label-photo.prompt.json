@@ -1,0 +1,17 @@
+{
+  "model": "Qwen-Image 2.1 (bf16), text to image, run locally (qwen-image-bf16 0.2.0): the blank base photo",
+  "seed": 14725,
+  "size": "1024 (4:3, 1184 x 896)",
+  "prompt": "A close-up photo of a blank white rectangular paper label on a brown corrugated carton in a Hyderabad distributor's godown, a blue rolling shutter half open behind, warm morning light, the camera a little to the right. nothing printed on the label, plain matte white paper, every corner of the label visible with brown cardboard all round it, realistic smartphone photo, sharp focus on the label, natural colours.",
+  "postProcessing": [
+    "design3/system/labels/label.py: the full statutory sticker (SC-147, option A) for the batch, as HTML",
+    "design3/system/labels/compose.mjs: rendered at twice its size, warped onto the base's sticker (bases.json quad), multiplied with a 0.55 px blur, each code read back with Chromium's BarcodeDetector",
+    "cwebp -q 86"
+  ],
+  "codes": {
+    "ean_13": "8900000001064",
+    "qr_code": "https://id.munchly.example/01/18900000001061/10/MF-2410-118?17=261024"
+  },
+  "read": "ok",
+  "purpose": "SC-147: the label photo Lakshmi Agencies sent for batch MF-2410-118 (Munchly Mango Drink 200 ml, best before 24/10/2026); every company, number and code fictional"
+}

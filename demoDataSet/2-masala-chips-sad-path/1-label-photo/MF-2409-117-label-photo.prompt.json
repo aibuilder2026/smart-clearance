@@ -1,0 +1,17 @@
+{
+  "model": "Qwen-Image 2.1 (bf16), text to image, run locally (qwen-image-bf16 0.2.0): the blank base photo",
+  "seed": 14701,
+  "size": "1024 (4:3, 1184 x 896)",
+  "prompt": "A realistic close-up smartphone photo of a plain blank white rectangular paper label sticker stuck flat on the side of a brown corrugated cardboard carton, the label fills most of the frame with a margin of brown cardboard visible on every side, nothing printed on the label, the label slightly glossy with tiny creases at one corner, even daylight from a godown window, the camera square on to the carton, sharp focus, natural colours.",
+  "postProcessing": [
+    "design3/system/labels/label.py: the full statutory sticker (SC-147, option A) for the batch, as HTML",
+    "design3/system/labels/compose.mjs: rendered at twice its size, warped onto the base's sticker (bases.json quad), multiplied with a 0.55 px blur, each code read back with Chromium's BarcodeDetector",
+    "cwebp -q 86"
+  ],
+  "codes": {
+    "ean_13": "8900000001019",
+    "qr_code": "https://id.munchly.example/01/18900000001016/10/MF-2409-117?17=261118"
+  },
+  "read": "ok",
+  "purpose": "SC-147: the label photo Rakesh Traders sent for batch MF-2409-117 (Munchly Masala Chips 150 g, best before 18/11/2026); every company, number and code fictional"
+}

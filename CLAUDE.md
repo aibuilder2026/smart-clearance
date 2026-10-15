@@ -2765,4 +2765,28 @@
     - `landing-demo/sales-film/smart-clearance-sales-film-2026-10-15_03-46-58.mp4` (crf 17) and its 720p copy;
     - the crf-21 1080p (83.9 MB), 720p and captions, the talking scenes and the score's cues with their sidecars, the pipeline and its README in `design3/designs/SC-210/`.
   - **The spend:** about $28 of the $35 cap: Veo $25.60, Lyria $0.72, the narrator about $0.6 and the reviews under $1.
+- **SC-212** (PR #192, merged): the demo data set, and DEMO.md rewritten as a judge's step-by-step guide, asked for by the maintainer.
+  - **The request:** "create a folder demoDataSet and put in it the data used in the application for happy and sad path, things like pictures of barcode, landfill and signatures", by journey; DEMO.md rewritten "proper and keep it simple": how a judge simulates the scenarios, step by step, with screenshots from the app, the data set first, each step saying when to use what, made from the live walkthrough recordings.
+  - **`demoDataSet/`**, by journey, each image with its sidecar, and a README naming each file, the step that uses it and its original:
+    - the happy path, the Mango Drink MF-2410-118 at Lakshmi Agencies: the label photo, the staff sale's receipt LA/SR/26-27/0002, the signatures and stamps on its papers, and, for packets left, the 248-packet evidence and Deccan Green Waste Management's four signers;
+    - the sad path, the Masala Chips MF-2409-117 at Rakesh Traders: the label photo and two that Vision should refuse (MF-2409-171, the batch number taped over), the 540-packet evidence, the certificate's four signers with Orange City Enviro Services' seal, and the signatures and stamps on its papers;
+    - the console: a new client's first stock export (the Admin and console suite's rows) and Munchly's own.
+  - **DEMO.md**, for judges:
+    - the data set first;
+    - the apps and their sign-ins, with the password coming with the submission, never in the repository;
+    - three browser sessions;
+    - the guided demo;
+    - one reset that flags both batches (Setup, Rakesh's permission, the Watcher);
+    - journey 1 in 11 steps and journey 2 in 12, each naming who acts, where, and which file to use;
+    - the console in 5 steps;
+    - when you finish, and known limits.
+  - **The screenshots** (`docs/demo/`, 66 WebP, 2.9 MB):
+    - each step's moment was found in the 2560 × 1440 recordings of 13 Oct (SC-201, SC-202, SC-204) by matching its run's still, then cropped to the acting device's screen at full size;
+    - a few moments between steps were taken too: the permission card, the order button, the receipt upload, the bid, Issue from Tally, the empty evidence form;
+    - the guided demo's route map was captured from smartclearance-demo.web.app.
+  - **What a judge can and can't do, found on the way:**
+    - a shop orders up to 4 times its own 14-day sales, so the Mango Drink's 58-shop scheme fills only when most shops order (in the recording, the other 50 ordered through the API). Alone, a judge orders as a few shops and closes the window, and the packets left are destroyed on expiry day;
+    - the sad path is reproducible as recorded: two shops at 24 packets each leave 540, the count the evidence is made for, as long as the lot is won before the window closes (otherwise the shortfall moves onto the lot).
+  - **Also:** README's documents table and AGENTS.md's layout name the data set.
+  - **Checks:** every link, anchor, image and data set path in DEMO.md and the data set's README resolves, and all 66 screenshots are used. No app change.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
