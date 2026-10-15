@@ -45,6 +45,7 @@ Every company, person and figure in the product is fictional. Munchly Foods is t
 | [demoDataSet/README.md](demoDataSet/README.md) | The demo data set, by journey: the carton label photos with their barcodes and QR codes, the staff sale's UPI receipt, the destruction's photos at the godown and the landfill, the certificate's signatures, and a first stock export for a new client. |
 | [TESTING.md](TESTING.md) | How every test is run: the gates, the a11y, e2e and parity suites, the live tests, the journey suites and the agents' evals, with the scripts, what each needs first, and which journeys to cover. |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | How it is built: the system on Google Cloud, every service and technology with its version, a batch's journey request by request, the agents and their Gemini models, backend-api, events and the live stream, the data, identity, the cloud, delivery, testing, decisions and known gaps. Every picture is a Lucidchart diagram (`docs/architecture/`), with Google Cloud's icons for its services. |
+| [Technical Design Documentation](docs/smart-clearance-tdd.pdf) | The architecture as a printed Technical Design Document (PDF, A4 landscape): document control and contents, the system on Google Cloud, Firebase, Cloud Run and Gemini, every service, the agents, the application flow, identity, delivery, testing, observability, performance and cost, decisions, known gaps and the roadmap, with every Lucidchart diagram in its appendix and a glossary. `docs/tdd/build.sh` rebuilds it from the architecture page and ARCHITECTURE.md. |
 | [DESIGN.md](DESIGN.md) | Design system v3: tokens, type, colour, components, motion and imagery. |
 | [AGENTS.md](AGENTS.md) | The repository's layout, commands, rules and tooling, for people and coding agents. |
 | [design3/README.md](design3/README.md) | The prototypes and their build. |
@@ -52,7 +53,7 @@ Every company, person and figure in the product is fictional. Munchly Foods is t
 | [backend-api/README.md](backend-api/README.md) | The API, its database, sign-in and roles, the journey, the contract, the synthetic world, the cloud. |
 | [agents/README.md](agents/README.md) | The agents: their pipelines, models, events, PDFs, tests and evals. |
 | [infra/README.md](infra/README.md) | Every cloud resource, its cost and what protects it; CI's keyless deploy. |
-| `docs/` | Journey Map v4.1 (`dobara-journey-map.html`, the source of every figure), the story (v6), the architecture as built (HTML, PDF and draw.io), the walkthrough. |
+| `docs/` | Journey Map v4.1 (`dobara-journey-map.html`, the source of every figure), the story (v6), the architecture as built (HTML, PDF and draw.io), the Technical Design Documentation (`smart-clearance-tdd.pdf`, built by `tdd/build.sh`), the walkthrough. |
 | Jira | project SC on [duttaarun2015.atlassian.net](https://duttaarun2015.atlassian.net) |
 
 ## What is in the repository
