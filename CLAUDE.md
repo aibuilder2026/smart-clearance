@@ -2918,7 +2918,7 @@
   - **Found on the way:** the stage's own cards and chapter chips cut out of every window's spans; the signing fast-forward flickered a frame between signers, so it runs sheet to sheet; the sell-through panel's day count was stuck at one; the new discs' icons were white on white.
   - **Checks:** −14.0 LUFS, −1.5 dB true peak; no one-frame flash in any of the 5,858 frames; windows between 0.97× and 1.40× apart from two labelled fast-forwards (34×, 22×); both QR codes read back; 26 of 30 lines word for word from the final mix (the rest a spelling, the brand as "Manchli", the URL as one word, and one slice that caught the line before).
   - **Where:** `working-demo/smart-clearance-working-demo-2026-10-15_16-44-16.mp4` (crf 17), its 720p copy and captions; the crf-21 1080p, 720p and captions, the pipeline and its README in `design3/designs/SC-218/`.
-- **SC-219** (In Review, branch `SC-219-working-demo-cut9`): cuts 9 to 11 of the working demo, everything made on this Mac, with no image, video or paid model called. Cut 11 is 3 min 58.9 s (238.92 s), inside the 238 to 239 s; cut 10 was 3 min 58.8 s (238.80 s); cut 9 3 min 56.3 s (236.32 s), inside 235 to 238.
+- **SC-219** (In Review, branch `SC-219-working-demo-cut9`): cuts 9 to 12 of the working demo, everything made on this Mac, with no image, video or paid model called. Cut 12 is 3 min 58.9 s (238.92 s), as cut 11; cut 10 was 3 min 58.8 s (238.80 s); cut 9 3 min 56.3 s (236.32 s), inside 235 to 238.
   - **Cut 9, the request** (the maintainer's notes on cut 8):
     - the install a little faster;
     - before the demo, the two paths and everyone in them, animated;
@@ -3028,14 +3028,36 @@
     - both QR codes read back;
     - 29 of 33 lines word for word, the architecture's six among them, read over the new sounds.
   - **Cut 11, where:** `working-demo/smart-clearance-working-demo-2026-10-15_21-40-01.mp4` (crf 17), its 720p copy, a light preview and captions; the crf-21 1080p, 720p and captions, the pipeline and its README in `design3/designs/SC-219/`.
-  - **Cut 12's concept round** (waiting for the pick):
+  - **Cut 12's concept round:**
     - **The request:** the architecture scene "more better and professional, think of Google Cloud Data center", with "animations and motion effects", in Remotion if useful; three ideas first; the rest of cut 11 stays.
-    - **The board:** `design3/designs/SC-219/round-cut12/board.html`. Each option has a Remotion motion test of the scene's first two lines, with the real voice and sound, and two stills of its later beats.
-    - **The options:**
+    - **Round 1:** on one board (`design3/designs/SC-219/round-cut12/board.html`), each a Remotion motion test of the scene's first two lines with the real voice and sound, plus two stills of its later beats:
       - A, The data hall: a real camera through a data centre (Qwen-Image plates, LTX moves), the stack tracked onto its racks;
       - B, The blueprint: an isometric floor plan in the brand's greens, built and lit in motion;
       - C, Inside the machine: a macro product film with large type.
-    - **The tooling:** the Remotion 4.0.535 project is `src/remo12/`; `src/prep12c.sh` rebuilds its media; `track12c.py` tracks the racks; `decision.md` records the pick.
+
+      None was picked; the notes were "Mix A and B", "A brighter, Google look" and "One continuous shot".
+    - **Round 2:** its bright hall was made and its chained camera moves begun when the maintainer stopped it.
+    - **The pick:** "revert back the 3D remotion animation effects you did in the last video to explain the architecture and think hard and better it", "sharp and surreal and explain the flow and components, camera movement and lighting should be perfect": B made whole. `decision.md` records it.
+  - **Cut 12, the scene** (Remotion 4.0.535, `src/remo12/` `Arch12`, its own isometric renderer in SVG): the data centre as one isometric hall floating in a dark green void over its faint reflection, one camera that never cuts and turns a few degrees as it travels.
+    - It opens on one agent's bright light and pulls back as the hall rises row by row.
+    - The four apps rise at the edge (Firebase); the call runs along the floor to the core (Cloud Run's containers stack); Cloud SQL's disks stack and the records fly in.
+    - Events run Pub/Sub's spine with their names, the camera travelling with them; the Scheduler's clock ticks.
+    - The nine AI agents light one by one, each named, the Watcher grey in plain code; BigQuery's sales rise as bars and reach the Watcher and the Valuer; a label photo flies from Cloud Storage to Vision.
+    - Gemini's accelerators wake violet behind the agents, and Pro's and Flash's beams reach their agents, each taking its model's colour and chip.
+    - A glass wall rises round the API and the money, and Gemini's beam stops at it; the API works out ₹16,917.
+    - Priya's Approve screen pops up beside the desk, the cursor taps it, and the yes runs across the hall, every rack turning green.
+
+    Lit from the upper left, with rims, contact shadows, pools of light where lit parts spill, bloom, and camera motion blur on the hall only. Cut 10's notes, the index and the three acts' titles stay.
+  - **Cut 12, into the film:**
+    - the scene as a JPEG sequence in `build/arch12/`;
+    - `shots12.py`, `render12.py`, `mix12.py` and `export12.sh`, with its sounds from `events12.py`;
+    - a camera whoosh, the record's pen scratch and the spine's ticks moved off "Pub/Sub".
+  - **Cut 12, checks:**
+    - −14.0 LUFS, −1.5 dB peak;
+    - no one-frame flash in 5,973 frames;
+    - both QR codes read back;
+    - 29 of 33 lines word for word, as cut 11; u03's "Pub/Sub" is Whisper's "PupSup", though the take alone reads "PubSub".
+  - **Cut 12, where:** `working-demo/smart-clearance-working-demo-2026-10-16_00-11-41.mp4` (crf 17), its 720p copy, a light preview and captions; the crf-21 copies, the pipeline and its README in `design3/designs/SC-219/`.
 - **SC-220** (PR #200, merged; Done): ARCHITECTURE.md purely technical, on Agent Platform, with the deck's details; the Lucid diagrams, the architecture page and its PDF, and the deck renamed.
   - **The request:** ARCHITECTURE.md "with these details" (the AI Builder Cup deck, *14 Oct v4*); "update the references of vertex AI with Agent Platform which is the new name", in the Lucidchart diagrams and pictures and in the deck; ARCHITECTURE.md "purely technical", without the references to the Jira project.
   - **The rename:** Google renamed Vertex AI to Gemini Enterprise Agent Platform on 22 Apr 2026, and Agent Engine to Agent Runtime. Nothing in the build changes: Gemini is still reached at `aiplatform.googleapis.com` under `roles/aiplatform.user`, and the google-genai SDK's `enterprise=True` (which the agents already pass) is its former `vertexai=True`.

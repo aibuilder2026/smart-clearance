@@ -7,12 +7,14 @@ import { Blueprint, BlueprintScene, litAt } from './b/Blueprint';
 import { DataHall } from './a/DataHall';
 import { InsideMachine } from './c/InsideMachine';
 import { AStillGemini, AStillYes, CStillGemini, CStillYes } from './Stills';
+import { Arch } from './arch12/Arch';
 
 const FPS = 25;
 const all = { ...litAt(99) };
 export const RemotionRoot: React.FC = () => {
 	return (
 		<>
+			<Composition id="Arch12" component={Arch} durationInFrames={Math.round(33.64 * FPS)} fps={FPS} width={1920} height={1080} />
 			<Composition id="A-DataHall" component={DataHall} durationInFrames={Math.round(TEST_END * FPS)} fps={FPS} width={1920} height={1080} />
 			<Composition id="C-InsideMachine" component={InsideMachine} durationInFrames={Math.round(TEST_END * FPS)} fps={FPS} width={1920} height={1080} />
 			<Composition id="B-Blueprint" component={Blueprint} durationInFrames={Math.round(TEST_END * FPS)} fps={FPS} width={1920} height={1080} />

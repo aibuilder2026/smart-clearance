@@ -5,7 +5,7 @@ from pathlib import Path
 from PIL import Image
 HERE = Path(__file__).resolve().parent
 OUT = HERE / 'remo12' / 'public' / 'plates'; OUT.mkdir(parents=True, exist_ok=True)
-for p in sorted((HERE / 'img').glob('dc-*.png')):
+for p in sorted((HERE / 'img').glob('dc*.png')):
     im = Image.open(p).convert('RGB'); w, h = im.size
     if w / h > 16 / 9: nw = round(h * 16 / 9); im = im.crop(((w - nw) // 2, 0, (w - nw) // 2 + nw, h))
     else: nh = round(w * 9 / 16); im = im.crop((0, (h - nh) // 2, w, (h - nh) // 2 + nh))

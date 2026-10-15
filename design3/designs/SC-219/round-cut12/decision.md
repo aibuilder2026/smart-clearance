@@ -37,6 +37,34 @@ for the test came out clean on the first take, and the graphics held to their ra
 scene should show how every part connects in one picture and stay quickest to change; C if it should feel most like a
 hardware launch.
 
-## The pick
+## Round 1's pick (15 Oct 2026)
 
-To be recorded when the maintainer picks.
+None of the three: "None of these: rework". The notes for round 2, as the maintainer chose them:
+
+- **Mix A and B:** the real data hall (A), with B's drawn connections over it: calls, events and Gemini's beams flowing
+  between the racks as each part is named;
+- **A brighter, Google look:** lighter and cleaner, Google's four colours, product-style tiles and icons, less dark and
+  moody;
+- **One continuous shot:** no cuts, a single unbroken camera move through the whole data centre, each part lighting up
+  as the camera passes it.
+
+## Round 2 (15 to 16 Oct 2026)
+
+Two options were begun on those notes: D, the walk (one continuous glide down a bright Google-look aisle, each part
+lighting as the camera passes, B's flows drawn between the racks) and E, the rise (the same glide, then up over the racks
+until the hall becomes B's plan). Their bright hall was made (`round-2/`, two seeds) and the first chained camera move
+begun, when the maintainer stopped the round: "Ok stop these".
+
+## The pick (16 Oct 2026)
+
+> I want you to revert back the 3D remotion animation effects you did in the last video to explain the architecture
+> and think hard and better it.
+
+> The entire thing should be sharp and surreal and explain the flow and components, camera movement and lighting
+> should be perfect
+
+**B, the blueprint, made whole** as cut 12's architecture scene: the isometric data centre floating in a dark green
+void, one camera that never cuts and turns a little as it travels, each part rising and lighting on its word with cut 10's
+notes, the flow drawn between the parts (the call, the events on Pub/Sub, the Scheduler's tick, sales and photos,
+Gemini's beams), the glass round the money, and Priya's yes as a green wave through the hall. The SC-219 README's cut 12
+section has the details.

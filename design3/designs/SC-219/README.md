@@ -1,9 +1,76 @@
-# SC-219 · The working demo, cuts 9 to 11
+# SC-219 · The working demo, cuts 9 to 12
 
 A demo film of about four minutes, made from the three production recordings of 13 Oct 2026, as cut 8 (SC-218) was:
-cut 9 on the maintainer's notes on cut 8, cut 10 on four notes on cut 9, then cut 11 on three notes on cut 10. Each
+cut 9 on the maintainer's notes on cut 8, cut 10 on four notes on cut 9, cut 11 on three notes on cut 10, then cut 12
+on a new architecture scene, after a concept round. Each
 joins the earlier cuts in the repository root's `working-demo/` folder, with its export's date and time in its name;
 `media/` holds the latest.
+
+## Cut 12 (16 Oct 2026)
+
+Cut 11 with the architecture scene (0:22.5 to 0:56, the lines t01, u02, u03, u17, u18 and u06) made again; everything
+else is cut 11's.
+
+### The brief
+
+After the concept round below, the maintainer stopped the second round and asked to "revert back the 3D remotion
+animation effects you did in the last video to explain the architecture and think hard and better it", then: "The
+entire thing should be sharp and surreal and explain the flow and components, camera movement and lighting should be
+perfect". That is concept B, the isometric blueprint built in Remotion, made into the whole scene.
+
+### The scene
+
+The data centre as one isometric hall floating in a dark green void over its own faint reflection, built and lit in
+motion on the narration's words, with one camera that never cuts and turns a few degrees about the hall as it travels:
+
+| From | What it shows |
+| --- | --- |
+| 0:00 | one agent's light, bright; the camera leaves it and pulls back, turning, as the hall rises row by row from it; "All on Google Cloud." large at the centre, then docked |
+| 0:03.7 | the four apps' screens rise at the hall's edge (Firebase), an orange pool of light under them |
+| 0:05.5 | the call runs along the floor from the apps to the core; Cloud Run's racks light and its containers stack |
+| 0:07.6 | Cloud SQL's three disks stack; the records fly in |
+| 0:09.3 | events leave the core and run Pub/Sub's spine, the camera travelling with them, their names riding them (batch.at_risk, journey.step, offer.received) |
+| 0:12.1 | the Scheduler's tower, its clock ticking, its tick dropping into the spine |
+| 0:13.8 | the nine AI agents light one by one, each named, the Watcher grey in plain code; an event branches up into each |
+| 0:16.5 | BigQuery's sales rise as bars and reach the Watcher and the Valuer; a label photo leaves Cloud Storage for Vision |
+| 0:20.9 | Gemini's accelerators wake violet behind the agents; Pro's beams reach the Valuer, the Router and the Negotiator, Flash's the six that read and write, each agent taking its model's colour and chip |
+| 0:26.2 | a glass wall rises round the API and the money; Gemini's beam stops at it; the API works out ₹16,917 |
+| 0:31.3 | close on the desk: Priya's Approve screen pops up beside it, the cursor taps Approve, the yes runs to the API and across the hall, every rack turning green, and the camera pulls back to the whole hall |
+
+Cut 10's notes come in with each part, its index runs along the foot, and the three acts keep their titles.
+
+### How it is made
+
+- **Remotion 4.0.535** (`src/remo12/`, composition `Arch12`): `src/arch12/world.ts` (the layout in world units, a true
+  isometric camera with an azimuth for the orbit, the camera's path on the cues) and `src/arch12/Arch.tsx` (the hall
+  drawn in SVG: faces lit from the upper left, rims on every top edge, contact shadows, pools of light where lit parts
+  spill onto the floor, bloom on what is lit; cables with packets, beams with light running along them; the void's slow
+  light and motes). Camera motion blur (`CameraMotionBlur`, 5 samples, 100°) on the hall only, so the type stays sharp.
+- **Into the film:** the scene rendered as a JPEG sequence into `build/arch12/` (`f00000.jpg` …), read by `shots12.py`
+  where cut 11 read `arch11/`; `render12.py`, `mix12.py`, `export12.sh`, with `flash12.py`, `cardscan12.py` and
+  `readback12.py` as cut 11's.
+- **Sound:** `events12.py` lays the scene's own events (the hall rising, the apps, the call, the disks, the clock, each
+  agent, the bars, the photo, Gemini, its beams, the glass, the block, the figure, the tap, the wave) in
+  `build/arch12/events.json`; `mix12.py` voices them with the film's palette (mix11's, with the call's landing added).
+  The scene's preview carries the same sounds (`remo12/public/audio/arch-sfx.wav`).
+
+### Found
+
+- A camera whoosh, the record's pen scratch and the spine's ticks sat on "Pub/Sub" and its line; they were moved or
+  removed. Whisper still spells the word "PupSup" in its read-back window, though the take alone reads "PubSub" and the
+  mix there differs from cut 11's by −42 dB.
+- The opening started on dark racks; it starts on one bright agent light. The title docked too early; it rises large at
+  the centre during the pull-back, as concept B's did.
+- The yes was small on the desk's screen; the Approve screen pops up beside the desk and the tap is on it.
+
+### The result
+
+- 3 min 58.9 s (238.92 s), the same length as cut 11; −14.0 LUFS, −1.5 dB peak.
+- No one-frame flash in its 5,973 frames; the window speeds and stage marks as cut 11's.
+- Both QR codes read back.
+- 29 of 33 lines word for word, as cut 11; u03's "Pub/Sub" is Whisper's "PupSup".
+- `working-demo/smart-clearance-working-demo-2026-10-16_00-11-41.mp4` (crf 17), its 720p copy, a light preview and
+  captions; the crf-21 copies in `media/`.
 
 ## Cut 12's concept round (15 Oct 2026)
 
@@ -23,8 +90,12 @@ The motion tests are a Remotion 4.0.535 project, `src/remo12/` (`A-DataHall`, `B
 the stills). `src/prep12c.sh` rebuilds its media: the fonts, the app screens, the voice of the scene's first two
 lines, the sounds (`sfx12c.py`, the film's own synths), the plates (`gen-qwen12c.sh`, `plates12c.py`), the camera
 moves made to their shots (`gen-ltx12c.py`, `retime12c.sh`) and their tracks (`track12c.py`: Lucas-Kanade features
-inside each rack, a homography a frame, ridden by the graphics as CSS `matrix3d`). `board12c.py` writes the board's
+inside each rack, a similarity a frame, ridden by the graphics as CSS `matrix3d`). `board12c.py` writes the board's
 media.
+
+None was picked; the notes for a second round were "Mix A and B", "A brighter, Google look" and "One continuous shot".
+Its bright hall was made (`gen-qwen12d.sh`, `round-cut12/round-2/`) and its chained camera moves begun
+(`gen-ltx12d.py`) when the maintainer stopped it and asked for concept B made whole: cut 12, above.
 
 ## Cut 11 (15 Oct 2026)
 
@@ -451,5 +522,16 @@ Cut 11, after cut 10's steps (its architecture is a plain 2D page: no three.js):
 .venv/bin/python prep10.py                                                          # cut 9's photographs, for arch11/ too
 ./capture11.sh                                                                      # the four scene pages, arch11/ among them
 .venv/bin/python render11.py && .venv/bin/python mix11.py && ./export11.sh
+node qrcheck11.mjs ../media/smart-clearance-working-demo.mp4 7.6 235                # the codes, read back
+```
+
+Cut 12, after cut 11's steps (its architecture is the Remotion scene; `./prep12c.sh` puts the fonts, screens and voice
+in `remo12/public/`):
+
+```sh
+./prep12c.sh && .venv/bin/python events12.py                                        # the media, the scene's sounds
+(cd remo12 && npm i && npx remotion render src/index.ts Arch12 ../build/arch12-seq --sequence --image-format=jpeg --jpeg-quality=95)
+# then name the frames f00000.jpg … in build/arch12/ (the sequence's element-NNN.jpeg, in order)
+.venv/bin/python render12.py && .venv/bin/python mix12.py && ./export12.sh
 node qrcheck11.mjs ../media/smart-clearance-working-demo.mp4 7.6 235                # the codes, read back
 ```
