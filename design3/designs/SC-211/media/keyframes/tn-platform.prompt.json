@@ -1,0 +1,16 @@
+{
+ "model": "Qwen-Image 2.1 (bf16, local, qwen-image-bf16 plugin 0.2.0)",
+ "mode": "edit",
+ "source": "img/f-neha.png",
+ "seed": 211108,
+ "size": 1024,
+ "output": [
+  1376,
+  768
+ ],
+ "prompt": "The same woman in the white shirt and black-rimmed glasses at the same desk in the same open office, now turned from her laptop to look straight into the camera lens with a calm, confident, friendly expression, about to speak; the laptop stays in front of her with its back to the camera. Same face, same hair, same office, colleagues and window light. Photorealistic, natural skin, eye level, medium close-up.",
+ "script": "gen-qwen11b.sh",
+ "cost_usd": 0,
+ "use": "SC-211: the keyframe LTX animates for tn-platform",
+ "shipped": "WebP q90; the PNG stays in src/img11/"
+}

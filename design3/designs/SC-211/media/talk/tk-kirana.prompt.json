@@ -1,0 +1,19 @@
+{
+ "prompt": "A locked-off medium close-up: a woman in her fifties in a maroon sari with a red bindi, holding her phone at chest height with its back to the camera, behind her shop counter looks straight into the camera lens and says calmly and clearly, in a natural Indian English accent: \"The offer came in Hindi, right on my phone. Twenty-four packets, in one tap.\" Her lips shape every word in time with the voice; a gentle, natural expression with small natural head movements; no laughing, no exaggerated mouth movements; her eyes stay on the camera. Behind her, shelves of a neighbourhood kirana shop in warm light. Soft, natural, motivated light. Photorealistic cinematic footage, sharp focus on the face. Audio: her friendly, pleased voice, close and clear, the gentle bustle of a lane outside, no music.",
+ "model": "LTX 2.5 Fast (local), audio generated with the picture",
+ "resolution": "720p",
+ "duration": 8,
+ "fps": 24,
+ "aspectRatio": "16:9",
+ "cameraMotion": "static",
+ "audio": true,
+ "seed": 211204,
+ "loras": [],
+ "image": "img11/tk-kirana.png",
+ "ltx_desktop": "1.2.7",
+ "minutes": 10.0,
+ "cost_usd": 0,
+ "use": "SC-211 tk-kirana",
+ "shipped": "the LTX output re-encoded for the repository (H.264 crf 20, AAC 160k); the original stays in src/clips/talk11/",
+ "derived_from": "clips/talk11/tk-kirana.mp4"
+}

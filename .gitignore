@@ -293,3 +293,37 @@ design3/designs/SC-210/src/tts/vo3/gemini-Sulafat/*
 !design3/designs/SC-210/src/tts/vo3/gemini-Sulafat/*.json
 # the talking scenes ship beside the film (media/talk/), past the root's *.mp4
 !design3/designs/SC-210/media/talk/*.mp4
+# SC-211: the sales film v2's pipeline ships as SC-210's did, with its scene pages (graph11/, pwa11/, teams11/, audit11/,
+# ops11/: their HTML, scripts and WebP screenshots), the talking scenes' prompts and jobs, and the narrator's chosen
+# takes' timings; keyframe PNGs, clips, depth maps, captures, voice takes, logs, the venvs and the build stay local
+!design3/designs/SC-211/src/
+design3/designs/SC-211/src/*
+!design3/designs/SC-211/src/*.py
+!design3/designs/SC-211/src/*.sh
+!design3/designs/SC-211/src/*.mjs
+!design3/designs/SC-211/src/*.js
+!design3/designs/SC-211/src/*.json
+!design3/designs/SC-211/src/narr-ids.txt
+!design3/designs/SC-211/src/prompts/
+!design3/designs/SC-211/src/relabel/
+!design3/designs/SC-211/src/graph11/
+!design3/designs/SC-211/src/pwa11/
+!design3/designs/SC-211/src/teams11/
+!design3/designs/SC-211/src/audit11/
+!design3/designs/SC-211/src/ops11/
+!design3/designs/SC-211/src/build/
+design3/designs/SC-211/src/build/*
+!design3/designs/SC-211/src/build/screens.json
+!design3/designs/SC-211/src/tts/
+design3/designs/SC-211/src/tts/*
+!design3/designs/SC-211/src/tts/*.py
+!design3/designs/SC-211/src/tts/*.sh
+!design3/designs/SC-211/src/tts/sample*.txt
+!design3/designs/SC-211/src/tts/voice.txt
+!design3/designs/SC-211/src/tts/vo3/
+design3/designs/SC-211/src/tts/vo3/*
+!design3/designs/SC-211/src/tts/vo3/maya1w-warm/
+design3/designs/SC-211/src/tts/vo3/maya1w-warm/*
+!design3/designs/SC-211/src/tts/vo3/maya1w-warm/*.json
+# the talking scenes made here ship beside the film (media/talk/), past the root's *.mp4
+!design3/designs/SC-211/media/talk/*.mp4

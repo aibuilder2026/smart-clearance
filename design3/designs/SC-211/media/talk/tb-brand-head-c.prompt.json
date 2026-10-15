@@ -1,0 +1,19 @@
+{
+ "prompt": "A medium close-up of an Indian man in his fifties with short salt-and-pepper hair and a trimmed grey beard, in a white shirt and a navy blazer. He looks straight into the camera lens and says, slowly and clearly in English with an Indian accent: \"We set the rules once. The agents do the legwork, and nothing moves without our yes.\" Calm, confident, natural delivery, his lips shaping each word, no laughing. Behind him, a bright modern office with glass walls, softly out of focus. Static camera. Photorealistic cinematic footage. Audio: his warm, clear baritone voice, a quiet office, no music.",
+ "model": "LTX 2.5 Fast (local), audio generated with the picture",
+ "resolution": "720p",
+ "duration": 8,
+ "fps": 24,
+ "aspectRatio": "16:9",
+ "cameraMotion": "static",
+ "audio": true,
+ "seed": 211303,
+ "loras": [],
+ "image": "img11/tb-brand-head.png",
+ "ltx_desktop": "1.2.7",
+ "minutes": 10.6,
+ "cost_usd": 0,
+ "use": "SC-211 tb-brand-head-c",
+ "shipped": "the LTX output re-encoded for the repository (H.264 crf 20, AAC 160k); the original stays in src/clips/talk11/",
+ "derived_from": "clips/talk11/tb-brand-head-c.mp4"
+}

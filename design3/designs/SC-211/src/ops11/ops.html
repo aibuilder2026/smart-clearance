@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SC-211 · the platform watches itself</title>
+<style>
+  @font-face { font-family: 'Bricolage Grotesque'; src: url('/fonts/Bricolage.ttf'); font-weight: 200 800; }
+  @font-face { font-family: 'Geist'; src: url('/fonts/Geist.ttf'); font-weight: 100 900; }
+  :root { --ink: #ecf3ef; --ink2: #aabcb2; --ink3: #7a8c82; --g300: #73c99d; --ring: #34d380; --amber2: #f7c04a; --blue: #9db5ff; }
+  html, body { margin: 0; padding: 0; width: 1920px; height: 1080px; overflow: hidden; background: #070b09;
+    font-family: 'Geist', system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  canvas { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+  #view { position: absolute; inset: 0; perspective: 2000px; perspective-origin: 50% 45%; }
+  #board { position: absolute; left: 230px; top: 250px; width: 1460px; height: 660px; transform-origin: 50% 50%; }
+  .tile { position: absolute; width: 460px; height: 300px; box-sizing: border-box; padding: 22px 24px; border-radius: 22px;
+    background: linear-gradient(180deg, rgba(19, 28, 24, 0.95), rgba(11, 17, 14, 0.95)); border: 1px solid rgba(115, 201, 157, 0.25);
+    box-shadow: 0 30px 70px rgba(0,0,0,0.5); overflow: hidden; }
+  .tile .hd { display: flex; align-items: center; gap: 12px; }
+  .tile .ic { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: rgba(52, 211, 128, 0.10); color: var(--g300); }
+  .tile .ic svg { width: 22px; height: 22px; }
+  .tile b { display: block; font: 700 22px/1.1 'Geist'; } .tile small { display: block; margin-top: 4px; font: 500 15px/1 'Geist'; color: var(--ink3); }
+  .tile .st { margin-left: auto; display: flex; align-items: center; gap: 7px; font: 600 14px/1 'Geist'; color: var(--g300); }
+  .tile .st i { width: 10px; height: 10px; border-radius: 50%; background: var(--ring); box-shadow: 0 0 12px var(--ring); display: block; }
+  .tile .big { margin-top: 22px; font: 700 46px/1 'Bricolage Grotesque'; letter-spacing: -0.5px; font-variant-numeric: tabular-nums; }
+  .tile .big span { font: 500 18px/1 'Geist'; color: var(--ink3); margin-left: 8px; letter-spacing: 0; }
+  .tile canvas { position: absolute; left: 0; top: auto; bottom: 0; width: 460px; height: 110px; }
+  .tile.warn { border-color: rgba(247, 192, 74, 0.7); box-shadow: 0 30px 70px rgba(0,0,0,0.5), 0 0 60px rgba(247, 192, 74, 0.25); }
+  .tile.warn .st { color: var(--amber2); } .tile.warn .st i { background: var(--amber2); box-shadow: 0 0 12px var(--amber2); }
+  .alert { position: absolute; left: 1260px; top: 300px; width: 560px; box-sizing: border-box; padding: 22px 24px; border-radius: 22px; opacity: 0;
+    background: linear-gradient(180deg, rgba(34, 26, 10, 0.97), rgba(20, 15, 7, 0.97)); border: 1px solid rgba(247, 192, 74, 0.6);
+    box-shadow: 0 40px 90px rgba(0,0,0,0.6), 0 0 70px rgba(247, 192, 74, 0.2); }
+  .alert .k { display: flex; gap: 9px; align-items: center; font: 700 14px/1 'Geist'; letter-spacing: 1.8px; text-transform: uppercase; color: var(--amber2); }
+  .alert .k svg { width: 18px; height: 18px; }
+  .alert h3 { margin: 12px 0 6px; font: 700 30px/1.1 'Bricolage Grotesque'; }
+  .alert p { margin: 0; font: 400 18px/1.35 'Geist'; color: #d8c9a6; }
+  .alert .ok { margin-top: 16px; display: flex; gap: 10px; align-items: center; padding: 12px 14px; border-radius: 14px; opacity: 0;
+    background: rgba(52, 211, 128, 0.12); border: 1px solid rgba(52, 211, 128, 0.45); font: 600 18px/1.2 'Geist'; color: var(--ink); }
+  .alert .ok svg { width: 20px; height: 20px; color: var(--ring); }
+  .kick { position: absolute; left: 0; right: 0; top: 46px; text-align: center; font: 700 15px/1 'Geist'; letter-spacing: 3px; text-transform: uppercase; color: var(--g300); opacity: 0; }
+  .h1 { position: absolute; left: 0; right: 0; top: 74px; text-align: center; font: 700 58px/1.05 'Bricolage Grotesque'; letter-spacing: -1px; opacity: 0; white-space: nowrap; }
+  .h1 em { font-style: normal; color: var(--amber2); }
+  .calm { position: absolute; left: 50%; top: 958px; display: flex; gap: 10px; align-items: center; padding: 12px 20px 12px 16px; border-radius: 999px; opacity: 0; white-space: nowrap;
+    background: rgba(10, 16, 13, 0.92); border: 1px solid rgba(52, 211, 128, 0.5); font: 600 19px/1 'Geist'; transform: translateX(-50%); }
+  .calm svg { width: 21px; height: 21px; color: var(--ring); }
+  .note { position: absolute; right: 40px; bottom: 30px; font: 500 13px/1 'Geist'; color: var(--ink3); letter-spacing: 0.4px; opacity: 0; }
+</style>
+</head>
+<body>
+<canvas id="bg" width="1920" height="1080"></canvas>
+<div id="view"><div id="board"></div></div>
+<canvas id="fx" width="1920" height="1080" style="mix-blend-mode: screen"></canvas>
+<div id="ui"></div>
+<script src="icons.js"></script>
+<script src="ops.js"></script>
+</body>
+</html>
