@@ -1,0 +1,19 @@
+{
+ "prompt": "A locked-off medium close-up: a woman in her fifties in a teal sari, her grey-streaked plait over her shoulder, holding a tablet with its back to the camera looks straight into the camera lens and says calmly and clearly, in a natural Indian English accent: \"Sixteen hundred packs, and twenty-two days left. The apps won't take them now.\" Her lips shape every word in time with the voice; a gentle, natural expression with small natural head movements; no laughing, no exaggerated mouth movements; her eyes stay on the camera. Behind her, a distributor's godown stacked with brown cartons in the morning light. Soft, natural, motivated light. Photorealistic cinematic footage, sharp focus on the face. Audio: her calm, slightly worried voice, close and clear, the soft hum of the godown, no music.",
+ "model": "LTX 2.5 Fast (local), audio generated with the picture",
+ "resolution": "720p",
+ "duration": 8,
+ "fps": 24,
+ "aspectRatio": "16:9",
+ "cameraMotion": "static",
+ "audio": true,
+ "seed": 211201,
+ "loras": [],
+ "image": "img11/t1c-distributor.png",
+ "ltx_desktop": "1.2.7",
+ "minutes": 10.1,
+ "cost_usd": 0,
+ "use": "SC-211 t1-distributor",
+ "shipped": "the LTX output re-encoded for the repository (H.264 crf 20, AAC 160k); the original stays in src/clips/talk11/",
+ "derived_from": "clips/talk11/t1-distributor.mp4"
+}

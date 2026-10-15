@@ -1,0 +1,92 @@
+[
+ {
+  "name": "t1-distributor",
+  "image": "img11/t1c-distributor.png",
+  "duration": 8,
+  "seed": 211201,
+  "prompt": "A locked-off medium close-up: a woman in her fifties in a teal sari, her grey-streaked plait over her shoulder, holding a tablet with its back to the camera looks straight into the camera lens and says calmly and clearly, in a natural Indian English accent: \"Sixteen hundred packs, and twenty-two days left. The apps won't take them now.\" Her lips shape every word in time with the voice; a gentle, natural expression with small natural head movements; no laughing, no exaggerated mouth movements; her eyes stay on the camera. Behind her, a distributor's godown stacked with brown cartons in the morning light. Soft, natural, motivated light. Photorealistic cinematic footage, sharp focus on the face. Audio: her calm, slightly worried voice, close and clear, the soft hum of the godown, no music.",
+  "resolution": "720p",
+  "camera": "static",
+  "audio": true
+ },
+ {
+  "name": "tb-brand-head",
+  "image": "img11/tb-brand-head.png",
+  "duration": 8,
+  "seed": 211202,
+  "prompt": "A locked-off medium close-up: an Indian man in his fifties with short salt-and-pepper hair and a trimmed grey beard, in a white shirt and navy blazer looks straight into the camera lens and says calmly and clearly, in a natural Indian English accent: \"We set the rules once. The agents do the legwork, and nothing moves without our yes.\" His lips shape every word in time with the voice; a gentle, natural expression with small natural head movements; no laughing, no exaggerated mouth movements; his eyes stay on the camera. Behind him, a bright modern office with glass walls, softly out of focus. Soft, natural, motivated light. Photorealistic cinematic footage, sharp focus on the face. Audio: his warm, confident baritone, close and clear, the quiet air of an office, no music.",
+  "resolution": "720p",
+  "camera": "static",
+  "audio": true
+ },
+ {
+  "name": "t2-lead",
+  "image": "img11/t2-lead.png",
+  "duration": 8,
+  "seed": 211203,
+  "prompt": "A locked-off medium close-up: a woman in her thirties in a navy striped blouse at a white desk, holding a tablet with its back to the camera looks straight into the camera lens and says calmly and clearly, in a natural Indian English accent: \"Kiranas, a staff sale, the food bank, and nothing to the bin. Approved.\" Her lips shape every word in time with the voice; a gentle, natural expression with small natural head movements; no laughing, no exaggerated mouth movements; her eyes stay on the camera. Behind her, a bright office window and a plant, softly out of focus. Soft, natural, motivated light. Photorealistic cinematic footage, sharp focus on the face. Audio: her warm, decisive voice, close and clear, a quiet office, no music.",
+  "resolution": "720p",
+  "camera": "static",
+  "audio": true
+ },
+ {
+  "name": "tk-kirana",
+  "image": "img11/tk-kirana.png",
+  "duration": 8,
+  "seed": 211204,
+  "prompt": "A locked-off medium close-up: a woman in her fifties in a maroon sari with a red bindi, holding her phone at chest height with its back to the camera, behind her shop counter looks straight into the camera lens and says calmly and clearly, in a natural Indian English accent: \"The offer came in Hindi, right on my phone. Twenty-four packets, in one tap.\" Her lips shape every word in time with the voice; a gentle, natural expression with small natural head movements; no laughing, no exaggerated mouth movements; her eyes stay on the camera. Behind her, shelves of a neighbourhood kirana shop in warm light. Soft, natural, motivated light. Photorealistic cinematic footage, sharp focus on the face. Audio: her friendly, pleased voice, close and clear, the gentle bustle of a lane outside, no music.",
+  "resolution": "720p",
+  "camera": "static",
+  "audio": true
+ },
+ {
+  "name": "t3-shopkeeper",
+  "image": "img11/t3c-shopkeeper.png",
+  "duration": 6,
+  "seed": 211205,
+  "prompt": "A locked-off medium close-up: a shopkeeper with a moustache, in a cream kurta behind his steel counter, holding a sealed brown carton in both hands, looks straight into the camera lens and says calmly and clearly, in a natural Indian English accent: \"Delivered this morning, invoice and all. These will be gone by Sunday.\" His lips shape every word in time with the voice; a gentle, natural expression with small natural head movements; no laughing, no exaggerated mouth movements; his eyes stay on the camera. Behind him, a delivery van and a busy neighbourhood lane in daylight. Soft, natural, motivated light. Photorealistic cinematic footage, sharp focus on the face. Audio: his cheerful, warm voice, close and clear, traffic and voices of the lane in the background, no music.",
+  "resolution": "720p",
+  "camera": "static",
+  "audio": true
+ },
+ {
+  "name": "t5-buyer",
+  "image": "img11/t5c-buyer.png",
+  "duration": 6,
+  "seed": 211206,
+  "prompt": "A locked-off medium close-up: a man in his thirties with a short beard in a grey shirt, holding his phone low with its back to the camera, in a wholesale market looks straight into the camera lens and says calmly and clearly, in a natural Indian English accent: \"Fourteen-twenty a pack? Done. Send the truck.\" His lips shape every word in time with the voice; a gentle, natural expression with small natural head movements; no laughing, no exaggerated mouth movements; his eyes stay on the camera. Behind him, sacks of grain and stacked brown cartons in a busy wholesale market. Soft, natural, motivated light. Photorealistic cinematic footage, sharp focus on the face. Audio: his decisive, pleased voice, close and clear, the murmur of the wholesale market, no music.",
+  "resolution": "720p",
+  "camera": "static",
+  "audio": true
+ },
+ {
+  "name": "t6-landfill",
+  "image": "img11/t6-landfill.png",
+  "duration": 6,
+  "seed": 211207,
+  "prompt": "A locked-off medium shot: medium shot of a man in his sixties in a light blue checked shirt with reading glasses on his head, holding a tablet against his chest with its screen facing him, looks straight into the camera lens and says calmly and clearly, in a natural Indian English accent: \"All four signatures. Now it's on the record.\" His lips shape every word in time with the voice; a gentle, natural expression with small natural head movements; no laughing, no exaggerated mouth movements; his eyes stay on the camera. Beside him an officer and two witnesses; behind them, the edge of a municipal landfill under a hazy evening sky. Soft, natural, motivated light. Photorealistic cinematic footage, sharp focus on the face. Audio: his calm, relieved voice, close and clear, a light wind and a distant excavator, no music.",
+  "resolution": "720p",
+  "camera": "static",
+  "audio": true
+ },
+ {
+  "name": "tn-platform",
+  "image": "img11/tn-platform.png",
+  "duration": 8,
+  "seed": 211208,
+  "prompt": "A locked-off medium close-up: a woman in her thirties with shoulder-length black hair and black-rimmed glasses, in a white shirt, at her desk with a laptop whose back faces the camera looks straight into the camera lens and says calmly and clearly, in a natural Indian English accent: \"From here I see every client and every agent, live. If anything stalls, we know first.\" Her lips shape every word in time with the voice; a gentle, natural expression with small natural head movements; no laughing, no exaggerated mouth movements; her eyes stay on the camera. Behind her, a bright open-plan office with colleagues at their desks, softly out of focus. Soft, natural, motivated light. Photorealistic cinematic footage, sharp focus on the face. Audio: her calm, assured voice, close and clear, the quiet murmur of an office, no music.",
+  "resolution": "720p",
+  "camera": "static",
+  "audio": true
+ },
+ {
+  "name": "tw-distributor",
+  "image": "img11/tw-distributor.png",
+  "duration": 8,
+  "seed": 211209,
+  "prompt": "A locked-off medium close-up: a woman in her fifties in a teal sari, her grey-streaked plait over her shoulder, holding a tablet lowered with its back to the camera looks straight into the camera lens and says calmly and clearly, in a natural Indian English accent: \"Every credit note came in on time. We ended whole, to the rupee.\" Her lips shape every word in time with the voice; a gentle, natural expression with small natural head movements; no laughing, no exaggerated mouth movements; her eyes stay on the camera. Behind her, a distributor's godown, its racks almost empty, in warm golden evening light. Soft, natural, motivated light. Photorealistic cinematic footage, sharp focus on the face. Audio: her warm, relieved voice, close and clear, the soft hum of the godown in the evening, no music.",
+  "resolution": "720p",
+  "camera": "static",
+  "audio": true
+ }
+]

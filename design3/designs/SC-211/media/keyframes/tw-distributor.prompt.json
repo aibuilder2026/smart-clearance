@@ -1,0 +1,16 @@
+{
+ "model": "Qwen-Image 2.1 (bf16, local, qwen-image-bf16 plugin 0.2.0)",
+ "mode": "edit",
+ "source": "img11/t1c-distributor.png",
+ "seed": 211109,
+ "size": 1024,
+ "output": [
+  1376,
+  768
+ ],
+ "prompt": "The same woman in the teal sari with the grey-streaked plait in the same godown, weeks later, in warm golden evening light through the open shutter, the racks behind her now almost empty, only a few cartons left. She holds the tablet lowered against her waist with its back to the camera and looks straight into the camera lens with a relieved, warm smile, about to speak. Same face, same plait, same sari. Photorealistic, natural skin, eye level, medium close-up.",
+ "script": "gen-qwen11b.sh",
+ "cost_usd": 0,
+ "use": "SC-211: the keyframe LTX animates for tw-distributor",
+ "shipped": "WebP q90; the PNG stays in src/img11/"
+}

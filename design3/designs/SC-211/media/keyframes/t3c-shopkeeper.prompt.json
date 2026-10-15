@@ -1,0 +1,16 @@
+{
+ "model": "Qwen-Image 2.1 (bf16, local, qwen-image-bf16 plugin 0.2.0)",
+ "mode": "edit",
+ "source": "img11/t3-shopkeeper-crop.png",
+ "seed": 211110,
+ "size": 1024,
+ "output": [
+  1376,
+  768
+ ],
+ "prompt": "The same shopkeeper in the cream kurta behind the same steel counter, holding the same plain sealed brown carton, looking straight into the camera lens with a broad, happy smile, about to speak. Keep the framing, the face, the moustache, the shelves of the shop and the van at the left exactly as they are; only make the whole picture crisp and finely detailed, like a photograph taken at this distance with a cinema camera, natural skin texture, sharp eyes. No text, no logos.",
+ "script": "gen-qwen11b.sh",
+ "cost_usd": 0,
+ "use": "SC-211: the keyframe LTX animates for t3-shopkeeper",
+ "shipped": "WebP q90; the PNG stays in src/img11/"
+}

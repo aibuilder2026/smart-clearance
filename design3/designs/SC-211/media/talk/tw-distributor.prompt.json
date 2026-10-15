@@ -1,0 +1,19 @@
+{
+ "prompt": "A locked-off medium close-up: a woman in her fifties in a teal sari, her grey-streaked plait over her shoulder, holding a tablet lowered with its back to the camera looks straight into the camera lens and says calmly and clearly, in a natural Indian English accent: \"Every credit note came in on time. We ended whole, to the rupee.\" Her lips shape every word in time with the voice; a gentle, natural expression with small natural head movements; no laughing, no exaggerated mouth movements; her eyes stay on the camera. Behind her, a distributor's godown, its racks almost empty, in warm golden evening light. Soft, natural, motivated light. Photorealistic cinematic footage, sharp focus on the face. Audio: her warm, relieved voice, close and clear, the soft hum of the godown in the evening, no music.",
+ "model": "LTX 2.5 Fast (local), audio generated with the picture",
+ "resolution": "720p",
+ "duration": 8,
+ "fps": 24,
+ "aspectRatio": "16:9",
+ "cameraMotion": "static",
+ "audio": true,
+ "seed": 211209,
+ "loras": [],
+ "image": "img11/tw-distributor.png",
+ "ltx_desktop": "1.2.7",
+ "minutes": 11.0,
+ "cost_usd": 0,
+ "use": "SC-211 tw-distributor",
+ "shipped": "the LTX output re-encoded for the repository (H.264 crf 20, AAC 160k); the original stays in src/clips/talk11/",
+ "derived_from": "clips/talk11/tw-distributor.mp4"
+}

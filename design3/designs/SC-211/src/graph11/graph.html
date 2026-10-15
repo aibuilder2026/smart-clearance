@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SC-211 · the agents as a graph</title>
+<style>
+  @font-face { font-family: 'Bricolage Grotesque'; src: url('/fonts/Bricolage.ttf'); font-weight: 200 800; }
+  @font-face { font-family: 'Geist'; src: url('/fonts/Geist.ttf'); font-weight: 100 900; }
+  :root {
+    --bg: #070b09; --surface: rgba(16, 22, 19, 0.82); --line: rgba(115, 201, 157, 0.22); --ink: #ecf3ef; --ink2: #aabcb2;
+    --ink3: #7a8c82; --g300: #73c99d; --g400: #3fb07b; --ring: #34d380; --amber: #f2b437; --amber2: #f7c04a; --red: #e55c4a;
+  }
+  html, body { margin: 0; padding: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--bg);
+    font-family: 'Geist', system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  #stage { position: absolute; inset: 0; overflow: hidden; }
+  canvas { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+  #world { position: absolute; left: 0; top: 0; width: 2800px; height: 1500px; transform-origin: 0 0; }
+  #world svg { position: absolute; left: 0; top: 0; overflow: visible; }
+  #chips, #ui { position: absolute; inset: 0; }
+  .chip { position: absolute; left: 0; top: 0; display: flex; align-items: center; gap: 12px; padding: 12px 20px 12px 12px;
+    border-radius: 18px; background: rgba(13, 19, 16, 0.86); border: 1.5px solid rgba(115, 201, 157, 0.20);
+    transform-origin: 50% 50%; white-space: nowrap; will-change: transform, filter, opacity; }
+  .chip .tile { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
+    background: rgba(52, 211, 128, 0.10); color: var(--g300); }
+  .chip .tile svg { width: 24px; height: 24px; }
+  .chip .nm { font: 600 26px/1 'Geist'; letter-spacing: -0.2px; color: var(--ink2); }
+  .chip .gem { position: absolute; right: -10px; top: -14px; font: 600 13px/1 'Geist'; padding: 5px 9px; border-radius: 999px;
+    background: rgba(9, 14, 12, 0.92); border: 1px solid rgba(138, 180, 248, 0.45); color: #c9dcff; display: flex; gap: 5px; align-items: center; }
+  .chip .gem svg { width: 13px; height: 13px; }
+  .chip.human .tile { background: rgba(242, 180, 55, 0.12); color: var(--amber2); }
+  .chip .ring { position: absolute; inset: -9px; border-radius: 24px; border: 2px solid var(--ring); opacity: 0; }
+  .chip.human .ring { border-color: var(--amber2); }
+  .chip .halo { position: absolute; inset: -40px; border-radius: 60px; opacity: 0;
+    background: radial-gradient(closest-side, rgba(52, 211, 128, 0.45), rgba(52, 211, 128, 0) 72%); z-index: -1; }
+  .chip.human .halo { background: radial-gradient(closest-side, rgba(247, 192, 74, 0.55), rgba(247, 192, 74, 0) 72%); }
+  .chip .lock { position: absolute; left: -14px; top: -14px; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+    background: #1b1408; border: 1.5px solid var(--amber2); color: var(--amber2); opacity: 0; }
+  .chip .lock svg { width: 16px; height: 16px; }
+
+  .card { position: absolute; left: 0; top: 0; z-index: 10; width: 470px; padding: 22px 24px 20px; border-radius: 22px;
+    background: linear-gradient(180deg, rgba(20, 30, 25, 0.94), rgba(11, 17, 14, 0.94)); border: 1px solid rgba(115, 201, 157, 0.30);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.03) inset, 0 0 60px rgba(52, 211, 128, 0.10);
+    transform-origin: 0% 50%; opacity: 0; backdrop-filter: blur(6px); }
+  .card .kick { font: 700 13px/1 'Geist'; letter-spacing: 1.6px; text-transform: uppercase; color: var(--g300); display: flex; gap: 8px; align-items: center; }
+  .card .kick .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ring); box-shadow: 0 0 12px var(--ring); }
+  .card h3 { margin: 12px 0 6px; font: 700 32px/1.05 'Bricolage Grotesque'; letter-spacing: -0.4px; color: var(--ink); }
+  .card p { margin: 0 0 14px; font: 400 19px/1.35 'Geist'; color: var(--ink2); }
+  .card .row { display: flex; align-items: flex-start; gap: 10px; margin-top: 9px; font: 500 17px/1.3 'Geist'; color: var(--ink); }
+  .card .row svg { width: 18px; height: 18px; flex: none; margin-top: 1px; color: var(--g300); }
+  .card .row.rule svg { color: var(--amber2); }
+  .card .row .lbl { color: var(--ink3); min-width: 74px; font-weight: 600; font-size: 14px; letter-spacing: 0.6px; text-transform: uppercase; margin-top: 2px; }
+  .card .chipm { display: inline-flex; margin-top: 14px; gap: 6px; align-items: center; font: 600 14px/1 'Geist'; padding: 7px 11px; border-radius: 999px;
+    background: rgba(138, 180, 248, 0.10); border: 1px solid rgba(138, 180, 248, 0.35); color: #c9dcff; }
+  .card .chipm svg { width: 14px; height: 14px; }
+  .card.amber { border-color: rgba(247, 192, 74, 0.45); box-shadow: 0 30px 80px rgba(0,0,0,0.55), 0 0 70px rgba(247, 192, 74, 0.16); }
+  .card.amber .kick { color: var(--amber2); }
+  .card.amber .kick .dot { background: var(--amber2); box-shadow: 0 0 12px var(--amber2); }
+  .btns { display: flex; gap: 12px; margin-top: 18px; }
+  .btn { font: 700 19px/1 'Geist'; padding: 15px 22px; border-radius: 14px; display: flex; gap: 9px; align-items: center; white-space: nowrap; }
+  .btn svg { width: 19px; height: 19px; }
+  .btn.go { background: var(--amber2); color: #1d1404; }
+  .btn.ghost { border: 1px solid rgba(255, 255, 255, 0.14); color: var(--ink2); }
+  .btn.done { background: var(--ring); color: #062114; }
+
+  .panel { position: absolute; padding: 26px 28px; border-radius: 24px; background: linear-gradient(180deg, rgba(18, 27, 23, 0.94), rgba(10, 15, 13, 0.95));
+    border: 1px solid rgba(115, 201, 157, 0.28); box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55), 0 0 80px rgba(52, 211, 128, 0.08); opacity: 0; }
+  .panel .kick { font: 700 14px/1 'Geist'; letter-spacing: 1.8px; text-transform: uppercase; color: var(--g300); display: flex; gap: 9px; align-items: center; }
+  .panel .kick svg { width: 17px; height: 17px; }
+  .panel h2 { margin: 12px 0 4px; font: 700 38px/1.05 'Bricolage Grotesque'; letter-spacing: -0.5px; }
+  .rule { display: flex; gap: 16px; align-items: flex-start; padding: 16px 0 4px; opacity: 0; }
+  .rule .ic { width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; flex: none;
+    background: rgba(247, 192, 74, 0.12); color: var(--amber2); border: 1px solid rgba(247, 192, 74, 0.35); }
+  .rule .ic svg { width: 24px; height: 24px; }
+  .rule b { display: block; font: 700 23px/1.15 'Geist'; color: var(--ink); }
+  .rule span { display: block; margin-top: 5px; font: 400 18px/1.3 'Geist'; color: var(--ink2); }
+  .badge { position: absolute; display: flex; gap: 12px; align-items: center; padding: 13px 20px 13px 14px; border-radius: 999px;
+    background: rgba(10, 15, 13, 0.9); border: 1px solid rgba(138, 180, 248, 0.40); box-shadow: 0 0 50px rgba(138, 180, 248, 0.16); opacity: 0; }
+  .badge .bi { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(138, 180, 248, 0.14); color: #c9dcff; }
+  .badge .bi svg { width: 21px; height: 21px; }
+  .badge b { font: 700 22px/1 'Geist'; color: var(--ink); } .badge span { font: 400 18px/1 'Geist'; color: var(--ink2); margin-left: 4px; }
+  .shield { position: absolute; left: 0; top: 0; z-index: 4; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
+    background: #1a1408; border: 2px solid var(--amber2); color: var(--amber2); box-shadow: 0 0 30px rgba(247, 192, 74, 0.45); opacity: 0; }
+  .shield svg { width: 24px; height: 24px; }
+  .title { position: absolute; left: 0; right: 0; text-align: center; font: 700 64px/1.05 'Bricolage Grotesque'; letter-spacing: -1px; opacity: 0; }
+  .title small { display: block; margin-top: 14px; font: 600 16px/1 'Geist'; letter-spacing: 3px; text-transform: uppercase; color: var(--g300); }
+  .audit { left: 260px; top: 610px; width: 1400px; height: 400px; overflow: hidden; }
+  .log { display: grid; grid-template-columns: 120px 260px 1fr 190px; align-items: center; gap: 12px; padding: 10px 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); font: 500 19px/1 'Geist'; color: var(--ink2); opacity: 0; }
+  .log .tm { font: 600 17px/1 'Geist'; color: var(--ink3); font-variant-numeric: tabular-nums; }
+  .log .who { display: flex; gap: 10px; align-items: center; color: var(--ink); font-weight: 600; }
+  .log .who svg { width: 19px; height: 19px; color: var(--g300); }
+  .log.person .who svg, .log.person .who { color: var(--amber2); }
+  .log .tr { font: 500 15px/1 'Geist'; color: #9db5ff; text-align: right; letter-spacing: 0.3px; }
+  .seal { position: absolute; left: 1290px; top: 470px; width: 300px; height: 300px; border-radius: 50%; display: grid; place-items: center; text-align: center;
+    border: 3px solid var(--ring); color: var(--ring); font: 800 26px/1.15 'Bricolage Grotesque'; letter-spacing: 0.5px; opacity: 0;
+    box-shadow: 0 0 80px rgba(52, 211, 128, 0.35), inset 0 0 40px rgba(52, 211, 128, 0.18); background: rgba(6, 20, 13, 0.75); }
+  .seal svg { width: 54px; height: 54px; display: block; margin: 0 auto 8px; }
+  .cursor { position: absolute; left: 0; top: 0; z-index: 30; width: 34px; height: 34px; opacity: 0; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.55)); }
+  .ripple { position: absolute; left: 0; top: 0; z-index: 29; border-radius: 50%; border: 3px solid var(--ring); opacity: 0; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg" width="1920" height="1080"></canvas>
+  <div id="world"></div>
+  <canvas id="glow" width="1920" height="1080" style="mix-blend-mode: screen"></canvas>
+  <div id="chips"></div>
+  <canvas id="fx" width="1920" height="1080" style="mix-blend-mode: screen"></canvas>
+  <div id="ui"></div>
+</div>
+<script src="icons.js"></script>
+<script src="graph.js"></script>
+</body>
+</html>

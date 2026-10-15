@@ -1,0 +1,16 @@
+{
+ "model": "Qwen-Image 2.1 (bf16, local, qwen-image-bf16 plugin 0.2.0)",
+ "mode": "generate",
+ "source": null,
+ "seed": 211107,
+ "size": 1024,
+ "output": [
+  1376,
+  768
+ ],
+ "prompt": "A medium close-up of an Indian man in his fifties with short salt-and-pepper hair and a neatly trimmed grey beard, in a crisp white shirt and a navy blazer, standing in a bright modern office with glass walls and soft daylight, a softly blurred open-plan office behind him. He looks straight into the camera lens with a calm, confident expression, about to speak. Photorealistic, natural skin, shallow depth of field, eye level. Photorealistic cinematic still from a professional corporate film, full-frame cinema camera, 35 mm lens, gentle shallow depth of field, realistic Indian setting, natural faces and natural hands with five fingers, true-to-life colours, motivated natural light, calm composition. Physically correct: a person always looks at the front of the screen they are using. Any screen we can see is a plain, evenly lit, blank white display with nothing on it. No text, no numbers, no lettering, no logos, no signs anywhere in the picture.",
+ "script": "gen-qwen11.sh",
+ "cost_usd": 0,
+ "use": "SC-211: the keyframe LTX animates for tb-brand-head-c",
+ "shipped": "WebP q90; the PNG stays in src/img11/"
+}

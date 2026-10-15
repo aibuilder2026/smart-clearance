@@ -1,0 +1,19 @@
+{
+ "prompt": "A locked-off medium close-up: a shopkeeper with a moustache, in a cream kurta behind his steel counter, holding a sealed brown carton in both hands, looks straight into the camera lens and says calmly and clearly, in a natural Indian English accent: \"Delivered this morning, invoice and all. These will be gone by Sunday.\" His lips shape every word in time with the voice; a gentle, natural expression with small natural head movements; no laughing, no exaggerated mouth movements; his eyes stay on the camera. Behind him, a delivery van and a busy neighbourhood lane in daylight. Soft, natural, motivated light. Photorealistic cinematic footage, sharp focus on the face. Audio: his cheerful, warm voice, close and clear, traffic and voices of the lane in the background, no music.",
+ "model": "LTX 2.5 Fast (local), audio generated with the picture",
+ "resolution": "720p",
+ "duration": 6,
+ "fps": 24,
+ "aspectRatio": "16:9",
+ "cameraMotion": "static",
+ "audio": true,
+ "seed": 211205,
+ "loras": [],
+ "image": "img11/t3c-shopkeeper.png",
+ "ltx_desktop": "1.2.7",
+ "minutes": 9.5,
+ "cost_usd": 0,
+ "use": "SC-211 t3-shopkeeper",
+ "shipped": "the LTX output re-encoded for the repository (H.264 crf 20, AAC 160k); the original stays in src/clips/talk11/",
+ "derived_from": "clips/talk11/t3-shopkeeper.mp4"
+}
