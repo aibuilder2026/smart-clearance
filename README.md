@@ -1,3 +1,8 @@
+> [!IMPORTANT]
+> **!!! IMPORTANT !!!** How to run the journey demos, step by step, and the sample data they use are in
+> **[DEMO.md](DEMO.md)**. The files themselves are in [`demoDataSet/`](demoDataSet/). The sign-in credentials are
+> shared separately, with the submission: every account in the demo uses the same password.
+
 # Smart-Clearance
 
 An agentic near-expiry stock router for Indian FMCG brands, built for the Google AI Hackathon 2026 (Retail &
@@ -15,7 +20,7 @@ from a console.
 | The guided demo | [smartclearance-demo.web.app](https://smartclearance-demo.web.app) | the workspace app's stub, in the browser |
 | backend-api, the platform API | Cloud Run in `asia-south1`, Cloud SQL for PostgreSQL 18 | live |
 | The agents service | Cloud Run, Gemini on Vertex AI, Pub/Sub | live |
-| The design prototypes | [Claude Design](#documentation) | in-browser mocks |
+| The design prototypes | [`design3/`](design3/README.md), served locally | in-browser mocks |
 
 Every company, person and figure in the product is fictional. Munchly Foods is the story's client.
 
@@ -36,19 +41,18 @@ Every company, person and figure in the product is fictional. Munchly Foods is t
 | Document | What it covers |
 | --- | --- |
 | [PRODUCT.md](PRODUCT.md) | The product: who uses it and for what, the story's batches and their figures, every surface, the principles and positioning. |
-| [DEMO.md](DEMO.md) | How the prototype is demoed: the guided demo's route map, the live workspace's three journeys (chips sold through, Mango Drink sold through, food left at the godown), the console's controls, and how Reset journey makes a live demo repeatable. |
+| [DEMO.md](DEMO.md) | How a judge tries it: the guided demo, then the live apps step by step with screenshots from the production recordings (`docs/demo/`): the Mango Drink's happy path, the Masala Chips' sad path destroyed against evidence, and the console. Each step says which file of the demo data set to use. |
+| [demoDataSet/README.md](demoDataSet/README.md) | The demo data set, by journey: the carton label photos with their barcodes and QR codes, the staff sale's UPI receipt, the destruction's photos at the godown and the landfill, the certificate's signatures, and a first stock export for a new client. |
 | [TESTING.md](TESTING.md) | How every test is run: the gates, the a11y, e2e and parity suites, the live tests, the journey suites and the agents' evals, with the scripts, what each needs first, and which journeys to cover. |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | How it is built: the system on Google Cloud, every service and technology with its version, a batch's journey request by request, the agents and their Gemini models, backend-api, events and the live stream, the data, identity, the cloud, delivery, testing, decisions and known gaps. Its pictures are the Lucidchart diagrams (`docs/architecture/`), with Mermaid for the code's own structure. |
 | [DESIGN.md](DESIGN.md) | Design system v3: tokens, type, colour, components, motion and imagery. |
 | [AGENTS.md](AGENTS.md) | The repository's layout, commands, rules and tooling, for people and coding agents. |
-| [CLAUDE.md](CLAUDE.md) | Claude Code specifics, and the record of every change by issue. |
-| [design3/README.md](design3/README.md) | The prototypes, their build and the hosted copies. |
+| [design3/README.md](design3/README.md) | The prototypes and their build. |
 | [frontend/README.md](frontend/README.md) | The SvelteKit workspace: its four apps, shared packages, stack, and how it is kept in step with design3. |
 | [backend-api/README.md](backend-api/README.md) | The API, its database, sign-in and roles, the journey, the contract, the synthetic world, the cloud. |
 | [agents/README.md](agents/README.md) | The agents: their pipelines, models, events, PDFs, tests and evals. |
 | [infra/README.md](infra/README.md) | Every cloud resource, its cost and what protects it; CI's keyless deploy. |
 | `docs/` | Journey Map v4.1 (`dobara-journey-map.html`, the source of every figure), the story (v6), the architecture as built (HTML, PDF and draw.io), the walkthrough. |
-| Hosted design pages | [design system](https://claude.ai/design/p/909d23bb-bd3c-466b-abf8-4eccc7c5881e?file=Smart-Clearance+DS+v3.html), [guided demo](https://claude.ai/design/p/8294ec70-3e6b-4359-8de6-2a3fd056c3b2?file=Smart-Clearance+demo+v3.html), [app](https://claude.ai/design/p/78962e0f-7300-46e4-8be7-ee1cbd101839?file=Smart-Clearance+app+v3.html), [landing page](https://claude.ai/design/p/976c5462-c3c3-4621-80b5-29b3cdda8326?file=Smart-Clearance+site+v3.html), [console](https://claude.ai/design/p/976c5462-c3c3-4621-80b5-29b3cdda8326?file=Smart-Clearance+console+v3.html) |
 | Jira | project SC on [duttaarun2015.atlassian.net](https://duttaarun2015.atlassian.net) |
 
 ## What is in the repository
@@ -118,7 +122,7 @@ python3 -m http.server 8787 --directory design3
 | Landing page | http://127.0.0.1:8787/site/Smart-Clearance%20site%20v3.html |
 | Staff console | http://127.0.0.1:8787/console/Smart-Clearance%20console%20v3.html |
 
-Rebuild after editing any `.jsx` (`./build.sh`); `./dist.sh` bundles the hosted build into `design3/dist/`.
+Rebuild after editing any `.jsx` (`./build.sh`); `./dist.sh` bundles the build into `design3/dist/`.
 
 ### 3. The frontend, on its mocks
 
@@ -257,7 +261,7 @@ For only the guided demo or the prototypes, nothing but `corepack pnpm dev:demo`
 | Re-export the API's OpenAPI after a contract change | `backend-api/scripts/contracts.sh` |
 | Production's data against local's (read-only) | `backend-api/scripts/sync.sh` |
 
-Demoing, and Reset journey in full: [DEMO.md](DEMO.md).
+Demoing step by step, with the demo data set, and what Reset journey keeps: [DEMO.md](DEMO.md).
 
 ## Tests
 
@@ -454,9 +458,9 @@ The rules are in [AGENTS.md](AGENTS.md). In short:
 - Every change has a Jira key in project SC: branch `SC-<n>-<slug>` from `main`, commits `SC-<n>: <subject>`, pull
   requests `[SC-<n>] <title>`. Never commit on `main`. Pull requests merge with a merge commit, and the branch is
   deleted.
-- Every new UI or UX change is designed first: two or three options on a review board in the surface's Claude Design
-  project, saved under `design3/designs/SC-<n>/`; only the option the maintainer picks is built, in design3 first and
-  then ported to `frontend/`.
+- Every new UI or UX change is designed first: two or three options on a review board, saved under
+  `design3/designs/SC-<n>/`; only the option the maintainer picks is built, in design3 first and then ported to
+  `frontend/`.
 - The frontend implements design3, and tests hold it there: ported CSS stays verbatim, generated files are
   regenerated and never edited, images are referenced in place.
 - WCAG 2.2 AA throughout, with every component the apps use scanned, and every animation stopping within five

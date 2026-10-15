@@ -2802,4 +2802,44 @@
     - `landing-demo/sales-film/smart-clearance-sales-film-v2-2026-10-15_11-40-29.mp4` (crf 17, 489 MB), its 720p copy, a phone preview (28.9 MB) and the captions;
     - in `design3/designs/SC-211/media/`: the 1080p copy (two passes, 93.0 MB), 720p, the captions, a GIF of the agents, the talking clips and their keyframes with sidecars; the pipeline and its README.
   - **The spend:** nothing.
+- **SC-212** (PR #192, merged): the demo data set, and DEMO.md rewritten as a judge's step-by-step guide, asked for by the maintainer.
+  - **The request:** "create a folder demoDataSet and put in it the data used in the application for happy and sad path, things like pictures of barcode, landfill and signatures", by journey; DEMO.md rewritten "proper and keep it simple": how a judge simulates the scenarios, step by step, with screenshots from the app, the data set first, each step saying when to use what, made from the live walkthrough recordings.
+  - **`demoDataSet/`**, by journey, each image with its sidecar, and a README naming each file, the step that uses it and its original:
+    - the happy path, the Mango Drink MF-2410-118 at Lakshmi Agencies: the label photo, the staff sale's receipt LA/SR/26-27/0002, the signatures and stamps on its papers, and, for packets left, the 248-packet evidence and Deccan Green Waste Management's four signers;
+    - the sad path, the Masala Chips MF-2409-117 at Rakesh Traders: the label photo and two that Vision should refuse (MF-2409-171, the batch number taped over), the 540-packet evidence, the certificate's four signers with Orange City Enviro Services' seal, and the signatures and stamps on its papers;
+    - the console: a new client's first stock export (the Admin and console suite's rows) and Munchly's own.
+  - **DEMO.md**, for judges:
+    - the data set first;
+    - the apps and their sign-ins, with the password coming with the submission, never in the repository;
+    - three browser sessions;
+    - the guided demo;
+    - one reset that flags both batches (Setup, Rakesh's permission, the Watcher);
+    - journey 1 in 11 steps and journey 2 in 12, each naming who acts, where, and which file to use;
+    - the console in 5 steps;
+    - when you finish, and known limits.
+  - **The screenshots** (`docs/demo/`, 66 WebP, 2.9 MB):
+    - each step's moment was found in the 2560 × 1440 recordings of 13 Oct (SC-201, SC-202, SC-204) by matching its run's still, then cropped to the acting device's screen at full size;
+    - a few moments between steps were taken too: the permission card, the order button, the receipt upload, the bid, Issue from Tally, the empty evidence form;
+    - the guided demo's route map was captured from smartclearance-demo.web.app.
+  - **What a judge can and can't do, found on the way:**
+    - a shop orders up to 4 times its own 14-day sales, so the Mango Drink's 58-shop scheme fills only when most shops order (in the recording, the other 50 ordered through the API). Alone, a judge orders as a few shops and closes the window, and the packets left are destroyed on expiry day;
+    - the sad path is reproducible as recorded: two shops at 24 packets each leave 540, the count the evidence is made for, as long as the lot is won before the window closes (otherwise the shortfall moves onto the lot).
+  - **Also:** README's documents table and AGENTS.md's layout name the data set.
+  - **Checks:** every link, anchor, image and data set path in DEMO.md and the data set's README resolves, and all 66 screenshots are used. No app change.
+- **SC-213** (PR #193, merged): README.md, for judges, asked for by the maintainer.
+  - **At the very top:** an IMPORTANT alert, before the title. It says how to run the journey demos, step by step, and the sample data they use are in DEMO.md, with the files in `demoDataSet/`. It also says the sign-in credentials are shared separately with the submission, one password for every account in the demo.
+  - **Removed:**
+    - the documentation table's CLAUDE.md row;
+    - its "Hosted design pages" row (the Claude Design links);
+    - every other Claude Design reference. The design prototypes' row now points at `design3/`, served locally; the design3 README's row, the `dist.sh` line and the design-first rule no longer name Claude Design or its hosted copies.
+  - **Checks:** every relative link and anchor in README.md resolves.
+- **SC-214** (PR #194, merged): DEMO.md pictures the cast, asked for by the maintainer ("pictorially can we portrait all the demo characters, the Munchly company and its retail and supply chain and what each role is").
+  - **The picture** (`docs/demo/cast-and-supply-chain.webp`, 2000 × 2626), drawn from the app's own portraits and 3D renders in design system v3's light colours and type, three tiers top to bottom:
+    - **the organisations:** Munchly Foods (the brand, Pune) with Priya, supply chain operator, and Arjun, workspace admin; beside it Smart-Clearance with Neha in the console, and the agents in the order they work, Priya's yes among them;
+    - **the distributors:** Lakshmi Agencies (Hyderabad, the Mango Drink, journey 1) and Rakesh Traders (Nagpur, the Masala Chips, journey 2), each with its godown, its batch and its owner's part;
+    - **each journey's exits,** in the app's channel colours: the kiranas, the staff sale and Feeding India's Meera for the Mango Drink; the kiranas, Agrawal Wholesale on ExpireSoon and the authorised waste agency for the chips.
+
+    Text in a channel colour takes its darker ink, 5.8:1 or better on white (the impeccable hook flagged the green, orange and green tag at first). The labels are in sentence case with a small colour chip, and the cards carry no side stripe (the hook's all-caps and side-tab findings). Its source is `docs/demo/source/cast-and-supply-chain.html`, rendered in Chrome at 1000 px and a device scale factor of 2.
+  - **DEMO.md:** a new section, "Meet the cast", after the data set: the picture, a who's-who table with each person's portrait (from `design3/system/img/people/`, in place), organisation, role and journey, and the agents in order.
+  - **Checks:** every link, anchor and image in DEMO.md resolves, and all 67 images in `docs/demo/` are used. AGENTS.md's layout names the picture.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
