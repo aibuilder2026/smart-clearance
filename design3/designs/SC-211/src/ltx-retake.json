@@ -1,0 +1,22 @@
+[
+ {
+  "name": "tb-brand-head-b",
+  "image": "img11/tb-brand-head.png",
+  "duration": 8,
+  "seed": 211302,
+  "resolution": "720p",
+  "camera": "static",
+  "audio": true,
+  "prompt": "A medium close-up of an Indian man in his fifties with short salt-and-pepper hair and a trimmed grey beard, in a white shirt and a navy blazer. He looks straight into the camera lens and says, slowly and clearly in English with an Indian accent: \"We set the rules once. The agents do the legwork, and nothing moves without our yes.\" Calm, confident, natural delivery, his lips shaping each word, no laughing. Behind him, a bright modern office with glass walls, softly out of focus. Static camera. Photorealistic cinematic footage. Audio: his warm, clear baritone voice, a quiet office, no music."
+ },
+ {
+  "name": "tb-brand-head-c",
+  "image": "img11/tb-brand-head.png",
+  "duration": 8,
+  "seed": 211303,
+  "resolution": "720p",
+  "camera": "static",
+  "audio": true,
+  "prompt": "A medium close-up of an Indian man in his fifties with short salt-and-pepper hair and a trimmed grey beard, in a white shirt and a navy blazer. He looks straight into the camera lens and says, slowly and clearly in English with an Indian accent: \"We set the rules once. The agents do the legwork, and nothing moves without our yes.\" Calm, confident, natural delivery, his lips shaping each word, no laughing. Behind him, a bright modern office with glass walls, softly out of focus. Static camera. Photorealistic cinematic footage. Audio: his warm, clear baritone voice, a quiet office, no music."
+ }
+]

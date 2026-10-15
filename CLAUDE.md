@@ -2722,7 +2722,7 @@
   - **Found on the way:** the recovery landed at the whip; the kicker could not be read over bright factories; the exits' counts ran off the frame; a light weight's last glyph was clipped (`text_sprite` now cuts to its ink); the fast-forward badge read 61× where the window plays 52×.
   - **Checks:** 238.72 s, −14.0 LUFS, −1.5 dBTP; windows between 0.47× and 1.28× (the labelled fast-forward aside); the note-card and ring scans as cut 6's; both QR codes read back; 26 of 31 lines word for word from the final mix.
   - **Where:** `working-demo/smart-clearance-working-demo-2026-10-14_23-55-28.mp4` (crf 17), its 720p copy and captions (the first export, `…_21-10-50-superseded`); the crf-21 1080p, 720p and captions, the new keyframes and the bin's clip with their sidecars, the pipeline and its README in `design3/designs/SC-209/`. The spend: nothing (all local; SC-187's music reused).
-- **SC-210** (In Review, branch `SC-210-landing-sales-film`): the sales film, 4 min 57.3 s, under the maintainer's 7-minute limit. The landing page's demo film (SC-187) reworked and married with the working demo (SC-205 to SC-209).
+- **SC-210** (PR #191, merged; Done): the sales film, 4 min 57.3 s, under the maintainer's 7-minute limit. The landing page's demo film (SC-187) reworked and married with the working demo (SC-205 to SC-209).
   - **The request:**
     - cinematic, full of motion and effects, and a sales film of the end-to-end journey rather than an app demo;
     - sharp, with no glitches or hallucinations;
@@ -2765,6 +2765,43 @@
     - `landing-demo/sales-film/smart-clearance-sales-film-2026-10-15_03-46-58.mp4` (crf 17) and its 720p copy;
     - the crf-21 1080p (83.9 MB), 720p and captions, the talking scenes and the score's cues with their sidecars, the pipeline and its README in `design3/designs/SC-210/`.
   - **The spend:** about $28 of the $35 cap: Veo $25.60, Lyria $0.72, the narrator about $0.6 and the reviews under $1.
+- **SC-211** (PR #195, merged; Done): the sales film v2, 6 min 50.1 s (410.08 s), inside the maintainer's 400 to 420 s. Everything new made on this Mac; no Google model called.
+  - **The request** (on SC-210's film):
+    - nothing animating in the top left of the opening, and more motion;
+    - the factory worker's white-screen tablet at about 50 s fixed;
+    - the agents as a graph like the app's, cinematic, with sound, more content and pop-overs about each agent, the brand's rules as guardrails and the human approvals as gates;
+    - the people who speak looking at the camera, as the food bank volunteer does, better transitions out of their scenes, more dialogue with lip sync;
+    - 400 to 420 s; no "Live on production" tag;
+    - only local tools (Qwen Image, LTX, ffmpeg, Remotion, local audio); stunning light and cinematic transitions; the whole journey; "hosted on Google's cloud, the latest Gemini models"; end-to-end telemetry and audits.
+  - **Added during the work:** sound and click effects in the graph; a pop-up of what a person sees whenever they look at a screen; the app as a PWA, installable on any device; the installed ffmpeg skills used throughout.
+  - **The opening:** a slit of light opens on the godown; the wide frame's bars hold while a scanner tags each carton's days to its date; the bars draw back as the camera dives into the label. The calendar card is gone.
+  - **The tablet:** the biscuit factory's tablet shows the brand's workspace watchlist, painted only over the screen's white so the gloved finger stays in front (`src/tablet11.py`).
+  - **The agents** (`src/graph11/`, HTML captured frame-exact on the narrator's cues):
+    - a spark runs the team's path before it wakes, and ten agents light, hosted on Google's cloud with the latest Gemini models;
+    - the camera flies to each agent, the pointer clicks it open, and a card gives its job, the rule it keeps and its model;
+    - the brand's rules are laid on as guardrails, their shields landing on the agents they bind;
+    - the plan stops at the lead's Approve, clicked, and a destruction at the second yes;
+    - the audit trail fills, every request traced, ready for an auditor;
+    - every event and click has its sound.
+  - **The people:** nine talking scenes made by LTX 2.5 Fast at 720p with their voices, from Qwen-Image 2.1 edits of the working demo's keyframes, each speaker turned to the lens, plus SC-210's food bank volunteer. New: the brand's head, a kirana owner, the platform team, and the distributor of the opening, weeks later ("We ended whole, to the rupee"). Each scene starts and ends with the person settling, and is left on a whip.
+  - **New scenes:** every team's part (`src/teams11/`); installed as an app on a laptop, a tablet and a phone, every alert a notification (`src/pwa11/`); one audit trail, exported (`src/audit11/`); the platform watching itself, a model call timing out, alerted and recovered (`src/ops11/`, figures marked illustrative).
+  - **Pop-ups** (`ScreenPop`, `PhonePopAt`): the dock's inbound check, the plan's notification at dawn, the label photo sent and read, the credit note on the distributor's laptop, the impact ledger the two read at the close.
+  - **Light and hand-overs:** a transition chosen for every cut (whip, push-through, light leak, flash, dip, focus pull) and a bloom on the brightest shots.
+  - **The voice:** Maya1 (local), the working demo's warm Indian storyteller, three takes a line, picked by Whisper's read-back; the line read as "badge" retaken until it read "batch".
+  - **The sound,** on the stitch-videos-ffmpeg skill's chain: the voices to −16 LUFS and the bed to −24 LUFS from measured passes; the bed ducked by `sidechaincompress` on the voice's held envelope (about 12 dB, 18 in the presence band); `amix` without normalising; two-pass loudnorm. The score is SC-210's Lyria cues, reused.
+  - **Found on the way:**
+    - Qwen's edits garbled two keyframes' carton labels; they were cleaned to plain cardboard;
+    - LTX's first take of the brand's head was gibberish, the second said "our eyes"; the third reads back word for word;
+    - LTX pushes its camera in even when told to hold still, so the compositor's own push on talking scenes is off;
+    - light-leak dissolves out of talking scenes ghosted one face through another; every exit is now a whip;
+    - the dawn notification covered the woman's face, the dock card named the wrong product, and the first verify-screen frames carried the recording stage's note card, which names a client; all moved or replaced;
+    - `parts.LEAD` shadowed the lead's role tag; the graph's events were named `type`, not `kind`, and went silent until the mixer read both;
+    - the export's first passes lacked `-pix_fmt yuv420p` for the grade's 4:4:4.
+  - **Checks:** 10,252 frames on every output, sound within 11 ms; −14.07 LUFS, −1.38 dBTP; 43 of 48 lines read back word for word (the rest Whisper's spellings); every talking scene's sound within 5 ms of its picture; contact sheets every 3 s; every pop-up, transition and talking scene as stills.
+  - **Where:**
+    - `landing-demo/sales-film/smart-clearance-sales-film-v2-2026-10-15_11-40-29.mp4` (crf 17, 489 MB), its 720p copy, a phone preview (28.9 MB) and the captions;
+    - in `design3/designs/SC-211/media/`: the 1080p copy (two passes, 93.0 MB), 720p, the captions, a GIF of the agents, the talking clips and their keyframes with sidecars; the pipeline and its README.
+  - **The spend:** nothing.
 - **SC-212** (PR #192, merged): the demo data set, and DEMO.md rewritten as a judge's step-by-step guide, asked for by the maintainer.
   - **The request:** "create a folder demoDataSet and put in it the data used in the application for happy and sad path, things like pictures of barcode, landfill and signatures", by journey; DEMO.md rewritten "proper and keep it simple": how a judge simulates the scenarios, step by step, with screenshots from the app, the data set first, each step saying when to use what, made from the live walkthrough recordings.
   - **`demoDataSet/`**, by journey, each image with its sidecar, and a README naming each file, the step that uses it and its original:
@@ -2805,6 +2842,24 @@
     Text in a channel colour takes its darker ink, 5.8:1 or better on white (the impeccable hook flagged the green, orange and green tag at first). The labels are in sentence case with a small colour chip, and the cards carry no side stripe (the hook's all-caps and side-tab findings). Its source is `docs/demo/source/cast-and-supply-chain.html`, rendered in Chrome at 1000 px and a device scale factor of 2.
   - **DEMO.md:** a new section, "Meet the cast", after the data set: the picture, a who's-who table with each person's portrait (from `design3/system/img/people/`, in place), organisation, role and journey, and the agents in order.
   - **Checks:** every link, anchor and image in DEMO.md resolves, and all 67 images in `docs/demo/` are used. AGENTS.md's layout names the picture.
+- **SC-216** (PR #196, merged; Done): the landing page plays SC-211's sales film, from YouTube.
+  - **The request:** "Lets upload this to youtube and replace the one on landing page, use chrome browser claude plugin to do it completely on your own." The theatre's film, its words and its label change, not its design, so no design round.
+  - **On YouTube:** [youtu.be/DT_4G2txLF4](https://youtu.be/DT_4G2txLF4), "Smart-Clearance: the 7-minute demo", unlisted on the maintainer's channel, uploaded end to end through Claude in Chrome:
+    - Studio's own page fetched the 410 MB YouTube copy from a local CORS server (SC-187's `serve.py`) onto its upload input;
+    - the description carries the 13 chapters, and the English (India) captions are the film's own 48 cues;
+    - not made for kids, AI use disclosed, embedding allowed;
+    - YouTube's oEmbed answers 200.
+
+    SC-187's cut 3 (youtu.be/5Z9-32Fuwh4) stays on YouTube as it was.
+  - **The chapters and words:** `design3/designs/SC-211/src/transcript11.py` writes them from the film's own timeline (the cuts `shots11.build()` lays out, the captions `mix11.py` writes): `youtube/transcript.json`, `youtube-description.txt` and `captions.srt`, and the theatre's `design3/site/assets/media/demo-film.json`. 13 chapters, from The waste to The close, and 48 lines, each person who speaks named by role only.
+  - **The theatre** (design3 `site.jsx` first, then the port's `media.ts` and `env.ts`): the id `DT_4G2txLF4` (the default of `PUBLIC_DEMO_FILM`), "Watch the 7-minute demo", "The 7-minute demo", "The whole journey, end to end", 6:50. The poster stays, since it is the office scene the film closes on; its sidecars say so. DEMO.md's film row follows.
+  - **No client on the landing page, the film included:** SC-211's film names none, so AGENTS.md's one exception (SC-187's film) is gone, and the film's unit test now checks every line of its words, not only the chapter titles.
+  - **Checks:**
+    - the frontend gate passes (api 83, core 408, admin 22, console 2, demo 9, workspace 115);
+    - design3's `dist/` is rebuilt, and only `site.js` changes;
+    - the landing page's build, played in the browser pane: every Watch reads "Watch the 7-minute demo", nothing of YouTube loads before it, and the theatre opens on `youtube-nocookie.com/embed/DT_4G2txLF4` with 13 chapters. A chapter jump lands on its scene, the words read 48 lines, Escape gives focus back to Watch, and the console shows no errors;
+    - YouTube's watch page offers 1080p and the English (India) captions;
+    - the keyboard spec follows the 13 chapters; the browser suites were not run (SC-55).
 - **SC-215** (In Review, branch `SC-215-fill-scheme`): the console stands in for a demo workspace's kiranas, so a judge can run the Mango Drink's happy path alone.
   - **The request:** a judge can't fill the Mango's scheme: each kirana orders only a few dozen packets, and the scheme goes to 58 shops; in the recording, 50 ordered through the API. "Can we take this up and update the DEMO.md with proper screenshots, make sure you locally run the playwright automation suite (just for Mango suite) end to end locally for this use case and then raise PR."
   - **Design first:** three options on one board in platform v3, `SC-215 design review.html`, each built on the console itself:

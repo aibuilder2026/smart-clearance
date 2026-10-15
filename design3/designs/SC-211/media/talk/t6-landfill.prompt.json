@@ -1,0 +1,19 @@
+{
+ "prompt": "A locked-off medium shot: medium shot of a man in his sixties in a light blue checked shirt with reading glasses on his head, holding a tablet against his chest with its screen facing him, looks straight into the camera lens and says calmly and clearly, in a natural Indian English accent: \"All four signatures. Now it's on the record.\" His lips shape every word in time with the voice; a gentle, natural expression with small natural head movements; no laughing, no exaggerated mouth movements; his eyes stay on the camera. Beside him an officer and two witnesses; behind them, the edge of a municipal landfill under a hazy evening sky. Soft, natural, motivated light. Photorealistic cinematic footage, sharp focus on the face. Audio: his calm, relieved voice, close and clear, a light wind and a distant excavator, no music.",
+ "model": "LTX 2.5 Fast (local), audio generated with the picture",
+ "resolution": "720p",
+ "duration": 6,
+ "fps": 24,
+ "aspectRatio": "16:9",
+ "cameraMotion": "static",
+ "audio": true,
+ "seed": 211207,
+ "loras": [],
+ "image": "img11/t6-landfill.png",
+ "ltx_desktop": "1.2.7",
+ "minutes": 9.7,
+ "cost_usd": 0,
+ "use": "SC-211 t6-landfill",
+ "shipped": "the LTX output re-encoded for the repository (H.264 crf 20, AAC 160k); the original stays in src/clips/talk11/",
+ "derived_from": "clips/talk11/t6-landfill.mp4"
+}

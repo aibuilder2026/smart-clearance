@@ -299,7 +299,7 @@ const YOUTUBE_STUB = `
 test('keyboard · Watch opens the demo film over the page, keeps focus in it, ends on the guided demo, and Escape gives it back (SC-164)', async ({
 	page
 }, testInfo) => {
-	const watch = page.locator('.film-ctas').getByText('Watch the 6-minute demo');
+	const watch = page.locator('.film-ctas').getByText('Watch the 7-minute demo');
 	test.skip(
 		(await watch.evaluate((e) => e.tagName)) !== 'BUTTON',
 		'this build has no film id (PUBLIC_DEMO_FILM): Watch opens the guided demo'
@@ -314,13 +314,13 @@ test('keyboard · Watch opens the demo film over the page, keeps focus in it, en
 
 	await watch.focus();
 	await page.keyboard.press('Enter');
-	const theatre = page.getByRole('dialog', { name: 'The 6-minute demo' });
+	const theatre = page.getByRole('dialog', { name: 'The 7-minute demo' });
 	await expect(theatre).toBeVisible();
 	expect(await inDialog(page), 'the theatre takes focus').toBe(true);
 	await expect(theatre.locator('iframe[title="Smart-Clearance demo film"]')).toHaveCount(1);
-	await expect(theatre.getByRole('navigation', { name: 'Chapters' }).getByRole('button')).toHaveCount(10);
+	await expect(theatre.getByRole('navigation', { name: 'Chapters' }).getByRole('button')).toHaveCount(13);
 	await theatre.getByText('Read the film instead').click();
-	await expect(theatre.locator('.fp-read-in section')).toHaveCount(10);
+	await expect(theatre.locator('.fp-read-in section')).toHaveCount(13);
 	const findings: Finding[] = await scan(page, 'demo film open');
 	for (let i = 0; i < 16; i += 1) await page.keyboard.press('Tab');
 	expect(await inDialog(page), 'Tab stays in the theatre').toBe(true);

@@ -72,7 +72,7 @@ but nobody acts on theirs in the demo.
 | --- | --- | --- | --- |
 | **The guided demo** | [smartclearance-demo.web.app](https://smartclearance-demo.web.app) | none | 5 to 18 minutes |
 | **The live apps** | the console, [smartclearance-console.web.app](https://smartclearance-console.web.app); Munchly's workspace, [munchly-smartclearance.web.app](https://munchly-smartclearance.web.app) | email and password | 20 to 30 minutes a journey |
-| **The demo film** | Watch on [smartclearance.web.app](https://smartclearance.web.app), or [youtu.be/5Z9-32Fuwh4](https://youtu.be/5Z9-32Fuwh4) | none | 6 minutes |
+| **The demo film** | Watch on [smartclearance.web.app](https://smartclearance.web.app), or [youtu.be/DT_4G2txLF4](https://youtu.be/DT_4G2txLF4) | none | 7 minutes |
 
 The screenshots below are from the recorded runs of the two journeys and the console on production, on 13 Oct 2026.
 Each is cropped to the screen of the person acting, on the device they used:
