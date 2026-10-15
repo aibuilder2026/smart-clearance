@@ -17,8 +17,8 @@
     return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
   };
   const Q215 = new URLSearchParams(location.search);
-  const OPT = (Q215.get("opt") || "a").toLowerCase();
-  const STATE = (Q215.get("state") || "main").toLowerCase();
+  const OPT = (Q215.get("opt") || window.SC215_OPT || "a").toLowerCase();
+  const STATE = (Q215.get("state") || window.SC215_STATE || "main").toLowerCase();
   const SCHEME = { ref: "MF-2410-118", sku: "Mango Drink 200 ml", dist: "Lakshmi Agencies", shops: 58, answered: 2, placed: 52, units: 1372, fill: { shops: 50, units: 1320 }, closes: "2026-10-04T09:04:00+05:30" };
   const realJourney = P.journey;
   P.journey = (st, id, wall) => {

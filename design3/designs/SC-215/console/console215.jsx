@@ -25,12 +25,13 @@
   const hhmm = () => { const d = new Date(); return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
 
   /* ---------- SC-215: the mockup's moment ---------- */
-  // ?opt=a|b|c picks the option, ?state=main|ask|filled the moment. Munchly's journey stands where a judge leaves the
+  // ?opt=a|b|c picks the option, ?state=main|ask|filled the moment (or window.SC215_OPT and SC215_STATE, on the
+  // published copies, which take no query). Munchly's journey stands where a judge leaves the
   // Mango Drink: the plan approved, the Hindi scheme sent to Lakshmi Agencies' 58 kiranas, two of them ordered on the
   // phone (52 packets). The other shops the story has ordering are 50, for 1,320 packets: the fill places those, each as
   // its own shop with its own tax invoice, and the scheme closes full. Figures are the story's (data.js HYDERABAD).
   const Q215 = new URLSearchParams(location.search);
-  const OPT = (Q215.get("opt") || "a").toLowerCase(); const STATE = (Q215.get("state") || "main").toLowerCase();
+  const OPT = (Q215.get("opt") || window.SC215_OPT || "a").toLowerCase(); const STATE = (Q215.get("state") || window.SC215_STATE || "main").toLowerCase();
   const SCHEME = { ref: "MF-2410-118", sku: "Mango Drink 200 ml", dist: "Lakshmi Agencies", shops: 58, answered: 2, placed: 52, units: 1372, fill: { shops: 50, units: 1320 }, closes: "2026-10-04T09:04:00+05:30" };
   const realJourney = P.journey;
   P.journey = (st, id, wall) => {
