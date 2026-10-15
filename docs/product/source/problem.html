@@ -1,0 +1,127 @@
+<!doctype html>
+<!--
+  PRODUCT.md, "The problem" (SC-224). The Mango Drink's write-off as money.js works it out (stories.json: mango.plan.writeOff),
+  the quick-commerce gates as the console sets them. Rendered by render.mjs; every company and figure is fictional.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=1000">
+<title>The problem: a near-expiry batch has one easy exit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Geist:wght@300..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="product.css">
+<style>
+  .path { display: grid; gap: 0; }
+  .step { display: grid; grid-template-columns: 40px 1fr; gap: 12px; position: relative; padding-bottom: 14px; }
+  .step:not(:last-child)::after { content: ""; position: absolute; left: 19px; top: 38px; bottom: 2px; width: 2px; background: var(--line-2); }
+  .step .n { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; background: var(--sunken);
+    font: 700 16px/1 "Bricolage Grotesque", sans-serif; color: var(--fg-2); }
+  .step.no .n { background: var(--red-soft); color: var(--red-text); }
+  .step.bin .n { background: var(--red); color: #fff; }
+  .step b { display: block; font-size: 15px; }
+  .step p { color: var(--fg-2); font-size: 13px; margin-top: 2px; }
+  .gates { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .bin-card { display: grid; gap: 12px; align-content: start; }
+  .bin-head { display: flex; gap: 14px; align-items: center; }
+  .bin-head img { width: 84px; height: 84px; object-fit: contain; }
+  .total { font-size: 46px; line-height: 1; color: var(--red-text); }
+  .stack { display: flex; height: 22px; border-radius: 8px; overflow: hidden; }
+  .stack span { display: block; height: 100%; }
+  .lines { display: grid; gap: 7px; }
+  .lines div { display: grid; grid-template-columns: 14px 1fr auto; gap: 10px; align-items: baseline; font-size: 13.5px; }
+  .lines div .num { font-size: 14.5px; }
+  .lines .tot { border-top: 1px solid var(--line-2); padding-top: 8px; font-weight: 650; }
+  .why { display: grid; grid-template-columns: 30px 1fr; gap: 6px 10px; align-content: start; align-items: center; }
+  .why p { grid-column: 1 / -1; }
+  .why .ic { display: grid; place-items: center; }
+  .why .ic svg { width: 24px; height: 24px; stroke: var(--red-text); }
+  .why p { font-size: 12.8px; color: var(--fg-2); }
+  .kg { display: flex; gap: 14px; align-items: center; background: var(--surface-2); border-radius: 14px; padding: 10px 12px; }
+  .kg .big { font-size: 26px; font-weight: 720; color: var(--clay); white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="poster">
+  <header>
+    <h1 style="margin-top:0">A near-expiry batch has one easy exit today: <span class="red">the bin</span>.</h1>
+    <p class="lede">Packaged food that quick-commerce will no longer take still has days, sometimes weeks, of life. In India it mostly waits at the distributor's godown, comes back as an expiry claim, and is destroyed. The brand pays for the stock, the disposal, the EPR, and loses the GST input credit on top.</p>
+  </header>
+
+  <div class="grid2" style="grid-template-columns: 1.05fr 1fr;">
+    <section class="card">
+      <h2 style="margin-bottom: 14px;">What happens to a short-dated batch today</h2>
+      <div class="path">
+        <div class="step"><span class="n">1</span><div><b>Made, shipped, bought by the distributor</b><p>Munchly Foods' Mango Drink, 1,580 packs at Lakshmi Agencies' godown in Hyderabad, bought at the dealer price.</p></div></div>
+        <div class="step no"><span class="n">2</span><div><b>Quick commerce says no</b><p>Its warehouses take only long-dated stock. This batch has 22 days left.</p>
+          <div class="gates"><span class="chip red">Blinkit · 90+ days left</span><span class="chip red">Zepto, Instamart · 60% of life left</span></div></div></div>
+        <div class="step no"><span class="n">3</span><div><b>It sits, and the date comes closer</b><p>Normal sales cannot move it in time. Nobody decides where else it could go, batch by batch.</p></div></div>
+        <div class="step no"><span class="n">4</span><div><b>An expiry claim</b><p>The distributor sends it back against the brand's return policy, or writes it off himself.</p></div></div>
+        <div class="step bin"><span class="n">5</span><div><b>Destroyed</b><p>Food that could have been sold or eaten goes to landfill, and the loss lands on the brand's books.</p></div></div>
+      </div>
+    </section>
+
+    <section class="card bin-card">
+      <div class="bin-head">
+        <img src="../../../design3/system/img/bin-plain.webp" alt="">
+        <div>
+          <span class="small subtle">What the bin costs Munchly, for one batch</span>
+          <div class="num total">−<span class="inr">22,657</span></div>
+          <span class="small muted">1,580 packs of Mango Drink, ₹14.34 a pack</span>
+        </div>
+      </div>
+      <div class="stack" aria-hidden="true">
+        <span style="width:76.7%; background:#c8372d"></span>
+        <span style="width:3.8%; background:#e08a0b"></span>
+        <span style="width:10.5%; background:#8a5a00"></span>
+        <span style="width:9.0%; background:#7a6f68"></span>
+      </div>
+      <div class="lines">
+        <div><span class="dot" style="background:#c8372d"></span><span>The stock, at Munchly's cost</span><span class="num inr">17,380.00</span></div>
+        <div><span class="dot" style="background:#e08a0b"></span><span>GST input credit reversed (CGST s.17(5)(h))</span><span class="num inr">869.00</span></div>
+        <div><span class="dot" style="background:#8a5a00"></span><span>Disposal by an authorised agency</span><span class="num inr">2,370.00</span></div>
+        <div><span class="dot" style="background:#7a6f68"></span><span>EPR on the packaging</span><span class="num inr">2,038.20</span></div>
+        <div class="tot"><span></span><span>The write-off</span><span class="num inr" style="color:var(--red-text)">22,657.20</span></div>
+      </div>
+      <div class="kg">
+        <span class="big num">339.7 kg</span>
+        <span class="small muted">of food to landfill, and a waste line in the brand's BRSR report under SEBI's Principle 6.</span>
+      </div>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2 style="margin-bottom: 12px;">Why nobody fixes it today</h2>
+    <div class="grid4">
+      <div class="why">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><circle cx="12" cy="6" r="2"/></svg></span>
+        <h3>Demand is scattered</h3>
+        <p>Millions of kiranas, about a lakh of distributors, young clearance marketplaces and licensed food banks. No buyer takes a truckload.</p>
+      </div>
+      <div class="why">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h6"/><path d="m16 16 4 4M20 16l-4 4"/></svg></span>
+        <h3>Every exit has its own rules</h3>
+        <p>Shelf-life gates, the territory the brand protects, what each shop can sell in a fortnight, the days a food bank needs.</p>
+      </div>
+      <div class="why">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg></span>
+        <h3>Days, not weeks</h3>
+        <p>Every day spent deciding is a day off the date. Stock with 22 days left cannot wait for a month-end review.</p>
+      </div>
+      <div class="why">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg></span>
+        <h3>Every move needs paper</h3>
+        <p>Tax invoices, credit notes, the GST credit kept or reversed, the FSSAI checklist, receipts, a destruction certificate, the BRSR line.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <span class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g" x1="8" y1="4" x2="58" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#2fbf7f"/><stop offset=".55" stop-color="#178258"/><stop offset="1" stop-color="#0d5a3e"/></linearGradient></defs><path d="M32 2C9.5 2 2 9.5 2 32s7.5 30 30 30 30-7.5 30-30S54.5 2 32 2Z" fill="url(#g)"/><path d="M43.5 19H27a7 7 0 0 0 0 14h10a7 7 0 0 1 0 14H20.5" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="43.5" cy="19" r="3.4" fill="#0d5a3e" stroke="#fff" stroke-width="2.6"/><circle cx="20.5" cy="47" r="4" fill="#f7c04a"/></svg>Smart-Clearance</span>
+    <span>Figures from the story's Mango Drink, MF-2410-118, worked out by money.js. Disposal and EPR are indicative. Every company is fictional.</span>
+  </div>
+</div>
+</body>
+</html>

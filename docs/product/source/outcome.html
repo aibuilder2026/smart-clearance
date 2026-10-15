@@ -1,0 +1,107 @@
+<!doctype html>
+<!--
+  PRODUCT.md, "What it changes" (SC-224). The two story batches as money.js plans them (stories.json: mango.plan,
+  chips.plan) and the pilot quarter's ledger (journey.json: history.ledger.periods fy27-q2). Rendered by render.mjs;
+  every company and figure is fictional.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=1000">
+<title>What it changes, in the story's own figures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Geist:wght@300..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="product.css">
+<style>
+  .batch { display: grid; gap: 12px; align-content: start; }
+  .bh { display: flex; gap: 12px; align-items: center; }
+  .bh img { width: 64px; height: 64px; object-fit: contain; }
+  .bh b { font-size: 16px; display: block; }
+  .bars { display: grid; gap: 8px; }
+  .bar { display: grid; grid-template-columns: 136px 1fr 108px; gap: 10px; align-items: center; font-size: 13px; }
+  .bar .track { height: 18px; border-radius: 6px; background: var(--sunken); position: relative; overflow: hidden; }
+  .bar .fill { position: absolute; top: 0; bottom: 0; right: 0; border-radius: 6px; }
+  .bar .num { text-align: right; font-size: 15px; }
+  .swing { display: flex; justify-content: space-between; align-items: center; background: var(--primary-soft); border-radius: 14px; padding: 10px 14px; }
+  .swing .big { font-size: 28px; font-weight: 720; color: var(--primary-text); }
+  .swing span.l { color: #0e4a32; font-size: 13px; max-width: 26ch; }
+  .split { display: flex; height: 14px; border-radius: 6px; overflow: hidden; }
+  .split span { display: block; height: 100%; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--fg-2); }
+  .legend span { display: inline-flex; gap: 6px; align-items: center; }
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .facts div { background: var(--surface-2); border-radius: 12px; padding: 8px 10px; }
+  .facts .num { font-size: 18px; display: block; }
+  .facts span { font-size: 12.5px; color: var(--fg-2); }
+  .quarter { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .tile { border-radius: 14px; background: var(--surface-2); padding: 12px 13px; display: grid; gap: 2px; align-content: start; }
+  .tile .num { font-size: 24px; }
+  .tile span { font-size: 12.5px; color: var(--fg-2); }
+  .tile.g { background: var(--primary-soft); } .tile.g .num { color: var(--primary-text); } .tile.g span { color: #0e4a32; }
+</style>
+</head>
+<body>
+<div class="poster">
+  <header>
+    <h1 style="margin-top:0">The same batch, the same days left: <em>the brand recovers the money, the distributor ends whole, and the food is eaten</em>.</h1>
+    <p class="lede">The story's two batches, as Munchly's workspace plans them, and the twelve batches its pilot quarter cleared. Each bar is the brand's profit or loss on the batch: in the bin, and with Smart-Clearance.</p>
+  </header>
+
+  <div class="grid2">
+    <section class="card batch">
+      <div class="bh"><img src="../../../design3/system/img/pack-mango.webp" alt=""><div><b>Mango Drink, 1,580 packs</b><span class="small muted">22 days left · Lakshmi Agencies, Hyderabad</span></div></div>
+      <div class="bars">
+        <div class="bar"><span>In the bin</span><span class="track"><span class="fill" style="width:100%; background:var(--red)"></span></span><span class="num" style="color:var(--red-text)">−<span class="inr">22,657.20</span></span></div>
+        <div class="bar"><span>With Smart-Clearance</span><span class="track"><span class="fill" style="width:2.1%; background:var(--primary)"></span></span><span class="num">−<span class="inr">462.90</span></span></div>
+      </div>
+      <div class="swing"><span class="l">better than the bin, with ₹16,917.10 recovered</span><span class="big num">+<span class="inr">22,194.30</span></span></div>
+      <div class="split" aria-hidden="true"><span style="width:86.8%; background:var(--kirana)"></span><span style="width:9.5%; background:var(--staff)"></span><span style="width:3.7%; background:var(--foodbank)"></span></div>
+      <div class="legend"><span><i class="dot" style="background:var(--kirana)"></i>1,372 to 52 kiranas</span><span><i class="dot" style="background:var(--staff)"></i>150 at the staff sale</span><span><i class="dot" style="background:var(--foodbank)"></i>58 to Feeding India</span></div>
+      <div class="facts">
+        <div><b class="num">339.7 kg</b><span>kept out of landfill</span></div>
+        <div><b class="num">58 meals</b><span>on Feeding India's receipt</span></div>
+      </div>
+    </section>
+
+    <section class="card batch">
+      <div class="bh"><img src="../../../design3/system/img/pack-chips.webp" alt=""><div><b>Masala Chips, 1,360 packets at risk</b><span class="small muted">47 days left · Rakesh Traders, Nagpur</span></div></div>
+      <div class="bars">
+        <div class="bar"><span>In the bin</span><span class="track"><span class="fill" style="width:100%; background:var(--red)"></span></span><span class="num" style="color:var(--red-text)">−<span class="inr">26,329.60</span></span></div>
+        <div class="bar"><span>With Smart-Clearance</span><span class="track"><span class="fill" style="width:0.4%; background:var(--primary)"></span></span><span class="num">+<span class="inr">10.00</span></span></div>
+      </div>
+      <div class="swing"><span class="l">better than the bin, with ₹21,770 recovered</span><span class="big num">+<span class="inr">26,339.60</span></span></div>
+      <div class="split" aria-hidden="true"><span style="width:43.2%; background:var(--kirana)"></span><span style="width:56.8%; background:var(--expiresoon)"></span></div>
+      <div class="legend"><span><i class="dot" style="background:var(--kirana)"></i>588 to 31 kiranas</span><span><i class="dot" style="background:var(--expiresoon)"></i>772 on the clearance marketplace</span></div>
+      <div class="facts">
+        <div><b class="num inr">1,224</b><span>of GST input credit kept</span></div>
+        <div><b class="num inr">0</b><span>left for Rakesh Traders to lose: he ends whole</span></div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card">
+    <div class="row" style="justify-content: space-between; margin-bottom: 12px;">
+      <h2>Munchly's pilot quarter, Q2 FY27: twelve batches cleared</h2>
+      <span class="chip green">7 sold through · 3 destroyed at the godown · 2 donated</span>
+    </div>
+    <div class="quarter">
+      <div class="tile g"><b class="num inr">2,20,384</b><span>recovered, against a would-be write-off of ₹3,04,504</span></div>
+      <div class="tile g"><b class="num inr">2,65,263</b><span>better than the bin across the quarter</span></div>
+      <div class="tile"><b class="num">96.4%</b><span>of the 10,569 packs at risk sold or donated</span></div>
+      <div class="tile"><b class="num inr">16,184</b><span>of GST input credit kept, ₹1,652 reversed</span></div>
+      <div class="tile"><b class="num">1,959.5 kg</b><span>of food kept out of landfill</span></div>
+      <div class="tile"><b class="num">4.9 t</b><span>of CO₂e avoided (indicative)</span></div>
+      <div class="tile"><b class="num">872</b><span>meals through the food banks</span></div>
+      <div class="tile"><b class="num">12 of 12</b><span>batches with every paper drawn, signed and reviewed</span></div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <span class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g" x1="8" y1="4" x2="58" y2="62" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#2fbf7f"/><stop offset=".55" stop-color="#178258"/><stop offset="1" stop-color="#0d5a3e"/></linearGradient></defs><path d="M32 2C9.5 2 2 9.5 2 32s7.5 30 30 30 30-7.5 30-30S54.5 2 32 2Z" fill="url(#g)"/><path d="M43.5 19H27a7 7 0 0 0 0 14h10a7 7 0 0 1 0 14H20.5" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="43.5" cy="19" r="3.4" fill="#0d5a3e" stroke="#fff" stroke-width="2.6"/><circle cx="20.5" cy="47" r="4" fill="#f7c04a"/></svg>Smart-Clearance</span>
+    <span>Every figure worked out by money.js and the ledger; the companies are fictional. Disposal, EPR and CO₂e factors are indicative.</span>
+  </div>
+</div>
+</body>
+</html>
