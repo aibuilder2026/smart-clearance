@@ -4,79 +4,82 @@
    "id": "i01",
    "sec": "intro",
    "text": "Every day, India's food brands write off stock that sells too slowly.",
-   "gap": 0.95
+   "gap": 0.3
   },
   {
-   "id": "i02",
+   "id": "i13",
    "sec": "intro",
-   "text": "Too close to its date for quick commerce, it's destroyed, and its GST credit reversed.",
-   "gap": 0.85
+   "text": "Too close to its date for quick commerce, it's destroyed.",
+   "gap": 0.25,
+   "take": "i13-0.wav"
   },
   {
    "id": "i03",
    "sec": "brand",
    "text": "Smart-Clearance turns that write-off into recovery.",
-   "gap": 0.3
+   "gap": 0.25
   },
   {
    "id": "b91",
    "sec": "brand",
    "text": "Agentic software as a service for the FMCG supply chain: brands, distributors and retailers.",
    "say": "Agentic software as a service for the F M C G supply chain: brands, distributors and retailers.",
-   "gap": 0.3,
+   "gap": 0.25,
    "take": "b91-1.wav"
   },
   {
    "id": "t01",
    "sec": "tech",
    "text": "Under the hood, it's all Google Cloud.",
-   "gap": 0.2
+   "gap": 0.12
   },
   {
    "id": "u02",
    "sec": "tech",
    "text": "Four apps on Firebase, one API on Cloud Run, Cloud SQL as the record.",
-   "gap": 0.2
+   "gap": 0.12
   },
   {
    "id": "u03",
    "sec": "tech",
    "text": "Pub/Sub carries every step; Cloud Scheduler keeps the clock.",
    "say": "Pub Sub carries every step; Cloud Scheduler keeps the clock.",
-   "gap": 0.2
+   "gap": 0.12
   },
   {
-   "id": "u04",
+   "id": "u17",
    "sec": "tech",
-   "text": "Ten agents on Google's ADK read sales from BigQuery and photos from Cloud Storage.",
-   "say": "Ten agents on Google's A D K read sales from BigQuery and photos from Cloud Storage.",
-   "gap": 0.2,
-   "take": "u04-5.wav"
+   "text": "Nine AI agents on Google's ADK read sales from BigQuery and photos from Cloud Storage.",
+   "say": "Nine A I agents on Google's A D K read sales from BigQuery and photos from Cloud Storage.",
+   "gap": 0.6,
+   "take": "u17-3.wav"
   },
   {
-   "id": "u05",
+   "id": "u18",
    "sec": "tech",
-   "text": "Gemini on Vertex AI thinks for them: Pro prices and negotiates, Flash reads and writes.",
-   "gap": 0.2,
-   "take": "u05-3.wav"
+   "text": "On Google's Agent Platform, Gemini Pro prices and negotiates, and Flash reads and writes.",
+   "gap": 0.12,
+   "take": "u18-5.wav"
   },
   {
    "id": "u06",
    "sec": "tech",
    "text": "The models never touch the money: the API works out every figure, and a person says yes.",
-   "gap": 0.6
+   "gap": 0.35
   },
   {
-   "id": "x01",
+   "id": "x24",
    "sec": "cast",
-   "text": "Now, live on production: two batches, one happy path, one sad, and the people who handle them.",
-   "gap": 0.7
+   "text": "Live on production: Munchly Foods, an imaginary brand, with two batches at two different distributors. One happy path, one sad.",
+   "say": "Lyve on production: Munch-lee Foods, an imaginary brand, with two batches at two different distributors. One happy path, one sad.",
+   "gap": 0.45,
+   "take": "x24-3.wav"
   },
   {
    "id": "k01",
    "sec": "console",
    "text": "In the console, Neha sets up a brand in minutes: its stock export, its people, its gates, its agents.",
-   "gap": 0.3
+   "gap": 1.3
   },
   {
    "id": "p02",
@@ -120,7 +123,13 @@
    "id": "m05",
    "sec": "mango",
    "text": "Outreach offers the packs to fifty-eight kiranas in their own language; each order lands on Priya's screen, live.",
-   "gap": 0.5
+   "gap": 0.5,
+   "pause": [
+    [
+     "language",
+     0.7
+    ]
+   ]
   },
   {
    "id": "m06",
@@ -138,13 +147,20 @@
    "id": "m08",
    "sec": "mango",
    "text": "Feeding India collects the last fifty-eight packs, and issues a donation receipt.",
-   "gap": 0.2
+   "gap": 0.8,
+   "take": "m08-0.wav"
   },
   {
    "id": "m09",
    "sec": "mango",
    "text": "Paperwork files every paper in Cloud Storage, and Lakshmi Agencies ends whole.",
-   "gap": 1.1
+   "gap": 1.1,
+   "pause": [
+    [
+     "Storage",
+     0.5
+    ]
+   ]
   },
   {
    "id": "s01",
@@ -157,7 +173,7 @@
    "id": "s02",
    "sec": "sad",
    "text": "On ExpireSoon, an imaginary near-expiry marketplace, the Negotiator counters a bid, and seven hundred and seventy-two packs sell.",
-   "gap": 0.5,
+   "gap": 1.8,
    "say": "On Expire Soon, an imaginary near-expiry marketplace, the Negotiator counters a bid, and seven hundred and seventy-two packs sell.",
    "take": "s02-5.wav"
   },
@@ -177,7 +193,7 @@
    "id": "s05",
    "sec": "sad",
    "text": "At the landfill he photographs it, and the officer, two witnesses and Rakesh sign the certificate.",
-   "gap": 1.0,
+   "gap": 2.3,
    "pause": [
     [
      "it",

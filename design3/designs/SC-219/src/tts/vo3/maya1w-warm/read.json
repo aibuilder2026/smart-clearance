@@ -25023,5 +25023,5720 @@
     "e": 7.38
    }
   ]
+ },
+ "i13-0.wav": {
+  "text": "Too close to its date for quick commerce, it's destroyed.",
+  "words": [
+   {
+    "w": "Too",
+    "s": 0.0,
+    "e": 0.18
+   },
+   {
+    "w": "close",
+    "s": 0.18,
+    "e": 0.54
+   },
+   {
+    "w": "to",
+    "s": 0.54,
+    "e": 0.7
+   },
+   {
+    "w": "its",
+    "s": 0.7,
+    "e": 0.9
+   },
+   {
+    "w": "date",
+    "s": 0.9,
+    "e": 1.16
+   },
+   {
+    "w": "for",
+    "s": 1.16,
+    "e": 1.38
+   },
+   {
+    "w": "quick",
+    "s": 1.38,
+    "e": 1.62
+   },
+   {
+    "w": "commerce,",
+    "s": 1.62,
+    "e": 2.08
+   },
+   {
+    "w": "it's",
+    "s": 2.32,
+    "e": 2.78
+   },
+   {
+    "w": "destroyed.",
+    "s": 2.78,
+    "e": 3.28
+   }
+  ]
+ },
+ "i13-1.wav": {
+  "text": "Too close to its state for quick commerce, it's destroyed.",
+  "words": [
+   {
+    "w": "Too",
+    "s": 0.0,
+    "e": 0.18
+   },
+   {
+    "w": "close",
+    "s": 0.18,
+    "e": 0.58
+   },
+   {
+    "w": "to",
+    "s": 0.58,
+    "e": 0.74
+   },
+   {
+    "w": "its",
+    "s": 0.74,
+    "e": 0.96
+   },
+   {
+    "w": "state",
+    "s": 0.96,
+    "e": 1.24
+   },
+   {
+    "w": "for",
+    "s": 1.24,
+    "e": 1.48
+   },
+   {
+    "w": "quick",
+    "s": 1.48,
+    "e": 1.76
+   },
+   {
+    "w": "commerce,",
+    "s": 1.76,
+    "e": 2.3
+   },
+   {
+    "w": "it's",
+    "s": 2.54,
+    "e": 2.94
+   },
+   {
+    "w": "destroyed.",
+    "s": 2.94,
+    "e": 3.42
+   }
+  ]
+ },
+ "i13-2.wav": {
+  "text": "Too close to its date for quick commerce, it's destroyed.",
+  "words": [
+   {
+    "w": "Too",
+    "s": 0.0,
+    "e": 0.2
+   },
+   {
+    "w": "close",
+    "s": 0.2,
+    "e": 0.56
+   },
+   {
+    "w": "to",
+    "s": 0.56,
+    "e": 0.7
+   },
+   {
+    "w": "its",
+    "s": 0.7,
+    "e": 0.9
+   },
+   {
+    "w": "date",
+    "s": 0.9,
+    "e": 1.16
+   },
+   {
+    "w": "for",
+    "s": 1.16,
+    "e": 1.4
+   },
+   {
+    "w": "quick",
+    "s": 1.4,
+    "e": 1.68
+   },
+   {
+    "w": "commerce,",
+    "s": 1.68,
+    "e": 2.2
+   },
+   {
+    "w": "it's",
+    "s": 2.44,
+    "e": 2.86
+   },
+   {
+    "w": "destroyed.",
+    "s": 2.86,
+    "e": 3.32
+   }
+  ]
+ },
+ "i13-3.wav": {
+  "text": "Too close to its date for quick commerce, it's destroyed.",
+  "words": [
+   {
+    "w": "Too",
+    "s": 0.0,
+    "e": 0.16
+   },
+   {
+    "w": "close",
+    "s": 0.16,
+    "e": 0.52
+   },
+   {
+    "w": "to",
+    "s": 0.52,
+    "e": 0.68
+   },
+   {
+    "w": "its",
+    "s": 0.68,
+    "e": 0.86
+   },
+   {
+    "w": "date",
+    "s": 0.86,
+    "e": 1.1
+   },
+   {
+    "w": "for",
+    "s": 1.1,
+    "e": 1.32
+   },
+   {
+    "w": "quick",
+    "s": 1.32,
+    "e": 1.56
+   },
+   {
+    "w": "commerce,",
+    "s": 1.56,
+    "e": 2.0
+   },
+   {
+    "w": "it's",
+    "s": 2.28,
+    "e": 2.46
+   },
+   {
+    "w": "destroyed.",
+    "s": 2.46,
+    "e": 2.9
+   }
+  ]
+ },
+ "i13-4.wav": {
+  "text": "Too close to its date for quick commerce, it's destroyed.",
+  "words": [
+   {
+    "w": "Too",
+    "s": 0.0,
+    "e": 0.18
+   },
+   {
+    "w": "close",
+    "s": 0.18,
+    "e": 0.54
+   },
+   {
+    "w": "to",
+    "s": 0.54,
+    "e": 0.7
+   },
+   {
+    "w": "its",
+    "s": 0.7,
+    "e": 0.9
+   },
+   {
+    "w": "date",
+    "s": 0.9,
+    "e": 1.28
+   },
+   {
+    "w": "for",
+    "s": 1.28,
+    "e": 1.54
+   },
+   {
+    "w": "quick",
+    "s": 1.54,
+    "e": 1.82
+   },
+   {
+    "w": "commerce,",
+    "s": 1.82,
+    "e": 2.34
+   },
+   {
+    "w": "it's",
+    "s": 2.64,
+    "e": 3.14
+   },
+   {
+    "w": "destroyed.",
+    "s": 3.14,
+    "e": 3.62
+   }
+  ]
+ },
+ "i13-5.wav": {
+  "text": "Too close to its date for quick commerce, it's destroyed.",
+  "words": [
+   {
+    "w": "Too",
+    "s": 0.0,
+    "e": 0.18
+   },
+   {
+    "w": "close",
+    "s": 0.18,
+    "e": 0.58
+   },
+   {
+    "w": "to",
+    "s": 0.58,
+    "e": 0.72
+   },
+   {
+    "w": "its",
+    "s": 0.72,
+    "e": 0.92
+   },
+   {
+    "w": "date",
+    "s": 0.92,
+    "e": 1.24
+   },
+   {
+    "w": "for",
+    "s": 1.24,
+    "e": 1.48
+   },
+   {
+    "w": "quick",
+    "s": 1.48,
+    "e": 1.74
+   },
+   {
+    "w": "commerce,",
+    "s": 1.74,
+    "e": 2.22
+   },
+   {
+    "w": "it's",
+    "s": 2.4,
+    "e": 2.66
+   },
+   {
+    "w": "destroyed.",
+    "s": 2.66,
+    "e": 3.1
+   }
+  ]
+ },
+ "u15-0.wav": {
+  "text": "Gemini on Google's agent platform thinks for them, pro-prices and negotiates, flash reads and writes.",
+  "words": [
+   {
+    "w": "Gemini",
+    "s": 0.0,
+    "e": 0.6
+   },
+   {
+    "w": "on",
+    "s": 0.6,
+    "e": 1.36
+   },
+   {
+    "w": "Google's",
+    "s": 1.36,
+    "e": 1.94
+   },
+   {
+    "w": "agent",
+    "s": 1.94,
+    "e": 2.3
+   },
+   {
+    "w": "platform",
+    "s": 2.3,
+    "e": 3.04
+   },
+   {
+    "w": "thinks",
+    "s": 3.04,
+    "e": 3.74
+   },
+   {
+    "w": "for",
+    "s": 3.74,
+    "e": 4.02
+   },
+   {
+    "w": "them,",
+    "s": 4.02,
+    "e": 4.32
+   },
+   {
+    "w": "pro",
+    "s": 5.28,
+    "e": 5.44
+   },
+   {
+    "w": "-prices",
+    "s": 5.44,
+    "e": 6.06
+   },
+   {
+    "w": "and",
+    "s": 6.06,
+    "e": 6.44
+   },
+   {
+    "w": "negotiates,",
+    "s": 6.44,
+    "e": 7.38
+   },
+   {
+    "w": "flash",
+    "s": 7.62,
+    "e": 8.28
+   },
+   {
+    "w": "reads",
+    "s": 8.28,
+    "e": 8.68
+   },
+   {
+    "w": "and",
+    "s": 8.68,
+    "e": 8.98
+   },
+   {
+    "w": "writes.",
+    "s": 8.98,
+    "e": 9.32
+   }
+  ]
+ },
+ "u15-1.wav": {
+  "text": "Gemini on Google's agent platform thinks for them, pro-prices and negotiates, flash reads and writes.",
+  "words": [
+   {
+    "w": "Gemini",
+    "s": 0.0,
+    "e": 0.6
+   },
+   {
+    "w": "on",
+    "s": 0.6,
+    "e": 1.32
+   },
+   {
+    "w": "Google's",
+    "s": 1.32,
+    "e": 1.9
+   },
+   {
+    "w": "agent",
+    "s": 1.9,
+    "e": 2.28
+   },
+   {
+    "w": "platform",
+    "s": 2.28,
+    "e": 2.98
+   },
+   {
+    "w": "thinks",
+    "s": 2.98,
+    "e": 3.58
+   },
+   {
+    "w": "for",
+    "s": 3.58,
+    "e": 3.8
+   },
+   {
+    "w": "them,",
+    "s": 3.8,
+    "e": 4.08
+   },
+   {
+    "w": "pro",
+    "s": 4.78,
+    "e": 4.92
+   },
+   {
+    "w": "-prices",
+    "s": 4.92,
+    "e": 5.48
+   },
+   {
+    "w": "and",
+    "s": 5.48,
+    "e": 5.78
+   },
+   {
+    "w": "negotiates,",
+    "s": 5.78,
+    "e": 6.62
+   },
+   {
+    "w": "flash",
+    "s": 6.82,
+    "e": 7.34
+   },
+   {
+    "w": "reads",
+    "s": 7.34,
+    "e": 7.72
+   },
+   {
+    "w": "and",
+    "s": 7.72,
+    "e": 8.1
+   },
+   {
+    "w": "writes.",
+    "s": 8.1,
+    "e": 8.46
+   }
+  ]
+ },
+ "u15-2.wav": {
+  "text": "Gemini on Google's agent platform thinks for them. Pro prices and negotiates. Flash reads and writes.",
+  "words": [
+   {
+    "w": "Gemini",
+    "s": 0.0,
+    "e": 0.64
+   },
+   {
+    "w": "on",
+    "s": 0.64,
+    "e": 1.28
+   },
+   {
+    "w": "Google's",
+    "s": 1.28,
+    "e": 1.84
+   },
+   {
+    "w": "agent",
+    "s": 1.84,
+    "e": 2.16
+   },
+   {
+    "w": "platform",
+    "s": 2.16,
+    "e": 2.86
+   },
+   {
+    "w": "thinks",
+    "s": 2.86,
+    "e": 3.34
+   },
+   {
+    "w": "for",
+    "s": 3.34,
+    "e": 3.62
+   },
+   {
+    "w": "them.",
+    "s": 3.62,
+    "e": 3.9
+   },
+   {
+    "w": "Pro",
+    "s": 4.52,
+    "e": 5.0
+   },
+   {
+    "w": "prices",
+    "s": 5.0,
+    "e": 5.5
+   },
+   {
+    "w": "and",
+    "s": 5.5,
+    "e": 6.02
+   },
+   {
+    "w": "negotiates.",
+    "s": 6.02,
+    "e": 6.94
+   },
+   {
+    "w": "Flash",
+    "s": 7.14,
+    "e": 7.78
+   },
+   {
+    "w": "reads",
+    "s": 7.78,
+    "e": 8.16
+   },
+   {
+    "w": "and",
+    "s": 8.16,
+    "e": 8.5
+   },
+   {
+    "w": "writes.",
+    "s": 8.5,
+    "e": 8.86
+   }
+  ]
+ },
+ "u15-3.wav": {
+  "text": "Gemini on Google's agent platform, thinks for them, pro-prices and negotiates, flash reads and writes.",
+  "words": [
+   {
+    "w": "Gemini",
+    "s": 0.0,
+    "e": 0.68
+   },
+   {
+    "w": "on",
+    "s": 0.68,
+    "e": 1.2
+   },
+   {
+    "w": "Google's",
+    "s": 1.2,
+    "e": 1.8
+   },
+   {
+    "w": "agent",
+    "s": 1.8,
+    "e": 2.14
+   },
+   {
+    "w": "platform,",
+    "s": 2.14,
+    "e": 2.88
+   },
+   {
+    "w": "thinks",
+    "s": 3.2,
+    "e": 3.62
+   },
+   {
+    "w": "for",
+    "s": 3.62,
+    "e": 3.88
+   },
+   {
+    "w": "them,",
+    "s": 3.88,
+    "e": 4.18
+   },
+   {
+    "w": "pro",
+    "s": 4.7,
+    "e": 4.88
+   },
+   {
+    "w": "-prices",
+    "s": 4.88,
+    "e": 5.4
+   },
+   {
+    "w": "and",
+    "s": 5.4,
+    "e": 5.74
+   },
+   {
+    "w": "negotiates,",
+    "s": 5.74,
+    "e": 6.62
+   },
+   {
+    "w": "flash",
+    "s": 7.04,
+    "e": 7.42
+   },
+   {
+    "w": "reads",
+    "s": 7.42,
+    "e": 7.8
+   },
+   {
+    "w": "and",
+    "s": 7.8,
+    "e": 8.14
+   },
+   {
+    "w": "writes.",
+    "s": 8.14,
+    "e": 8.52
+   }
+  ]
+ },
+ "u15-4.wav": {
+  "text": "Gemini on Google's agent platform thinks for them, pro-prices and negotiates, flash reads and writes.",
+  "words": [
+   {
+    "w": "Gemini",
+    "s": 0.0,
+    "e": 0.62
+   },
+   {
+    "w": "on",
+    "s": 0.62,
+    "e": 1.2
+   },
+   {
+    "w": "Google's",
+    "s": 1.2,
+    "e": 1.74
+   },
+   {
+    "w": "agent",
+    "s": 1.74,
+    "e": 2.1
+   },
+   {
+    "w": "platform",
+    "s": 2.1,
+    "e": 2.78
+   },
+   {
+    "w": "thinks",
+    "s": 2.78,
+    "e": 3.36
+   },
+   {
+    "w": "for",
+    "s": 3.36,
+    "e": 3.6
+   },
+   {
+    "w": "them,",
+    "s": 3.6,
+    "e": 3.84
+   },
+   {
+    "w": "pro",
+    "s": 4.34,
+    "e": 4.5
+   },
+   {
+    "w": "-prices",
+    "s": 4.5,
+    "e": 5.02
+   },
+   {
+    "w": "and",
+    "s": 5.02,
+    "e": 5.4
+   },
+   {
+    "w": "negotiates,",
+    "s": 5.4,
+    "e": 6.24
+   },
+   {
+    "w": "flash",
+    "s": 6.52,
+    "e": 7.04
+   },
+   {
+    "w": "reads",
+    "s": 7.04,
+    "e": 7.52
+   },
+   {
+    "w": "and",
+    "s": 7.52,
+    "e": 7.84
+   },
+   {
+    "w": "writes.",
+    "s": 7.84,
+    "e": 8.22
+   }
+  ]
+ },
+ "u15-5.wav": {
+  "text": "Gemini on Google's agent platform thinks for them. Pro prices and negotiates. Flash reads and writes.",
+  "words": [
+   {
+    "w": "Gemini",
+    "s": 0.0,
+    "e": 0.62
+   },
+   {
+    "w": "on",
+    "s": 0.62,
+    "e": 1.12
+   },
+   {
+    "w": "Google's",
+    "s": 1.12,
+    "e": 1.72
+   },
+   {
+    "w": "agent",
+    "s": 1.72,
+    "e": 2.12
+   },
+   {
+    "w": "platform",
+    "s": 2.12,
+    "e": 2.84
+   },
+   {
+    "w": "thinks",
+    "s": 2.84,
+    "e": 3.38
+   },
+   {
+    "w": "for",
+    "s": 3.38,
+    "e": 3.64
+   },
+   {
+    "w": "them.",
+    "s": 3.64,
+    "e": 3.94
+   },
+   {
+    "w": "Pro",
+    "s": 4.22,
+    "e": 4.76
+   },
+   {
+    "w": "prices",
+    "s": 4.76,
+    "e": 5.22
+   },
+   {
+    "w": "and",
+    "s": 5.22,
+    "e": 5.66
+   },
+   {
+    "w": "negotiates.",
+    "s": 5.66,
+    "e": 6.52
+   },
+   {
+    "w": "Flash",
+    "s": 6.66,
+    "e": 7.18
+   },
+   {
+    "w": "reads",
+    "s": 7.18,
+    "e": 7.58
+   },
+   {
+    "w": "and",
+    "s": 7.58,
+    "e": 7.92
+   },
+   {
+    "w": "writes.",
+    "s": 7.92,
+    "e": 8.28
+   }
+  ]
+ },
+ "x21-0.wav": {
+  "text": "Live on production, Munch Lee Foods, an imaginary brand. Two of its batches at two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Live",
+    "s": 0.0,
+    "e": 0.36
+   },
+   {
+    "w": "on",
+    "s": 0.36,
+    "e": 0.56
+   },
+   {
+    "w": "production,",
+    "s": 0.56,
+    "e": 1.1
+   },
+   {
+    "w": "Munch",
+    "s": 1.76,
+    "e": 2.0
+   },
+   {
+    "w": "Lee",
+    "s": 2.0,
+    "e": 2.24
+   },
+   {
+    "w": "Foods,",
+    "s": 2.24,
+    "e": 2.66
+   },
+   {
+    "w": "an",
+    "s": 2.88,
+    "e": 3.18
+   },
+   {
+    "w": "imaginary",
+    "s": 3.18,
+    "e": 3.74
+   },
+   {
+    "w": "brand.",
+    "s": 3.74,
+    "e": 4.3
+   },
+   {
+    "w": "Two",
+    "s": 4.64,
+    "e": 5.12
+   },
+   {
+    "w": "of",
+    "s": 5.12,
+    "e": 5.34
+   },
+   {
+    "w": "its",
+    "s": 5.34,
+    "e": 5.54
+   },
+   {
+    "w": "batches",
+    "s": 5.54,
+    "e": 6.16
+   },
+   {
+    "w": "at",
+    "s": 6.16,
+    "e": 6.62
+   },
+   {
+    "w": "two",
+    "s": 6.62,
+    "e": 6.82
+   },
+   {
+    "w": "different",
+    "s": 6.82,
+    "e": 7.28
+   },
+   {
+    "w": "distributors.",
+    "s": 7.28,
+    "e": 8.22
+   },
+   {
+    "w": "One",
+    "s": 8.5,
+    "e": 8.98
+   },
+   {
+    "w": "happy",
+    "s": 8.98,
+    "e": 9.34
+   },
+   {
+    "w": "path,",
+    "s": 9.34,
+    "e": 9.78
+   },
+   {
+    "w": "one",
+    "s": 10.02,
+    "e": 10.24
+   },
+   {
+    "w": "sad.",
+    "s": 10.24,
+    "e": 10.56
+   }
+  ]
+ },
+ "x21-1.wav": {
+  "text": "Leave On Production, Munch Lee Foods, an imaginary brand. Two of its batches at two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Leave",
+    "s": 0.0,
+    "e": 0.3
+   },
+   {
+    "w": "On",
+    "s": 0.3,
+    "e": 0.46
+   },
+   {
+    "w": "Production,",
+    "s": 0.46,
+    "e": 0.98
+   },
+   {
+    "w": "Munch",
+    "s": 1.32,
+    "e": 1.84
+   },
+   {
+    "w": "Lee",
+    "s": 1.84,
+    "e": 2.04
+   },
+   {
+    "w": "Foods,",
+    "s": 2.04,
+    "e": 2.4
+   },
+   {
+    "w": "an",
+    "s": 2.6,
+    "e": 2.88
+   },
+   {
+    "w": "imaginary",
+    "s": 2.88,
+    "e": 3.4
+   },
+   {
+    "w": "brand.",
+    "s": 3.4,
+    "e": 3.94
+   },
+   {
+    "w": "Two",
+    "s": 4.2,
+    "e": 4.48
+   },
+   {
+    "w": "of",
+    "s": 4.48,
+    "e": 4.7
+   },
+   {
+    "w": "its",
+    "s": 4.7,
+    "e": 4.88
+   },
+   {
+    "w": "batches",
+    "s": 4.88,
+    "e": 5.42
+   },
+   {
+    "w": "at",
+    "s": 5.42,
+    "e": 5.82
+   },
+   {
+    "w": "two",
+    "s": 5.82,
+    "e": 6.06
+   },
+   {
+    "w": "different",
+    "s": 6.06,
+    "e": 6.48
+   },
+   {
+    "w": "distributors.",
+    "s": 6.48,
+    "e": 7.34
+   },
+   {
+    "w": "One",
+    "s": 7.6,
+    "e": 8.04
+   },
+   {
+    "w": "happy",
+    "s": 8.04,
+    "e": 8.4
+   },
+   {
+    "w": "path,",
+    "s": 8.4,
+    "e": 8.8
+   },
+   {
+    "w": "one",
+    "s": 9.02,
+    "e": 9.34
+   },
+   {
+    "w": "sad.",
+    "s": 9.34,
+    "e": 9.66
+   }
+  ]
+ },
+ "x21-2.wav": {
+  "text": "Live on production. Munchly Foods, an imaginary brand, two of its batches, at two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Live",
+    "s": 0.0,
+    "e": 0.36
+   },
+   {
+    "w": "on",
+    "s": 0.36,
+    "e": 0.54
+   },
+   {
+    "w": "production.",
+    "s": 0.54,
+    "e": 1.06
+   },
+   {
+    "w": "Munchly",
+    "s": 1.54,
+    "e": 2.22
+   },
+   {
+    "w": "Foods,",
+    "s": 2.22,
+    "e": 2.62
+   },
+   {
+    "w": "an",
+    "s": 2.84,
+    "e": 3.16
+   },
+   {
+    "w": "imaginary",
+    "s": 3.16,
+    "e": 3.72
+   },
+   {
+    "w": "brand,",
+    "s": 3.72,
+    "e": 4.3
+   },
+   {
+    "w": "two",
+    "s": 4.66,
+    "e": 4.82
+   },
+   {
+    "w": "of",
+    "s": 4.82,
+    "e": 5.02
+   },
+   {
+    "w": "its",
+    "s": 5.02,
+    "e": 5.22
+   },
+   {
+    "w": "batches,",
+    "s": 5.22,
+    "e": 5.78
+   },
+   {
+    "w": "at",
+    "s": 5.94,
+    "e": 6.18
+   },
+   {
+    "w": "two",
+    "s": 6.18,
+    "e": 6.4
+   },
+   {
+    "w": "different",
+    "s": 6.4,
+    "e": 6.84
+   },
+   {
+    "w": "distributors.",
+    "s": 6.84,
+    "e": 7.74
+   },
+   {
+    "w": "One",
+    "s": 8.08,
+    "e": 8.46
+   },
+   {
+    "w": "happy",
+    "s": 8.46,
+    "e": 8.8
+   },
+   {
+    "w": "path,",
+    "s": 8.8,
+    "e": 9.2
+   },
+   {
+    "w": "one",
+    "s": 9.46,
+    "e": 9.68
+   },
+   {
+    "w": "sad.",
+    "s": 9.68,
+    "e": 10.0
+   }
+  ]
+ },
+ "x21-3.wav": {
+  "text": "Live on production. Munchly Foods, an imaginary brand. Two of its batches at two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Live",
+    "s": 0.0,
+    "e": 0.34
+   },
+   {
+    "w": "on",
+    "s": 0.34,
+    "e": 0.56
+   },
+   {
+    "w": "production.",
+    "s": 0.56,
+    "e": 1.08
+   },
+   {
+    "w": "Munchly",
+    "s": 1.62,
+    "e": 2.42
+   },
+   {
+    "w": "Foods,",
+    "s": 2.42,
+    "e": 2.84
+   },
+   {
+    "w": "an",
+    "s": 3.14,
+    "e": 3.5
+   },
+   {
+    "w": "imaginary",
+    "s": 3.5,
+    "e": 4.04
+   },
+   {
+    "w": "brand.",
+    "s": 4.04,
+    "e": 4.6
+   },
+   {
+    "w": "Two",
+    "s": 4.96,
+    "e": 5.38
+   },
+   {
+    "w": "of",
+    "s": 5.38,
+    "e": 5.58
+   },
+   {
+    "w": "its",
+    "s": 5.58,
+    "e": 5.8
+   },
+   {
+    "w": "batches",
+    "s": 5.8,
+    "e": 6.34
+   },
+   {
+    "w": "at",
+    "s": 6.34,
+    "e": 6.76
+   },
+   {
+    "w": "two",
+    "s": 6.76,
+    "e": 6.98
+   },
+   {
+    "w": "different",
+    "s": 6.98,
+    "e": 7.38
+   },
+   {
+    "w": "distributors.",
+    "s": 7.38,
+    "e": 8.28
+   },
+   {
+    "w": "One",
+    "s": 8.7,
+    "e": 9.28
+   },
+   {
+    "w": "happy",
+    "s": 9.28,
+    "e": 9.62
+   },
+   {
+    "w": "path,",
+    "s": 9.62,
+    "e": 10.04
+   },
+   {
+    "w": "one",
+    "s": 10.34,
+    "e": 10.48
+   },
+   {
+    "w": "sad.",
+    "s": 10.48,
+    "e": 10.8
+   }
+  ]
+ },
+ "x21-4.wav": {
+  "text": "Live on production, Munch Lee Foods, an imaginary brand. Two of its batches at two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Live",
+    "s": 0.0,
+    "e": 0.34
+   },
+   {
+    "w": "on",
+    "s": 0.34,
+    "e": 0.52
+   },
+   {
+    "w": "production,",
+    "s": 0.52,
+    "e": 1.04
+   },
+   {
+    "w": "Munch",
+    "s": 1.7,
+    "e": 1.94
+   },
+   {
+    "w": "Lee",
+    "s": 1.94,
+    "e": 2.14
+   },
+   {
+    "w": "Foods,",
+    "s": 2.14,
+    "e": 2.54
+   },
+   {
+    "w": "an",
+    "s": 2.8,
+    "e": 3.08
+   },
+   {
+    "w": "imaginary",
+    "s": 3.08,
+    "e": 3.62
+   },
+   {
+    "w": "brand.",
+    "s": 3.62,
+    "e": 4.18
+   },
+   {
+    "w": "Two",
+    "s": 4.46,
+    "e": 4.88
+   },
+   {
+    "w": "of",
+    "s": 4.88,
+    "e": 5.08
+   },
+   {
+    "w": "its",
+    "s": 5.08,
+    "e": 5.28
+   },
+   {
+    "w": "batches",
+    "s": 5.28,
+    "e": 5.84
+   },
+   {
+    "w": "at",
+    "s": 5.84,
+    "e": 6.26
+   },
+   {
+    "w": "two",
+    "s": 6.26,
+    "e": 6.48
+   },
+   {
+    "w": "different",
+    "s": 6.48,
+    "e": 6.88
+   },
+   {
+    "w": "distributors.",
+    "s": 6.88,
+    "e": 7.74
+   },
+   {
+    "w": "One",
+    "s": 8.1,
+    "e": 8.62
+   },
+   {
+    "w": "happy",
+    "s": 8.62,
+    "e": 8.96
+   },
+   {
+    "w": "path,",
+    "s": 8.96,
+    "e": 9.36
+   },
+   {
+    "w": "one",
+    "s": 9.64,
+    "e": 9.78
+   },
+   {
+    "w": "sad.",
+    "s": 9.78,
+    "e": 10.1
+   }
+  ]
+ },
+ "x21-5.wav": {
+  "text": "Leave-On Production, Munchly Foods, an imaginary brand. Two of its batches at two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Leave",
+    "s": 0.0,
+    "e": 0.28
+   },
+   {
+    "w": "-On",
+    "s": 0.28,
+    "e": 0.44
+   },
+   {
+    "w": "Production,",
+    "s": 0.44,
+    "e": 0.94
+   },
+   {
+    "w": "Munchly",
+    "s": 1.32,
+    "e": 2.0
+   },
+   {
+    "w": "Foods,",
+    "s": 2.0,
+    "e": 2.42
+   },
+   {
+    "w": "an",
+    "s": 2.74,
+    "e": 3.08
+   },
+   {
+    "w": "imaginary",
+    "s": 3.08,
+    "e": 3.66
+   },
+   {
+    "w": "brand.",
+    "s": 3.66,
+    "e": 4.18
+   },
+   {
+    "w": "Two",
+    "s": 4.5,
+    "e": 5.02
+   },
+   {
+    "w": "of",
+    "s": 5.02,
+    "e": 5.26
+   },
+   {
+    "w": "its",
+    "s": 5.26,
+    "e": 5.44
+   },
+   {
+    "w": "batches",
+    "s": 5.44,
+    "e": 6.06
+   },
+   {
+    "w": "at",
+    "s": 6.06,
+    "e": 6.5
+   },
+   {
+    "w": "two",
+    "s": 6.5,
+    "e": 6.76
+   },
+   {
+    "w": "different",
+    "s": 6.76,
+    "e": 7.22
+   },
+   {
+    "w": "distributors.",
+    "s": 7.22,
+    "e": 8.14
+   },
+   {
+    "w": "One",
+    "s": 8.52,
+    "e": 9.06
+   },
+   {
+    "w": "happy",
+    "s": 9.06,
+    "e": 9.44
+   },
+   {
+    "w": "path,",
+    "s": 9.44,
+    "e": 9.88
+   },
+   {
+    "w": "one",
+    "s": 10.14,
+    "e": 10.46
+   },
+   {
+    "w": "sad.",
+    "s": 10.46,
+    "e": 10.82
+   }
+  ]
+ },
+ "x23-0.wav": {
+  "text": "Now, the live demo on production. Munch Lee Foods, an imaginary brand, two of its batches at two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Now,",
+    "s": 0.0,
+    "e": 0.32
+   },
+   {
+    "w": "the",
+    "s": 0.58,
+    "e": 0.78
+   },
+   {
+    "w": "live",
+    "s": 0.78,
+    "e": 1.1
+   },
+   {
+    "w": "demo",
+    "s": 1.1,
+    "e": 1.48
+   },
+   {
+    "w": "on",
+    "s": 1.48,
+    "e": 1.98
+   },
+   {
+    "w": "production.",
+    "s": 1.98,
+    "e": 2.52
+   },
+   {
+    "w": "Munch",
+    "s": 2.94,
+    "e": 3.64
+   },
+   {
+    "w": "Lee",
+    "s": 3.64,
+    "e": 3.84
+   },
+   {
+    "w": "Foods,",
+    "s": 3.84,
+    "e": 4.26
+   },
+   {
+    "w": "an",
+    "s": 4.46,
+    "e": 4.8
+   },
+   {
+    "w": "imaginary",
+    "s": 4.8,
+    "e": 5.32
+   },
+   {
+    "w": "brand,",
+    "s": 5.32,
+    "e": 5.84
+   },
+   {
+    "w": "two",
+    "s": 6.24,
+    "e": 6.38
+   },
+   {
+    "w": "of",
+    "s": 6.38,
+    "e": 6.58
+   },
+   {
+    "w": "its",
+    "s": 6.58,
+    "e": 6.76
+   },
+   {
+    "w": "batches",
+    "s": 6.76,
+    "e": 7.32
+   },
+   {
+    "w": "at",
+    "s": 7.32,
+    "e": 7.8
+   },
+   {
+    "w": "two",
+    "s": 7.8,
+    "e": 8.04
+   },
+   {
+    "w": "different",
+    "s": 8.04,
+    "e": 8.46
+   },
+   {
+    "w": "distributors.",
+    "s": 8.46,
+    "e": 9.36
+   },
+   {
+    "w": "One",
+    "s": 9.74,
+    "e": 10.34
+   },
+   {
+    "w": "happy",
+    "s": 10.34,
+    "e": 10.68
+   },
+   {
+    "w": "path,",
+    "s": 10.68,
+    "e": 11.1
+   },
+   {
+    "w": "one",
+    "s": 11.34,
+    "e": 11.56
+   },
+   {
+    "w": "sad.",
+    "s": 11.56,
+    "e": 11.86
+   }
+  ]
+ },
+ "x23-1.wav": {
+  "text": "Now, the live demo on production. Munchly Foods, an imaginary brand, two of its batches at two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Now,",
+    "s": 0.0,
+    "e": 0.28
+   },
+   {
+    "w": "the",
+    "s": 0.54,
+    "e": 0.8
+   },
+   {
+    "w": "live",
+    "s": 0.8,
+    "e": 1.08
+   },
+   {
+    "w": "demo",
+    "s": 1.08,
+    "e": 1.46
+   },
+   {
+    "w": "on",
+    "s": 1.46,
+    "e": 1.96
+   },
+   {
+    "w": "production.",
+    "s": 1.96,
+    "e": 2.5
+   },
+   {
+    "w": "Munchly",
+    "s": 3.24,
+    "e": 3.92
+   },
+   {
+    "w": "Foods,",
+    "s": 3.92,
+    "e": 4.3
+   },
+   {
+    "w": "an",
+    "s": 4.54,
+    "e": 4.86
+   },
+   {
+    "w": "imaginary",
+    "s": 4.86,
+    "e": 5.4
+   },
+   {
+    "w": "brand,",
+    "s": 5.4,
+    "e": 5.96
+   },
+   {
+    "w": "two",
+    "s": 6.3,
+    "e": 6.4
+   },
+   {
+    "w": "of",
+    "s": 6.4,
+    "e": 6.58
+   },
+   {
+    "w": "its",
+    "s": 6.58,
+    "e": 6.76
+   },
+   {
+    "w": "batches",
+    "s": 6.76,
+    "e": 7.32
+   },
+   {
+    "w": "at",
+    "s": 7.32,
+    "e": 7.86
+   },
+   {
+    "w": "two",
+    "s": 7.86,
+    "e": 8.08
+   },
+   {
+    "w": "different",
+    "s": 8.08,
+    "e": 8.44
+   },
+   {
+    "w": "distributors.",
+    "s": 8.44,
+    "e": 9.28
+   },
+   {
+    "w": "One",
+    "s": 9.74,
+    "e": 10.34
+   },
+   {
+    "w": "happy",
+    "s": 10.34,
+    "e": 10.66
+   },
+   {
+    "w": "path,",
+    "s": 10.66,
+    "e": 11.06
+   },
+   {
+    "w": "one",
+    "s": 11.34,
+    "e": 11.58
+   },
+   {
+    "w": "sad.",
+    "s": 11.58,
+    "e": 11.88
+   }
+  ]
+ },
+ "x23-2.wav": {
+  "text": "Now the live demo on production. Munch Lee Foods. An imaginary brand. Two of its batches at two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Now",
+    "s": 0.0,
+    "e": 0.24
+   },
+   {
+    "w": "the",
+    "s": 0.24,
+    "e": 0.44
+   },
+   {
+    "w": "live",
+    "s": 0.44,
+    "e": 0.74
+   },
+   {
+    "w": "demo",
+    "s": 0.74,
+    "e": 1.16
+   },
+   {
+    "w": "on",
+    "s": 1.16,
+    "e": 1.58
+   },
+   {
+    "w": "production.",
+    "s": 1.58,
+    "e": 2.12
+   },
+   {
+    "w": "Munch",
+    "s": 2.5,
+    "e": 3.14
+   },
+   {
+    "w": "Lee",
+    "s": 3.14,
+    "e": 3.36
+   },
+   {
+    "w": "Foods.",
+    "s": 3.36,
+    "e": 3.74
+   },
+   {
+    "w": "An",
+    "s": 4.04,
+    "e": 4.38
+   },
+   {
+    "w": "imaginary",
+    "s": 4.38,
+    "e": 4.96
+   },
+   {
+    "w": "brand.",
+    "s": 4.96,
+    "e": 5.48
+   },
+   {
+    "w": "Two",
+    "s": 5.84,
+    "e": 6.18
+   },
+   {
+    "w": "of",
+    "s": 6.18,
+    "e": 6.4
+   },
+   {
+    "w": "its",
+    "s": 6.4,
+    "e": 6.58
+   },
+   {
+    "w": "batches",
+    "s": 6.58,
+    "e": 7.14
+   },
+   {
+    "w": "at",
+    "s": 7.14,
+    "e": 7.54
+   },
+   {
+    "w": "two",
+    "s": 7.54,
+    "e": 7.76
+   },
+   {
+    "w": "different",
+    "s": 7.76,
+    "e": 8.16
+   },
+   {
+    "w": "distributors.",
+    "s": 8.16,
+    "e": 9.06
+   },
+   {
+    "w": "One",
+    "s": 9.38,
+    "e": 9.94
+   },
+   {
+    "w": "happy",
+    "s": 9.94,
+    "e": 10.28
+   },
+   {
+    "w": "path,",
+    "s": 10.28,
+    "e": 10.66
+   },
+   {
+    "w": "one",
+    "s": 10.86,
+    "e": 11.18
+   },
+   {
+    "w": "sad.",
+    "s": 11.18,
+    "e": 11.5
+   }
+  ]
+ },
+ "x23-3.wav": {
+  "text": "Now, the live demo on production. Munchly Foods, an imaginary brand. Two of its batches at two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Now,",
+    "s": 0.0,
+    "e": 0.3
+   },
+   {
+    "w": "the",
+    "s": 0.62,
+    "e": 0.76
+   },
+   {
+    "w": "live",
+    "s": 0.76,
+    "e": 1.04
+   },
+   {
+    "w": "demo",
+    "s": 1.04,
+    "e": 1.42
+   },
+   {
+    "w": "on",
+    "s": 1.42,
+    "e": 1.98
+   },
+   {
+    "w": "production.",
+    "s": 1.98,
+    "e": 2.52
+   },
+   {
+    "w": "Munchly",
+    "s": 2.86,
+    "e": 3.52
+   },
+   {
+    "w": "Foods,",
+    "s": 3.52,
+    "e": 3.92
+   },
+   {
+    "w": "an",
+    "s": 4.16,
+    "e": 4.52
+   },
+   {
+    "w": "imaginary",
+    "s": 4.52,
+    "e": 5.04
+   },
+   {
+    "w": "brand.",
+    "s": 5.04,
+    "e": 5.56
+   },
+   {
+    "w": "Two",
+    "s": 5.88,
+    "e": 6.34
+   },
+   {
+    "w": "of",
+    "s": 6.34,
+    "e": 6.54
+   },
+   {
+    "w": "its",
+    "s": 6.54,
+    "e": 6.7
+   },
+   {
+    "w": "batches",
+    "s": 6.7,
+    "e": 7.24
+   },
+   {
+    "w": "at",
+    "s": 7.24,
+    "e": 7.72
+   },
+   {
+    "w": "two",
+    "s": 7.72,
+    "e": 7.98
+   },
+   {
+    "w": "different",
+    "s": 7.98,
+    "e": 8.4
+   },
+   {
+    "w": "distributors.",
+    "s": 8.4,
+    "e": 9.26
+   },
+   {
+    "w": "One",
+    "s": 9.62,
+    "e": 10.16
+   },
+   {
+    "w": "happy",
+    "s": 10.16,
+    "e": 10.5
+   },
+   {
+    "w": "path,",
+    "s": 10.5,
+    "e": 10.92
+   },
+   {
+    "w": "one",
+    "s": 11.16,
+    "e": 11.32
+   },
+   {
+    "w": "sad.",
+    "s": 11.32,
+    "e": 11.64
+   }
+  ]
+ },
+ "x23-4.wav": {
+  "text": "Now the live demo on production. Munch Lee Foods, an imaginary brand. Two of its batches at two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Now",
+    "s": 0.0,
+    "e": 0.24
+   },
+   {
+    "w": "the",
+    "s": 0.24,
+    "e": 0.46
+   },
+   {
+    "w": "live",
+    "s": 0.46,
+    "e": 0.74
+   },
+   {
+    "w": "demo",
+    "s": 0.74,
+    "e": 1.14
+   },
+   {
+    "w": "on",
+    "s": 1.14,
+    "e": 1.64
+   },
+   {
+    "w": "production.",
+    "s": 1.64,
+    "e": 2.18
+   },
+   {
+    "w": "Munch",
+    "s": 2.58,
+    "e": 3.2
+   },
+   {
+    "w": "Lee",
+    "s": 3.2,
+    "e": 3.4
+   },
+   {
+    "w": "Foods,",
+    "s": 3.4,
+    "e": 3.8
+   },
+   {
+    "w": "an",
+    "s": 4.06,
+    "e": 4.36
+   },
+   {
+    "w": "imaginary",
+    "s": 4.36,
+    "e": 4.9
+   },
+   {
+    "w": "brand.",
+    "s": 4.9,
+    "e": 5.46
+   },
+   {
+    "w": "Two",
+    "s": 5.78,
+    "e": 6.12
+   },
+   {
+    "w": "of",
+    "s": 6.12,
+    "e": 6.34
+   },
+   {
+    "w": "its",
+    "s": 6.34,
+    "e": 6.52
+   },
+   {
+    "w": "batches",
+    "s": 6.52,
+    "e": 7.08
+   },
+   {
+    "w": "at",
+    "s": 7.08,
+    "e": 7.48
+   },
+   {
+    "w": "two",
+    "s": 7.48,
+    "e": 7.7
+   },
+   {
+    "w": "different",
+    "s": 7.7,
+    "e": 8.12
+   },
+   {
+    "w": "distributors.",
+    "s": 8.12,
+    "e": 9.0
+   },
+   {
+    "w": "One",
+    "s": 9.36,
+    "e": 9.8
+   },
+   {
+    "w": "happy",
+    "s": 9.8,
+    "e": 10.16
+   },
+   {
+    "w": "path,",
+    "s": 10.16,
+    "e": 10.54
+   },
+   {
+    "w": "one",
+    "s": 10.72,
+    "e": 10.98
+   },
+   {
+    "w": "sad.",
+    "s": 10.98,
+    "e": 11.32
+   }
+  ]
+ },
+ "x23-5.wav": {
+  "text": "Now, the live demo on production. Munchly Foods, an imaginary brand, two of its batches at two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Now,",
+    "s": 0.0,
+    "e": 0.3
+   },
+   {
+    "w": "the",
+    "s": 0.54,
+    "e": 0.88
+   },
+   {
+    "w": "live",
+    "s": 0.88,
+    "e": 1.18
+   },
+   {
+    "w": "demo",
+    "s": 1.18,
+    "e": 1.54
+   },
+   {
+    "w": "on",
+    "s": 1.54,
+    "e": 2.08
+   },
+   {
+    "w": "production.",
+    "s": 2.08,
+    "e": 2.64
+   },
+   {
+    "w": "Munchly",
+    "s": 3.08,
+    "e": 3.84
+   },
+   {
+    "w": "Foods,",
+    "s": 3.84,
+    "e": 4.26
+   },
+   {
+    "w": "an",
+    "s": 4.58,
+    "e": 5.02
+   },
+   {
+    "w": "imaginary",
+    "s": 5.02,
+    "e": 5.58
+   },
+   {
+    "w": "brand,",
+    "s": 5.58,
+    "e": 6.16
+   },
+   {
+    "w": "two",
+    "s": 6.72,
+    "e": 6.82
+   },
+   {
+    "w": "of",
+    "s": 6.82,
+    "e": 7.04
+   },
+   {
+    "w": "its",
+    "s": 7.04,
+    "e": 7.22
+   },
+   {
+    "w": "batches",
+    "s": 7.22,
+    "e": 7.78
+   },
+   {
+    "w": "at",
+    "s": 7.78,
+    "e": 8.28
+   },
+   {
+    "w": "two",
+    "s": 8.28,
+    "e": 8.5
+   },
+   {
+    "w": "different",
+    "s": 8.5,
+    "e": 8.96
+   },
+   {
+    "w": "distributors.",
+    "s": 8.96,
+    "e": 9.84
+   },
+   {
+    "w": "One",
+    "s": 10.22,
+    "e": 10.74
+   },
+   {
+    "w": "happy",
+    "s": 10.74,
+    "e": 11.06
+   },
+   {
+    "w": "path,",
+    "s": 11.06,
+    "e": 11.48
+   },
+   {
+    "w": "one",
+    "s": 11.72,
+    "e": 11.92
+   },
+   {
+    "w": "sad.",
+    "s": 11.92,
+    "e": 12.26
+   }
+  ]
+ },
+ "x24-0.wav": {
+  "text": "Live on production, Munchly Foods, an imaginary brand with two batches at two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Live",
+    "s": 0.0,
+    "e": 0.38
+   },
+   {
+    "w": "on",
+    "s": 0.38,
+    "e": 0.58
+   },
+   {
+    "w": "production,",
+    "s": 0.58,
+    "e": 1.1
+   },
+   {
+    "w": "Munchly",
+    "s": 1.56,
+    "e": 2.18
+   },
+   {
+    "w": "Foods,",
+    "s": 2.18,
+    "e": 2.58
+   },
+   {
+    "w": "an",
+    "s": 2.86,
+    "e": 3.26
+   },
+   {
+    "w": "imaginary",
+    "s": 3.26,
+    "e": 3.78
+   },
+   {
+    "w": "brand",
+    "s": 3.78,
+    "e": 4.34
+   },
+   {
+    "w": "with",
+    "s": 4.34,
+    "e": 4.88
+   },
+   {
+    "w": "two",
+    "s": 4.88,
+    "e": 5.12
+   },
+   {
+    "w": "batches",
+    "s": 5.12,
+    "e": 5.7
+   },
+   {
+    "w": "at",
+    "s": 5.7,
+    "e": 5.94
+   },
+   {
+    "w": "two",
+    "s": 5.94,
+    "e": 6.2
+   },
+   {
+    "w": "different",
+    "s": 6.2,
+    "e": 6.6
+   },
+   {
+    "w": "distributors.",
+    "s": 6.6,
+    "e": 7.5
+   },
+   {
+    "w": "One",
+    "s": 7.76,
+    "e": 8.22
+   },
+   {
+    "w": "happy",
+    "s": 8.22,
+    "e": 8.58
+   },
+   {
+    "w": "path,",
+    "s": 8.58,
+    "e": 9.0
+   },
+   {
+    "w": "one",
+    "s": 9.2,
+    "e": 9.5
+   },
+   {
+    "w": "sad.",
+    "s": 9.5,
+    "e": 9.84
+   }
+  ]
+ },
+ "x24-1.wav": {
+  "text": "Leave-On Production Munchly Foods, an imaginary brand with two batches at two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Leave",
+    "s": 0.0,
+    "e": 0.24
+   },
+   {
+    "w": "-On",
+    "s": 0.24,
+    "e": 0.38
+   },
+   {
+    "w": "Production",
+    "s": 0.38,
+    "e": 0.82
+   },
+   {
+    "w": "Munchly",
+    "s": 0.82,
+    "e": 2.0
+   },
+   {
+    "w": "Foods,",
+    "s": 2.0,
+    "e": 2.38
+   },
+   {
+    "w": "an",
+    "s": 2.6,
+    "e": 2.98
+   },
+   {
+    "w": "imaginary",
+    "s": 2.98,
+    "e": 3.52
+   },
+   {
+    "w": "brand",
+    "s": 3.52,
+    "e": 4.02
+   },
+   {
+    "w": "with",
+    "s": 4.02,
+    "e": 4.54
+   },
+   {
+    "w": "two",
+    "s": 4.54,
+    "e": 4.74
+   },
+   {
+    "w": "batches",
+    "s": 4.74,
+    "e": 5.28
+   },
+   {
+    "w": "at",
+    "s": 5.28,
+    "e": 5.56
+   },
+   {
+    "w": "two",
+    "s": 5.56,
+    "e": 5.78
+   },
+   {
+    "w": "different",
+    "s": 5.78,
+    "e": 6.16
+   },
+   {
+    "w": "distributors.",
+    "s": 6.16,
+    "e": 7.0
+   },
+   {
+    "w": "One",
+    "s": 7.24,
+    "e": 7.7
+   },
+   {
+    "w": "happy",
+    "s": 7.7,
+    "e": 8.02
+   },
+   {
+    "w": "path,",
+    "s": 8.02,
+    "e": 8.38
+   },
+   {
+    "w": "one",
+    "s": 8.56,
+    "e": 8.84
+   },
+   {
+    "w": "sad.",
+    "s": 8.84,
+    "e": 9.18
+   }
+  ]
+ },
+ "x24-2.wav": {
+  "text": "Live on production, Munchly Foods, an imaginary brand, with two batches at two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Live",
+    "s": 0.0,
+    "e": 0.34
+   },
+   {
+    "w": "on",
+    "s": 0.34,
+    "e": 0.54
+   },
+   {
+    "w": "production,",
+    "s": 0.54,
+    "e": 1.04
+   },
+   {
+    "w": "Munchly",
+    "s": 1.66,
+    "e": 2.08
+   },
+   {
+    "w": "Foods,",
+    "s": 2.08,
+    "e": 2.46
+   },
+   {
+    "w": "an",
+    "s": 2.74,
+    "e": 3.06
+   },
+   {
+    "w": "imaginary",
+    "s": 3.06,
+    "e": 3.6
+   },
+   {
+    "w": "brand,",
+    "s": 3.6,
+    "e": 4.14
+   },
+   {
+    "w": "with",
+    "s": 4.34,
+    "e": 4.72
+   },
+   {
+    "w": "two",
+    "s": 4.72,
+    "e": 4.92
+   },
+   {
+    "w": "batches",
+    "s": 4.92,
+    "e": 5.48
+   },
+   {
+    "w": "at",
+    "s": 5.48,
+    "e": 5.74
+   },
+   {
+    "w": "two",
+    "s": 5.74,
+    "e": 5.96
+   },
+   {
+    "w": "different",
+    "s": 5.96,
+    "e": 6.34
+   },
+   {
+    "w": "distributors.",
+    "s": 6.34,
+    "e": 7.18
+   },
+   {
+    "w": "One",
+    "s": 7.48,
+    "e": 8.02
+   },
+   {
+    "w": "happy",
+    "s": 8.02,
+    "e": 8.34
+   },
+   {
+    "w": "path,",
+    "s": 8.34,
+    "e": 8.72
+   },
+   {
+    "w": "one",
+    "s": 8.92,
+    "e": 9.2
+   },
+   {
+    "w": "sad.",
+    "s": 9.2,
+    "e": 9.54
+   }
+  ]
+ },
+ "x24-3.wav": {
+  "text": "Live on production, Munchly Foods, an imaginary brand, with two batches at two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Live",
+    "s": 0.0,
+    "e": 0.38
+   },
+   {
+    "w": "on",
+    "s": 0.38,
+    "e": 0.58
+   },
+   {
+    "w": "production,",
+    "s": 0.58,
+    "e": 1.06
+   },
+   {
+    "w": "Munchly",
+    "s": 1.66,
+    "e": 2.1
+   },
+   {
+    "w": "Foods,",
+    "s": 2.1,
+    "e": 2.48
+   },
+   {
+    "w": "an",
+    "s": 2.78,
+    "e": 3.08
+   },
+   {
+    "w": "imaginary",
+    "s": 3.08,
+    "e": 3.64
+   },
+   {
+    "w": "brand,",
+    "s": 3.64,
+    "e": 4.18
+   },
+   {
+    "w": "with",
+    "s": 4.38,
+    "e": 4.74
+   },
+   {
+    "w": "two",
+    "s": 4.74,
+    "e": 4.96
+   },
+   {
+    "w": "batches",
+    "s": 4.96,
+    "e": 5.5
+   },
+   {
+    "w": "at",
+    "s": 5.5,
+    "e": 5.76
+   },
+   {
+    "w": "two",
+    "s": 5.76,
+    "e": 5.98
+   },
+   {
+    "w": "different",
+    "s": 5.98,
+    "e": 6.36
+   },
+   {
+    "w": "distributors.",
+    "s": 6.36,
+    "e": 7.24
+   },
+   {
+    "w": "One",
+    "s": 7.52,
+    "e": 7.92
+   },
+   {
+    "w": "happy",
+    "s": 7.92,
+    "e": 8.28
+   },
+   {
+    "w": "path,",
+    "s": 8.28,
+    "e": 8.68
+   },
+   {
+    "w": "one",
+    "s": 8.92,
+    "e": 9.14
+   },
+   {
+    "w": "sad.",
+    "s": 9.14,
+    "e": 9.46
+   }
+  ]
+ },
+ "x24-4.wav": {
+  "text": "Leave on production, Munchly Foods, an imaginary brand, with two batches at two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Leave",
+    "s": 0.0,
+    "e": 0.28
+   },
+   {
+    "w": "on",
+    "s": 0.28,
+    "e": 0.46
+   },
+   {
+    "w": "production,",
+    "s": 0.46,
+    "e": 1.0
+   },
+   {
+    "w": "Munchly",
+    "s": 1.62,
+    "e": 2.04
+   },
+   {
+    "w": "Foods,",
+    "s": 2.04,
+    "e": 2.44
+   },
+   {
+    "w": "an",
+    "s": 2.74,
+    "e": 3.04
+   },
+   {
+    "w": "imaginary",
+    "s": 3.04,
+    "e": 3.6
+   },
+   {
+    "w": "brand,",
+    "s": 3.6,
+    "e": 4.16
+   },
+   {
+    "w": "with",
+    "s": 4.34,
+    "e": 4.7
+   },
+   {
+    "w": "two",
+    "s": 4.7,
+    "e": 4.92
+   },
+   {
+    "w": "batches",
+    "s": 4.92,
+    "e": 5.5
+   },
+   {
+    "w": "at",
+    "s": 5.5,
+    "e": 5.8
+   },
+   {
+    "w": "two",
+    "s": 5.8,
+    "e": 6.04
+   },
+   {
+    "w": "different",
+    "s": 6.04,
+    "e": 6.46
+   },
+   {
+    "w": "distributors.",
+    "s": 6.46,
+    "e": 7.38
+   },
+   {
+    "w": "One",
+    "s": 7.72,
+    "e": 8.22
+   },
+   {
+    "w": "happy",
+    "s": 8.22,
+    "e": 8.56
+   },
+   {
+    "w": "path,",
+    "s": 8.56,
+    "e": 9.02
+   },
+   {
+    "w": "one",
+    "s": 9.24,
+    "e": 9.62
+   },
+   {
+    "w": "sad.",
+    "s": 9.62,
+    "e": 9.98
+   }
+  ]
+ },
+ "x24-5.wav": {
+  "text": "Live on production, Munchly Foods, an imaginary brand with two batches at two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Live",
+    "s": 0.0,
+    "e": 0.36
+   },
+   {
+    "w": "on",
+    "s": 0.36,
+    "e": 0.58
+   },
+   {
+    "w": "production,",
+    "s": 0.58,
+    "e": 1.12
+   },
+   {
+    "w": "Munchly",
+    "s": 1.8,
+    "e": 2.26
+   },
+   {
+    "w": "Foods,",
+    "s": 2.26,
+    "e": 2.7
+   },
+   {
+    "w": "an",
+    "s": 3.02,
+    "e": 3.3
+   },
+   {
+    "w": "imaginary",
+    "s": 3.3,
+    "e": 3.86
+   },
+   {
+    "w": "brand",
+    "s": 3.86,
+    "e": 4.44
+   },
+   {
+    "w": "with",
+    "s": 4.44,
+    "e": 4.96
+   },
+   {
+    "w": "two",
+    "s": 4.96,
+    "e": 5.18
+   },
+   {
+    "w": "batches",
+    "s": 5.18,
+    "e": 5.74
+   },
+   {
+    "w": "at",
+    "s": 5.74,
+    "e": 5.98
+   },
+   {
+    "w": "two",
+    "s": 5.98,
+    "e": 6.2
+   },
+   {
+    "w": "different",
+    "s": 6.2,
+    "e": 6.64
+   },
+   {
+    "w": "distributors.",
+    "s": 6.64,
+    "e": 7.64
+   },
+   {
+    "w": "One",
+    "s": 8.08,
+    "e": 8.72
+   },
+   {
+    "w": "happy",
+    "s": 8.72,
+    "e": 9.1
+   },
+   {
+    "w": "path,",
+    "s": 9.1,
+    "e": 9.52
+   },
+   {
+    "w": "one",
+    "s": 9.76,
+    "e": 9.96
+   },
+   {
+    "w": "sad.",
+    "s": 9.96,
+    "e": 10.3
+   }
+  ]
+ },
+ "x25-0.wav": {
+  "text": "Leave on production. Munch Lee Foods. An imaginary brand. Two batches. Two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Leave",
+    "s": 0.0,
+    "e": 0.3
+   },
+   {
+    "w": "on",
+    "s": 0.3,
+    "e": 0.5
+   },
+   {
+    "w": "production.",
+    "s": 0.5,
+    "e": 1.04
+   },
+   {
+    "w": "Munch",
+    "s": 1.46,
+    "e": 2.0
+   },
+   {
+    "w": "Lee",
+    "s": 2.0,
+    "e": 2.2
+   },
+   {
+    "w": "Foods.",
+    "s": 2.2,
+    "e": 2.62
+   },
+   {
+    "w": "An",
+    "s": 2.96,
+    "e": 3.34
+   },
+   {
+    "w": "imaginary",
+    "s": 3.34,
+    "e": 3.92
+   },
+   {
+    "w": "brand.",
+    "s": 3.92,
+    "e": 4.42
+   },
+   {
+    "w": "Two",
+    "s": 4.82,
+    "e": 5.2
+   },
+   {
+    "w": "batches.",
+    "s": 5.2,
+    "e": 5.8
+   },
+   {
+    "w": "Two",
+    "s": 6.04,
+    "e": 6.38
+   },
+   {
+    "w": "different",
+    "s": 6.38,
+    "e": 6.78
+   },
+   {
+    "w": "distributors.",
+    "s": 6.78,
+    "e": 7.6
+   },
+   {
+    "w": "One",
+    "s": 8.0,
+    "e": 8.44
+   },
+   {
+    "w": "happy",
+    "s": 8.44,
+    "e": 8.8
+   },
+   {
+    "w": "path,",
+    "s": 8.8,
+    "e": 9.2
+   },
+   {
+    "w": "one",
+    "s": 9.46,
+    "e": 9.6
+   },
+   {
+    "w": "sad.",
+    "s": 9.6,
+    "e": 9.94
+   }
+  ]
+ },
+ "x25-1.wav": {
+  "text": "Live on Production Munch Lee Foods An imaginary brand Two batches Two different distributors One happy path One sad",
+  "words": [
+   {
+    "w": "Live",
+    "s": 0.0,
+    "e": 0.32
+   },
+   {
+    "w": "on",
+    "s": 0.32,
+    "e": 0.52
+   },
+   {
+    "w": "Production",
+    "s": 0.52,
+    "e": 1.02
+   },
+   {
+    "w": "Munch",
+    "s": 1.02,
+    "e": 2.02
+   },
+   {
+    "w": "Lee",
+    "s": 2.02,
+    "e": 2.24
+   },
+   {
+    "w": "Foods",
+    "s": 2.24,
+    "e": 2.68
+   },
+   {
+    "w": "An",
+    "s": 2.68,
+    "e": 3.36
+   },
+   {
+    "w": "imaginary",
+    "s": 3.36,
+    "e": 3.94
+   },
+   {
+    "w": "brand",
+    "s": 3.94,
+    "e": 4.5
+   },
+   {
+    "w": "Two",
+    "s": 4.5,
+    "e": 5.24
+   },
+   {
+    "w": "batches",
+    "s": 5.24,
+    "e": 5.9
+   },
+   {
+    "w": "Two",
+    "s": 5.9,
+    "e": 6.38
+   },
+   {
+    "w": "different",
+    "s": 6.38,
+    "e": 6.78
+   },
+   {
+    "w": "distributors",
+    "s": 6.78,
+    "e": 7.74
+   },
+   {
+    "w": "One",
+    "s": 7.74,
+    "e": 8.4
+   },
+   {
+    "w": "happy",
+    "s": 8.4,
+    "e": 8.76
+   },
+   {
+    "w": "path",
+    "s": 8.76,
+    "e": 9.14
+   },
+   {
+    "w": "One",
+    "s": 9.14,
+    "e": 9.54
+   },
+   {
+    "w": "sad",
+    "s": 9.54,
+    "e": 9.92
+   }
+  ]
+ },
+ "x25-2.wav": {
+  "text": "Live on production. Munchly Foods. An imaginary brand. Two batches. Two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Live",
+    "s": 0.0,
+    "e": 0.38
+   },
+   {
+    "w": "on",
+    "s": 0.38,
+    "e": 0.64
+   },
+   {
+    "w": "production.",
+    "s": 0.64,
+    "e": 1.14
+   },
+   {
+    "w": "Munchly",
+    "s": 1.56,
+    "e": 2.28
+   },
+   {
+    "w": "Foods.",
+    "s": 2.28,
+    "e": 2.7
+   },
+   {
+    "w": "An",
+    "s": 2.98,
+    "e": 3.32
+   },
+   {
+    "w": "imaginary",
+    "s": 3.32,
+    "e": 3.88
+   },
+   {
+    "w": "brand.",
+    "s": 3.88,
+    "e": 4.4
+   },
+   {
+    "w": "Two",
+    "s": 4.82,
+    "e": 5.22
+   },
+   {
+    "w": "batches.",
+    "s": 5.22,
+    "e": 5.8
+   },
+   {
+    "w": "Two",
+    "s": 6.06,
+    "e": 6.36
+   },
+   {
+    "w": "different",
+    "s": 6.36,
+    "e": 6.76
+   },
+   {
+    "w": "distributors.",
+    "s": 6.76,
+    "e": 7.6
+   },
+   {
+    "w": "One",
+    "s": 7.98,
+    "e": 8.36
+   },
+   {
+    "w": "happy",
+    "s": 8.36,
+    "e": 8.7
+   },
+   {
+    "w": "path,",
+    "s": 8.7,
+    "e": 9.06
+   },
+   {
+    "w": "one",
+    "s": 9.34,
+    "e": 9.46
+   },
+   {
+    "w": "sad.",
+    "s": 9.46,
+    "e": 9.78
+   }
+  ]
+ },
+ "x25-3.wav": {
+  "text": "Levon Production Munch Lee Foods An imaginary brand Two batches, two different distributors, one happy path, one sad.",
+  "words": [
+   {
+    "w": "Levon",
+    "s": 0.0,
+    "e": 0.48
+   },
+   {
+    "w": "Production",
+    "s": 0.48,
+    "e": 1.0
+   },
+   {
+    "w": "Munch",
+    "s": 1.0,
+    "e": 2.08
+   },
+   {
+    "w": "Lee",
+    "s": 2.08,
+    "e": 2.3
+   },
+   {
+    "w": "Foods",
+    "s": 2.3,
+    "e": 2.72
+   },
+   {
+    "w": "An",
+    "s": 2.72,
+    "e": 3.46
+   },
+   {
+    "w": "imaginary",
+    "s": 3.46,
+    "e": 4.04
+   },
+   {
+    "w": "brand",
+    "s": 4.04,
+    "e": 4.62
+   },
+   {
+    "w": "Two",
+    "s": 4.62,
+    "e": 5.54
+   },
+   {
+    "w": "batches,",
+    "s": 5.54,
+    "e": 6.28
+   },
+   {
+    "w": "two",
+    "s": 6.32,
+    "e": 6.7
+   },
+   {
+    "w": "different",
+    "s": 6.7,
+    "e": 7.12
+   },
+   {
+    "w": "distributors,",
+    "s": 7.12,
+    "e": 8.18
+   },
+   {
+    "w": "one",
+    "s": 8.66,
+    "e": 8.8
+   },
+   {
+    "w": "happy",
+    "s": 8.8,
+    "e": 9.18
+   },
+   {
+    "w": "path,",
+    "s": 9.18,
+    "e": 9.58
+   },
+   {
+    "w": "one",
+    "s": 9.78,
+    "e": 10.06
+   },
+   {
+    "w": "sad.",
+    "s": 10.06,
+    "e": 10.4
+   }
+  ]
+ },
+ "x25-4.wav": {
+  "text": "Live on Traduction Munch Lee Foods, an imaginary brand, two batches, two different distributors, one happy path, one sad.",
+  "words": [
+   {
+    "w": "Live",
+    "s": 0.0,
+    "e": 0.32
+   },
+   {
+    "w": "on",
+    "s": 0.32,
+    "e": 0.5
+   },
+   {
+    "w": "Traduction",
+    "s": 0.5,
+    "e": 1.12
+   },
+   {
+    "w": "Munch",
+    "s": 1.12,
+    "e": 1.94
+   },
+   {
+    "w": "Lee",
+    "s": 1.94,
+    "e": 2.14
+   },
+   {
+    "w": "Foods,",
+    "s": 2.14,
+    "e": 2.52
+   },
+   {
+    "w": "an",
+    "s": 2.78,
+    "e": 3.12
+   },
+   {
+    "w": "imaginary",
+    "s": 3.12,
+    "e": 3.64
+   },
+   {
+    "w": "brand,",
+    "s": 3.64,
+    "e": 4.24
+   },
+   {
+    "w": "two",
+    "s": 4.72,
+    "e": 4.84
+   },
+   {
+    "w": "batches,",
+    "s": 4.84,
+    "e": 5.46
+   },
+   {
+    "w": "two",
+    "s": 5.9,
+    "e": 6.0
+   },
+   {
+    "w": "different",
+    "s": 6.0,
+    "e": 6.38
+   },
+   {
+    "w": "distributors,",
+    "s": 6.38,
+    "e": 7.3
+   },
+   {
+    "w": "one",
+    "s": 7.76,
+    "e": 7.94
+   },
+   {
+    "w": "happy",
+    "s": 7.94,
+    "e": 8.3
+   },
+   {
+    "w": "path,",
+    "s": 8.3,
+    "e": 8.72
+   },
+   {
+    "w": "one",
+    "s": 8.96,
+    "e": 9.18
+   },
+   {
+    "w": "sad.",
+    "s": 9.18,
+    "e": 9.54
+   }
+  ]
+ },
+ "x25-5.wav": {
+  "text": "Leave on production. Munchly Foods. An imaginary brand. Two batches. Two different distributors. One happy path, one sad.",
+  "words": [
+   {
+    "w": "Leave",
+    "s": 0.0,
+    "e": 0.32
+   },
+   {
+    "w": "on",
+    "s": 0.32,
+    "e": 0.52
+   },
+   {
+    "w": "production.",
+    "s": 0.52,
+    "e": 1.08
+   },
+   {
+    "w": "Munchly",
+    "s": 1.5,
+    "e": 2.28
+   },
+   {
+    "w": "Foods.",
+    "s": 2.28,
+    "e": 2.7
+   },
+   {
+    "w": "An",
+    "s": 3.02,
+    "e": 3.6
+   },
+   {
+    "w": "imaginary",
+    "s": 3.6,
+    "e": 4.14
+   },
+   {
+    "w": "brand.",
+    "s": 4.14,
+    "e": 4.66
+   },
+   {
+    "w": "Two",
+    "s": 5.18,
+    "e": 5.68
+   },
+   {
+    "w": "batches.",
+    "s": 5.68,
+    "e": 6.28
+   },
+   {
+    "w": "Two",
+    "s": 6.52,
+    "e": 6.94
+   },
+   {
+    "w": "different",
+    "s": 6.94,
+    "e": 7.34
+   },
+   {
+    "w": "distributors.",
+    "s": 7.34,
+    "e": 8.22
+   },
+   {
+    "w": "One",
+    "s": 8.6,
+    "e": 9.24
+   },
+   {
+    "w": "happy",
+    "s": 9.24,
+    "e": 9.62
+   },
+   {
+    "w": "path,",
+    "s": 9.62,
+    "e": 10.02
+   },
+   {
+    "w": "one",
+    "s": 10.32,
+    "e": 10.58
+   },
+   {
+    "w": "sad.",
+    "s": 10.58,
+    "e": 10.92
+   }
+  ]
+ },
+ "u14-0.wav": {
+  "text": "9 AI agents on Google's ADK and a watcher in plain code read sales from BigQuery and photos from cloud storage.",
+  "words": [
+   {
+    "w": "9",
+    "s": 0.0,
+    "e": 0.4
+   },
+   {
+    "w": "AI",
+    "s": 0.4,
+    "e": 0.8
+   },
+   {
+    "w": "agents",
+    "s": 0.8,
+    "e": 1.48
+   },
+   {
+    "w": "on",
+    "s": 1.48,
+    "e": 1.76
+   },
+   {
+    "w": "Google's",
+    "s": 1.76,
+    "e": 2.32
+   },
+   {
+    "w": "ADK",
+    "s": 2.32,
+    "e": 2.98
+   },
+   {
+    "w": "and",
+    "s": 2.98,
+    "e": 3.64
+   },
+   {
+    "w": "a",
+    "s": 3.64,
+    "e": 3.8
+   },
+   {
+    "w": "watcher",
+    "s": 3.8,
+    "e": 4.18
+   },
+   {
+    "w": "in",
+    "s": 4.18,
+    "e": 4.38
+   },
+   {
+    "w": "plain",
+    "s": 4.38,
+    "e": 4.6
+   },
+   {
+    "w": "code",
+    "s": 4.6,
+    "e": 5.04
+   },
+   {
+    "w": "read",
+    "s": 5.04,
+    "e": 5.56
+   },
+   {
+    "w": "sales",
+    "s": 5.56,
+    "e": 5.98
+   },
+   {
+    "w": "from",
+    "s": 5.98,
+    "e": 6.26
+   },
+   {
+    "w": "BigQuery",
+    "s": 6.26,
+    "e": 6.64
+   },
+   {
+    "w": "and",
+    "s": 6.64,
+    "e": 7.32
+   },
+   {
+    "w": "photos",
+    "s": 7.32,
+    "e": 7.76
+   },
+   {
+    "w": "from",
+    "s": 7.76,
+    "e": 8.04
+   },
+   {
+    "w": "cloud",
+    "s": 8.04,
+    "e": 8.34
+   },
+   {
+    "w": "storage.",
+    "s": 8.34,
+    "e": 8.74
+   }
+  ]
+ },
+ "u14-1.wav": {
+  "text": "Nine AI agents on Google's ADK and a watcher in plain code read sales from BigQuery and photos from cloud storage.",
+  "words": [
+   {
+    "w": "Nine",
+    "s": 0.0,
+    "e": 0.36
+   },
+   {
+    "w": "AI",
+    "s": 0.36,
+    "e": 0.72
+   },
+   {
+    "w": "agents",
+    "s": 0.72,
+    "e": 1.3
+   },
+   {
+    "w": "on",
+    "s": 1.3,
+    "e": 1.62
+   },
+   {
+    "w": "Google's",
+    "s": 1.62,
+    "e": 2.14
+   },
+   {
+    "w": "ADK",
+    "s": 2.14,
+    "e": 2.8
+   },
+   {
+    "w": "and",
+    "s": 2.8,
+    "e": 3.36
+   },
+   {
+    "w": "a",
+    "s": 3.36,
+    "e": 3.52
+   },
+   {
+    "w": "watcher",
+    "s": 3.52,
+    "e": 3.96
+   },
+   {
+    "w": "in",
+    "s": 3.96,
+    "e": 4.18
+   },
+   {
+    "w": "plain",
+    "s": 4.18,
+    "e": 4.44
+   },
+   {
+    "w": "code",
+    "s": 4.44,
+    "e": 4.86
+   },
+   {
+    "w": "read",
+    "s": 4.86,
+    "e": 5.42
+   },
+   {
+    "w": "sales",
+    "s": 5.42,
+    "e": 5.88
+   },
+   {
+    "w": "from",
+    "s": 5.88,
+    "e": 6.16
+   },
+   {
+    "w": "BigQuery",
+    "s": 6.16,
+    "e": 6.56
+   },
+   {
+    "w": "and",
+    "s": 6.56,
+    "e": 7.24
+   },
+   {
+    "w": "photos",
+    "s": 7.24,
+    "e": 7.68
+   },
+   {
+    "w": "from",
+    "s": 7.68,
+    "e": 8.0
+   },
+   {
+    "w": "cloud",
+    "s": 8.0,
+    "e": 8.3
+   },
+   {
+    "w": "storage.",
+    "s": 8.3,
+    "e": 8.7
+   }
+  ]
+ },
+ "u14-2.wav": {
+  "text": "9 AI agents on Google's ADK and a watcher in plain code read sales from BigQuery and photos from cloud storage.",
+  "words": [
+   {
+    "w": "9",
+    "s": 0.0,
+    "e": 0.28
+   },
+   {
+    "w": "AI",
+    "s": 0.28,
+    "e": 0.68
+   },
+   {
+    "w": "agents",
+    "s": 0.68,
+    "e": 1.3
+   },
+   {
+    "w": "on",
+    "s": 1.3,
+    "e": 1.56
+   },
+   {
+    "w": "Google's",
+    "s": 1.56,
+    "e": 2.06
+   },
+   {
+    "w": "ADK",
+    "s": 2.06,
+    "e": 2.66
+   },
+   {
+    "w": "and",
+    "s": 2.66,
+    "e": 3.3
+   },
+   {
+    "w": "a",
+    "s": 3.3,
+    "e": 3.44
+   },
+   {
+    "w": "watcher",
+    "s": 3.44,
+    "e": 3.84
+   },
+   {
+    "w": "in",
+    "s": 3.84,
+    "e": 3.98
+   },
+   {
+    "w": "plain",
+    "s": 3.98,
+    "e": 4.22
+   },
+   {
+    "w": "code",
+    "s": 4.22,
+    "e": 4.66
+   },
+   {
+    "w": "read",
+    "s": 4.66,
+    "e": 5.14
+   },
+   {
+    "w": "sales",
+    "s": 5.14,
+    "e": 5.54
+   },
+   {
+    "w": "from",
+    "s": 5.54,
+    "e": 5.8
+   },
+   {
+    "w": "BigQuery",
+    "s": 5.8,
+    "e": 6.18
+   },
+   {
+    "w": "and",
+    "s": 6.18,
+    "e": 6.6
+   },
+   {
+    "w": "photos",
+    "s": 6.6,
+    "e": 6.98
+   },
+   {
+    "w": "from",
+    "s": 6.98,
+    "e": 7.28
+   },
+   {
+    "w": "cloud",
+    "s": 7.28,
+    "e": 7.56
+   },
+   {
+    "w": "storage.",
+    "s": 7.56,
+    "e": 7.92
+   }
+  ]
+ },
+ "u14-3.wav": {
+  "text": "Nine AI agents on Google's ADK and a watcher in plain code read sales from BigQuery and photos from cloud storage.",
+  "words": [
+   {
+    "w": "Nine",
+    "s": 0.0,
+    "e": 0.36
+   },
+   {
+    "w": "AI",
+    "s": 0.36,
+    "e": 0.72
+   },
+   {
+    "w": "agents",
+    "s": 0.72,
+    "e": 1.36
+   },
+   {
+    "w": "on",
+    "s": 1.36,
+    "e": 1.64
+   },
+   {
+    "w": "Google's",
+    "s": 1.64,
+    "e": 2.22
+   },
+   {
+    "w": "ADK",
+    "s": 2.22,
+    "e": 2.92
+   },
+   {
+    "w": "and",
+    "s": 2.92,
+    "e": 3.52
+   },
+   {
+    "w": "a",
+    "s": 3.52,
+    "e": 3.68
+   },
+   {
+    "w": "watcher",
+    "s": 3.68,
+    "e": 4.08
+   },
+   {
+    "w": "in",
+    "s": 4.08,
+    "e": 4.32
+   },
+   {
+    "w": "plain",
+    "s": 4.32,
+    "e": 4.58
+   },
+   {
+    "w": "code",
+    "s": 4.58,
+    "e": 5.04
+   },
+   {
+    "w": "read",
+    "s": 5.04,
+    "e": 5.64
+   },
+   {
+    "w": "sales",
+    "s": 5.64,
+    "e": 6.06
+   },
+   {
+    "w": "from",
+    "s": 6.06,
+    "e": 6.3
+   },
+   {
+    "w": "BigQuery",
+    "s": 6.3,
+    "e": 6.7
+   },
+   {
+    "w": "and",
+    "s": 6.7,
+    "e": 7.4
+   },
+   {
+    "w": "photos",
+    "s": 7.4,
+    "e": 7.82
+   },
+   {
+    "w": "from",
+    "s": 7.82,
+    "e": 8.14
+   },
+   {
+    "w": "cloud",
+    "s": 8.14,
+    "e": 8.44
+   },
+   {
+    "w": "storage.",
+    "s": 8.44,
+    "e": 8.82
+   }
+  ]
+ },
+ "u14-4.wav": {
+  "text": "Nine AI agents on Google's ADK and a watcher in plain code read sales from BigQuery and photos from cloud storage.",
+  "words": [
+   {
+    "w": "Nine",
+    "s": 0.0,
+    "e": 0.4
+   },
+   {
+    "w": "AI",
+    "s": 0.4,
+    "e": 0.82
+   },
+   {
+    "w": "agents",
+    "s": 0.82,
+    "e": 1.48
+   },
+   {
+    "w": "on",
+    "s": 1.48,
+    "e": 1.78
+   },
+   {
+    "w": "Google's",
+    "s": 1.78,
+    "e": 2.28
+   },
+   {
+    "w": "ADK",
+    "s": 2.28,
+    "e": 2.94
+   },
+   {
+    "w": "and",
+    "s": 2.94,
+    "e": 3.52
+   },
+   {
+    "w": "a",
+    "s": 3.52,
+    "e": 3.66
+   },
+   {
+    "w": "watcher",
+    "s": 3.66,
+    "e": 4.06
+   },
+   {
+    "w": "in",
+    "s": 4.06,
+    "e": 4.3
+   },
+   {
+    "w": "plain",
+    "s": 4.3,
+    "e": 4.54
+   },
+   {
+    "w": "code",
+    "s": 4.54,
+    "e": 4.96
+   },
+   {
+    "w": "read",
+    "s": 4.96,
+    "e": 5.52
+   },
+   {
+    "w": "sales",
+    "s": 5.52,
+    "e": 5.96
+   },
+   {
+    "w": "from",
+    "s": 5.96,
+    "e": 6.24
+   },
+   {
+    "w": "BigQuery",
+    "s": 6.24,
+    "e": 6.66
+   },
+   {
+    "w": "and",
+    "s": 6.66,
+    "e": 7.42
+   },
+   {
+    "w": "photos",
+    "s": 7.42,
+    "e": 7.88
+   },
+   {
+    "w": "from",
+    "s": 7.88,
+    "e": 8.2
+   },
+   {
+    "w": "cloud",
+    "s": 8.2,
+    "e": 8.48
+   },
+   {
+    "w": "storage.",
+    "s": 8.48,
+    "e": 8.9
+   }
+  ]
+ },
+ "u14-5.wav": {
+  "text": "9 AI agents on Google's ADK and a watcher in plain code read sales from BigQuery and photos from Cloud Storage.",
+  "words": [
+   {
+    "w": "9",
+    "s": 0.0,
+    "e": 0.32
+   },
+   {
+    "w": "AI",
+    "s": 0.32,
+    "e": 0.72
+   },
+   {
+    "w": "agents",
+    "s": 0.72,
+    "e": 1.38
+   },
+   {
+    "w": "on",
+    "s": 1.38,
+    "e": 1.64
+   },
+   {
+    "w": "Google's",
+    "s": 1.64,
+    "e": 2.18
+   },
+   {
+    "w": "ADK",
+    "s": 2.18,
+    "e": 2.88
+   },
+   {
+    "w": "and",
+    "s": 2.88,
+    "e": 3.42
+   },
+   {
+    "w": "a",
+    "s": 3.42,
+    "e": 3.56
+   },
+   {
+    "w": "watcher",
+    "s": 3.56,
+    "e": 3.98
+   },
+   {
+    "w": "in",
+    "s": 3.98,
+    "e": 4.18
+   },
+   {
+    "w": "plain",
+    "s": 4.18,
+    "e": 4.38
+   },
+   {
+    "w": "code",
+    "s": 4.38,
+    "e": 4.8
+   },
+   {
+    "w": "read",
+    "s": 4.8,
+    "e": 5.3
+   },
+   {
+    "w": "sales",
+    "s": 5.3,
+    "e": 5.72
+   },
+   {
+    "w": "from",
+    "s": 5.72,
+    "e": 6.0
+   },
+   {
+    "w": "BigQuery",
+    "s": 6.0,
+    "e": 6.4
+   },
+   {
+    "w": "and",
+    "s": 6.4,
+    "e": 7.24
+   },
+   {
+    "w": "photos",
+    "s": 7.24,
+    "e": 7.68
+   },
+   {
+    "w": "from",
+    "s": 7.68,
+    "e": 8.02
+   },
+   {
+    "w": "Cloud",
+    "s": 8.02,
+    "e": 8.3
+   },
+   {
+    "w": "Storage.",
+    "s": 8.3,
+    "e": 8.74
+   }
+  ]
+ },
+ "u16-0.wav": {
+  "text": "9 AI agents on Google's ADK and 1 rule-based watcher read sales from BigQuery and photos from cloud storage.",
+  "words": [
+   {
+    "w": "9",
+    "s": 0.0,
+    "e": 0.32
+   },
+   {
+    "w": "AI",
+    "s": 0.32,
+    "e": 0.72
+   },
+   {
+    "w": "agents",
+    "s": 0.72,
+    "e": 1.24
+   },
+   {
+    "w": "on",
+    "s": 1.24,
+    "e": 1.5
+   },
+   {
+    "w": "Google's",
+    "s": 1.5,
+    "e": 2.02
+   },
+   {
+    "w": "ADK",
+    "s": 2.02,
+    "e": 2.68
+   },
+   {
+    "w": "and",
+    "s": 2.68,
+    "e": 3.56
+   },
+   {
+    "w": "1",
+    "s": 3.56,
+    "e": 3.8
+   },
+   {
+    "w": "rule",
+    "s": 3.8,
+    "e": 4.12
+   },
+   {
+    "w": "-based",
+    "s": 4.12,
+    "e": 4.48
+   },
+   {
+    "w": "watcher",
+    "s": 4.48,
+    "e": 5.12
+   },
+   {
+    "w": "read",
+    "s": 5.12,
+    "e": 6.0
+   },
+   {
+    "w": "sales",
+    "s": 6.0,
+    "e": 6.4
+   },
+   {
+    "w": "from",
+    "s": 6.4,
+    "e": 6.68
+   },
+   {
+    "w": "BigQuery",
+    "s": 6.68,
+    "e": 7.1
+   },
+   {
+    "w": "and",
+    "s": 7.1,
+    "e": 7.74
+   },
+   {
+    "w": "photos",
+    "s": 7.74,
+    "e": 8.18
+   },
+   {
+    "w": "from",
+    "s": 8.18,
+    "e": 8.48
+   },
+   {
+    "w": "cloud",
+    "s": 8.48,
+    "e": 8.78
+   },
+   {
+    "w": "storage.",
+    "s": 8.78,
+    "e": 9.2
+   }
+  ]
+ },
+ "u16-1.wav": {
+  "text": "9 AI agents on Google's ADK and 1 rule-based watcher read sales from BigQuery and photos from cloud storage.",
+  "words": [
+   {
+    "w": "9",
+    "s": 0.0,
+    "e": 0.3
+   },
+   {
+    "w": "AI",
+    "s": 0.3,
+    "e": 0.62
+   },
+   {
+    "w": "agents",
+    "s": 0.62,
+    "e": 1.18
+   },
+   {
+    "w": "on",
+    "s": 1.18,
+    "e": 1.48
+   },
+   {
+    "w": "Google's",
+    "s": 1.48,
+    "e": 2.04
+   },
+   {
+    "w": "ADK",
+    "s": 2.04,
+    "e": 2.7
+   },
+   {
+    "w": "and",
+    "s": 2.7,
+    "e": 3.32
+   },
+   {
+    "w": "1",
+    "s": 3.32,
+    "e": 3.54
+   },
+   {
+    "w": "rule",
+    "s": 3.54,
+    "e": 3.84
+   },
+   {
+    "w": "-based",
+    "s": 3.84,
+    "e": 4.2
+   },
+   {
+    "w": "watcher",
+    "s": 4.2,
+    "e": 4.78
+   },
+   {
+    "w": "read",
+    "s": 4.78,
+    "e": 5.38
+   },
+   {
+    "w": "sales",
+    "s": 5.38,
+    "e": 5.78
+   },
+   {
+    "w": "from",
+    "s": 5.78,
+    "e": 6.04
+   },
+   {
+    "w": "BigQuery",
+    "s": 6.04,
+    "e": 6.42
+   },
+   {
+    "w": "and",
+    "s": 6.42,
+    "e": 6.94
+   },
+   {
+    "w": "photos",
+    "s": 6.94,
+    "e": 7.38
+   },
+   {
+    "w": "from",
+    "s": 7.38,
+    "e": 7.68
+   },
+   {
+    "w": "cloud",
+    "s": 7.68,
+    "e": 7.98
+   },
+   {
+    "w": "storage.",
+    "s": 7.98,
+    "e": 8.4
+   }
+  ]
+ },
+ "u16-2.wav": {
+  "text": "9 AI agents on Google's ADK and 1 rule-based watcher read sales from BigQuery and photos from Cloud Storage.",
+  "words": [
+   {
+    "w": "9",
+    "s": 0.0,
+    "e": 0.34
+   },
+   {
+    "w": "AI",
+    "s": 0.34,
+    "e": 0.6
+   },
+   {
+    "w": "agents",
+    "s": 0.6,
+    "e": 1.1
+   },
+   {
+    "w": "on",
+    "s": 1.1,
+    "e": 1.36
+   },
+   {
+    "w": "Google's",
+    "s": 1.36,
+    "e": 1.88
+   },
+   {
+    "w": "ADK",
+    "s": 1.88,
+    "e": 2.54
+   },
+   {
+    "w": "and",
+    "s": 2.54,
+    "e": 3.12
+   },
+   {
+    "w": "1",
+    "s": 3.12,
+    "e": 3.36
+   },
+   {
+    "w": "rule",
+    "s": 3.36,
+    "e": 3.66
+   },
+   {
+    "w": "-based",
+    "s": 3.66,
+    "e": 4.04
+   },
+   {
+    "w": "watcher",
+    "s": 4.04,
+    "e": 4.64
+   },
+   {
+    "w": "read",
+    "s": 4.64,
+    "e": 5.18
+   },
+   {
+    "w": "sales",
+    "s": 5.18,
+    "e": 5.62
+   },
+   {
+    "w": "from",
+    "s": 5.62,
+    "e": 5.88
+   },
+   {
+    "w": "BigQuery",
+    "s": 5.88,
+    "e": 6.24
+   },
+   {
+    "w": "and",
+    "s": 6.24,
+    "e": 6.8
+   },
+   {
+    "w": "photos",
+    "s": 6.8,
+    "e": 7.24
+   },
+   {
+    "w": "from",
+    "s": 7.24,
+    "e": 7.54
+   },
+   {
+    "w": "Cloud",
+    "s": 7.54,
+    "e": 7.8
+   },
+   {
+    "w": "Storage.",
+    "s": 7.8,
+    "e": 8.26
+   }
+  ]
+ },
+ "u16-3.wav": {
+  "text": "Nine AI agents on Google's ADK and one rule-based watcher read sales from BigQuery and photos from cloud storage.",
+  "words": [
+   {
+    "w": "Nine",
+    "s": 0.0,
+    "e": 0.36
+   },
+   {
+    "w": "AI",
+    "s": 0.36,
+    "e": 0.68
+   },
+   {
+    "w": "agents",
+    "s": 0.68,
+    "e": 1.26
+   },
+   {
+    "w": "on",
+    "s": 1.26,
+    "e": 1.54
+   },
+   {
+    "w": "Google's",
+    "s": 1.54,
+    "e": 2.06
+   },
+   {
+    "w": "ADK",
+    "s": 2.06,
+    "e": 2.76
+   },
+   {
+    "w": "and",
+    "s": 2.76,
+    "e": 3.38
+   },
+   {
+    "w": "one",
+    "s": 3.38,
+    "e": 3.62
+   },
+   {
+    "w": "rule",
+    "s": 3.62,
+    "e": 3.9
+   },
+   {
+    "w": "-based",
+    "s": 3.9,
+    "e": 4.2
+   },
+   {
+    "w": "watcher",
+    "s": 4.2,
+    "e": 4.8
+   },
+   {
+    "w": "read",
+    "s": 4.8,
+    "e": 5.32
+   },
+   {
+    "w": "sales",
+    "s": 5.32,
+    "e": 5.72
+   },
+   {
+    "w": "from",
+    "s": 5.72,
+    "e": 6.0
+   },
+   {
+    "w": "BigQuery",
+    "s": 6.0,
+    "e": 6.4
+   },
+   {
+    "w": "and",
+    "s": 6.4,
+    "e": 7.1
+   },
+   {
+    "w": "photos",
+    "s": 7.1,
+    "e": 7.54
+   },
+   {
+    "w": "from",
+    "s": 7.54,
+    "e": 7.84
+   },
+   {
+    "w": "cloud",
+    "s": 7.84,
+    "e": 8.12
+   },
+   {
+    "w": "storage.",
+    "s": 8.12,
+    "e": 8.56
+   }
+  ]
+ },
+ "u16-4.wav": {
+  "text": "9 AI agents on Google's ADK and 1 rule-based watcher read sales from BigQuery and photos from cloud storage.",
+  "words": [
+   {
+    "w": "9",
+    "s": 0.0,
+    "e": 0.34
+   },
+   {
+    "w": "AI",
+    "s": 0.34,
+    "e": 0.72
+   },
+   {
+    "w": "agents",
+    "s": 0.72,
+    "e": 1.34
+   },
+   {
+    "w": "on",
+    "s": 1.34,
+    "e": 1.62
+   },
+   {
+    "w": "Google's",
+    "s": 1.62,
+    "e": 2.14
+   },
+   {
+    "w": "ADK",
+    "s": 2.14,
+    "e": 2.76
+   },
+   {
+    "w": "and",
+    "s": 2.76,
+    "e": 3.54
+   },
+   {
+    "w": "1",
+    "s": 3.54,
+    "e": 3.76
+   },
+   {
+    "w": "rule",
+    "s": 3.76,
+    "e": 4.06
+   },
+   {
+    "w": "-based",
+    "s": 4.06,
+    "e": 4.4
+   },
+   {
+    "w": "watcher",
+    "s": 4.4,
+    "e": 4.96
+   },
+   {
+    "w": "read",
+    "s": 4.96,
+    "e": 5.64
+   },
+   {
+    "w": "sales",
+    "s": 5.64,
+    "e": 6.06
+   },
+   {
+    "w": "from",
+    "s": 6.06,
+    "e": 6.32
+   },
+   {
+    "w": "BigQuery",
+    "s": 6.32,
+    "e": 6.72
+   },
+   {
+    "w": "and",
+    "s": 6.72,
+    "e": 7.26
+   },
+   {
+    "w": "photos",
+    "s": 7.26,
+    "e": 7.7
+   },
+   {
+    "w": "from",
+    "s": 7.7,
+    "e": 8.02
+   },
+   {
+    "w": "cloud",
+    "s": 8.02,
+    "e": 8.32
+   },
+   {
+    "w": "storage.",
+    "s": 8.32,
+    "e": 8.74
+   }
+  ]
+ },
+ "u16-5.wav": {
+  "text": "9 AI agents on Google's ADK and 1 rule-based watcher read sales from BigQuery and photos from cloud storage.",
+  "words": [
+   {
+    "w": "9",
+    "s": 0.0,
+    "e": 0.28
+   },
+   {
+    "w": "AI",
+    "s": 0.28,
+    "e": 0.54
+   },
+   {
+    "w": "agents",
+    "s": 0.54,
+    "e": 1.18
+   },
+   {
+    "w": "on",
+    "s": 1.18,
+    "e": 1.46
+   },
+   {
+    "w": "Google's",
+    "s": 1.46,
+    "e": 1.96
+   },
+   {
+    "w": "ADK",
+    "s": 1.96,
+    "e": 2.6
+   },
+   {
+    "w": "and",
+    "s": 2.6,
+    "e": 3.24
+   },
+   {
+    "w": "1",
+    "s": 3.24,
+    "e": 3.44
+   },
+   {
+    "w": "rule",
+    "s": 3.44,
+    "e": 3.72
+   },
+   {
+    "w": "-based",
+    "s": 3.72,
+    "e": 4.06
+   },
+   {
+    "w": "watcher",
+    "s": 4.06,
+    "e": 4.6
+   },
+   {
+    "w": "read",
+    "s": 4.6,
+    "e": 5.2
+   },
+   {
+    "w": "sales",
+    "s": 5.2,
+    "e": 5.64
+   },
+   {
+    "w": "from",
+    "s": 5.64,
+    "e": 5.92
+   },
+   {
+    "w": "BigQuery",
+    "s": 5.92,
+    "e": 6.4
+   },
+   {
+    "w": "and",
+    "s": 6.4,
+    "e": 7.02
+   },
+   {
+    "w": "photos",
+    "s": 7.02,
+    "e": 7.48
+   },
+   {
+    "w": "from",
+    "s": 7.48,
+    "e": 7.78
+   },
+   {
+    "w": "cloud",
+    "s": 7.78,
+    "e": 8.06
+   },
+   {
+    "w": "storage.",
+    "s": 8.06,
+    "e": 8.46
+   }
+  ]
+ },
+ "u17-0.wav": {
+  "text": "Nine AI agents on Google's ADK read sales from BigQuery and photos from cloud storage.",
+  "words": [
+   {
+    "w": "Nine",
+    "s": 0.0,
+    "e": 0.38
+   },
+   {
+    "w": "AI",
+    "s": 0.38,
+    "e": 0.7
+   },
+   {
+    "w": "agents",
+    "s": 0.7,
+    "e": 1.24
+   },
+   {
+    "w": "on",
+    "s": 1.24,
+    "e": 1.52
+   },
+   {
+    "w": "Google's",
+    "s": 1.52,
+    "e": 2.06
+   },
+   {
+    "w": "ADK",
+    "s": 2.06,
+    "e": 2.74
+   },
+   {
+    "w": "read",
+    "s": 2.74,
+    "e": 3.22
+   },
+   {
+    "w": "sales",
+    "s": 3.22,
+    "e": 3.7
+   },
+   {
+    "w": "from",
+    "s": 3.7,
+    "e": 4.0
+   },
+   {
+    "w": "BigQuery",
+    "s": 4.0,
+    "e": 4.54
+   },
+   {
+    "w": "and",
+    "s": 4.54,
+    "e": 5.16
+   },
+   {
+    "w": "photos",
+    "s": 5.16,
+    "e": 5.62
+   },
+   {
+    "w": "from",
+    "s": 5.62,
+    "e": 5.92
+   },
+   {
+    "w": "cloud",
+    "s": 5.92,
+    "e": 6.22
+   },
+   {
+    "w": "storage.",
+    "s": 6.22,
+    "e": 6.68
+   }
+  ]
+ },
+ "u17-1.wav": {
+  "text": "nine AI agents on Google's ADK read sales from BigQuery and photos from cloud storage.",
+  "words": [
+   {
+    "w": "nine",
+    "s": 0.0,
+    "e": 0.4
+   },
+   {
+    "w": "AI",
+    "s": 0.4,
+    "e": 0.86
+   },
+   {
+    "w": "agents",
+    "s": 0.86,
+    "e": 1.52
+   },
+   {
+    "w": "on",
+    "s": 1.52,
+    "e": 1.86
+   },
+   {
+    "w": "Google's",
+    "s": 1.86,
+    "e": 2.4
+   },
+   {
+    "w": "ADK",
+    "s": 2.4,
+    "e": 3.04
+   },
+   {
+    "w": "read",
+    "s": 3.04,
+    "e": 3.28
+   },
+   {
+    "w": "sales",
+    "s": 3.28,
+    "e": 3.66
+   },
+   {
+    "w": "from",
+    "s": 3.66,
+    "e": 3.92
+   },
+   {
+    "w": "BigQuery",
+    "s": 3.92,
+    "e": 4.34
+   },
+   {
+    "w": "and",
+    "s": 4.34,
+    "e": 4.88
+   },
+   {
+    "w": "photos",
+    "s": 4.88,
+    "e": 5.32
+   },
+   {
+    "w": "from",
+    "s": 5.32,
+    "e": 5.64
+   },
+   {
+    "w": "cloud",
+    "s": 5.64,
+    "e": 5.94
+   },
+   {
+    "w": "storage.",
+    "s": 5.94,
+    "e": 6.36
+   }
+  ]
+ },
+ "u17-2.wav": {
+  "text": "9 AI agents on Google's ADK read sales from BigQuery and photos from cloud storage.",
+  "words": [
+   {
+    "w": "9",
+    "s": 0.0,
+    "e": 0.36
+   },
+   {
+    "w": "AI",
+    "s": 0.36,
+    "e": 0.72
+   },
+   {
+    "w": "agents",
+    "s": 0.72,
+    "e": 1.3
+   },
+   {
+    "w": "on",
+    "s": 1.3,
+    "e": 1.6
+   },
+   {
+    "w": "Google's",
+    "s": 1.6,
+    "e": 2.16
+   },
+   {
+    "w": "ADK",
+    "s": 2.16,
+    "e": 2.72
+   },
+   {
+    "w": "read",
+    "s": 2.72,
+    "e": 2.96
+   },
+   {
+    "w": "sales",
+    "s": 2.96,
+    "e": 3.38
+   },
+   {
+    "w": "from",
+    "s": 3.38,
+    "e": 3.66
+   },
+   {
+    "w": "BigQuery",
+    "s": 3.66,
+    "e": 4.18
+   },
+   {
+    "w": "and",
+    "s": 4.18,
+    "e": 4.82
+   },
+   {
+    "w": "photos",
+    "s": 4.82,
+    "e": 5.24
+   },
+   {
+    "w": "from",
+    "s": 5.24,
+    "e": 5.56
+   },
+   {
+    "w": "cloud",
+    "s": 5.56,
+    "e": 5.86
+   },
+   {
+    "w": "storage.",
+    "s": 5.86,
+    "e": 6.26
+   }
+  ]
+ },
+ "u17-3.wav": {
+  "text": "9 AI agents on Google's ADK read sales from BigQuery and photos from cloud storage.",
+  "words": [
+   {
+    "w": "9",
+    "s": 0.0,
+    "e": 0.3
+   },
+   {
+    "w": "AI",
+    "s": 0.3,
+    "e": 0.6
+   },
+   {
+    "w": "agents",
+    "s": 0.6,
+    "e": 1.14
+   },
+   {
+    "w": "on",
+    "s": 1.14,
+    "e": 1.36
+   },
+   {
+    "w": "Google's",
+    "s": 1.36,
+    "e": 1.84
+   },
+   {
+    "w": "ADK",
+    "s": 1.84,
+    "e": 2.46
+   },
+   {
+    "w": "read",
+    "s": 2.46,
+    "e": 2.72
+   },
+   {
+    "w": "sales",
+    "s": 2.72,
+    "e": 3.1
+   },
+   {
+    "w": "from",
+    "s": 3.1,
+    "e": 3.36
+   },
+   {
+    "w": "BigQuery",
+    "s": 3.36,
+    "e": 3.76
+   },
+   {
+    "w": "and",
+    "s": 3.76,
+    "e": 4.26
+   },
+   {
+    "w": "photos",
+    "s": 4.26,
+    "e": 4.64
+   },
+   {
+    "w": "from",
+    "s": 4.64,
+    "e": 4.92
+   },
+   {
+    "w": "cloud",
+    "s": 4.92,
+    "e": 5.2
+   },
+   {
+    "w": "storage.",
+    "s": 5.2,
+    "e": 5.6
+   }
+  ]
+ },
+ "u17-4.wav": {
+  "text": "9 AI agents on Google's ADK Red sales from BigQuery and photos from cloud storage.",
+  "words": [
+   {
+    "w": "9",
+    "s": 0.0,
+    "e": 0.38
+   },
+   {
+    "w": "AI",
+    "s": 0.38,
+    "e": 0.78
+   },
+   {
+    "w": "agents",
+    "s": 0.78,
+    "e": 1.46
+   },
+   {
+    "w": "on",
+    "s": 1.46,
+    "e": 1.8
+   },
+   {
+    "w": "Google's",
+    "s": 1.8,
+    "e": 2.36
+   },
+   {
+    "w": "ADK",
+    "s": 2.36,
+    "e": 3.08
+   },
+   {
+    "w": "Red",
+    "s": 3.08,
+    "e": 3.32
+   },
+   {
+    "w": "sales",
+    "s": 3.32,
+    "e": 3.82
+   },
+   {
+    "w": "from",
+    "s": 3.82,
+    "e": 4.38
+   },
+   {
+    "w": "BigQuery",
+    "s": 4.38,
+    "e": 4.8
+   },
+   {
+    "w": "and",
+    "s": 4.8,
+    "e": 5.34
+   },
+   {
+    "w": "photos",
+    "s": 5.34,
+    "e": 5.78
+   },
+   {
+    "w": "from",
+    "s": 5.78,
+    "e": 6.1
+   },
+   {
+    "w": "cloud",
+    "s": 6.1,
+    "e": 6.4
+   },
+   {
+    "w": "storage.",
+    "s": 6.4,
+    "e": 6.82
+   }
+  ]
+ },
+ "u17-5.wav": {
+  "text": "9 AI agents on Google's ADK read sales from BigQuery and photos from cloud storage.",
+  "words": [
+   {
+    "w": "9",
+    "s": 0.0,
+    "e": 0.28
+   },
+   {
+    "w": "AI",
+    "s": 0.28,
+    "e": 0.56
+   },
+   {
+    "w": "agents",
+    "s": 0.56,
+    "e": 1.04
+   },
+   {
+    "w": "on",
+    "s": 1.04,
+    "e": 1.28
+   },
+   {
+    "w": "Google's",
+    "s": 1.28,
+    "e": 1.76
+   },
+   {
+    "w": "ADK",
+    "s": 1.76,
+    "e": 2.42
+   },
+   {
+    "w": "read",
+    "s": 2.42,
+    "e": 2.68
+   },
+   {
+    "w": "sales",
+    "s": 2.68,
+    "e": 3.08
+   },
+   {
+    "w": "from",
+    "s": 3.08,
+    "e": 3.36
+   },
+   {
+    "w": "BigQuery",
+    "s": 3.36,
+    "e": 3.88
+   },
+   {
+    "w": "and",
+    "s": 3.88,
+    "e": 4.6
+   },
+   {
+    "w": "photos",
+    "s": 4.6,
+    "e": 5.02
+   },
+   {
+    "w": "from",
+    "s": 5.02,
+    "e": 5.34
+   },
+   {
+    "w": "cloud",
+    "s": 5.34,
+    "e": 5.62
+   },
+   {
+    "w": "storage.",
+    "s": 5.62,
+    "e": 6.04
+   }
+  ]
+ },
+ "u18-0.wav": {
+  "text": "On Google's agent platform, Gemini Pro prices and negotiates, and Flash reads and writes.",
+  "words": [
+   {
+    "w": "On",
+    "s": 0.0,
+    "e": 0.22
+   },
+   {
+    "w": "Google's",
+    "s": 0.22,
+    "e": 0.68
+   },
+   {
+    "w": "agent",
+    "s": 0.68,
+    "e": 0.92
+   },
+   {
+    "w": "platform,",
+    "s": 0.92,
+    "e": 1.5
+   },
+   {
+    "w": "Gemini",
+    "s": 1.94,
+    "e": 2.32
+   },
+   {
+    "w": "Pro",
+    "s": 2.32,
+    "e": 2.6
+   },
+   {
+    "w": "prices",
+    "s": 2.6,
+    "e": 3.02
+   },
+   {
+    "w": "and",
+    "s": 3.02,
+    "e": 3.36
+   },
+   {
+    "w": "negotiates,",
+    "s": 3.36,
+    "e": 4.18
+   },
+   {
+    "w": "and",
+    "s": 4.58,
+    "e": 4.66
+   },
+   {
+    "w": "Flash",
+    "s": 4.66,
+    "e": 5.02
+   },
+   {
+    "w": "reads",
+    "s": 5.02,
+    "e": 5.36
+   },
+   {
+    "w": "and",
+    "s": 5.36,
+    "e": 5.56
+   },
+   {
+    "w": "writes.",
+    "s": 5.56,
+    "e": 5.9
+   }
+  ]
+ },
+ "u18-1.wav": {
+  "text": "On Google's agent platform, Gemini Pro prices and negotiates and Flash reads and writes.",
+  "words": [
+   {
+    "w": "On",
+    "s": 0.0,
+    "e": 0.22
+   },
+   {
+    "w": "Google's",
+    "s": 0.22,
+    "e": 0.74
+   },
+   {
+    "w": "agent",
+    "s": 0.74,
+    "e": 1.06
+   },
+   {
+    "w": "platform,",
+    "s": 1.06,
+    "e": 1.74
+   },
+   {
+    "w": "Gemini",
+    "s": 2.08,
+    "e": 2.72
+   },
+   {
+    "w": "Pro",
+    "s": 2.72,
+    "e": 3.0
+   },
+   {
+    "w": "prices",
+    "s": 3.0,
+    "e": 3.5
+   },
+   {
+    "w": "and",
+    "s": 3.5,
+    "e": 4.06
+   },
+   {
+    "w": "negotiates",
+    "s": 4.06,
+    "e": 4.94
+   },
+   {
+    "w": "and",
+    "s": 4.94,
+    "e": 5.54
+   },
+   {
+    "w": "Flash",
+    "s": 5.54,
+    "e": 5.96
+   },
+   {
+    "w": "reads",
+    "s": 5.96,
+    "e": 6.52
+   },
+   {
+    "w": "and",
+    "s": 6.52,
+    "e": 6.92
+   },
+   {
+    "w": "writes.",
+    "s": 6.92,
+    "e": 7.28
+   }
+  ]
+ },
+ "u18-2.wav": {
+  "text": "On Google's agent platform, Gemini Pro prices and negotiates, and Flash reads and writes.",
+  "words": [
+   {
+    "w": "On",
+    "s": 0.0,
+    "e": 0.22
+   },
+   {
+    "w": "Google's",
+    "s": 0.22,
+    "e": 0.72
+   },
+   {
+    "w": "agent",
+    "s": 0.72,
+    "e": 1.02
+   },
+   {
+    "w": "platform,",
+    "s": 1.02,
+    "e": 1.64
+   },
+   {
+    "w": "Gemini",
+    "s": 2.12,
+    "e": 2.54
+   },
+   {
+    "w": "Pro",
+    "s": 2.54,
+    "e": 2.84
+   },
+   {
+    "w": "prices",
+    "s": 2.84,
+    "e": 3.26
+   },
+   {
+    "w": "and",
+    "s": 3.26,
+    "e": 3.68
+   },
+   {
+    "w": "negotiates,",
+    "s": 3.68,
+    "e": 4.56
+   },
+   {
+    "w": "and",
+    "s": 4.74,
+    "e": 5.14
+   },
+   {
+    "w": "Flash",
+    "s": 5.14,
+    "e": 5.56
+   },
+   {
+    "w": "reads",
+    "s": 5.56,
+    "e": 5.94
+   },
+   {
+    "w": "and",
+    "s": 5.94,
+    "e": 6.24
+   },
+   {
+    "w": "writes.",
+    "s": 6.24,
+    "e": 6.64
+   }
+  ]
+ },
+ "u18-3.wav": {
+  "text": "On Google's agent platform, Gemini Pro prices and negotiates, and Flash reads and writes.",
+  "words": [
+   {
+    "w": "On",
+    "s": 0.0,
+    "e": 0.22
+   },
+   {
+    "w": "Google's",
+    "s": 0.22,
+    "e": 0.7
+   },
+   {
+    "w": "agent",
+    "s": 0.7,
+    "e": 0.96
+   },
+   {
+    "w": "platform,",
+    "s": 0.96,
+    "e": 1.6
+   },
+   {
+    "w": "Gemini",
+    "s": 2.08,
+    "e": 2.5
+   },
+   {
+    "w": "Pro",
+    "s": 2.5,
+    "e": 2.74
+   },
+   {
+    "w": "prices",
+    "s": 2.74,
+    "e": 3.16
+   },
+   {
+    "w": "and",
+    "s": 3.16,
+    "e": 3.5
+   },
+   {
+    "w": "negotiates,",
+    "s": 3.5,
+    "e": 4.28
+   },
+   {
+    "w": "and",
+    "s": 4.68,
+    "e": 4.76
+   },
+   {
+    "w": "Flash",
+    "s": 4.76,
+    "e": 5.12
+   },
+   {
+    "w": "reads",
+    "s": 5.12,
+    "e": 5.52
+   },
+   {
+    "w": "and",
+    "s": 5.52,
+    "e": 5.84
+   },
+   {
+    "w": "writes.",
+    "s": 5.84,
+    "e": 6.2
+   }
+  ]
+ },
+ "u18-4.wav": {
+  "text": "On Google's agent platform, Gemini Pro prices and negotiates, and Flash reads and writes.",
+  "words": [
+   {
+    "w": "On",
+    "s": 0.0,
+    "e": 0.22
+   },
+   {
+    "w": "Google's",
+    "s": 0.22,
+    "e": 0.68
+   },
+   {
+    "w": "agent",
+    "s": 0.68,
+    "e": 0.96
+   },
+   {
+    "w": "platform,",
+    "s": 0.96,
+    "e": 1.6
+   },
+   {
+    "w": "Gemini",
+    "s": 2.14,
+    "e": 2.5
+   },
+   {
+    "w": "Pro",
+    "s": 2.5,
+    "e": 2.78
+   },
+   {
+    "w": "prices",
+    "s": 2.78,
+    "e": 3.22
+   },
+   {
+    "w": "and",
+    "s": 3.22,
+    "e": 3.64
+   },
+   {
+    "w": "negotiates,",
+    "s": 3.64,
+    "e": 4.46
+   },
+   {
+    "w": "and",
+    "s": 4.64,
+    "e": 5.02
+   },
+   {
+    "w": "Flash",
+    "s": 5.02,
+    "e": 5.4
+   },
+   {
+    "w": "reads",
+    "s": 5.4,
+    "e": 5.76
+   },
+   {
+    "w": "and",
+    "s": 5.76,
+    "e": 6.02
+   },
+   {
+    "w": "writes.",
+    "s": 6.02,
+    "e": 6.38
+   }
+  ]
+ },
+ "u18-5.wav": {
+  "text": "On Google's agent platform, Gemini Pro prices and negotiates and Flash reads and writes.",
+  "words": [
+   {
+    "w": "On",
+    "s": 0.0,
+    "e": 0.22
+   },
+   {
+    "w": "Google's",
+    "s": 0.22,
+    "e": 0.7
+   },
+   {
+    "w": "agent",
+    "s": 0.7,
+    "e": 0.94
+   },
+   {
+    "w": "platform,",
+    "s": 0.94,
+    "e": 1.54
+   },
+   {
+    "w": "Gemini",
+    "s": 2.04,
+    "e": 2.42
+   },
+   {
+    "w": "Pro",
+    "s": 2.42,
+    "e": 2.68
+   },
+   {
+    "w": "prices",
+    "s": 2.68,
+    "e": 3.06
+   },
+   {
+    "w": "and",
+    "s": 3.06,
+    "e": 3.46
+   },
+   {
+    "w": "negotiates",
+    "s": 3.46,
+    "e": 4.26
+   },
+   {
+    "w": "and",
+    "s": 4.26,
+    "e": 4.66
+   },
+   {
+    "w": "Flash",
+    "s": 4.66,
+    "e": 5.02
+   },
+   {
+    "w": "reads",
+    "s": 5.02,
+    "e": 5.38
+   },
+   {
+    "w": "and",
+    "s": 5.38,
+    "e": 5.66
+   },
+   {
+    "w": "writes.",
+    "s": 5.66,
+    "e": 5.96
+   }
+  ]
  }
 }

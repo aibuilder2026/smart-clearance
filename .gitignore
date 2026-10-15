@@ -362,7 +362,8 @@ design3/designs/SC-218/src/tts/vo3/maya1w-warm/*
 
 # SC-219: cut 9's pipeline ships as cut 8's did, with its four scene pages (saas9/, what it is; arch9/, the architecture
 # in 3D; cast9/, the two paths and the people; pwa9/, the install, faster), their stills and the cues they were captured
-# on; arch9's three.js comes from SC-210's eco by a link that stays local, as do captures, takes, clips and the build
+# on; arch9's three.js comes from SC-210's eco by a link that stays local, as do captures, takes, clips and the build.
+# Cut 10's pages (saas10/, arch10/, cast10/) ship the same way; their photographs are cut 9's, copied by prep10.py
 !design3/designs/SC-219/src/
 design3/designs/SC-219/src/*
 !design3/designs/SC-219/src/*.py
@@ -378,6 +379,13 @@ design3/designs/SC-219/src/*
 design3/designs/SC-219/src/arch9/node_modules
 !design3/designs/SC-219/src/cast9/
 !design3/designs/SC-219/src/pwa9/
+!design3/designs/SC-219/src/saas10/
+!design3/designs/SC-219/src/arch10/
+design3/designs/SC-219/src/arch10/node_modules
+!design3/designs/SC-219/src/cast10/
+design3/designs/SC-219/src/saas10/*.webp
+design3/designs/SC-219/src/arch10/*.webp
+design3/designs/SC-219/src/cast10/*.webp
 !design3/designs/SC-219/src/build/
 design3/designs/SC-219/src/build/*
 !design3/designs/SC-219/src/build/screens.json
@@ -385,6 +393,9 @@ design3/designs/SC-219/src/build/*
 !design3/designs/SC-219/src/build/arch9-cues.json
 !design3/designs/SC-219/src/build/cast9-cues.json
 !design3/designs/SC-219/src/build/pwa9-cues.json
+!design3/designs/SC-219/src/build/saas10-cues.json
+!design3/designs/SC-219/src/build/arch10-cues.json
+!design3/designs/SC-219/src/build/cast10-cues.json
 !design3/designs/SC-219/src/build/clicks8.json
 !design3/designs/SC-219/src/tts/
 design3/designs/SC-219/src/tts/*

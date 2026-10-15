@@ -409,8 +409,9 @@ class CostStack:
             ('Disposal', '1,580 packs × ₹1.50', -2370.0, False),
             ('EPR on the waste', '339.7 kg × ₹6', -2038.2, False)]
 
-    def __init__(self, x, y, times, u_total, u1, w=640):
+    def __init__(self, x, y, times, u_total, u1, w=640, pace=1.0):
         self.x, self.y, self.times, self.u_total, self.u1, self.w = x, y, times, u_total, u1, w
+        self.k = pace     # cut 10 plays the rows and the GST swap faster (0.55), in a 10 s opening
         self.title = words_sprite(kicker='IF IT IS DESTROYED · MANGO DRINK, 1,580 PACKS', width=w, kcolor='a')
 
     def draw(self, f, u, L=None):
@@ -427,16 +428,17 @@ class CostStack:
         blit(f, self.title, self.x, self.y, a)
         for i, ((lab, sub, v, hot), t) in enumerate(zip(self.ROWS, self.times)):
             if u < t: continue
-            e = ease_out(clamp((u - t) / 0.35))
-            vv = v * clamp((u - t) / 0.6)
-            spr = cost_row(lab, sub, money(v) if (u - t) > 0.6 else money(round(vv)), self.w, hot and u - t < 1.8)
+            k = self.k
+            e = ease_out(clamp((u - t) / (0.35 * k)))
+            vv = v * clamp((u - t) / (0.6 * k))
+            spr = cost_row(lab, sub, money(v) if (u - t) > 0.6 * k else money(round(vv)), self.w, hot and u - t < 1.8 * k)
             yy = self.y + 46 + i * rh
             blit(f, spr, self.x + 20 * (1 - e), yy, a * e)
             if hot:   # the credit Munchly kept on these packs, struck out, then taken back
                 px, py = self.x + 300, yy + 16
-                k_in = clamp((u - t - 0.2) / 0.25)
-                strike = ease_in_out(clamp((u - t - 0.6) / 0.4))
-                swap = ease_out(clamp((u - t - 1.15) / 0.35))
+                k_in = clamp((u - t - 0.2 * k) / (0.25 * k))
+                strike = ease_in_out(clamp((u - t - 0.6 * k) / (0.4 * k)))
+                swap = ease_out(clamp((u - t - 1.15 * k) / (0.35 * k)))
                 if swap < 1:
                     blit(f, itc_pill('kept'), px, py, a * k_in * (1 - swap))
                     if strike > 0:
@@ -445,10 +447,10 @@ class CostStack:
                     blit(f, itc_pill('reversed'), px + 18 * (1 - swap), py, a * swap)
         # the total
         if u >= self.u_total:
-            e = ease_out(clamp((u - self.u_total) / 0.4))
+            e = ease_out(clamp((u - self.u_total) / (0.4 * self.k)))
             yy = self.y + 46 + n * rh + 10
             line(f, (self.x + 16, yy), (self.x + self.w - 16, yy), (229, 92, 74), alpha=a * e, width=1.6, dot=False)
-            tot = money(-22657.2) if u - self.u_total > 0.5 else money(round(-22657.2 * clamp((u - self.u_total) / 0.5)))
+            tot = money(-22657.2) if u - self.u_total > 0.5 * self.k else money(round(-22657.2 * clamp((u - self.u_total) / (0.5 * self.k))))
             blit(f, text_sprite('Lost if destroyed', 'g', 24, 680, (255, 220, 210)), self.x + 16, yy + 18, a * e)
             ts = text_sprite(tot, 'b', 44, 800, (255, 120, 100))
             blit(f, ts, self.x + self.w - 16 - ts.shape[1], yy + 6, a * e)

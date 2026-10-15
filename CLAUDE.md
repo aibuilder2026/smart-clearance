@@ -2918,8 +2918,8 @@
   - **Found on the way:** the stage's own cards and chapter chips cut out of every window's spans; the signing fast-forward flickered a frame between signers, so it runs sheet to sheet; the sell-through panel's day count was stuck at one; the new discs' icons were white on white.
   - **Checks:** −14.0 LUFS, −1.5 dB true peak; no one-frame flash in any of the 5,858 frames; windows between 0.97× and 1.40× apart from two labelled fast-forwards (34×, 22×); both QR codes read back; 26 of 30 lines word for word from the final mix (the rest a spelling, the brand as "Manchli", the URL as one word, and one slice that caught the line before).
   - **Where:** `working-demo/smart-clearance-working-demo-2026-10-15_16-44-16.mp4` (crf 17), its 720p copy and captions; the crf-21 1080p, 720p and captions, the pipeline and its README in `design3/designs/SC-218/`.
-- **SC-219** (In Review, branch `SC-219-working-demo-cut9`): cut 9 of the working demo, 3 min 56.3 s (236.32 s), inside the 235 to 238 s asked for. Everything made on this Mac; no image, video or paid model called.
-  - **The request** (the maintainer's notes on cut 8):
+- **SC-219** (In Review, branch `SC-219-working-demo-cut9`): cuts 9 and 10 of the working demo, everything made on this Mac, with no image, video or paid model called. Cut 10 is 3 min 58.8 s (238.80 s), inside the 238 to 239 s asked for; cut 9 was 3 min 56.3 s (236.32 s), inside 235 to 238.
+  - **Cut 9, the request** (the maintainer's notes on cut 8):
     - the install a little faster;
     - before the demo, the two paths and everyone in them, animated;
     - the brand scenes condensed into agentic SaaS for retailers and the FMCG supply chain, aesthetic;
@@ -2930,7 +2930,7 @@
     - special care with transitions.
 
     Then: "show a live sign in to the application for Supply chain persona", and "Only use realistic photos and videos, no cartoons please".
-  - **The film:**
+  - **Cut 9, the film:**
     - **What it is** (`saas9/`, 11.3 s, an HTML page captured frame by frame on photographs): the name turns −₹22,657 into ₹16,917 recovered, then "Agentic software as a service · For the FMCG supply chain.", each brand's workspace address, and the three tiers as photographs of the work (a packing line, a godown counter, a kirana delivery), each lit as named, with the ten agents riding the route between them.
     - **Under the hood** (`arch9/`, 33.8 s, 0:24 to 0:58): cut 8's content, said in fewer words, as a lit three.js scene the camera flies through. The four apps' real screens on Firebase; backend-api as a server with rack lights, beside Secret Manager and Cloud SQL; the Pub/Sub ring with Cloud Scheduler's clock; ten agent pods fed by BigQuery and Cloud Storage; the Gemini core lighting Pro and Flash; the guardrails' shield and the API's own figure; a person's yes on the real Approve sheet. The scene has blueprint-to-lit parts, a mirror floor, light shafts, bloom and crisp HTML labels.
     - **The live demo** (`cast9/`, 8 s): two lanes from the two packs, each person's photograph in the order they act, each path's outcome, and Neha's console beside both.
@@ -2939,21 +2939,62 @@
     - **The Command Center** (16.1 s, the sad recording): the watchlist with what it tracks (days left, sell-through, quick-commerce gates, the cost of the bin) lit as named; ₹48,987 at stake; the Watcher's two Hinglish pushes landing in her screen, then lifted out; the flagged batches; the Mango Drink's card, then the Masala Chips' (held as a still, the only clean span).
     - **The rest:** the agents' heads open on the agent at work (cut 8's Verify and staff-sale shots showed "Priya · Approve"). The impact card and BigQuery's badge no longer overlap. The close moves left, with the QR code in a column of its own at the right.
     - **Transitions:** an iris (the brand's squircle) into the product, a rise under the hood, pushes between people, a cut where the same screen goes on, cut 8's wipe into the sad path. None blurs.
-  - **The voice:** eleven new Maya1 lines (b91, u02 to u06, x01, p02, q01 to q03), six takes each, every pick read back word for word; m02 is gone.
-  - **Found on the way:**
+  - **Cut 9, the voice:** eleven new Maya1 lines (b91, u02 to u06, x01, p02, q01 to q03), six takes each, every pick read back word for word; m02 is gone.
+  - **Cut 9, found on the way:**
     - GLSL `pow(x, 2.0)` of a negative x is NaN on Metal (and `1 − dot` dipped below zero), which the bloom spread into black boxes;
     - fading meshes still wrote depth;
     - the floor's dark edge was sorted by its centre over the agents;
     - the screens tripped the bloom, and a halo was sized to the 21.5-unit deck;
     - a rounded box has no edges to outline.
-  - **Checks:**
+  - **Cut 9, checks:**
     - −14.0 LUFS, −1.5 dB true peak;
     - no one-frame flash in the 5,908 frames;
     - windows between 0.67× and 1.4×, apart from the two labelled fast-forwards and the chips' held card;
     - no stage marks in the new beats;
     - both QR codes read back;
     - 28 of 33 lines word for word from the final mix.
-  - **Where:** `working-demo/smart-clearance-working-demo-2026-10-15_18-53-48.mp4` (crf 17), its 720p copy, a light preview and captions; the crf-21 1080p, 720p and captions, the pipeline (the scene pages' photographs remade as WebP by `prep9.py`) and its README in `design3/designs/SC-219/`.
+  - **Cut 9, where:** `working-demo/smart-clearance-working-demo-2026-10-15_18-53-48.mp4` (crf 17), its 720p copy, a light preview and captions; its pipeline (the scene pages' photographs remade as WebP by `prep9.py`) in `design3/designs/SC-219/`, whose `media/` held its crf-21 copies until cut 10 replaced them.
+  - **Cut 10, the request** (the maintainer's notes on cut 9):
+    - the architecture (0:30 to 1:00) refined: every component properly highlighted, the motion cinematic, like a film;
+    - the use cases (1:00 to 1:05) saying that Munchly Foods is an imaginary company, with two batches at two different distributors, in 7 to 10 s;
+    - "Live", in "Live on production", said right;
+    - the first 15 s sped up to 10, and the time given to the walkthrough;
+    - at least 238 and at most 239 s.
+
+    Then: "Video should mention 9 AI agents, Watcher is a normal coding agent".
+  - **Cut 10, the film:**
+    - **The opening** (10.1 s): cut 9's godown, label and bin, faster, with a shorter second line (i13). Every figure lands before its shot cuts: the write-off rolls in on "too", the countdown runs in 0.7 s, the bin's costs and the planet's figures come a beat apart (`CostStack`'s `pace`), and the iris opens on the name as it is said.
+    - **Under the hood** (`arch10/`, 33.7 s, 0:20 to 0:54), built again as a film:
+      - a lens: depth of field on the camera's target over a depth pre-pass, anamorphic streaks, bloom, motion blur from 1 to 14 sub-frames, ACES, chromatic aberration, lens ghosts, a grade, a vignette and grain;
+      - a 2.39:1 letterbox, with each act's title and the stack's parts lit in its bars;
+      - every component highlighted as it is named: a light down on it, a ring under it, the rest dimmed, and a callout on a leader line with what it does and its real names;
+      - a keyed camera with roll and lens changes;
+      - a whoosh a move, a rise and an impact.
+    - **The use cases** (`cast10/`, 9.7 s): "Live, on production." pushed through onto Munchly Foods' card, stamped "Imaginary brand · fictional data" on "imaginary". Then a tree: two batches, two distributors (Lakshmi Agencies, Hyderabad; Rakesh Traders, Nagpur), and two paths with their people and outcomes (₹16,917; ₹11,702, with 540 packs destroyed with proof).
+    - **Nine AI agents, and the Watcher in plain code**, throughout:
+      - the voice (u17);
+      - the architecture: a grey "plain code" tier, with no beam from Gemini;
+      - what it is;
+      - the Command Center's head;
+      - the close.
+    - **Gemini on Google's Agent Platform** (u18), its new name (SC-220).
+    - **The walkthrough** runs 2 min 47.5 s, 4.5 s more than cut 9's.
+  - **Cut 10, the voice:** four new Maya1 lines (i13, u17, u18, x24).
+    - x24's "Live" is given as "Lyve", and kept once its vowel measures as /aɪ/ (`tts/vowel.py`, LPC formants; F1's 90th percentile 868 Hz) and Whisper reads "Live".
+    - i13, u18 and m08 keep takes whose consonants still read with the music under them ("date", "prices", "packs"); the takes first kept read "state", "prizes" and "bags" under the bed.
+  - **Cut 10, found on the way:**
+    - the camera flew through the Pub/Sub ring three times, and motion blur washed those frames out (up to 28% clipped): every additive light now fades within 2.4 units of the lens;
+    - the clock flared as the camera left it;
+    - 0.3 s of empty frame came before the brand card;
+    - the opening's figures landed as their shots cut.
+  - **Cut 10, checks:**
+    - −14.0 LUFS, −1.4 dB true peak;
+    - no one-frame flash in the 5,970 frames, and no burst of light left in the architecture;
+    - windows between 0.67× and 1.21×, apart from the two labelled fast-forwards and the chips' held card;
+    - no stage marks (`cardscan10.py`'s hits are the apps' own buttons);
+    - both QR codes read back;
+    - 29 of 33 lines word for word from the final mix.
+  - **Cut 10, where:** `working-demo/smart-clearance-working-demo-2026-10-15_20-34-52.mp4` (crf 17), its 720p copy, a light preview and captions, with two earlier exports kept as `…-superseded`; the crf-21 1080p, 720p and captions, the pipeline and its README in `design3/designs/SC-219/`.
 - **SC-220** (PR #200, merged; Done): ARCHITECTURE.md purely technical, on Agent Platform, with the deck's details; the Lucid diagrams, the architecture page and its PDF, and the deck renamed.
   - **The request:** ARCHITECTURE.md "with these details" (the AI Builder Cup deck, *14 Oct v4*); "update the references of vertex AI with Agent Platform which is the new name", in the Lucidchart diagrams and pictures and in the deck; ARCHITECTURE.md "purely technical", without the references to the Jira project.
   - **The rename:** Google renamed Vertex AI to Gemini Enterprise Agent Platform on 22 Apr 2026, and Agent Engine to Agent Runtime. Nothing in the build changes: Gemini is still reached at `aiplatform.googleapis.com` under `roles/aiplatform.user`, and the google-genai SDK's `enterprise=True` (which the agents already pass) is its former `vertexai=True`.

@@ -1,4 +1,135 @@
-# SC-219 · The working demo, cut 9
+# SC-219 · The working demo, cuts 9 and 10
+
+A demo film of about four minutes, made from the three production recordings of 13 Oct 2026, as cut 8 (SC-218) was:
+cut 9 on the maintainer's notes on cut 8, then cut 10 on four notes on cut 9. Each joins the earlier cuts in the
+repository root's `working-demo/` folder, with its export's date and time in its name; `media/` holds the latest.
+
+## Cut 10 (15 Oct 2026)
+
+Made from cut 9's pipeline, with three scene pages built again and captured frame by frame on the voice's own words:
+`src/arch10/` (the architecture, as a film), `src/cast10/` (the use cases) and `src/saas10/` (what it is, with the
+Watcher in code). The install is cut 9's (`src/pwa9/`).
+
+### The brief
+
+**The maintainer's notes on cut 9** (15 Oct 2026):
+
+1. The architecture (0:30 to 1:00) looks good, but refine it more: every component properly highlighted, and the
+   animation and motion really cinematic, like a film.
+2. The use cases (1:00 to 1:05): say that Munchly Foods is an imaginary company, and that we picked two batches with
+   two different distributors; at most 7 to 10 seconds.
+3. "Live", in "Live on production", was said wrong.
+4. The first 15 seconds sped up to 10, and the time given to the application's walkthrough.
+
+"Think hard and use best of the best cinematic, animation and motion effects." The film runs at least 238 and at most
+239 seconds.
+
+**Then, while it was being made:** "Video should mention 9 AI agents, Watcher is a normal coding agent".
+
+### What changed
+
+| Part | Cut 9 | Cut 10 |
+| --- | --- | --- |
+| The opening | 0:00 to 0:13: the godown, the label's date, the bin and its costs | **10.1 s**, the same three shots, faster. The second line is shorter ("Too close to its date for quick commerce, it's destroyed."); the GST credit taken back is shown, not said. Every figure lands before its shot cuts: the statement's ₹22,657 rolls in on "too", the countdown runs from 60 to 22 days in 0.7 s, the bin's four costs come in a beat apart (the GST credit kept, struck out, then taken back) with the planet's four figures beside them, and the iris opens on the name as the voice says it |
+| Under the hood | 33.8 s, 0:24 to 0:58: a lit 3D scene the camera flew through | **33.7 s, 0:20 to 0:54**, built again as a film (`arch10/`). **A lens:** depth of field on the camera's target (a bokeh pass over a depth pre-pass), anamorphic streaks on the lights, bloom, motion blur from 1 to 14 sub-frames a frame (a 180° shutter, as many as the move needs), ACES tone mapping, a touch of chromatic aberration and lens ghosts, a grade, a vignette and grain. **A 2.39:1 letterbox:** the act's title in the top bar (1/3 All on Google Cloud; 2/3 Nine AI agents, two Gemini models; 3/3 The models never touch the money) and the stack's parts in the bottom bar, each lit as the voice names it. **Every component highlighted:** as the voice names it, a light comes down on it, a ring pulses under it, the rest of the platform dims, and a callout beside it, on a leader line, says what it does here, with its real names: Firebase's four apps, backend-api on Cloud Run, Cloud SQL, Pub/Sub, Cloud Scheduler, the agents, BigQuery, Cloud Storage, Gemini on Google's Agent Platform (formerly Vertex AI), Pro, Flash, the shield, the API's ₹16,917 and the person's yes. **The camera** flies a keyed path with roll and lens changes, and Gemini's core wakes as it is named. **Its sound:** a whoosh under each move, a rise into the last shot, an impact as the platform lights |
+| The use cases | 8 s: "Two batches. Two paths." | **9.7 s** (`cast10/`). "Live, on production." large, then the camera pushes through it onto Munchly Foods' card, stamped "Imaginary brand · fictional data" as the voice says "imaginary". The card moves into a tree as the header says "Two batches. Two distributors. Two paths.": the Mango Drink (MF-2410-118) at Lakshmi Agencies in Hyderabad and the Masala Chips (MF-2409-117) at Rakesh Traders in Nagpur, each with its godown and kiranas, then each path with its people and how it ended: Sri Lakshmi Ganapathi Kirana, the godown's staff and Feeding India, ₹16,917 recovered; Shree Ganesh Kirana, Agrawal Wholesale and Orange City Enviro, ₹11,702 recovered and 540 packs destroyed with proof. A light runs each lane |
+| "Live" | x01, "Now, live on production", said as the verb (/lɪv/) | x24, "Live on production: Munchly Foods, an imaginary brand, with two batches at two different distributors. One happy path, one sad." Maya1 is given "Lyve", and the take is kept only once its vowel measures as /aɪ/ (`tts/vowel.py`) and Whisper reads it as "Live" |
+| Nine AI agents | "Ten agents" | **Nine AI agents, and the Watcher in plain code.** The voice says it (u17); the architecture's act and callout say it, its Watcher stands in a grey "plain code" tier with no beam from Gemini; what it is says "Nine AI agents, and the Watcher in plain code, at every step"; the Command Center's head reads "Watcher · plain code · no AI model"; the close reads "Nine AI agents, one yes, and nothing good goes to waste." |
+| Gemini | "Gemini on Vertex AI thinks for them" | u18, "On Google's Agent Platform, Gemini Pro prices and negotiates, and Flash reads and writes.", the new name (SC-220) |
+| The walkthrough | 2 min 43 s, from the console to the close | **2 min 47.5 s**: the console, the offer, the donation, the lot, the signing and the papers each hold longer |
+
+**Only realistic photographs and footage**, as in cut 9: the use cases are the people's portraits, the work's
+photographs and the packs; the architecture is a technical scene, not an illustration.
+
+**The voice.** Four lines are new (Maya1, six takes each): i13, the opening's second line; u17 and u18, the agents and
+Gemini; x24, the use cases. Three lines keep the take whose consonants still read with the music under it: i13
+("date"), u18 ("prices") and m08 ("packs"). Each read right on its own, but Whisper heard "state", "prizes" and "bags"
+once the bed was under the take first kept, so every take of the three was voiced over the bed at its place in the film.
+
+### The film
+
+| When | Part |
+| --- | --- |
+| 0:00 | A distributor's godown, the label's date, the bin and its cost |
+| 0:10 | Agentic software as a service for the FMCG supply chain |
+| 0:20 | Under the hood: all on Google Cloud; nine AI agents and two Gemini models; the guardrails and a person's yes |
+| 0:54 | The live demo: Munchly Foods, an imaginary brand; two batches, two distributors, two paths |
+| 1:04 | The console: a brand set up in minutes |
+| 1:13 | The workspace installs as an app on any laptop, tablet or phone |
+| 1:19 | Priya signs in, live |
+| 1:25 | Her Command Center tracks every batch at risk; the Watcher flags two |
+| 1:41 | The happy path, Munchly Mango Drink with Lakshmi Agencies |
+| 2:38 | The sad path, Munchly Masala Chips with Rakesh Traders |
+| 3:27 | On the record: the audit trail and one trace |
+| 3:37 | How the chips' swing adds up |
+| 3:45 | Impact's ledger, ready for BRSR |
+| 3:51 | The close: the guided demo |
+
+### How cut 10 is made
+
+| Part | Tool | Where |
+| --- | --- | --- |
+| The opening | cut 9's shots, re-timed; the cost stack's pace | `src/shots10.py`, `src/parts6.py` |
+| The architecture | three.js 0.170 (from SC-210's eco) with its own passes: a bokeh depth of field over a depth pre-pass, anamorphic streaks, bloom, motion blur by sub-frame accumulation and a lens pass; WebGL in headless Chromium on the GPU, HTML callouts at each part's projected place | `src/arch10/` |
+| The use cases | an HTML page drawn frame by frame | `src/cast10/` |
+| What it is | cut 9's page, with the Watcher in code | `src/saas10/` |
+| The pages' photographs | cut 9's, copied | `src/prep10.py` |
+| The captures | `capture-page.mjs` on each page's cues, which `shots10.py` writes | `src/capture10.sh` |
+| The walkthrough | cut 9's parts, re-timed | `src/shots10.py`, `src/render10.py` |
+| The sound | cut 9's mix with the architecture's moves, its rise and impact, and the use cases' stamp | `src/mix10.py` |
+| The voice | Maya1 (local), "live" checked by its formants | `src/lines.json`, `src/tts/`, `src/run10v.sh`, `src/tts/vowel.py` |
+
+**Found while making it:**
+
+- **Black frames in the 3D scene:** `pow()` of a negative number is NaN on Metal, and the bloom spread one into a whole
+  black frame; the spotlights' cone shader clamps before each `pow()`.
+- **The camera flew through the Pub/Sub ring** three times (from the clock to the agents, from the agents to BigQuery,
+  and from Gemini's close-up to Pro). With motion blur, the ring's glow washed those frames out green-white, up to 28%
+  of the frame clipped. Every additive light now fades within 2.4 units of the lens, as a real lens loses what passes
+  it; the nearest framed part sits 5 units off, so nothing else changes. The clock also keeps its close-up's softer
+  light while the camera is near it.
+- **An empty moment** before the brand card arrived (0.3 s): the title now pushes through onto the card.
+- **The opening's figures** landed just as their shots cut, and the bin's were complete only 0.3 s before the iris.
+- **"Lyve"** still came out short in 2 of 6 takes, so each take's vowel was measured.
+- **Three words misheard under the music**, above.
+
+### The result
+
+`media/smart-clearance-working-demo.mp4`: **3 min 58.8 s (238.80 s)**, inside the 238 to 239 s asked for.
+
+- 1920 × 1080 at 25 fps, H.264 crf 21, with AAC 48 kHz audio at −14.0 LUFS integrated and −1.4 dB true peak.
+- Beside it are a 720p copy and the narration as `.srt`.
+- The crf-17 master is `working-demo/smart-clearance-working-demo-2026-10-15_20-34-52.mp4` (git-ignored), with its 720p
+  copy, a light preview and the captions. Two earlier exports of cut 10 are kept there as `…-superseded` (`…_20-17-10`,
+  `…_20-25-57`).
+
+**Checks:**
+
+- the opening, the architecture and the use cases as stills and at 5 to 25 frames a second through each move, and the
+  whole film at about one frame a second;
+- the architecture scanned frame by frame for a burst of light: none left (the bright frames are the Approve sheet's
+  and the console's own white screens);
+- all 5,970 frames scanned for a frame that differs from both its neighbours while they match each other: none
+  (`flash10.py`);
+- every window plays between 0.67× and 1.21×, apart from the two labelled fast-forwards (the scheme filling, 34×; the
+  signing, 22×) and the Masala Chips' card, held as a still;
+- the recordings' own stage marks: none. The scan's 196 hits are the apps' own green buttons, a phone's dark card and
+  the label photo (`cardscan10.py`);
+- both codes read back from the film's own frames: the carton label's
+  `https://id.munchly.example/01/18900000001061/10/MF-2410-118?17=261024` and the guided demo's
+  `https://smartclearance-demo.web.app`;
+- the narration read back from the final mix by Whisper, a slice a line (`readback10.py`): 29 of 33 word for word. One
+  slice writes Pub/Sub as "PupSup" (sliced at the line's own edges, the voice and the mix both read "PubSub"), one hears
+  the brand as "Manchli", one writes the URL as one word, and b91's slice heard "Argentic" (from its own slice it reads
+  "Agentic");
+- "Live" in x24: its vowel opens as /aɪ/ does (F1's 90th percentile 868 Hz, against 874 Hz for the "live" m05 says
+  right), and Whisper reads "Live";
+- the opening is over at 0:10.1, the architecture runs 33.7 s (0:20 to 0:54), and the use cases are on screen 9.7 s.
+
+**The spend:** nothing. Maya1, Whisper, UTMOS, Chromium (three.js on the GPU) and ffmpeg ran on this Mac; no image, video
+or paid model was called. The music is SC-187's.
+
+## Cut 9 (15 Oct 2026)
 
 Cut 9 of the demo film, after SC-218's cut 8. It follows the maintainer's notes on cut 8, and is made from:
 
@@ -8,11 +139,9 @@ Cut 9 of the demo film, after SC-218's cut 8. It follows the maintainer's notes 
   - `src/saas9/`, what it is (new);
   - `src/arch9/`, the architecture in 3D (new);
   - `src/cast9/`, the two paths and the people (new);
-  - `src/pwa9/`, the install scene, faster.
+  - `src/pwa9/`, the install, faster.
 
-It joins the earlier cuts in the repository root's `working-demo/` folder, with its export's date and time in its name.
-
-## The brief
+### The brief
 
 **The maintainer's notes on cut 8** (15 Oct 2026):
 
@@ -35,7 +164,7 @@ The film runs at least 235 and at most 238 seconds, with special care on the scr
 - "Make sure we show a live sign in to the application for Supply chain persona".
 - "Only use realistic photos and videos, no cartoons please".
 
-## What changed
+### What changed
 
 | Part | Cut 8 | Cut 9 |
 | --- | --- | --- |
@@ -63,7 +192,7 @@ recordings and the apps' own screens. The architecture is a technical scene, not
 
 m02 is gone.
 
-## The film
+### The film
 
 | When | Part |
 | --- | --- |
@@ -82,7 +211,7 @@ m02 is gone.
 | 3:42 | Impact's ledger, ready for BRSR |
 | 3:49 | The close: the guided demo |
 
-## How cut 9 is made
+### How cut 9 is made
 
 | Part | Tool | Where |
 | --- | --- | --- |
@@ -110,12 +239,12 @@ m02 is gone.
 - **The Masala Chips' card is clean in the recording only from 115.95 to 116.1 s**, before the stage's own card dims
   it, so it is held there as a still.
 
-## The result
+### The result
 
-`media/smart-clearance-working-demo.mp4`: **3 min 56.3 s (236.32 s)**, inside the 235 to 238 s asked for.
+**3 min 56.3 s (236.32 s)**, inside the 235 to 238 s asked for.
 
 - 1920 × 1080 at 25 fps, H.264 crf 21, with AAC 48 kHz audio at −14.0 LUFS integrated and −1.5 dB true peak.
-- Beside it are a 720p copy and the narration as `.srt`.
+- Its crf-21 1080p and 720p copies and its captions were in `media/` until cut 10 replaced them.
 - The crf-17 master is `working-demo/smart-clearance-working-demo-2026-10-15_18-53-48.mp4` (git-ignored), with its 720p
   copy, a light preview and the captions, beside cut 8 (`…_16-44-16`).
 
@@ -145,7 +274,8 @@ or paid model was called. The music is SC-187's.
 ## Rebuild
 
 From `src/`. It needs cut 8's media in place (SC-218's rebuild, which needs the earlier cuts'), and reads the
-recordings from the main checkout:
+recordings from the main checkout. `lines.json` and the voice's picks now hold cut 10's narration; cut 9's are at its
+commit, `3d7eaa6b`. Cut 9:
 
 ```sh
 node icons.mjs && node icons8.mjs && node icons9.mjs && node render-pushes.mjs 380 460   # the icons and the pushes
@@ -154,4 +284,16 @@ node icons.mjs && node icons8.mjs && node icons9.mjs && node render-pushes.mjs 3
 ./capture9.sh                                                                       # the four scene pages, on the voice's cues
 .venv/bin/python render9.py && .venv/bin/python mix9.py && ./export9.sh
 node qrcheck9.mjs ../media/smart-clearance-working-demo.mp4 8.4 233                  # the codes, read back
+```
+
+Cut 10, after cut 9's steps (its pages' three.js comes from SC-210's eco by a link, as arch9's does):
+
+```sh
+ln -s ../../../SC-210/src/eco/node_modules arch10/node_modules
+./run10v.sh                                                                         # the new lines' takes, then the pick
+.venv/bin/python tts/vowel.py x24-3.wav:Live m05-2.wav:live                         # how each "live" is said
+.venv/bin/python prep10.py                                                          # cut 9's photographs, for cut 10's pages
+./capture10.sh                                                                      # the four scene pages, on the voice's cues
+.venv/bin/python render10.py && .venv/bin/python mix10.py && ./export10.sh
+node qrcheck10.mjs ../media/smart-clearance-working-demo.mp4 7.6 233.5              # the codes, read back
 ```
