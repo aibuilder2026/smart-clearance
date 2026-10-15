@@ -103,6 +103,15 @@
       "port": 8787
     },
     {
+      "name": "design3-threaded",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "frontend/testing/design3-server.py",
+        "8789"
+      ],
+      "port": 8789
+    },
+    {
       "name": "backend-api",
       "runtimeExecutable": "backend-api/scripts/dev.sh",
       "runtimeArgs": [],
