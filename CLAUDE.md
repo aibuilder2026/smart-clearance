@@ -2789,4 +2789,11 @@
     - the sad path is reproducible as recorded: two shops at 24 packets each leave 540, the count the evidence is made for, as long as the lot is won before the window closes (otherwise the shortfall moves onto the lot).
   - **Also:** README's documents table and AGENTS.md's layout name the data set.
   - **Checks:** every link, anchor, image and data set path in DEMO.md and the data set's README resolves, and all 66 screenshots are used. No app change.
+- **SC-213** (In Review, branch `SC-213-readme-judges-note`): README.md, for judges, asked for by the maintainer.
+  - **At the very top:** an IMPORTANT alert, before the title. It says how to run the journey demos, step by step, and the sample data they use are in DEMO.md, with the files in `demoDataSet/`. It also says the sign-in credentials are shared separately with the submission, one password for every account in the demo.
+  - **Removed:**
+    - the documentation table's CLAUDE.md row;
+    - its "Hosted design pages" row (the Claude Design links);
+    - every other Claude Design reference. The design prototypes' row now points at `design3/`, served locally; the design3 README's row, the `dist.sh` line and the design-first rule no longer name Claude Design or its hosted copies.
+  - **Checks:** every relative link and anchor in README.md resolves.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
