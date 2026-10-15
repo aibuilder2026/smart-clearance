@@ -2765,7 +2765,7 @@
     - `landing-demo/sales-film/smart-clearance-sales-film-2026-10-15_03-46-58.mp4` (crf 17) and its 720p copy;
     - the crf-21 1080p (83.9 MB), 720p and captions, the talking scenes and the score's cues with their sidecars, the pipeline and its README in `design3/designs/SC-210/`.
   - **The spend:** about $28 of the $35 cap: Veo $25.60, Lyria $0.72, the narrator about $0.6 and the reviews under $1.
-- **SC-211** (In Review, branch `SC-211-sales-film-v2`): the sales film v2, 6 min 50.1 s (410.08 s), inside the maintainer's 400 to 420 s. Everything new made on this Mac; no Google model called.
+- **SC-211** (PR #195, merged; Done): the sales film v2, 6 min 50.1 s (410.08 s), inside the maintainer's 400 to 420 s. Everything new made on this Mac; no Google model called.
   - **The request** (on SC-210's film):
     - nothing animating in the top left of the opening, and more motion;
     - the factory worker's white-screen tablet at about 50 s fixed;
