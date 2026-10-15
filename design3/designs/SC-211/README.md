@@ -114,6 +114,12 @@ passes at 1,614 kbps (93.0 MB, under GitHub's limit), AAC 192k at 48 kHz.
 **The spend:** nothing. Qwen-Image, LTX, Maya1, Whisper, Chromium and ffmpeg ran on this Mac. The score is SC-210's
 Lyria cues, reused; no Google model was called.
 
+## On YouTube and the landing page (SC-216)
+
+The film is [youtu.be/DT_4G2txLF4](https://youtu.be/DT_4G2txLF4), "Smart-Clearance: the 7-minute demo", unlisted,
+with its 13 chapters and its captions (`youtube/README.md`). The landing page's theatre plays it when Watch is pressed
+("Watch the 7-minute demo"), its chapters and words from `src/transcript11.py`.
+
 ## Rebuild
 
 From `src/`. It needs SC-210's media in place (hard-linked or copied) and reads the recordings from the main checkout:
@@ -127,4 +133,5 @@ uv run --script talkwin11.py && .venv/bin/python prep11.py        # each scene's
 .venv/bin/python tablet11.py && .venv/bin/python sidecars11.py
 ./capture11.sh                                                     # the scene pages, on the narrator's cues
 .venv/bin/python render11.py --workers 10 && .venv/bin/python mix11.py && ./export11.sh
+.venv/bin/python transcript11.py                                   # the chapters, the YouTube package, the theatre's words
 ```

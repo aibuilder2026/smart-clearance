@@ -2842,4 +2842,22 @@
     Text in a channel colour takes its darker ink, 5.8:1 or better on white (the impeccable hook flagged the green, orange and green tag at first). The labels are in sentence case with a small colour chip, and the cards carry no side stripe (the hook's all-caps and side-tab findings). Its source is `docs/demo/source/cast-and-supply-chain.html`, rendered in Chrome at 1000 px and a device scale factor of 2.
   - **DEMO.md:** a new section, "Meet the cast", after the data set: the picture, a who's-who table with each person's portrait (from `design3/system/img/people/`, in place), organisation, role and journey, and the agents in order.
   - **Checks:** every link, anchor and image in DEMO.md resolves, and all 67 images in `docs/demo/` are used. AGENTS.md's layout names the picture.
+- **SC-216** (In Review, branch `SC-216-landing-film-v2`): the landing page plays SC-211's sales film, from YouTube.
+  - **The request:** "Lets upload this to youtube and replace the one on landing page, use chrome browser claude plugin to do it completely on your own." The theatre's film, its words and its label change, not its design, so no design round.
+  - **On YouTube:** [youtu.be/DT_4G2txLF4](https://youtu.be/DT_4G2txLF4), "Smart-Clearance: the 7-minute demo", unlisted on the maintainer's channel, uploaded end to end through Claude in Chrome:
+    - Studio's own page fetched the 410 MB YouTube copy from a local CORS server (SC-187's `serve.py`) onto its upload input;
+    - the description carries the 13 chapters, and the English (India) captions are the film's own 48 cues;
+    - not made for kids, AI use disclosed, embedding allowed;
+    - YouTube's oEmbed answers 200.
+
+    SC-187's cut 3 (youtu.be/5Z9-32Fuwh4) stays on YouTube as it was.
+  - **The chapters and words:** `design3/designs/SC-211/src/transcript11.py` writes them from the film's own timeline (the cuts `shots11.build()` lays out, the captions `mix11.py` writes): `youtube/transcript.json`, `youtube-description.txt` and `captions.srt`, and the theatre's `design3/site/assets/media/demo-film.json`. 13 chapters, from The waste to The close, and 48 lines, each person who speaks named by role only.
+  - **The theatre** (design3 `site.jsx` first, then the port's `media.ts` and `env.ts`): the id `DT_4G2txLF4` (the default of `PUBLIC_DEMO_FILM`), "Watch the 7-minute demo", "The 7-minute demo", "The whole journey, end to end", 6:50. The poster stays, since it is the office scene the film closes on; its sidecars say so. DEMO.md's film row follows.
+  - **No client on the landing page, the film included:** SC-211's film names none, so AGENTS.md's one exception (SC-187's film) is gone, and the film's unit test now checks every line of its words, not only the chapter titles.
+  - **Checks:**
+    - the frontend gate passes (api 83, core 408, admin 22, console 2, demo 9, workspace 115);
+    - design3's `dist/` is rebuilt, and only `site.js` changes;
+    - the landing page's build, played in the browser pane: every Watch reads "Watch the 7-minute demo", nothing of YouTube loads before it, and the theatre opens on `youtube-nocookie.com/embed/DT_4G2txLF4` with 13 chapters. A chapter jump lands on its scene, the words read 48 lines, Escape gives focus back to Watch, and the console shows no errors;
+    - YouTube's watch page offers 1080p and the English (India) captions;
+    - the keyboard spec follows the 13 chapters; the browser suites were not run (SC-55).
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
