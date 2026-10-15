@@ -7,6 +7,7 @@ import { isEmail } from '../identity';
 import type { Agent } from '../types/shared';
 import type {
 	Journey,
+	JourneyStandIn,
 	JourneyTrigger,
 	AgentConfig,
 	BatchOverride,
@@ -641,6 +642,18 @@ export function setupErrors(f: SetupAnswers, taken: (slug: string) => boolean): 
 // Watcher's daily check, and the timers an offer leaves, each with when it falls due in journey time and the wall time
 // it fires. A daily run fired now is that day's; a timer fired goes; a reset puts the journey back at day 0, 08:00.
 
+/** a kirana scheme as the mock keeps it (SC-215): each shop the scheme went to, in the story's order, with its story share
+ *  and its cap; the packets each shop ordered; who said Not this time; and whether the console filled it */
+export type MockScheme = {
+	ref: string;
+	distributor: string;
+	units: number;
+	status: 'sent' | 'closed';
+	filled: { at: string; shops: number; units: number } | null;
+	shops: { id: string; share: number; cap: number }[];
+	ordered: Record<string, number>;
+	declined: Record<string, unknown>;
+};
 /** a live client's journey, as the mock keeps it */
 export type MockJourney = {
 	day0: string;
@@ -648,6 +661,8 @@ export type MockJourney = {
 	setupConfirmed: boolean;
 	daily: Record<string, string>;
 	timers: { id: string; agent: string; key: JourneyTrigger['key']; ref: string; due: string; blocked?: string }[];
+	/** its open kirana schemes (SC-215); a journey saved before them has none */
+	schemes?: MockScheme[];
 };
 const DAILY = [
 	{ id: 'data', name: 'Data agent', time: '08:30', what: 'daily load' },
@@ -678,7 +693,8 @@ export function journeyOf(c: Client, j: MockJourney | undefined, wall = Date.now
 				dueWall: null,
 				time: a.time,
 				blocked: off(a)
-			}))
+			})),
+			standIns: []
 		};
 	const today = j.now.slice(0, 10);
 	// a journey day lasts dayMinutes of wall time while a batch is at risk, as backend-api's clock runs
@@ -713,8 +729,83 @@ export function journeyOf(c: Client, j: MockJourney | undefined, wall = Date.now
 	return {
 		live: true,
 		clock: { now: j.now, day, day0: j.day0, dayMinutes: c.dayMinutes, compressed: c.dayMinutes < DAY_MINUTES },
-		triggers: [...runs, ...timers].sort((a, b) => Date.parse(a.due!) - Date.parse(b.due!))
+		triggers: [...runs, ...timers].sort((a, b) => Date.parse(a.due!) - Date.parse(b.due!)),
+		standIns: (j.schemes ?? []).filter((sc) => sc.status === 'sent' || sc.filled).map(standInOf)
 	};
+}
+
+/* ---------- standing in for a client's partners, in a demo (SC-215; platform.js fillScheme, standIn) ---------- */
+
+/** a kirana scheme filled as the story has it: every shop that hasn't answered orders its share, within its cap and the
+ *  packets left; whatever is still left goes to the same shops in the same order, each up to its cap. `shops` in the
+ *  story's order; `answered`, the shops that ordered or said Not this time; `left`, the packets left. `story` is the
+ *  story's own shares of those shops, to say whether the fill tops them up or stops at the packets left */
+export function fillScheme(
+	shops: readonly { id: string; share: number; cap: number }[],
+	answered: readonly string[],
+	left: number
+): { orders: { id: string; units: number }[]; shops: number; units: number; story: number } {
+	const open = shops.filter((k) => !answered.includes(k.id));
+	const take: Record<string, number> = {};
+	let rest = Math.max(0, left);
+	for (const k of open) {
+		const n = Math.min(k.share, k.cap, rest);
+		if (n > 0) {
+			take[k.id] = n;
+			rest -= n;
+		}
+	}
+	for (const k of open) {
+		if (!rest) break;
+		const n = Math.min(k.cap - (take[k.id] ?? 0), rest);
+		if (n > 0) {
+			take[k.id] = (take[k.id] ?? 0) + n;
+			rest -= n;
+		}
+	}
+	const orders = open.filter((k) => take[k.id]).map((k) => ({ id: k.id, units: take[k.id] }));
+	return {
+		orders,
+		shops: orders.length,
+		units: orders.reduce((t, o) => t + o.units, 0),
+		story: open.reduce((t, k) => t + Math.min(k.share, k.cap), 0)
+	};
+}
+const answeredOf = (sc: MockScheme) => [...Object.keys(sc.ordered), ...Object.keys(sc.declined ?? {})];
+const placedOf = (sc: MockScheme) => Object.values(sc.ordered).reduce((t, n) => t + n, 0);
+function standInOf(sc: MockScheme): JourneyStandIn {
+	const placed = placedOf(sc);
+	const f = fillScheme(sc.shops, answeredOf(sc), sc.units - placed);
+	return {
+		id: `kiranas-${sc.ref}`,
+		kind: 'kiranas',
+		ref: sc.ref,
+		distributor: sc.distributor,
+		shops: sc.shops.length,
+		ordered: Object.keys(sc.ordered).length,
+		declined: Object.keys(sc.declined ?? {}).length,
+		units: sc.units,
+		placed,
+		fill: { shops: f.shops, units: f.units, story: f.story },
+		filled: sc.filled ?? null,
+		blocked: f.units ? null : placed >= sc.units ? 'The scheme is full' : 'Every shop has answered'
+	};
+}
+/** the audit line a stand-in writes, in backend-api's words */
+export const standInLine = (c: Client, x: JourneyStandIn) =>
+	`Filled ${x.ref}'s kirana scheme for ${c.name}: ${x.fill.shops} ${x.fill.shops === 1 ? 'shop' : 'shops'} ordered ${x.fill.units.toLocaleString('en-IN')} packets`;
+/** a stand-in, on the mock's journey: each shop's order placed as the story has it; a scheme that fills closes, and its
+ *  window's timer goes, as backend-api closes a full scheme */
+export function standInOn(j: MockJourney, id: string): void {
+	const sc = (j.schemes ?? []).find((y) => `kiranas-${y.ref}` === id);
+	if (!sc || sc.status !== 'sent') return;
+	const f = fillScheme(sc.shops, answeredOf(sc), sc.units - placedOf(sc));
+	for (const o of f.orders) sc.ordered[o.id] = o.units;
+	sc.filled = { at: j.now, shops: f.shops, units: f.units };
+	if (placedOf(sc) >= sc.units) {
+		sc.status = 'closed';
+		j.timers = j.timers.filter((t) => !(t.key === 'offer.close' && t.ref === sc.ref));
+	}
 }
 
 /** the audit line a fire writes, in backend-api's words */
@@ -745,7 +836,8 @@ export const journeyFromStart = (day0: string): MockJourney => ({
 	now: `${day0}T08:00:00+05:30`,
 	setupConfirmed: false,
 	daily: {},
-	timers: []
+	timers: [],
+	schemes: []
 });
 export const resetLine = (day0: string) => `started the journey again from ${day0}`;
 

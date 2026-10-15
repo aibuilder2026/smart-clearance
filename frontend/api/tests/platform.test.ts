@@ -17,9 +17,12 @@ import {
 	spanWords,
 	exitsFor,
 	fireLine,
+	fillScheme,
 	journeyFromStart,
 	journeyOf,
 	resetLine,
+	standInLine,
+	standInOn,
 	type MockJourney,
 	overrideError,
 	overrideLine,
@@ -267,5 +270,33 @@ describe("a client's journey, driven from the console (SC-79), matches platform.
 		const draft = { journeys: structuredClone(journeys) };
 		P.resetJourney(draft, 'munchly');
 		expect(journeyFromStart(journeys.munchly.day0)).toEqual(draft.journeys.munchly);
+	});
+});
+
+describe('a kirana scheme filled for a demo (SC-215) matches platform.js', () => {
+	const journeys = (seed.state as unknown as { journeys: Record<string, MockJourney> }).journeys;
+	const sc = journeys.munchly.schemes![0];
+	it('fills it as platform.js does: the story shares, topped up, trimmed, around who has answered', () => {
+		const ids = sc.shops.map((k) => k.id);
+		for (const [answered, left] of [
+			[ids.slice(0, 2), 1320],
+			[ids.slice(0, 2), 1324],
+			[ids.slice(0, 3), 1320],
+			[ids.slice(0, 1), 100],
+			[ids, 40],
+			[[], 0],
+			[[], 2000]
+		] as const)
+			expect(fillScheme(sc.shops, answered, left)).toEqual(P.fillScheme(sc.shops, answered, left));
+	});
+	it('fills the mock as platform.js fills its draft, and writes its audit line', () => {
+		const wall = Date.parse('2026-10-08T06:00:00Z');
+		const x = journeyOf(munchly, journeys.munchly, wall).standIns[0];
+		expect(standInLine(munchly, x)).toBe(P.standInLine(munchly, x));
+		const mine = structuredClone(journeys.munchly);
+		standInOn(mine, x.id);
+		const draft = { journeys: structuredClone(journeys) };
+		P.standIn(draft, 'munchly', x);
+		expect(mine).toEqual(draft.journeys.munchly);
 	});
 });

@@ -1,4 +1,4 @@
-import type { Client, JourneyTrigger } from '@smart-clearance/api/console';
+import type { Client, JourneyStandIn, JourneyTrigger } from '@smart-clearance/api/console';
 import type { IconName } from '../../../index';
 
 // a client's runs and timers, fired now (SC-79, option A): what each is called, its button, its rhythm, and the question a
@@ -91,3 +91,37 @@ export function fromNow(iso: string, now = Date.now()): string {
 /** a run's or a timer's rhythm */
 export const everyOf = (t: JourneyTrigger, c: Client) =>
 	t.time ? `every day at ${t.time}` : (TRIG[t.key].every?.(c) ?? '');
+
+/* ---------- standing in for a client's partners, in a demo (SC-215, option C; design3/console/console.jsx) ---------- */
+const n0 = (v: number) => v.toLocaleString('en-IN');
+/** "1 shop", "50 shops" */
+export const shopsN = (n: number) => `${n} ${n === 1 ? 'shop' : 'shops'}`;
+/** how the fill places them: the story's shares, topped up to fill the scheme, or stopping at the packets left */
+export const fillHow = (x: JourneyStandIn) =>
+	x.fill.units > x.fill.story
+		? 'as the story has them, topped up to fill it'
+		: x.fill.units < x.fill.story
+			? 'as the story has them, up to the packets left'
+			: 'as the story has them';
+/** the row's line: who has answered and what the fill places, or what it placed */
+export const standInSub = (x: JourneyStandIn) =>
+	x.filled
+		? `Filled ${journeyTime(x.filled.at)}: ${shopsN(x.filled.shops)} ordered ${n0(x.filled.units)} packets`
+		: `${x.ordered} of ${x.shops} have ordered${x.declined ? `, ${x.declined} said not this time` : ''} · ${x.fill.shops} more order ${fillHow(x)}, ${n0(x.fill.units)} packets`;
+/** a stand-in asks first, as a timer does, since it acts for people and can't be undone */
+export const STANDIN = {
+	act: 'Fill now',
+	busy: 'Filling…',
+	ask: (x: JourneyStandIn) => {
+		const open = x.shops - x.ordered - x.declined;
+		const left = x.units - x.placed - x.fill.units;
+		return {
+			title: `Fill ${x.ref}'s scheme now?`,
+			message: `${x.fill.shops === open ? `The ${open}` : `${x.fill.shops} of the ${open}`} shops that haven't answered order ${fillHow(x)}: ${n0(x.fill.units)} packets, each as its own shop, with its own tax invoice from ${x.distributor}. ${left > 0 ? `${n0(left)} packets stay in the scheme until its window closes.` : 'The scheme fills and closes, and the van round can run.'} This stands in for the shops in a demo, and can't be undone.`
+		};
+	},
+	done: (x: JourneyStandIn) => {
+		const left = x.units - x.placed - x.fill.units;
+		return `${shopsN(x.fill.shops)} ordered ${n0(x.fill.units)} packets: ${left > 0 ? `${n0(left)} are still open in ${x.ref}'s scheme` : `${x.ref}'s scheme is full`}`;
+	}
+};

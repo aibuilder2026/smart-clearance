@@ -16,6 +16,7 @@ from sc_api import models as m
 from sc_api.domain import copy, money, papers
 from sc_api.domain import journey as J
 from sc_api.domain.clock import IST
+from sc_api.domain.scheme import Shop, fill_scheme
 from sc_api.errors import ApiError, not_found
 from sc_api.services import agents as agent_runs
 from sc_api.services import audit, exports, supply
@@ -23,6 +24,7 @@ from sc_api.services.context import Ctx
 from sc_api.services.journey import events as ev
 from sc_api.services.journey import views, world
 from sc_api.services.presenter import lock_client
+from sc_api.services.reference import load
 
 PHOTO_MAX_BYTES = 8 * 1024 * 1024
 LISTING_DAYS = 9  # an ExpireSoon lot that has found no buyer by then closes unsold (the channel clears in 5-9 days)
@@ -1009,20 +1011,17 @@ async def donation(ctx: Ctx, client_id: str, ref: str, run: Run | None) -> None:
     await _save(ctx, s, note=f"donation booked with {partner.name}")
 
 
-async def order(ctx: Ctx, client_id: str, ref: str, units: int) -> None:
-    """a kirana orders under the scheme, within its cap"""
-    ctx.require("offer.order", "Only a kirana orders under the scheme.")
-    s = await scene(ctx, client_id, ref)
-    _guard(s, "order")
-    me = await world.member(ctx, client_id, _member(ctx))
-    kirana_id = me.org_ref or ""
+async def _place(
+    ctx: Ctx, s: Scene, kirana_id: str, units: int, member_ref: str | None, taken: list[m.CaseOrder]
+) -> m.CaseOrder:
+    """one shop's order under the scheme, with its tax invoice: a shop the scheme went to, once, within its cap and the
+    packets left. An order after Not this time takes the shop off the declined (SC-130)"""
     caps = (s.case.offer or {}).get("caps", {})
     if kirana_id not in caps:
         raise ApiError(403, "This scheme was not offered to your shop.")
     cap = int(caps[kirana_id])
     if units <= 0 or units > cap:
         raise ApiError(422, f"Order between 1 and {cap} packets.", {"units": f"Up to {cap} packets."})
-    taken = (await ctx.session.execute(select(m.CaseOrder).where(m.CaseOrder.case_id == s.case.id))).scalars().all()
     if any(o.kirana_id == kirana_id for o in taken):
         raise stale("Your shop has already ordered.")
     left = int(s.case.offer["units"]) - sum(o.units for o in taken)
@@ -1030,24 +1029,42 @@ async def order(ctx: Ctx, client_id: str, ref: str, units: int) -> None:
         raise ApiError(422, f"Only {left} packets are left in the scheme.", {"units": f"Up to {left} packets."})
     at = ev.now(ctx, s.c)
     invoice = await kirana_invoice(ctx, s, kirana_id, units, at)
-    ctx.session.add(
-        m.CaseOrder(
-            case_id=s.case.id,
-            kirana_id=kirana_id,
-            units=units,
-            at=at,
-            wall=ctx.clock.now(),
-            member_ref=me.ref,
-            invoice=invoice,
-        )
+    o = m.CaseOrder(
+        case_id=s.case.id,
+        kirana_id=kirana_id,
+        units=units,
+        at=at,
+        wall=ctx.clock.now(),
+        member_ref=member_ref,
+        invoice=invoice,
     )
-    # an order after Not this time takes the shop off the declined (SC-130)
+    ctx.session.add(o)
     if kirana_id in (s.case.offer.get("declined") or {}):
         s.case.offer = {
             **s.case.offer,
             "declined": {k: v for k, v in s.case.offer["declined"].items() if k != kirana_id},
         }
     await ctx.session.flush()
+    return o
+
+
+def _invoice_events(s: Scene, placed: list[m.CaseOrder]) -> list[J.Event]:
+    """the Paperwork agent lays out each order's tax invoice as a PDF"""
+    return [
+        J.Event(J.STEP, {"type": J.KIRANA, "client": s.c.id, "ref": s.ref, "kirana": o.kirana_id}, f"{s.c.id}:{s.ref}")
+        for o in placed
+        if o.invoice
+    ]
+
+
+async def order(ctx: Ctx, client_id: str, ref: str, units: int) -> None:
+    """a kirana orders under the scheme, within its cap"""
+    ctx.require("offer.order", "Only a kirana orders under the scheme.")
+    s = await scene(ctx, client_id, ref)
+    _guard(s, "order")
+    me = await world.member(ctx, client_id, _member(ctx))
+    taken = await _orders(ctx, s)
+    o = await _place(ctx, s, me.org_ref or "", units, me.ref, taken)
     await audit.record(
         ctx,
         s.c.id,
@@ -1055,14 +1072,83 @@ async def order(ctx: Ctx, client_id: str, ref: str, units: int) -> None:
         f"ordered {units} packets",
         {"member": me.ref, "target": f"{copy.base(s.sku.name)} scheme", "batch": ref},
     )
-    if units == left:  # the scheme is full: it closes now
+    if sum(x.units for x in taken) + units >= int(s.case.offer["units"]):  # the scheme is full: it closes now
         await _close_offer(ctx, s)
     await _save(ctx, s)
-    if invoice:  # Paperwork lays out its PDF
-        await ev.publish(
+    for e in _invoice_events(s, [o]):
+        await ev.publish(ctx, e)
+
+
+async def scheme_of(ctx: Ctx, case: m.Case, dist_id: str, taken: list[m.CaseOrder]) -> dict[str, Any]:
+    """a sent scheme as the console's stand-in reads it (SC-215): each shop it went to, in the story's order, with its
+    story share (journey.json's kiranas) and its cap; who has answered; and what filling it now places"""
+    offer_ = case.offer or {}
+    caps = {k: int(v) for k, v in (offer_.get("caps") or {}).items()}
+    story = {k["id"]: int(k.get("orders") or 0) for k in load("journey.json")["kiranas"] if k["distributor"] == dist_id}
+    order_ = [k for k in story if k in caps] + [k for k in caps if k not in story]
+    shops: list[Shop] = [{"id": k, "share": story.get(k, 0), "cap": caps[k]} for k in order_]
+    declined = list((offer_.get("declined") or {}).keys())
+    placed = sum(o.units for o in taken)
+    units = int(offer_.get("units", 0))
+    fill = fill_scheme(shops, [o.kirana_id for o in taken] + declined, units - placed)
+    return {
+        "shops": shops,
+        "ordered": len(taken),
+        "declined": len(declined),
+        "units": units,
+        "placed": placed,
+        "fill": fill,
+    }
+
+
+async def fill_scheme_now(ctx: Ctx, client_id: str, ref: str) -> dict[str, Any]:
+    """a demo workspace's kirana scheme, filled from the console (SC-215): every shop that hasn't answered orders its
+    share as the story has it, each as its own shop with its own tax invoice, topped up until the scheme is full; a shop
+    that ordered or said Not this time is left alone. Each order's audit line, and the fill's, are the staff member's:
+    each says the shop it stood in for"""
+    s = await scene(ctx, client_id, ref)
+    _guard(s, "order")
+    taken = await _orders(ctx, s)
+    sc = await scheme_of(ctx, s.case, s.dist.id, taken)
+    if not sc["fill"]["orders"]:
+        raise stale("The scheme is full." if sc["placed"] >= sc["units"] else "Every shop has answered.")
+    shops = {k.id: k for k in await world.kiranas(ctx, client_id, s.dist.id)}
+    placed: list[m.CaseOrder] = []
+    for x in sc["fill"]["orders"]:
+        k = shops.get(x["id"])
+        o = await _place(ctx, s, x["id"], x["units"], k.member_ref if k else None, taken + placed)
+        placed.append(o)
+        await audit.record(
             ctx,
-            J.Event(J.STEP, {"type": J.KIRANA, "client": s.c.id, "ref": ref, "kirana": kirana_id}, f"{s.c.id}:{ref}"),
+            s.c.id,
+            "offer.order",
+            f"ordered {x['units']} packets for {k.name if k else x['id']}",
+            {
+                "member": k.member_ref if k else None,
+                "target": f"{copy.base(s.sku.name)} scheme",
+                "batch": ref,
+                "standIn": True,
+            },
         )
+    n, units = len(placed), sum(o.units for o in placed)
+    s.case.offer = {
+        **s.case.offer,
+        "filled": {"at": ev.now(ctx, s.c).astimezone(IST).isoformat(), "shops": n, "units": units},
+    }
+    await audit.record(
+        ctx,
+        s.c.id,
+        "offer.fill",
+        f"Filled {ref}'s kirana scheme for {s.c.name}: {n} {'shop' if n == 1 else 'shops'} ordered "
+        f"{money.fmt.num(units)} packets",
+        {"batch": ref, "shops": n, "units": units},
+    )
+    if sc["placed"] + units >= sc["units"]:  # the scheme is full: it closes now
+        await _close_offer(ctx, s)
+    await _save(ctx, s, note=f"{n} kiranas ordered for the demo")
+    for e in _invoice_events(s, placed):
+        await ev.publish(ctx, e)
+    return {"shops": n, "units": units}
 
 
 async def kirana_invoice(ctx: Ctx, s: Scene, kirana_id: str, units: int, at: datetime) -> dict[str, Any] | None:

@@ -1,0 +1,22 @@
+/* SC-215's console mockup: filling a kirana scheme for a demo. On the design system's tokens; nothing loops or glows. */
+
+/* B: how the scheme ends, two choices in the sheet, as the reset sheet's day lengths are drawn */
+.c215-ends { display: grid; gap: 8px; margin: 0; padding: 0; border: 0; min-width: 0; }
+.c215-end { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 8px; padding: 12px 14px; border-radius: 14px; background: var(--surface); box-shadow: 0 0 0 var(--hair) var(--line-2); cursor: pointer; transition: box-shadow var(--t-fast); }
+[data-theme="dark"] .c215-end { background: var(--fill); }
+.c215-end input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.c215-end:hover { box-shadow: 0 0 0 var(--hair) var(--line-2), var(--shadow-1); }
+.c215-end.on { box-shadow: 0 0 0 2px var(--primary); }
+.c215-end:has(input:focus-visible) { outline: 3px solid var(--ring); outline-offset: 2px; }
+.c215-end-n { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; font-size: 15px; font-weight: 650; }
+.c215-end-s { grid-column: 1; font-size: 13px; line-height: 1.45; color: var(--fg-2); }
+.c215-end > .ic { position: absolute; right: 12px; top: 12px; color: var(--primary-text); }
+
+/* C: the demo's stand-ins for people, a card of its own above the agents */
+.c215-standins { display: grid; gap: 10px; padding: 14px; }
+.c215-standins-head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; }
+.c215-standin { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px 12px; padding: 10px 12px; border-radius: 12px; background: var(--surface-sunken); }
+.c215-standin.fired { background: var(--primary-soft); }
+.c215-standin.later { opacity: 1; }
+.c215-standin.later .cs-trig-s { color: var(--fg-3); }
+@container app (max-width: 767px) { .c215-standin { grid-template-columns: auto minmax(0, 1fr); } .c215-standin > .btn { grid-column: 1 / -1; justify-self: start; } }

@@ -69,6 +69,7 @@ export function consoleHttp(
 		setDayMinutes: (id, dayMinutes) => call('PUT', `${c(id)}/clock`, { dayMinutes }),
 		journey: (id) => call('GET', `${c(id)}/journey`),
 		fireTrigger: (id, trigger) => call('POST', `${c(id)}/journey/triggers/${encodeURIComponent(trigger)}`),
+		standIn: (id, standIn) => call('POST', `${c(id)}/journey/stand-ins/${encodeURIComponent(standIn)}`),
 		resetJourney: (id, input) => call('POST', `${c(id)}/journey/reset`, input ?? {}),
 		uploadExport: async (id, file, opts) => {
 			const link = await call<UploadLink>('POST', `${c(id)}/exports`, {

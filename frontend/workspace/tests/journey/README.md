@@ -266,7 +266,7 @@ Feeding India sign in to the workspace as each is needed. The sign-ins, the curs
 (SC-184, SC-188); `Stage.open` takes the cast (`holds`: who keeps a tablet; `phone`: the note under the phone).
 
 **The telling (SC-201):** as the admin tour (SC-199): green rings and clicks (`ink: 'green'`), a green card beside only
-the major moments (`notes: 'card'`: the risk, Vision's check, the split, the yes, a live order, the scheme filling, the
+the major moments (`notes: 'card'`: the risk, Vision's check, the split, the yes, a live order, the console's stand-in, the scheme filling, the
 staff sale's UPI receipt, the food bank's receipt, the price support, the invoices, the report, GST, ESG, Lakshmi
 Agencies ending whole, the swing), and a chapter card as each of its 13 chapters opens (written to
 `recording.chapters.json`, which `cut-chapters.mjs` cuts into clips). Every paper is read top to bottom
@@ -282,8 +282,9 @@ Agencies ending whole, the swing), and a chapter card as each of its 13 chapters
   and the split (₹16,917: 1,372 packets to the kiranas, 150 to the staff sale, 58 to a food bank; no ExpireSoon lot, at
   22 days left). She approves it, and keeps Execution open from there.
 - The first `E2E_SHOWN` (2) ordering kiranas sign in on the phone and order their story's share, each order checked
-  live on Priya's Execution. The other ordering kiranas order as themselves through backend-api, each with its own
-  session, meanwhile, and a note says so; Priya watches the scheme fill (52 shops, 1,372 packets).
+  live on Priya's Execution. Then Neha, in the console on the phone, stands in for the rest, as a judge does (SC-215):
+  Fill the scheme on Munchly's Agents tab, asked first. Each shop orders its story share as itself, with its own
+  invoice, and Priya watches the scheme fill (52 shops, 1,372 packets).
 - Lakshmi Agencies records the staff sale on its consolidated receipt (`design3/system/img/receipts/MF-2410-118.webp`),
   which Vision reads on its tablet; the sale lands on Priya's Execution, where she opens its UPI references and the
   receipt whole. Meera confirms and collects Feeding India's pickup on the phone, each seen live on Priya's Execution,
@@ -304,7 +305,8 @@ E2E_KEEP='../../playwright-automation-videos/munchly-mango-e2e-prod-{stamp}.mp4'
 ```
 
 Its run of 12 Oct on production is in `runs/2026-10-12-prod-mango/`, and its run of 13 Oct, told with the green
-cards (SC-201), in `runs/2026-10-13-prod-mango/`.
+cards (SC-201), in `runs/2026-10-13-prod-mango/`. Its run of 15 Oct on this machine's stack, with the console filling
+the scheme (SC-215), is in `runs/2026-10-15-mango-local/`.
 
 ## Admin and console E2E
 

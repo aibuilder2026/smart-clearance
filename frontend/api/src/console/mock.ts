@@ -40,6 +40,8 @@ import {
 	exportUploaded,
 	possessive,
 	resetLine,
+	standInLine,
+	standInOn,
 	type MockJourney,
 	exitsFor,
 	inviteError,
@@ -57,7 +59,7 @@ import {
 /** where the mock keeps the platform's state, and who is signed in */
 export const CONSOLE_KEY = 'sc-console';
 export const SESSION_KEY = 'sc-console-session';
-const VERSION = 7;
+const VERSION = 8;
 
 type State = {
 	v: number;
@@ -617,6 +619,15 @@ export function consoleMock({
 				},
 				{ client: id, text: fireLine(c, t, AGENTS) }
 			);
+			return out(journeyOf(clientOf(id), state.journeys?.[id]));
+		},
+		async standIn(id, standIn) {
+			await wait();
+			const c = clientOf(id);
+			const x = journeyOf(c, state.journeys?.[id]).standIns.find((y) => y.id === standIn);
+			if (!x) throw new ApiError(404, 'No such stand-in.');
+			if (x.blocked) throw new ApiError(409, x.blocked);
+			update((d) => d.journeys?.[id] && standInOn(d.journeys[id], x.id), { client: id, text: standInLine(c, x) });
 			return out(journeyOf(clientOf(id), state.journeys?.[id]));
 		},
 		async resetJourney(id, input) {

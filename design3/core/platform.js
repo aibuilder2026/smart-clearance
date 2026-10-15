@@ -6,7 +6,7 @@
 (function () {
   const D = window.SC3_DATA, M = window.SC3_MONEY, AppStore = window.SC3_STORE;
   const R = M.RULES;
-  const KEY = "sc3-platform", VERSION = 7;
+  const KEY = "sc3-platform", VERSION = 8;
 
   /* ---------- Smart-Clearance's own people (fictional) ---------- */
   const STAFF = [
@@ -398,23 +398,67 @@
   // journey back at day 0, 08:00, with nothing pending but the day's two runs.
   const DAILY = [{ id: "data", name: "Data agent", time: "08:30", what: "daily load" }, { id: "watcher", name: "Watcher", time: "09:00", what: "daily check" }];
   const TIMER_WORDS = { "offer.close": "closed the offer window", "listing.close": "closed the unsold lot", "report.due": "wrote the report" };
+  // the Mango Drink's: Priya approved it at 09:40 today and Outreach sent its scheme at 09:42, for 48 hours (SC-215)
   const JOURNEY_TIMERS = [
-    { id: "timer-1", agent: "outreach", key: "offer.close", ref: "MF-2409-117", due: "2026-10-04T12:40:00+05:30" },
-    { id: "timer-3", agent: "impact", key: "report.due", ref: "MF-2409-117", due: "2026-11-18T10:00:00+05:30", blocked: null },
+    { id: "timer-1", agent: "outreach", key: "offer.close", ref: "MF-2410-118", due: "2026-10-05T09:42:00+05:30" },
+    { id: "timer-3", agent: "impact", key: "report.due", ref: "MF-2410-118", due: "2026-10-24T10:00:00+05:30", blocked: null },
   ];
-  const seedJourney = () => ({ day0: D.DAY0, now: D.addDays(D.DAY0, 1) + "T10:15:00+05:30", setupConfirmed: true, daily: { data: D.addDays(D.DAY0, 1), watcher: D.addDays(D.DAY0, 1) }, timers: JOURNEY_TIMERS.map(t => Object.assign({}, t)) });
+  // the Mango Drink's scheme, as a judge leaves it: sent to Lakshmi Agencies' 58 kiranas, and the first two ordered on
+  // the phone, as the story has them (SC-215). Each shop with its story share and its cap; ordered and declined by shop
+  function mangoScheme() {
+    const ks = D.HYDERABAD; const line = D.MANGO_PLAN.lines.find(l => l.id === "kirana");
+    return { ref: D.BATCHES[1].id, distributor: D.DISTRIBUTORS[D.BATCHES[1].distributor].name, units: line.units, status: "sent", filled: null,
+      shops: ks.map(k => ({ id: k.id, share: k.orders, cap: k.sales14 * R.shopCapTimes })), ordered: { [ks[0].id]: ks[0].orders, [ks[1].id]: ks[1].orders }, declined: {} };
+  }
+  const seedJourney = () => ({ day0: D.DAY0, now: D.addDays(D.DAY0, 1) + "T10:15:00+05:30", setupConfirmed: true, daily: { data: D.addDays(D.DAY0, 1), watcher: D.addDays(D.DAY0, 1) }, timers: JOURNEY_TIMERS.map(t => Object.assign({}, t)), schemes: [mangoScheme()] });
   const ms = iso => Date.parse(iso);
   function journey(s, id, wall = Date.now()) {
     const c = s.clients.find(x => x.id === id); const j = (s.journeys || {})[id];
     const off = a => (c && c.agents[a.id] && !c.agents[a.id].on ? `The ${a.name} is off` : null);
-    if (!c || !j) return { live: false, clock: null, triggers: DAILY.map(a => ({ id: a.id, agent: a.id, kind: "run", key: a.id + ".daily", ref: null, due: null, dueWall: null, time: a.time, blocked: c ? off(a) : null })) };
+    if (!c || !j) return { live: false, clock: null, triggers: DAILY.map(a => ({ id: a.id, agent: a.id, kind: "run", key: a.id + ".daily", ref: null, due: null, dueWall: null, time: a.time, blocked: c ? off(a) : null })), standIns: [] };
     const today = j.now.slice(0, 10);
     // a journey day lasts dayMinutes of wall time while a batch is at risk, as backend-api's clock runs
     const wallOf = at => new Date(wall + (ms(at) - ms(j.now)) * c.dayMinutes / DAY_MINUTES).toISOString();
     const runs = DAILY.map(a => { const day = j.daily[a.id] === today ? D.addDays(today, 1) : today; const due = `${day}T${a.time}:00+05:30`; return { id: a.id, agent: a.id, kind: "run", key: a.id + ".daily", ref: null, due, dueWall: wallOf(due), time: a.time, blocked: off(a) || (a.id === "watcher" && !j.setupConfirmed ? "After Setup is confirmed" : null) }; });
     const timers = j.timers.map(t => ({ id: t.id, agent: t.agent, kind: "timer", key: t.key, ref: t.ref, due: t.due, dueWall: wallOf(t.due), time: null, blocked: t.blocked || null }));
     const day = Math.round((ms(today + "T00:00:00+05:30") - ms(j.day0 + "T00:00:00+05:30")) / 864e5);
-    return { live: true, clock: { now: j.now, day, day0: j.day0, dayMinutes: c.dayMinutes, compressed: c.dayMinutes < DAY_MINUTES }, triggers: runs.concat(timers).sort((a, b) => ms(a.due) - ms(b.due)) };
+    return { live: true, clock: { now: j.now, day, day0: j.day0, dayMinutes: c.dayMinutes, compressed: c.dayMinutes < DAY_MINUTES }, triggers: runs.concat(timers).sort((a, b) => ms(a.due) - ms(b.due)), standIns: (j.schemes || []).filter(sc => sc.status === "sent" || sc.filled).map(standInOf) };
+  }
+
+  /* ---------- standing in for a client's partners, in a demo (SC-215, the console's option C) ---------- */
+  // What the story's people would do when no one is there to do it, done from the console on a live demo workspace,
+  // each step acting as that person. The first is a distributor's kiranas, whose scheme no judge can fill alone: a shop
+  // orders at most 4 times its own 14-day sales, and the scheme goes to dozens of shops. Every shop that hasn't answered
+  // orders its share as the story has it, within its cap and the packets left; whatever is still left goes to the same
+  // shops in the same order, each up to its cap, so the scheme fills. A shop that ordered or said Not this time is left
+  // alone. backend-api's is domain/scheme.py, held to this by rules.json.
+  // shops: [{ id, share, cap }] in the story's order; answered: the ids that ordered or declined; left: packets left
+  function fillScheme(shops, answered, left) {
+    const open = shops.filter(k => !answered.includes(k.id)); const take = {}; let rest = Math.max(0, left);
+    for (const k of open) { const n = Math.min(k.share, k.cap, rest); if (n > 0) { take[k.id] = n; rest -= n; } }
+    for (const k of open) { if (!rest) break; const n = Math.min(k.cap - (take[k.id] || 0), rest); if (n > 0) { take[k.id] = (take[k.id] || 0) + n; rest -= n; } }
+    const orders = open.filter(k => take[k.id]).map(k => ({ id: k.id, units: take[k.id] }));
+    // the story's own shares of those shops, to say whether the fill tops them up or stops at the packets left
+    return { orders, shops: orders.length, units: orders.reduce((t, o) => t + o.units, 0), story: open.reduce((t, k) => t + Math.min(k.share, k.cap), 0) };
+  }
+  const answeredOf = sc => Object.keys(sc.ordered).concat(Object.keys(sc.declined || {}));
+  function standInOf(sc) {
+    const placed = Object.values(sc.ordered).reduce((t, n) => t + n, 0);
+    const f = fillScheme(sc.shops, answeredOf(sc), sc.units - placed);
+    return { id: "kiranas-" + sc.ref, kind: "kiranas", ref: sc.ref, distributor: sc.distributor, shops: sc.shops.length, ordered: Object.keys(sc.ordered).length, declined: Object.keys(sc.declined || {}).length, units: sc.units, placed,
+      fill: { shops: f.shops, units: f.units, story: f.story }, filled: sc.filled || null, blocked: f.units ? null : placed >= sc.units ? "The scheme is full" : "Every shop has answered" };
+  }
+  // the audit line a stand-in writes, in backend-api's words
+  const standInLine = (c, x) => `Filled ${x.ref}'s kirana scheme for ${c.name}: ${x.fill.shops} ${x.fill.shops === 1 ? "shop" : "shops"} ordered ${x.fill.units.toLocaleString("en-IN")} packets`;
+  // a stand-in, on the draft: each shop's order placed as the story has it, the scheme closed full and its window's timer
+  // gone, as backend-api closes a scheme that fills
+  function standIn(draft, id, x) {
+    const j = (draft.journeys || {})[id]; const sc = j && (j.schemes || []).find(y => "kiranas-" + y.ref === x.id);
+    if (!sc || sc.status !== "sent") return;
+    const f = fillScheme(sc.shops, answeredOf(sc), sc.units - Object.values(sc.ordered).reduce((t, n) => t + n, 0));
+    f.orders.forEach(o => { sc.ordered[o.id] = o.units; });
+    sc.filled = { at: j.now, shops: f.shops, units: f.units };
+    if (Object.values(sc.ordered).reduce((t, n) => t + n, 0) >= sc.units) { sc.status = "closed"; j.timers = j.timers.filter(t => !(t.key === "offer.close" && t.ref === sc.ref)); }
   }
   // the audit line a fire writes, in backend-api's words
   function fireLine(c, t) {
@@ -430,7 +474,7 @@
     draft.runs.unshift({ at, agent: t.agent, client: id, text: `${TIMER_WORDS[t.key]} for ${t.ref}, on request` });
   }
   // the journey from day 0 again: nothing pending but the day's two runs, Setup to confirm again
-  function resetJourney(draft, id) { draft.journeys[id] = { day0: D.DAY0, now: D.DAY0 + "T08:00:00+05:30", setupConfirmed: false, daily: {}, timers: [] }; }
+  function resetJourney(draft, id) { draft.journeys[id] = { day0: D.DAY0, now: D.DAY0 + "T08:00:00+05:30", setupConfirmed: false, daily: {}, timers: [], schemes: [] }; }
   const resetLine = () => `started the journey again from ${D.DAY0}`;
   // a client's stock export, uploaded by staff (SC-84): mapping until the Data agent has read it, then mapped with what
   // the file brought (the prototype's export is the story's: its rows, batches and distributors)
@@ -564,7 +608,7 @@
     dashboard, batchPage, RANGES, SIZES,
     TODAY, GATE_BOUNDS, batchGates, gateText, skuGatesError, overrideError, skuGatesLine, overrideLine, clearOverrideLine,
     DAY_MINUTES, DAY_PRESETS, dayWords, spanWords, dayBadge, dayReadouts, dayHead, dayMinutesError, dayMinutesLine, poss,
-    journey, fire, fireLine, resetJourney, resetLine,
+    journey, fire, fireLine, resetJourney, resetLine, fillScheme, standIn, standInLine,
     exportUploaded, exportMapped, exportLine,
     STAFF, AUTONOMY, AGENTS, STAGE_NAME, FIELDS, PLANS, CONNECTORS, EXITS, PROFILE, PRESETS, seed,
   };
