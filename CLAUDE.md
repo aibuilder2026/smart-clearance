@@ -2842,7 +2842,7 @@
     Text in a channel colour takes its darker ink, 5.8:1 or better on white (the impeccable hook flagged the green, orange and green tag at first). The labels are in sentence case with a small colour chip, and the cards carry no side stripe (the hook's all-caps and side-tab findings). Its source is `docs/demo/source/cast-and-supply-chain.html`, rendered in Chrome at 1000 px and a device scale factor of 2.
   - **DEMO.md:** a new section, "Meet the cast", after the data set: the picture, a who's-who table with each person's portrait (from `design3/system/img/people/`, in place), organisation, role and journey, and the agents in order.
   - **Checks:** every link, anchor and image in DEMO.md resolves, and all 67 images in `docs/demo/` are used. AGENTS.md's layout names the picture.
-- **SC-216** (In Review, branch `SC-216-landing-film-v2`): the landing page plays SC-211's sales film, from YouTube.
+- **SC-216** (PR #196, merged; Done): the landing page plays SC-211's sales film, from YouTube.
   - **The request:** "Lets upload this to youtube and replace the one on landing page, use chrome browser claude plugin to do it completely on your own." The theatre's film, its words and its label change, not its design, so no design round.
   - **On YouTube:** [youtu.be/DT_4G2txLF4](https://youtu.be/DT_4G2txLF4), "Smart-Clearance: the 7-minute demo", unlisted on the maintainer's channel, uploaded end to end through Claude in Chrome:
     - Studio's own page fetched the 410 MB YouTube copy from a local CORS server (SC-187's `serve.py`) onto its upload input;
