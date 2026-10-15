@@ -2796,7 +2796,7 @@
     - its "Hosted design pages" row (the Claude Design links);
     - every other Claude Design reference. The design prototypes' row now points at `design3/`, served locally; the design3 README's row, the `dist.sh` line and the design-first rule no longer name Claude Design or its hosted copies.
   - **Checks:** every relative link and anchor in README.md resolves.
-- **SC-214** (In Review, branch `SC-214-demo-cast`): DEMO.md pictures the cast, asked for by the maintainer ("pictorially can we portrait all the demo characters, the Munchly company and its retail and supply chain and what each role is").
+- **SC-214** (PR #194, merged): DEMO.md pictures the cast, asked for by the maintainer ("pictorially can we portrait all the demo characters, the Munchly company and its retail and supply chain and what each role is").
   - **The picture** (`docs/demo/cast-and-supply-chain.webp`, 2000 × 2626), drawn from the app's own portraits and 3D renders in design system v3's light colours and type, three tiers top to bottom:
     - **the organisations:** Munchly Foods (the brand, Pune) with Priya, supply chain operator, and Arjun, workspace admin; beside it Smart-Clearance with Neha in the console, and the agents in the order they work, Priya's yes among them;
     - **the distributors:** Lakshmi Agencies (Hyderabad, the Mango Drink, journey 1) and Rakesh Traders (Nagpur, the Masala Chips, journey 2), each with its godown, its batch and its owner's part;
