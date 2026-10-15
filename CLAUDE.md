@@ -2860,7 +2860,7 @@
     - the landing page's build, played in the browser pane: every Watch reads "Watch the 7-minute demo", nothing of YouTube loads before it, and the theatre opens on `youtube-nocookie.com/embed/DT_4G2txLF4` with 13 chapters. A chapter jump lands on its scene, the words read 48 lines, Escape gives focus back to Watch, and the console shows no errors;
     - YouTube's watch page offers 1080p and the English (India) captions;
     - the keyboard spec follows the 13 chapters; the browser suites were not run (SC-55).
-- **SC-215** (In Review, branch `SC-215-fill-scheme`): the console stands in for a demo workspace's kiranas, so a judge can run the Mango Drink's happy path alone.
+- **SC-215** (PR #197, merged; Done): the console stands in for a demo workspace's kiranas, so a judge can run the Mango Drink's happy path alone.
   - **The request:** a judge can't fill the Mango's scheme: each kirana orders only a few dozen packets, and the scheme goes to 58 shops; in the recording, 50 ordered through the API. "Can we take this up and update the DEMO.md with proper screenshots, make sure you locally run the playwright automation suite (just for Mango suite) end to end locally for this use case and then raise PR."
   - **Design first:** three options on one board in platform v3, `SC-215 design review.html`, each built on the console itself:
     - A, beside Close now, on Outreach (recommended);
