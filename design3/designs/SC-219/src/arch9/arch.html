@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SC-219 · under the hood</title>
+<style>
+  @font-face { font-family: 'Bricolage Grotesque'; src: url('/fonts/Bricolage.ttf'); font-weight: 200 800; }
+  @font-face { font-family: 'Geist'; src: url('/fonts/Geist.ttf'); font-weight: 100 900; }
+  :root {
+    --bg: #050806; --ink: #ecf3ef; --ink2: #aabcb2; --ink3: #7a8c82; --g300: #73c99d; --g400: #3fb07b; --ring: #34d380;
+    --amber: #f2b437; --amber2: #f7c04a; --red: #e55c4a; --blue: #8ab4f8; --blue2: #c9dcff; --violet: #c58af9; --orange: #ff9f45;
+  }
+  html, body { margin: 0; padding: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--bg);
+    font-family: 'Geist', system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  canvas { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; display: block; }
+  #labels, #ui { position: absolute; inset: 0; pointer-events: none; }
+  /* a soft shade under the header, so the scene behind never fights its words */
+  #scrim { position: absolute; left: 0; top: 0; width: 1180px; height: 300px; pointer-events: none;
+    background: radial-gradient(120% 100% at 0% 0%, rgba(4, 8, 6, 0.86) 0%, rgba(4, 8, 6, 0.55) 48%, rgba(4, 8, 6, 0) 100%); }
+  #vign { position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(130% 120% at 50% 45%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.55) 100%); }
+
+  /* a part of the platform, set over the scene at its place, sized by its depth */
+  .node { position: absolute; left: 0; top: 0; display: flex; align-items: center; gap: 13px; padding: 11px 20px 11px 11px;
+    border-radius: 20px; background: linear-gradient(180deg, rgba(18, 28, 23, 0.92), rgba(9, 15, 12, 0.92));
+    border: 1.5px solid rgba(115, 201, 157, 0.30); transform-origin: 50% 50%; white-space: nowrap;
+    box-shadow: 0 22px 56px rgba(0, 0, 0, 0.55); opacity: 0; backdrop-filter: blur(6px); }
+  .node .tile { width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; flex: none;
+    background: rgba(52, 211, 128, 0.12); color: var(--g300); border: 1px solid rgba(115, 201, 157, 0.25); }
+  .node .tile svg { width: 24px; height: 24px; }
+  .node b { display: block; font: 700 25px/1.05 'Bricolage Grotesque'; letter-spacing: -0.3px; color: var(--ink); }
+  .node span { display: block; margin-top: 5px; font: 500 16px/1.15 'Geist'; color: var(--ink2); }
+  .node.fire { border-color: rgba(255, 159, 69, 0.45); }
+  .node.fire .tile { background: rgba(255, 159, 69, 0.14); color: #ffb470; border-color: rgba(255, 159, 69, 0.38); }
+  .node.gcp .tile { background: rgba(138, 180, 248, 0.14); color: var(--blue2); border-color: rgba(138, 180, 248, 0.38); }
+  .node.gem { border-color: rgba(197, 138, 249, 0.55); box-shadow: 0 22px 56px rgba(0,0,0,0.55); }
+  .node.gem .tile { background: linear-gradient(135deg, rgba(138,180,248,0.24), rgba(197,138,249,0.24)); color: #e3d4ff; border-color: rgba(197, 138, 249, 0.5); }
+  .node.big b { font-size: 30px; } .node.big .tile { width: 56px; height: 56px; } .node.big .tile svg { width: 29px; height: 29px; }
+  .node.small { padding: 8px 15px 8px 8px; gap: 10px; border-radius: 16px; }
+  .node.small .tile { width: 34px; height: 34px; border-radius: 10px; } .node.small .tile svg { width: 18px; height: 18px; }
+  .node.small b { font-size: 19px; } .node.small span { font-size: 13.5px; margin-top: 3px; }
+
+  .agent { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; gap: 7px; width: 150px;
+    transform-origin: 50% 0%; opacity: 0; }
+  .agent b { font: 650 20px/1 'Geist'; color: var(--ink); letter-spacing: -0.2px; text-shadow: 0 2px 12px rgba(0,0,0,0.9); padding: 6px 11px;
+    border-radius: 10px; background: rgba(6, 11, 9, 0.78); border: 1px solid rgba(115, 201, 157, 0.18); }
+  .agent .tier { font: 700 15px/1 'Geist'; padding: 6px 10px; border-radius: 999px; white-space: nowrap; opacity: 0; display: flex; gap: 6px;
+    align-items: center; letter-spacing: 0.2px; }
+  .agent .tier svg { width: 14px; height: 14px; }
+  .tier.pro { background: rgba(40, 24, 56, 0.95); border: 1.5px solid rgba(197, 138, 249, 0.8); color: #ead9ff; }
+  .tier.flash { background: rgba(14, 26, 48, 0.95); border: 1.5px solid rgba(138, 180, 248, 0.8); color: var(--blue2); }
+  .tier.rules { background: rgba(14, 26, 20, 0.95); border: 1.5px solid rgba(115, 201, 157, 0.65); color: var(--g300); }
+
+  .topic { position: absolute; left: 0; top: 0; font: 600 18px/1 ui-monospace, 'SF Mono', Menlo, monospace; padding: 8px 13px; border-radius: 11px;
+    background: rgba(7, 14, 11, 0.92); border: 1.5px solid rgba(115, 201, 157, 0.5); color: #bdf5d6; white-space: nowrap; opacity: 0;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5); }
+  .pill { position: absolute; left: 0; top: 0; display: flex; gap: 8px; align-items: center; font: 650 16px/1 'Geist'; padding: 8px 13px; border-radius: 999px;
+    white-space: nowrap; opacity: 0; background: rgba(7, 13, 10, 0.92); border: 1.2px solid rgba(115, 201, 157, 0.38); color: #cfe9db; }
+  .pill svg { width: 16px; height: 16px; color: var(--g300); }
+  .pill.blue { border-color: rgba(138, 180, 248, 0.5); color: #c9dcff; } .pill.blue svg { color: var(--blue); }
+  .pill.amber { border-color: rgba(247, 192, 74, 0.55); color: #ffe2a3; } .pill.amber svg { color: var(--amber2); }
+  .pill.big { font-size: 22px; padding: 12px 18px; gap: 10px; } .pill.big svg { width: 21px; height: 21px; }
+
+  /* the act's header, top left */
+  .hdr { position: absolute; left: 76px; top: 64px; opacity: 0; }
+  .hdr .k { font: 700 16px/1 'Geist'; letter-spacing: 3px; text-transform: uppercase; color: var(--g300); display: flex; gap: 12px; align-items: center; }
+  .hdr .k i { width: 9px; height: 9px; border-radius: 50%; background: var(--ring); }
+  .hdr h1 { margin: 14px 0 0; font: 700 60px/1.02 'Bricolage Grotesque'; letter-spacing: -1.2px; color: var(--ink); text-shadow: 0 4px 30px rgba(0,0,0,0.7); }
+  .hdr h1 .w { display: inline-block; }
+  .hdr p { margin: 12px 0 0; font: 500 22px/1.3 'Geist'; color: var(--ink2); }
+
+  /* guardrails: the figure the API works out, its checks, the lock on the reserve */
+  .money { position: absolute; left: 0; top: 0; padding: 18px 22px 16px; border-radius: 22px; opacity: 0; white-space: nowrap;
+    background: linear-gradient(180deg, rgba(14, 26, 20, 0.95), rgba(8, 15, 12, 0.95)); border: 1.5px solid rgba(115, 201, 157, 0.5);
+    box-shadow: 0 26px 70px rgba(0,0,0,0.6); }
+  .money .k { font: 700 14px/1 'Geist'; letter-spacing: 2.4px; text-transform: uppercase; color: var(--g300); }
+  .money .f { margin-top: 10px; font: 700 64px/1 'Bricolage Grotesque'; letter-spacing: -1.4px; color: #c9f7de; font-variant-numeric: tabular-nums; }
+  .money .s { margin-top: 6px; font: 500 17px/1 'Geist'; color: var(--ink2); }
+  .checks { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; gap: 10px; }
+  .chk { display: flex; gap: 10px; align-items: center; font: 600 19px/1 'Geist'; padding: 10px 15px 10px 10px; border-radius: 14px; opacity: 0; white-space: nowrap;
+    background: rgba(8, 15, 12, 0.93); border: 1px solid rgba(115, 201, 157, 0.35); color: #dcefe4; }
+  .chk .ic { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: rgba(52, 211, 128, 0.18); color: var(--ring); }
+  .chk .ic svg { width: 16px; height: 16px; }
+  .lockchip { position: absolute; left: 0; top: 0; display: flex; gap: 12px; align-items: center; padding: 12px 20px 12px 12px; border-radius: 999px;
+    background: rgba(32, 12, 10, 0.94); border: 1.5px solid rgba(229, 92, 74, 0.65); color: #ffd0c8; font: 650 21px/1 'Geist'; opacity: 0; white-space: nowrap;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55); }
+  .lockchip .bi { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: rgba(229, 92, 74, 0.2); color: #ff9c8c; }
+  .lockchip svg { width: 20px; height: 20px; }
+  .evals { position: absolute; left: 0; top: 0; display: flex; gap: 12px; align-items: center; opacity: 0; }
+  .evals .e { font: 600 17px/1 'Geist'; padding: 10px 15px; border-radius: 999px; background: rgba(8, 14, 11, 0.93); border: 1px solid rgba(115, 201, 157, 0.32); color: var(--ink2); white-space: nowrap; }
+  .evals .e b { color: var(--ink); font-weight: 700; }
+  .evals .lead { font: 700 14px/1 'Geist'; letter-spacing: 2.2px; text-transform: uppercase; color: var(--g300); margin-right: 2px; }
+  .yes { position: absolute; left: 0; top: 0; display: flex; gap: 12px; align-items: center; padding: 14px 22px 14px 14px; border-radius: 18px; opacity: 0; white-space: nowrap;
+    background: rgba(30, 22, 6, 0.95); border: 1.5px solid rgba(247, 192, 74, 0.7); color: #ffe7b0; font: 700 24px/1 'Geist';
+    box-shadow: 0 24px 60px rgba(0,0,0,0.6); }
+  .yes .bi { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--amber2); color: #241703; }
+  .yes .bi svg { width: 22px; height: 22px; }
+  .cursor { position: absolute; left: 0; top: 0; z-index: 30; width: 36px; height: 36px; opacity: 0; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); }
+  .ripple { position: absolute; left: 0; top: 0; z-index: 29; border-radius: 50%; border: 3px solid var(--amber2); opacity: 0; }
+  .ripple.r2 { border-color: rgba(247, 192, 74, 0.6); border-width: 2px; }
+</style>
+<script type="importmap">
+{ "imports": { "three": "./node_modules/three/build/three.module.js", "three/addons/": "./node_modules/three/examples/jsm/" } }
+</script>
+</head>
+<body>
+<canvas id="gl" width="1920" height="1080"></canvas>
+<div id="vign"></div>
+<div id="labels"></div>
+<div id="scrim"></div>
+<div id="ui"></div>
+<script src="icons.js"></script>
+<script type="module" src="./arch.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+// SC-219 cut 9: the icons cut 9's panels add (the sign-in's hops, what the Command Center tracks), drawn by Chromium from the
+// architecture page's Lucide set (arch8/icons.js), white strokes on transparent at 192 px, beside cut 7's: build/icons/<name>.png
+import { createRequire } from 'node:module';
+import { mkdirSync, readFileSync } from 'node:fs';
+const require = createRequire('/Users/arundutta/projects/smart-clearance/frontend/workspace/package.json');
+const { chromium } = require('@playwright/test');
+const src = readFileSync(new URL('./arch9/icons.js', import.meta.url), 'utf8');
+const w = {}; new Function('window', src)(w);
+const ICONS = w.SC3_ICONS || Object.values(w)[0];
+const NAMES = ['layout-dashboard', 'badge-check', 'hourglass', 'trending-down', 'shield', 'trash-2', 'key', 'tablet', 'server', 'smartphone'];
+const out = new URL('./build/icons/', import.meta.url).pathname; mkdirSync(out, { recursive: true });
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 192, height: 192 }, deviceScaleFactor: 1 });
+for (const n of NAMES) {
+	if (!ICONS[n]) { console.log('missing', n); continue; }
+	await page.setContent(`<html><body style="margin:0;background:transparent"><svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[n]}</svg></body></html>`);
+	await page.locator('svg').screenshot({ path: `${out}${n}.png`, omitBackground: true });
+}
+await browser.close();
+console.log('icons', NAMES.length);

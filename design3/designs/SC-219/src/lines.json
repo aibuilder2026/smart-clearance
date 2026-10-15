@@ -1,0 +1,222 @@
+{
+ "lines": [
+  {
+   "id": "i01",
+   "sec": "intro",
+   "text": "Every day, India's food brands write off stock that sells too slowly.",
+   "gap": 0.95
+  },
+  {
+   "id": "i02",
+   "sec": "intro",
+   "text": "Too close to its date for quick commerce, it's destroyed, and its GST credit reversed.",
+   "gap": 0.85
+  },
+  {
+   "id": "i03",
+   "sec": "brand",
+   "text": "Smart-Clearance turns that write-off into recovery.",
+   "gap": 0.3
+  },
+  {
+   "id": "b91",
+   "sec": "brand",
+   "text": "Agentic software as a service for the FMCG supply chain: brands, distributors and retailers.",
+   "say": "Agentic software as a service for the F M C G supply chain: brands, distributors and retailers.",
+   "gap": 0.3,
+   "take": "b91-1.wav"
+  },
+  {
+   "id": "t01",
+   "sec": "tech",
+   "text": "Under the hood, it's all Google Cloud.",
+   "gap": 0.2
+  },
+  {
+   "id": "u02",
+   "sec": "tech",
+   "text": "Four apps on Firebase, one API on Cloud Run, Cloud SQL as the record.",
+   "gap": 0.2
+  },
+  {
+   "id": "u03",
+   "sec": "tech",
+   "text": "Pub/Sub carries every step; Cloud Scheduler keeps the clock.",
+   "say": "Pub Sub carries every step; Cloud Scheduler keeps the clock.",
+   "gap": 0.2
+  },
+  {
+   "id": "u04",
+   "sec": "tech",
+   "text": "Ten agents on Google's ADK read sales from BigQuery and photos from Cloud Storage.",
+   "say": "Ten agents on Google's A D K read sales from BigQuery and photos from Cloud Storage.",
+   "gap": 0.2,
+   "take": "u04-5.wav"
+  },
+  {
+   "id": "u05",
+   "sec": "tech",
+   "text": "Gemini on Vertex AI thinks for them: Pro prices and negotiates, Flash reads and writes.",
+   "gap": 0.2,
+   "take": "u05-3.wav"
+  },
+  {
+   "id": "u06",
+   "sec": "tech",
+   "text": "The models never touch the money: the API works out every figure, and a person says yes.",
+   "gap": 0.6
+  },
+  {
+   "id": "x01",
+   "sec": "cast",
+   "text": "Now, live on production: two batches, one happy path, one sad, and the people who handle them.",
+   "gap": 0.7
+  },
+  {
+   "id": "k01",
+   "sec": "console",
+   "text": "In the console, Neha sets up a brand in minutes: its stock export, its people, its gates, its agents.",
+   "gap": 0.3
+  },
+  {
+   "id": "p02",
+   "sec": "live",
+   "text": "The workspace installs as an app on any laptop, tablet or phone.",
+   "gap": 0.4
+  },
+  {
+   "id": "q01",
+   "sec": "live",
+   "text": "Priya, who runs Munchly's supply chain, signs in.",
+   "say": "Priya, who runs Munch-lee's supply chain, signs in.",
+   "gap": 1.6
+  },
+  {
+   "id": "q02",
+   "sec": "live",
+   "text": "Her Command Center tracks every batch at risk: days left, sell-through, and the cost of the bin.",
+   "gap": 0.8
+  },
+  {
+   "id": "q03",
+   "sec": "live",
+   "text": "From BigQuery's sell-through, the Watcher flags two batches: the Mango Drink and the Masala Chips.",
+   "gap": 0.8
+  },
+  {
+   "id": "m03",
+   "sec": "mango",
+   "text": "Lakshmi Agencies photographs the label, and Vision, on Gemini Flash, matches it to the stock export.",
+   "gap": 0.3
+  },
+  {
+   "id": "m04",
+   "sec": "mango",
+   "text": "From the batch's sales history and Munchly's own rules, the Valuer prices each exit and the Router splits it. Priya approves with one tap.",
+   "gap": 0.9,
+   "say": "From the batch's sales history and Munch-lee's own rules, the Valuer prices each exit and the Router splits it. Priya approves with one tap."
+  },
+  {
+   "id": "m05",
+   "sec": "mango",
+   "text": "Outreach offers the packs to fifty-eight kiranas in their own language; each order lands on Priya's screen, live.",
+   "gap": 0.5
+  },
+  {
+   "id": "m06",
+   "sec": "mango",
+   "text": "Fifty-two shops take thirteen hundred and seventy-two packets, each with its own GST invoice.",
+   "gap": 0.8
+  },
+  {
+   "id": "m07",
+   "sec": "mango",
+   "text": "The godown's staff buy a hundred and fifty packs by UPI, and Vision checks the receipt against the count.",
+   "gap": 0.3
+  },
+  {
+   "id": "m08",
+   "sec": "mango",
+   "text": "Feeding India collects the last fifty-eight packs, and issues a donation receipt.",
+   "gap": 0.2
+  },
+  {
+   "id": "m09",
+   "sec": "mango",
+   "text": "Paperwork files every paper in Cloud Storage, and Lakshmi Agencies ends whole.",
+   "gap": 1.1
+  },
+  {
+   "id": "s01",
+   "sec": "sad",
+   "text": "But not every batch sells. Munchly's Masala Chips go to Rakesh Traders' kiranas in Nagpur, and just two order.",
+   "gap": 0.3,
+   "say": "But not every batch sells. Munch-lee's Masala Chips go to Rakesh Traders' kiranas in Nagpur, and just two order."
+  },
+  {
+   "id": "s02",
+   "sec": "sad",
+   "text": "On ExpireSoon, an imaginary near-expiry marketplace, the Negotiator counters a bid, and seven hundred and seventy-two packs sell.",
+   "gap": 0.5,
+   "say": "On Expire Soon, an imaginary near-expiry marketplace, the Negotiator counters a bid, and seven hundred and seventy-two packs sell.",
+   "take": "s02-5.wav"
+  },
+  {
+   "id": "s03",
+   "sec": "sad",
+   "text": "Five hundred and forty packets are left when the window closes.",
+   "gap": 0.4
+  },
+  {
+   "id": "s04",
+   "sec": "sad",
+   "text": "On expiry day, Rakesh must destroy them through an authorised agency, and prove it.",
+   "gap": 0.3
+  },
+  {
+   "id": "s05",
+   "sec": "sad",
+   "text": "At the landfill he photographs it, and the officer, two witnesses and Rakesh sign the certificate.",
+   "gap": 1.0,
+   "pause": [
+    [
+     "it",
+     0.6
+    ]
+   ]
+  },
+  {
+   "id": "s06",
+   "sec": "sad",
+   "text": "Vision checks the photos; only on Priya's second yes are the certificate and credit note issued.",
+   "gap": 0.8
+  },
+  {
+   "id": "r01",
+   "sec": "sad",
+   "text": "Every step is on the record: an append-only audit trail in Cloud SQL, and requests traced end to end in Cloud Trace, with OpenTelemetry.",
+   "gap": 0.4
+  },
+  {
+   "id": "s08",
+   "sec": "sad",
+   "text": "Even here, Munchly recovers eleven thousand seven hundred rupees, and Rakesh ends whole.",
+   "gap": 0.5,
+   "say": "Even here, Munch-lee recovers eleven thousand seven hundred rupees, and Rakesh ends whole."
+  },
+  {
+   "id": "m11",
+   "sec": "report",
+   "text": "Impact posts every batch to its ledger in BigQuery, ready for BRSR.",
+   "gap": 0.6
+  },
+  {
+   "id": "d01",
+   "sec": "next",
+   "text": "Try the guided demo at smartclearance-demo dot web dot app.",
+   "gap": 0.0,
+   "say": "Try the guided demo at smart clearance demo dot web dot app."
+  }
+ ],
+ "note": "SC-219 cut 9: cut 8's lines where they stay (their takes reused); new: the SaaS line (b91), the architecture condensed (u02 to u06, after t01), the cast and two paths (x01), a shorter install line (p02), and Priya's sign-in and Command Center (q01 to q03), which replace m02"
+}

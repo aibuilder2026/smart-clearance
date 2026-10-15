@@ -1,0 +1,131 @@
+1
+00:00:00,900 --> 00:00:06,293
+Every day, India's food brands write off stock that sells too slowly.
+
+2
+00:00:06,993 --> 00:00:13,304
+Too close to its date for quick commerce, it's destroyed, and its GST credit reversed.
+
+3
+00:00:14,304 --> 00:00:17,678
+Smart-Clearance turns that write-off into recovery.
+
+4
+00:00:17,728 --> 00:00:25,168
+Agentic software as a service for the FMCG supply chain: brands, distributors and retailers.
+
+5
+00:00:25,368 --> 00:00:27,971
+Under the hood, it's all Google Cloud.
+
+6
+00:00:27,921 --> 00:00:33,862
+Four apps on Firebase, one API on Cloud Run, Cloud SQL as the record.
+
+7
+00:00:33,812 --> 00:00:38,428
+Pub/Sub carries every step; Cloud Scheduler keeps the clock.
+
+8
+00:00:38,378 --> 00:00:44,225
+Ten agents on Google's ADK read sales from BigQuery and photos from Cloud Storage.
+
+9
+00:00:44,175 --> 00:00:51,490
+Gemini on Vertex AI thinks for them: Pro prices and negotiates, Flash reads and writes.
+
+10
+00:00:51,440 --> 00:00:57,944
+The models never touch the money: the API works out every figure, and a person says yes.
+
+11
+00:00:58,594 --> 00:01:05,878
+Now, live on production: two batches, one happy path, one sad, and the people who handle them.
+
+12
+00:01:06,628 --> 00:01:15,393
+In the console, Neha sets up a brand in minutes: its stock export, its people, its gates, its agents.
+
+13
+00:01:15,443 --> 00:01:20,623
+The workspace installs as an app on any laptop, tablet or phone.
+
+14
+00:01:21,273 --> 00:01:25,463
+Priya, who runs Munchly's supply chain, signs in.
+
+15
+00:01:26,813 --> 00:01:33,730
+Her Command Center tracks every batch at risk: days left, sell-through, and the cost of the bin.
+
+16
+00:01:34,280 --> 00:01:41,943
+From BigQuery's sell-through, the Watcher flags two batches: the Mango Drink and the Masala Chips.
+
+17
+00:01:42,893 --> 00:01:50,302
+Lakshmi Agencies photographs the label, and Vision, on Gemini Flash, matches it to the stock export.
+
+18
+00:01:50,352 --> 00:02:02,110
+From the batch's sales history and Munchly's own rules, the Valuer prices each exit and the Router splits it. Priya approves with one tap.
+
+19
+00:02:02,760 --> 00:02:11,092
+Outreach offers the packs to fifty-eight kiranas in their own language; each order lands on Priya's screen, live.
+
+20
+00:02:11,342 --> 00:02:18,390
+Fifty-two shops take thirteen hundred and seventy-two packets, each with its own GST invoice.
+
+21
+00:02:18,940 --> 00:02:26,316
+The godown's staff buy a hundred and fifty packs by UPI, and Vision checks the receipt against the count.
+
+22
+00:02:26,366 --> 00:02:31,578
+Feeding India collects the last fifty-eight packs, and issues a donation receipt.
+
+23
+00:02:31,528 --> 00:02:37,569
+Paperwork files every paper in Cloud Storage, and Lakshmi Agencies ends whole.
+
+24
+00:02:39,719 --> 00:02:47,849
+But not every batch sells. Munchly's Masala Chips go to Rakesh Traders' kiranas in Nagpur, and just two order.
+
+25
+00:02:47,899 --> 00:02:57,734
+On ExpireSoon, an imaginary near-expiry marketplace, the Negotiator counters a bid, and seven hundred and seventy-two packs sell.
+
+26
+00:02:57,984 --> 00:03:02,061
+Five hundred and forty packets are left when the window closes.
+
+27
+00:03:02,211 --> 00:03:08,436
+On expiry day, Rakesh must destroy them through an authorised agency, and prove it.
+
+28
+00:03:08,486 --> 00:03:16,741
+At the landfill he photographs it, and the officer, two witnesses and Rakesh sign the certificate.
+
+29
+00:03:17,491 --> 00:03:24,260
+Vision checks the photos; only on Priya's second yes are the certificate and credit note issued.
+
+30
+00:03:25,310 --> 00:03:35,102
+Every step is on the record: an append-only audit trail in Cloud SQL, and requests traced end to end in Cloud Trace, with OpenTelemetry.
+
+31
+00:03:35,252 --> 00:03:42,432
+Even here, Munchly recovers eleven thousand seven hundred rupees, and Rakesh ends whole.
+
+32
+00:03:42,682 --> 00:03:48,544
+Impact posts every batch to its ledger in BigQuery, ready for BRSR.
+
+33
+00:03:48,894 --> 00:03:53,386
+Try the guided demo at smartclearance-demo dot web dot app.

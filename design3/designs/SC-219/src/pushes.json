@@ -1,0 +1,57 @@
+{
+ "note": "SC-205 cut 2: the pushes the people receive, in the app's own words (backend-api domain/copy.py) with the 13 Oct production runs' figures; checked against the recordings (the offers' Hindi on the kiranas' lock screens, the Saturday van round, the 1,580 packs at risk).",
+ "pushes": {
+  "detect": {
+   "title": "Mango Drink 200 ml · Hyderabad",
+   "body": "Priya ji, Hyderabad godown mein Mango Drink 200ml (batch MF-2410-118) ki 1,580 units 24 Oct se pehle nahi bikengi. Q-commerce block hai. Route dekhne ke liye tap karein."
+  },
+  "verify": {
+   "title": "Ek photo chahiye",
+   "body": "Lakshmi Agencies, Mango Drink 200ml ka ek carton ka label photo bhej dein (batch MF-2410-118). Bas ek photo, baaki hum kar lenge."
+  },
+  "plan": {
+   "title": "Plan ready · MF-2410-118",
+   "body": "Plan for MF-2410-118: 1,372 units kirana (₹12), 150 units staff sale (₹8), 58 units food bank (₹0). Net ₹16,917, ₹22,194 better than write-off. GST ITC ₹837 safe. Tap to review and approve."
+  },
+  "offer": {
+   "title": "आज का खास ऑफर",
+   "body": "नमस्ते Sri Lakshmi Ganapathi Kirana! Munchly Mango Drink 200ml पर आज खास ऑफर: 10 पैकेट लो, 2 मुफ़्त. Best before 24 Oct 2026. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें — Lakshmi Agencies"
+  },
+  "staff": {
+   "title": "Staff sale · Mango Drink",
+   "body": "150 packs of Mango Drink for your staff at ₹8 a pack, at Begum Bazaar godown. Record what sold when the sale is over."
+  },
+  "pickup": {
+   "title": "Pickup request · Mango Drink",
+   "body": "58 packs of Mango Drink, 22 days left, with the FSSAI checklist. Pickup from Begum Bazaar godown?"
+  },
+  "van": {
+   "title": "Van route for Saturday",
+   "body": "Van route for Saturday updated: 52 kiranas, 1,372 packets."
+  },
+  "offer-chips": {
+   "title": "आज का खास ऑफर",
+   "body": "नमस्ते Om Sai Provision! Munchly Masala Chips 150g पर आज खास ऑफर: 10 पैकेट लो, 2 मुफ़्त. Best before 18 Nov 2026. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें — Rakesh Traders"
+  },
+  "counter": {
+   "title": "Rakesh Traders · Lot ES-24117",
+   "body": "Thank you for your bid. We can offer the 772 packs at ₹14.20 per pack, and dispatch is within 24 hours of the balance."
+  },
+  "destroy": {
+   "title": "Expired packs destroy karein",
+   "body": "Rakesh bhai, Masala Chips 150g (batch MF-2409-117) ke 540 packs Kalamna Market godown mein expire ho gaye. Authorised agency se destroy karwayein, aur do photo aur certificate number bhej dein. Munchly Foods credit note dega."
+  },
+  "review": {
+   "title": "The destruction waits for your yes",
+   "body": "Rakesh Traders destroyed 540 packs of Masala Chips at Kalamna Market godown. Vision checked the photos. Review them to issue the credit note."
+  },
+  "offer-ganesh": {
+   "title": "आज का खास ऑफर",
+   "body": "नमस्ते Shree Ganesh Kirana! Munchly Masala Chips 150g पर आज खास ऑफर: 10 पैकेट लो, 2 मुफ़्त. Best before 18 Nov 2026. सिर्फ़ 48 घंटे. ऑर्डर के लिए टैप करें — Rakesh Traders"
+  },
+  "detect-chips": {
+   "title": "Masala Chips 150 g · Nagpur",
+   "body": "Priya ji, Nagpur godown mein Masala Chips 150g (batch MF-2409-117) ki 1,360 units 18 Nov se pehle nahi bikengi. Q-commerce block hai. Route dekhne ke liye tap karein."
+  }
+ }
+}
