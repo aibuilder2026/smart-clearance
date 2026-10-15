@@ -7,6 +7,46 @@ and the papers come out as PDFs.
 Every company, person, batch and figure is fictional. Munchly Foods is the story's client, an Indian snacks brand. Its
 distributors hold two batches that won't sell before their best-before date.
 
+> [!IMPORTANT]
+> **How the agents run in production, and why this demo resets the clock**
+>
+> **In production, the agents start on their own.** People only give their yes. Each run starts in one of two ways:
+>
+> - **On a schedule, from Cloud Scheduler.** A job, `sc-tick`, calls backend-api every minute. Each tick runs the
+>   day's work on the client's clock: the Data agent loads the distributors' stock exports at 08:30, and the Watcher
+>   checks every batch against the quick-commerce gates at 09:00. It also fires the timers that fall due: a kirana
+>   offer's 48-hour window closing, an unsold ExpireSoon lot closing, a reminder for the destruction's evidence, and
+>   expiry day's report on the batch's own best-before date.
+> - **On an event, through Pub/Sub.** Every change backend-api saves publishes an event: a batch flagged, a label photo
+>   arriving, a plan approved, a buyer's bid, a deal closing. Pub/Sub pushes it to the agents' service on Cloud Run,
+>   which runs that event's agents on Gemini and reports back. Vision reads the label, the Valuer and the Router
+>   price and split the batch, the Lister, Outreach and Donation carry out the plan, the Negotiator answers a bid,
+>   Paperwork drafts the papers and Impact posts the ledger. Another event sends people their pushes through Firebase
+>   Cloud Messaging.
+>
+> So a real batch takes days to weeks: a check each morning, a 48-hour offer window, and expiry day on its own
+> best-before date. [ARCHITECTURE.md](ARCHITECTURE.md#8-events-time-and-the-live-stream) shows both paths.
+>
+> **This demo runs on a synthetic world.** All of it is fictional, generated for the prototype and loaded through
+> backend-api's own services (`hydrate.sh`), never typed in as rows:
+>
+> - Munchly Foods, its four distributors, 96 kiranas, two food banks and a marketplace buyer;
+> - Munchly's pilot quarter of 12 cleared batches, with their papers;
+> - the other brands in the console, each with its own people, distributors, agent runs and batches;
+> - the distributors' daily stock exports, since no real DMS is connected;
+> - every label photo, receipt and piece of evidence (made with Qwen-Image), and every GSTIN, licence and signature.
+>
+> **That's why you reset the clock and shorten it.** The story's batches have fixed best-before dates: 24 Oct 2026
+> for the Mango Drink and 18 Nov 2026 for the Masala Chips. So the workspace replays the story's own calendar from day
+> 0, Friday 2 Oct 2026, and the screens show its date as "Prototype time".
+>
+> - **Reset journey** in the console puts the story back at day 0, 08:00.
+> - A shorter journey day lets it play in an afternoon. On **Rehearsal** a day lasts an hour, so the 48-hour offer
+>   window takes two hours.
+> - The console's controls do at once what Cloud Scheduler or the partners would do in time: **Run now** for the
+>   daily runs, **Close now** for an offer window, **Report now** for expiry day, and **Fill the scheme** for the
+>   kiranas who aren't there to order.
+
 - [Start here: the demo data set](#start-here-the-demo-data-set)
 - [Meet the cast: Munchly Foods and its supply chain](#meet-the-cast-munchly-foods-and-its-supply-chain)
 - [Pick a way in](#pick-a-way-in)
