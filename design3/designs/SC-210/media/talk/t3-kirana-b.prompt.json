@@ -1,0 +1,40 @@
+{
+ "name": "t3-kirana-b",
+ "model": "veo-3.1-generate-001",
+ "location": "us-central1",
+ "service": "Vertex AI",
+ "prompt": "Exactly as in the image: at a neighbourhood kirana shop's steel counter on a busy lane, beside an open white delivery van, a young delivery man in a grey t-shirt hands one sealed brown carton across the counter to the shopkeeper, a man in a cream kurta. The delivery man turns his face toward the shopkeeper and says clearly, in an Indian English accent: \"Your twenty-four packets, sir. The invoice is already on your phone.\" The shopkeeper takes the carton with both hands, looks at him and replies with a calm, pleased expression, speaking clearly, his lips shaping every word, in an Indian English accent: \"Very good! These will be gone by Sunday.\" Only after his last word does he break into a smile. Each man's mouth moves only while he is speaking, in time with his words. The camera is locked off. Audio: their two voices clear, the gentle bustle of the lane behind them, no music.",
+ "negative_prompt": "subtitles, captions, watermark, on-screen text, music, singing, children, deformed hands, extra fingers, morphing face, distorted mouth, flicker",
+ "seed": null,
+ "enhance_prompt": true,
+ "resolution": "1080p",
+ "aspect": "16:9",
+ "duration_s": 8,
+ "fps": 24,
+ "generate_audio": true,
+ "person_generation": "allow_adult",
+ "inputs": [
+  {
+   "role": "first",
+   "file": "dl-kirana-L.png",
+   "sha256": "d96f806ddb09d3648801dc6d71ba870bfff798226e3432e1fb559961a59a5420"
+  }
+ ],
+ "watermark": "SynthID",
+ "cost_usd": 3.2,
+ "price_table_date": "2026-10-10",
+ "created": "2026-10-15",
+ "use": "SC-210 talking scene t3-kirana-b",
+ "status": "done",
+ "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/36ddbd69-5f55-4d4d-ae09-063e618f25a7",
+ "latency_s": 130.9,
+ "rai_filtered": {
+  "count": 0,
+  "reasons": []
+ },
+ "files": [
+  "t3-kirana-b.mp4"
+ ],
+ "shipped": "the Veo output re-encoded for the repository (H.264 crf 20, AAC 160k); the original stays in src/clips/talk/",
+ "derived_from": "src/clips/talk/t3-kirana-b.mp4"
+}

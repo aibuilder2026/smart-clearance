@@ -1,0 +1,279 @@
+{
+ "note": "SC-210: the landing demo film as a sales film. The narration (kind absent) and the talking scenes (kind 'talk', their words as Veo speaks them in clips/talk/<clip>.mp4). Generic: no client, product or person is named. 'say' is what the narrator reads where it differs from the text.",
+ "lines": [
+  {
+   "id": "o1",
+   "sec": "waste",
+   "text": "Every day, good food leaves a warehouse in India, and never reaches a single plate.",
+   "gap": 0.8
+  },
+  {
+   "id": "o2",
+   "sec": "waste",
+   "text": "Not because it has spoiled. Because it is running out of time.",
+   "gap": 0.6
+  },
+  {
+   "id": "t1",
+   "sec": "waste",
+   "kind": "talk",
+   "clip": "t1-distributor",
+   "speaker": "a distributor",
+   "text": "Sixteen hundred packs, and twenty-two days left. The apps won't take them now.",
+   "gap": 0.6,
+   "clip_in": 0.0,
+   "clip_out": 6.5
+  },
+  {
+   "id": "o3",
+   "sec": "waste",
+   "text": "Too close to its date for quick commerce, too slow for the shelf. So it is written off, sent to a landfill, and its tax credit reversed.",
+   "gap": 0.7
+  },
+  {
+   "id": "o4",
+   "sec": "waste",
+   "text": "Week after week. Brand after brand.",
+   "gap": 1.0
+  },
+  {
+   "id": "o5",
+   "sec": "waste",
+   "text": "What if every one of those packs could still find a home?",
+   "gap": 2.6
+  },
+  {
+   "id": "p1",
+   "sec": "platform",
+   "text": "This is Smart-Clearance.",
+   "say": "This is Smart Clearance.",
+   "gap": 0.4
+  },
+  {
+   "id": "p2",
+   "sec": "platform",
+   "text": "Software, delivered as a service, that turns write-offs into recovery.",
+   "gap": 0.8
+  },
+  {
+   "id": "p3",
+   "sec": "platform",
+   "text": "Every brand gets its own secure workspace. From one console, a new brand is onboarded in minutes: its stock data, its distributors, its people and its own rules.",
+   "gap": 0.8,
+   "pause": [
+    [
+     "workspace",
+     1.6
+    ]
+   ]
+  },
+  {
+   "id": "p5",
+   "sec": "platform",
+   "text": "And from the same console, the platform team watches every client, every batch and every agent, live.",
+   "gap": 0.8
+  },
+  {
+   "id": "p4",
+   "sec": "platform",
+   "text": "And inside every workspace works a team that never sleeps.",
+   "gap": 1.2
+  },
+  {
+   "id": "a1",
+   "sec": "agents",
+   "text": "Ten AI agents, built with Google's Agent Development Kit, running on Cloud Run, and thinking with Gemini.",
+   "gap": 0.8
+  },
+  {
+   "id": "a2",
+   "sec": "agents",
+   "text": "Each has one job. The Data agent loads the stock. The Watcher spots what won't sell. Vision reads the label. The Valuer prices every exit, and the Router splits the batch.",
+   "gap": 0.5
+  },
+  {
+   "id": "a3",
+   "sec": "agents",
+   "text": "Outreach, the Lister and the Negotiator find the buyers. Paperwork files every paper, and Impact measures the good it does.",
+   "gap": 0.8
+  },
+  {
+   "id": "a5",
+   "sec": "agents",
+   "text": "Every event flows through Pub/Sub, the sales history lives in BigQuery, and every screen stays live.",
+   "say": "Every event flows through Pub Sub, the sales history lives in Big Query, and every screen stays live.",
+   "gap": 0.8
+  },
+  {
+   "id": "a4",
+   "sec": "agents",
+   "text": "They pass each batch from hand to hand, and stop for only one thing: a person's yes.",
+   "gap": 2.0
+  },
+  {
+   "id": "j1",
+   "sec": "journey",
+   "text": "It begins at dawn. The Watcher reads the sell-through and flags the batch that won't make it in time.",
+   "gap": 0.6
+  },
+  {
+   "id": "j2",
+   "sec": "journey",
+   "text": "The distributor takes one photo of the carton, and Vision checks the batch and its dates against the stock.",
+   "gap": 0.6
+  },
+  {
+   "id": "j3",
+   "sec": "journey",
+   "text": "The Valuer prices every exit, and the Router splits the batch, guided by its sales history and the brand's own rules.",
+   "gap": 0.5
+  },
+  {
+   "id": "t2",
+   "sec": "journey",
+   "kind": "talk",
+   "clip": "t2-lead",
+   "speaker": "the supply-chain lead",
+   "text": "Kiranas, a staff sale, the food bank... and nothing to the bin. Approved.",
+   "gap": 0.3,
+   "clip_in": 0.0,
+   "clip_out": 6.9
+  },
+  {
+   "id": "j4",
+   "sec": "journey",
+   "text": "One tap. Now the agents go to work.",
+   "gap": 1.8
+  },
+  {
+   "id": "j5",
+   "sec": "journey",
+   "text": "Outreach offers the packs to neighbourhood kiranas, in their own language. Every order lands live, with its own GST invoice.",
+   "gap": 0.4
+  },
+  {
+   "id": "t3",
+   "sec": "journey",
+   "kind": "talk",
+   "clip": "t3-kirana-b",
+   "speaker": "a delivery man and a shopkeeper",
+   "text": "Your twenty-four packets, sir. The invoice is already on your phone. / Very good! These will be gone by Sunday.",
+   "gap": 1.0,
+   "clip_in": 0.0,
+   "clip_out": 7.2
+  },
+  {
+   "id": "j6",
+   "sec": "journey",
+   "text": "At the godown, the staff buy their share by UPI, and Vision checks the receipt against the count.",
+   "gap": 0.6
+  },
+  {
+   "id": "j7",
+   "sec": "journey",
+   "text": "What remains near its date goes to a food bank, collected with a receipt.",
+   "gap": 0.3
+  },
+  {
+   "id": "t4",
+   "sec": "journey",
+   "kind": "talk",
+   "clip": "t4-foodbank-b",
+   "speaker": "a food bank volunteer",
+   "text": "Fifty-eight packs. That's fifty-eight meals tonight.",
+   "gap": 0.8,
+   "clip_in": 1.3,
+   "clip_out": 5.1
+  },
+  {
+   "id": "j8",
+   "sec": "journey",
+   "text": "And when a batch has time to travel, the Lister puts it on a near-expiry marketplace, and the Negotiator closes the deal, without ever revealing the brand's floor price.",
+   "gap": 0.3
+  },
+  {
+   "id": "t5",
+   "sec": "journey",
+   "kind": "talk",
+   "clip": "t5-buyer",
+   "speaker": "a marketplace buyer",
+   "text": "Fourteen-twenty a pack? Done. Send the truck.",
+   "gap": 2.6,
+   "clip_in": 2.0,
+   "clip_out": 6.45
+  },
+  {
+   "id": "j9",
+   "sec": "journey",
+   "text": "Even the hardest case is handled with care. If a few packs truly can't be saved, an authorised agency destroys them, Vision checks the photos, and the certificate is signed on the spot by its officer, two witnesses and the distributor.",
+   "gap": 0.3
+  },
+  {
+   "id": "t6",
+   "sec": "journey",
+   "kind": "talk",
+   "clip": "t6-landfill",
+   "speaker": "a distributor at the landfill",
+   "text": "All four signatures. Now it's on the record.",
+   "gap": 0.4,
+   "clip_in": 0.0,
+   "clip_out": 4.6
+  },
+  {
+   "id": "j10",
+   "sec": "journey",
+   "text": "And not a rupee is credited until a second yes.",
+   "gap": 1.6
+  },
+  {
+   "id": "m1",
+   "sec": "papers",
+   "text": "Then the paperwork writes itself.",
+   "gap": 0.4
+  },
+  {
+   "id": "m2",
+   "sec": "papers",
+   "text": "A tax invoice for every order, e-invoices, credit notes, a GST memo with every reversal worked out, donation receipts and certificates, each one drafted, signed and filed.",
+   "gap": 0.8
+  },
+  {
+   "id": "m3",
+   "sec": "money",
+   "text": "On a single batch, a loss of twenty-two thousand rupees becomes a recovery of nearly seventeen thousand. And the distributor ends whole, to the rupee.",
+   "gap": 1.2
+  },
+  {
+   "id": "m4",
+   "sec": "money",
+   "text": "Every step is on the record, every request traced from end to end.",
+   "gap": 1.0
+  },
+  {
+   "id": "e1",
+   "sec": "impact",
+   "text": "And every batch posts to an impact ledger: kilos kept out of landfill, meals served, emissions avoided, ready for the brand's sustainability report.",
+   "gap": 1.6
+  },
+  {
+   "id": "c1",
+   "sec": "close",
+   "text": "It plugs into what brands already use: the distributor's stock exports, Tally, UPI, the marketplace and the food banks, on every phone, tablet and laptop.",
+   "gap": 1.2
+  },
+  {
+   "id": "c2",
+   "sec": "close",
+   "text": "Smart-Clearance. Ten agents. One yes. And nothing good goes to waste.",
+   "say": "Smart Clearance. Ten agents. One yes. And nothing good goes to waste.",
+   "gap": 1.0
+  },
+  {
+   "id": "c3",
+   "sec": "close",
+   "text": "See it for yourself, at smartclearance-demo dot web dot app.",
+   "say": "See it for yourself, at smart clearance demo, dot web, dot app.",
+   "gap": 0.0
+  }
+ ]
+}

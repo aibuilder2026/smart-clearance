@@ -1,0 +1,20 @@
+{
+ "name": "waste-2102",
+ "model": "lyria-002",
+ "location": "us-central1",
+ "service": "Vertex AI",
+ "kind": "music",
+ "prompt": "A surreal, slow, melancholic cinematic underscore in D minor at 72 BPM: a soft felt piano playing sparse notes with long reverse-reverb tails, a warm tanpura drone, distant breathy bansuri flute phrases, granular shimmering textures, deep sub swells, dreamy and weightless, like time running out in slow motion. Spacious and quiet, no drums.",
+ "negative_prompt": "vocals, singing, lyrics, choir words, drums, drum kit, percussion hits, distortion, lo-fi, aggressive, harsh, fast tempo, EDM, dubstep, trap",
+ "seed": 2102,
+ "cost_usd": 0.06,
+ "price_table_date": "2026-10-12",
+ "created": "2026-10-15",
+ "latency_s": 25.9,
+ "use": "SC-210: a candidate cue for the sales film's score",
+ "watermark": "SynthID",
+ "status": "done",
+ "output": "waste-2102.wav 32.768229 s 48 kHz stereo",
+ "shipped": "the Lyria 2 output as AAC 192k; the WAV stays in src/music10/",
+ "derived_from": "src/music10/waste-2102.wav"
+}

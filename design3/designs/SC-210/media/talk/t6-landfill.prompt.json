@@ -1,0 +1,40 @@
+{
+ "name": "t6-landfill",
+ "model": "veo-3.1-generate-001",
+ "location": "us-central1",
+ "service": "Vertex AI",
+ "prompt": "Exactly as in the image: at the edge of a municipal landfill under a hazy evening sky, a man in his sixties in a checked shirt, reading glasses pushed up on his head, holds a tablet whose screen stays a plain blank white, beside an officer in a dark uniform and two witnesses, a man and a woman; a yellow excavator works far behind them. He looks up at the officer, nods, and says, in an Indian English accent: \"All four signatures. Now it's on the record.\" The officer nods back. His face and lips move naturally with his words. The camera is locked off. Audio: his voice clear and close, a faint wind and the distant excavator, no music.",
+ "negative_prompt": "subtitles, captions, watermark, on-screen text, music, singing, children, deformed hands, extra fingers, morphing face, distorted mouth, flicker",
+ "seed": null,
+ "enhance_prompt": true,
+ "resolution": "1080p",
+ "aspect": "16:9",
+ "duration_s": 8,
+ "fps": 24,
+ "generate_audio": true,
+ "person_generation": "allow_adult",
+ "inputs": [
+  {
+   "role": "first",
+   "file": "s-landfill-sign.png",
+   "sha256": "224dbe6ed00270740e6abb084773fa5ed1c843e01d423c49e5e6a77be9d4b307"
+  }
+ ],
+ "watermark": "SynthID",
+ "cost_usd": 3.2,
+ "price_table_date": "2026-10-10",
+ "created": "2026-10-15",
+ "use": "SC-210 talking scene t6-landfill",
+ "status": "done",
+ "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/95b9fe30-d5c2-4a4e-b7a9-413ae78be2ba",
+ "latency_s": 130.0,
+ "rai_filtered": {
+  "count": 0,
+  "reasons": []
+ },
+ "files": [
+  "t6-landfill.mp4"
+ ],
+ "shipped": "the Veo output re-encoded for the repository (H.264 crf 20, AAC 160k); the original stays in src/clips/talk/",
+ "derived_from": "src/clips/talk/t6-landfill.mp4"
+}

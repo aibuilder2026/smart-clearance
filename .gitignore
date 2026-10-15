@@ -255,3 +255,41 @@ design3/designs/SC-209/src/tts/vo3/*
 design3/designs/SC-209/src/tts/vo3/maya1w-warm/*
 !design3/designs/SC-209/src/tts/vo3/maya1w-warm/*.json
 
+
+# SC-210: the sales film's pipeline ships as cut 7's did, with the agentic ecosystem's 3D scene (eco/, without its
+# node_modules), the label tracker's flat-label renderer (relabel/) and the narrator's chosen takes' timings; keyframe
+# PNGs, clips, depth maps, captures, voice takes, the score's WAVs, the venvs and the build stay local
+!design3/designs/SC-210/src/
+design3/designs/SC-210/src/*
+!design3/designs/SC-210/src/*.py
+!design3/designs/SC-210/src/*.sh
+!design3/designs/SC-210/src/*.mjs
+!design3/designs/SC-210/src/*.js
+!design3/designs/SC-210/src/lines.json
+!design3/designs/SC-210/src/pushes.json
+!design3/designs/SC-210/src/kiranas.json
+!design3/designs/SC-210/src/prompts/
+!design3/designs/SC-210/src/relabel/
+!design3/designs/SC-210/src/eco/
+design3/designs/SC-210/src/eco/*
+!design3/designs/SC-210/src/eco/*.html
+!design3/designs/SC-210/src/eco/*.js
+!design3/designs/SC-210/src/eco/*.mjs
+!design3/designs/SC-210/src/eco/package.json
+!design3/designs/SC-210/src/eco/package-lock.json
+!design3/designs/SC-210/src/build/
+design3/designs/SC-210/src/build/*
+!design3/designs/SC-210/src/build/screens.json
+!design3/designs/SC-210/src/tts/
+design3/designs/SC-210/src/tts/*
+!design3/designs/SC-210/src/tts/*.py
+!design3/designs/SC-210/src/tts/*.sh
+!design3/designs/SC-210/src/tts/sample*.txt
+!design3/designs/SC-210/src/tts/voice.txt
+!design3/designs/SC-210/src/tts/vo3/
+design3/designs/SC-210/src/tts/vo3/*
+!design3/designs/SC-210/src/tts/vo3/gemini-Sulafat/
+design3/designs/SC-210/src/tts/vo3/gemini-Sulafat/*
+!design3/designs/SC-210/src/tts/vo3/gemini-Sulafat/*.json
+# the talking scenes ship beside the film (media/talk/), past the root's *.mp4
+!design3/designs/SC-210/media/talk/*.mp4

@@ -1,0 +1,40 @@
+{
+ "name": "t1-distributor",
+ "model": "veo-3.1-generate-001",
+ "location": "us-central1",
+ "service": "Vertex AI",
+ "prompt": "Exactly as in the image: in a distributor's godown at dawn, a woman in her fifties in a teal sari, her long grey-streaked plait over her shoulder and reading glasses hanging at her neck, holds a tablet with its back to the camera among stacks of brown cartons with white labels. She looks up from the tablet with quiet concern and says, in a warm Indian English accent: \"Sixteen hundred packs, and twenty-two days left. The apps won't take them now.\" Her face and lips move naturally with her words. The camera holds still and pushes in very slowly. Audio: her voice clear and close, the soft hum of the godown behind her, no music.",
+ "negative_prompt": "subtitles, captions, watermark, on-screen text, music, singing, children, deformed hands, extra fingers, morphing face, distorted mouth, flicker",
+ "seed": null,
+ "enhance_prompt": true,
+ "resolution": "1080p",
+ "aspect": "16:9",
+ "duration_s": 8,
+ "fps": 24,
+ "generate_audio": true,
+ "person_generation": "allow_adult",
+ "inputs": [
+  {
+   "role": "first",
+   "file": "f-lakshmi-L.png",
+   "sha256": "08cd75e6bcbc069b8420eb0dc34f6c05c855a572e5fd150e28eb313a5c96059a"
+  }
+ ],
+ "watermark": "SynthID",
+ "cost_usd": 3.2,
+ "price_table_date": "2026-10-10",
+ "created": "2026-10-15",
+ "use": "SC-210 talking scene t1-distributor",
+ "status": "done",
+ "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/2cbbdb46-f683-4f6f-b32e-f2085c686aa3",
+ "latency_s": 115.0,
+ "rai_filtered": {
+  "count": 0,
+  "reasons": []
+ },
+ "files": [
+  "t1-distributor.mp4"
+ ],
+ "shipped": "the Veo output re-encoded for the repository (H.264 crf 20, AAC 160k); the original stays in src/clips/talk/",
+ "derived_from": "src/clips/talk/t1-distributor.mp4"
+}

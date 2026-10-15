@@ -1,0 +1,156 @@
+1
+00:00:00,900 --> 00:00:06,911
+Every day, good food leaves a warehouse in India, and never reaches a single plate.
+
+2
+00:00:07,511 --> 00:00:11,922
+Not because it has spoiled. Because it is running out of time.
+
+3
+00:00:12,322 --> 00:00:18,762
+— Sixteen hundred packs, and twenty-two days left. The apps won't take them now.
+
+4
+00:00:19,162 --> 00:00:28,213
+Too close to its date for quick commerce, too slow for the shelf. So it is written off, sent to a landfill, and its tax credit reversed.
+
+5
+00:00:28,713 --> 00:00:31,524
+Week after week. Brand after brand.
+
+6
+00:00:32,324 --> 00:00:36,255
+What if every one of those packs could still find a home?
+
+7
+00:00:38,655 --> 00:00:40,986
+This is Smart-Clearance.
+
+8
+00:00:41,186 --> 00:00:45,637
+Software, delivered as a service, that turns write-offs into recovery.
+
+9
+00:00:46,237 --> 00:00:58,088
+Every brand gets its own secure workspace. From one console, a new brand is onboarded in minutes: its stock data, its distributors, its people and its own rules.
+
+10
+00:00:58,688 --> 00:01:05,539
+And from the same console, the platform team watches every client, every batch and every agent, live.
+
+11
+00:01:06,139 --> 00:01:10,270
+And inside every workspace works a team that never sleeps.
+
+12
+00:01:13,270 --> 00:01:21,041
+Ten AI agents, built with Google's Agent Development Kit, running on Cloud Run, and thinking with Gemini.
+
+13
+00:01:21,641 --> 00:01:35,132
+Each has one job. The Data agent loads the stock. The Watcher spots what won't sell. Vision reads the label. The Valuer prices every exit, and the Router splits the batch.
+
+14
+00:01:35,432 --> 00:01:44,083
+Outreach, the Lister and the Negotiator find the buyers. Paperwork files every paper, and Impact measures the good it does.
+
+15
+00:01:44,683 --> 00:01:50,694
+Every event flows through Pub/Sub, the sales history lives in BigQuery, and every screen stays live.
+
+16
+00:01:51,294 --> 00:01:56,945
+They pass each batch from hand to hand, and stop for only one thing: a person's yes.
+
+17
+00:02:00,145 --> 00:02:06,036
+It begins at dawn. The Watcher reads the sell-through and flags the batch that won't make it in time.
+
+18
+00:02:06,436 --> 00:02:12,167
+The distributor takes one photo of the carton, and Vision checks the batch and its dates against the stock.
+
+19
+00:02:12,567 --> 00:02:20,898
+The Valuer prices every exit, and the Router splits the batch, guided by its sales history and the brand's own rules.
+
+20
+00:02:21,198 --> 00:02:28,022
+— Kiranas, a staff sale, the food bank... and nothing to the bin. Approved.
+
+21
+00:02:28,122 --> 00:02:31,293
+One tap. Now the agents go to work.
+
+22
+00:02:32,893 --> 00:02:41,144
+Outreach offers the packs to neighbourhood kiranas, in their own language. Every order lands live, with its own GST invoice.
+
+23
+00:02:41,344 --> 00:02:48,456
+— Your twenty-four packets, sir. The invoice is already on your phone.
+Very good! These will be gone by Sunday.
+
+24
+00:02:49,256 --> 00:02:55,667
+At the godown, the staff buy their share by UPI, and Vision checks the receipt against the count.
+
+25
+00:02:56,067 --> 00:03:01,158
+What remains near its date goes to a food bank, collected with a receipt.
+
+26
+00:03:01,258 --> 00:03:05,106
+— Fifty-eight packs. That's fifty-eight meals tonight.
+
+27
+00:03:05,706 --> 00:03:16,557
+And when a batch has time to travel, the Lister puts it on a near-expiry marketplace, and the Negotiator closes the deal, without ever revealing the brand's floor price.
+
+28
+00:03:16,657 --> 00:03:21,129
+— Fourteen-twenty a pack? Done. Send the truck.
+
+29
+00:03:23,529 --> 00:03:37,540
+Even the hardest case is handled with care. If a few packs truly can't be saved, an authorised agency destroys them, Vision checks the photos, and the certificate is signed on the spot by its officer, two witnesses and the distributor.
+
+30
+00:03:37,640 --> 00:03:42,256
+— All four signatures. Now it's on the record.
+
+31
+00:03:42,456 --> 00:03:46,227
+And not a rupee is credited until a second yes.
+
+32
+00:03:48,427 --> 00:03:50,918
+Then the paperwork writes itself.
+
+33
+00:03:51,118 --> 00:04:03,849
+A tax invoice for every order, e-invoices, credit notes, a GST memo with every reversal worked out, donation receipts and certificates, each one drafted, signed and filed.
+
+34
+00:04:04,449 --> 00:04:12,980
+On a single batch, a loss of twenty-two thousand rupees becomes a recovery of nearly seventeen thousand. And the distributor ends whole, to the rupee.
+
+35
+00:04:13,980 --> 00:04:19,031
+Every step is on the record, every request traced from end to end.
+
+36
+00:04:19,831 --> 00:04:29,642
+And every batch posts to an impact ledger: kilos kept out of landfill, meals served, emissions avoided, ready for the brand's sustainability report.
+
+37
+00:04:31,642 --> 00:04:42,413
+It plugs into what brands already use: the distributor's stock exports, Tally, UPI, the marketplace and the food banks, on every phone, tablet and laptop.
+
+38
+00:04:43,413 --> 00:04:49,144
+Smart-Clearance. Ten agents. One yes. And nothing good goes to waste.
+
+39
+00:04:49,944 --> 00:04:54,115
+See it for yourself, at smartclearance-demo dot web dot app.

@@ -1,0 +1,30 @@
+{
+ "name": "smart-clearance-sales-film",
+ "kind": "film",
+ "use": "SC-210: the sales film, the landing-demo film (SC-187) reworked and married with the working demo (SC-205 to SC-209)",
+ "duration_s": 297.32,
+ "size": "1920 x 1080",
+ "fps": 25,
+ "video": "H.264 crf 21 (this copy); the crf-17 master is landing-demo/sales-film/ at the repository root, local",
+ "audio": "AAC 256k 48 kHz, -14.0 LUFS integrated, -1.4 dBTP",
+ "models": {
+  "talking scenes": "veo-3.1-generate-001 (Vertex AI, us-central1), 1080p, 8 s with sound, from the working demo's keyframes; six used (media/talk/), two takes replaced (t3-kirana, t4-foodbank, kept in src/clips/talk/)",
+  "narrator": "gemini-2.5-pro-tts (Cloud Text-to-Speech v1beta1), voice Sulafat, en-IN, directed by tts/tts10.py's PROMPT; three takes a line, each read back by Whisper (pick.py)",
+  "score": "lyria-002 (Vertex AI, us-central1), twelve cues, seven used (media/music/), picked by Gemini as ears",
+  "review": "gemini-3.8-flash (Vertex AI, global): every clip as a VFX supervisor (eyes.py), the cut minute by minute with its sound, the music and the voice (ears.py)"
+ },
+ "reused": [
+  "SC-187's Veo clips: c53 (the hold), c57 (the label photo), c32 (the food bank), c52 (the distributor's office), each with the batch's own label tracked onto its carton (src/relabel.py)",
+  "SC-154's Veo clips: the bay at dawn, the office in the evening",
+  "SC-205 to SC-209: the people and their devices (LTX), the godown with its labels, the aerial bin trail, the labelled keyframes as 2.5D stills, the deliveries",
+  "the production recordings of 13 Oct 2026 (SC-201, SC-202, SC-204): the app screens as recorded"
+ ],
+ "made_here": "the agentic ecosystem (three.js 0.170, src/eco/, captured frame-exact on the narration's cues); every card, tag, ring and push (the frame compositor, src/parts10.py, src/shots10.py); the tea factory's machine panel (src/hmi.py); the sound design (numpy, src/mix10.py)",
+ "cost_usd_clips": 26.32,
+ "cost_usd_voice_estimate": 0.6,
+ "cost_usd_review_estimate": 1.0,
+ "cost_note": "Veo $25.60 (eight clips at $3.20) and Lyria $0.72 from their sidecars (cost.py); the narrator and the reviews estimated from the APIs' list prices (neither returns a cost). Against the maintainer's $35 cap.",
+ "price_table_date": "2026-10-10",
+ "created": "2026-10-15",
+ "watermark": "SynthID (Veo, Lyria)"
+}
