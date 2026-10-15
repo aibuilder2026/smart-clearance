@@ -2918,7 +2918,7 @@
   - **Found on the way:** the stage's own cards and chapter chips cut out of every window's spans; the signing fast-forward flickered a frame between signers, so it runs sheet to sheet; the sell-through panel's day count was stuck at one; the new discs' icons were white on white.
   - **Checks:** −14.0 LUFS, −1.5 dB true peak; no one-frame flash in any of the 5,858 frames; windows between 0.97× and 1.40× apart from two labelled fast-forwards (34×, 22×); both QR codes read back; 26 of 30 lines word for word from the final mix (the rest a spelling, the brand as "Manchli", the URL as one word, and one slice that caught the line before).
   - **Where:** `working-demo/smart-clearance-working-demo-2026-10-15_16-44-16.mp4` (crf 17), its 720p copy and captions; the crf-21 1080p, 720p and captions, the pipeline and its README in `design3/designs/SC-218/`.
-- **SC-219** (In Review, branch `SC-219-working-demo-cut9`): cuts 9 and 10 of the working demo, everything made on this Mac, with no image, video or paid model called. Cut 10 is 3 min 58.8 s (238.80 s), inside the 238 to 239 s asked for; cut 9 was 3 min 56.3 s (236.32 s), inside 235 to 238.
+- **SC-219** (In Review, branch `SC-219-working-demo-cut9`): cuts 9 to 11 of the working demo, everything made on this Mac, with no image, video or paid model called. Cut 11 is 3 min 58.9 s (238.92 s), inside the 238 to 239 s; cut 10 was 3 min 58.8 s (238.80 s); cut 9 3 min 56.3 s (236.32 s), inside 235 to 238.
   - **Cut 9, the request** (the maintainer's notes on cut 8):
     - the install a little faster;
     - before the demo, the two paths and everyone in them, animated;
@@ -2994,7 +2994,40 @@
     - no stage marks (`cardscan10.py`'s hits are the apps' own buttons);
     - both QR codes read back;
     - 29 of 33 lines word for word from the final mix.
-  - **Cut 10, where:** `working-demo/smart-clearance-working-demo-2026-10-15_20-34-52.mp4` (crf 17), its 720p copy, a light preview and captions, with two earlier exports kept as `…-superseded`; the crf-21 1080p, 720p and captions, the pipeline and its README in `design3/designs/SC-219/`.
+  - **Cut 10, where:** `working-demo/smart-clearance-working-demo-2026-10-15_20-34-52.mp4` (crf 17), its 720p copy, a light preview and captions, with two earlier exports kept as `…-superseded`; its pipeline in `design3/designs/SC-219/`, whose `media/` held its crf-21 copies until cut 11 replaced them.
+  - **Cut 11, the request** (the maintainer's notes on cut 10):
+    - the bin's scene runs too fast;
+    - the architecture (0:22 to 0:55): its storytelling, parts, screens and notes are fine, but the 3D animation is too much. Keep Smart-Clearance's green, but in 2D motion animation, with sound effects, and surreal;
+    - the last scene a bit condensed;
+    - "Think hard and come up with best solution"; inside cut 10's 238 to 239 s.
+  - **Cut 11, the film:**
+    - **The bin** (3.6 s, from 1.2): the voice pauses 2.4 s after "it's destroyed". The costs land 0.35 s apart, then the GST credit is taken back, the total rolls to −₹22,657 and the planet's figures follow; the whole holds before the iris.
+    - **Under the hood in 2D** (`arch11/`, 33.4 s, 0:23 to 0:56), a surreal dreamscape on the green: the camera sinks through night clouds to a still lake under a huge, low moon (Google Cloud, its cloud drawn in as named), everything mirrored in the water, rippled. Each part is a surreal object:
+      - the apps' own screens rising out of the water (Firebase);
+      - a door standing in the lake (Cloud Run), with a clock that drops onto its lintel and melts over its shoulder (Cloud Scheduler);
+      - stone tablets (Cloud SQL), and paper boats carrying the events on a lane of light (Pub/Sub);
+      - the agents as lanterns rising from their reflections, the Watcher a grey block of plain code;
+      - a cloud raining a bar chart (BigQuery), and a chest of drawers handing Vision the label photo (Cloud Storage);
+      - a star born from the moon whose violet and blue light picks each agent's model (Gemini);
+      - a pane of glass turning that light away from a coin (the guardrails);
+      - the door glowing amber with the figure, and the yes rippling across the lake as every part lights.
+
+      The camera is a 2D pan and zoom with parallax, its long moves eased out wide mid-move. Each part has its own sound: water, woody knocks, a pen, glass bells, a melting tone, a kalimba up the pentatonic for the lanterns, dry blips for the Watcher, rain, a drawer, a star's bells, glass notes for the rays, a coin, a glass chime (`mix11.DREAM_SOUND`). The notes, act titles and index are cut 10's.
+    - **The close** condensed: its card held 1.2 s after the last word (`parts.HOLD`), 5.7 s in all.
+  - **Cut 11, found on the way:**
+    - the first clouds were a white wall (now night clouds);
+    - the boats read as sparkles and lingered (now larger paper boats that give their events to the rising lanterns);
+    - the melting clock smeared into a glow (one glow behind it, not one per strip);
+    - the long moves crossed about 1,700 px a second and smeared whole frames (longer, out wide mid-move, a lighter shutter);
+    - the boats launched on top of each other, and the Cloud Storage note covered the chest.
+  - **Cut 11, checks:**
+    - −14.0 LUFS, −1.5 dB true peak;
+    - no one-frame flash in the 5,973 frames;
+    - windows between 0.67× and 1.21×, apart from the labelled fast-forwards and the chips' held card;
+    - no stage marks;
+    - both QR codes read back;
+    - 29 of 33 lines word for word, the architecture's six among them, read over the new sounds.
+  - **Cut 11, where:** `working-demo/smart-clearance-working-demo-2026-10-15_21-40-01.mp4` (crf 17), its 720p copy, a light preview and captions; the crf-21 1080p, 720p and captions, the pipeline and its README in `design3/designs/SC-219/`.
 - **SC-220** (PR #200, merged; Done): ARCHITECTURE.md purely technical, on Agent Platform, with the deck's details; the Lucid diagrams, the architecture page and its PDF, and the deck renamed.
   - **The request:** ARCHITECTURE.md "with these details" (the AI Builder Cup deck, *14 Oct v4*); "update the references of vertex AI with Agent Platform which is the new name", in the Lucidchart diagrams and pictures and in the deck; ARCHITECTURE.md "purely technical", without the references to the Jira project.
   - **The rename:** Google renamed Vertex AI to Gemini Enterprise Agent Platform on 22 Apr 2026, and Agent Engine to Agent Runtime. Nothing in the build changes: Gemini is still reached at `aiplatform.googleapis.com` under `roles/aiplatform.user`, and the google-genai SDK's `enterprise=True` (which the agents already pass) is its former `vertexai=True`.

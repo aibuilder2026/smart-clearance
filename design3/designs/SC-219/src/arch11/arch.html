@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SC-219 · under the hood, cut 11: the dreamscape</title>
+<style>
+  @font-face { font-family: 'Bricolage Grotesque'; src: url('/fonts/Bricolage.ttf'); font-weight: 200 800; }
+  @font-face { font-family: 'Geist'; src: url('/fonts/Geist.ttf'); font-weight: 100 900; }
+  :root {
+    --ink: #ecf3ef; --ink2: #aabcb2; --ink3: #7a8c82; --g300: #73c99d; --ring: #34d380;
+    --amber: #f2b437; --amber2: #f7c04a; --blue: #8ab4f8; --blue2: #c9dcff; --violet: #c58af9;
+  }
+  html, body { margin: 0; padding: 0; width: 1920px; height: 1080px; overflow: hidden; background: #010407;
+    font-family: 'Geist', system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  canvas { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; display: block; }
+  #labels, #ui, #lead { position: absolute; inset: 0; pointer-events: none; }
+  #lead { overflow: visible; }
+
+  /* a part's name, small, beside it in the dreamscape */
+  .lb { position: absolute; left: 0; top: 0; display: flex; gap: 8px; align-items: center; padding: 7px 12px 7px 8px; border-radius: 999px;
+    font: 650 15px/1 'Geist'; white-space: nowrap; color: #d6eee1; opacity: 0;
+    background: rgba(4, 14, 10, 0.78); border: 1px solid rgba(115, 201, 157, 0.34); box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45); }
+  .lb svg { width: 16px; height: 16px; color: var(--g300); }
+  .lb.blue { border-color: rgba(138, 180, 248, 0.45); } .lb.blue svg { color: var(--blue); }
+  .lb.fire { border-color: rgba(255, 159, 69, 0.5); } .lb.fire svg { color: #ffb470; }
+  .lb.violet { border-color: rgba(197, 138, 249, 0.55); } .lb.violet svg { color: #d9b3ff; }
+  .lb.amber { border-color: rgba(247, 192, 74, 0.6); } .lb.amber svg { color: var(--amber2); }
+  .lb small { font: 500 13px/1 'Geist'; color: var(--ink3); margin-left: 2px; }
+  /* an event on a paper boat */
+  .tp { position: absolute; left: 0; top: 0; font: 600 14px/1 ui-monospace, 'SF Mono', Menlo, monospace; padding: 6px 9px; border-radius: 8px;
+    background: rgba(5, 14, 10, 0.86); border: 1.2px solid rgba(115, 201, 157, 0.55); color: #bdf5d6; white-space: nowrap; opacity: 0; }
+  /* an agent's name under its lantern, and its model once Gemini's light reaches it */
+  .an { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; gap: 5px; width: 140px; opacity: 0; }
+  .an b { font: 650 15px/1 'Geist'; color: var(--ink); padding: 4px 9px; border-radius: 8px; background: rgba(4, 12, 9, 0.8); border: 1px solid rgba(115, 201, 157, 0.22); }
+  .an i { font: 700 12.5px/1 'Geist'; font-style: normal; padding: 4px 8px; border-radius: 999px; white-space: nowrap; opacity: 0; }
+  .an i.pro { background: rgba(40, 24, 56, 0.95); border: 1.3px solid rgba(197, 138, 249, 0.85); color: #ead9ff; }
+  .an i.flash { background: rgba(14, 26, 48, 0.95); border: 1.3px solid rgba(138, 180, 248, 0.85); color: var(--blue2); }
+  .an i.code { background: rgba(20, 24, 22, 0.95); border: 1.3px solid rgba(207, 216, 211, 0.6); color: #dfe7e2; }
+
+  /* the note: the part the voice names, beside it, with a leader to it (cut 10's) */
+  .hero { position: absolute; left: 0; top: 0; width: 540px; padding: 20px 24px 20px 20px; border-radius: 20px; opacity: 0;
+    background: linear-gradient(180deg, rgba(10, 22, 16, 0.86), rgba(5, 12, 9, 0.86)); border: 1.3px solid rgba(115, 201, 157, 0.36);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); }
+  .hero .row { display: flex; gap: 16px; align-items: center; }
+  .hero .tile { width: 60px; height: 60px; border-radius: 16px; display: grid; place-items: center; flex: none;
+    background: rgba(52, 211, 128, 0.14); color: #9ff0c4; border: 1px solid rgba(115, 201, 157, 0.36); }
+  .hero .tile svg { width: 30px; height: 30px; }
+  .hero .k { font: 700 13.5px/1 'Geist'; letter-spacing: 2.6px; text-transform: uppercase; color: var(--g300); }
+  .hero h2 { margin: 7px 0 0; font: 700 40px/1.02 'Bricolage Grotesque'; letter-spacing: -0.8px; color: var(--ink); white-space: nowrap; }
+  .hero h2 .c { display: inline-block; }
+  .hero .s { margin-top: 14px; font: 500 19px/1.32 'Geist'; color: var(--ink2); }
+  .hero .chips { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .hero .chips span { font: 600 14.5px/1 ui-monospace, 'SF Mono', Menlo, monospace; padding: 7px 10px; border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #cfe2d8; white-space: nowrap; }
+  .hero.blue { border-color: rgba(138, 180, 248, 0.45); } .hero.blue .tile { background: rgba(138, 180, 248, 0.15); color: var(--blue2); border-color: rgba(138, 180, 248, 0.45); } .hero.blue .k { color: var(--blue); }
+  .hero.fire { border-color: rgba(255, 159, 69, 0.45); } .hero.fire .tile { background: rgba(255, 159, 69, 0.15); color: #ffc58e; border-color: rgba(255, 159, 69, 0.45); } .hero.fire .k { color: #ffb470; }
+  .hero.violet { border-color: rgba(197, 138, 249, 0.55); } .hero.violet .tile { background: linear-gradient(135deg, rgba(138, 180, 248, 0.2), rgba(197, 138, 249, 0.26)); color: #ead9ff; border-color: rgba(197, 138, 249, 0.55); } .hero.violet .k { color: #d4adff; }
+  .hero.amber { border-color: rgba(247, 192, 74, 0.55); } .hero.amber .tile { background: rgba(247, 192, 74, 0.16); color: #ffd98a; border-color: rgba(247, 192, 74, 0.55); } .hero.amber .k { color: var(--amber2); }
+  .hero .fig { margin-top: 10px; font: 700 64px/1 'Bricolage Grotesque'; letter-spacing: -1.4px; color: #c9f7de; font-variant-numeric: tabular-nums; }
+
+  /* the act's title, top left over the sky; the stack's parts along the foot, over the lake */
+  .ttl { position: absolute; left: 76px; top: 40px; z-index: 21; opacity: 0; }
+  .ttl .k { font: 700 14px/1 'Geist'; letter-spacing: 3.2px; text-transform: uppercase; color: var(--g300); display: flex; gap: 12px; align-items: center; }
+  .ttl .k i { width: 8px; height: 8px; border-radius: 50%; background: var(--ring); }
+  .ttl .k em { font-style: normal; color: var(--ink3); letter-spacing: 2px; }
+  .ttl h1 { margin: 12px 0 0; font: 700 44px/1 'Bricolage Grotesque'; letter-spacing: -0.9px; color: var(--ink); white-space: nowrap; overflow: hidden;
+    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6); }
+  .ttl h1 .w { display: inline-block; }
+  #foot { position: absolute; left: 0; right: 0; bottom: 0; height: 150px; background: linear-gradient(180deg, rgba(1, 4, 3, 0), rgba(1, 4, 3, 0.72)); z-index: 19; }
+  #index { position: absolute; left: 0; right: 0; bottom: 36px; z-index: 21; display: flex; justify-content: center; gap: 10px; opacity: 0; }
+  .ix { display: flex; align-items: center; gap: 8px; padding: 9px 14px 9px 10px; border-radius: 999px; font: 600 16px/1 'Geist';
+    color: #5f6f67; border: 1px solid rgba(255, 255, 255, 0.07); background: rgba(3, 8, 6, 0.6); white-space: nowrap; }
+  .ix svg { width: 17px; height: 17px; }
+  .ix.done { color: #9fb7aa; border-color: rgba(115, 201, 157, 0.22); }
+  .ix.on { color: #eafff2; border-color: rgba(52, 211, 128, 0.85); background: rgba(52, 211, 128, 0.16); }
+  .ix.on svg { color: var(--ring); }
+
+  .ripple { position: absolute; left: 0; top: 0; z-index: 12; border-radius: 50%; border: 3px solid var(--amber2); opacity: 0; }
+  .ripple.r2 { border-color: rgba(247, 192, 74, 0.6); border-width: 2px; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div id="labels"></div>
+<svg id="lead" width="1920" height="1080" viewBox="0 0 1920 1080"></svg>
+<div id="ui"></div>
+<div id="foot"></div>
+<div id="index"></div>
+<script src="icons.js"></script>
+<script src="arch.js"></script>
+</body>
+</html>

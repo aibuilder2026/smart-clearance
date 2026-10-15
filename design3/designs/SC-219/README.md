@@ -1,8 +1,133 @@
-# SC-219 · The working demo, cuts 9 and 10
+# SC-219 · The working demo, cuts 9 to 11
 
 A demo film of about four minutes, made from the three production recordings of 13 Oct 2026, as cut 8 (SC-218) was:
-cut 9 on the maintainer's notes on cut 8, then cut 10 on four notes on cut 9. Each joins the earlier cuts in the
-repository root's `working-demo/` folder, with its export's date and time in its name; `media/` holds the latest.
+cut 9 on the maintainer's notes on cut 8, cut 10 on four notes on cut 9, then cut 11 on three notes on cut 10. Each
+joins the earlier cuts in the repository root's `working-demo/` folder, with its export's date and time in its name;
+`media/` holds the latest.
+
+## Cut 11 (15 Oct 2026)
+
+Made from cut 10's pipeline, with the architecture drawn again in 2D (`src/arch11/`), and the bin and the close
+re-timed.
+
+### The brief
+
+**The maintainer's notes on cut 10** (15 Oct 2026):
+
+1. The bin's scene (its costs and the planet's) runs too fast.
+2. The architecture (0:22 to 0:55): its storytelling and the parts shown, with their screens and notes, are fine, but
+   the 3D animation is too much. Keep Smart-Clearance's green background theme, but in 2D motion animation, with sound
+   effects, and surreal.
+3. The last scene a bit condensed.
+
+"Think hard and come up with best solution." The film stays inside cut 10's 238 to 239 s.
+
+### What changed
+
+| Part | Cut 10 | Cut 11 |
+| --- | --- | --- |
+| The bin | 1.2 s before the iris, its rows landing as fast as they could | **3.6 s.** The voice pauses 2.4 s after "it's destroyed". The four costs land 0.35 s apart, with a tick each; the GST credit is kept, struck out and taken back; the total rolls to −₹22,657 on a low hit; then the planet's four figures; and the whole holds about a second before the iris opens on the name |
+| Under the hood | 3D: a lens (depth of field, streaks, motion blur), a letterbox, a camera that flew | **2D motion, surreal, 33.4 s (0:23 to 0:56)** (`arch11/`): the same story, parts, screens and notes on Smart-Clearance's green. The camera sinks through night clouds to a still lake under a huge, low moon, Google Cloud, whose cloud draws itself into the moon as the voice names it. Everything above the water is mirrored in it, rippled, and each part is a surreal object, below |
+| The close | the card held 3.2 s after the last word | **1.2 s:** the card and its QR code are up within its first two seconds; 5.7 s in all |
+
+**The parts, in the dreamscape:**
+
+- **Firebase:** the four apps' own screens rise out of the water, each on a pillar of light, under a flickering flame.
+- **Cloud Run:** a door stands in the lake, its rack of lights blinking faster as the apps' requests flow into it;
+  Secret Manager's key hangs at its shoulder.
+- **Cloud SQL:** stone tablets float up beside it, and a line is written on the top one as the voice says "record".
+- **Pub/Sub:** three paper boats carry `batch.at_risk`, `journey.step` and `offer.received` along a lane of light on the
+  horizon, and give their events to the agents as they rise.
+- **Cloud Scheduler:** a clock drops onto the door's lintel and melts over its shoulder, following the arch, still
+  ticking.
+- **The agents:** nine lanterns rise out of their own reflections; the Watcher is a grey block of plain code.
+- **BigQuery:** a cloud rains a bar chart onto the Watcher and the Valuer.
+- **Cloud Storage:** a floating chest of drawers opens and hands Vision the label photo; Paperwork's papers fly back in.
+- **Gemini:** a star is born from the moon and rises. Its light reaches the Valuer, the Router and the Negotiator in
+  violet (Pro), then the six others in blue (Flash). The Watcher gets none.
+- **The guardrails:** a coin rises, the money. The light reaches for it; a pane of glass drops between them and turns
+  it away.
+- **The API's figure:** the coin's light runs into the door, which glows amber as ₹16,917 is worked out.
+- **The yes:** the plan's Approve sheet rises from the water; a tap, and an amber ring spreads across the lake, lighting
+  each part as it passes, as the camera pulls back over the whole dreamscape.
+
+**Motion:** a 2D pan and zoom, with parallax (the moon and the stars move less); the long moves ease out wide mid-move;
+a light motion blur only while the camera moves.
+
+**Sound:** each part has its own. A drop of water as something rises out of the lake; a woody knock for each tablet;
+a pen's scratch on the record; a glass bell for each boat; a sagging tone for the melting clock; a kalimba's note for
+each lantern, up the pentatonic scale, and two dry digital blips for the Watcher; a rain of soft drops; a drawer; a
+cluster of bells for the star; a glass note for each ray, lower for Pro; a coin's ring; a glassy chime as the glass
+lands; the API's climbing ticks; the yes's swell.
+
+The notes, the act titles and the parts' index along the foot are cut 10's.
+
+### The film
+
+| When | Part |
+| --- | --- |
+| 0:00 | A distributor's godown, the label's date, the bin and its cost |
+| 0:12 | Agentic software as a service for the FMCG supply chain |
+| 0:23 | Under the hood, in 2D: all on Google Cloud; nine AI agents and two Gemini models; the guardrails and a person's yes |
+| 0:56 | The live demo: Munchly Foods, an imaginary brand; two batches, two distributors, two paths |
+| 1:06 | The console: a brand set up in minutes |
+| 1:15 | The workspace installs as an app on any laptop, tablet or phone |
+| 1:21 | Priya signs in, live |
+| 1:27 | Her Command Center tracks every batch at risk; the Watcher flags two |
+| 1:43 | The happy path, Munchly Mango Drink with Lakshmi Agencies |
+| 2:40 | The sad path, Munchly Masala Chips with Rakesh Traders |
+| 3:29 | On the record: the audit trail and one trace |
+| 3:40 | How the chips' swing adds up |
+| 3:47 | Impact's ledger, ready for BRSR |
+| 3:53 | The close: the guided demo |
+
+### How cut 11 is made
+
+| Part | Tool | Where |
+| --- | --- | --- |
+| The architecture | a 2D canvas drawn frame-exact on the voice's cues, captured frame by frame. Parallax layers, a rippled mirror pass for the lake, motion blur from sub-frames while the camera moves, and the notes, labels and index in HTML | `src/arch11/` |
+| The bin | cut 10's shot, with a pause after the line and the cost stack's own pace | `src/shots11.py`, `src/parts6.py` |
+| The close | cut 9's card, held 1.2 s after the last word | `src/parts.py` (`HOLD`) |
+| The sound | cut 10's mix, with the dreamscape's own synths (`DREAM_SOUND`) | `src/mix11.py` |
+| The rest | cut 10's pages and parts, re-timed | `src/render11.py`, `src/capture11.sh`, `src/export11.sh` |
+
+**Found while making it:**
+
+- **The first clouds were a white wall:** they are night clouds now, a dim body with moonlit tops.
+- **The paper boats read as sparkles** and lingered under the lanterns. They are larger now, paper-white with their
+  folds, and they give their events to the agents as the lanterns rise.
+- **The melting clock smeared into a glow:** each of its strips drew its own glow. One glow sits behind it now.
+- **The long moves** (the clock to the agents, the apps to the door, the guardrails back to the door) crossed about
+  1,700 px a second, and the motion blur smeared whole frames. They take longer now, ease out wide mid-move, and the
+  shutter is lighter.
+- **The three boats launched on top of each other**, their events overlapping; and the Cloud Storage note covered the
+  chest.
+
+### The result
+
+`media/smart-clearance-working-demo.mp4`: **3 min 58.9 s (238.92 s)**, inside the 238 to 239 s.
+
+- 1920 × 1080 at 25 fps, H.264 crf 21, with AAC 48 kHz audio at −14.0 LUFS integrated and −1.5 dB true peak.
+- Beside it are a 720p copy and the narration as `.srt`.
+- The crf-17 master is `working-demo/smart-clearance-working-demo-2026-10-15_21-40-01.mp4` (git-ignored), with its 720p
+  copy, a light preview and the captions.
+
+**Checks:**
+
+- the 2D scene played through at two frames a second and its long moves at five; the bin, the close and the first minute
+  in the finished film at one a second;
+- the six architecture lines read back from the final mix over the new sounds, word for word, and "date" in the opening's
+  second line;
+- all 5,973 frames scanned for a one-frame flash: none (`flash11.py`);
+- every window plays between 0.67× and 1.21×, apart from the two labelled fast-forwards and the Masala Chips' card,
+  held as a still;
+- the recordings' own stage marks: none; the scan's 196 hits are the apps' own buttons, as in cut 10 (`cardscan11.py`);
+- both codes read back from the film's own frames;
+- the narration read back from the final mix by Whisper, a slice a line (`readback11.py`): 29 of 33 word for word, the
+  same four spellings as cut 10.
+
+**The spend:** nothing. Maya1's takes were cut 10's; Whisper, Chromium and ffmpeg ran on this Mac; no image, video or
+paid model was called. The music is SC-187's.
 
 ## Cut 10 (15 Oct 2026)
 
@@ -95,10 +220,11 @@ once the bed was under the take first kept, so every take of the three was voice
 
 ### The result
 
-`media/smart-clearance-working-demo.mp4`: **3 min 58.8 s (238.80 s)**, inside the 238 to 239 s asked for.
+**3 min 58.8 s (238.80 s)**, inside the 238 to 239 s asked for.
 
 - 1920 × 1080 at 25 fps, H.264 crf 21, with AAC 48 kHz audio at −14.0 LUFS integrated and −1.4 dB true peak.
 - Beside it are a 720p copy and the narration as `.srt`.
+- Its crf-21 copies and captions were in `media/` until cut 11 replaced them.
 - The crf-17 master is `working-demo/smart-clearance-working-demo-2026-10-15_20-34-52.mp4` (git-ignored), with its 720p
   copy, a light preview and the captions. Two earlier exports of cut 10 are kept there as `…-superseded` (`…_20-17-10`,
   `…_20-25-57`).
@@ -274,8 +400,8 @@ or paid model was called. The music is SC-187's.
 ## Rebuild
 
 From `src/`. It needs cut 8's media in place (SC-218's rebuild, which needs the earlier cuts'), and reads the
-recordings from the main checkout. `lines.json` and the voice's picks now hold cut 10's narration; cut 9's are at its
-commit, `3d7eaa6b`. Cut 9:
+recordings from the main checkout. `lines.json` and the voice's picks now hold cut 11's narration (cut 10's takes, with its
+gaps and hold); cut 9's are at its commit, `3d7eaa6b`, and cut 10's at `dc391d62`. Cut 9:
 
 ```sh
 node icons.mjs && node icons8.mjs && node icons9.mjs && node render-pushes.mjs 380 460   # the icons and the pushes
@@ -296,4 +422,13 @@ ln -s ../../../SC-210/src/eco/node_modules arch10/node_modules
 ./capture10.sh                                                                      # the four scene pages, on the voice's cues
 .venv/bin/python render10.py && .venv/bin/python mix10.py && ./export10.sh
 node qrcheck10.mjs ../media/smart-clearance-working-demo.mp4 7.6 233.5              # the codes, read back
+```
+
+Cut 11, after cut 10's steps (its architecture is a plain 2D page: no three.js):
+
+```sh
+.venv/bin/python prep10.py                                                          # cut 9's photographs, for arch11/ too
+./capture11.sh                                                                      # the four scene pages, arch11/ among them
+.venv/bin/python render11.py && .venv/bin/python mix11.py && ./export11.sh
+node qrcheck11.mjs ../media/smart-clearance-working-demo.mp4 7.6 235                # the codes, read back
 ```

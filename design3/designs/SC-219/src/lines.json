@@ -10,7 +10,7 @@
    "id": "i13",
    "sec": "intro",
    "text": "Too close to its date for quick commerce, it's destroyed.",
-   "gap": 0.25,
+   "gap": 2.65,
    "take": "i13-0.wav"
   },
   {
@@ -51,7 +51,7 @@
    "sec": "tech",
    "text": "Nine AI agents on Google's ADK read sales from BigQuery and photos from Cloud Storage.",
    "say": "Nine A I agents on Google's A D K read sales from BigQuery and photos from Cloud Storage.",
-   "gap": 0.6,
+   "gap": 0.35,
    "take": "u17-3.wav"
   },
   {
