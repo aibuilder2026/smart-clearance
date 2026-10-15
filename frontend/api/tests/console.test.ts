@@ -92,14 +92,14 @@ describe('the day the console opens on', () => {
 
 describe('every change is logged in the words the prototype uses', () => {
 	it("an agent's autonomy, and nothing when it is unchanged", async () => {
-		await api.updateAgent('munchly', 'negotiator', { autonomy: 'act' });
+		await api.updateAgent('munchly', 'negotiator', { autonomy: 'ask' });
 		expect(await lastAudit()).toMatchObject({
 			who: 'Neha Kulkarni',
 			client: 'munchly',
-			text: 'Set the Negotiator agent to Act for Munchly Foods (was Ask)'
+			text: 'Set the Negotiator agent to Ask for Munchly Foods (was Act)'
 		});
 		const n = (await api.audit()).length;
-		await api.updateAgent('munchly', 'negotiator', { autonomy: 'act' });
+		await api.updateAgent('munchly', 'negotiator', { autonomy: 'ask' });
 		expect(await api.audit()).toHaveLength(n);
 	});
 	it("an agent's settings and its approver", async () => {

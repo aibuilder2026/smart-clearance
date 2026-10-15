@@ -5,7 +5,7 @@
 		"design3/core/papers.js": "6ab322044c02cb2a",
 		"design3/core/data.js": "a3ad9a0c50985039",
 		"design3/core/store.js": "7d9ad3139237a5b9",
-		"design3/core/platform.js": "6fd7a45b0097eac2",
+		"design3/core/platform.js": "ed5612588e9d665b",
 		"design3/screens/admin.jsx": "bb2a12a8695d75e0",
 		"design3/system/product.jsx": "ee4027949c02fe1e"
 	},
@@ -13,7 +13,7 @@
 		"showcase.json": "3df8650776ab231c",
 		"catalog.json": "9364528d5346a8c3",
 		"directory.json": "b7309b040b25fa79",
-		"console.json": "267be4056a3e0782",
-		"console-demo.json": "19e19f19a7fb1c60"
+		"console.json": "acdb6f878dca787c",
+		"console-demo.json": "25ef760bff109f2a"
 	}
 }
