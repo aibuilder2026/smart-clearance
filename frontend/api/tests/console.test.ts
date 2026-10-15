@@ -231,7 +231,7 @@ describe('every change is logged in the words the prototype uses', () => {
 		const fired = await api.fireTrigger('munchly', 'timer-1');
 		expect(fired.triggers.map((t) => t.id)).not.toContain('timer-1');
 		expect((await lastAudit()).text).toBe(
-			"Fired the Outreach agent's timer now for Munchly Foods: closed the offer window for MF-2409-117"
+			"Fired the Outreach agent's timer now for Munchly Foods: closed the offer window for MF-2410-118"
 		);
 		await expect(api.fireTrigger('munchly', 'timer-1')).rejects.toMatchObject({ status: 404 });
 		// the reset, at a day length chosen then: both lines, and only the day's two runs to come
@@ -251,6 +251,46 @@ describe('every change is logged in the words the prototype uses', () => {
 		const early = await api.fireTrigger('munchly', 'data');
 		expect(early.triggers.find((t) => t.id === 'data')!.due).toBe('2026-10-03T08:30:00+05:30');
 		await expect(api.resetJourney('munchly', { dayMinutes: 0 })).rejects.toMatchObject({ status: 422 });
+	});
+	it("stands in for a demo client's kiranas, filling the scheme as the story has it (SC-215)", async () => {
+		const j = await api.journey('munchly');
+		expect(j.standIns).toEqual([
+			{
+				id: 'kiranas-MF-2410-118',
+				kind: 'kiranas',
+				ref: 'MF-2410-118',
+				distributor: 'Lakshmi Agencies',
+				shops: 58,
+				ordered: 2,
+				declined: 0,
+				units: 1372,
+				placed: 52,
+				fill: { shops: 50, units: 1320, story: 1320 },
+				filled: null,
+				blocked: null
+			}
+		]);
+		const filled = await api.standIn('munchly', 'kiranas-MF-2410-118');
+		expect(filled.standIns[0]).toMatchObject({
+			ordered: 52,
+			placed: 1372,
+			filled: { at: j.clock!.now, shops: 50, units: 1320 },
+			blocked: 'The scheme is full'
+		});
+		// the scheme closed full, so its window's timer has nothing left to close
+		expect(filled.triggers.map((t) => t.key)).not.toContain('offer.close');
+		expect(await lastAudit()).toMatchObject({
+			who: 'Neha Kulkarni',
+			client: 'munchly',
+			text: "Filled MF-2410-118's kirana scheme for Munchly Foods: 50 shops ordered 1,320 packets"
+		});
+		await expect(api.standIn('munchly', 'kiranas-MF-2410-118')).rejects.toMatchObject({
+			status: 409,
+			message: 'The scheme is full'
+		});
+		await expect(api.standIn('munchly', 'nope')).rejects.toMatchObject({ status: 404 });
+		// a reset journey has no scheme sent yet, so nothing waits on the kiranas
+		expect((await api.resetJourney('munchly')).standIns).toEqual([]);
 	});
 	it('a client with no live journey runs its daily agents on request, and has no journey to reset', async () => {
 		await api.createClient(kesari());

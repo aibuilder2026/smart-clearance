@@ -51,6 +51,41 @@ packets end up destroyed at the godown.
   configure clients.
 - **What it leaves:** one audit line in the staff member's name, and the mark For demos wherever it shows.
 
+## Published
+
+On platform v3 (15 Oct): `SC-215 design review.html`, and the three option pages `SC-215 option A.html`, `B` and
+`C`. Each loads the design system from jsDelivr, pinned to `1608e15`. jsDelivr's GitHub backend answered 503 for every
+repository for about a minute after the publish. It came back before the pages were checked: every pinned file at its
+full size, and the four pages with no console errors in light, dark and on a phone.
+
 ## The pick
 
-Waiting for the maintainer.
+The maintainer, 15 Oct 2026: **C · Stand in for the partners.**
+
+- **Topping up:** "Top up until full". Whatever the story's shares leave is spread over the shops the fill orders
+  for, each within its cap, so the scheme always fills.
+- **Declined shops:** "Leave them alone". The fill orders only for shops that haven't answered.
+
+**What the build keeps from the mockup, and what it leaves:**
+
+- **Kept:** the card above the legend and the pipeline on the Agents tab, while a stand-in waits; its head and
+  sentence; a row for the distributor's kiranas, with Fill the scheme, asked first; the row's filled state.
+- **Left:** the mockup's "Feeding India collects · Later" row. It showed only the card's room to grow: the pickup is
+  Meera's to confirm, and a judge can sign in as her.
+- **Fixed:** "Lakshmi Agencies's kiranas" becomes "Lakshmi Agencies' kiranas", the console's possessive (`P.poss`).
+
+**Corrected in the build:** the board said staff who may configure clients, "Neha, not Support". Support may configure
+clients too (`rbac.json`), so it may fill a scheme as it may fire a timer: the rule is the journey controls' own,
+`clients.configure`.
+
+## The build
+
+- **design3 first:** `core/platform.js` gains `fillScheme` (the rule), the journey's `standIns`, `standIn` and its audit
+  line. The prototype's still journey is the approved moment: the Mango Drink's offer window and report (its timers move
+  from the chips to MF-2410-118) and its scheme with the judge's two orders. `console/console.jsx` gains the card
+  (`StandIns`, `StandInRow`) and its question; `console/console.css` its styles.
+- **The port:** the contract's `JourneyStandIn`, `Journey.standIns` and `ConsoleApi.standIn`; the mock and its HTTP
+  route; core's `StandIns.svelte` and the Agents tab; `console.css` verbatim.
+- **backend-api:** `domain/scheme.py` (the rule, held to platform.js by `rules.json`); `steps.fill_scheme_now` over the
+  order path (`_place`, which `order` now uses too); `controls.stand_ins` and `stand_in`; `POST
+  …/journey/stand-ins/{id}`. A scheme that has closed takes its offer window off the schedule.

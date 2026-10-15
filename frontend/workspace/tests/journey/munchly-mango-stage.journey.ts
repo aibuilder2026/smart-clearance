@@ -1,10 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
-import { randomUUID } from 'node:crypto';
 import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { api, mint } from './auth.ts';
-import { AGENT_WAIT, begin, caseAs, inr, running, story, until, WS, type Case } from './flow.ts';
+import { mint } from './auth.ts';
+import { AGENT_WAIT, begin, caseAs, inr, running, story, until, type Case } from './flow.ts';
 import { DIST, HERO, KIRANAS, orderPlan, past, printed, STEP } from './mango.ts';
 import { closeSheet, readPaper, showSwing } from './read.ts';
 import { loaded, Stage, type Note } from './stage.ts';
@@ -24,10 +23,11 @@ import { loaded, Stage, type Note } from './stage.ts';
 //
 // The happy path: the Mango's plan has three lines and no ExpireSoon lot (22 days left is under ExpireSoon's 30): the
 // kiranas' scheme, the staff sale at Lakshmi Agencies' godown, and the food bank's donation. The first E2E_SHOWN (2)
-// ordering kiranas sign in on the phone and order; the other ordering kiranas order as themselves through backend-api,
-// their own sessions, meanwhile (a sign-in on camera for each of 52 shops would take twenty minutes).
+// ordering kiranas sign in on the phone and order; then Neha, in the console on the phone, stands in for the rest and
+// fills the scheme as the story has it (SC-215), each shop ordering as itself with its own invoice, as a judge does
+// (a sign-in on camera for each of 52 shops would take twenty minutes).
 //
-// E2E_SHOWN (2): how many of the ordering kiranas order on the phone.
+// E2E_SHOWN (2): how many of the ordering kiranas order on the phone before Neha fills the scheme.
 // E2E_DAY_MINUTES (60, Rehearsal): the journey day the reset starts.
 // E2E_FROM=<step id> resumes on the journey as it stands (the sign-ins always run); E2E_UNTIL=<step id> stops after it.
 // E2E_KEEP=<path> copies the recording there; `{stamp}` in it becomes the run's start, as 2026-10-13_09-15-42.
@@ -137,7 +137,12 @@ const NOTE = {
 	filled: (shops: number, packets: number): Note => ({
 		tag: 'Live',
 		title: 'The scheme fills',
-		text: `The other shops ordered from their own phones meanwhile; the recording shows ${SHOWN}. Each order reached Priya's screen as it landed, and the scheme closed the moment it filled: ${num(packets)} packets to ${shops} shops.`
+		text: `${SHOWN} shops ordered on the phone, and Neha filled the rest from the console, each shop ordering as itself with its own GST invoice. The scheme closed the moment it filled: ${num(packets)} packets to ${shops} shops.`
+	}),
+	standIn: (left: number, shops: number): Note => ({
+		tag: 'Demo',
+		title: 'Standing in for the shops',
+		text: `No one is on the other kiranas' phones in a demo. The console's stand-in has ${shops} more shops order as the story has them, ${num(left)} packets, each as itself with its own GST invoice, and writes every line in Neha's name.`
 	}),
 	donation: (units: number, partner: string): Note => ({
 		tag: 'Food bank',
@@ -368,18 +373,12 @@ const STEPS: Step[] = [
 	},
 	{
 		id: 'orders',
-		title: `The first ${SHOWN} kiranas order on the phone and the rest from their own; Priya watches the scheme fill`,
+		title: `The first ${SHOWN} kiranas order on the phone, Neha fills the scheme from the console, and Priya watches it fill`,
 		async run(s) {
 			const before = (await caseAs('priya'))!;
 			const line = lineOf(before, 'kirana')!.units;
-			const { plan, over } = orderPlan(KIRANAS, line);
-			if (over)
-				running().find(
-					'warning',
-					HERO,
-					`the scheme cannot be filled to the packet from the offer screen: ${over} over`
-				);
-			for (const p of plan.filter((p) => p.units !== p.story))
+			const { plan } = orderPlan(KIRANAS, line);
+			for (const p of plan.slice(0, SHOWN).filter((p) => p.units !== p.story))
 				running().find(
 					'note',
 					`/offer/${HERO}`,
@@ -425,21 +424,38 @@ const STEPS: Step[] = [
 				else await s.point(row, 1200);
 				await running().done(`Live on Priya's tablet: ${p.k.name}, ${p.units} packets`);
 			}
-			// the rest order from their own phones meanwhile, as themselves, while Priya's tablet counts them in
-			await s.run.act('Priya Deshmukh', 'Supply Chain', 'watches the other shops order, and the scheme fill');
+			// the rest: Neha stands in for them from the console, as a judge does (SC-215): each shop orders its share as
+			// the story has it, as itself, with its own invoice; Priya's tablet counts them in
+			const con = await s.open(
+				'neha',
+				'/clients/munchly/agents',
+				"stands in for Lakshmi Agencies' other kiranas from the console"
+			);
+			const card = con.locator('.cs-standins');
+			const fill = card.getByRole('button', { name: new RegExp(`^Fill the scheme: .*${HERO}`) });
+			const done = card.getByRole('button', { name: new RegExp(`^Filled: .*${HERO}`) });
+			await expect(fill.or(done).first()).toBeVisible({ timeout: 60_000 });
+			if (await fill.isVisible()) {
+				const row = card.locator('.cs-standin', { hasText: HERO });
+				const left = (await caseAs('priya'))!;
+				const placed = left.journey.orders.reduce((t, o) => t + o.units, 0);
+				await s.spot(row, NOTE.standIn(line - placed, plan.length - left.journey.orders.length));
+				await running().done(
+					`Console: the stand-in for Lakshmi Agencies' kiranas, ${left.journey.orders.length} of 58 ordered`
+				);
+				await s.click(fill);
+				const ask = con.getByRole('alertdialog', { name: new RegExp(`Fill ${HERO}'s scheme now`) });
+				await expect(ask).toBeVisible();
+				await s.read(ask, 1600);
+				await running().done('The console asks first: the shops still to answer, each with its own invoice');
+				await s.click(ask.getByRole('button', { name: 'Fill now', exact: true }));
+				await expect(done).toBeVisible({ timeout: 60_000 });
+				await s.point(row, 1200);
+				await running().done('Filled from the console: the scheme is full');
+			} else running().find('note', HERO, 'the scheme was filled from the console before');
+			await s.run.act('Priya Deshmukh', 'Supply Chain', 'watches the stand-in orders arrive, and the scheme fill');
 			await s.active('operator');
 			await s.point(count, 300);
-			for (const [i, p] of plan.slice(SHOWN).entries()) {
-				const c = await caseAs(p.k.member);
-				const mine = c?.journey.orders.some((o) => o.id === p.k.id);
-				if (!mine)
-					await api('workspace', p.k.member, `${WS}/cases/${HERO}/orders`, {
-						method: 'POST',
-						body: JSON.stringify({ units: p.units }),
-						headers: { 'idempotency-key': randomUUID() }
-					});
-				await s.stat('ordered', 'shops ordered', String(SHOWN + i + 1));
-			}
 			const c = await until(
 				'the scheme fills and closes',
 				'priya',
@@ -447,6 +463,7 @@ const STEPS: Step[] = [
 				120_000
 			);
 			const packets = c.journey.orders.reduce((t, o) => t + o.units, 0);
+			await s.stat('ordered', 'shops ordered', String(c.journey.orders.length));
 			story(
 				'Kirana orders',
 				`${c.journey.orders.length} shops, ${packets} packets`,

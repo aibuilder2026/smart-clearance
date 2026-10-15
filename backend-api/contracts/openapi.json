@@ -2009,6 +2009,14 @@
             "title": "Live",
             "type": "boolean"
           },
+          "standIns": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/JourneyStandIn"
+            },
+            "title": "Standins",
+            "type": "array"
+          },
           "triggers": {
             "items": {
               "$ref": "#/components/schemas/JourneyTrigger"
@@ -2040,6 +2048,87 @@
           }
         },
         "title": "JourneyResetInput",
+        "type": "object"
+      },
+      "JourneyStandIn": {
+        "additionalProperties": false,
+        "description": "a step the console takes for a client's partners in a demo (SC-215): a distributor's kiranas, whose scheme every\nshop that hasn't answered fills as the story has it",
+        "properties": {
+          "blocked": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blocked"
+          },
+          "declined": {
+            "title": "Declined",
+            "type": "integer"
+          },
+          "distributor": {
+            "title": "Distributor",
+            "type": "string"
+          },
+          "fill": {
+            "$ref": "#/components/schemas/StandInFill"
+          },
+          "filled": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StandInFilled"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "const": "kiranas",
+            "title": "Kind",
+            "type": "string"
+          },
+          "ordered": {
+            "title": "Ordered",
+            "type": "integer"
+          },
+          "placed": {
+            "title": "Placed",
+            "type": "integer"
+          },
+          "ref": {
+            "title": "Ref",
+            "type": "string"
+          },
+          "shops": {
+            "title": "Shops",
+            "type": "integer"
+          },
+          "units": {
+            "title": "Units",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "ref",
+          "distributor",
+          "shops",
+          "ordered",
+          "declined",
+          "units",
+          "placed",
+          "fill"
+        ],
+        "title": "JourneyStandIn",
         "type": "object"
       },
       "JourneyTrigger": {
@@ -3050,6 +3139,54 @@
           "sold"
         ],
         "title": "StaffSaleInput",
+        "type": "object"
+      },
+      "StandInFill": {
+        "additionalProperties": false,
+        "properties": {
+          "shops": {
+            "title": "Shops",
+            "type": "integer"
+          },
+          "story": {
+            "title": "Story",
+            "type": "integer"
+          },
+          "units": {
+            "title": "Units",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "shops",
+          "units",
+          "story"
+        ],
+        "title": "StandInFill",
+        "type": "object"
+      },
+      "StandInFilled": {
+        "additionalProperties": false,
+        "properties": {
+          "at": {
+            "title": "At",
+            "type": "string"
+          },
+          "shops": {
+            "title": "Shops",
+            "type": "integer"
+          },
+          "units": {
+            "title": "Units",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "at",
+          "shops",
+          "units"
+        ],
+        "title": "StandInFilled",
         "type": "object"
       },
       "Track": {
@@ -4616,6 +4753,63 @@
           }
         ],
         "summary": "Start a client's journey again from day 0",
+        "tags": [
+          "console"
+        ]
+      }
+    },
+    "/v1/console/clients/{client_id}/journey/stand-ins/{stand_in_id}": {
+      "post": {
+        "description": "a demo workspace's kiranas order as the story has them, each as its own shop (SC-215)",
+        "operationId": "stand_in_v1_console_clients__client_id__journey_stand_ins__stand_in_id__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "stand_in_id",
+            "required": true,
+            "schema": {
+              "title": "Stand In Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JourneyOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Stand in for a client's partners now",
         "tags": [
           "console"
         ]

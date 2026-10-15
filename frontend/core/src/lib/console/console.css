@@ -109,6 +109,15 @@
   .cs-trig { grid-template-columns: minmax(0, 1fr); }
   .cs-trig-act { justify-content: flex-start; }
 }
+/* standing in for a client's partners, in a demo (SC-215): a card above the agents, a row for each stand-in */
+.cs-standins { display: grid; gap: 10px; padding: 14px; }
+.cs-standins-head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; }
+.cs-standin { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px 12px; padding: 10px 12px; border-radius: 12px; background: var(--surface-sunken); }
+.cs-standin.fired { background: var(--primary-soft); }
+@container app (max-width: 767px) {
+  .cs-standin { grid-template-columns: auto minmax(0, 1fr); }
+  .cs-standin > .btn { grid-column: 1 / -1; justify-self: start; }
+}
 .cs-ctl { flex: none; display: grid; justify-items: end; gap: 4px; } /* the level, then its save line while it saves (SC-152) */
 .cs-app .segmented.sm .seg { height: 26px; padding: 0 10px; font-size: 12.5px; }
 .cs-gate-note { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; font-size: 14px; background: var(--amber-soft); color: var(--amber-text); }

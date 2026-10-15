@@ -24,7 +24,7 @@ from sc_api.services import audit
 from sc_api.services.context import Ctx
 from sc_api.services.journey import events as ev
 from sc_api.services.journey import reset as reset_svc
-from sc_api.services.journey import tick, world
+from sc_api.services.journey import steps, tick, world
 from sc_api.services.presenter import lock_client
 
 DAILY = {"data": "daily load", "watcher": "daily check"}
@@ -58,6 +58,7 @@ async def schedule(ctx: Ctx, client_id: str) -> dict[str, Any]:
         return {
             "live": False,
             "clock": None,
+            "standIns": [],
             "triggers": [
                 {
                     "id": a,
@@ -111,6 +112,8 @@ async def schedule(ctx: Ctx, client_id: str) -> dict[str, Any]:
     for t, case in timers:
         if t.kind not in TIMERS:
             continue
+        if t.kind == "offer.close" and (case.offer or {}).get("status") != "sent":
+            continue  # its scheme closed already (it filled, SC-215): the window has nothing left to close
         triggers.append(
             {
                 "id": f"timer-{t.id}",
@@ -135,7 +138,68 @@ async def schedule(ctx: Ctx, client_id: str) -> dict[str, Any]:
             "compressed": c.clock_speed is not None and c.clock_speed < 1440,
         },
         "triggers": triggers,
+        "standIns": await stand_ins(ctx, c),
     }
+
+
+async def stand_ins(ctx: Ctx, c: m.Client) -> list[dict[str, Any]]:
+    """what the console can do for a demo workspace's partners (SC-215): each open case's kirana scheme, while it is
+    open or once the console filled it, with what filling it places. A real client's workspace has none"""
+    if not (c.workspace_doc or {}).get("synthetic"):
+        return []
+    cases = (
+        (
+            await ctx.session.execute(
+                select(m.Case).where(m.Case.client_id == c.id, m.Case.status == "open").order_by(m.Case.opened_wall)
+            )
+        )
+        .scalars()
+        .all()
+    )
+    out: list[dict[str, Any]] = []
+    for case in cases:
+        offer = case.offer or {}
+        if offer.get("status") != "sent" and not offer.get("filled"):
+            continue
+        dist = await ctx.session.get(m.Distributor, (c.id, case.distributor_id))
+        taken = list(
+            (await ctx.session.execute(select(m.CaseOrder).where(m.CaseOrder.case_id == case.id))).scalars().all()
+        )
+        sc = await steps.scheme_of(ctx, case, case.distributor_id, taken)
+        f = sc["fill"]
+        filled = offer.get("filled")
+        out.append(
+            {
+                "id": f"kiranas-{case.batch_ref}",
+                "kind": "kiranas",
+                "ref": case.batch_ref,
+                "distributor": dist.name if dist else case.distributor_id,
+                "shops": len(sc["shops"]),
+                "ordered": sc["ordered"],
+                "declined": sc["declined"],
+                "units": sc["units"],
+                "placed": sc["placed"],
+                "fill": {"shops": f["shops"], "units": f["units"], "story": f["story"]},
+                "filled": {k: filled[k] for k in ("at", "shops", "units")} if filled else None,
+                "blocked": None
+                if f["units"]
+                else "The scheme is full"
+                if sc["placed"] >= sc["units"]
+                else "Every shop has answered",
+            }
+        )
+    return out
+
+
+async def stand_in(ctx: Ctx, client_id: str, stand_in_id: str) -> None:
+    """a stand-in for a demo workspace's partners, now (SC-215): the kiranas' scheme filled as the story has it"""
+    ctx.require("clients.configure", "Your role can't stand in for a client's partners.")
+    c = await _client(ctx, client_id)
+    if not (c.workspace_doc or {}).get("synthetic"):
+        raise ApiError(409, f"Only a demo workspace has stand-ins, and {copy.possessive(c.name)} workspace isn't one.")
+    if not stand_in_id.startswith("kiranas-"):
+        raise ApiError(404, "No such stand-in.")
+    await steps.fill_scheme_now(ctx, client_id, stand_in_id.removeprefix("kiranas-"))
 
 
 async def fire(ctx: Ctx, client_id: str, trigger_id: str) -> None:

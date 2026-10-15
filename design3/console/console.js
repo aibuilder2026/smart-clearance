@@ -640,7 +640,12 @@
       setAsking(null);
       toast({ text: t.kind === "run" ? `${a.name} · ${words.title.toLowerCase()} running for ${c.name}` : `${a.name} · ${words.title.toLowerCase()}: fired for ${t.ref}`, tone: "ok" });
     };
-    return { j, just, asking, ask: (t) => t.kind === "timer" ? setAsking(t) : fire(t), fire, cancel: () => setAsking(null) };
+    const fill = (x) => {
+      P.update((d) => P.standIn(d, c.id, x), { who: me.name, client: c.id, text: P.standInLine(c, x) });
+      setAsking(null);
+      toast({ text: STANDIN.done(x), tone: "ok" });
+    };
+    return { j, just, asking, ask: (t) => t.kind === "timer" || t.kind === "kiranas" ? setAsking(t) : fire(t), fire, fill, cancel: () => setAsking(null) };
   }
   function TrigRow({ c, t, trig, dense }) {
     const words = TRIG[t.key];
@@ -663,8 +668,36 @@
   }
   function TimerAlert({ c, trig }) {
     const t = trig.asking;
-    const q = t ? TRIG[t.key].ask(t, journeyTime(t.due)) : { title: "", message: "" };
-    return /* @__PURE__ */ React.createElement(Alert, { open: !!t, onClose: trig.cancel, title: q.title, message: q.message, actions: [{ label: "Cancel" }, { label: t ? TRIG[t.key].act : "", busy: t ? TRIG[t.key].busy : void 0, strong: true, onClick: () => t && trig.fire(t) }] });
+    const sub = t && t.kind === "kiranas";
+    const w = !t ? null : sub ? STANDIN : TRIG[t.key];
+    const q = !t ? { title: "", message: "" } : sub ? STANDIN.ask(t) : w.ask(t, journeyTime(t.due));
+    return /* @__PURE__ */ React.createElement(Alert, { open: !!t, onClose: trig.cancel, title: q.title, message: q.message, actions: [{ label: "Cancel" }, { label: w ? w.act : "", busy: w ? w.busy : void 0, strong: true, onClick: () => t && (sub ? trig.fill(t) : trig.fire(t)) }] });
+  }
+  const n0 = (v) => v.toLocaleString("en-IN");
+  const shopsN = (n) => `${n} ${n === 1 ? "shop" : "shops"}`;
+  const fillHow = (x) => x.fill.units > x.fill.story ? "as the story has them, topped up to fill it" : x.fill.units < x.fill.story ? "as the story has them, up to the packets left" : "as the story has them";
+  const STANDIN = {
+    act: "Fill now",
+    busy: "Filling…",
+    ask: (x) => {
+      const open = x.shops - x.ordered - x.declined;
+      const left = x.units - x.placed - x.fill.units;
+      return { title: `Fill ${x.ref}'s scheme now?`, message: `${x.fill.shops === open ? `The ${open}` : `${x.fill.shops} of the ${open}`} shops that haven't answered order ${fillHow(x)}: ${n0(x.fill.units)} packets, each as its own shop, with its own tax invoice from ${x.distributor}. ${left > 0 ? `${n0(left)} packets stay in the scheme until its window closes.` : "The scheme fills and closes, and the van round can run."} This stands in for the shops in a demo, and can't be undone.` };
+    },
+    done: (x) => {
+      const left = x.units - x.placed - x.fill.units;
+      return `${shopsN(x.fill.shops)} ordered ${n0(x.fill.units)} packets: ${left > 0 ? `${n0(left)} are still open in ${x.ref}'s scheme` : `${x.ref}'s scheme is full`}`;
+    }
+  };
+  function StandIns({ trig }) {
+    const xs = trig.j.standIns || [];
+    if (!xs.length) return null;
+    return /* @__PURE__ */ React.createElement("section", { className: "card cs-standins", "aria-labelledby": "cs-standins-h" }, /* @__PURE__ */ React.createElement("div", { className: "cs-standins-head" }, /* @__PURE__ */ React.createElement("span", { className: "icontile soft" }, /* @__PURE__ */ React.createElement(Icon, { name: "hand", size: 17, stroke: 2 })), /* @__PURE__ */ React.createElement("span", { className: "stack tight", style: { gap: 2 } }, /* @__PURE__ */ React.createElement("b", { id: "cs-standins-h", className: "t-headline" }, "Stand in for the partners"), /* @__PURE__ */ React.createElement("span", { className: "t-footnote muted" }, "For demos: what the story's people would do, when no one is there to do it. Each step acts as that person, and writes its audit line in your name."))), xs.map((x) => /* @__PURE__ */ React.createElement(StandInRow, { key: x.id, x, trig })));
+  }
+  function StandInRow({ x, trig }) {
+    const who = `${P.poss(x.distributor)} kiranas`;
+    const sub = x.filled ? `Filled ${journeyTime(x.filled.at)}: ${shopsN(x.filled.shops)} ordered ${n0(x.filled.units)} packets` : `${x.ordered} of ${x.shops} have ordered${x.declined ? `, ${x.declined} said not this time` : ""} · ${x.fill.shops} more order ${fillHow(x)}, ${n0(x.fill.units)} packets`;
+    return /* @__PURE__ */ React.createElement("div", { className: cx("cs-standin", x.filled && "fired") }, /* @__PURE__ */ React.createElement("span", { className: "icontile soft" }, /* @__PURE__ */ React.createElement(Icon, { name: "store", size: 16, stroke: 2 })), /* @__PURE__ */ React.createElement("span", { className: "cs-trig-txt" }, /* @__PURE__ */ React.createElement("span", { className: "cs-trig-t" }, /* @__PURE__ */ React.createElement("b", null, who), /* @__PURE__ */ React.createElement("span", { className: "mono cs-trig-ref" }, x.ref)), /* @__PURE__ */ React.createElement("span", { className: "cs-trig-s" }, sub), x.blocked && !x.filled && /* @__PURE__ */ React.createElement("span", { className: "cs-trig-s cs-trig-why" }, /* @__PURE__ */ React.createElement(Icon, { name: "hourglass", size: 12, stroke: 2.2 }), x.blocked)), /* @__PURE__ */ React.createElement(Button, { variant: "secondary", size: "sm", icon: x.filled ? "check" : "store", disabled: !!x.blocked, onClick: () => trig.ask(x), "aria-label": `${x.filled ? "Filled" : "Fill the scheme"}: ${who}, ${x.ref}` }, x.filled ? "Filled" : "Fill the scheme"));
   }
   function ResetJourneySheet({ c, me, open, onClose }) {
     const app = useApp();
@@ -712,8 +745,9 @@
     const pipe = /* @__PURE__ */ React.createElement(AgentPipeline, { c, sel, onSelect: setSel, onAutonomy: setAutonomy, compact: app.bp === "phone", trig });
     const insp = sel ? /* @__PURE__ */ React.createElement(AgentInspector, { key: c.id + sel, c, id: sel, me, onAutonomy: setAutonomy, trig }) : null;
     const shell = (body) => /* @__PURE__ */ React.createElement(React.Fragment, null, body, /* @__PURE__ */ React.createElement(TimerAlert, { c, trig }));
-    if (app.bp === "desktop") return shell(/* @__PURE__ */ React.createElement("div", { className: "cs-agents" }, /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 12, minWidth: 0 } }, legend, pipe), /* @__PURE__ */ React.createElement("aside", { className: "cs-inspector card", "aria-label": "Selected agent" }, insp || /* @__PURE__ */ React.createElement(Empty, { icon: "mouse-pointer-click", title: "Choose an agent", body: "Its limits, schedule and last run open here." }))));
-    return shell(/* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 12 } }, legend, pipe, /* @__PURE__ */ React.createElement(Sheet, { open: !!sel, onClose: () => setSel(null), title: sel ? AGENT(sel).name : "", side: app.bp === "phone" ? "bottom" : "side", detent: "large" }, insp)));
+    const standins = /* @__PURE__ */ React.createElement(StandIns, { trig });
+    if (app.bp === "desktop") return shell(/* @__PURE__ */ React.createElement("div", { className: "cs-agents" }, /* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 12, minWidth: 0 } }, standins, legend, pipe), /* @__PURE__ */ React.createElement("aside", { className: "cs-inspector card", "aria-label": "Selected agent" }, insp || /* @__PURE__ */ React.createElement(Empty, { icon: "mouse-pointer-click", title: "Choose an agent", body: "Its limits, schedule and last run open here." }))));
+    return shell(/* @__PURE__ */ React.createElement("div", { className: "stack", style: { gap: 12 } }, standins, legend, pipe, /* @__PURE__ */ React.createElement(Sheet, { open: !!sel, onClose: () => setSel(null), title: sel ? AGENT(sel).name : "", side: app.bp === "phone" ? "bottom" : "side", detent: "large" }, insp)));
   }
   function AgentPipeline({ c, sel, onSelect, onAutonomy, compact, trig }) {
     return /* @__PURE__ */ React.createElement("ol", { className: "cs-pipe", "aria-label": `${c.name}'s agents, in the order they work` }, P.AGENTS.map((a) => {

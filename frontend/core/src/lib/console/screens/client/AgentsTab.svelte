@@ -1,11 +1,12 @@
 <script lang="ts">
-	import type { Agent, Autonomy, Client, JourneyTrigger } from '@smart-clearance/api/console';
+	import type { Agent, Autonomy, Client, JourneyStandIn, JourneyTrigger } from '@smart-clearance/api/console';
 	import { Alert, cx, Empty, Sheet, useApp } from '../../../index';
 	import { createQuery } from '@tanstack/svelte-query';
 	import { useConsole } from '../../console.svelte';
 	import AgentInspector from './AgentInspector.svelte';
 	import AgentPipeline from './AgentPipeline.svelte';
-	import { journeyTime, TRIG } from './journey.ts';
+	import StandIns from './StandIns.svelte';
+	import { journeyTime, STANDIN, TRIG } from './journey.ts';
 
 	// a client's agents: the pipeline, and the selected agent's settings beside it on desktops or in a sheet elsewhere
 	let { c }: { c: Client } = $props();
@@ -19,7 +20,11 @@
 	const journey = createQuery(() => k.q.journey(c.id));
 	let just = $state<Record<string, boolean>>({});
 	let asking = $state<JourneyTrigger | null>(null);
-	const question = $derived(asking?.due ? TRIG[asking.key].ask?.(asking, journeyTime(asking.due)) : undefined);
+	// a stand-in for the client's partners (SC-215) asks first too: it acts for people, and can't be undone
+	let standing = $state<JourneyStandIn | null>(null);
+	const question = $derived(
+		standing ? STANDIN.ask(standing) : asking?.due ? TRIG[asking.key].ask?.(asking, journeyTime(asking.due)) : undefined
+	);
 	// a run's button and a timer's alert each wait on the platform (SC-152); the alert closes once it has fired
 	async function fire(t: JourneyTrigger) {
 		const a = k.agent(t.agent);
@@ -31,6 +36,8 @@
 		just = { ...just, [t.id]: true };
 	}
 	const ask = (t: JourneyTrigger) => (t.kind === 'timer' ? void (asking = t) : fire(t));
+	// the shops' orders placed as the story has them, in the staff member's name; the alert waits on it
+	const fill = (x: JourneyStandIn) => k.act(() => k.api.standIn(c.id, x.id), STANDIN.done(x));
 
 	// the pipeline's and the inspector's autonomy each keep the level pressed and say Saving…, Saved, or why it went
 	// back (SC-152): they wait on this
@@ -54,9 +61,11 @@
 		onask={ask}
 	/>{/snippet}
 
+{#snippet standins()}<StandIns standIns={journey.data?.standIns ?? []} onask={(x) => (standing = x)} />{/snippet}
+
 {#if app.bp === 'desktop'}
 	<div class="cs-agents">
-		<div class="stack" style="gap: 12px; min-width: 0">{@render legend()}{@render pipe()}</div>
+		<div class="stack" style="gap: 12px; min-width: 0">{@render standins()}{@render legend()}{@render pipe()}</div>
 		<aside class="cs-inspector card" aria-label="Selected agent">
 			{#if sel}{#key c.id + sel}<AgentInspector
 						{c}
@@ -74,7 +83,7 @@
 	</div>
 {:else}
 	<div class="stack" style="gap: 12px">
-		{@render legend()}{@render pipe()}<Sheet
+		{@render standins()}{@render legend()}{@render pipe()}<Sheet
 			open={!!sel}
 			onclose={() => (sel = null)}
 			title={sel ? k.agent(sel).name : ''}
@@ -92,17 +101,17 @@
 	</div>
 {/if}
 <Alert
-	open={!!asking}
-	onclose={() => (asking = null)}
+	open={!!asking || !!standing}
+	onclose={() => ((asking = null), (standing = null))}
 	title={question?.title ?? ''}
 	message={question?.message ?? ''}
 	actions={[
 		{ label: 'Cancel' },
 		{
-			label: asking ? TRIG[asking.key].act : '',
-			busy: asking ? TRIG[asking.key].busy : undefined,
+			label: standing ? STANDIN.act : asking ? TRIG[asking.key].act : '',
+			busy: standing ? STANDIN.busy : asking ? TRIG[asking.key].busy : undefined,
 			strong: true,
-			onclick: () => asking && fire(asking)
+			onclick: () => (standing ? fill(standing) : asking && fire(asking))
 		}
 	]}
 />

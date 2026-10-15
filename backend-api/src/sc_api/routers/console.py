@@ -224,6 +224,17 @@ async def fire_trigger(client_id: str, trigger_id: str, request: Request, ctx: S
     return JourneyOut.model_validate(await journey_controls.schedule(ctx, client_id))
 
 
+@router.post(
+    C + "/journey/stand-ins/{stand_in_id}", response_model=JourneyOut, summary="Stand in for a client's partners now"
+)
+async def stand_in(client_id: str, stand_in_id: str, request: Request, ctx: StaffCtx) -> JourneyOut:
+    """a demo workspace's kiranas order as the story has them, each as its own shop (SC-215)"""
+    await journey_controls.stand_in(ctx, client_id, stand_in_id)
+    await ctx.session.commit()
+    await _drain(request, ctx)
+    return JourneyOut.model_validate(await journey_controls.schedule(ctx, client_id))
+
+
 @router.post(C + "/journey/reset", response_model=JourneyOut, summary="Start a client's journey again from day 0")
 async def reset_journey(client_id: str, data: JourneyResetInput, request: Request, ctx: StaffCtx) -> JourneyOut:
     await journey_controls.reset(ctx, client_id, data.day_minutes)

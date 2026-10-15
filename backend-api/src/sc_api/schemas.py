@@ -624,10 +624,41 @@ class JourneyClockOut(Shape):
     compressed: bool
 
 
+class StandInFill(Shape):
+    shops: int
+    units: int
+    story: int
+
+
+class StandInFilled(Shape):
+    at: str
+    shops: int
+    units: int
+
+
+class JourneyStandIn(Shape):
+    """a step the console takes for a client's partners in a demo (SC-215): a distributor's kiranas, whose scheme every
+    shop that hasn't answered fills as the story has it"""
+
+    id: str
+    kind: Literal["kiranas"]
+    ref: str
+    distributor: str
+    shops: int
+    ordered: int
+    declined: int
+    units: int
+    placed: int
+    fill: StandInFill
+    filled: StandInFilled | None = None
+    blocked: str | None = None
+
+
 class JourneyOut(Shape):
     live: bool
     clock: JourneyClockOut | None = None
     triggers: list[JourneyTrigger]
+    stand_ins: list[JourneyStandIn] = []
 
 
 class JourneyResetInput(Shape):

@@ -15,6 +15,7 @@ from sc_api.domain.gates import (
     sku_gates_line,
 )
 from sc_api.domain.rules import agent_defaults, exits_for, show_value, slug
+from sc_api.domain.scheme import fill_scheme
 from sc_api.services.reference import load
 
 FIXTURES = load("rules.json")
@@ -106,3 +107,11 @@ def test_day_words_for_every_length():
         "23 h 59 min",
         "a day",
     ]
+
+
+# SC-215: a kirana scheme filled for a demo, as the story has it
+@pytest.mark.parametrize(
+    "case", FIXTURES["fillScheme"], ids=lambda c: f"{len(c['answered'])}-answered-{c['left']}-left"
+)
+def test_fill_scheme(case):
+    assert fill_scheme(case["shops"], case["answered"], case["left"]) == case["fill"]

@@ -226,8 +226,40 @@ export type JourneyTrigger = {
 	blocked: string | null;
 };
 export type JourneyClock = { now: string; day: number; day0: string; dayMinutes: number; compressed: boolean };
-/** a client's journey as the console drives it: its clock, and what is coming, in time order (SC-79) */
-export type Journey = { live: boolean; clock: JourneyClock | null; triggers: JourneyTrigger[] };
+/** a step the console takes for a client's partners in a demo (SC-215): what the story's people would do when no one is
+ *  there to do it, acting as them, on a live demo workspace only. The first is a distributor's kiranas, whose scheme a
+ *  judge can't fill alone: every shop that hasn't answered orders its share as the story has it, topped up until the
+ *  scheme is full; a shop that ordered or said Not this time is left alone */
+export type JourneyStandIn = {
+	/** 'kiranas-<batch>' */
+	id: string;
+	kind: 'kiranas';
+	/** the batch whose scheme it fills */
+	ref: string;
+	/** the distributor whose kiranas it stands in for */
+	distributor: string;
+	/** the shops the scheme went to; those that have ordered, and those that said Not this time */
+	shops: number;
+	ordered: number;
+	declined: number;
+	/** the scheme's packets, and those ordered so far */
+	units: number;
+	placed: number;
+	/** what filling it now places: the shops that order, their packets, and the story's own shares of those shops */
+	fill: { shops: number; units: number; story: number };
+	/** once filled: when (journey time), and what it placed */
+	filled: { at: string; shops: number; units: number } | null;
+	/** why it can't be done now, in words staff read */
+	blocked: string | null;
+};
+/** a client's journey as the console drives it: its clock, what is coming, in time order (SC-79), and what the console
+ *  can do for its partners in a demo (SC-215) */
+export type Journey = {
+	live: boolean;
+	clock: JourneyClock | null;
+	triggers: JourneyTrigger[];
+	standIns: JourneyStandIn[];
+};
 
 export type StaffRole = 'Super admin' | 'Platform engineer' | 'Support';
 /** one of Smart-Clearance's own people, who sign in to the console */
@@ -462,6 +494,9 @@ export interface ConsoleApi {
 	journey(client: string): Promise<Journey>;
 	/** a daily run or a timer, fired now; a timer that isn't ready is refused with its reason */
 	fireTrigger(client: string, trigger: string): Promise<Journey>;
+	/** a stand-in for the client's partners, done now (SC-215): a demo workspace's kiranas order as the story has them,
+	 *  each as its own shop; refused with its reason when it can't be done */
+	standIn(client: string, standIn: string): Promise<Journey>;
 	/** the client's journey from day 0 again, at the day length given (the client's own when none is) */
 	resetJourney(client: string, input?: { dayMinutes?: number }): Promise<Journey>;
 	/** a client's stock export, uploaded by staff (SC-84): a signed link, the file, then the Data agent maps and loads it.

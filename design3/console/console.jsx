@@ -625,7 +625,13 @@
       setJust(x => ({ ...x, [t.id]: true })); setAsking(null);
       toast({ text: t.kind === "run" ? `${a.name} · ${words.title.toLowerCase()} running for ${c.name}` : `${a.name} · ${words.title.toLowerCase()}: fired for ${t.ref}`, tone: "ok" });
     };
-    return { j, just, asking, ask: t => (t.kind === "timer" ? setAsking(t) : fire(t)), fire, cancel: () => setAsking(null) };
+    // a stand-in (SC-215): the shops' orders placed as the story has them, in the staff member's name
+    const fill = x => {
+      P.update(d => P.standIn(d, c.id, x), { who: me.name, client: c.id, text: P.standInLine(c, x) });
+      setAsking(null);
+      toast({ text: STANDIN.done(x), tone: "ok" });
+    };
+    return { j, just, asking, ask: t => (t.kind === "timer" || t.kind === "kiranas" ? setAsking(t) : fire(t)), fire, fill, cancel: () => setAsking(null) };
   }
   function TrigRow({ c, t, trig, dense }) {
     const words = TRIG[t.key]; const a = AGENT(t.agent); const off = !c.agents[t.agent] || !c.agents[t.agent].on;
@@ -651,10 +657,49 @@
     if (!mine.length) return <List><ListRow title="When it runs" sub={EVENT_OF[agent] ? `When ${EVENT_OF[agent]}; nothing to run now` : "On its own events"} /></List>;
     return <div className="stack tight" style={{ gap: 8 }}><span className="t-footnote strong">Scheduled runs and timers</span>{mine.map(t => <TrigRow key={t.id} c={c} t={t} trig={trig} />)}</div>;
   }
-  // a timer asks first: what it does, instead of when
+  // a timer asks first: what it does, instead of when; so does a stand-in, since it acts for people
   function TimerAlert({ c, trig }) {
-    const t = trig.asking; const q = t ? TRIG[t.key].ask(t, journeyTime(t.due)) : { title: "", message: "" };
-    return <Alert open={!!t} onClose={trig.cancel} title={q.title} message={q.message} actions={[{ label: "Cancel" }, { label: t ? TRIG[t.key].act : "", busy: t ? TRIG[t.key].busy : undefined, strong: true, onClick: () => t && trig.fire(t) }]} />;
+    const t = trig.asking; const sub = t && t.kind === "kiranas";
+    const w = !t ? null : sub ? STANDIN : TRIG[t.key];
+    const q = !t ? { title: "", message: "" } : sub ? STANDIN.ask(t) : w.ask(t, journeyTime(t.due));
+    return <Alert open={!!t} onClose={trig.cancel} title={q.title} message={q.message} actions={[{ label: "Cancel" }, { label: w ? w.act : "", busy: w ? w.busy : undefined, strong: true, onClick: () => t && (sub ? trig.fill(t) : trig.fire(t)) }]} />;
+  }
+
+  /* ---------- standing in for a client's partners, in a demo (SC-215, option C) ---------- */
+  // A card of its own above the agents, while something waits on a partner: what the story's people would do when no one
+  // is there to do it, set apart from the agents' runs and timers, since each step acts as a person. The first is a
+  // distributor's kiranas, whose scheme a judge can't fill alone: every shop that hasn't answered orders its share as the
+  // story has it, each with its own tax invoice, topped up until the scheme is full. It asks first, as a timer does. Only
+  // a live demo workspace has one (GET …/journey's standIns, here platform.js's)
+  const n0 = v => v.toLocaleString("en-IN");
+  const shopsN = n => `${n} ${n === 1 ? "shop" : "shops"}`;
+  // how the fill places them: the story's shares, topped up to fill the scheme, or stopping at the packets left
+  const fillHow = x => (x.fill.units > x.fill.story ? "as the story has them, topped up to fill it" : x.fill.units < x.fill.story ? "as the story has them, up to the packets left" : "as the story has them");
+  const STANDIN = {
+    act: "Fill now", busy: "Filling…",
+    ask: x => {
+      const open = x.shops - x.ordered - x.declined; const left = x.units - x.placed - x.fill.units;
+      return { title: `Fill ${x.ref}'s scheme now?`, message: `${x.fill.shops === open ? `The ${open}` : `${x.fill.shops} of the ${open}`} shops that haven't answered order ${fillHow(x)}: ${n0(x.fill.units)} packets, each as its own shop, with its own tax invoice from ${x.distributor}. ${left > 0 ? `${n0(left)} packets stay in the scheme until its window closes.` : "The scheme fills and closes, and the van round can run."} This stands in for the shops in a demo, and can't be undone.` };
+    },
+    done: x => { const left = x.units - x.placed - x.fill.units; return `${shopsN(x.fill.shops)} ordered ${n0(x.fill.units)} packets: ${left > 0 ? `${n0(left)} are still open in ${x.ref}'s scheme` : `${x.ref}'s scheme is full`}`; },
+  };
+  function StandIns({ trig }) {
+    const xs = trig.j.standIns || [];
+    if (!xs.length) return null;
+    return <section className="card cs-standins" aria-labelledby="cs-standins-h">
+      <div className="cs-standins-head"><span className="icontile soft"><Icon name="hand" size={17} stroke={2} /></span><span className="stack tight" style={{ gap: 2 }}><b id="cs-standins-h" className="t-headline">Stand in for the partners</b><span className="t-footnote muted">For demos: what the story's people would do, when no one is there to do it. Each step acts as that person, and writes its audit line in your name.</span></span></div>
+      {xs.map(x => <StandInRow key={x.id} x={x} trig={trig} />)}
+    </section>;
+  }
+  function StandInRow({ x, trig }) {
+    const who = `${P.poss(x.distributor)} kiranas`;
+    const sub = x.filled ? `Filled ${journeyTime(x.filled.at)}: ${shopsN(x.filled.shops)} ordered ${n0(x.filled.units)} packets` : `${x.ordered} of ${x.shops} have ordered${x.declined ? `, ${x.declined} said not this time` : ""} · ${x.fill.shops} more order ${fillHow(x)}, ${n0(x.fill.units)} packets`;
+    return <div className={cx("cs-standin", x.filled && "fired")}>
+      <span className="icontile soft"><Icon name="store" size={16} stroke={2} /></span>
+      <span className="cs-trig-txt"><span className="cs-trig-t"><b>{who}</b><span className="mono cs-trig-ref">{x.ref}</span></span><span className="cs-trig-s">{sub}</span>
+        {x.blocked && !x.filled && <span className="cs-trig-s cs-trig-why"><Icon name="hourglass" size={12} stroke={2.2} />{x.blocked}</span>}</span>
+      <Button variant="secondary" size="sm" icon={x.filled ? "check" : "store"} disabled={!!x.blocked} onClick={() => trig.ask(x)} aria-label={`${x.filled ? "Filled" : "Fill the scheme"}: ${who}, ${x.ref}`}>{x.filled ? "Filled" : "Fill the scheme"}</Button>
+    </div>;
   }
   // the reset: what it does, and the day length the journey starts at (the client's own, unless another is picked)
   function ResetJourneySheet({ c, me, open, onClose }) {
@@ -686,8 +731,9 @@
     const pipe = <AgentPipeline c={c} sel={sel} onSelect={setSel} onAutonomy={setAutonomy} compact={app.bp === "phone"} trig={trig} />;
     const insp = sel ? <AgentInspector key={c.id + sel} c={c} id={sel} me={me} onAutonomy={setAutonomy} trig={trig} /> : null;
     const shell = body => <>{body}<TimerAlert c={c} trig={trig} /></>;
-    if (app.bp === "desktop") return shell(<div className="cs-agents"><div className="stack" style={{ gap: 12, minWidth: 0 }}>{legend}{pipe}</div><aside className="cs-inspector card" aria-label="Selected agent">{insp || <Empty icon="mouse-pointer-click" title="Choose an agent" body="Its limits, schedule and last run open here." />}</aside></div>);
-    return shell(<div className="stack" style={{ gap: 12 }}>{legend}{pipe}<Sheet open={!!sel} onClose={() => setSel(null)} title={sel ? AGENT(sel).name : ""} side={app.bp === "phone" ? "bottom" : "side"} detent="large">{insp}</Sheet></div>);
+    const standins = <StandIns trig={trig} />;
+    if (app.bp === "desktop") return shell(<div className="cs-agents"><div className="stack" style={{ gap: 12, minWidth: 0 }}>{standins}{legend}{pipe}</div><aside className="cs-inspector card" aria-label="Selected agent">{insp || <Empty icon="mouse-pointer-click" title="Choose an agent" body="Its limits, schedule and last run open here." />}</aside></div>);
+    return shell(<div className="stack" style={{ gap: 12 }}>{standins}{legend}{pipe}<Sheet open={!!sel} onClose={() => setSel(null)} title={sel ? AGENT(sel).name : ""} side={app.bp === "phone" ? "bottom" : "side"} detent="large">{insp}</Sheet></div>);
   }
   function AgentPipeline({ c, sel, onSelect, onAutonomy, compact, trig }) {
     return <ol className="cs-pipe" aria-label={`${c.name}'s agents, in the order they work`}>

@@ -372,7 +372,22 @@ const ruleFixtures = {
 		'',
 		'X',
 		'A'.repeat(40)
-	].map((name) => ({ name, slug: P.slug(name) }))
+	].map((name) => ({ name, slug: P.slug(name) })),
+	// SC-215: a kirana scheme filled for a demo, as the story has it (the Mango Drink's, Lakshmi Agencies' 58 shops): after
+	// a judge's two orders as the story has them; short of the story (topped up); with a shop that said Not this time;
+	// with fewer packets left than the story's shares; with every shop answered; with nothing left
+	fillScheme: (() => {
+		const sc = platform.journeys.munchly.schemes[0];
+		const [h0, h1, h2] = sc.shops;
+		return [
+			{ answered: [h0.id, h1.id], left: sc.units - h0.share - h1.share },
+			{ answered: [h0.id, h1.id], left: sc.units - h0.share - 24 },
+			{ answered: [h0.id, h1.id, h2.id], left: sc.units - h0.share - h1.share },
+			{ answered: [h0.id], left: 100 },
+			{ answered: sc.shops.map((k) => k.id), left: 40 },
+			{ answered: [], left: 0 }
+		].map((x) => ({ shops: sc.shops, ...x, fill: P.fillScheme(sc.shops, x.answered, x.left) }));
+	})()
 };
 
 /* ---------- the live journey (SC-66): Munchly's world for backend-api, and the fixtures its Python ports are held to
