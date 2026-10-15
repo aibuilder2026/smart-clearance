@@ -3,7 +3,7 @@
 The agents service (SC-72): the agents that read a label photo, comment on an exit's price, explain a split, list a
 lot, write a kirana offer, answer a buyer, draft the papers and post the ledger, for the live journey that
 backend-api runs (`backend-api/README.md`, "The live workspace (SC-66)"). Built with Google's Agent Development Kit
-(ADK) on Gemini through Vertex AI.
+(ADK) on Gemini through Agent Platform (Gemini Enterprise Agent Platform, formerly Vertex AI).
 
 **The service is stateless.** backend-api is the system of record: it works out every figure (`domain/money.py`,
 money.js's rules), writes every change, and sends the next event. Each Pub/Sub message runs one ADK pipeline for one
@@ -61,12 +61,12 @@ and the run reports `fallback: true`.
 
 ## Models
 
-Gemini on Vertex AI through `google-genai`, with no API key. ADK's `Gemini` model builds its google-genai `Client` from
-`client_kwargs`: `enterprise=True` (Vertex AI), the project, `GENAI_LOCATION` (default `global`, where the Gemini 3
+Gemini on Agent Platform through `google-genai`, with no API key. ADK's `Gemini` model builds its google-genai `Client` from
+`client_kwargs`: `enterprise=True` (Agent Platform), the project, `GENAI_LOCATION` (default `global`, where the Gemini 3
 models are served) and the service's own credentials (`gcp.py`: sc-agents-local impersonated in code on a laptop,
 sc-agents on Cloud Run). Checked on 7 Oct 2026: an impersonated `IDTokenCredentials` minted backend-api's ID token
 (audience `sc-backend-api`, email verified), and ADK's `Gemini`, given impersonated credentials this way, resolved both
-models on Vertex AI (a metadata read, no generation).
+models on Agent Platform (a metadata read, no generation).
 
 | Tier | Variable | Used by | On 7 Oct 2026 (`publishers/google/models`) |
 | --- | --- | --- | --- |
@@ -77,7 +77,7 @@ Neither has a default in code: model ids move with Google's releases, so each en
 (`.env.example` has the ones above). `GET /readyz` checks that both resolve.
 
 Every model call:
-- has a 30 s deadline an attempt (`MODEL_TIMEOUT_S`), and up to 3 attempts (`MODEL_ATTEMPTS`) when Vertex AI answers
+- has a 30 s deadline an attempt (`MODEL_TIMEOUT_S`), and up to 3 attempts (`MODEL_ATTEMPTS`) when Agent Platform answers
   429, 500, 503 or 504, with exponential backoff (1 s, then 2 s, each plus up to 1 s of jitter); the whole call is
   allowed exactly that long (SC-77: the first live eval run met the Pro preview's quota, and 20 s deadlines);
 - falls back on any error, timeout or output that does not match its schema by leaving its field out, so
@@ -178,7 +178,7 @@ deterministic checks (`scorers.py`) and, for the agents that write words, by a G
 rubric of 1 to 5 (`judge.py`). Each case's result goes into BigQuery's `smartclearance_local.agent_evals` and
 `results-<run>.jsonl` (git-ignored); the set's pass marks into `summary.json` beside it. Each set splits into train
 (examples may be drawn from it for the prompts) and held-out. The cases run one at a time, a second apart (`--pace`),
-each call retrying Vertex AI's 429, 500, 503 and 504; a case the judge could not score is reported as such
+each call retrying Agent Platform's 429, 500, 503 and 504; a case the judge could not score is reported as such
 (`judged X of N`), never as 0.
 
 **What the first live run found** (7–8 Oct, SC-77; its summaries are in `evals/*/summary.json`): Gemini's structured
