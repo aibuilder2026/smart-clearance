@@ -6,7 +6,7 @@
 (function () {
   const D = window.SC3_DATA, M = window.SC3_MONEY, AppStore = window.SC3_STORE;
   const R = M.RULES;
-  const KEY = "sc3-platform", VERSION = 8;
+  const KEY = "sc3-platform", VERSION = 9;
 
   /* ---------- Smart-Clearance's own people (fictional) ---------- */
   const STAFF = [
@@ -349,6 +349,8 @@
       approver: "priya", destruction: destructionDefaults(),
     };
     client.agents = agentDefaults("standard", client);
+    // every agent acts; the approval stays a person's (SC-221), so Munchly's journeys run straight through
+    Object.values(client.agents).forEach(a => { if (a.autonomy !== "gate") a.autonomy = "act"; });
     const last = { data: "08:30 today · 4 exports, 312 batches", watcher: "09:00 today · MF-2410-118 at risk, 22 days left", vision: "09:14 today · label read, 0.96", valuer: "09:21 today · exits priced; ExpireSoon needs 30+ days", router: "09:22 today · plan sent to Priya", gate: "09:40 today · Priya approved MF-2410-118", lister: "1 Oct · ES-24117 listed in Rakesh Traders' name", outreach: "09:42 today · offers to Lakshmi Agencies' kiranas", negotiator: "1 Oct · countered ₹14.20 on ES-24117", paperwork: "11:05 today · FSSAI checklist for Feeding India", impact: "waits for the return window to close on 29 Oct" };
     const next = { data: "tomorrow 08:30", watcher: "tomorrow 09:00", vision: "on the next label", valuer: "on the next batch", router: "on the next batch", gate: "on the next plan", lister: "on the next plan", outreach: "on the next plan", negotiator: "on the next bid", paperwork: "on the next sale", impact: "30 Oct" };
     Object.keys(client.agents).forEach(k => { client.agents[k].last = last[k]; client.agents[k].next = next[k]; });

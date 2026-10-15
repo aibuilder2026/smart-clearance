@@ -87,7 +87,7 @@ async def test_support_may_help_but_not_invite_staff_or_change_plans(api, suppor
 async def test_a_platform_engineer_cannot_take_a_client_live(api, sameer):
     r = await api.patch(f"{C}/munchly", json={"plan": "growth"}, headers=sameer)
     assert r.status_code == 403
-    r = await api.patch(f"{C}/munchly/agents/vision", json={"autonomy": "act"}, headers=sameer)
+    r = await api.patch(f"{C}/munchly/agents/vision", json={"autonomy": "ask"}, headers=sameer)
     assert r.status_code == 200
     line = (await api.get("/v1/console/audit", headers=sameer)).json()[0]
     assert line["who"] == "Sameer Rao"
