@@ -1,0 +1,373 @@
+<!doctype html>
+<!--
+  Munchly Foods' supply chain, and who's who in the demo (SC-214): the picture at the top of DEMO.md's cast section.
+  Drawn from the app's own portraits and 3D renders (design3/system/img), in design system v3's light colours and type.
+  To draw it again: open this file in Chrome at 1000 px wide with a device scale factor of 2, take a full-page
+  screenshot, and save it as ../cast-and-supply-chain.webp. Every company and person is fictional.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=1000">
+<title>Munchly Foods' supply chain, and who's who</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Geist:wght@300..800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f2f6f3;
+    --surface: #ffffff;
+    --surface-2: #f8faf9;
+    --sunken: #eaf0ec;
+    --fg: #0d1c15;
+    --fg-2: #45554d;
+    --fg-3: #5f6e67;
+    --line: rgb(17 41 30 / 0.1);
+    --line-2: rgb(17 41 30 / 0.17);
+    --primary: #167a52;
+    --primary-soft: #e3f4ea;
+    --primary-text: #12704a;
+    --amber: #f2b437;
+    --amber-soft: #fff3d4;
+    --amber-text: #8a5a00;
+    /* the exits, in the app's channel colours (validated with the dataviz checks); destroyed is SC-149's clay */
+    --kirana: #178a58;
+    --expiresoon: #7c5cd6;
+    --staff: #e08a0b;
+    --foodbank: #a3519a;
+    --destroyed: #c2410c;
+    --munchly: #ef6c1a;
+    --img: ../../../design3/system/img;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { background: var(--bg); }
+  body {
+    width: 1000px;
+    font-family: "Geist", system-ui, sans-serif;
+    color: var(--fg);
+    background:
+      radial-gradient(60% 30% at 10% 0%, #d9f0e3 0%, transparent 70%),
+      radial-gradient(50% 25% at 95% 8%, #e2eef7 0%, transparent 70%),
+      var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  .poster { padding: 36px 36px 30px; }
+  h1, h2, h3, .org-name, .name {
+    font-family: "Bricolage Grotesque", "Geist", sans-serif;
+    font-optical-sizing: auto;
+  }
+  header { margin-bottom: 22px; }
+  .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--primary-text); }
+  h1 { font-size: 34px; line-height: 1.08; font-weight: 750; letter-spacing: -0.02em; margin-top: 6px; }
+  .lede { margin-top: 10px; font-size: 15px; line-height: 1.5; color: var(--fg-2); max-width: 860px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: 0 1px 2px rgb(13 28 21 / 0.04), 0 8px 24px -12px rgb(13 28 21 / 0.12);
+  }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+  /* the two organisations at the top */
+  .org { padding: 18px 18px 16px; }
+  .org-head { display: flex; align-items: center; gap: 12px; }
+  .mark { width: 40px; height: 40px; border-radius: 12px; flex: none; display: grid; place-items: center; }
+  .mark.munchly { background: var(--munchly); color: #fff; font: 800 24px/1 "Bricolage Grotesque", sans-serif; padding-bottom: 3px; }
+  .mark.platform img { width: 40px; height: 40px; }
+  .org-name { font-size: 22px; font-weight: 750; letter-spacing: -0.01em; line-height: 1.1; }
+  .org-sub { font-size: 13px; color: var(--fg-3); margin-top: 2px; white-space: nowrap; }
+  .org-art { display: flex; justify-content: flex-end; gap: 0; margin-left: auto; height: 56px; }
+  .org-art img { height: 56px; width: 56px; object-fit: contain; }
+
+  .people { display: grid; gap: 12px; margin-top: 14px; }
+  .person { display: grid; grid-template-columns: 56px 1fr; gap: 12px; align-items: start; }
+  .face { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--line-2); }
+  .name { font-size: 16px; font-weight: 700; line-height: 1.2; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .role { font-size: 13px; font-weight: 600; color: var(--primary-text); margin-top: 1px; }
+  .does { font-size: 13px; line-height: 1.45; color: var(--fg-2); margin-top: 3px; }
+  .app { font: 600 11px/1 "Geist", sans-serif; letter-spacing: 0.02em; color: var(--fg-3); background: var(--sunken); border-radius: 999px; padding: 4px 8px; }
+  .agents { margin-top: 12px; padding: 12px; border-radius: 14px; background: var(--surface-2); border: 1px dashed var(--line-2); }
+  .agents-title { font-size: 13px; font-weight: 600; color: var(--fg-2); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .chip { font-size: 12px; font-weight: 600; color: var(--primary-text); background: var(--primary-soft); border-radius: 999px; padding: 4px 9px; }
+  .chip.yes { color: var(--amber-text); background: var(--amber-soft); }
+
+  /* the flow between the tiers */
+  .flow { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 14px 0; font-size: 13px; font-weight: 600; color: var(--fg-3); }
+  .flow svg { flex: none; }
+  .flow.split { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .flow.split > div { display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+  /* the distributors */
+  .dist { padding: 16px 16px 16px 18px; display: grid; grid-template-columns: 1fr 112px; gap: 10px; position: relative; overflow: hidden; }
+  .dist::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 5px; background: var(--j); }
+  .dist-art { width: 112px; height: 112px; object-fit: contain; align-self: center; }
+  .tag { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 650; color: var(--jt); }
+  .tag::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--j); }
+  .dist .org-name { margin-top: 4px; }
+  .batch { margin-top: 10px; display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); }
+  .batch img { width: 34px; height: 34px; object-fit: contain; flex: none; }
+  .batch b { font-size: 13px; }
+  .batch span { display: block; font-size: 12px; color: var(--fg-3); margin-top: 1px; }
+  .dist .person { margin-top: 12px; }
+  .others { text-align: center; font-size: 12.5px; color: var(--fg-3); margin-top: 10px; }
+
+  /* the exits */
+  .col h3 { font-size: 17px; font-weight: 750; display: flex; align-items: center; gap: 8px; margin: 0 2px 10px; }
+  .col h3::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--j); }
+  .col h3 small { font: 500 13px "Geist", sans-serif; color: var(--fg-3); }
+  .exits-list { display: grid; gap: 12px; }
+  .exit { padding: 14px 14px 14px 12px; display: grid; grid-template-columns: 84px 1fr; gap: 12px; align-items: center; position: relative; overflow: hidden; }
+  .exit::after { content: ""; position: absolute; inset: 0 0 0 auto; width: 5px; background: var(--c); }
+  .exit-art { width: 84px; height: 84px; object-fit: contain; }
+  .kind { font-size: 12px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--ct); }
+  .exit .person { grid-template-columns: 44px 1fr; gap: 10px; margin-top: 6px; }
+  .exit .face { width: 44px; height: 44px; }
+  .exit .name { font-size: 14.5px; }
+  .exit .does { font-size: 12.5px; }
+  .exit .plain { margin-top: 4px; }
+  .exit .plain .name { font-size: 14.5px; }
+
+  footer { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: center; font-size: 12.5px; color: var(--fg-3); }
+  footer .key { display: inline-flex; align-items: center; gap: 6px; }
+  footer .dot { width: 9px; height: 9px; border-radius: 50%; }
+  footer .sq { width: 14px; height: 8px; border-radius: 3px; }
+  /* text in a channel colour takes its darker ink, so it meets 4.5:1 on white; the bars and dots keep the colour */
+  .j1 { --j: var(--kirana); --jt: #12704a; }
+  .j2 { --j: var(--destroyed); --jt: #b63c0b; }
+</style>
+</head>
+<body>
+<main class="poster">
+  <header>
+    <div class="eyebrow">The demo's story · everyone here is fictional</div>
+    <h1>Munchly Foods' supply chain, and who's who</h1>
+    <p class="lede">Munchly makes snacks and drinks in Pune and sells them through distributors to the kiranas, India's
+      corner shops. Two batches won't sell before their best-before date. Smart-Clearance's agents plan where each one
+      goes, and Munchly's supply chain operator says yes.</p>
+  </header>
+
+  <section class="row">
+    <article class="card org">
+      <div class="org-head">
+        <div class="mark munchly" aria-hidden="true">m</div>
+        <div>
+          <div class="org-name">Munchly Foods</div>
+          <div class="org-sub">The brand, in Pune · the client</div>
+        </div>
+        <div class="org-art">
+          <img src="../../../design3/system/img/carton-hero.webp" alt="">
+          <img src="../../../design3/system/img/pack-chips.webp" alt="">
+          <img src="../../../design3/system/img/pack-mango.webp" alt="">
+        </div>
+      </div>
+      <div class="people">
+        <div class="person">
+          <img class="face" src="../../../design3/system/img/people/p-priya.webp" alt="">
+          <div>
+            <div class="name">Priya Deshmukh <span class="app">Workspace</span></div>
+            <div class="role">Supply chain operator</div>
+            <div class="does">Gives the one yes on each plan and the second yes on a destruction, reviews the papers,
+              reads the ledger.</div>
+          </div>
+        </div>
+        <div class="person">
+          <img class="face" src="../../../design3/system/img/people/p-arjun.webp" alt="">
+          <div>
+            <div class="name">Arjun Nair <span class="app">Workspace</span></div>
+            <div class="role">Workspace admin</div>
+            <div class="does">Looks after Munchly's workspace: its people and the agents' guardrails.</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card org">
+      <div class="org-head">
+        <div class="mark platform"><img src="../../../design3/system/img/icon.svg" alt=""></div>
+        <div>
+          <div class="org-name">Smart-Clearance</div>
+          <div class="org-sub">The platform · one workspace for each client</div>
+        </div>
+      </div>
+      <div class="people">
+        <div class="person">
+          <img class="face" src="../../../design3/system/img/people/p-neha.webp" alt="">
+          <div>
+            <div class="name">Neha Kulkarni <span class="app">Console</span></div>
+            <div class="role">Staff · Super admin</div>
+            <div class="does">Sets each client up. In the demo she resets the journey and fires the agents' timers.</div>
+          </div>
+        </div>
+      </div>
+      <div class="agents">
+        <div class="agents-title">The agents, on Gemini, act for Munchly inside its guardrails</div>
+        <div class="chips">
+          <span class="chip">Data</span><span class="chip">Watcher</span><span class="chip">Vision</span>
+          <span class="chip">Valuer</span><span class="chip">Router</span><span class="chip yes">Priya's yes</span>
+          <span class="chip">Lister</span><span class="chip">Outreach</span><span class="chip">Negotiator</span>
+          <span class="chip">Paperwork</span><span class="chip">Impact</span>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <div class="flow">
+    <svg width="14" height="22" viewBox="0 0 14 22" aria-hidden="true"><path d="M7 0v19M1 13l6 7 6-7" fill="none" stroke="#5f6e67" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Munchly ships its stock to four distributors, who hold it in their godowns
+    <svg width="14" height="22" viewBox="0 0 14 22" aria-hidden="true"><path d="M7 0v19M1 13l6 7 6-7" fill="none" stroke="#5f6e67" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+
+  <section class="row">
+    <article class="card dist j1">
+      <div>
+        <span class="tag">Journey 1 · the happy path</span>
+        <div class="org-name">Lakshmi Agencies</div>
+        <div class="org-sub">Distributor · Begum Bazaar godown, Hyderabad</div>
+        <div class="batch">
+          <img src="../../../design3/system/img/pack-mango.webp" alt="">
+          <div><b>Mango Drink 200 ml · MF-2410-118</b><span>2,000 packs · 22 days left</span></div>
+        </div>
+        <div class="person">
+          <img class="face" src="../../../design3/system/img/people/p-lakshmi.webp" alt="">
+          <div>
+            <div class="name">Its owner <span class="app">Workspace</span></div>
+            <div class="does">Signs in as Lakshmi Agencies. Sends the label photo, records the staff sale on its UPI
+              receipt, runs the van round.</div>
+          </div>
+        </div>
+      </div>
+      <img class="dist-art" src="../../../design3/system/img/godown-plain.webp" alt="">
+    </article>
+
+    <article class="card dist j2">
+      <div>
+        <span class="tag">Journey 2 · the sad path</span>
+        <div class="org-name">Rakesh Traders</div>
+        <div class="org-sub">Distributor · Kalamna Market godown, Nagpur</div>
+        <div class="batch">
+          <img src="../../../design3/system/img/pack-chips.webp" alt="">
+          <div><b>Masala Chips 150 g · MF-2409-117</b><span>1,840 packs · 47 days left</span></div>
+        </div>
+        <div class="person">
+          <img class="face" src="../../../design3/system/img/people/p-rakesh.webp" alt="">
+          <div>
+            <div class="name">Rakesh bhai <span class="app">Workspace</span></div>
+            <div class="does">Sends the label photo, loads the buyer's truck, issues the invoice from Tally, sends the
+              destruction's evidence.</div>
+          </div>
+        </div>
+      </div>
+      <img class="dist-art" src="../../../design3/system/img/godown.webp" alt="">
+    </article>
+  </section>
+  <p class="others">Patil Distributors (Pune) and Gupta &amp; Sons (Indore) hold more of Munchly's batches. The Watcher
+    reads every distributor's stock each morning.</p>
+
+  <div class="flow split">
+    <div><svg width="14" height="22" viewBox="0 0 14 22" aria-hidden="true"><path d="M7 0v19M1 13l6 7 6-7" fill="none" stroke="#178a58" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Where the Mango Drink goes, on Priya's yes</div>
+    <div><svg width="14" height="22" viewBox="0 0 14 22" aria-hidden="true"><path d="M7 0v19M1 13l6 7 6-7" fill="none" stroke="#c2410c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Where the Masala Chips go, on Priya's yes</div>
+  </div>
+
+  <section class="row">
+    <div class="col j1">
+      <div class="exits-list">
+        <article class="card exit" style="--c: var(--kirana); --ct: #12704a">
+          <img class="exit-art" src="../../../design3/system/img/kirana-plain.webp" alt="">
+          <div>
+            <div class="kind">Kiranas · 58 shops in Hyderabad</div>
+            <div class="person">
+              <img class="face" src="../../../design3/system/img/people/p-lakshmi-ganapathi.webp" alt="">
+              <div>
+                <div class="name">Sri Lakshmi Ganapathi Kirana</div>
+                <div class="does">Orders from the Hindi scheme on the phone, as does Al-Noor Provision Store.</div>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="card exit" style="--c: var(--staff); --ct: #8a5a00">
+          <img class="exit-art" src="../../../design3/system/img/pack-mango.webp" alt="">
+          <div>
+            <div class="kind">Staff sale · at the godown</div>
+            <div class="plain">
+              <div class="name">Lakshmi Agencies' own staff</div>
+              <div class="does">Buy 150 packs at ₹8, paying by UPI. One consolidated receipt lists every payment, and
+                Vision reads it.</div>
+            </div>
+          </div>
+        </article>
+        <article class="card exit" style="--c: var(--foodbank); --ct: #93468b">
+          <img class="exit-art" src="../../../design3/system/img/donation-crate.webp" alt="">
+          <div>
+            <div class="kind">Food bank · Feeding India</div>
+            <div class="person">
+              <img class="face" src="../../../design3/system/img/people/p-meera.webp" alt="">
+              <div>
+                <div class="name">Meera, city lead</div>
+                <div class="does">Collects 58 packs for a hunger spot, and the app issues her donation receipt.</div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div class="col j2">
+      <div class="exits-list">
+        <article class="card exit" style="--c: var(--kirana); --ct: #12704a">
+          <img class="exit-art" src="../../../design3/system/img/kirana.webp" alt="">
+          <div>
+            <div class="kind">Kiranas · 38 shops round Nagpur</div>
+            <div class="person">
+              <img class="face" src="../../../design3/system/img/people/p-ganesh.webp" alt="">
+              <div>
+                <div class="name">Ganesh ji, Shree Ganesh Kirana</div>
+                <div class="does">Orders 24 packets, as does Jai Durga Stores. Om Sai Provision says not this time.</div>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="card exit" style="--c: var(--expiresoon); --ct: #5b45b5">
+          <img class="exit-art" src="../../../design3/system/img/marketplace-bag.webp" alt="">
+          <div>
+            <div class="kind">ExpireSoon · the marketplace</div>
+            <div class="person">
+              <img class="face" src="../../../design3/system/img/people/p-agrawal.webp" alt="">
+              <div>
+                <div class="name">Agrawal ji, Agrawal Wholesale</div>
+                <div class="does">A buyer in Raipur. Bids on the 772-pack lot; the Negotiator agent counters.</div>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="card exit" style="--c: var(--destroyed); --ct: #b63c0b">
+          <img class="exit-art" src="../../../design3/system/img/bin-plain.webp" alt="">
+          <div>
+            <div class="kind">Destroyed · Orange City Enviro Services</div>
+            <div class="plain">
+              <div class="name">An authorised waste agency</div>
+              <div class="does">Destroys the 540 packets nobody bought at a landfill. Its officer, two witnesses and
+                Rakesh sign the certificate, and Priya gives the second yes.</div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span class="key"><span class="dot" style="background: var(--kirana)"></span>Journey 1 · the happy path</span>
+    <span class="key"><span class="dot" style="background: var(--destroyed)"></span>Journey 2 · the sad path</span>
+    <span class="key"><span class="sq" style="background: var(--kirana)"></span>Kiranas</span>
+    <span class="key"><span class="sq" style="background: var(--staff)"></span>Staff sale</span>
+    <span class="key"><span class="sq" style="background: var(--foodbank)"></span>Food bank</span>
+    <span class="key"><span class="sq" style="background: var(--expiresoon)"></span>ExpireSoon</span>
+    <span class="key"><span class="sq" style="background: var(--destroyed)"></span>Destroyed</span>
+  </footer>
+</main>
+</body>
+</html>
