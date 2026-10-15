@@ -29,7 +29,7 @@ landfill, and the signatures. Download it, or open each file on GitHub as the st
 | File | Journey and step | Who uses it |
 | --- | --- | --- |
 | [`1-mango-drink-happy-path/1-label-photo/MF-2410-118-label-photo.webp`](demoDataSet/1-mango-drink-happy-path/1-label-photo/MF-2410-118-label-photo.webp) | Journey 1, step 1: the label photo | Lakshmi Agencies (distributor) |
-| [`1-mango-drink-happy-path/2-staff-sale-receipt/LA-SR-26-27-0002-staff-sale-receipt.webp`](demoDataSet/1-mango-drink-happy-path/2-staff-sale-receipt/LA-SR-26-27-0002-staff-sale-receipt.webp) | Journey 1, step 4: the staff sale | Lakshmi Agencies |
+| [`1-mango-drink-happy-path/2-staff-sale-receipt/LA-SR-26-27-0002-staff-sale-receipt.webp`](demoDataSet/1-mango-drink-happy-path/2-staff-sale-receipt/LA-SR-26-27-0002-staff-sale-receipt.webp) | Journey 1, step 5: the staff sale | Lakshmi Agencies |
 | [`1-mango-drink-happy-path/4-if-packs-are-left/`](demoDataSet/1-mango-drink-happy-path/4-if-packs-are-left/) | Journey 1, step 9, only if packets are left at the godown | Lakshmi Agencies |
 | [`2-masala-chips-sad-path/1-label-photo/MF-2409-117-label-photo.webp`](demoDataSet/2-masala-chips-sad-path/1-label-photo/MF-2409-117-label-photo.webp) | Journey 2, step 1: the label photo (`try-a-bad-photo/` first, if you like) | Rakesh Traders (distributor) |
 | [`2-masala-chips-sad-path/2-destruction-evidence/`](demoDataSet/2-masala-chips-sad-path/2-destruction-evidence/) | Journey 2, step 8: the photos before and after | Rakesh Traders |
@@ -221,11 +221,23 @@ Each order lands on Priya's Execution within seconds. Each has its own GST tax i
 
 <img src="docs/demo/mango-08-kirana-offer.webp" width="190" alt="The kirana's offer in Hindi: ₹14.40 a packet, 24 packets, the order button"> <img src="docs/demo/mango-09-kirana-ordered.webp" width="190" alt="Order placed: 24 packets, ₹302 on delivery, a ₹178 margin"> <img src="docs/demo/mango-10-order-live.webp" width="460" alt="Priya's Execution: 1 of 58 kiranas ordered, 24 packets, as it lands">
 
-The scheme went to 58 shops, and no shop may order more than 4 times its own 14-day sales. So it fills only when most
-of them order. In the recording, the other 50 ordered through the API as themselves, which you can't do from the app.
-On your own, carry on: the staff sale and the donation don't wait for the scheme.
+The scheme went to 58 shops, and no shop may order more than 4 times its own 14-day sales, so it fills only when most
+of them order. In step 4 the console orders for the rest.
 
-**4. Lakshmi Agencies records the staff sale.** *Private window.*
+**4. Neha fills the scheme for the other shops.** *Console.*
+
+1. In **Munchly Foods**, open **Agents**. At the top, the **Stand in for the partners** card reads "Lakshmi Agencies'
+   kiranas · MF-2410-118": 2 of 58 have ordered, and 50 more order as the story has them, 1,320 packets.
+2. Press **Fill the scheme**, then confirm with **Fill now**.
+
+Each of the 50 shops orders its share as the story has it, as itself, with its own GST tax invoice from Lakshmi
+Agencies. The scheme fills and closes at 52 shops and 1,372 packets, and Priya's Execution counts the orders in. The
+card is for demos only. It shows on a demo workspace while a scheme is open, and each order it places writes its audit
+line in Neha's name, naming the shop.
+
+<img src="docs/demo/mango-fill-1-card.webp" width="190" alt="The console's Agents tab: Stand in for the partners, Lakshmi Agencies' kiranas, 2 of 58 have ordered, Fill the scheme"> <img src="docs/demo/mango-fill-2-ask.webp" width="190" alt="Fill MF-2410-118's scheme now? 50 of the 56 shops that haven't answered order as the story has them, with Fill now"> <img src="docs/demo/mango-fill-3-filled.webp" width="190" alt="The card filled: 50 shops ordered 1,320 packets"> <img src="docs/demo/mango-fill-4-scheme-full.webp" width="460" alt="Priya's Execution: the kiranas' scheme filled, 52 of 58 shops, 1,372 packets">
+
+**5. Lakshmi Agencies records the staff sale.** *Private window.*
 
 1. On **Today**, press **Record what sold**.
 2. The staff sale card on **Deliveries** shows the UPI code staff pay to, and the count: 150 packs.
@@ -238,7 +250,7 @@ sale**. Priya sees the receipt on Execution, every UPI reference with it.
 
 <img src="docs/demo/mango-11-staff-sale.webp" width="260" alt="The staff sale: the UPI code, 150 of 150 packs, Consolidated receipt with Take a photo and Upload"> <img src="docs/demo/mango-12-receipt-matched.webp" width="260" alt="Vision read LA/SR/26-27/0002: 18 UPI payments, ₹1,200, 150 packs × ₹8 matches your count"> <img src="docs/demo/mango-13-receipt-on-execution.webp" width="460" alt="Priya's Execution: the staff sale recorded, with the receipt's 18 UPI references">
 
-**5. Feeding India collects the donation.** *Phone, as Meera.*
+**6. Feeding India collects the donation.** *Phone, as Meera.*
 
 1. **Pickups** shows the request: 58 packs of Mango Drink, with the FSSAI checklist.
 2. Press **Confirm** with its day and time, then **Mark collected**.
@@ -247,14 +259,7 @@ The app issues Feeding India's donation receipt, FI/HYD/26-27/0417 (58 packs, 58
 
 <img src="docs/demo/mango-14-pickup.webp" width="190" alt="Meera's Pickups: 58 packs of Mango Drink, pickup Saturday 10 am"> <img src="docs/demo/mango-15-donation-receipt.webp" width="190" alt="Pickup collected: donation receipt FI/HYD/26-27/0417, 58 packs, 58 meals">
 
-**6. Neha closes the offer window.** *Console.* Do this once you've seen your orders land.
-
-1. Under **Agents**, find **Outreach**. On its row **Offer window closes · MF-2410-118**, press **Close now**.
-2. Confirm with **Close now**.
-
-Every line is now done, so the Paperwork agent drafts the batch's papers. In the recording the scheme filled before
-its window closed, so nothing was left. With only your orders, the packets no shop took stay at Lakshmi Agencies'
-godown (step 9).
+Every line is now done, so the Paperwork agent drafts the batch's papers.
 
 **7. Lakshmi Agencies runs the van round.** *Private window.* On **Today**, press **Start the round**. The van delivers
 every shop that ordered.
@@ -278,8 +283,9 @@ Press **Mark reviewed**.
 **9. Neha calls expiry day.** *Console.* Under **Agents**, find **Impact**. On its row **Expiry day · report ·
 MF-2410-118**, press **Report now**, then confirm with **Report now**. Impact posts the ledger, and the batch clears.
 
-If packets are left at the godown, expiry day first asks Lakshmi Agencies to destroy them against evidence. That's
-journey 2's steps 8 and 9, with Deccan Green Waste Management as the agency.
+If you closed the scheme short instead of filling it (Outreach's **Close now**), the packets no shop took stay at
+Lakshmi Agencies' godown. Expiry day then asks Lakshmi Agencies to destroy them against evidence. That's journey 2's
+steps 8 and 9, with Deccan Green Waste Management as the agency.
 
 > **Upload, only if packets are left:** the pair in `demoDataSet/1-mango-drink-happy-path/4-if-packs-are-left/`. It is
 > made for 248 packets left, so for any other count Vision flags the count and the slate, and Priya still decides.
@@ -361,7 +367,8 @@ Priya's Execution shows the lot won.
 The 540 packets no shop ordered stay at Kalamna Market godown.
 
 Close the window after Agrawal accepts. While the lot is still open, closing the window moves the unordered packets
-onto it. Then nothing is left to destroy.
+onto it. Then nothing is left to destroy. Leave the **Stand in for the partners** card alone on this journey: filling
+the scheme would leave nothing at the godown either.
 
 <img src="docs/demo/chips-11-close-window.webp" width="190" alt="Close the offer window now? with Close now"> <img src="docs/demo/chips-12-left-at-godown.webp" width="460" alt="Execution: the window ended with 2 of 38 shops ordering 48, the 540 left at Rakesh Traders' godown">
 
@@ -499,7 +506,7 @@ them. For each agent you can set:
 - its settings, such as the Watcher's gates or the Negotiator's floor.
 
 The approval is always on. On a live client, the same tab holds the journey's controls you used above: **Run now**,
-**Close now** and **Report now**.
+**Close now** and **Report now**, and on a demo workspace **Fill the scheme**.
 
 <img src="docs/demo/console-5-agents.webp" width="560" alt="A client's agents: each with Suggest, Ask or Act, the Watcher's settings saved">
 
@@ -528,8 +535,9 @@ The approval is always on. On a live client, the same tab holds the journey's co
 
 - **One workspace for everyone.** Production holds one Munchly workspace. If someone else is mid-journey, finish theirs
   or reset it, and the reset restarts it for everyone.
-- **The kiranas order by hand.** Each shop is capped, so the Mango Drink's scheme fills only when most of its 58 shops
-  order. Alone, you'll order as a few shops and close the window (journey 1, steps 3 and 6).
+- **The console stands in for the other kiranas.** Each shop is capped, so the Mango Drink's scheme fills only when
+  most of its 58 shops order. Alone, you order as two shops and the console's **Fill the scheme** orders for the rest,
+  each as itself with its own invoice (journey 1, steps 3 and 4).
 - **Your figures may differ.** Every figure is worked out live: the plan from the days left, the money from what each
   exit took. Run soon after a reset on Rehearsal, the journeys match the recordings.
 - **What is mocked:** ExpireSoon, the food banks' systems, Tally and the distributors' stock exports. The pushes, the

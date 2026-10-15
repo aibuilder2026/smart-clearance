@@ -89,3 +89,14 @@ clients too (`rbac.json`), so it may fill a scheme as it may fire a timer: the r
 - **backend-api:** `domain/scheme.py` (the rule, held to platform.js by `rules.json`); `steps.fill_scheme_now` over the
   order path (`_place`, which `order` now uses too); `controls.stand_ins` and `stand_in`; `POST
   …/journey/stand-ins/{id}`. A scheme that has closed takes its offer window off the schedule.
+
+## Checked
+
+- **The browser:** design3 and the console's mock build, played through at 1440 and on a phone: the card, its question,
+  Fill now, the filled row and its toast, the audit line, the offer window's timer gone.
+- **Live, on this machine's stack:** Munchly Mango E2E on three screens, 15 Oct
+  (`frontend/workspace/tests/journey/runs/2026-10-15-mango-local/`). Two kiranas ordered on the phone and Neha filled the
+  rest from the console. That made 52 shops and 1,372 packets, each order with its invoice, and the run passed end to end
+  with every figure the story's.
+- **DEMO.md:** journey 1's new step 4 uses four screenshots cropped from that run's recording
+  (`docs/demo/mango-fill-*.webp`).

@@ -1,0 +1,80 @@
+[
+	{
+		"n": 1,
+		"title": "Everyone signs in",
+		"start": 0.002,
+		"end": 78.5
+	},
+	{
+		"n": 2,
+		"title": "A fresh journey",
+		"start": 78.5,
+		"end": 120.377
+	},
+	{
+		"n": 3,
+		"title": "The Watcher finds the risk",
+		"start": 120.377,
+		"end": 148.07
+	},
+	{
+		"n": 4,
+		"title": "Vision checks the label",
+		"start": 148.07,
+		"end": 183.215
+	},
+	{
+		"n": 5,
+		"title": "The plan, and one yes",
+		"start": 183.215,
+		"end": 247.033
+	},
+	{
+		"n": 6,
+		"title": "The kiranas order, live",
+		"start": 247.033,
+		"end": 362.105
+	},
+	{
+		"n": 7,
+		"title": "The staff sale, on UPI",
+		"start": 362.105,
+		"end": 555.158
+	},
+	{
+		"n": 8,
+		"title": "The donation",
+		"start": 555.158,
+		"end": 601.65
+	},
+	{
+		"n": 9,
+		"title": "The papers",
+		"start": 601.65,
+		"end": 692.886
+	},
+	{
+		"n": 10,
+		"title": "Impact posts the ledger",
+		"start": 692.886,
+		"end": 723.234
+	},
+	{
+		"n": 11,
+		"title": "Finance and ESG",
+		"start": 723.234,
+		"end": 769.248
+	},
+	{
+		"n": 12,
+		"title": "Lakshmi Agencies' side",
+		"start": 769.248,
+		"end": 825.903
+	},
+	{
+		"n": 13,
+		"title": "The swing, worked out",
+		"start": 825.903,
+		"end": 880.818
+	}
+]

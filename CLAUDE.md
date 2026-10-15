@@ -2805,4 +2805,39 @@
     Text in a channel colour takes its darker ink, 5.8:1 or better on white (the impeccable hook flagged the green, orange and green tag at first). The labels are in sentence case with a small colour chip, and the cards carry no side stripe (the hook's all-caps and side-tab findings). Its source is `docs/demo/source/cast-and-supply-chain.html`, rendered in Chrome at 1000 px and a device scale factor of 2.
   - **DEMO.md:** a new section, "Meet the cast", after the data set: the picture, a who's-who table with each person's portrait (from `design3/system/img/people/`, in place), organisation, role and journey, and the agents in order.
   - **Checks:** every link, anchor and image in DEMO.md resolves, and all 67 images in `docs/demo/` are used. AGENTS.md's layout names the picture.
+- **SC-215** (In Review, branch `SC-215-fill-scheme`): the console stands in for a demo workspace's kiranas, so a judge can run the Mango Drink's happy path alone.
+  - **The request:** a judge can't fill the Mango's scheme: each kirana orders only a few dozen packets, and the scheme goes to 58 shops; in the recording, 50 ordered through the API. "Can we take this up and update the DEMO.md with proper screenshots, make sure you locally run the playwright automation suite (just for Mango suite) end to end locally for this use case and then raise PR."
+  - **Design first:** three options on one board in platform v3, `SC-215 design review.html`, each built on the console itself:
+    - A, beside Close now, on Outreach (recommended);
+    - B, one choice when the scheme ends;
+    - C, stand in for the partners.
+
+    The maintainer picked **C**, with "Top up until full", and "Leave them alone" for shops that declined. Designs, stills and the decision are in `design3/designs/SC-215/`.
+  - **The card:** "Stand in for the partners", above the agents on a live client's Agents tab, while something waits on a partner. It reads "For demos: what the story's people would do, when no one is there to do it", and holds a row for the distributor's kiranas:
+    - who has ordered, and what the fill places ("2 of 58 have ordered · 50 more order as the story has them, 1,320 packets");
+    - **Fill the scheme**, which asks first, as a timer does ("Fill MF-2410-118's scheme now?", Fill now);
+    - once filled, "Filled Fri 2 Oct, 09:38: 50 shops ordered 1,320 packets".
+  - **The rule** (platform.js `fillScheme`, platform.ts, `domain/scheme.py`, held together by `rules.json`): every shop that hasn't answered orders its story share (`journey.json`'s kiranas), within its cap and the packets left. Whatever is still left goes to the same shops in order, each up to its cap, so the scheme fills. A shop that ordered or said Not this time is left alone.
+  - **backend-api:**
+    - `steps.fill_scheme_now` places each order on the order path (`_place`, which `order` now uses too), each with its tax invoice and its PDF from Paperwork;
+    - each order's audit line is the staff member's and names the shop ("ordered 24 packets for …"), so the batch's Record counts all 52; the fill's own line is "Filled MF-2410-118's kirana scheme for Munchly Foods: 50 shops ordered 1,320 packets";
+    - only on a synthetic workspace, and for `clients.configure`, as the timers (Support too: the board's "not Support" was wrong);
+    - `POST …/journey/stand-ins/{id}`; a scheme that has closed takes its offer window off the schedule.
+  - **design3's still journey** is the approved moment: its timers moved to MF-2410-118, and its scheme holds the judge's two orders (platform `VERSION` 8, the console mock's too).
+  - **The port:** the contract's `JourneyStandIn`, `Journey.standIns` and `ConsoleApi.standIn`; the mock and its route; core's `StandIns.svelte` and the Agents tab; `console.css` verbatim.
+  - **Munchly Mango E2E on three screens** (`test:journey:mango-stage`) has the two kiranas order on the phone, then Neha fill the rest from the console.
+    - **Its run of 15 Oct on this machine's stack** (`runs/2026-10-15-mango-local/REPORT.md`; the 14 min 41 s recording stays local): passed end to end, 72 steps in 14 min 50 s, from a reset, with no finding.
+    - **The figures:** plan and actual ₹16,917.10; 52 shops, 1,372 packets, invoices LA/26-27/0972 to 1023 (Bilal Stores and Saraswathi Kirana at their story's 28 and 4); 150 at the staff sale; 58 to Feeding India; nothing left at the godown; a ₹22,194.30 swing.
+    - The day is back at 24 hours.
+  - **DEMO.md:**
+    - journey 1's new step 4, Neha fills the scheme, with four screenshots from the run (`docs/demo/mango-fill-*.webp`), in place of closing the window;
+    - journey 2's note to leave the card alone;
+    - the console's agents and the known limits name it; the data set's step numbers follow.
+  - **Checks:**
+    - backend-api 583 passed, 1 skipped (`test_stand_in.py`, 3 new, and 6 rule fixtures);
+    - the frontend gate passes: api 86 (3 new), core 408, admin 22, console 2, demo 9, workspace 115;
+    - design3 and the console's mock build were played through in the browser at 1440 and on a phone;
+    - the a11y, e2e and parity suites were not run (SC-55).
+  - **Found, not fixed:** the batch head reads "Scheme open · 52 of 52 kiranas ordered" after the scheme closed, as SC-184 noted ("2 of 2"); offered as a follow-up.
+  - **Hosting:** design3's `dist/` is rebuilt; the hosted pages stay on their pinned commits.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

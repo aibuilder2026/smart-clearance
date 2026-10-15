@@ -305,7 +305,8 @@ E2E_KEEP='../../playwright-automation-videos/munchly-mango-e2e-prod-{stamp}.mp4'
 ```
 
 Its run of 12 Oct on production is in `runs/2026-10-12-prod-mango/`, and its run of 13 Oct, told with the green
-cards (SC-201), in `runs/2026-10-13-prod-mango/`.
+cards (SC-201), in `runs/2026-10-13-prod-mango/`. Its run of 15 Oct on this machine's stack, with the console filling
+the scheme (SC-215), is in `runs/2026-10-15-mango-local/`.
 
 ## Admin and console E2E
 
