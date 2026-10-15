@@ -1,0 +1,119 @@
+1
+00:00:00,900 --> 00:00:06,293
+Every day, India's food brands write off stock that sells too slowly.
+
+2
+00:00:07,143 --> 00:00:13,454
+Too close to its date for quick commerce, it's destroyed, and its GST credit reversed.
+
+3
+00:00:14,904 --> 00:00:18,278
+Smart-Clearance turns that write-off into recovery.
+
+4
+00:00:18,328 --> 00:00:25,684
+Each brand gets its own workspace, where AI agents find the best exit for every pack at risk.
+
+5
+00:00:27,334 --> 00:00:29,937
+Under the hood, it's all Google Cloud.
+
+6
+00:00:29,987 --> 00:00:38,032
+Four apps on Firebase talk to one API on Cloud Run, with Cloud SQL as the system of record.
+
+7
+00:00:38,182 --> 00:00:44,561
+Every step publishes an event to Pub/Sub, and Cloud Scheduler keeps the journey's clock.
+
+8
+00:00:44,811 --> 00:00:54,112
+Ten agents, built with Google's Agent Development Kit, run on Cloud Run, reading sales from BigQuery and photos from Cloud Storage.
+
+9
+00:00:54,362 --> 00:01:05,043
+They think with Gemini on Vertex AI: Pro prices, splits and negotiates; Flash reads labels and receipts, and writes the offers and papers.
+
+10
+00:01:05,393 --> 00:01:16,562
+The models never touch the money: the API works out every figure, checks every answer against the brand's rules, and waits for a person's yes.
+
+11
+00:01:17,612 --> 00:01:26,377
+In the console, Neha sets up a brand in minutes: its stock export, its people, its gates, its agents.
+
+12
+00:01:26,427 --> 00:01:33,692
+The workspace installs as an app on any phone, tablet or laptop, so alerts reach everyone live.
+
+13
+00:01:34,642 --> 00:01:43,548
+From the sell-through in BigQuery, the Watcher alerts Priya: Munchly's Mango Drink won't sell in its twenty-two days.
+
+14
+00:01:43,598 --> 00:01:51,007
+Lakshmi Agencies photographs the label, and Vision, on Gemini Flash, matches it to the stock export.
+
+15
+00:01:51,057 --> 00:02:02,815
+From the batch's sales history and Munchly's own rules, the Valuer prices each exit and the Router splits it. Priya approves with one tap.
+
+16
+00:02:03,165 --> 00:02:11,497
+Outreach offers the packs to fifty-eight kiranas in their own language; each order lands on Priya's screen, live.
+
+17
+00:02:11,547 --> 00:02:18,595
+Fifty-two shops take thirteen hundred and seventy-two packets, each with its own GST invoice.
+
+18
+00:02:19,145 --> 00:02:26,521
+The godown's staff buy a hundred and fifty packs by UPI, and Vision checks the receipt against the count.
+
+19
+00:02:26,571 --> 00:02:31,783
+Feeding India collects the last fifty-eight packs, and issues a donation receipt.
+
+20
+00:02:31,733 --> 00:02:37,774
+Paperwork files every paper in Cloud Storage, and Lakshmi Agencies ends whole.
+
+21
+00:02:39,424 --> 00:02:47,554
+But not every batch sells. Munchly's Masala Chips go to Rakesh Traders' kiranas in Nagpur, and just two order.
+
+22
+00:02:47,604 --> 00:02:57,439
+On ExpireSoon, an imaginary near-expiry marketplace, the Negotiator counters a bid, and seven hundred and seventy-two packs sell.
+
+23
+00:02:57,489 --> 00:03:01,566
+Five hundred and forty packets are left when the window closes.
+
+24
+00:03:01,716 --> 00:03:07,941
+On expiry day, Rakesh must destroy them through an authorised agency, and prove it.
+
+25
+00:03:07,991 --> 00:03:16,246
+At the landfill he photographs it, and the officer, two witnesses and Rakesh sign the certificate.
+
+26
+00:03:16,896 --> 00:03:23,665
+Vision checks the photos; only on Priya's second yes are the certificate and credit note issued.
+
+27
+00:03:24,315 --> 00:03:34,107
+Every step is on the record: an append-only audit trail in Cloud SQL, and requests traced end to end in Cloud Trace, with OpenTelemetry.
+
+28
+00:03:34,257 --> 00:03:41,437
+Even here, Munchly recovers eleven thousand seven hundred rupees, and Rakesh ends whole.
+
+29
+00:03:41,687 --> 00:03:47,549
+Impact posts every batch to its ledger in BigQuery, ready for BRSR.
+
+30
+00:03:47,899 --> 00:03:52,391
+Try the guided demo at smartclearance-demo dot web dot app.

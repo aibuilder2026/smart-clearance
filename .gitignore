@@ -327,3 +327,35 @@ design3/designs/SC-211/src/tts/vo3/maya1w-warm/*
 !design3/designs/SC-211/src/tts/vo3/maya1w-warm/*.json
 # the talking scenes made here ship beside the film (media/talk/), past the root's *.mp4
 !design3/designs/SC-211/media/talk/*.mp4
+# SC-218: cut 8's pipeline ships as cut 7's did, with its two scene pages (arch8/, the architecture and the models;
+# pwa8/, the landing film's install scene) and the cues they were captured on, and the clicks found in the recordings;
+# keyframe PNGs, clips, captures, voice takes, the venvs and the build stay local
+!design3/designs/SC-218/src/
+design3/designs/SC-218/src/*
+!design3/designs/SC-218/src/*.py
+!design3/designs/SC-218/src/*.sh
+!design3/designs/SC-218/src/*.mjs
+!design3/designs/SC-218/src/*.js
+!design3/designs/SC-218/src/lines.json
+!design3/designs/SC-218/src/pushes.json
+!design3/designs/SC-218/src/kiranas.json
+!design3/designs/SC-218/src/prompts/
+!design3/designs/SC-218/src/arch8/
+!design3/designs/SC-218/src/pwa8/
+!design3/designs/SC-218/src/build/
+design3/designs/SC-218/src/build/*
+!design3/designs/SC-218/src/build/screens.json
+!design3/designs/SC-218/src/build/arch8-cues.json
+!design3/designs/SC-218/src/build/pwa8-cues.json
+!design3/designs/SC-218/src/build/clicks8.json
+!design3/designs/SC-218/src/tts/
+design3/designs/SC-218/src/tts/*
+!design3/designs/SC-218/src/tts/*.py
+!design3/designs/SC-218/src/tts/*.sh
+!design3/designs/SC-218/src/tts/sample*.txt
+!design3/designs/SC-218/src/tts/voice.txt
+!design3/designs/SC-218/src/tts/vo3/
+design3/designs/SC-218/src/tts/vo3/*
+!design3/designs/SC-218/src/tts/vo3/maya1w-warm/
+design3/designs/SC-218/src/tts/vo3/maya1w-warm/*
+!design3/designs/SC-218/src/tts/vo3/maya1w-warm/*.json
