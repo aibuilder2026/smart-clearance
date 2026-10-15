@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ENDED, chapterAt, clock, filmPlayer, loadYouTube, type YouTubeApi } from '#lib/landing/youtube.ts';
 
 // the demo film's theatre (SC-164): YouTube only after Watch, on its no-cookie host; its chapters from the film's own
-// timeline (design3/designs/SC-164/transcript.py)
+// timeline (SC-211's sales film, design3/designs/SC-211/src/transcript11.py, SC-216)
 const here = dirname(fileURLToPath(import.meta.url));
 const words = JSON.parse(readFileSync(join(here, '../../../../design3/site/assets/media/demo-film.json'), 'utf8')) as {
 	duration: number;
@@ -15,24 +15,27 @@ const words = JSON.parse(readFileSync(join(here, '../../../../design3/site/asset
 };
 
 describe("the film's words", () => {
-	it('are its ten chapters from 0:00, in order, each long enough to be a YouTube chapter, and its 52 narration lines', () => {
+	it('are its thirteen chapters from 0:00, in order, each long enough to be a YouTube chapter, and its 48 lines', () => {
 		const starts = words.chapters.map((c) => c.at);
-		expect(words.runtime).toBe('6:06');
-		expect(starts).toHaveLength(10);
+		expect(words.runtime).toBe('6:50');
+		expect(starts).toHaveLength(13);
 		expect(starts[0]).toBe(0);
 		starts.forEach((s, i) => expect((starts[i + 1] ?? words.duration) - s).toBeGreaterThanOrEqual(10));
-		expect(words.chapters.flatMap((c) => c.lines)).toHaveLength(52);
+		expect(words.chapters.flatMap((c) => c.lines)).toHaveLength(48);
 		expect(words.chapters.map((c) => `${clock(c.at)} ${c.title}`)).toEqual([
-			'0:00 Smart-Clearance',
-			'0:33 The platform',
-			'1:21 Connect and detect',
-			'1:51 Verify',
-			'2:12 Value, decide, approve',
-			'2:52 Five exits',
-			'3:46 The paperwork',
-			'4:24 When it does not go as planned',
-			'5:09 The ledger',
-			'5:42 The close'
+			'0:00 The waste',
+			'0:38 Smart-Clearance, as a service',
+			'1:01 Every team, on any device',
+			'1:39 Ten agents',
+			'2:21 Guardrails and one yes',
+			'3:04 Flagged, read and planned',
+			'3:41 The kiranas',
+			'4:05 The staff sale and the food bank',
+			'4:23 The marketplace',
+			'4:44 The hardest case',
+			'5:10 The paperwork and the money',
+			'5:42 The record and the impact',
+			'6:18 The close'
 		]);
 	});
 	it('mark the chapter a time falls in', () => {
@@ -40,12 +43,13 @@ describe("the film's words", () => {
 		expect(chapterAt(0, starts)).toBe(0);
 		expect(chapterAt(82, starts)).toBe(2);
 		expect(chapterAt(200, starts)).toBe(5);
-		expect(chapterAt(360, starts)).toBe(9);
+		expect(chapterAt(360, starts)).toBe(11);
+		expect(chapterAt(405, starts)).toBe(12);
 	});
-	it('name no client in the chapters the theatre shows before the words are opened', () => {
-		const titles = words.chapters.map((c) => c.title).join(' ');
-		for (const name of ['Munchly', 'Lakshmi', 'Priya', 'Rakesh', 'MF-24', 'Mango', 'Chips'])
-			expect(titles).not.toContain(name);
+	it('name no client, in the chapters the theatre shows or in any line of the film (SC-28)', () => {
+		const said = words.chapters.flatMap((c) => [c.title, ...c.lines.map((l) => l.text)]).join(' ');
+		for (const name of ['Munchly', 'Lakshmi', 'Priya', 'Rakesh', 'Agrawal', 'Meera', 'MF-24', 'Mango', 'Chips'])
+			expect(said).not.toContain(name);
 	});
 });
 

@@ -8,5 +8,6 @@
   "at_s": 0.0,
   "output": "film-poster.webp 1920x1080",
   "post_process": "the source clip's first frame (the office scene as it opens in the film at 5:40, before the chapter tag fades in), WebP q80 by Pillow",
-  "use": "the demo film's poster on the landing page: the brand and its distributor reading the quarter's dashboard, no lettering, no client named"
+  "use": "the demo film's poster on the landing page: the brand and its distributor reading the quarter's dashboard, no lettering, no client named",
+  "film_since": "SC-216: the poster of SC-211's sales film v2 (youtu.be/DT_4G2txLF4), which closes on this office scene at 6:33, so the image stays as it was"
 }

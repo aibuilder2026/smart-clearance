@@ -1,0 +1,20 @@
+Every day, good food leaves a warehouse in India and never reaches a single plate: not because it has spoiled, but because it is running out of time. Smart-Clearance finds each near-expiry batch a home before it is written off: kiranas offered it in their own language, a staff sale by UPI, a food bank, a near-expiry marketplace, and, where nothing else can, destruction against evidence and a second yes. Ten AI agents on Google's cloud and Gemini do the legwork inside the brand's own rules, every plan stops at a person, and every step is on the record.
+
+0:00 The waste
+0:38 Smart-Clearance, as a service
+1:01 Every team, on any device
+1:39 Ten agents
+2:21 Guardrails and one yes
+3:04 Flagged, read and planned
+3:41 The kiranas
+4:05 The staff sale and the food bank
+4:23 The marketplace
+4:44 The hardest case
+5:10 The paperwork and the money
+5:42 The record and the impact
+6:18 The close
+
+Every company, person and figure in this film is fictional, and its people and scenes are AI-generated.
+Google AI Hackathon 2026.
+Try the guided demo: https://smartclearance-demo.web.app
+https://smartclearance.web.app

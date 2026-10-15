@@ -46,16 +46,17 @@ export const FILM = {
 		{ x: 0.5, y: 0.5 }
 	] as Place[]
 };
-/** the demo film (SC-187 cut 3, SC-164): 6 min 6 s, two batches through five exits, the paperwork, the week that does
- *  not go to plan, and the ledger, played from YouTube (unlisted) in a theatre over the page. Its poster is the brand
- *  and its distributor at the quarter's dashboard, which names no client; the page names none (SC-28). Its chapters and captions (`words`) are read when the theatre first opens. Until its id is set
- *  (PUBLIC_DEMO_FILM), Watch opens the guided demo */
+/** the demo film (SC-211's sales film, SC-164, SC-216): 6 min 50 s, the waste, the product, the agents inside the
+ *  brand's rules and one yes, the journey through every exit, the paperwork, the record and the impact, played from
+ *  YouTube (unlisted) in a theatre over the page. Its poster is the office scene the film closes on, the brand and its
+ *  distributor at the dashboard; the film names no client either (SC-28). Its chapters and captions (`words`) are read
+ *  when the theatre first opens. Until its id is set (PUBLIC_DEMO_FILM), Watch opens the guided demo */
 export const DEMO_FILM = {
 	youtube: PUBLIC_DEMO_FILM ?? null,
-	runtime: '6:06',
-	label: 'Watch the 6-minute demo',
-	title: 'The 6-minute demo',
-	sub: 'From the first flag to the ledger',
+	runtime: '6:50',
+	label: 'Watch the 7-minute demo',
+	title: 'The 7-minute demo',
+	sub: 'The whole journey, end to end',
 	poster: url(stills, 'film-poster.webp'),
 	thumb: url(stills, 'film-thumb.webp'),
 	words: url(words, 'demo-film.json')

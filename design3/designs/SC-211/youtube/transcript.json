@@ -1,0 +1,304 @@
+{
+ "film": "SC-211 · the sales film v2",
+ "duration": 410.08,
+ "runtime": "6:50",
+ "opening": "Near-expiry stock, routed by AI agents. One yes from a person.",
+ "chapters": [
+  {
+   "id": "opening",
+   "n": 0,
+   "title": "The waste",
+   "at": 0.0,
+   "lines": [
+    {
+     "at": 0.9,
+     "text": "Every day, good food leaves a warehouse in India, and never reaches a single plate."
+    },
+    {
+     "at": 7.5,
+     "text": "Not because it has spoiled. Because it is running out of time."
+    },
+    {
+     "at": 11.9,
+     "text": "A distributor: “Sixteen hundred packs, and twenty-two days left. The app won't take them now.”"
+    },
+    {
+     "at": 18.5,
+     "text": "Too close to its date for quick commerce, too slow for the shelf. So it is written off, sent to a landfill, and its tax credit reversed."
+    },
+    {
+     "at": 28.3,
+     "text": "Week after week. Brand after brand."
+    },
+    {
+     "at": 32.5,
+     "text": "What if every one of those packs could still find a home?"
+    }
+   ]
+  },
+  {
+   "id": "ch-1",
+   "n": 1,
+   "title": "Smart-Clearance, as a service",
+   "at": 38.0,
+   "lines": [
+    {
+     "at": 38.3,
+     "text": "This is Smart-Clearance."
+    },
+    {
+     "at": 41.1,
+     "text": "Software, delivered as a service, that turns write-offs into recovery."
+    },
+    {
+     "at": 48.3,
+     "text": "Every brand gets its own secure workspace. From one console, a new brand is onboarded in minutes: its stock data, its distributors, its people and its own rules."
+    }
+   ]
+  },
+  {
+   "id": "ch-2",
+   "n": 2,
+   "title": "Every team, on any device",
+   "at": 61.6,
+   "lines": [
+    {
+     "at": 61.9,
+     "text": "Inside, every team sees its own part of the work: the supply chain, the distributors, the kiranas and the food banks."
+    },
+    {
+     "at": 72.3,
+     "text": "And it is a progressive web app: install it from the browser on any laptop, tablet or phone, with every alert arriving as a notification."
+    },
+    {
+     "at": 83.2,
+     "text": "And from the same console, the platform team watches every client, every batch and every agent, live."
+    },
+    {
+     "at": 91.7,
+     "text": "The platform team: “From here I see every client and every agent, live. If anything stalls, we know first.”"
+    }
+   ]
+  },
+  {
+   "id": "ch-3",
+   "n": 3,
+   "title": "Ten agents",
+   "at": 99.4,
+   "lines": [
+    {
+     "at": 102.1,
+     "text": "And inside every workspace works a team that never sleeps."
+    },
+    {
+     "at": 107.5,
+     "text": "Ten AI agents, hosted on Google's cloud, and thinking with the latest Gemini models."
+    },
+    {
+     "at": 115.7,
+     "text": "Each has one job. The Data agent loads the stock. The Watcher spots what won't sell. Vision reads the label. The Valuer prices every exit, and the Router splits the batch."
+    },
+    {
+     "at": 130.7,
+     "text": "Outreach, the Lister and the Negotiator find the buyers. Paperwork files every paper, and Impact measures the good it does."
+    }
+   ]
+  },
+  {
+   "id": "ch-4",
+   "n": 4,
+   "title": "Guardrails and one yes",
+   "at": 141.2,
+   "lines": [
+    {
+     "at": 141.7,
+     "text": "And they never work off the rails. The brand's own rules are the guardrails: the dates each channel accepts, the floor price nothing sells below, and the credit a distributor may receive."
+    },
+    {
+     "at": 156.2,
+     "text": "The brand's head: “We set their rules once. The agents do the legwork, and nothing moves without our yes.”"
+    },
+    {
+     "at": 164.1,
+     "text": "Every plan stops at a person. The supply chain lead approves it before a single pack moves, and a destruction waits for a second yes."
+    },
+    {
+     "at": 174.1,
+     "text": "And every step leaves a trace: every agent's run, every person's yes, recorded end to end, ready for an auditor."
+    }
+   ]
+  },
+  {
+   "id": "ch-5",
+   "n": 5,
+   "title": "Flagged, read and planned",
+   "at": 184.7,
+   "lines": [
+    {
+     "at": 186.3,
+     "text": "It begins at dawn. The Watcher reads the sell-through and flags the batch that won't make it in time."
+    },
+    {
+     "at": 193.1,
+     "text": "The distributor takes one photo of the carton, and Vision checks the batch and its dates against the stock."
+    },
+    {
+     "at": 200.5,
+     "text": "The Valuer prices every exit, and the Router splits the batch, guided by its sales history and the brand's own rules."
+    },
+    {
+     "at": 209.4,
+     "text": "The supply chain lead: “Kiranas, a staff sale, the food bank, and nothing to the bin. Approved.”"
+    },
+    {
+     "at": 216.9,
+     "text": "One tap. Now the agents go to work."
+    }
+   ]
+  },
+  {
+   "id": "ch-6",
+   "n": 6,
+   "title": "The kiranas",
+   "at": 221.3,
+   "lines": [
+    {
+     "at": 221.6,
+     "text": "Outreach offers the packs to neighbourhood kiranas, in their own language. Every order lands live, with its own GST invoice."
+    },
+    {
+     "at": 231.7,
+     "text": "A kirana owner: “The offer came in Hindi, right on my phone. Twenty-four packets, in one tap.”"
+    },
+    {
+     "at": 239.9,
+     "text": "A shopkeeper: “Delivered this morning, invoice and all. These will be gone by Sunday.”"
+    }
+   ]
+  },
+  {
+   "id": "ch-7",
+   "n": 7,
+   "title": "The staff sale and the food bank",
+   "at": 245.7,
+   "lines": [
+    {
+     "at": 246.4,
+     "text": "At the godown, the staff buy their share by UPI, and Vision checks the receipt against the count."
+    },
+    {
+     "at": 253.6,
+     "text": "What remains near its date goes to a food bank, collected with a receipt."
+    },
+    {
+     "at": 259.0,
+     "text": "A food bank volunteer: “Fifty-eight packs. That's fifty-eight meals tonight.”"
+    }
+   ]
+  },
+  {
+   "id": "ch-8",
+   "n": 8,
+   "title": "The marketplace",
+   "at": 263.1,
+   "lines": [
+    {
+     "at": 263.4,
+     "text": "And when a batch has time to travel, the Lister puts it on a near-expiry marketplace, and the Negotiator closes the deal, without ever revealing the brand's floor price."
+    },
+    {
+     "at": 276.5,
+     "text": "A wholesale buyer: “Fourteen-twenty a pack? Done. Send the truck.”"
+    }
+   ]
+  },
+  {
+   "id": "ch-9",
+   "n": 9,
+   "title": "The hardest case",
+   "at": 284.1,
+   "lines": [
+    {
+     "at": 284.4,
+     "text": "Even the hardest case is handled with care. If a few packs truly can't be saved, an authorised agency destroys them, Vision checks the photos, and the certificate is signed on the spot by its officer, two witnesses and the distributor."
+    },
+    {
+     "at": 301.0,
+     "text": "A distributor, at the landfill: “All four signatures. Now it's on record.”"
+    },
+    {
+     "at": 306.1,
+     "text": "And not a rupee is credited until a second yes."
+    }
+   ]
+  },
+  {
+   "id": "ch-10",
+   "n": 10,
+   "title": "The paperwork and the money",
+   "at": 310.6,
+   "lines": [
+    {
+     "at": 311.6,
+     "text": "Then the paperwork writes itself."
+    },
+    {
+     "at": 313.9,
+     "text": "A tax invoice for every order, e-invoices, credit notes, a GST memo with every reversal worked out, donation receipts and certificates, each one drafted, signed and filed."
+    },
+    {
+     "at": 328.4,
+     "text": "On a single batch, a loss of twenty-two thousand rupees becomes a recovery of nearly seventeen thousand."
+    },
+    {
+     "at": 335.7,
+     "text": "The distributor, weeks later: “Every credit note came in on time. We ended whole, to the rupee.”"
+    }
+   ]
+  },
+  {
+   "id": "ch-11",
+   "n": 11,
+   "title": "The record and the impact",
+   "at": 342.3,
+   "lines": [
+    {
+     "at": 342.8,
+     "text": "Every step is on the record, every request traced from end to end."
+    },
+    {
+     "at": 348.3,
+     "text": "Which agent did what, who said yes, and when. The whole journey, in one audit trail."
+    },
+    {
+     "at": 356.4,
+     "text": "And the platform watches itself: every service measured live, and any failure alerted before anyone has to ask."
+    },
+    {
+     "at": 366.2,
+     "text": "And every batch posts to an impact ledger: kilos kept out of landfill, meals served, emissions avoided, ready for the brand's sustainability report."
+    }
+   ]
+  },
+  {
+   "id": "ch-12",
+   "n": 12,
+   "title": "The close",
+   "at": 378.5,
+   "lines": [
+    {
+     "at": 379.3,
+     "text": "It plugs into what brands already use: the distributor's stock exports, Tally, UPI, the marketplace and the food banks, on every phone, tablet and laptop."
+    },
+    {
+     "at": 393.5,
+     "text": "Smart-Clearance. Ten agents. One yes. And nothing good goes to waste."
+    },
+    {
+     "at": 400.8,
+     "text": "See it for yourself, at smartclearance-demo dot web dot app."
+    }
+   ]
+  }
+ ]
+}

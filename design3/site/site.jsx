@@ -110,17 +110,18 @@
   }
 
   /* ---------- the demo film, in a theatre over the page (SC-164) ---------- */
-  // SC-187's film (cut 3), 6 min 6 s: two batches through five exits, the paperwork, the week that does not go to plan,
-  // and the ledger. Every Watch (the hero, the pill, the close) opens it in a dark room over the page, which stays where
-  // it was. It plays from YouTube, unlisted, on the no-cookie host: nothing of YouTube loads before Watch. Its poster is
-  // the brand and its distributor at the quarter's dashboard, which names no client; the page names none (SC-28), and the
-  // film, played on request, may. Without an id, Watch opens the guided demo.
-  // The film is youtu.be/5Z9-32Fuwh4, unlisted, on the maintainer's channel (@arundutta3411); cut 1's youtu.be/EWFLqM3oHYU is private
-  const DEMO_FILM = Object.assign({ youtube: "5Z9-32Fuwh4", runtime: "6:06", label: "Watch the 6-minute demo", title: "The 6-minute demo", sub: "From the first flag to the ledger",
+  // SC-211's sales film (SC-216), 6 min 50 s: the waste, the product, the agents inside the brand's rules and one yes, the
+  // journey through every exit, the paperwork, the record and the impact. Every Watch (the hero, the pill, the close)
+  // opens it in a dark room over the page, which stays where it was. It plays from YouTube, unlisted, on the no-cookie
+  // host: nothing of YouTube loads before Watch. Its poster is the office scene the film closes on, the brand and its
+  // distributor at the dashboard; the film names no client either (SC-28). Without an id, Watch opens the guided demo.
+  // The film is youtu.be/DT_4G2txLF4, unlisted, on the maintainer's channel (@arundutta3411); SC-187's cut 3,
+  // youtu.be/5Z9-32Fuwh4, stays there as it was
+  const DEMO_FILM = Object.assign({ youtube: "DT_4G2txLF4", runtime: "6:50", label: "Watch the 7-minute demo", title: "The 7-minute demo", sub: "The whole journey, end to end",
     poster: "film-poster.webp", thumb: "film-thumb.webp", words: "demo-film.json" }, window.SC3_FILM || {});
   const clock = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
-  // the film's chapters and captions (design3/designs/SC-187/src/transcript3.py, from the film's own timeline), read once,
-  // when the theatre first opens
+  // the film's chapters and captions (design3/designs/SC-211/src/transcript11.py, from the film's own timeline), read
+  // once, when the theatre first opens
   let filmWords = null;
   const readFilmWords = () => filmWords || (filmWords = fetch(MEDIA + DEMO_FILM.words).then(r => r.json()).catch(() => { filmWords = null; return null; }));
   // YouTube's IFrame API, loaded once and only after the first Watch
