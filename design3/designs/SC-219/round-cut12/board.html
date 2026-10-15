@@ -1,0 +1,205 @@
+<title>Under the Hood Concepts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500&display=swap">
+<style>
+  /* A screening room for one scene: the film's own night-green ground and inks; each concept a reel with its notes. */
+  :root {
+    color-scheme: dark;
+    --ground: #06110c; --panel: #0b1a13; --rule: #1d3528; --ink: #ecf3ef; --ink2: #aabcb2; --ink3: #7f9187;
+    --mint: #5fe3a1; --ring: #34d380; --amber: #f7c04a; --blue: #8ab4f8; --violet: #c58af9;
+    --display: 'Bricolage Grotesque', 'Avenir Next', system-ui, sans-serif;
+    --body: 'Geist', 'Helvetica Neue', system-ui, sans-serif;
+    --mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--ground); color: var(--ink); font: 400 16px/1.55 var(--body); padding-inline: 20px; padding-block: 40px 80px; }
+  .wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 64px; }
+  h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -0.02em; }
+  h1 { font-size: clamp(34px, 5vw, 56px); line-height: 1.02; font-weight: 700; }
+  h2 { font-size: clamp(26px, 3.4vw, 38px); line-height: 1.05; font-weight: 700; }
+  h3 { font: 600 13px/1 var(--body); letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink3); }
+  p { margin: 0; max-width: 68ch; color: var(--ink2); }
+  .k { font: 600 13px/1 var(--body); letter-spacing: 0.18em; text-transform: uppercase; color: var(--mint); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .k i { width: 8px; height: 8px; border-radius: 50%; background: var(--ring); display: inline-block; }
+  header { display: grid; gap: 18px; }
+  blockquote { margin: 0; padding: 14px 18px; border-left: 2px solid var(--rule); color: var(--ink); font-style: normal; max-width: 72ch; }
+  blockquote small { display: block; color: var(--ink3); margin-top: 6px; font-size: 13px; }
+  .strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .strip figure, .pair figure { margin: 0; display: grid; gap: 6px; min-width: 0; }
+  .strip img, .pair img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; display: block; background: var(--panel); }
+  figcaption { font-size: 13px; color: var(--ink3); }
+  section.opt { display: grid; gap: 22px; padding-top: 34px; border-top: 1px solid var(--rule); }
+  .head { display: flex; gap: 16px; align-items: baseline; justify-content: space-between; flex-wrap: wrap; }
+  .badge { font: 700 12px/1 var(--body); letter-spacing: 0.14em; text-transform: uppercase; padding: 8px 12px; border-radius: 999px; color: #06110c; background: var(--amber); }
+  .reel { position: relative; border-radius: 12px; overflow: hidden; background: #000; }
+  .reel video { width: 100%; aspect-ratio: 16 / 9; display: block; background: #000; }
+  .pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .cols { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 34px; }
+  .beats { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 10px; }
+  .beats li { display: grid; grid-template-columns: 11.5em minmax(0, 1fr); gap: 14px; color: var(--ink2); }
+  .beats b { font: 500 14px/1.4 var(--mono); color: var(--ink); }
+  .facts { display: grid; gap: 16px; align-content: start; }
+  .facts div { display: grid; gap: 6px; }
+  .facts p { font-size: 15px; }
+  .tone-a { --accent: var(--blue); } .tone-b { --accent: var(--mint); } .tone-c { --accent: var(--violet); }
+  .opt .k { color: var(--accent); } .opt .k i { background: var(--accent); }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font: 600 12px/1.3 var(--body); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink3); }
+  td:first-child { color: var(--ink); white-space: nowrap; }
+  td { color: var(--ink2); }
+  .tablewrap { overflow-x: auto; }
+  .stays { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .stays div { padding: 14px 16px; border-radius: 10px; background: var(--panel); color: var(--ink2); font-size: 15px; }
+  .stays b { display: block; color: var(--ink); font-weight: 600; margin-bottom: 4px; }
+  a { color: var(--mint); }
+  :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+  @media (max-width: 760px) {
+    .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .pair, .cols { grid-template-columns: minmax(0, 1fr); }
+    .beats li { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="k"><i></i>SC-219 · the working demo · cut 12</div>
+    <h1>Under the hood, three ways</h1>
+    <blockquote>“I want the scenes and animation and effects to be more better and professional, think of Google Cloud Data center.” “I need animations and motion effects.”<small>Your notes on cut 11's architecture scene (0:22.5 to 0:56)</small></blockquote>
+    <p>Each concept is a motion test of the scene's first two lines, “Under the hood, it's all Google Cloud. Four apps on Firebase, one API on Cloud Run, Cloud SQL as the record.”, with the real voice and its sound. Two stills show its later beats: the agents with their Gemini models, and the money behind its guardrail with a person's yes. All three are built in Remotion. A and C put their motion graphics over real camera moves (Qwen-Image plates, LTX, all on this Mac).</p>
+  </header>
+
+  <section>
+    <div style="display:grid;gap:14px">
+      <h3>Cut 11, as it is</h3>
+      <div class="strip">
+        <figure><img src="current/cut11-24.6.webp" alt="Cut 11: the dreamscape's moon over the lake" loading="lazy"><figcaption>0:24.6</figcaption></figure>
+        <figure><img src="current/cut11-31.2.webp" alt="Cut 11: Cloud SQL's stone tablets" loading="lazy"><figcaption>0:31.2</figcaption></figure>
+        <figure><img src="current/cut11-40.5.webp" alt="Cut 11: the agents as lanterns" loading="lazy"><figcaption>0:40.5</figcaption></figure>
+        <figure><img src="current/cut11-52.6.webp" alt="Cut 11: the yes rippling across the lake" loading="lazy"><figcaption>0:52.6</figcaption></figure>
+      </div>
+      <div class="stays">
+        <div><b>Stays as it is</b>The six lines of narration and their timing (33.4 s), the notes' words, the parts in the order they are named.</div>
+        <div><b>Stays as it is</b>Everything else in cut 11: the landfill's time, the condensed close, the walkthroughs.</div>
+        <div><b>Changes</b>The picture under the voice, its motion and effects, and the scene's sounds.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="opt tone-a" id="a">
+    <div class="head"><div class="k"><i></i>Option A · live action with motion graphics</div><span class="badge" data-rec="a">Recommended</span></div>
+    <h2>The data hall</h2>
+    <p>A real camera moves through a hyperscale data centre at night, and the stack is laid onto its racks as the voice names each part, the way a keynote shows its infrastructure. Every graphic is tracked to its rack and rides the camera's move.</p>
+    <div class="reel"><video controls playsinline preload="metadata" poster="option-a/poster.webp" src="option-a/motion.mp4"></video></div>
+    <div class="pair">
+      <figure><img src="option-a/still-gemini.webp" alt="Option A: the liquid-cooled TPU hall, Gemini Pro and Flash marked on its racks" loading="lazy"><figcaption>The agents' models: the TPU hall, Pro in violet, Flash in blue</figcaption></figure>
+      <figure><img src="option-a/still-yes.webp" alt="Option A: the API's rack in a locked cage, Priya's approval beside it" loading="lazy"><figcaption>The money stays in the API's caged rack; Priya's yes beside it</figcaption></figure>
+    </div>
+    <div class="cols">
+      <div><h3>How it tells the scene</h3>
+        <ul class="beats">
+          <li><b>Under the hood</b><span>The cooling plant, its pipes in Google's four colours; the title rises over it, then a flash-push into the cold aisle.</span></li>
+          <li><b>Four apps, Firebase</b><span>The four apps float into the aisle as glass, an orange scan running down each.</span></li>
+          <li><b>One API, Cloud Run</b><span>A call runs along the cable tray to a rack, which lights blue as brackets snap onto it.</span></li>
+          <li><b>The record, Cloud SQL</b><span>A rack across the aisle lights, and the record writes down its face row by row.</span></li>
+          <li><b>Pub/Sub, Scheduler</b><span>Pulses race along the overhead fibre trays; a clock on the timing rack.</span></li>
+          <li><b>Nine AI agents</b><span>Ten racks light one by one with their names: nine on Gemini, the Watcher in plain code. BigQuery and Cloud Storage in the storage hall.</span></li>
+          <li><b>Gemini</b><span>The liquid-cooled TPU hall, Pro in violet, Flash in blue.</span></li>
+          <li><b>Never the money</b><span>The API's rack in a locked cage, the reserve inside; Priya's yes, and every rack down the hall turns green.</span></li>
+        </ul>
+      </div>
+      <div class="facts">
+        <div><h3>Motion and effects</h3><p>One slow real camera move a shot, graphics tracked onto it, flash-pushes between shots, light sweeps, cut 10's notes.</p></div>
+        <div><h3>Sound</h3><p>The hall's air, fans rising as racks light, relay clicks, a chime for each part, fibre zips.</p></div>
+        <div><h3>To build</h3><p>About eight more plates and camera moves (Qwen-Image and LTX, about 1.7 hours on this Mac), each reviewed, then the tracking and the composition.</p></div>
+        <div><h3>Watch for</h3><p>Generated footage can bend a rack or invent a sign, so each clip is checked and some are made again. A tracked graphic can slip a few pixels on a fast move.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="opt tone-b" id="b">
+    <div class="head"><div class="k"><i></i>Option B · motion graphics</div><span class="badge" data-rec="b" hidden>Recommended</span></div>
+    <h2>The blueprint</h2>
+    <p>The data centre drawn as one isometric floor plan in Smart-Clearance's greens, built and lit in motion, the way Google Cloud's own explainers draw a system. Every frame is drawn, so it shows how the parts connect, not only what they are called.</p>
+    <div class="reel"><video controls playsinline preload="metadata" poster="option-b/poster.webp" src="option-b/motion.mp4"></video></div>
+    <div class="pair">
+      <figure><img src="option-b/still-agents.webp" alt="Option B: the agents' rack row, each agent named with its Gemini model, beams from the accelerator row" loading="lazy"><figcaption>Each agent named with its model; Gemini's beams reach each one</figcaption></figure>
+      <figure><img src="option-b/still-yes.webp" alt="Option B: the whole floor lit, a glass wall around the API stopping Gemini's beam, Priya's approval at the desk" loading="lazy"><figcaption>A glass wall stops the model at the money; the yes crosses the floor</figcaption></figure>
+    </div>
+    <div class="cols">
+      <div><h3>How it tells the scene</h3>
+        <ul class="beats">
+          <li><b>Under the hood</b><span>The camera starts on one rack's light and pulls back as the hall rises row by row; a band of light crosses the floor under the title.</span></li>
+          <li><b>Four apps, Firebase</b><span>The four apps' screens rise at the hall's edge on Firebase's platform.</span></li>
+          <li><b>One API, Cloud Run</b><span>A call runs along the floor to the core, and Cloud Run's containers stack on its racks.</span></li>
+          <li><b>The record, Cloud SQL</b><span>Cloud SQL's disks stack up and the records fly in.</span></li>
+          <li><b>Pub/Sub, Scheduler</b><span>Events run the spine across the floor; the clock tower ticks.</span></li>
+          <li><b>Nine AI agents</b><span>A row of ten racks, each named with its model, the Watcher grey in plain code; BigQuery's row and Cloud Storage's bucket.</span></li>
+          <li><b>Gemini</b><span>The accelerator row lights violet and its beams reach each agent, Pro in violet, Flash in blue.</span></li>
+          <li><b>Never the money</b><span>A glass wall rises around the API and Gemini's beam stops at it; Priya's yes at the desk, a ring across the floor, everything lit.</span></li>
+        </ul>
+      </div>
+      <div class="facts">
+        <div><h3>Motion and effects</h3><p>One continuous camera over one plan: draw-ons, extrusions on springs, light sweeps, bloom, packets with trails.</p></div>
+        <div><h3>Sound</h3><p>Soft plucks as each part rises, a low hum, whooshes on the glides, a swell on the yes.</p></div>
+        <div><h3>To build</h3><p>The plan drawn in full and the camera laid on the voice, all in Remotion. No generated footage, so any change is quick.</p></div>
+        <div><h3>Watch for</h3><p>It is a drawing, not footage. The rest of the film is live action, so this scene reads as a diagram, as cut 11's did, but in the brand's own look.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="opt tone-c" id="c">
+    <div class="head"><div class="k"><i></i>Option C · macro product film</div><span class="badge" data-rec="c" hidden>Recommended</span></div>
+    <h2>Inside the machine</h2>
+    <p>A product film shot in macro inside the machines: fibres, server sleds, a TPU under its cold plate, a locked cage. Each part of the stack is set large as the voice names it, with light running through the hardware.</p>
+    <div class="reel"><video controls playsinline preload="metadata" poster="option-c/poster.webp" src="option-c/motion.mp4"></video></div>
+    <div class="pair">
+      <figure><img src="option-c/still-gemini.webp" alt="Option C: a TPU under its copper cold plate, violet coolant, Gemini set large with the two models" loading="lazy"><figcaption>Gemini over the TPU's cold plate, each model with its agents</figcaption></figure>
+      <figure><img src="option-c/still-yes.webp" alt="Option C: a green light behind a locked mesh, Never the money set large" loading="lazy"><figcaption>The money behind a locked mesh; the yes as one green light</figcaption></figure>
+    </div>
+    <div class="cols">
+      <div><h3>How it tells the scene</h3>
+        <ul class="beats">
+          <li><b>Under the hood</b><span>Light runs down the fibres; “All on Google Cloud.” set large, Google lighting as it is said.</span></li>
+          <li><b>Four apps, Firebase</b><span>A rack focus onto the server sleds; “Four apps.” with the apps as glass tiles.</span></li>
+          <li><b>One API, Cloud Run</b><span>The pulled-out sled lights blue along its edge.</span></li>
+          <li><b>The record, Cloud SQL</b><span>Writes run along every sled, top to bottom.</span></li>
+          <li><b>Pub/Sub, Scheduler</b><span>Pulses through a fibre bundle; a timing card's crystal.</span></li>
+          <li><b>Nine AI agents</b><span>Ten sleds light in turn, the Watcher's in plain white.</span></li>
+          <li><b>Gemini</b><span>The TPU's coolant glows violet; the two models set large with their agents.</span></li>
+          <li><b>Never the money</b><span>A locked mesh with one dark appliance; Priya's yes turns its green light on.</span></li>
+        </ul>
+      </div>
+      <div class="facts">
+        <div><h3>Motion and effects</h3><p>Slow macro moves and rack focus, large type rising out of a mask with a light passing across it, light pulses on the fibres.</p></div>
+        <div><h3>Sound</h3><p>Close and tactile: a fibre's whine, a sled's click, coolant, a lock, a pure tone for the yes.</p></div>
+        <div><h3>To build</h3><p>About seven more macro plates and moves (about 1.5 hours), and large type for every beat.</p></div>
+        <div><h3>Watch for</h3><p>The most cinematic of the three, but it names the parts more than it shows how they connect. Macro footage can melt fine detail.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:grid;gap:16px">
+    <h3>Side by side</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th></th><th>A · The data hall</th><th>B · The blueprint</th><th>C · Inside the machine</th></tr></thead>
+        <tbody>
+          <tr><td>Looks like</td><td>Live action in a real data centre</td><td>An isometric explainer of a data centre</td><td>A macro product film</td></tr>
+          <tr><td>Shows how parts connect</td><td>Partly: calls and pulses between racks</td><td>Fully: one plan, every link drawn</td><td>Little: one part at a time</td></tr>
+          <tr><td>Motion and effects</td><td>Real camera moves with tracked graphics</td><td>Everything animated and timed to the voice</td><td>Rack focus, light through hardware, large type</td></tr>
+          <tr><td>Matches the rest of the film</td><td>Closely: live action, like the people's scenes</td><td>Less: a drawing among live action</td><td>Closely: live action</td></tr>
+          <tr><td>Risk</td><td>Generated racks can bend; tracking can slip</td><td>Lowest: nothing generated</td><td>Macro detail can melt</td></tr>
+          <tr><td>Build</td><td>About 1.7 h of generation, then tracking</td><td>Remotion only</td><td>About 1.5 h of generation</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section style="display:grid;gap:10px">
+    <h3>Your pick</h3>
+    <p id="rec-why"><strong style="color:var(--ink)">Recommended: A, the data hall.</strong> It is the data centre itself, filmed, which is what your note asks for, and it keeps the live action of the rest of the film. The motion graphics carry the stack, tracked onto real racks, with cut 10's notes. Both camera moves made for this test came out clean on the first take, and the graphics stayed on their racks through a 1.4× push. Pick B if the scene should show how every part connects in one picture and stay the quickest to change. Pick C if it should feel most like a hardware launch.</p>
+    <p>Pick A, B or C in the chat, or say what to change. Only the picked concept is built, as cut 12, at 238 to 239 seconds.</p>
+  </section>
+</div>

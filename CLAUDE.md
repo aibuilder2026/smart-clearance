@@ -3028,6 +3028,14 @@
     - both QR codes read back;
     - 29 of 33 lines word for word, the architecture's six among them, read over the new sounds.
   - **Cut 11, where:** `working-demo/smart-clearance-working-demo-2026-10-15_21-40-01.mp4` (crf 17), its 720p copy, a light preview and captions; the crf-21 1080p, 720p and captions, the pipeline and its README in `design3/designs/SC-219/`.
+  - **Cut 12's concept round** (waiting for the pick):
+    - **The request:** the architecture scene "more better and professional, think of Google Cloud Data center", with "animations and motion effects", in Remotion if useful; three ideas first; the rest of cut 11 stays.
+    - **The board:** `design3/designs/SC-219/round-cut12/board.html`. Each option has a Remotion motion test of the scene's first two lines, with the real voice and sound, and two stills of its later beats.
+    - **The options:**
+      - A, The data hall: a real camera through a data centre (Qwen-Image plates, LTX moves), the stack tracked onto its racks;
+      - B, The blueprint: an isometric floor plan in the brand's greens, built and lit in motion;
+      - C, Inside the machine: a macro product film with large type.
+    - **The tooling:** the Remotion 4.0.535 project is `src/remo12/`; `src/prep12c.sh` rebuilds its media; `track12c.py` tracks the racks; `decision.md` records the pick.
 - **SC-220** (PR #200, merged; Done): ARCHITECTURE.md purely technical, on Agent Platform, with the deck's details; the Lucid diagrams, the architecture page and its PDF, and the deck renamed.
   - **The request:** ARCHITECTURE.md "with these details" (the AI Builder Cup deck, *14 Oct v4*); "update the references of vertex AI with Agent Platform which is the new name", in the Lucidchart diagrams and pictures and in the deck; ARCHITECTURE.md "purely technical", without the references to the Jira project.
   - **The rename:** Google renamed Vertex AI to Gemini Enterprise Agent Platform on 22 Apr 2026, and Agent Engine to Agent Runtime. Nothing in the build changes: Gemini is still reached at `aiplatform.googleapis.com` under `roles/aiplatform.user`, and the google-genai SDK's `enterprise=True` (which the agents already pass) is its former `vertexai=True`.

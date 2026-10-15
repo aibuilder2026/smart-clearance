@@ -5,6 +5,27 @@ cut 9 on the maintainer's notes on cut 8, cut 10 on four notes on cut 9, then cu
 joins the earlier cuts in the repository root's `working-demo/` folder, with its export's date and time in its name;
 `media/` holds the latest.
 
+## Cut 12's concept round (15 Oct 2026)
+
+On cut 11 the maintainer asked for the architecture scene (0:22.5 to 0:56) "more better and professional, think of
+Google Cloud Data center", with "animations and motion effects", made in Remotion if useful, and to see three ideas
+before anything is built. The rest of cut 11 stays as it is. Three concepts went on one board, `round-cut12/board.html`
+(the request, cut 11's frames, each option's motion test with the real voice and two stills of its later beats, and how
+they compare); `round-cut12/decision.md` records the pick.
+
+- **A · The data hall:** live action with motion graphics: a real camera moves through a data centre (Qwen-Image
+  plates, LTX camera moves), the stack laid onto the racks as each part is named, each graphic tracked to its rack.
+- **B · The blueprint:** motion graphics: the data centre as one isometric floor plan in the brand's greens, built and
+  lit in motion. Nothing generated.
+- **C · Inside the machine:** a macro product film: fibres, server sleds, a TPU, a locked cage; each part set large.
+
+The motion tests are a Remotion 4.0.535 project, `src/remo12/` (`A-DataHall`, `B-Blueprint`, `C-InsideMachine`, and
+the stills). `src/prep12c.sh` rebuilds its media: the fonts, the app screens, the voice of the scene's first two
+lines, the sounds (`sfx12c.py`, the film's own synths), the plates (`gen-qwen12c.sh`, `plates12c.py`), the camera
+moves made to their shots (`gen-ltx12c.py`, `retime12c.sh`) and their tracks (`track12c.py`: Lucas-Kanade features
+inside each rack, a homography a frame, ridden by the graphics as CSS `matrix3d`). `board12c.py` writes the board's
+media.
+
 ## Cut 11 (15 Oct 2026)
 
 Made from cut 10's pipeline, with the architecture drawn again in 2D (`src/arch11/`), and the bin and the close
