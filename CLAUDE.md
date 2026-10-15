@@ -2895,4 +2895,10 @@
     - the a11y, e2e and parity suites were not run (SC-55).
   - **Found, not fixed:** the batch head reads "Scheme open · 52 of 52 kiranas ordered" after the scheme closed, as SC-184 noted ("2 of 2"); offered as a follow-up.
   - **Hosting:** design3's `dist/` is rebuilt; the hosted pages stay on their pinned commits.
+- **SC-217** (PR #198, merged; Done): DEMO.md says how the agents run in production, and why the demo resets and shortens time, asked for by the maintainer ("THIS should be in a highlighted section towards top of DEMO.md").
+  - **The section,** an IMPORTANT alert under DEMO.md's opening, before its contents, in three parts:
+    - **in production the agents start on their own:** Cloud Scheduler's `sc-tick` every minute (the Data agent at 08:30, the Watcher at 09:00, and the timers: the 48-hour offer window, an unsold lot, the destruction's reminder, expiry day's report), and Pub/Sub's events pushed to the agents on Cloud Run (each event's agents on Gemini; FCM for the pushes). A real batch takes days to weeks; ARCHITECTURE.md's section 8 has both paths;
+    - **the demo is a synthetic world,** hydrated through backend-api's services: Munchly, its four distributors, 96 kiranas, two food banks and a buyer, the pilot quarter's 12 batches, the console's other brands, the daily stock exports, and the Qwen-Image photos, GSTINs, licences and signatures;
+    - **hence the clock:** the story's fixed best-before dates, its calendar from day 0 (2 Oct 2026, "Prototype time"), Reset journey, Rehearsal's hour-long day, and the console's controls standing in for the schedule and the partners (Run now, Close now, Report now, Fill the scheme).
+  - **Checks:** every link and anchor in DEMO.md resolves; the facts were read from `infra/prod/scheduler.tf` and `events.tf`, the agents' pipelines and backend-api's README. Documentation only.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
