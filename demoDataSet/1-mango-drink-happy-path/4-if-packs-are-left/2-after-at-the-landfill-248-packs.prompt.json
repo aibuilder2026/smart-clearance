@@ -1,0 +1,9 @@
+{
+  "model": "Qwen-Image 2.1 (bf16, local)",
+  "prompt": "A smartphone evidence photo at a municipal solid-waste landfill on the outskirts of an Indian city: in the foreground a freshly dug muddy pit in grey-brown soil and mixed garbage, holding about two hundred and fifty small yellow mango drink tetra cartons, crushed, juice staining the soil that have been slit open, their contents spilling out; a man in a dark blue shirt and an orange high-visibility vest holds a small black slate board in the foreground, written on it in white chalk \"MF-2410-118  248 PKTS  02-10-26\"; behind the pit a yellow JCB backhoe loader is pushing soil over them; a large heap of municipal garbage and smoke haze in the background, crows overhead, overcast hazy daylight, handheld, slightly tilted framing, realistic documentary photo, natural colours",
+  "aspect": "4:3",
+  "size": 1024,
+  "seed": 1408,
+  "post": "cwebp -q 82, resized to 1024 wide",
+  "use": "SC-139: the after photo of batch MF-2410-118's destruction at the distributor's godown (slit open at the authorised municipal landfill, a JCB, a slate with the batch, count and date). Illustrative, fictional brand"
+}

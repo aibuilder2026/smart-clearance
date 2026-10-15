@@ -36,7 +36,8 @@ Every company, person and figure in the product is fictional. Munchly Foods is t
 | Document | What it covers |
 | --- | --- |
 | [PRODUCT.md](PRODUCT.md) | The product: who uses it and for what, the story's batches and their figures, every surface, the principles and positioning. |
-| [DEMO.md](DEMO.md) | How the prototype is demoed: the guided demo's route map, the live workspace's three journeys (chips sold through, Mango Drink sold through, food left at the godown), the console's controls, and how Reset journey makes a live demo repeatable. |
+| [DEMO.md](DEMO.md) | How a judge tries it: the guided demo, then the live apps step by step with screenshots from the production recordings (`docs/demo/`): the Mango Drink's happy path, the Masala Chips' sad path destroyed against evidence, and the console. Each step says which file of the demo data set to use. |
+| [demoDataSet/README.md](demoDataSet/README.md) | The demo data set, by journey: the carton label photos with their barcodes and QR codes, the staff sale's UPI receipt, the destruction's photos at the godown and the landfill, the certificate's signatures, and a first stock export for a new client. |
 | [TESTING.md](TESTING.md) | How every test is run: the gates, the a11y, e2e and parity suites, the live tests, the journey suites and the agents' evals, with the scripts, what each needs first, and which journeys to cover. |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | How it is built: the system on Google Cloud, every service and technology with its version, a batch's journey request by request, the agents and their Gemini models, backend-api, events and the live stream, the data, identity, the cloud, delivery, testing, decisions and known gaps. Its pictures are the Lucidchart diagrams (`docs/architecture/`), with Mermaid for the code's own structure. |
 | [DESIGN.md](DESIGN.md) | Design system v3: tokens, type, colour, components, motion and imagery. |
@@ -257,7 +258,7 @@ For only the guided demo or the prototypes, nothing but `corepack pnpm dev:demo`
 | Re-export the API's OpenAPI after a contract change | `backend-api/scripts/contracts.sh` |
 | Production's data against local's (read-only) | `backend-api/scripts/sync.sh` |
 
-Demoing, and Reset journey in full: [DEMO.md](DEMO.md).
+Demoing step by step, with the demo data set, and what Reset journey keeps: [DEMO.md](DEMO.md).
 
 ## Tests
 

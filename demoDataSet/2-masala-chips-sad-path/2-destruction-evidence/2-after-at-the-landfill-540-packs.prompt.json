@@ -1,0 +1,9 @@
+{
+	"model": "Qwen-Image 2.1 (bf16, local), an edit",
+	"image": "design3/system/img/evidence/MF-2409-117-after.webp",
+	"prompt": "Change only the chalk count written on the small black slate board, from \"144 PKTS\" to \"540 PKTS\", in the same white chalk handwriting, same size and position; keep the other two lines \"MF-2409-117\" and \"03-10-26\" exactly as they are, and keep everything else in the photo identical: the landfill pit, the red chips packets, the yellow JCB, the man and his hand, the light and colours.",
+	"size": 1024,
+	"seed": 2201,
+	"post": "cwebp -q 82, resized to 1024 wide",
+	"use": "Munchly Chips Sad Path E2E (SC-179): the destruction's evidence for the 540 packets of MF-2409-117 left at Kalamna godown when 2 of 38 kiranas order. Vision (flash, the worker's own prompt) read it twice: before 500 and 520 packs, batch MF-2409-117; the slate MF-2409-117 \u00b7 540 \u00b7 03-10-26, a landfill, destroyed. Illustrative, fictional brand."
+}

@@ -1,0 +1,9 @@
+{
+	"model": "Qwen-Image 2.1 (bf16, local)",
+	"prompt": "A smartphone photo taken inside a small Indian FMCG distributor's godown in Nagpur: on a grey concrete floor, five blue plastic crates in a row, each heaped high and overflowing with bright red foil snack packets of potato chips with an orange spice illustration and the word \"MUNCHLY\" printed on them, more packets spilling onto the floor around them, about five hundred and forty packets in all; beside them a stack of opened brown cardboard cartons, and a white printed sticker on the nearest carton reads \"BATCH MF-2409-117\" in bold black letters; steel racks with cartons in the background, flat fluorescent tube light, slightly tilted handheld framing, realistic, natural colours, no people",
+	"aspect": "4:3",
+	"size": 1024,
+	"seed": 1792,
+	"post": "cwebp -q 92 at its full 1184 \u00d7 896 (a 1024-wide q82 copy read 250 to 500 packs; this one 500 to 540 in six reads); picked from seeds 1791 and 1792 (Vision counted 95 and 115 packs in 1791)",
+	"use": "Munchly Chips Sad Path E2E (SC-179): the destruction's evidence for the 540 packets of MF-2409-117 left at Kalamna godown when 2 of 38 kiranas order. Vision (flash, the worker's own prompt) read it twice: before 500 to 540 packs in six reads, batch MF-2409-117; the slate MF-2409-117 \u00b7 540 \u00b7 03-10-26, a landfill, destroyed. Illustrative, fictional brand."
+}
