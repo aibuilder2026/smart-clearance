@@ -2765,7 +2765,7 @@
     - `landing-demo/sales-film/smart-clearance-sales-film-2026-10-15_03-46-58.mp4` (crf 17) and its 720p copy;
     - the crf-21 1080p (83.9 MB), 720p and captions, the talking scenes and the score's cues with their sidecars, the pipeline and its README in `design3/designs/SC-210/`.
   - **The spend:** about $28 of the $35 cap: Veo $25.60, Lyria $0.72, the narrator about $0.6 and the reviews under $1.
-- **SC-212** (In Review, branch `SC-212-demo-dataset`): the demo data set, and DEMO.md rewritten as a judge's step-by-step guide, asked for by the maintainer.
+- **SC-212** (PR #192, merged): the demo data set, and DEMO.md rewritten as a judge's step-by-step guide, asked for by the maintainer.
   - **The request:** "create a folder demoDataSet and put in it the data used in the application for happy and sad path, things like pictures of barcode, landfill and signatures", by journey; DEMO.md rewritten "proper and keep it simple": how a judge simulates the scenarios, step by step, with screenshots from the app, the data set first, each step saying when to use what, made from the live walkthrough recordings.
   - **`demoDataSet/`**, by journey, each image with its sidecar, and a README naming each file, the step that uses it and its original:
     - the happy path, the Mango Drink MF-2410-118 at Lakshmi Agencies: the label photo, the staff sale's receipt LA/SR/26-27/0002, the signatures and stamps on its papers, and, for packets left, the 248-packet evidence and Deccan Green Waste Management's four signers;
