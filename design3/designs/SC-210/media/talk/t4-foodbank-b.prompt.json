@@ -1,0 +1,40 @@
+{
+ "name": "t4-foodbank-b",
+ "model": "veo-3.1-generate-001",
+ "location": "us-central1",
+ "service": "Vertex AI",
+ "prompt": "Exactly as in the image: beside an open white van in a warehouse yard, a young woman in a green t-shirt holds a phone while a man in a blue shirt lifts a sealed brown carton into the van. She looks up from her phone and says warmly and clearly, in an Indian English accent, her lips shaping every word: \"Fifty-eight packs. That's fifty-eight meals tonight.\" She keeps her face toward the camera while she speaks and smiles only after her last word. He sets the carton down in the van. The camera holds still with a very slow push in. Audio: her voice clear and close, a quiet yard, no music.",
+ "negative_prompt": "subtitles, captions, watermark, on-screen text, music, singing, children, deformed hands, extra fingers, morphing face, distorted mouth, flicker",
+ "seed": null,
+ "enhance_prompt": true,
+ "resolution": "1080p",
+ "aspect": "16:9",
+ "duration_s": 8,
+ "fps": 24,
+ "generate_audio": true,
+ "person_generation": "allow_adult",
+ "inputs": [
+  {
+   "role": "first",
+   "file": "f-meera-L.png",
+   "sha256": "8b556948bccf9dc570acb5a3d704d36a8cc6186ce7a66174895f1eb1d030d38e"
+  }
+ ],
+ "watermark": "SynthID",
+ "cost_usd": 3.2,
+ "price_table_date": "2026-10-10",
+ "created": "2026-10-15",
+ "use": "SC-210 talking scene t4-foodbank-b",
+ "status": "done",
+ "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/d4fbb1bd-4745-468c-9338-29b861b7f993",
+ "latency_s": 130.4,
+ "rai_filtered": {
+  "count": 0,
+  "reasons": []
+ },
+ "files": [
+  "t4-foodbank-b.mp4"
+ ],
+ "shipped": "the Veo output re-encoded for the repository (H.264 crf 20, AAC 160k); the original stays in src/clips/talk/",
+ "derived_from": "src/clips/talk/t4-foodbank-b.mp4"
+}

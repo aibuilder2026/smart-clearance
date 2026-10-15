@@ -1,0 +1,40 @@
+{
+ "name": "t2-lead",
+ "model": "veo-3.1-generate-001",
+ "location": "us-central1",
+ "service": "Vertex AI",
+ "prompt": "Exactly as in the image: in a bright office by a large window, a woman in her thirties in a navy blouse sits at a white desk holding a tablet with its back to the camera, a glass of tea beside her. She reads, nods with a small smile, looks up and says, in a confident, warm Indian English accent: \"Kiranas, a staff sale, the food bank... and nothing to the bin. Approved.\" Then she taps the tablet once. Her face and lips move naturally with her words. The camera holds still with a very slow push in. Audio: her voice clear and close, a quiet office, no music.",
+ "negative_prompt": "subtitles, captions, watermark, on-screen text, music, singing, children, deformed hands, extra fingers, morphing face, distorted mouth, flicker",
+ "seed": null,
+ "enhance_prompt": true,
+ "resolution": "1080p",
+ "aspect": "16:9",
+ "duration_s": 8,
+ "fps": 24,
+ "generate_audio": true,
+ "person_generation": "allow_adult",
+ "inputs": [
+  {
+   "role": "first",
+   "file": "f-priya.png",
+   "sha256": "fbec02fde253fe7e3c4422e47a804ecd71cead31567c62aa85d391121e36f445"
+  }
+ ],
+ "watermark": "SynthID",
+ "cost_usd": 3.2,
+ "price_table_date": "2026-10-10",
+ "created": "2026-10-15",
+ "use": "SC-210 talking scene t2-lead",
+ "status": "done",
+ "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/31e8f233-1b65-4901-ba0b-3f1ead569c63",
+ "latency_s": 113.8,
+ "rai_filtered": {
+  "count": 0,
+  "reasons": []
+ },
+ "files": [
+  "t2-lead.mp4"
+ ],
+ "shipped": "the Veo output re-encoded for the repository (H.264 crf 20, AAC 160k); the original stays in src/clips/talk/",
+ "derived_from": "src/clips/talk/t2-lead.mp4"
+}

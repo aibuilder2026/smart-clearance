@@ -1,0 +1,40 @@
+{
+ "name": "t5-buyer",
+ "model": "veo-3.1-generate-001",
+ "location": "us-central1",
+ "service": "Vertex AI",
+ "prompt": "Exactly as in the image: in a busy wholesale warehouse among sacks of grain and labelled cartons, a man in his late thirties in a grey shirt sits holding a phone, its back to the camera, on a call on speaker. He reads, grins, and says into the phone, in an Indian English accent: \"Fourteen-twenty a pack? Done. Send the truck.\" His face and lips move naturally with his words. The camera holds still with a very slow push in. Audio: his voice clear and close, the low murmur of the warehouse, no music.",
+ "negative_prompt": "subtitles, captions, watermark, on-screen text, music, singing, children, deformed hands, extra fingers, morphing face, distorted mouth, flicker",
+ "seed": null,
+ "enhance_prompt": true,
+ "resolution": "1080p",
+ "aspect": "16:9",
+ "duration_s": 8,
+ "fps": 24,
+ "generate_audio": true,
+ "person_generation": "allow_adult",
+ "inputs": [
+  {
+   "role": "first",
+   "file": "f-agrawal-L.png",
+   "sha256": "7b9ea1828ae02e423f94c46583923fddd60534e6fd0ca3c7ba4a958fc3dc7d9f"
+  }
+ ],
+ "watermark": "SynthID",
+ "cost_usd": 3.2,
+ "price_table_date": "2026-10-10",
+ "created": "2026-10-15",
+ "use": "SC-210 talking scene t5-buyer",
+ "status": "done",
+ "operation": "projects/aibuilder-510213/locations/us-central1/publishers/google/models/veo-3.1-generate-001/operations/df6bf8ba-9d87-4251-904b-b8374d6b9b5c",
+ "latency_s": 115.4,
+ "rai_filtered": {
+  "count": 0,
+  "reasons": []
+ },
+ "files": [
+  "t5-buyer.mp4"
+ ],
+ "shipped": "the Veo output re-encoded for the repository (H.264 crf 20, AAC 160k); the original stays in src/clips/talk/",
+ "derived_from": "src/clips/talk/t5-buyer.mp4"
+}

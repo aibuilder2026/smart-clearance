@@ -2722,4 +2722,47 @@
   - **Found on the way:** the recovery landed at the whip; the kicker could not be read over bright factories; the exits' counts ran off the frame; a light weight's last glyph was clipped (`text_sprite` now cuts to its ink); the fast-forward badge read 61× where the window plays 52×.
   - **Checks:** 238.72 s, −14.0 LUFS, −1.5 dBTP; windows between 0.47× and 1.28× (the labelled fast-forward aside); the note-card and ring scans as cut 6's; both QR codes read back; 26 of 31 lines word for word from the final mix.
   - **Where:** `working-demo/smart-clearance-working-demo-2026-10-14_23-55-28.mp4` (crf 17), its 720p copy and captions (the first export, `…_21-10-50-superseded`); the crf-21 1080p, 720p and captions, the new keyframes and the bin's clip with their sidecars, the pipeline and its README in `design3/designs/SC-209/`. The spend: nothing (all local; SC-187's music reused).
+- **SC-210** (In Review, branch `SC-210-landing-sales-film`): the sales film, 4 min 57.3 s, under the maintainer's 7-minute limit. The landing page's demo film (SC-187) reworked and married with the working demo (SC-205 to SC-209).
+  - **The request:**
+    - cinematic, full of motion and effects, and a sales film of the end-to-end journey rather than an app demo;
+    - sharp, with no glitches or hallucinations;
+    - the agentic ecosystem clearly shown;
+    - a real-sounding Indian woman narrating over surreal music;
+    - the Playwright recordings used, and the SaaS product highlighted;
+    - the money, ESG, papers, destruction and signing, donation, staff sale, kiranas, marketplace and integrations covered;
+    - generic, naming no client or product, with only the mango and chips packs shown;
+    - real people talking.
+  - **The maintainer's answers:** Veo 3.1 talking scenes under a $35 cap (covering Veo, the narrator and the score); the app's screens kept as recorded.
+  - **The film,** in six acts:
+    - the waste (a distributor's godown, the label's best-before, the bin, WRITTEN OFF);
+    - the product (software as a service, every brand's workspace, one console);
+    - the agentic ecosystem in 3D (ten agents on ADK, Cloud Run and Gemini, Pub/Sub, BigQuery, the person's yes);
+    - the journey (the alert, the label read, the split, the yes, the kiranas in Hindi with a GST invoice an order, the staff sale by UPI, the food bank's receipt, the marketplace's counter, the destruction signed at the landfill, the second yes);
+    - the papers, the swing, the record and the impact;
+    - the integrations, the line and the guided demo.
+  - **New media:**
+    - **the voices:** six talking scenes on Veo 3.1 at 1080p with sound, from the working demo's keyframes (a distributor, the supply chain lead, a delivery at a kirana, a food bank volunteer, a wholesale buyer, a distributor at the landfill), two of them retaken; the narrator on Gemini-TTS (`gemini-2.5-pro-tts`, Sulafat, en-IN), picked from a bake-off, every take read back by Whisper;
+    - **the score:** twelve Lyria 2 cues, seven used, judged by Gemini as ears;
+    - **the ecosystem:** a three.js scene captured frame-exact on the narration's cues (`src/eco/`).
+  - **No hallucinated lettering:**
+    - all nine SC-187 Veo clips the first cut used had garbled label fine print ("NUKCKLY", "BEST BEFORE 18/11/0005"), one also mirrored packs;
+    - four now carry the batch's real label, tracked by its plane and printed in the clip's own light (`src/relabel.py`);
+    - five were replaced by clean clips from the earlier cuts.
+  - **Found on the way:**
+    - the talking scenes' sound ran 0.3 s past their lines (ffmpeg's `-t` after the speed-up), read as loose lip sync; it is now cut on the input, and the sync was measured frame by frame;
+    - each scene now has its own acoustics and room tone, with the score held down through it;
+    - "One yes" read "One ues" mid-reveal, so words now slide in whole;
+    - agent cards and names overlapped, and now fade apart;
+    - a blank factory screen got a machine panel;
+    - a ghosting dissolve became a cut.
+  - **Checks:**
+    - 297.32 s, −14.0 LUFS, −1.4 dBTP;
+    - 33 of 39 lines read back word for word, every talking line among them (the rest spellings, and Whisper's "floor cries", which Gemini hears as "floor price");
+    - Gemini's minute-by-minute review 6.0 to 6.8, with no garbled text found;
+    - both QR codes read back;
+    - contact sheets every 4 s.
+  - **Where:**
+    - `landing-demo/sales-film/smart-clearance-sales-film-2026-10-15_03-46-58.mp4` (crf 17) and its 720p copy;
+    - the crf-21 1080p (83.9 MB), 720p and captions, the talking scenes and the score's cues with their sidecars, the pipeline and its README in `design3/designs/SC-210/`.
+  - **The spend:** about $28 of the $35 cap: Veo $25.60, Lyria $0.72, the narrator about $0.6 and the reviews under $1.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

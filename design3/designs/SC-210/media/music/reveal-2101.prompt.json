@@ -1,0 +1,20 @@
+{
+ "name": "reveal-2101",
+ "model": "lyria-002",
+ "location": "us-central1",
+ "service": "Vertex AI",
+ "kind": "music",
+ "prompt": "A surreal, hopeful cinematic underscore in D major at 80 BPM: luminous evolving synth pads, a gentle pulsing arpeggio of soft plucked notes, a tanpura drone underneath, a warm bansuri melody rising, airy wordless pads, a sense of dawn and wonder. Spacious and uplifting, no drums.",
+ "negative_prompt": "vocals, singing, lyrics, choir words, drums, drum kit, percussion hits, distortion, lo-fi, aggressive, harsh, fast tempo, EDM, dubstep, trap",
+ "seed": 2101,
+ "cost_usd": 0.06,
+ "price_table_date": "2026-10-12",
+ "created": "2026-10-15",
+ "latency_s": 38.3,
+ "use": "SC-210: a candidate cue for the sales film's score",
+ "watermark": "SynthID",
+ "status": "done",
+ "output": "reveal-2101.wav 32.768229 s 48 kHz stereo",
+ "shipped": "the Lyria 2 output as AAC 192k; the WAV stays in src/music10/",
+ "derived_from": "src/music10/reveal-2101.wav"
+}

@@ -1,0 +1,10977 @@
+{
+ "a1-0.wav": {
+  "text": "10 AI agents built with Google's agent development kit running on Cloud Run and thinking with Gemini.",
+  "words": [
+   {
+    "w": "10",
+    "s": 0.0,
+    "e": 0.5
+   },
+   {
+    "w": "AI",
+    "s": 0.5,
+    "e": 0.86
+   },
+   {
+    "w": "agents",
+    "s": 0.86,
+    "e": 1.4
+   },
+   {
+    "w": "built",
+    "s": 1.4,
+    "e": 1.96
+   },
+   {
+    "w": "with",
+    "s": 1.96,
+    "e": 2.2
+   },
+   {
+    "w": "Google's",
+    "s": 2.2,
+    "e": 2.76
+   },
+   {
+    "w": "agent",
+    "s": 2.76,
+    "e": 3.12
+   },
+   {
+    "w": "development",
+    "s": 3.12,
+    "e": 3.64
+   },
+   {
+    "w": "kit",
+    "s": 3.64,
+    "e": 4.06
+   },
+   {
+    "w": "running",
+    "s": 4.06,
+    "e": 4.68
+   },
+   {
+    "w": "on",
+    "s": 4.68,
+    "e": 4.94
+   },
+   {
+    "w": "Cloud",
+    "s": 4.94,
+    "e": 5.3
+   },
+   {
+    "w": "Run",
+    "s": 5.3,
+    "e": 5.66
+   },
+   {
+    "w": "and",
+    "s": 5.66,
+    "e": 6.26
+   },
+   {
+    "w": "thinking",
+    "s": 6.26,
+    "e": 6.62
+   },
+   {
+    "w": "with",
+    "s": 6.62,
+    "e": 6.94
+   },
+   {
+    "w": "Gemini.",
+    "s": 6.94,
+    "e": 7.42
+   }
+  ]
+ },
+ "a1-1.wav": {
+  "text": "10 AI agents built with Google's Agent Development Kit, running on Cloud Run and thinking with Gemini.",
+  "words": [
+   {
+    "w": "10",
+    "s": 0.0,
+    "e": 0.48
+   },
+   {
+    "w": "AI",
+    "s": 0.48,
+    "e": 0.84
+   },
+   {
+    "w": "agents",
+    "s": 0.84,
+    "e": 1.44
+   },
+   {
+    "w": "built",
+    "s": 1.44,
+    "e": 2.0
+   },
+   {
+    "w": "with",
+    "s": 2.0,
+    "e": 2.24
+   },
+   {
+    "w": "Google's",
+    "s": 2.24,
+    "e": 2.78
+   },
+   {
+    "w": "Agent",
+    "s": 2.78,
+    "e": 3.12
+   },
+   {
+    "w": "Development",
+    "s": 3.12,
+    "e": 3.74
+   },
+   {
+    "w": "Kit,",
+    "s": 3.74,
+    "e": 4.22
+   },
+   {
+    "w": "running",
+    "s": 4.44,
+    "e": 4.9
+   },
+   {
+    "w": "on",
+    "s": 4.9,
+    "e": 5.22
+   },
+   {
+    "w": "Cloud",
+    "s": 5.22,
+    "e": 5.46
+   },
+   {
+    "w": "Run",
+    "s": 5.46,
+    "e": 5.82
+   },
+   {
+    "w": "and",
+    "s": 5.82,
+    "e": 6.36
+   },
+   {
+    "w": "thinking",
+    "s": 6.36,
+    "e": 6.74
+   },
+   {
+    "w": "with",
+    "s": 6.74,
+    "e": 7.1
+   },
+   {
+    "w": "Gemini.",
+    "s": 7.1,
+    "e": 7.66
+   }
+  ]
+ },
+ "a1-2.wav": {
+  "text": "10 AI agents built with Google's agent development kit running on Cloud Run and thinking with Gemini.",
+  "words": [
+   {
+    "w": "10",
+    "s": 0.0,
+    "e": 0.46
+   },
+   {
+    "w": "AI",
+    "s": 0.46,
+    "e": 0.86
+   },
+   {
+    "w": "agents",
+    "s": 0.86,
+    "e": 1.48
+   },
+   {
+    "w": "built",
+    "s": 1.48,
+    "e": 2.16
+   },
+   {
+    "w": "with",
+    "s": 2.16,
+    "e": 2.38
+   },
+   {
+    "w": "Google's",
+    "s": 2.38,
+    "e": 2.86
+   },
+   {
+    "w": "agent",
+    "s": 2.86,
+    "e": 3.2
+   },
+   {
+    "w": "development",
+    "s": 3.2,
+    "e": 3.68
+   },
+   {
+    "w": "kit",
+    "s": 3.68,
+    "e": 4.1
+   },
+   {
+    "w": "running",
+    "s": 4.1,
+    "e": 4.72
+   },
+   {
+    "w": "on",
+    "s": 4.72,
+    "e": 4.94
+   },
+   {
+    "w": "Cloud",
+    "s": 4.94,
+    "e": 5.26
+   },
+   {
+    "w": "Run",
+    "s": 5.26,
+    "e": 5.52
+   },
+   {
+    "w": "and",
+    "s": 5.52,
+    "e": 5.9
+   },
+   {
+    "w": "thinking",
+    "s": 5.9,
+    "e": 6.24
+   },
+   {
+    "w": "with",
+    "s": 6.24,
+    "e": 6.52
+   },
+   {
+    "w": "Gemini.",
+    "s": 6.52,
+    "e": 7.02
+   }
+  ]
+ },
+ "a2-0.wav": {
+  "text": "Each has one job. The data agent loads the stock. The watcher spots what won't sell. Vision reads the label. The valuer prices every exit and the router splits the batch.",
+  "words": [
+   {
+    "w": "Each",
+    "s": 0.0,
+    "e": 0.46
+   },
+   {
+    "w": "has",
+    "s": 0.46,
+    "e": 0.7
+   },
+   {
+    "w": "one",
+    "s": 0.7,
+    "e": 1.0
+   },
+   {
+    "w": "job.",
+    "s": 1.0,
+    "e": 1.34
+   },
+   {
+    "w": "The",
+    "s": 1.6,
+    "e": 2.08
+   },
+   {
+    "w": "data",
+    "s": 2.08,
+    "e": 2.38
+   },
+   {
+    "w": "agent",
+    "s": 2.38,
+    "e": 2.8
+   },
+   {
+    "w": "loads",
+    "s": 2.8,
+    "e": 3.2
+   },
+   {
+    "w": "the",
+    "s": 3.2,
+    "e": 3.46
+   },
+   {
+    "w": "stock.",
+    "s": 3.46,
+    "e": 3.8
+   },
+   {
+    "w": "The",
+    "s": 4.06,
+    "e": 4.46
+   },
+   {
+    "w": "watcher",
+    "s": 4.46,
+    "e": 4.86
+   },
+   {
+    "w": "spots",
+    "s": 4.86,
+    "e": 5.24
+   },
+   {
+    "w": "what",
+    "s": 5.24,
+    "e": 5.58
+   },
+   {
+    "w": "won't",
+    "s": 5.58,
+    "e": 5.94
+   },
+   {
+    "w": "sell.",
+    "s": 5.94,
+    "e": 6.2
+   },
+   {
+    "w": "Vision",
+    "s": 6.56,
+    "e": 7.12
+   },
+   {
+    "w": "reads",
+    "s": 7.12,
+    "e": 7.4
+   },
+   {
+    "w": "the",
+    "s": 7.4,
+    "e": 7.6
+   },
+   {
+    "w": "label.",
+    "s": 7.6,
+    "e": 7.94
+   },
+   {
+    "w": "The",
+    "s": 8.26,
+    "e": 8.62
+   },
+   {
+    "w": "valuer",
+    "s": 8.62,
+    "e": 9.06
+   },
+   {
+    "w": "prices",
+    "s": 9.06,
+    "e": 9.52
+   },
+   {
+    "w": "every",
+    "s": 9.52,
+    "e": 10.08
+   },
+   {
+    "w": "exit",
+    "s": 10.08,
+    "e": 10.52
+   },
+   {
+    "w": "and",
+    "s": 10.52,
+    "e": 11.0
+   },
+   {
+    "w": "the",
+    "s": 11.0,
+    "e": 11.16
+   },
+   {
+    "w": "router",
+    "s": 11.16,
+    "e": 11.42
+   },
+   {
+    "w": "splits",
+    "s": 11.42,
+    "e": 11.9
+   },
+   {
+    "w": "the",
+    "s": 11.9,
+    "e": 12.1
+   },
+   {
+    "w": "batch.",
+    "s": 12.1,
+    "e": 12.36
+   }
+  ]
+ },
+ "a2-1.wav": {
+  "text": "Each has one job. The data agent loads the stock. The watcher spots what won't sell. Vision reads the label. The valuer prices every exit and the router splits the batch.",
+  "words": [
+   {
+    "w": "Each",
+    "s": 0.0,
+    "e": 0.52
+   },
+   {
+    "w": "has",
+    "s": 0.52,
+    "e": 0.76
+   },
+   {
+    "w": "one",
+    "s": 0.76,
+    "e": 1.2
+   },
+   {
+    "w": "job.",
+    "s": 1.2,
+    "e": 1.62
+   },
+   {
+    "w": "The",
+    "s": 1.86,
+    "e": 2.38
+   },
+   {
+    "w": "data",
+    "s": 2.38,
+    "e": 2.68
+   },
+   {
+    "w": "agent",
+    "s": 2.68,
+    "e": 3.06
+   },
+   {
+    "w": "loads",
+    "s": 3.06,
+    "e": 3.44
+   },
+   {
+    "w": "the",
+    "s": 3.44,
+    "e": 3.68
+   },
+   {
+    "w": "stock.",
+    "s": 3.68,
+    "e": 4.04
+   },
+   {
+    "w": "The",
+    "s": 4.26,
+    "e": 4.56
+   },
+   {
+    "w": "watcher",
+    "s": 4.56,
+    "e": 5.0
+   },
+   {
+    "w": "spots",
+    "s": 5.0,
+    "e": 5.26
+   },
+   {
+    "w": "what",
+    "s": 5.26,
+    "e": 5.52
+   },
+   {
+    "w": "won't",
+    "s": 5.52,
+    "e": 5.84
+   },
+   {
+    "w": "sell.",
+    "s": 5.84,
+    "e": 6.1
+   },
+   {
+    "w": "Vision",
+    "s": 6.32,
+    "e": 6.9
+   },
+   {
+    "w": "reads",
+    "s": 6.9,
+    "e": 7.2
+   },
+   {
+    "w": "the",
+    "s": 7.2,
+    "e": 7.42
+   },
+   {
+    "w": "label.",
+    "s": 7.42,
+    "e": 7.76
+   },
+   {
+    "w": "The",
+    "s": 8.1,
+    "e": 8.52
+   },
+   {
+    "w": "valuer",
+    "s": 8.52,
+    "e": 8.96
+   },
+   {
+    "w": "prices",
+    "s": 8.96,
+    "e": 9.42
+   },
+   {
+    "w": "every",
+    "s": 9.42,
+    "e": 9.82
+   },
+   {
+    "w": "exit",
+    "s": 9.82,
+    "e": 10.28
+   },
+   {
+    "w": "and",
+    "s": 10.28,
+    "e": 10.74
+   },
+   {
+    "w": "the",
+    "s": 10.74,
+    "e": 10.88
+   },
+   {
+    "w": "router",
+    "s": 10.88,
+    "e": 11.12
+   },
+   {
+    "w": "splits",
+    "s": 11.12,
+    "e": 11.54
+   },
+   {
+    "w": "the",
+    "s": 11.54,
+    "e": 11.76
+   },
+   {
+    "w": "batch.",
+    "s": 11.76,
+    "e": 12.04
+   }
+  ]
+ },
+ "a2-2.wav": {
+  "text": "Each has one job. The data agent loads the stock. The watcher spots what won't sell. Vision reads the label. The valuer prices every exit. And the router splits the batch.",
+  "words": [
+   {
+    "w": "Each",
+    "s": 0.0,
+    "e": 0.48
+   },
+   {
+    "w": "has",
+    "s": 0.48,
+    "e": 0.82
+   },
+   {
+    "w": "one",
+    "s": 0.82,
+    "e": 1.12
+   },
+   {
+    "w": "job.",
+    "s": 1.12,
+    "e": 1.48
+   },
+   {
+    "w": "The",
+    "s": 1.72,
+    "e": 2.14
+   },
+   {
+    "w": "data",
+    "s": 2.14,
+    "e": 2.46
+   },
+   {
+    "w": "agent",
+    "s": 2.46,
+    "e": 2.92
+   },
+   {
+    "w": "loads",
+    "s": 2.92,
+    "e": 3.3
+   },
+   {
+    "w": "the",
+    "s": 3.3,
+    "e": 3.56
+   },
+   {
+    "w": "stock.",
+    "s": 3.56,
+    "e": 3.9
+   },
+   {
+    "w": "The",
+    "s": 4.1,
+    "e": 4.46
+   },
+   {
+    "w": "watcher",
+    "s": 4.46,
+    "e": 4.92
+   },
+   {
+    "w": "spots",
+    "s": 4.92,
+    "e": 5.3
+   },
+   {
+    "w": "what",
+    "s": 5.3,
+    "e": 5.58
+   },
+   {
+    "w": "won't",
+    "s": 5.58,
+    "e": 5.92
+   },
+   {
+    "w": "sell.",
+    "s": 5.92,
+    "e": 6.3
+   },
+   {
+    "w": "Vision",
+    "s": 6.54,
+    "e": 7.14
+   },
+   {
+    "w": "reads",
+    "s": 7.14,
+    "e": 7.48
+   },
+   {
+    "w": "the",
+    "s": 7.48,
+    "e": 7.72
+   },
+   {
+    "w": "label.",
+    "s": 7.72,
+    "e": 8.06
+   },
+   {
+    "w": "The",
+    "s": 8.36,
+    "e": 8.68
+   },
+   {
+    "w": "valuer",
+    "s": 8.68,
+    "e": 9.24
+   },
+   {
+    "w": "prices",
+    "s": 9.24,
+    "e": 9.8
+   },
+   {
+    "w": "every",
+    "s": 9.8,
+    "e": 10.18
+   },
+   {
+    "w": "exit.",
+    "s": 10.18,
+    "e": 10.7
+   },
+   {
+    "w": "And",
+    "s": 10.9,
+    "e": 11.3
+   },
+   {
+    "w": "the",
+    "s": 11.3,
+    "e": 11.46
+   },
+   {
+    "w": "router",
+    "s": 11.46,
+    "e": 11.78
+   },
+   {
+    "w": "splits",
+    "s": 11.78,
+    "e": 12.42
+   },
+   {
+    "w": "the",
+    "s": 12.42,
+    "e": 12.66
+   },
+   {
+    "w": "batch.",
+    "s": 12.66,
+    "e": 13.0
+   }
+  ]
+ },
+ "a3-0.wav": {
+  "text": "Outreach, the lister and the negotiator find the buyers. Paperwork files every paper and impact measures the good it does.",
+  "words": [
+   {
+    "w": "Outreach,",
+    "s": 0.0,
+    "e": 0.84
+   },
+   {
+    "w": "the",
+    "s": 0.98,
+    "e": 1.22
+   },
+   {
+    "w": "lister",
+    "s": 1.22,
+    "e": 1.6
+   },
+   {
+    "w": "and",
+    "s": 1.6,
+    "e": 1.94
+   },
+   {
+    "w": "the",
+    "s": 1.94,
+    "e": 2.12
+   },
+   {
+    "w": "negotiator",
+    "s": 2.12,
+    "e": 2.86
+   },
+   {
+    "w": "find",
+    "s": 2.86,
+    "e": 3.2
+   },
+   {
+    "w": "the",
+    "s": 3.2,
+    "e": 3.36
+   },
+   {
+    "w": "buyers.",
+    "s": 3.36,
+    "e": 3.72
+   },
+   {
+    "w": "Paperwork",
+    "s": 4.06,
+    "e": 4.74
+   },
+   {
+    "w": "files",
+    "s": 4.74,
+    "e": 5.1
+   },
+   {
+    "w": "every",
+    "s": 5.1,
+    "e": 5.48
+   },
+   {
+    "w": "paper",
+    "s": 5.48,
+    "e": 5.88
+   },
+   {
+    "w": "and",
+    "s": 5.88,
+    "e": 6.38
+   },
+   {
+    "w": "impact",
+    "s": 6.38,
+    "e": 6.84
+   },
+   {
+    "w": "measures",
+    "s": 6.84,
+    "e": 7.38
+   },
+   {
+    "w": "the",
+    "s": 7.38,
+    "e": 7.6
+   },
+   {
+    "w": "good",
+    "s": 7.6,
+    "e": 7.8
+   },
+   {
+    "w": "it",
+    "s": 7.8,
+    "e": 7.98
+   },
+   {
+    "w": "does.",
+    "s": 7.98,
+    "e": 8.24
+   }
+  ]
+ },
+ "a3-1.wav": {
+  "text": "Outreach the lister and the negotiator find the buyers. Paperwork files every paper. And impact measures the good it does.",
+  "words": [
+   {
+    "w": "Outreach",
+    "s": 0.0,
+    "e": 0.7
+   },
+   {
+    "w": "the",
+    "s": 0.7,
+    "e": 0.9
+   },
+   {
+    "w": "lister",
+    "s": 0.9,
+    "e": 1.2
+   },
+   {
+    "w": "and",
+    "s": 1.2,
+    "e": 1.46
+   },
+   {
+    "w": "the",
+    "s": 1.46,
+    "e": 1.64
+   },
+   {
+    "w": "negotiator",
+    "s": 1.64,
+    "e": 2.24
+   },
+   {
+    "w": "find",
+    "s": 2.24,
+    "e": 2.5
+   },
+   {
+    "w": "the",
+    "s": 2.5,
+    "e": 2.66
+   },
+   {
+    "w": "buyers.",
+    "s": 2.66,
+    "e": 3.06
+   },
+   {
+    "w": "Paperwork",
+    "s": 3.38,
+    "e": 3.96
+   },
+   {
+    "w": "files",
+    "s": 3.96,
+    "e": 4.3
+   },
+   {
+    "w": "every",
+    "s": 4.3,
+    "e": 4.74
+   },
+   {
+    "w": "paper.",
+    "s": 4.74,
+    "e": 5.16
+   },
+   {
+    "w": "And",
+    "s": 5.34,
+    "e": 5.66
+   },
+   {
+    "w": "impact",
+    "s": 5.66,
+    "e": 6.0
+   },
+   {
+    "w": "measures",
+    "s": 6.0,
+    "e": 6.46
+   },
+   {
+    "w": "the",
+    "s": 6.46,
+    "e": 6.66
+   },
+   {
+    "w": "good",
+    "s": 6.66,
+    "e": 6.82
+   },
+   {
+    "w": "it",
+    "s": 6.82,
+    "e": 6.96
+   },
+   {
+    "w": "does.",
+    "s": 6.96,
+    "e": 7.2
+   }
+  ]
+ },
+ "a3-2.wav": {
+  "text": "Outreach, the lister and the negotiator find the buyers. Paperwork files every paper. And impact measures the good it does.",
+  "words": [
+   {
+    "w": "Outreach,",
+    "s": 0.0,
+    "e": 0.86
+   },
+   {
+    "w": "the",
+    "s": 1.0,
+    "e": 1.1
+   },
+   {
+    "w": "lister",
+    "s": 1.1,
+    "e": 1.48
+   },
+   {
+    "w": "and",
+    "s": 1.48,
+    "e": 1.88
+   },
+   {
+    "w": "the",
+    "s": 1.88,
+    "e": 2.02
+   },
+   {
+    "w": "negotiator",
+    "s": 2.02,
+    "e": 2.72
+   },
+   {
+    "w": "find",
+    "s": 2.72,
+    "e": 3.02
+   },
+   {
+    "w": "the",
+    "s": 3.02,
+    "e": 3.18
+   },
+   {
+    "w": "buyers.",
+    "s": 3.18,
+    "e": 3.56
+   },
+   {
+    "w": "Paperwork",
+    "s": 3.94,
+    "e": 4.64
+   },
+   {
+    "w": "files",
+    "s": 4.64,
+    "e": 5.0
+   },
+   {
+    "w": "every",
+    "s": 5.0,
+    "e": 5.42
+   },
+   {
+    "w": "paper.",
+    "s": 5.42,
+    "e": 5.78
+   },
+   {
+    "w": "And",
+    "s": 6.06,
+    "e": 6.46
+   },
+   {
+    "w": "impact",
+    "s": 6.46,
+    "e": 6.92
+   },
+   {
+    "w": "measures",
+    "s": 6.92,
+    "e": 7.38
+   },
+   {
+    "w": "the",
+    "s": 7.38,
+    "e": 7.6
+   },
+   {
+    "w": "good",
+    "s": 7.6,
+    "e": 7.76
+   },
+   {
+    "w": "it",
+    "s": 7.76,
+    "e": 7.92
+   },
+   {
+    "w": "does.",
+    "s": 7.92,
+    "e": 8.18
+   }
+  ]
+ },
+ "a4-0.wav": {
+  "text": "They pass each batch from hand to hand and stop for only one thing, a person's yes.",
+  "words": [
+   {
+    "w": "They",
+    "s": 0.0,
+    "e": 0.2
+   },
+   {
+    "w": "pass",
+    "s": 0.2,
+    "e": 0.48
+   },
+   {
+    "w": "each",
+    "s": 0.48,
+    "e": 0.8
+   },
+   {
+    "w": "batch",
+    "s": 0.8,
+    "e": 1.16
+   },
+   {
+    "w": "from",
+    "s": 1.16,
+    "e": 1.42
+   },
+   {
+    "w": "hand",
+    "s": 1.42,
+    "e": 1.7
+   },
+   {
+    "w": "to",
+    "s": 1.7,
+    "e": 1.86
+   },
+   {
+    "w": "hand",
+    "s": 1.86,
+    "e": 2.12
+   },
+   {
+    "w": "and",
+    "s": 2.12,
+    "e": 2.56
+   },
+   {
+    "w": "stop",
+    "s": 2.56,
+    "e": 2.82
+   },
+   {
+    "w": "for",
+    "s": 2.82,
+    "e": 3.04
+   },
+   {
+    "w": "only",
+    "s": 3.04,
+    "e": 3.28
+   },
+   {
+    "w": "one",
+    "s": 3.28,
+    "e": 3.52
+   },
+   {
+    "w": "thing,",
+    "s": 3.52,
+    "e": 3.76
+   },
+   {
+    "w": "a",
+    "s": 3.96,
+    "e": 4.42
+   },
+   {
+    "w": "person's",
+    "s": 4.42,
+    "e": 4.96
+   },
+   {
+    "w": "yes.",
+    "s": 4.96,
+    "e": 5.24
+   }
+  ]
+ },
+ "a4-1.wav": {
+  "text": "They pass each batch from hand to hand and stop for only one thing, a person's yes.",
+  "words": [
+   {
+    "w": "They",
+    "s": 0.0,
+    "e": 0.28
+   },
+   {
+    "w": "pass",
+    "s": 0.28,
+    "e": 0.64
+   },
+   {
+    "w": "each",
+    "s": 0.64,
+    "e": 1.02
+   },
+   {
+    "w": "batch",
+    "s": 1.02,
+    "e": 1.4
+   },
+   {
+    "w": "from",
+    "s": 1.4,
+    "e": 1.64
+   },
+   {
+    "w": "hand",
+    "s": 1.64,
+    "e": 1.96
+   },
+   {
+    "w": "to",
+    "s": 1.96,
+    "e": 2.14
+   },
+   {
+    "w": "hand",
+    "s": 2.14,
+    "e": 2.44
+   },
+   {
+    "w": "and",
+    "s": 2.44,
+    "e": 2.98
+   },
+   {
+    "w": "stop",
+    "s": 2.98,
+    "e": 3.26
+   },
+   {
+    "w": "for",
+    "s": 3.26,
+    "e": 3.44
+   },
+   {
+    "w": "only",
+    "s": 3.44,
+    "e": 3.66
+   },
+   {
+    "w": "one",
+    "s": 3.66,
+    "e": 3.94
+   },
+   {
+    "w": "thing,",
+    "s": 3.94,
+    "e": 4.22
+   },
+   {
+    "w": "a",
+    "s": 4.42,
+    "e": 4.82
+   },
+   {
+    "w": "person's",
+    "s": 4.82,
+    "e": 5.32
+   },
+   {
+    "w": "yes.",
+    "s": 5.32,
+    "e": 5.48
+   }
+  ]
+ },
+ "a4-2.wav": {
+  "text": "They pass each batch from hand to hand and stop for only one thing, a person's yes.",
+  "words": [
+   {
+    "w": "They",
+    "s": 0.0,
+    "e": 0.44
+   },
+   {
+    "w": "pass",
+    "s": 0.44,
+    "e": 0.86
+   },
+   {
+    "w": "each",
+    "s": 0.86,
+    "e": 1.32
+   },
+   {
+    "w": "batch",
+    "s": 1.32,
+    "e": 1.74
+   },
+   {
+    "w": "from",
+    "s": 1.74,
+    "e": 2.08
+   },
+   {
+    "w": "hand",
+    "s": 2.08,
+    "e": 2.38
+   },
+   {
+    "w": "to",
+    "s": 2.38,
+    "e": 2.54
+   },
+   {
+    "w": "hand",
+    "s": 2.54,
+    "e": 2.84
+   },
+   {
+    "w": "and",
+    "s": 2.84,
+    "e": 3.26
+   },
+   {
+    "w": "stop",
+    "s": 3.26,
+    "e": 3.56
+   },
+   {
+    "w": "for",
+    "s": 3.56,
+    "e": 3.82
+   },
+   {
+    "w": "only",
+    "s": 3.82,
+    "e": 4.08
+   },
+   {
+    "w": "one",
+    "s": 4.08,
+    "e": 4.32
+   },
+   {
+    "w": "thing,",
+    "s": 4.32,
+    "e": 4.62
+   },
+   {
+    "w": "a",
+    "s": 4.84,
+    "e": 5.22
+   },
+   {
+    "w": "person's",
+    "s": 5.22,
+    "e": 5.78
+   },
+   {
+    "w": "yes.",
+    "s": 5.78,
+    "e": 6.0
+   }
+  ]
+ },
+ "a5-0.wav": {
+  "text": "Every event flows through PubSub, the sales history lives in BigQuery, and every screen stays live.",
+  "words": [
+   {
+    "w": "Every",
+    "s": 0.0,
+    "e": 0.42
+   },
+   {
+    "w": "event",
+    "s": 0.42,
+    "e": 0.8
+   },
+   {
+    "w": "flows",
+    "s": 0.8,
+    "e": 1.18
+   },
+   {
+    "w": "through",
+    "s": 1.18,
+    "e": 1.38
+   },
+   {
+    "w": "PubSub,",
+    "s": 1.38,
+    "e": 1.9
+   },
+   {
+    "w": "the",
+    "s": 2.14,
+    "e": 2.42
+   },
+   {
+    "w": "sales",
+    "s": 2.42,
+    "e": 2.72
+   },
+   {
+    "w": "history",
+    "s": 2.72,
+    "e": 3.08
+   },
+   {
+    "w": "lives",
+    "s": 3.08,
+    "e": 3.38
+   },
+   {
+    "w": "in",
+    "s": 3.38,
+    "e": 3.58
+   },
+   {
+    "w": "BigQuery,",
+    "s": 3.58,
+    "e": 4.0
+   },
+   {
+    "w": "and",
+    "s": 4.32,
+    "e": 4.7
+   },
+   {
+    "w": "every",
+    "s": 4.7,
+    "e": 4.94
+   },
+   {
+    "w": "screen",
+    "s": 4.94,
+    "e": 5.3
+   },
+   {
+    "w": "stays",
+    "s": 5.3,
+    "e": 5.6
+   },
+   {
+    "w": "live.",
+    "s": 5.6,
+    "e": 5.86
+   }
+  ]
+ },
+ "a5-1.wav": {
+  "text": "Every event flows through PubSub. The sales history lives in BigQuery and every screen stays live.",
+  "words": [
+   {
+    "w": "Every",
+    "s": 0.0,
+    "e": 0.54
+   },
+   {
+    "w": "event",
+    "s": 0.54,
+    "e": 0.84
+   },
+   {
+    "w": "flows",
+    "s": 0.84,
+    "e": 1.28
+   },
+   {
+    "w": "through",
+    "s": 1.28,
+    "e": 1.54
+   },
+   {
+    "w": "PubSub.",
+    "s": 1.54,
+    "e": 2.1
+   },
+   {
+    "w": "The",
+    "s": 2.34,
+    "e": 2.68
+   },
+   {
+    "w": "sales",
+    "s": 2.68,
+    "e": 3.0
+   },
+   {
+    "w": "history",
+    "s": 3.0,
+    "e": 3.4
+   },
+   {
+    "w": "lives",
+    "s": 3.4,
+    "e": 3.64
+   },
+   {
+    "w": "in",
+    "s": 3.64,
+    "e": 3.8
+   },
+   {
+    "w": "BigQuery",
+    "s": 3.8,
+    "e": 4.32
+   },
+   {
+    "w": "and",
+    "s": 4.32,
+    "e": 4.96
+   },
+   {
+    "w": "every",
+    "s": 4.96,
+    "e": 5.34
+   },
+   {
+    "w": "screen",
+    "s": 5.34,
+    "e": 5.68
+   },
+   {
+    "w": "stays",
+    "s": 5.68,
+    "e": 6.0
+   },
+   {
+    "w": "live.",
+    "s": 6.0,
+    "e": 6.28
+   }
+  ]
+ },
+ "a5-2.wav": {
+  "text": "Every event flows through PubSub, the sales history lives in BigQuery, and every screen stays live.",
+  "words": [
+   {
+    "w": "Every",
+    "s": 0.0,
+    "e": 0.36
+   },
+   {
+    "w": "event",
+    "s": 0.36,
+    "e": 0.7
+   },
+   {
+    "w": "flows",
+    "s": 0.7,
+    "e": 1.04
+   },
+   {
+    "w": "through",
+    "s": 1.04,
+    "e": 1.26
+   },
+   {
+    "w": "PubSub,",
+    "s": 1.26,
+    "e": 1.76
+   },
+   {
+    "w": "the",
+    "s": 2.02,
+    "e": 2.16
+   },
+   {
+    "w": "sales",
+    "s": 2.16,
+    "e": 2.46
+   },
+   {
+    "w": "history",
+    "s": 2.46,
+    "e": 2.92
+   },
+   {
+    "w": "lives",
+    "s": 2.92,
+    "e": 3.16
+   },
+   {
+    "w": "in",
+    "s": 3.16,
+    "e": 3.32
+   },
+   {
+    "w": "BigQuery,",
+    "s": 3.32,
+    "e": 3.78
+   },
+   {
+    "w": "and",
+    "s": 4.06,
+    "e": 4.24
+   },
+   {
+    "w": "every",
+    "s": 4.24,
+    "e": 4.44
+   },
+   {
+    "w": "screen",
+    "s": 4.44,
+    "e": 4.8
+   },
+   {
+    "w": "stays",
+    "s": 4.8,
+    "e": 5.16
+   },
+   {
+    "w": "live.",
+    "s": 5.16,
+    "e": 5.46
+   }
+  ]
+ },
+ "c1-0.wav": {
+  "text": "It plugs into what brands already use, the distributors, stockists, sports, tally, UPI, the marketplace and the food banks on every phone, tablet and laptop.",
+  "words": [
+   {
+    "w": "It",
+    "s": 0.0,
+    "e": 0.34
+   },
+   {
+    "w": "plugs",
+    "s": 0.34,
+    "e": 0.62
+   },
+   {
+    "w": "into",
+    "s": 0.62,
+    "e": 0.84
+   },
+   {
+    "w": "what",
+    "s": 0.84,
+    "e": 1.08
+   },
+   {
+    "w": "brands",
+    "s": 1.08,
+    "e": 1.42
+   },
+   {
+    "w": "already",
+    "s": 1.42,
+    "e": 1.78
+   },
+   {
+    "w": "use,",
+    "s": 1.78,
+    "e": 2.16
+   },
+   {
+    "w": "the",
+    "s": 2.38,
+    "e": 2.64
+   },
+   {
+    "w": "distributors,",
+    "s": 2.64,
+    "e": 3.32
+   },
+   {
+    "w": "stockists,",
+    "s": 3.46,
+    "e": 3.8
+   },
+   {
+    "w": "sports,",
+    "s": 3.92,
+    "e": 4.2
+   },
+   {
+    "w": "tally,",
+    "s": 4.54,
+    "e": 4.84
+   },
+   {
+    "w": "UPI,",
+    "s": 5.14,
+    "e": 5.64
+   },
+   {
+    "w": "the",
+    "s": 5.88,
+    "e": 5.94
+   },
+   {
+    "w": "marketplace",
+    "s": 5.94,
+    "e": 6.34
+   },
+   {
+    "w": "and",
+    "s": 6.34,
+    "e": 6.8
+   },
+   {
+    "w": "the",
+    "s": 6.8,
+    "e": 6.94
+   },
+   {
+    "w": "food",
+    "s": 6.94,
+    "e": 7.14
+   },
+   {
+    "w": "banks",
+    "s": 7.14,
+    "e": 7.5
+   },
+   {
+    "w": "on",
+    "s": 7.5,
+    "e": 8.0
+   },
+   {
+    "w": "every",
+    "s": 8.0,
+    "e": 8.24
+   },
+   {
+    "w": "phone,",
+    "s": 8.24,
+    "e": 8.54
+   },
+   {
+    "w": "tablet",
+    "s": 8.68,
+    "e": 8.96
+   },
+   {
+    "w": "and",
+    "s": 8.96,
+    "e": 9.24
+   },
+   {
+    "w": "laptop.",
+    "s": 9.24,
+    "e": 9.54
+   }
+  ]
+ },
+ "c1-1.wav": {
+  "text": "It plugs into what brands already use, the distributors' stock exports, Tally, UPI, the marketplace and the food banks, on every phone, tablet and laptop.",
+  "words": [
+   {
+    "w": "It",
+    "s": 0.0,
+    "e": 0.36
+   },
+   {
+    "w": "plugs",
+    "s": 0.36,
+    "e": 0.66
+   },
+   {
+    "w": "into",
+    "s": 0.66,
+    "e": 0.88
+   },
+   {
+    "w": "what",
+    "s": 0.88,
+    "e": 1.12
+   },
+   {
+    "w": "brands",
+    "s": 1.12,
+    "e": 1.52
+   },
+   {
+    "w": "already",
+    "s": 1.52,
+    "e": 1.88
+   },
+   {
+    "w": "use,",
+    "s": 1.88,
+    "e": 2.28
+   },
+   {
+    "w": "the",
+    "s": 2.48,
+    "e": 2.76
+   },
+   {
+    "w": "distributors'",
+    "s": 2.76,
+    "e": 3.42
+   },
+   {
+    "w": "stock",
+    "s": 3.58,
+    "e": 3.74
+   },
+   {
+    "w": "exports,",
+    "s": 3.74,
+    "e": 4.38
+   },
+   {
+    "w": "Tally,",
+    "s": 4.76,
+    "e": 5.1
+   },
+   {
+    "w": "UPI,",
+    "s": 5.36,
+    "e": 5.98
+   },
+   {
+    "w": "the",
+    "s": 6.2,
+    "e": 6.3
+   },
+   {
+    "w": "marketplace",
+    "s": 6.3,
+    "e": 6.74
+   },
+   {
+    "w": "and",
+    "s": 6.74,
+    "e": 7.4
+   },
+   {
+    "w": "the",
+    "s": 7.4,
+    "e": 7.52
+   },
+   {
+    "w": "food",
+    "s": 7.52,
+    "e": 7.74
+   },
+   {
+    "w": "banks,",
+    "s": 7.74,
+    "e": 8.06
+   },
+   {
+    "w": "on",
+    "s": 8.24,
+    "e": 8.68
+   },
+   {
+    "w": "every",
+    "s": 8.68,
+    "e": 8.96
+   },
+   {
+    "w": "phone,",
+    "s": 8.96,
+    "e": 9.32
+   },
+   {
+    "w": "tablet",
+    "s": 9.46,
+    "e": 9.78
+   },
+   {
+    "w": "and",
+    "s": 9.78,
+    "e": 9.96
+   },
+   {
+    "w": "laptop.",
+    "s": 9.96,
+    "e": 10.28
+   }
+  ]
+ },
+ "c1-2.wav": {
+  "text": "It plugs into what brands already use, the distributor stock exports, Tally, UPI, the marketplace and the food banks on every phone, tablet and laptop.",
+  "words": [
+   {
+    "w": "It",
+    "s": 0.0,
+    "e": 0.4
+   },
+   {
+    "w": "plugs",
+    "s": 0.4,
+    "e": 0.7
+   },
+   {
+    "w": "into",
+    "s": 0.7,
+    "e": 0.92
+   },
+   {
+    "w": "what",
+    "s": 0.92,
+    "e": 1.24
+   },
+   {
+    "w": "brands",
+    "s": 1.24,
+    "e": 1.68
+   },
+   {
+    "w": "already",
+    "s": 1.68,
+    "e": 2.16
+   },
+   {
+    "w": "use,",
+    "s": 2.16,
+    "e": 2.62
+   },
+   {
+    "w": "the",
+    "s": 2.78,
+    "e": 3.1
+   },
+   {
+    "w": "distributor",
+    "s": 3.1,
+    "e": 3.64
+   },
+   {
+    "w": "stock",
+    "s": 3.64,
+    "e": 4.06
+   },
+   {
+    "w": "exports,",
+    "s": 4.06,
+    "e": 4.68
+   },
+   {
+    "w": "Tally,",
+    "s": 5.12,
+    "e": 5.38
+   },
+   {
+    "w": "UPI,",
+    "s": 5.86,
+    "e": 6.38
+   },
+   {
+    "w": "the",
+    "s": 6.7,
+    "e": 6.78
+   },
+   {
+    "w": "marketplace",
+    "s": 6.78,
+    "e": 7.18
+   },
+   {
+    "w": "and",
+    "s": 7.18,
+    "e": 7.5
+   },
+   {
+    "w": "the",
+    "s": 7.5,
+    "e": 7.66
+   },
+   {
+    "w": "food",
+    "s": 7.66,
+    "e": 7.84
+   },
+   {
+    "w": "banks",
+    "s": 7.84,
+    "e": 8.18
+   },
+   {
+    "w": "on",
+    "s": 8.18,
+    "e": 8.64
+   },
+   {
+    "w": "every",
+    "s": 8.64,
+    "e": 9.12
+   },
+   {
+    "w": "phone,",
+    "s": 9.12,
+    "e": 9.48
+   },
+   {
+    "w": "tablet",
+    "s": 9.62,
+    "e": 9.84
+   },
+   {
+    "w": "and",
+    "s": 9.84,
+    "e": 10.06
+   },
+   {
+    "w": "laptop.",
+    "s": 10.06,
+    "e": 10.38
+   }
+  ]
+ },
+ "c2-0.wav": {
+  "text": "smart clearance. 10 agents, 1 yes. And nothing good goes to waste.",
+  "words": [
+   {
+    "w": "smart",
+    "s": 0.0,
+    "e": 0.72
+   },
+   {
+    "w": "clearance.",
+    "s": 0.72,
+    "e": 1.3
+   },
+   {
+    "w": "10",
+    "s": 1.62,
+    "e": 2.06
+   },
+   {
+    "w": "agents,",
+    "s": 2.06,
+    "e": 2.52
+   },
+   {
+    "w": "1",
+    "s": 2.76,
+    "e": 3.14
+   },
+   {
+    "w": "yes.",
+    "s": 3.14,
+    "e": 3.48
+   },
+   {
+    "w": "And",
+    "s": 3.68,
+    "e": 4.08
+   },
+   {
+    "w": "nothing",
+    "s": 4.08,
+    "e": 4.36
+   },
+   {
+    "w": "good",
+    "s": 4.36,
+    "e": 4.62
+   },
+   {
+    "w": "goes",
+    "s": 4.62,
+    "e": 4.88
+   },
+   {
+    "w": "to",
+    "s": 4.88,
+    "e": 5.04
+   },
+   {
+    "w": "waste.",
+    "s": 5.04,
+    "e": 5.34
+   }
+  ]
+ },
+ "c2-1.wav": {
+  "text": "Smart clearance. 10 agents, 1 yes. And nothing good goes to waste.",
+  "words": [
+   {
+    "w": "Smart",
+    "s": 0.0,
+    "e": 0.72
+   },
+   {
+    "w": "clearance.",
+    "s": 0.72,
+    "e": 1.16
+   },
+   {
+    "w": "10",
+    "s": 1.54,
+    "e": 1.9
+   },
+   {
+    "w": "agents,",
+    "s": 1.9,
+    "e": 2.34
+   },
+   {
+    "w": "1",
+    "s": 2.54,
+    "e": 2.88
+   },
+   {
+    "w": "yes.",
+    "s": 2.88,
+    "e": 3.2
+   },
+   {
+    "w": "And",
+    "s": 3.44,
+    "e": 3.7
+   },
+   {
+    "w": "nothing",
+    "s": 3.7,
+    "e": 3.98
+   },
+   {
+    "w": "good",
+    "s": 3.98,
+    "e": 4.2
+   },
+   {
+    "w": "goes",
+    "s": 4.2,
+    "e": 4.46
+   },
+   {
+    "w": "to",
+    "s": 4.46,
+    "e": 4.62
+   },
+   {
+    "w": "waste.",
+    "s": 4.62,
+    "e": 4.96
+   }
+  ]
+ },
+ "c2-2.wav": {
+  "text": "Smart clearance. 10 agents, 1 yes. And nothing good goes to waste.",
+  "words": [
+   {
+    "w": "Smart",
+    "s": 0.0,
+    "e": 0.64
+   },
+   {
+    "w": "clearance.",
+    "s": 0.64,
+    "e": 1.06
+   },
+   {
+    "w": "10",
+    "s": 1.48,
+    "e": 1.88
+   },
+   {
+    "w": "agents,",
+    "s": 1.88,
+    "e": 2.36
+   },
+   {
+    "w": "1",
+    "s": 2.6,
+    "e": 2.92
+   },
+   {
+    "w": "yes.",
+    "s": 2.92,
+    "e": 3.24
+   },
+   {
+    "w": "And",
+    "s": 3.42,
+    "e": 3.78
+   },
+   {
+    "w": "nothing",
+    "s": 3.78,
+    "e": 4.16
+   },
+   {
+    "w": "good",
+    "s": 4.16,
+    "e": 4.44
+   },
+   {
+    "w": "goes",
+    "s": 4.44,
+    "e": 4.74
+   },
+   {
+    "w": "to",
+    "s": 4.74,
+    "e": 4.88
+   },
+   {
+    "w": "waste.",
+    "s": 4.88,
+    "e": 5.16
+   }
+  ]
+ },
+ "c3-0.wav": {
+  "text": "See it for yourself at smartclearancedemo.web.app",
+  "words": [
+   {
+    "w": "See",
+    "s": 0.0,
+    "e": 0.4
+   },
+   {
+    "w": "it",
+    "s": 0.4,
+    "e": 0.56
+   },
+   {
+    "w": "for",
+    "s": 0.56,
+    "e": 0.7
+   },
+   {
+    "w": "yourself",
+    "s": 0.7,
+    "e": 1.1
+   },
+   {
+    "w": "at",
+    "s": 1.1,
+    "e": 1.56
+   },
+   {
+    "w": "smartclearancedemo",
+    "s": 1.56,
+    "e": 2.86
+   },
+   {
+    "w": ".web",
+    "s": 2.86,
+    "e": 3.54
+   },
+   {
+    "w": ".app",
+    "s": 3.54,
+    "e": 3.94
+   }
+  ]
+ },
+ "c3-1.wav": {
+  "text": "See it for yourself at smartclearancedemo.web.app",
+  "words": [
+   {
+    "w": "See",
+    "s": 0.0,
+    "e": 0.24
+   },
+   {
+    "w": "it",
+    "s": 0.24,
+    "e": 0.38
+   },
+   {
+    "w": "for",
+    "s": 0.38,
+    "e": 0.54
+   },
+   {
+    "w": "yourself",
+    "s": 0.54,
+    "e": 0.94
+   },
+   {
+    "w": "at",
+    "s": 0.94,
+    "e": 1.48
+   },
+   {
+    "w": "smartclearancedemo",
+    "s": 1.48,
+    "e": 2.74
+   },
+   {
+    "w": ".web",
+    "s": 2.74,
+    "e": 3.54
+   },
+   {
+    "w": ".app",
+    "s": 3.54,
+    "e": 4.08
+   }
+  ]
+ },
+ "c3-2.wav": {
+  "text": "See it for yourself at smartclearancedemo.web.app",
+  "words": [
+   {
+    "w": "See",
+    "s": 0.0,
+    "e": 0.56
+   },
+   {
+    "w": "it",
+    "s": 0.56,
+    "e": 0.7
+   },
+   {
+    "w": "for",
+    "s": 0.7,
+    "e": 0.84
+   },
+   {
+    "w": "yourself",
+    "s": 0.84,
+    "e": 1.26
+   },
+   {
+    "w": "at",
+    "s": 1.26,
+    "e": 1.78
+   },
+   {
+    "w": "smartclearancedemo",
+    "s": 1.78,
+    "e": 3.06
+   },
+   {
+    "w": ".web",
+    "s": 3.06,
+    "e": 3.9
+   },
+   {
+    "w": ".app",
+    "s": 3.9,
+    "e": 4.5
+   }
+  ]
+ },
+ "e1-0.wav": {
+  "text": "An educated, urban Indian English accent, as spoken in Bangaluru or Mumbai. Intimate and conversational, like telling a friend a story she has lived. Never like an announcer or an advert. Breathe naturally before each sentence. Let the pace move. Slower and a little lower on the problem. A small smile in the voice on the hopeful lines. Lightly quicker through the lists. Real pauses at full stops, tiny ones at commas. And every batch posts to an impact ledger. Kilos kept out of landfill. Meals served. Emissions avoided. Ready for the brand sustainability report.",
+  "words": [
+   {
+    "w": "An",
+    "s": 0.0,
+    "e": 0.36
+   },
+   {
+    "w": "educated,",
+    "s": 0.36,
+    "e": 0.88
+   },
+   {
+    "w": "urban",
+    "s": 1.24,
+    "e": 1.44
+   },
+   {
+    "w": "Indian",
+    "s": 1.44,
+    "e": 1.84
+   },
+   {
+    "w": "English",
+    "s": 1.84,
+    "e": 2.2
+   },
+   {
+    "w": "accent,",
+    "s": 2.2,
+    "e": 2.68
+   },
+   {
+    "w": "as",
+    "s": 2.88,
+    "e": 3.2
+   },
+   {
+    "w": "spoken",
+    "s": 3.2,
+    "e": 3.52
+   },
+   {
+    "w": "in",
+    "s": 3.52,
+    "e": 3.76
+   },
+   {
+    "w": "Bangaluru",
+    "s": 3.76,
+    "e": 4.36
+   },
+   {
+    "w": "or",
+    "s": 4.36,
+    "e": 4.7
+   },
+   {
+    "w": "Mumbai.",
+    "s": 4.7,
+    "e": 5.08
+   },
+   {
+    "w": "Intimate",
+    "s": 5.52,
+    "e": 6.14
+   },
+   {
+    "w": "and",
+    "s": 6.14,
+    "e": 6.3
+   },
+   {
+    "w": "conversational,",
+    "s": 6.3,
+    "e": 7.06
+   },
+   {
+    "w": "like",
+    "s": 7.28,
+    "e": 7.6
+   },
+   {
+    "w": "telling",
+    "s": 7.6,
+    "e": 7.82
+   },
+   {
+    "w": "a",
+    "s": 7.82,
+    "e": 8.02
+   },
+   {
+    "w": "friend",
+    "s": 8.02,
+    "e": 8.26
+   },
+   {
+    "w": "a",
+    "s": 8.26,
+    "e": 8.46
+   },
+   {
+    "w": "story",
+    "s": 8.46,
+    "e": 8.8
+   },
+   {
+    "w": "she",
+    "s": 8.8,
+    "e": 9.0
+   },
+   {
+    "w": "has",
+    "s": 9.0,
+    "e": 9.2
+   },
+   {
+    "w": "lived.",
+    "s": 9.2,
+    "e": 9.5
+   },
+   {
+    "w": "Never",
+    "s": 9.8,
+    "e": 10.2
+   },
+   {
+    "w": "like",
+    "s": 10.2,
+    "e": 10.48
+   },
+   {
+    "w": "an",
+    "s": 10.48,
+    "e": 10.62
+   },
+   {
+    "w": "announcer",
+    "s": 10.62,
+    "e": 11.04
+   },
+   {
+    "w": "or",
+    "s": 11.04,
+    "e": 11.32
+   },
+   {
+    "w": "an",
+    "s": 11.32,
+    "e": 11.48
+   },
+   {
+    "w": "advert.",
+    "s": 11.48,
+    "e": 11.82
+   },
+   {
+    "w": "Breathe",
+    "s": 12.06,
+    "e": 12.54
+   },
+   {
+    "w": "naturally",
+    "s": 12.54,
+    "e": 13.06
+   },
+   {
+    "w": "before",
+    "s": 13.06,
+    "e": 13.4
+   },
+   {
+    "w": "each",
+    "s": 13.4,
+    "e": 13.72
+   },
+   {
+    "w": "sentence.",
+    "s": 13.72,
+    "e": 14.2
+   },
+   {
+    "w": "Let",
+    "s": 14.52,
+    "e": 14.86
+   },
+   {
+    "w": "the",
+    "s": 14.86,
+    "e": 15.02
+   },
+   {
+    "w": "pace",
+    "s": 15.02,
+    "e": 15.3
+   },
+   {
+    "w": "move.",
+    "s": 15.3,
+    "e": 15.7
+   },
+   {
+    "w": "Slower",
+    "s": 16.0,
+    "e": 16.52
+   },
+   {
+    "w": "and",
+    "s": 16.52,
+    "e": 16.76
+   },
+   {
+    "w": "a",
+    "s": 16.76,
+    "e": 16.92
+   },
+   {
+    "w": "little",
+    "s": 16.92,
+    "e": 17.08
+   },
+   {
+    "w": "lower",
+    "s": 17.08,
+    "e": 17.44
+   },
+   {
+    "w": "on",
+    "s": 17.44,
+    "e": 17.64
+   },
+   {
+    "w": "the",
+    "s": 17.64,
+    "e": 17.76
+   },
+   {
+    "w": "problem.",
+    "s": 17.76,
+    "e": 18.16
+   },
+   {
+    "w": "A",
+    "s": 18.4,
+    "e": 18.74
+   },
+   {
+    "w": "small",
+    "s": 18.74,
+    "e": 19.04
+   },
+   {
+    "w": "smile",
+    "s": 19.04,
+    "e": 19.44
+   },
+   {
+    "w": "in",
+    "s": 19.44,
+    "e": 19.62
+   },
+   {
+    "w": "the",
+    "s": 19.62,
+    "e": 19.72
+   },
+   {
+    "w": "voice",
+    "s": 19.72,
+    "e": 20.02
+   },
+   {
+    "w": "on",
+    "s": 20.02,
+    "e": 20.18
+   },
+   {
+    "w": "the",
+    "s": 20.18,
+    "e": 20.3
+   },
+   {
+    "w": "hopeful",
+    "s": 20.3,
+    "e": 20.66
+   },
+   {
+    "w": "lines.",
+    "s": 20.66,
+    "e": 21.08
+   },
+   {
+    "w": "Lightly",
+    "s": 21.48,
+    "e": 21.88
+   },
+   {
+    "w": "quicker",
+    "s": 21.88,
+    "e": 22.18
+   },
+   {
+    "w": "through",
+    "s": 22.18,
+    "e": 22.44
+   },
+   {
+    "w": "the",
+    "s": 22.44,
+    "e": 22.6
+   },
+   {
+    "w": "lists.",
+    "s": 22.6,
+    "e": 22.92
+   },
+   {
+    "w": "Real",
+    "s": 23.32,
+    "e": 23.7
+   },
+   {
+    "w": "pauses",
+    "s": 23.7,
+    "e": 24.1
+   },
+   {
+    "w": "at",
+    "s": 24.1,
+    "e": 24.3
+   },
+   {
+    "w": "full",
+    "s": 24.3,
+    "e": 24.54
+   },
+   {
+    "w": "stops,",
+    "s": 24.54,
+    "e": 24.9
+   },
+   {
+    "w": "tiny",
+    "s": 25.2,
+    "e": 25.52
+   },
+   {
+    "w": "ones",
+    "s": 25.52,
+    "e": 25.8
+   },
+   {
+    "w": "at",
+    "s": 25.8,
+    "e": 26.0
+   },
+   {
+    "w": "commas.",
+    "s": 26.0,
+    "e": 26.46
+   },
+   {
+    "w": "And",
+    "s": 26.68,
+    "e": 27.3
+   },
+   {
+    "w": "every",
+    "s": 27.3,
+    "e": 27.54
+   },
+   {
+    "w": "batch",
+    "s": 27.54,
+    "e": 27.88
+   },
+   {
+    "w": "posts",
+    "s": 27.88,
+    "e": 28.3
+   },
+   {
+    "w": "to",
+    "s": 28.3,
+    "e": 28.58
+   },
+   {
+    "w": "an",
+    "s": 28.58,
+    "e": 28.74
+   },
+   {
+    "w": "impact",
+    "s": 28.74,
+    "e": 29.1
+   },
+   {
+    "w": "ledger.",
+    "s": 29.1,
+    "e": 29.5
+   },
+   {
+    "w": "Kilos",
+    "s": 29.5,
+    "e": 30.24
+   },
+   {
+    "w": "kept",
+    "s": 30.24,
+    "e": 30.52
+   },
+   {
+    "w": "out",
+    "s": 30.52,
+    "e": 30.76
+   },
+   {
+    "w": "of",
+    "s": 30.76,
+    "e": 30.9
+   },
+   {
+    "w": "landfill.",
+    "s": 30.9,
+    "e": 31.4
+   },
+   {
+    "w": "Meals",
+    "s": 31.64,
+    "e": 32.1
+   },
+   {
+    "w": "served.",
+    "s": 32.1,
+    "e": 32.48
+   },
+   {
+    "w": "Emissions",
+    "s": 32.72,
+    "e": 33.2
+   },
+   {
+    "w": "avoided.",
+    "s": 33.2,
+    "e": 33.6
+   },
+   {
+    "w": "Ready",
+    "s": 34.02,
+    "e": 34.22
+   },
+   {
+    "w": "for",
+    "s": 34.22,
+    "e": 34.4
+   },
+   {
+    "w": "the",
+    "s": 34.4,
+    "e": 34.52
+   },
+   {
+    "w": "brand",
+    "s": 34.52,
+    "e": 34.78
+   },
+   {
+    "w": "sustainability",
+    "s": 34.78,
+    "e": 35.26
+   },
+   {
+    "w": "report.",
+    "s": 35.26,
+    "e": 35.98
+   }
+  ]
+ },
+ "e1-1.wav": {
+  "text": "And every batch posts to an impact ledger, kilos kept out of landfill, meals served, emissions avoided, ready for the brand sustainability report.",
+  "words": [
+   {
+    "w": "And",
+    "s": 0.0,
+    "e": 0.38
+   },
+   {
+    "w": "every",
+    "s": 0.38,
+    "e": 0.64
+   },
+   {
+    "w": "batch",
+    "s": 0.64,
+    "e": 0.96
+   },
+   {
+    "w": "posts",
+    "s": 0.96,
+    "e": 1.38
+   },
+   {
+    "w": "to",
+    "s": 1.38,
+    "e": 1.62
+   },
+   {
+    "w": "an",
+    "s": 1.62,
+    "e": 1.8
+   },
+   {
+    "w": "impact",
+    "s": 1.8,
+    "e": 2.16
+   },
+   {
+    "w": "ledger,",
+    "s": 2.16,
+    "e": 2.6
+   },
+   {
+    "w": "kilos",
+    "s": 2.84,
+    "e": 3.2
+   },
+   {
+    "w": "kept",
+    "s": 3.2,
+    "e": 3.5
+   },
+   {
+    "w": "out",
+    "s": 3.5,
+    "e": 3.74
+   },
+   {
+    "w": "of",
+    "s": 3.74,
+    "e": 3.9
+   },
+   {
+    "w": "landfill,",
+    "s": 3.9,
+    "e": 4.44
+   },
+   {
+    "w": "meals",
+    "s": 4.68,
+    "e": 4.94
+   },
+   {
+    "w": "served,",
+    "s": 4.94,
+    "e": 5.4
+   },
+   {
+    "w": "emissions",
+    "s": 5.58,
+    "e": 5.94
+   },
+   {
+    "w": "avoided,",
+    "s": 5.94,
+    "e": 6.4
+   },
+   {
+    "w": "ready",
+    "s": 6.86,
+    "e": 7.04
+   },
+   {
+    "w": "for",
+    "s": 7.04,
+    "e": 7.22
+   },
+   {
+    "w": "the",
+    "s": 7.22,
+    "e": 7.32
+   },
+   {
+    "w": "brand",
+    "s": 7.32,
+    "e": 7.58
+   },
+   {
+    "w": "sustainability",
+    "s": 7.58,
+    "e": 8.08
+   },
+   {
+    "w": "report.",
+    "s": 8.08,
+    "e": 8.86
+   }
+  ]
+ },
+ "e1-2.wav": {
+  "text": "and every batch posts to an impact ledger. Kilos kept out of landfill, meals served, emissions avoided, ready for the brand's sustainability report.",
+  "words": [
+   {
+    "w": "and",
+    "s": 0.0,
+    "e": 0.34
+   },
+   {
+    "w": "every",
+    "s": 0.34,
+    "e": 0.74
+   },
+   {
+    "w": "batch",
+    "s": 0.74,
+    "e": 1.04
+   },
+   {
+    "w": "posts",
+    "s": 1.04,
+    "e": 1.48
+   },
+   {
+    "w": "to",
+    "s": 1.48,
+    "e": 1.78
+   },
+   {
+    "w": "an",
+    "s": 1.78,
+    "e": 1.94
+   },
+   {
+    "w": "impact",
+    "s": 1.94,
+    "e": 2.32
+   },
+   {
+    "w": "ledger.",
+    "s": 2.32,
+    "e": 2.8
+   },
+   {
+    "w": "Kilos",
+    "s": 2.94,
+    "e": 3.46
+   },
+   {
+    "w": "kept",
+    "s": 3.46,
+    "e": 3.7
+   },
+   {
+    "w": "out",
+    "s": 3.7,
+    "e": 3.92
+   },
+   {
+    "w": "of",
+    "s": 3.92,
+    "e": 4.06
+   },
+   {
+    "w": "landfill,",
+    "s": 4.06,
+    "e": 4.6
+   },
+   {
+    "w": "meals",
+    "s": 4.86,
+    "e": 5.22
+   },
+   {
+    "w": "served,",
+    "s": 5.22,
+    "e": 5.68
+   },
+   {
+    "w": "emissions",
+    "s": 5.98,
+    "e": 6.42
+   },
+   {
+    "w": "avoided,",
+    "s": 6.42,
+    "e": 6.96
+   },
+   {
+    "w": "ready",
+    "s": 7.44,
+    "e": 7.6
+   },
+   {
+    "w": "for",
+    "s": 7.6,
+    "e": 7.82
+   },
+   {
+    "w": "the",
+    "s": 7.82,
+    "e": 7.92
+   },
+   {
+    "w": "brand's",
+    "s": 7.92,
+    "e": 8.32
+   },
+   {
+    "w": "sustainability",
+    "s": 8.32,
+    "e": 8.78
+   },
+   {
+    "w": "report.",
+    "s": 8.78,
+    "e": 9.42
+   }
+  ]
+ },
+ "j1-0.wav": {
+  "text": "It begins at dawn. The watcher reads the cell through and flags the batch that won't make it in time.",
+  "words": [
+   {
+    "w": "It",
+    "s": 0.0,
+    "e": 0.38
+   },
+   {
+    "w": "begins",
+    "s": 0.38,
+    "e": 0.74
+   },
+   {
+    "w": "at",
+    "s": 0.74,
+    "e": 0.96
+   },
+   {
+    "w": "dawn.",
+    "s": 0.96,
+    "e": 1.26
+   },
+   {
+    "w": "The",
+    "s": 1.46,
+    "e": 1.82
+   },
+   {
+    "w": "watcher",
+    "s": 1.82,
+    "e": 2.26
+   },
+   {
+    "w": "reads",
+    "s": 2.26,
+    "e": 2.48
+   },
+   {
+    "w": "the",
+    "s": 2.48,
+    "e": 2.72
+   },
+   {
+    "w": "cell",
+    "s": 2.72,
+    "e": 2.98
+   },
+   {
+    "w": "through",
+    "s": 2.98,
+    "e": 3.22
+   },
+   {
+    "w": "and",
+    "s": 3.22,
+    "e": 3.5
+   },
+   {
+    "w": "flags",
+    "s": 3.5,
+    "e": 3.9
+   },
+   {
+    "w": "the",
+    "s": 3.9,
+    "e": 4.1
+   },
+   {
+    "w": "batch",
+    "s": 4.1,
+    "e": 4.38
+   },
+   {
+    "w": "that",
+    "s": 4.38,
+    "e": 4.6
+   },
+   {
+    "w": "won't",
+    "s": 4.6,
+    "e": 4.96
+   },
+   {
+    "w": "make",
+    "s": 4.96,
+    "e": 5.2
+   },
+   {
+    "w": "it",
+    "s": 5.2,
+    "e": 5.34
+   },
+   {
+    "w": "in",
+    "s": 5.34,
+    "e": 5.54
+   },
+   {
+    "w": "time.",
+    "s": 5.54,
+    "e": 5.7
+   }
+  ]
+ },
+ "j1-1.wav": {
+  "text": "It begins at dawn. The watcher reads the cell through and flags the batch that won't make it in time.",
+  "words": [
+   {
+    "w": "It",
+    "s": 0.0,
+    "e": 0.4
+   },
+   {
+    "w": "begins",
+    "s": 0.4,
+    "e": 0.8
+   },
+   {
+    "w": "at",
+    "s": 0.8,
+    "e": 1.04
+   },
+   {
+    "w": "dawn.",
+    "s": 1.04,
+    "e": 1.34
+   },
+   {
+    "w": "The",
+    "s": 1.6,
+    "e": 1.84
+   },
+   {
+    "w": "watcher",
+    "s": 1.84,
+    "e": 2.26
+   },
+   {
+    "w": "reads",
+    "s": 2.26,
+    "e": 2.48
+   },
+   {
+    "w": "the",
+    "s": 2.48,
+    "e": 2.66
+   },
+   {
+    "w": "cell",
+    "s": 2.66,
+    "e": 2.92
+   },
+   {
+    "w": "through",
+    "s": 2.92,
+    "e": 3.18
+   },
+   {
+    "w": "and",
+    "s": 3.18,
+    "e": 3.5
+   },
+   {
+    "w": "flags",
+    "s": 3.5,
+    "e": 3.86
+   },
+   {
+    "w": "the",
+    "s": 3.86,
+    "e": 4.04
+   },
+   {
+    "w": "batch",
+    "s": 4.04,
+    "e": 4.34
+   },
+   {
+    "w": "that",
+    "s": 4.34,
+    "e": 4.54
+   },
+   {
+    "w": "won't",
+    "s": 4.54,
+    "e": 4.8
+   },
+   {
+    "w": "make",
+    "s": 4.8,
+    "e": 5.02
+   },
+   {
+    "w": "it",
+    "s": 5.02,
+    "e": 5.16
+   },
+   {
+    "w": "in",
+    "s": 5.16,
+    "e": 5.32
+   },
+   {
+    "w": "time.",
+    "s": 5.32,
+    "e": 5.52
+   }
+  ]
+ },
+ "j1-2.wav": {
+  "text": "It begins at dawn. The watcher reads the cell through and flags the batch that won't make it in time.",
+  "words": [
+   {
+    "w": "It",
+    "s": 0.0,
+    "e": 0.38
+   },
+   {
+    "w": "begins",
+    "s": 0.38,
+    "e": 0.76
+   },
+   {
+    "w": "at",
+    "s": 0.76,
+    "e": 0.96
+   },
+   {
+    "w": "dawn.",
+    "s": 0.96,
+    "e": 1.22
+   },
+   {
+    "w": "The",
+    "s": 1.48,
+    "e": 1.92
+   },
+   {
+    "w": "watcher",
+    "s": 1.92,
+    "e": 2.3
+   },
+   {
+    "w": "reads",
+    "s": 2.3,
+    "e": 2.5
+   },
+   {
+    "w": "the",
+    "s": 2.5,
+    "e": 2.68
+   },
+   {
+    "w": "cell",
+    "s": 2.68,
+    "e": 2.9
+   },
+   {
+    "w": "through",
+    "s": 2.9,
+    "e": 3.08
+   },
+   {
+    "w": "and",
+    "s": 3.08,
+    "e": 3.26
+   },
+   {
+    "w": "flags",
+    "s": 3.26,
+    "e": 3.64
+   },
+   {
+    "w": "the",
+    "s": 3.64,
+    "e": 3.82
+   },
+   {
+    "w": "batch",
+    "s": 3.82,
+    "e": 4.06
+   },
+   {
+    "w": "that",
+    "s": 4.06,
+    "e": 4.28
+   },
+   {
+    "w": "won't",
+    "s": 4.28,
+    "e": 4.6
+   },
+   {
+    "w": "make",
+    "s": 4.6,
+    "e": 4.84
+   },
+   {
+    "w": "it",
+    "s": 4.84,
+    "e": 4.94
+   },
+   {
+    "w": "in",
+    "s": 4.94,
+    "e": 5.08
+   },
+   {
+    "w": "time.",
+    "s": 5.08,
+    "e": 5.26
+   }
+  ]
+ },
+ "j10-0.wav": {
+  "text": "and not a rupee is credited until a second yes.",
+  "words": [
+   {
+    "w": "and",
+    "s": 0.0,
+    "e": 0.28
+   },
+   {
+    "w": "not",
+    "s": 0.28,
+    "e": 0.5
+   },
+   {
+    "w": "a",
+    "s": 0.5,
+    "e": 0.64
+   },
+   {
+    "w": "rupee",
+    "s": 0.64,
+    "e": 0.94
+   },
+   {
+    "w": "is",
+    "s": 0.94,
+    "e": 1.18
+   },
+   {
+    "w": "credited",
+    "s": 1.18,
+    "e": 1.56
+   },
+   {
+    "w": "until",
+    "s": 1.56,
+    "e": 2.04
+   },
+   {
+    "w": "a",
+    "s": 2.04,
+    "e": 2.24
+   },
+   {
+    "w": "second",
+    "s": 2.24,
+    "e": 2.56
+   },
+   {
+    "w": "yes.",
+    "s": 2.56,
+    "e": 2.88
+   }
+  ]
+ },
+ "j10-1.wav": {
+  "text": "and not a rupee is credited until a second yes.",
+  "words": [
+   {
+    "w": "and",
+    "s": 0.0,
+    "e": 0.36
+   },
+   {
+    "w": "not",
+    "s": 0.36,
+    "e": 0.56
+   },
+   {
+    "w": "a",
+    "s": 0.56,
+    "e": 0.7
+   },
+   {
+    "w": "rupee",
+    "s": 0.7,
+    "e": 1.02
+   },
+   {
+    "w": "is",
+    "s": 1.02,
+    "e": 1.34
+   },
+   {
+    "w": "credited",
+    "s": 1.34,
+    "e": 1.72
+   },
+   {
+    "w": "until",
+    "s": 1.72,
+    "e": 2.2
+   },
+   {
+    "w": "a",
+    "s": 2.2,
+    "e": 2.42
+   },
+   {
+    "w": "second",
+    "s": 2.42,
+    "e": 2.72
+   },
+   {
+    "w": "yes.",
+    "s": 2.72,
+    "e": 3.02
+   }
+  ]
+ },
+ "j10-2.wav": {
+  "text": "and not a rupee is credited until a second yes.",
+  "words": [
+   {
+    "w": "and",
+    "s": 0.0,
+    "e": 0.42
+   },
+   {
+    "w": "not",
+    "s": 0.42,
+    "e": 0.68
+   },
+   {
+    "w": "a",
+    "s": 0.68,
+    "e": 0.82
+   },
+   {
+    "w": "rupee",
+    "s": 0.82,
+    "e": 1.14
+   },
+   {
+    "w": "is",
+    "s": 1.14,
+    "e": 1.3
+   },
+   {
+    "w": "credited",
+    "s": 1.3,
+    "e": 1.68
+   },
+   {
+    "w": "until",
+    "s": 1.68,
+    "e": 2.2
+   },
+   {
+    "w": "a",
+    "s": 2.2,
+    "e": 2.44
+   },
+   {
+    "w": "second",
+    "s": 2.44,
+    "e": 2.84
+   },
+   {
+    "w": "yes.",
+    "s": 2.84,
+    "e": 3.24
+   }
+  ]
+ },
+ "j2-0.wav": {
+  "text": "The distributor takes one photo of the carton and vision checks the batch and its dates against the stock.",
+  "words": [
+   {
+    "w": "The",
+    "s": 0.0,
+    "e": 0.3
+   },
+   {
+    "w": "distributor",
+    "s": 0.3,
+    "e": 0.8
+   },
+   {
+    "w": "takes",
+    "s": 0.8,
+    "e": 1.18
+   },
+   {
+    "w": "one",
+    "s": 1.18,
+    "e": 1.5
+   },
+   {
+    "w": "photo",
+    "s": 1.5,
+    "e": 1.86
+   },
+   {
+    "w": "of",
+    "s": 1.86,
+    "e": 2.0
+   },
+   {
+    "w": "the",
+    "s": 2.0,
+    "e": 2.08
+   },
+   {
+    "w": "carton",
+    "s": 2.08,
+    "e": 2.48
+   },
+   {
+    "w": "and",
+    "s": 2.48,
+    "e": 2.86
+   },
+   {
+    "w": "vision",
+    "s": 2.86,
+    "e": 3.14
+   },
+   {
+    "w": "checks",
+    "s": 3.14,
+    "e": 3.46
+   },
+   {
+    "w": "the",
+    "s": 3.46,
+    "e": 3.64
+   },
+   {
+    "w": "batch",
+    "s": 3.64,
+    "e": 3.94
+   },
+   {
+    "w": "and",
+    "s": 3.94,
+    "e": 4.1
+   },
+   {
+    "w": "its",
+    "s": 4.1,
+    "e": 4.28
+   },
+   {
+    "w": "dates",
+    "s": 4.28,
+    "e": 4.6
+   },
+   {
+    "w": "against",
+    "s": 4.6,
+    "e": 5.08
+   },
+   {
+    "w": "the",
+    "s": 5.08,
+    "e": 5.34
+   },
+   {
+    "w": "stock.",
+    "s": 5.34,
+    "e": 5.64
+   }
+  ]
+ },
+ "j2-1.wav": {
+  "text": "The distributor takes one photo of the carton and Vision checks the batch and its dates against the stock.",
+  "words": [
+   {
+    "w": "The",
+    "s": 0.0,
+    "e": 0.34
+   },
+   {
+    "w": "distributor",
+    "s": 0.34,
+    "e": 0.84
+   },
+   {
+    "w": "takes",
+    "s": 0.84,
+    "e": 1.22
+   },
+   {
+    "w": "one",
+    "s": 1.22,
+    "e": 1.54
+   },
+   {
+    "w": "photo",
+    "s": 1.54,
+    "e": 1.9
+   },
+   {
+    "w": "of",
+    "s": 1.9,
+    "e": 2.04
+   },
+   {
+    "w": "the",
+    "s": 2.04,
+    "e": 2.16
+   },
+   {
+    "w": "carton",
+    "s": 2.16,
+    "e": 2.58
+   },
+   {
+    "w": "and",
+    "s": 2.58,
+    "e": 2.98
+   },
+   {
+    "w": "Vision",
+    "s": 2.98,
+    "e": 3.24
+   },
+   {
+    "w": "checks",
+    "s": 3.24,
+    "e": 3.58
+   },
+   {
+    "w": "the",
+    "s": 3.58,
+    "e": 3.76
+   },
+   {
+    "w": "batch",
+    "s": 3.76,
+    "e": 4.04
+   },
+   {
+    "w": "and",
+    "s": 4.04,
+    "e": 4.2
+   },
+   {
+    "w": "its",
+    "s": 4.2,
+    "e": 4.38
+   },
+   {
+    "w": "dates",
+    "s": 4.38,
+    "e": 4.64
+   },
+   {
+    "w": "against",
+    "s": 4.64,
+    "e": 4.96
+   },
+   {
+    "w": "the",
+    "s": 4.96,
+    "e": 5.2
+   },
+   {
+    "w": "stock.",
+    "s": 5.2,
+    "e": 5.46
+   }
+  ]
+ },
+ "j2-2.wav": {
+  "text": "The distributor takes one photo of the carton and Vision checks the batch and its dates against the stock.",
+  "words": [
+   {
+    "w": "The",
+    "s": 0.0,
+    "e": 0.3
+   },
+   {
+    "w": "distributor",
+    "s": 0.3,
+    "e": 0.66
+   },
+   {
+    "w": "takes",
+    "s": 0.66,
+    "e": 1.12
+   },
+   {
+    "w": "one",
+    "s": 1.12,
+    "e": 1.38
+   },
+   {
+    "w": "photo",
+    "s": 1.38,
+    "e": 1.72
+   },
+   {
+    "w": "of",
+    "s": 1.72,
+    "e": 1.92
+   },
+   {
+    "w": "the",
+    "s": 1.92,
+    "e": 2.04
+   },
+   {
+    "w": "carton",
+    "s": 2.04,
+    "e": 2.46
+   },
+   {
+    "w": "and",
+    "s": 2.46,
+    "e": 2.76
+   },
+   {
+    "w": "Vision",
+    "s": 2.76,
+    "e": 3.04
+   },
+   {
+    "w": "checks",
+    "s": 3.04,
+    "e": 3.4
+   },
+   {
+    "w": "the",
+    "s": 3.4,
+    "e": 3.62
+   },
+   {
+    "w": "batch",
+    "s": 3.62,
+    "e": 3.9
+   },
+   {
+    "w": "and",
+    "s": 3.9,
+    "e": 4.08
+   },
+   {
+    "w": "its",
+    "s": 4.08,
+    "e": 4.24
+   },
+   {
+    "w": "dates",
+    "s": 4.24,
+    "e": 4.52
+   },
+   {
+    "w": "against",
+    "s": 4.52,
+    "e": 4.84
+   },
+   {
+    "w": "the",
+    "s": 4.84,
+    "e": 5.1
+   },
+   {
+    "w": "stock.",
+    "s": 5.1,
+    "e": 5.38
+   }
+  ]
+ },
+ "j3-0.wav": {
+  "text": "The valuer prices every exit and the router splits the batch, guided by its sales history and the brand's own rules.",
+  "words": [
+   {
+    "w": "The",
+    "s": 0.0,
+    "e": 0.3
+   },
+   {
+    "w": "valuer",
+    "s": 0.3,
+    "e": 0.68
+   },
+   {
+    "w": "prices",
+    "s": 0.68,
+    "e": 1.14
+   },
+   {
+    "w": "every",
+    "s": 1.14,
+    "e": 1.62
+   },
+   {
+    "w": "exit",
+    "s": 1.62,
+    "e": 2.02
+   },
+   {
+    "w": "and",
+    "s": 2.02,
+    "e": 2.3
+   },
+   {
+    "w": "the",
+    "s": 2.3,
+    "e": 2.48
+   },
+   {
+    "w": "router",
+    "s": 2.48,
+    "e": 2.7
+   },
+   {
+    "w": "splits",
+    "s": 2.7,
+    "e": 3.18
+   },
+   {
+    "w": "the",
+    "s": 3.18,
+    "e": 3.44
+   },
+   {
+    "w": "batch,",
+    "s": 3.44,
+    "e": 3.76
+   },
+   {
+    "w": "guided",
+    "s": 3.98,
+    "e": 4.4
+   },
+   {
+    "w": "by",
+    "s": 4.4,
+    "e": 4.62
+   },
+   {
+    "w": "its",
+    "s": 4.62,
+    "e": 4.8
+   },
+   {
+    "w": "sales",
+    "s": 4.8,
+    "e": 5.06
+   },
+   {
+    "w": "history",
+    "s": 5.06,
+    "e": 5.48
+   },
+   {
+    "w": "and",
+    "s": 5.48,
+    "e": 5.8
+   },
+   {
+    "w": "the",
+    "s": 5.8,
+    "e": 5.92
+   },
+   {
+    "w": "brand's",
+    "s": 5.92,
+    "e": 6.32
+   },
+   {
+    "w": "own",
+    "s": 6.32,
+    "e": 6.44
+   },
+   {
+    "w": "rules.",
+    "s": 6.44,
+    "e": 6.76
+   }
+  ]
+ },
+ "j3-1.wav": {
+  "text": "The valuer prices every exit and the router splits the batch guided by its sales history and the brand's own rules.",
+  "words": [
+   {
+    "w": "The",
+    "s": 0.0,
+    "e": 0.36
+   },
+   {
+    "w": "valuer",
+    "s": 0.36,
+    "e": 0.76
+   },
+   {
+    "w": "prices",
+    "s": 0.76,
+    "e": 1.22
+   },
+   {
+    "w": "every",
+    "s": 1.22,
+    "e": 1.8
+   },
+   {
+    "w": "exit",
+    "s": 1.8,
+    "e": 2.28
+   },
+   {
+    "w": "and",
+    "s": 2.28,
+    "e": 2.7
+   },
+   {
+    "w": "the",
+    "s": 2.7,
+    "e": 2.84
+   },
+   {
+    "w": "router",
+    "s": 2.84,
+    "e": 3.04
+   },
+   {
+    "w": "splits",
+    "s": 3.04,
+    "e": 3.42
+   },
+   {
+    "w": "the",
+    "s": 3.42,
+    "e": 3.64
+   },
+   {
+    "w": "batch",
+    "s": 3.64,
+    "e": 3.94
+   },
+   {
+    "w": "guided",
+    "s": 3.94,
+    "e": 4.48
+   },
+   {
+    "w": "by",
+    "s": 4.48,
+    "e": 4.74
+   },
+   {
+    "w": "its",
+    "s": 4.74,
+    "e": 4.92
+   },
+   {
+    "w": "sales",
+    "s": 4.92,
+    "e": 5.2
+   },
+   {
+    "w": "history",
+    "s": 5.2,
+    "e": 5.6
+   },
+   {
+    "w": "and",
+    "s": 5.6,
+    "e": 5.96
+   },
+   {
+    "w": "the",
+    "s": 5.96,
+    "e": 6.08
+   },
+   {
+    "w": "brand's",
+    "s": 6.08,
+    "e": 6.54
+   },
+   {
+    "w": "own",
+    "s": 6.54,
+    "e": 6.66
+   },
+   {
+    "w": "rules.",
+    "s": 6.66,
+    "e": 6.92
+   }
+  ]
+ },
+ "j3-2.wav": {
+  "text": "the valuer prices every exit and the router splits the batch guided by its sales history and the brand's own rules.",
+  "words": [
+   {
+    "w": "the",
+    "s": 0.0,
+    "e": 0.16
+   },
+   {
+    "w": "valuer",
+    "s": 0.16,
+    "e": 0.58
+   },
+   {
+    "w": "prices",
+    "s": 0.58,
+    "e": 1.04
+   },
+   {
+    "w": "every",
+    "s": 1.04,
+    "e": 1.6
+   },
+   {
+    "w": "exit",
+    "s": 1.6,
+    "e": 2.16
+   },
+   {
+    "w": "and",
+    "s": 2.16,
+    "e": 2.8
+   },
+   {
+    "w": "the",
+    "s": 2.8,
+    "e": 2.94
+   },
+   {
+    "w": "router",
+    "s": 2.94,
+    "e": 3.2
+   },
+   {
+    "w": "splits",
+    "s": 3.2,
+    "e": 3.66
+   },
+   {
+    "w": "the",
+    "s": 3.66,
+    "e": 3.9
+   },
+   {
+    "w": "batch",
+    "s": 3.9,
+    "e": 4.26
+   },
+   {
+    "w": "guided",
+    "s": 4.26,
+    "e": 4.84
+   },
+   {
+    "w": "by",
+    "s": 4.84,
+    "e": 5.12
+   },
+   {
+    "w": "its",
+    "s": 5.12,
+    "e": 5.4
+   },
+   {
+    "w": "sales",
+    "s": 5.4,
+    "e": 5.74
+   },
+   {
+    "w": "history",
+    "s": 5.74,
+    "e": 6.2
+   },
+   {
+    "w": "and",
+    "s": 6.2,
+    "e": 6.72
+   },
+   {
+    "w": "the",
+    "s": 6.72,
+    "e": 6.84
+   },
+   {
+    "w": "brand's",
+    "s": 6.84,
+    "e": 7.32
+   },
+   {
+    "w": "own",
+    "s": 7.32,
+    "e": 7.62
+   },
+   {
+    "w": "rules.",
+    "s": 7.62,
+    "e": 7.9
+   }
+  ]
+ },
+ "j4-0.wav": {
+  "text": "One tap. Now the agents go to work.",
+  "words": [
+   {
+    "w": "One",
+    "s": 0.0,
+    "e": 0.4
+   },
+   {
+    "w": "tap.",
+    "s": 0.4,
+    "e": 0.76
+   },
+   {
+    "w": "Now",
+    "s": 1.0,
+    "e": 1.48
+   },
+   {
+    "w": "the",
+    "s": 1.48,
+    "e": 1.68
+   },
+   {
+    "w": "agents",
+    "s": 1.68,
+    "e": 2.06
+   },
+   {
+    "w": "go",
+    "s": 2.06,
+    "e": 2.32
+   },
+   {
+    "w": "to",
+    "s": 2.32,
+    "e": 2.46
+   },
+   {
+    "w": "work.",
+    "s": 2.46,
+    "e": 2.76
+   }
+  ]
+ },
+ "j4-1.wav": {
+  "text": "One tap and now the agents go to work.",
+  "words": [
+   {
+    "w": "One",
+    "s": 0.0,
+    "e": 0.54
+   },
+   {
+    "w": "tap",
+    "s": 0.54,
+    "e": 0.88
+   },
+   {
+    "w": "and",
+    "s": 0.88,
+    "e": 1.42
+   },
+   {
+    "w": "now",
+    "s": 1.42,
+    "e": 1.6
+   },
+   {
+    "w": "the",
+    "s": 1.6,
+    "e": 1.78
+   },
+   {
+    "w": "agents",
+    "s": 1.78,
+    "e": 2.14
+   },
+   {
+    "w": "go",
+    "s": 2.14,
+    "e": 2.44
+   },
+   {
+    "w": "to",
+    "s": 2.44,
+    "e": 2.62
+   },
+   {
+    "w": "work.",
+    "s": 2.62,
+    "e": 2.8
+   }
+  ]
+ },
+ "j4-2.wav": {
+  "text": "One tap, now the agents go to WAP.",
+  "words": [
+   {
+    "w": "One",
+    "s": 0.0,
+    "e": 0.5
+   },
+   {
+    "w": "tap,",
+    "s": 0.5,
+    "e": 0.86
+   },
+   {
+    "w": "now",
+    "s": 1.16,
+    "e": 1.4
+   },
+   {
+    "w": "the",
+    "s": 1.4,
+    "e": 1.56
+   },
+   {
+    "w": "agents",
+    "s": 1.56,
+    "e": 1.86
+   },
+   {
+    "w": "go",
+    "s": 1.86,
+    "e": 2.06
+   },
+   {
+    "w": "to",
+    "s": 2.06,
+    "e": 2.22
+   },
+   {
+    "w": "WAP.",
+    "s": 2.22,
+    "e": 2.5
+   }
+  ]
+ },
+ "j5-0.wav": {
+  "text": "Outreach offers the PACs to neighborhood Kiranas in their own language. Every order lands live with its own GST invoice.",
+  "words": [
+   {
+    "w": "Outreach",
+    "s": 0.0,
+    "e": 0.74
+   },
+   {
+    "w": "offers",
+    "s": 0.74,
+    "e": 1.18
+   },
+   {
+    "w": "the",
+    "s": 1.18,
+    "e": 1.38
+   },
+   {
+    "w": "PACs",
+    "s": 1.38,
+    "e": 1.72
+   },
+   {
+    "w": "to",
+    "s": 1.72,
+    "e": 1.84
+   },
+   {
+    "w": "neighborhood",
+    "s": 1.84,
+    "e": 2.16
+   },
+   {
+    "w": "Kiranas",
+    "s": 2.16,
+    "e": 2.78
+   },
+   {
+    "w": "in",
+    "s": 2.78,
+    "e": 3.28
+   },
+   {
+    "w": "their",
+    "s": 3.28,
+    "e": 3.46
+   },
+   {
+    "w": "own",
+    "s": 3.46,
+    "e": 3.66
+   },
+   {
+    "w": "language.",
+    "s": 3.66,
+    "e": 4.14
+   },
+   {
+    "w": "Every",
+    "s": 4.44,
+    "e": 5.04
+   },
+   {
+    "w": "order",
+    "s": 5.04,
+    "e": 5.32
+   },
+   {
+    "w": "lands",
+    "s": 5.32,
+    "e": 5.72
+   },
+   {
+    "w": "live",
+    "s": 5.72,
+    "e": 6.1
+   },
+   {
+    "w": "with",
+    "s": 6.1,
+    "e": 6.54
+   },
+   {
+    "w": "its",
+    "s": 6.54,
+    "e": 6.72
+   },
+   {
+    "w": "own",
+    "s": 6.72,
+    "e": 6.88
+   },
+   {
+    "w": "GST",
+    "s": 6.88,
+    "e": 7.32
+   },
+   {
+    "w": "invoice.",
+    "s": 7.32,
+    "e": 7.62
+   }
+  ]
+ },
+ "j5-1.wav": {
+  "text": "Outreach offers the PACs to neighbourhood Kiranas in their own language. Every order lands live with its own GST invoice.",
+  "words": [
+   {
+    "w": "Outreach",
+    "s": 0.0,
+    "e": 0.68
+   },
+   {
+    "w": "offers",
+    "s": 0.68,
+    "e": 1.0
+   },
+   {
+    "w": "the",
+    "s": 1.0,
+    "e": 1.2
+   },
+   {
+    "w": "PACs",
+    "s": 1.2,
+    "e": 1.54
+   },
+   {
+    "w": "to",
+    "s": 1.54,
+    "e": 1.7
+   },
+   {
+    "w": "neighbourhood",
+    "s": 1.7,
+    "e": 2.06
+   },
+   {
+    "w": "Kiranas",
+    "s": 2.06,
+    "e": 2.7
+   },
+   {
+    "w": "in",
+    "s": 2.7,
+    "e": 3.16
+   },
+   {
+    "w": "their",
+    "s": 3.16,
+    "e": 3.36
+   },
+   {
+    "w": "own",
+    "s": 3.36,
+    "e": 3.6
+   },
+   {
+    "w": "language.",
+    "s": 3.6,
+    "e": 4.14
+   },
+   {
+    "w": "Every",
+    "s": 4.42,
+    "e": 5.02
+   },
+   {
+    "w": "order",
+    "s": 5.02,
+    "e": 5.26
+   },
+   {
+    "w": "lands",
+    "s": 5.26,
+    "e": 5.66
+   },
+   {
+    "w": "live",
+    "s": 5.66,
+    "e": 6.04
+   },
+   {
+    "w": "with",
+    "s": 6.04,
+    "e": 6.46
+   },
+   {
+    "w": "its",
+    "s": 6.46,
+    "e": 6.64
+   },
+   {
+    "w": "own",
+    "s": 6.64,
+    "e": 6.94
+   },
+   {
+    "w": "GST",
+    "s": 6.94,
+    "e": 7.44
+   },
+   {
+    "w": "invoice.",
+    "s": 7.44,
+    "e": 7.8
+   }
+  ]
+ },
+ "j5-2.wav": {
+  "text": "Outreach offers the PACs to neighbourhood Kiranas in their own language. Every order lands live with its own GST invoice.",
+  "words": [
+   {
+    "w": "Outreach",
+    "s": 0.0,
+    "e": 0.7
+   },
+   {
+    "w": "offers",
+    "s": 0.7,
+    "e": 1.1
+   },
+   {
+    "w": "the",
+    "s": 1.1,
+    "e": 1.28
+   },
+   {
+    "w": "PACs",
+    "s": 1.28,
+    "e": 1.6
+   },
+   {
+    "w": "to",
+    "s": 1.6,
+    "e": 1.74
+   },
+   {
+    "w": "neighbourhood",
+    "s": 1.74,
+    "e": 2.06
+   },
+   {
+    "w": "Kiranas",
+    "s": 2.06,
+    "e": 2.66
+   },
+   {
+    "w": "in",
+    "s": 2.66,
+    "e": 3.08
+   },
+   {
+    "w": "their",
+    "s": 3.08,
+    "e": 3.26
+   },
+   {
+    "w": "own",
+    "s": 3.26,
+    "e": 3.54
+   },
+   {
+    "w": "language.",
+    "s": 3.54,
+    "e": 4.02
+   },
+   {
+    "w": "Every",
+    "s": 4.32,
+    "e": 4.9
+   },
+   {
+    "w": "order",
+    "s": 4.9,
+    "e": 5.14
+   },
+   {
+    "w": "lands",
+    "s": 5.14,
+    "e": 5.54
+   },
+   {
+    "w": "live",
+    "s": 5.54,
+    "e": 5.92
+   },
+   {
+    "w": "with",
+    "s": 5.92,
+    "e": 6.42
+   },
+   {
+    "w": "its",
+    "s": 6.42,
+    "e": 6.6
+   },
+   {
+    "w": "own",
+    "s": 6.6,
+    "e": 6.88
+   },
+   {
+    "w": "GST",
+    "s": 6.88,
+    "e": 7.34
+   },
+   {
+    "w": "invoice.",
+    "s": 7.34,
+    "e": 7.68
+   }
+  ]
+ },
+ "j6-0.wav": {
+  "text": "At the go-down, the staff buy their share by UPI, and Vision checks the receipt against the count.",
+  "words": [
+   {
+    "w": "At",
+    "s": 0.0,
+    "e": 0.38
+   },
+   {
+    "w": "the",
+    "s": 0.38,
+    "e": 0.52
+   },
+   {
+    "w": "go",
+    "s": 0.52,
+    "e": 0.74
+   },
+   {
+    "w": "-down,",
+    "s": 0.74,
+    "e": 0.94
+   },
+   {
+    "w": "the",
+    "s": 1.16,
+    "e": 1.4
+   },
+   {
+    "w": "staff",
+    "s": 1.4,
+    "e": 1.72
+   },
+   {
+    "w": "buy",
+    "s": 1.72,
+    "e": 2.0
+   },
+   {
+    "w": "their",
+    "s": 2.0,
+    "e": 2.2
+   },
+   {
+    "w": "share",
+    "s": 2.2,
+    "e": 2.48
+   },
+   {
+    "w": "by",
+    "s": 2.48,
+    "e": 2.7
+   },
+   {
+    "w": "UPI,",
+    "s": 2.7,
+    "e": 3.3
+   },
+   {
+    "w": "and",
+    "s": 3.44,
+    "e": 3.86
+   },
+   {
+    "w": "Vision",
+    "s": 3.86,
+    "e": 4.16
+   },
+   {
+    "w": "checks",
+    "s": 4.16,
+    "e": 4.48
+   },
+   {
+    "w": "the",
+    "s": 4.48,
+    "e": 4.7
+   },
+   {
+    "w": "receipt",
+    "s": 4.7,
+    "e": 5.1
+   },
+   {
+    "w": "against",
+    "s": 5.1,
+    "e": 5.44
+   },
+   {
+    "w": "the",
+    "s": 5.44,
+    "e": 5.68
+   },
+   {
+    "w": "count.",
+    "s": 5.68,
+    "e": 5.92
+   }
+  ]
+ },
+ "j6-1.wav": {
+  "text": "At the go-down, the staff buy their share by UPI, and Vision checks their receipt against the count.",
+  "words": [
+   {
+    "w": "At",
+    "s": 0.0,
+    "e": 0.38
+   },
+   {
+    "w": "the",
+    "s": 0.38,
+    "e": 0.54
+   },
+   {
+    "w": "go",
+    "s": 0.54,
+    "e": 0.76
+   },
+   {
+    "w": "-down,",
+    "s": 0.76,
+    "e": 1.02
+   },
+   {
+    "w": "the",
+    "s": 1.24,
+    "e": 1.42
+   },
+   {
+    "w": "staff",
+    "s": 1.42,
+    "e": 1.72
+   },
+   {
+    "w": "buy",
+    "s": 1.72,
+    "e": 2.0
+   },
+   {
+    "w": "their",
+    "s": 2.0,
+    "e": 2.3
+   },
+   {
+    "w": "share",
+    "s": 2.3,
+    "e": 2.56
+   },
+   {
+    "w": "by",
+    "s": 2.56,
+    "e": 2.78
+   },
+   {
+    "w": "UPI,",
+    "s": 2.78,
+    "e": 3.36
+   },
+   {
+    "w": "and",
+    "s": 3.5,
+    "e": 3.78
+   },
+   {
+    "w": "Vision",
+    "s": 3.78,
+    "e": 4.06
+   },
+   {
+    "w": "checks",
+    "s": 4.06,
+    "e": 4.4
+   },
+   {
+    "w": "their",
+    "s": 4.4,
+    "e": 4.6
+   },
+   {
+    "w": "receipt",
+    "s": 4.6,
+    "e": 4.96
+   },
+   {
+    "w": "against",
+    "s": 4.96,
+    "e": 5.3
+   },
+   {
+    "w": "the",
+    "s": 5.3,
+    "e": 5.56
+   },
+   {
+    "w": "count.",
+    "s": 5.56,
+    "e": 5.8
+   }
+  ]
+ },
+ "j6-2.wav": {
+  "text": "At the go-down the staff buy their share by UPI and Vision checks the receipt against the count.",
+  "words": [
+   {
+    "w": "At",
+    "s": 0.0,
+    "e": 0.36
+   },
+   {
+    "w": "the",
+    "s": 0.36,
+    "e": 0.48
+   },
+   {
+    "w": "go",
+    "s": 0.48,
+    "e": 0.66
+   },
+   {
+    "w": "-down",
+    "s": 0.66,
+    "e": 0.9
+   },
+   {
+    "w": "the",
+    "s": 0.9,
+    "e": 1.14
+   },
+   {
+    "w": "staff",
+    "s": 1.14,
+    "e": 1.42
+   },
+   {
+    "w": "buy",
+    "s": 1.42,
+    "e": 1.76
+   },
+   {
+    "w": "their",
+    "s": 1.76,
+    "e": 1.92
+   },
+   {
+    "w": "share",
+    "s": 1.92,
+    "e": 2.16
+   },
+   {
+    "w": "by",
+    "s": 2.16,
+    "e": 2.36
+   },
+   {
+    "w": "UPI",
+    "s": 2.36,
+    "e": 2.88
+   },
+   {
+    "w": "and",
+    "s": 2.88,
+    "e": 3.26
+   },
+   {
+    "w": "Vision",
+    "s": 3.26,
+    "e": 3.54
+   },
+   {
+    "w": "checks",
+    "s": 3.54,
+    "e": 3.86
+   },
+   {
+    "w": "the",
+    "s": 3.86,
+    "e": 4.04
+   },
+   {
+    "w": "receipt",
+    "s": 4.04,
+    "e": 4.4
+   },
+   {
+    "w": "against",
+    "s": 4.4,
+    "e": 4.8
+   },
+   {
+    "w": "the",
+    "s": 4.8,
+    "e": 5.02
+   },
+   {
+    "w": "count.",
+    "s": 5.02,
+    "e": 5.28
+   }
+  ]
+ },
+ "j7-0.wav": {
+  "text": "What remains near its date goes to a food bank collected with a receipt.",
+  "words": [
+   {
+    "w": "What",
+    "s": 0.0,
+    "e": 0.48
+   },
+   {
+    "w": "remains",
+    "s": 0.48,
+    "e": 0.86
+   },
+   {
+    "w": "near",
+    "s": 0.86,
+    "e": 1.2
+   },
+   {
+    "w": "its",
+    "s": 1.2,
+    "e": 1.46
+   },
+   {
+    "w": "date",
+    "s": 1.46,
+    "e": 1.8
+   },
+   {
+    "w": "goes",
+    "s": 1.8,
+    "e": 2.3
+   },
+   {
+    "w": "to",
+    "s": 2.3,
+    "e": 2.48
+   },
+   {
+    "w": "a",
+    "s": 2.48,
+    "e": 2.62
+   },
+   {
+    "w": "food",
+    "s": 2.62,
+    "e": 2.8
+   },
+   {
+    "w": "bank",
+    "s": 2.8,
+    "e": 3.16
+   },
+   {
+    "w": "collected",
+    "s": 3.16,
+    "e": 3.76
+   },
+   {
+    "w": "with",
+    "s": 3.76,
+    "e": 4.02
+   },
+   {
+    "w": "a",
+    "s": 4.02,
+    "e": 4.14
+   },
+   {
+    "w": "receipt.",
+    "s": 4.14,
+    "e": 4.46
+   }
+  ]
+ },
+ "j7-1.wav": {
+  "text": "What remains near its date goes to a food bank, collected with a receipt.",
+  "words": [
+   {
+    "w": "What",
+    "s": 0.0,
+    "e": 0.48
+   },
+   {
+    "w": "remains",
+    "s": 0.48,
+    "e": 0.94
+   },
+   {
+    "w": "near",
+    "s": 0.94,
+    "e": 1.32
+   },
+   {
+    "w": "its",
+    "s": 1.32,
+    "e": 1.62
+   },
+   {
+    "w": "date",
+    "s": 1.62,
+    "e": 1.98
+   },
+   {
+    "w": "goes",
+    "s": 1.98,
+    "e": 2.42
+   },
+   {
+    "w": "to",
+    "s": 2.42,
+    "e": 2.6
+   },
+   {
+    "w": "a",
+    "s": 2.6,
+    "e": 2.74
+   },
+   {
+    "w": "food",
+    "s": 2.74,
+    "e": 3.0
+   },
+   {
+    "w": "bank,",
+    "s": 3.0,
+    "e": 3.36
+   },
+   {
+    "w": "collected",
+    "s": 3.52,
+    "e": 4.02
+   },
+   {
+    "w": "with",
+    "s": 4.02,
+    "e": 4.26
+   },
+   {
+    "w": "a",
+    "s": 4.26,
+    "e": 4.36
+   },
+   {
+    "w": "receipt.",
+    "s": 4.36,
+    "e": 4.68
+   }
+  ]
+ },
+ "j7-2.wav": {
+  "text": "What remains near its date goes to a food bank collected with a receipt.",
+  "words": [
+   {
+    "w": "What",
+    "s": 0.0,
+    "e": 0.44
+   },
+   {
+    "w": "remains",
+    "s": 0.44,
+    "e": 0.84
+   },
+   {
+    "w": "near",
+    "s": 0.84,
+    "e": 1.16
+   },
+   {
+    "w": "its",
+    "s": 1.16,
+    "e": 1.38
+   },
+   {
+    "w": "date",
+    "s": 1.38,
+    "e": 1.64
+   },
+   {
+    "w": "goes",
+    "s": 1.64,
+    "e": 1.92
+   },
+   {
+    "w": "to",
+    "s": 1.92,
+    "e": 2.08
+   },
+   {
+    "w": "a",
+    "s": 2.08,
+    "e": 2.22
+   },
+   {
+    "w": "food",
+    "s": 2.22,
+    "e": 2.4
+   },
+   {
+    "w": "bank",
+    "s": 2.4,
+    "e": 2.76
+   },
+   {
+    "w": "collected",
+    "s": 2.76,
+    "e": 3.44
+   },
+   {
+    "w": "with",
+    "s": 3.44,
+    "e": 3.7
+   },
+   {
+    "w": "a",
+    "s": 3.7,
+    "e": 3.82
+   },
+   {
+    "w": "receipt.",
+    "s": 3.82,
+    "e": 4.12
+   }
+  ]
+ },
+ "j8-0.wav": {
+  "text": "And when a batch has time to travel, the lister puts it on a near-expiry marketplace, and the negotiator closes the deal, without ever revealing the brand's floor price.",
+  "words": [
+   {
+    "w": "And",
+    "s": 0.0,
+    "e": 0.38
+   },
+   {
+    "w": "when",
+    "s": 0.38,
+    "e": 0.54
+   },
+   {
+    "w": "a",
+    "s": 0.54,
+    "e": 0.7
+   },
+   {
+    "w": "batch",
+    "s": 0.7,
+    "e": 0.98
+   },
+   {
+    "w": "has",
+    "s": 0.98,
+    "e": 1.2
+   },
+   {
+    "w": "time",
+    "s": 1.2,
+    "e": 1.46
+   },
+   {
+    "w": "to",
+    "s": 1.46,
+    "e": 1.64
+   },
+   {
+    "w": "travel,",
+    "s": 1.64,
+    "e": 1.98
+   },
+   {
+    "w": "the",
+    "s": 2.28,
+    "e": 2.6
+   },
+   {
+    "w": "lister",
+    "s": 2.6,
+    "e": 2.92
+   },
+   {
+    "w": "puts",
+    "s": 2.92,
+    "e": 3.22
+   },
+   {
+    "w": "it",
+    "s": 3.22,
+    "e": 3.38
+   },
+   {
+    "w": "on",
+    "s": 3.38,
+    "e": 3.5
+   },
+   {
+    "w": "a",
+    "s": 3.5,
+    "e": 3.62
+   },
+   {
+    "w": "near",
+    "s": 3.62,
+    "e": 3.9
+   },
+   {
+    "w": "-expiry",
+    "s": 3.9,
+    "e": 4.56
+   },
+   {
+    "w": "marketplace,",
+    "s": 4.56,
+    "e": 5.14
+   },
+   {
+    "w": "and",
+    "s": 5.44,
+    "e": 5.84
+   },
+   {
+    "w": "the",
+    "s": 5.84,
+    "e": 5.94
+   },
+   {
+    "w": "negotiator",
+    "s": 5.94,
+    "e": 6.68
+   },
+   {
+    "w": "closes",
+    "s": 6.68,
+    "e": 7.1
+   },
+   {
+    "w": "the",
+    "s": 7.1,
+    "e": 7.38
+   },
+   {
+    "w": "deal,",
+    "s": 7.38,
+    "e": 7.66
+   },
+   {
+    "w": "without",
+    "s": 7.84,
+    "e": 8.3
+   },
+   {
+    "w": "ever",
+    "s": 8.3,
+    "e": 8.66
+   },
+   {
+    "w": "revealing",
+    "s": 8.66,
+    "e": 9.08
+   },
+   {
+    "w": "the",
+    "s": 9.08,
+    "e": 9.3
+   },
+   {
+    "w": "brand's",
+    "s": 9.3,
+    "e": 9.76
+   },
+   {
+    "w": "floor",
+    "s": 9.76,
+    "e": 10.08
+   },
+   {
+    "w": "price.",
+    "s": 10.08,
+    "e": 10.38
+   }
+  ]
+ },
+ "j8-1.wav": {
+  "text": "An educated urban Indian English accent as spoken in Bangalore or Mumbai. And when a batch is time to travel, the lister puts it on a near-expiry marketplace and the negotiator closes the deal, without ever revealing the brand's floor price.",
+  "words": [
+   {
+    "w": "An",
+    "s": 0.0,
+    "e": 0.36
+   },
+   {
+    "w": "educated",
+    "s": 0.36,
+    "e": 0.84
+   },
+   {
+    "w": "urban",
+    "s": 0.84,
+    "e": 1.26
+   },
+   {
+    "w": "Indian",
+    "s": 1.26,
+    "e": 1.5
+   },
+   {
+    "w": "English",
+    "s": 1.5,
+    "e": 1.86
+   },
+   {
+    "w": "accent",
+    "s": 1.86,
+    "e": 2.34
+   },
+   {
+    "w": "as",
+    "s": 2.34,
+    "e": 2.7
+   },
+   {
+    "w": "spoken",
+    "s": 2.7,
+    "e": 3.0
+   },
+   {
+    "w": "in",
+    "s": 3.0,
+    "e": 3.18
+   },
+   {
+    "w": "Bangalore",
+    "s": 3.18,
+    "e": 3.64
+   },
+   {
+    "w": "or",
+    "s": 3.64,
+    "e": 3.82
+   },
+   {
+    "w": "Mumbai.",
+    "s": 3.82,
+    "e": 4.12
+   },
+   {
+    "w": "And",
+    "s": 4.66,
+    "e": 5.26
+   },
+   {
+    "w": "when",
+    "s": 5.26,
+    "e": 5.4
+   },
+   {
+    "w": "a",
+    "s": 5.4,
+    "e": 5.52
+   },
+   {
+    "w": "batch",
+    "s": 5.52,
+    "e": 5.72
+   },
+   {
+    "w": "is",
+    "s": 5.72,
+    "e": 5.86
+   },
+   {
+    "w": "time",
+    "s": 5.86,
+    "e": 6.04
+   },
+   {
+    "w": "to",
+    "s": 6.04,
+    "e": 6.18
+   },
+   {
+    "w": "travel,",
+    "s": 6.18,
+    "e": 6.52
+   },
+   {
+    "w": "the",
+    "s": 6.74,
+    "e": 7.08
+   },
+   {
+    "w": "lister",
+    "s": 7.08,
+    "e": 7.4
+   },
+   {
+    "w": "puts",
+    "s": 7.4,
+    "e": 7.62
+   },
+   {
+    "w": "it",
+    "s": 7.62,
+    "e": 7.74
+   },
+   {
+    "w": "on",
+    "s": 7.74,
+    "e": 7.86
+   },
+   {
+    "w": "a",
+    "s": 7.86,
+    "e": 7.98
+   },
+   {
+    "w": "near",
+    "s": 7.98,
+    "e": 8.2
+   },
+   {
+    "w": "-expiry",
+    "s": 8.2,
+    "e": 8.7
+   },
+   {
+    "w": "marketplace",
+    "s": 8.7,
+    "e": 9.2
+   },
+   {
+    "w": "and",
+    "s": 9.2,
+    "e": 9.46
+   },
+   {
+    "w": "the",
+    "s": 9.46,
+    "e": 9.58
+   },
+   {
+    "w": "negotiator",
+    "s": 9.58,
+    "e": 10.16
+   },
+   {
+    "w": "closes",
+    "s": 10.16,
+    "e": 10.46
+   },
+   {
+    "w": "the",
+    "s": 10.46,
+    "e": 10.68
+   },
+   {
+    "w": "deal,",
+    "s": 10.68,
+    "e": 10.92
+   },
+   {
+    "w": "without",
+    "s": 11.18,
+    "e": 11.7
+   },
+   {
+    "w": "ever",
+    "s": 11.7,
+    "e": 12.26
+   },
+   {
+    "w": "revealing",
+    "s": 12.26,
+    "e": 12.68
+   },
+   {
+    "w": "the",
+    "s": 12.68,
+    "e": 12.88
+   },
+   {
+    "w": "brand's",
+    "s": 12.88,
+    "e": 13.32
+   },
+   {
+    "w": "floor",
+    "s": 13.32,
+    "e": 13.62
+   },
+   {
+    "w": "price.",
+    "s": 13.62,
+    "e": 14.0
+   }
+  ]
+ },
+ "j8-2.wav": {
+  "text": "An educated urban Indian English accent, as spoken in Bangalore or Mumbai. Intimate and conversational. Like telling a friend a story she has lived. Never like an announcer or an advert. Breathe naturally before each sentence. Let the pace move. Slower and a little lower on the problem. A small smile in the voice on the hopeful lines. Lightly quicker through the lists. Real pauses at full stops. Tiny ones at commas. And when a batch has time to travel, the lister puts it on a near expiry marketplace. And the negotiator closes the deal without ever revealing the brand's floor price.",
+  "words": [
+   {
+    "w": "An",
+    "s": 0.0,
+    "e": 0.16
+   },
+   {
+    "w": "educated",
+    "s": 0.16,
+    "e": 0.68
+   },
+   {
+    "w": "urban",
+    "s": 0.68,
+    "e": 1.14
+   },
+   {
+    "w": "Indian",
+    "s": 1.14,
+    "e": 1.48
+   },
+   {
+    "w": "English",
+    "s": 1.48,
+    "e": 1.94
+   },
+   {
+    "w": "accent,",
+    "s": 1.94,
+    "e": 2.48
+   },
+   {
+    "w": "as",
+    "s": 2.7,
+    "e": 3.0
+   },
+   {
+    "w": "spoken",
+    "s": 3.0,
+    "e": 3.32
+   },
+   {
+    "w": "in",
+    "s": 3.32,
+    "e": 3.54
+   },
+   {
+    "w": "Bangalore",
+    "s": 3.54,
+    "e": 3.98
+   },
+   {
+    "w": "or",
+    "s": 3.98,
+    "e": 4.18
+   },
+   {
+    "w": "Mumbai.",
+    "s": 4.18,
+    "e": 4.6
+   },
+   {
+    "w": "Intimate",
+    "s": 5.06,
+    "e": 5.66
+   },
+   {
+    "w": "and",
+    "s": 5.66,
+    "e": 5.82
+   },
+   {
+    "w": "conversational.",
+    "s": 5.82,
+    "e": 6.58
+   },
+   {
+    "w": "Like",
+    "s": 6.96,
+    "e": 7.44
+   },
+   {
+    "w": "telling",
+    "s": 7.44,
+    "e": 7.68
+   },
+   {
+    "w": "a",
+    "s": 7.68,
+    "e": 7.84
+   },
+   {
+    "w": "friend",
+    "s": 7.84,
+    "e": 8.06
+   },
+   {
+    "w": "a",
+    "s": 8.06,
+    "e": 8.28
+   },
+   {
+    "w": "story",
+    "s": 8.28,
+    "e": 8.56
+   },
+   {
+    "w": "she",
+    "s": 8.56,
+    "e": 8.76
+   },
+   {
+    "w": "has",
+    "s": 8.76,
+    "e": 8.94
+   },
+   {
+    "w": "lived.",
+    "s": 8.94,
+    "e": 9.26
+   },
+   {
+    "w": "Never",
+    "s": 9.54,
+    "e": 9.92
+   },
+   {
+    "w": "like",
+    "s": 9.92,
+    "e": 10.14
+   },
+   {
+    "w": "an",
+    "s": 10.14,
+    "e": 10.28
+   },
+   {
+    "w": "announcer",
+    "s": 10.28,
+    "e": 10.72
+   },
+   {
+    "w": "or",
+    "s": 10.72,
+    "e": 11.08
+   },
+   {
+    "w": "an",
+    "s": 11.08,
+    "e": 11.28
+   },
+   {
+    "w": "advert.",
+    "s": 11.28,
+    "e": 11.72
+   },
+   {
+    "w": "Breathe",
+    "s": 12.18,
+    "e": 12.58
+   },
+   {
+    "w": "naturally",
+    "s": 12.58,
+    "e": 13.08
+   },
+   {
+    "w": "before",
+    "s": 13.08,
+    "e": 13.38
+   },
+   {
+    "w": "each",
+    "s": 13.38,
+    "e": 13.7
+   },
+   {
+    "w": "sentence.",
+    "s": 13.7,
+    "e": 14.16
+   },
+   {
+    "w": "Let",
+    "s": 14.38,
+    "e": 14.8
+   },
+   {
+    "w": "the",
+    "s": 14.8,
+    "e": 14.96
+   },
+   {
+    "w": "pace",
+    "s": 14.96,
+    "e": 15.24
+   },
+   {
+    "w": "move.",
+    "s": 15.24,
+    "e": 15.62
+   },
+   {
+    "w": "Slower",
+    "s": 15.82,
+    "e": 16.36
+   },
+   {
+    "w": "and",
+    "s": 16.36,
+    "e": 16.52
+   },
+   {
+    "w": "a",
+    "s": 16.52,
+    "e": 16.64
+   },
+   {
+    "w": "little",
+    "s": 16.64,
+    "e": 16.78
+   },
+   {
+    "w": "lower",
+    "s": 16.78,
+    "e": 17.16
+   },
+   {
+    "w": "on",
+    "s": 17.16,
+    "e": 17.34
+   },
+   {
+    "w": "the",
+    "s": 17.34,
+    "e": 17.48
+   },
+   {
+    "w": "problem.",
+    "s": 17.48,
+    "e": 17.82
+   },
+   {
+    "w": "A",
+    "s": 18.04,
+    "e": 18.34
+   },
+   {
+    "w": "small",
+    "s": 18.34,
+    "e": 18.64
+   },
+   {
+    "w": "smile",
+    "s": 18.64,
+    "e": 19.04
+   },
+   {
+    "w": "in",
+    "s": 19.04,
+    "e": 19.22
+   },
+   {
+    "w": "the",
+    "s": 19.22,
+    "e": 19.3
+   },
+   {
+    "w": "voice",
+    "s": 19.3,
+    "e": 19.56
+   },
+   {
+    "w": "on",
+    "s": 19.56,
+    "e": 19.7
+   },
+   {
+    "w": "the",
+    "s": 19.7,
+    "e": 19.8
+   },
+   {
+    "w": "hopeful",
+    "s": 19.8,
+    "e": 20.12
+   },
+   {
+    "w": "lines.",
+    "s": 20.12,
+    "e": 20.48
+   },
+   {
+    "w": "Lightly",
+    "s": 20.96,
+    "e": 21.28
+   },
+   {
+    "w": "quicker",
+    "s": 21.28,
+    "e": 21.58
+   },
+   {
+    "w": "through",
+    "s": 21.58,
+    "e": 21.8
+   },
+   {
+    "w": "the",
+    "s": 21.8,
+    "e": 21.94
+   },
+   {
+    "w": "lists.",
+    "s": 21.94,
+    "e": 22.26
+   },
+   {
+    "w": "Real",
+    "s": 22.6,
+    "e": 23.0
+   },
+   {
+    "w": "pauses",
+    "s": 23.0,
+    "e": 23.38
+   },
+   {
+    "w": "at",
+    "s": 23.38,
+    "e": 23.58
+   },
+   {
+    "w": "full",
+    "s": 23.58,
+    "e": 23.8
+   },
+   {
+    "w": "stops.",
+    "s": 23.8,
+    "e": 24.14
+   },
+   {
+    "w": "Tiny",
+    "s": 24.36,
+    "e": 24.68
+   },
+   {
+    "w": "ones",
+    "s": 24.68,
+    "e": 24.96
+   },
+   {
+    "w": "at",
+    "s": 24.96,
+    "e": 25.14
+   },
+   {
+    "w": "commas.",
+    "s": 25.14,
+    "e": 25.54
+   },
+   {
+    "w": "And",
+    "s": 26.72,
+    "e": 27.32
+   },
+   {
+    "w": "when",
+    "s": 27.32,
+    "e": 27.48
+   },
+   {
+    "w": "a",
+    "s": 27.48,
+    "e": 27.64
+   },
+   {
+    "w": "batch",
+    "s": 27.64,
+    "e": 27.94
+   },
+   {
+    "w": "has",
+    "s": 27.94,
+    "e": 28.16
+   },
+   {
+    "w": "time",
+    "s": 28.16,
+    "e": 28.42
+   },
+   {
+    "w": "to",
+    "s": 28.42,
+    "e": 28.58
+   },
+   {
+    "w": "travel,",
+    "s": 28.58,
+    "e": 28.92
+   },
+   {
+    "w": "the",
+    "s": 28.92,
+    "e": 29.5
+   },
+   {
+    "w": "lister",
+    "s": 29.5,
+    "e": 29.84
+   },
+   {
+    "w": "puts",
+    "s": 29.84,
+    "e": 30.14
+   },
+   {
+    "w": "it",
+    "s": 30.14,
+    "e": 30.24
+   },
+   {
+    "w": "on",
+    "s": 30.24,
+    "e": 30.38
+   },
+   {
+    "w": "a",
+    "s": 30.38,
+    "e": 30.52
+   },
+   {
+    "w": "near",
+    "s": 30.52,
+    "e": 30.78
+   },
+   {
+    "w": "expiry",
+    "s": 30.78,
+    "e": 31.42
+   },
+   {
+    "w": "marketplace.",
+    "s": 31.42,
+    "e": 31.9
+   },
+   {
+    "w": "And",
+    "s": 31.92,
+    "e": 32.5
+   },
+   {
+    "w": "the",
+    "s": 32.5,
+    "e": 32.62
+   },
+   {
+    "w": "negotiator",
+    "s": 32.62,
+    "e": 33.36
+   },
+   {
+    "w": "closes",
+    "s": 33.36,
+    "e": 33.68
+   },
+   {
+    "w": "the",
+    "s": 33.68,
+    "e": 33.9
+   },
+   {
+    "w": "deal",
+    "s": 33.9,
+    "e": 34.14
+   },
+   {
+    "w": "without",
+    "s": 34.14,
+    "e": 34.68
+   },
+   {
+    "w": "ever",
+    "s": 34.68,
+    "e": 35.2
+   },
+   {
+    "w": "revealing",
+    "s": 35.2,
+    "e": 35.66
+   },
+   {
+    "w": "the",
+    "s": 35.66,
+    "e": 35.86
+   },
+   {
+    "w": "brand's",
+    "s": 35.86,
+    "e": 36.24
+   },
+   {
+    "w": "floor",
+    "s": 36.24,
+    "e": 36.54
+   },
+   {
+    "w": "price.",
+    "s": 36.54,
+    "e": 36.88
+   }
+  ]
+ },
+ "j9-0.wav": {
+  "text": "Even the hardest case is handled with care. If a few packs truly can't be saved, an authorized agency destroys them. Vision checks the photos, and the certificate is signed on the spot by its officer, two witnesses, and the distributor.",
+  "words": [
+   {
+    "w": "Even",
+    "s": 0.0,
+    "e": 0.48
+   },
+   {
+    "w": "the",
+    "s": 0.48,
+    "e": 0.64
+   },
+   {
+    "w": "hardest",
+    "s": 0.64,
+    "e": 1.02
+   },
+   {
+    "w": "case",
+    "s": 1.02,
+    "e": 1.4
+   },
+   {
+    "w": "is",
+    "s": 1.4,
+    "e": 1.6
+   },
+   {
+    "w": "handled",
+    "s": 1.6,
+    "e": 1.96
+   },
+   {
+    "w": "with",
+    "s": 1.96,
+    "e": 2.26
+   },
+   {
+    "w": "care.",
+    "s": 2.26,
+    "e": 2.48
+   },
+   {
+    "w": "If",
+    "s": 2.74,
+    "e": 3.12
+   },
+   {
+    "w": "a",
+    "s": 3.12,
+    "e": 3.24
+   },
+   {
+    "w": "few",
+    "s": 3.24,
+    "e": 3.44
+   },
+   {
+    "w": "packs",
+    "s": 3.44,
+    "e": 3.74
+   },
+   {
+    "w": "truly",
+    "s": 3.74,
+    "e": 4.1
+   },
+   {
+    "w": "can't",
+    "s": 4.1,
+    "e": 4.5
+   },
+   {
+    "w": "be",
+    "s": 4.5,
+    "e": 4.66
+   },
+   {
+    "w": "saved,",
+    "s": 4.66,
+    "e": 5.06
+   },
+   {
+    "w": "an",
+    "s": 5.28,
+    "e": 5.58
+   },
+   {
+    "w": "authorized",
+    "s": 5.58,
+    "e": 5.86
+   },
+   {
+    "w": "agency",
+    "s": 5.86,
+    "e": 6.54
+   },
+   {
+    "w": "destroys",
+    "s": 6.54,
+    "e": 7.1
+   },
+   {
+    "w": "them.",
+    "s": 7.1,
+    "e": 7.38
+   },
+   {
+    "w": "Vision",
+    "s": 7.78,
+    "e": 8.26
+   },
+   {
+    "w": "checks",
+    "s": 8.26,
+    "e": 8.58
+   },
+   {
+    "w": "the",
+    "s": 8.58,
+    "e": 8.82
+   },
+   {
+    "w": "photos,",
+    "s": 8.82,
+    "e": 9.28
+   },
+   {
+    "w": "and",
+    "s": 9.44,
+    "e": 9.82
+   },
+   {
+    "w": "the",
+    "s": 9.82,
+    "e": 9.96
+   },
+   {
+    "w": "certificate",
+    "s": 9.96,
+    "e": 10.36
+   },
+   {
+    "w": "is",
+    "s": 10.36,
+    "e": 10.68
+   },
+   {
+    "w": "signed",
+    "s": 10.68,
+    "e": 10.98
+   },
+   {
+    "w": "on",
+    "s": 10.98,
+    "e": 11.32
+   },
+   {
+    "w": "the",
+    "s": 11.32,
+    "e": 11.48
+   },
+   {
+    "w": "spot",
+    "s": 11.48,
+    "e": 11.84
+   },
+   {
+    "w": "by",
+    "s": 11.84,
+    "e": 12.1
+   },
+   {
+    "w": "its",
+    "s": 12.1,
+    "e": 12.3
+   },
+   {
+    "w": "officer,",
+    "s": 12.3,
+    "e": 12.72
+   },
+   {
+    "w": "two",
+    "s": 13.14,
+    "e": 13.24
+   },
+   {
+    "w": "witnesses,",
+    "s": 13.24,
+    "e": 13.72
+   },
+   {
+    "w": "and",
+    "s": 13.98,
+    "e": 14.32
+   },
+   {
+    "w": "the",
+    "s": 14.32,
+    "e": 14.48
+   },
+   {
+    "w": "distributor.",
+    "s": 14.48,
+    "e": 14.84
+   }
+  ]
+ },
+ "j9-1.wav": {
+  "text": "Even the hardest case is handled with care. If a few packs truly can't be saved, an authorized agency destroys them. Vision checks the photos and the certificate is signed on the spot by its officer, two witnesses and the distributor.",
+  "words": [
+   {
+    "w": "Even",
+    "s": 0.0,
+    "e": 0.32
+   },
+   {
+    "w": "the",
+    "s": 0.32,
+    "e": 0.48
+   },
+   {
+    "w": "hardest",
+    "s": 0.48,
+    "e": 0.78
+   },
+   {
+    "w": "case",
+    "s": 0.78,
+    "e": 1.1
+   },
+   {
+    "w": "is",
+    "s": 1.1,
+    "e": 1.3
+   },
+   {
+    "w": "handled",
+    "s": 1.3,
+    "e": 1.62
+   },
+   {
+    "w": "with",
+    "s": 1.62,
+    "e": 1.88
+   },
+   {
+    "w": "care.",
+    "s": 1.88,
+    "e": 2.1
+   },
+   {
+    "w": "If",
+    "s": 2.34,
+    "e": 2.64
+   },
+   {
+    "w": "a",
+    "s": 2.64,
+    "e": 2.78
+   },
+   {
+    "w": "few",
+    "s": 2.78,
+    "e": 2.96
+   },
+   {
+    "w": "packs",
+    "s": 2.96,
+    "e": 3.28
+   },
+   {
+    "w": "truly",
+    "s": 3.28,
+    "e": 3.7
+   },
+   {
+    "w": "can't",
+    "s": 3.7,
+    "e": 4.04
+   },
+   {
+    "w": "be",
+    "s": 4.04,
+    "e": 4.16
+   },
+   {
+    "w": "saved,",
+    "s": 4.16,
+    "e": 4.52
+   },
+   {
+    "w": "an",
+    "s": 4.92,
+    "e": 5.04
+   },
+   {
+    "w": "authorized",
+    "s": 5.04,
+    "e": 5.42
+   },
+   {
+    "w": "agency",
+    "s": 5.42,
+    "e": 6.08
+   },
+   {
+    "w": "destroys",
+    "s": 6.08,
+    "e": 6.6
+   },
+   {
+    "w": "them.",
+    "s": 6.6,
+    "e": 6.86
+   },
+   {
+    "w": "Vision",
+    "s": 7.26,
+    "e": 7.6
+   },
+   {
+    "w": "checks",
+    "s": 7.6,
+    "e": 7.92
+   },
+   {
+    "w": "the",
+    "s": 7.92,
+    "e": 8.12
+   },
+   {
+    "w": "photos",
+    "s": 8.12,
+    "e": 8.54
+   },
+   {
+    "w": "and",
+    "s": 8.54,
+    "e": 9.04
+   },
+   {
+    "w": "the",
+    "s": 9.04,
+    "e": 9.18
+   },
+   {
+    "w": "certificate",
+    "s": 9.18,
+    "e": 9.6
+   },
+   {
+    "w": "is",
+    "s": 9.6,
+    "e": 9.88
+   },
+   {
+    "w": "signed",
+    "s": 9.88,
+    "e": 10.18
+   },
+   {
+    "w": "on",
+    "s": 10.18,
+    "e": 10.5
+   },
+   {
+    "w": "the",
+    "s": 10.5,
+    "e": 10.66
+   },
+   {
+    "w": "spot",
+    "s": 10.66,
+    "e": 10.96
+   },
+   {
+    "w": "by",
+    "s": 10.96,
+    "e": 11.16
+   },
+   {
+    "w": "its",
+    "s": 11.16,
+    "e": 11.3
+   },
+   {
+    "w": "officer,",
+    "s": 11.3,
+    "e": 11.72
+   },
+   {
+    "w": "two",
+    "s": 12.06,
+    "e": 12.16
+   },
+   {
+    "w": "witnesses",
+    "s": 12.16,
+    "e": 12.6
+   },
+   {
+    "w": "and",
+    "s": 12.6,
+    "e": 12.86
+   },
+   {
+    "w": "the",
+    "s": 12.86,
+    "e": 13.0
+   },
+   {
+    "w": "distributor.",
+    "s": 13.0,
+    "e": 13.46
+   }
+  ]
+ },
+ "j9-2.wav": {
+  "text": "Even the hardest case is handled with care. If a few packs truly can't be saved, an authorized agency destroys them, vision checks the photos, and the certificate is signed on the spot by its officer, two witnesses, and the distributor.",
+  "words": [
+   {
+    "w": "Even",
+    "s": 0.0,
+    "e": 0.48
+   },
+   {
+    "w": "the",
+    "s": 0.48,
+    "e": 0.66
+   },
+   {
+    "w": "hardest",
+    "s": 0.66,
+    "e": 1.04
+   },
+   {
+    "w": "case",
+    "s": 1.04,
+    "e": 1.48
+   },
+   {
+    "w": "is",
+    "s": 1.48,
+    "e": 1.64
+   },
+   {
+    "w": "handled",
+    "s": 1.64,
+    "e": 2.0
+   },
+   {
+    "w": "with",
+    "s": 2.0,
+    "e": 2.34
+   },
+   {
+    "w": "care.",
+    "s": 2.34,
+    "e": 2.56
+   },
+   {
+    "w": "If",
+    "s": 2.84,
+    "e": 3.18
+   },
+   {
+    "w": "a",
+    "s": 3.18,
+    "e": 3.3
+   },
+   {
+    "w": "few",
+    "s": 3.3,
+    "e": 3.52
+   },
+   {
+    "w": "packs",
+    "s": 3.52,
+    "e": 3.84
+   },
+   {
+    "w": "truly",
+    "s": 3.84,
+    "e": 4.18
+   },
+   {
+    "w": "can't",
+    "s": 4.18,
+    "e": 4.56
+   },
+   {
+    "w": "be",
+    "s": 4.56,
+    "e": 4.68
+   },
+   {
+    "w": "saved,",
+    "s": 4.68,
+    "e": 5.02
+   },
+   {
+    "w": "an",
+    "s": 5.24,
+    "e": 5.48
+   },
+   {
+    "w": "authorized",
+    "s": 5.48,
+    "e": 5.74
+   },
+   {
+    "w": "agency",
+    "s": 5.74,
+    "e": 6.42
+   },
+   {
+    "w": "destroys",
+    "s": 6.42,
+    "e": 6.94
+   },
+   {
+    "w": "them,",
+    "s": 6.94,
+    "e": 7.2
+   },
+   {
+    "w": "vision",
+    "s": 7.54,
+    "e": 7.86
+   },
+   {
+    "w": "checks",
+    "s": 7.86,
+    "e": 8.16
+   },
+   {
+    "w": "the",
+    "s": 8.16,
+    "e": 8.36
+   },
+   {
+    "w": "photos,",
+    "s": 8.36,
+    "e": 8.78
+   },
+   {
+    "w": "and",
+    "s": 8.96,
+    "e": 9.24
+   },
+   {
+    "w": "the",
+    "s": 9.24,
+    "e": 9.38
+   },
+   {
+    "w": "certificate",
+    "s": 9.38,
+    "e": 9.8
+   },
+   {
+    "w": "is",
+    "s": 9.8,
+    "e": 10.08
+   },
+   {
+    "w": "signed",
+    "s": 10.08,
+    "e": 10.44
+   },
+   {
+    "w": "on",
+    "s": 10.44,
+    "e": 10.74
+   },
+   {
+    "w": "the",
+    "s": 10.74,
+    "e": 10.88
+   },
+   {
+    "w": "spot",
+    "s": 10.88,
+    "e": 11.16
+   },
+   {
+    "w": "by",
+    "s": 11.16,
+    "e": 11.4
+   },
+   {
+    "w": "its",
+    "s": 11.4,
+    "e": 11.54
+   },
+   {
+    "w": "officer,",
+    "s": 11.54,
+    "e": 12.08
+   },
+   {
+    "w": "two",
+    "s": 12.48,
+    "e": 12.62
+   },
+   {
+    "w": "witnesses,",
+    "s": 12.62,
+    "e": 13.08
+   },
+   {
+    "w": "and",
+    "s": 13.28,
+    "e": 13.52
+   },
+   {
+    "w": "the",
+    "s": 13.52,
+    "e": 13.66
+   },
+   {
+    "w": "distributor.",
+    "s": 13.66,
+    "e": 13.96
+   }
+  ]
+ },
+ "m1-0.wav": {
+  "text": "Then the paperwork writes itself.",
+  "words": [
+   {
+    "w": "Then",
+    "s": 0.0,
+    "e": 0.48
+   },
+   {
+    "w": "the",
+    "s": 0.48,
+    "e": 0.66
+   },
+   {
+    "w": "paperwork",
+    "s": 0.66,
+    "e": 1.08
+   },
+   {
+    "w": "writes",
+    "s": 1.08,
+    "e": 1.66
+   },
+   {
+    "w": "itself.",
+    "s": 1.66,
+    "e": 2.06
+   }
+  ]
+ },
+ "m1-1.wav": {
+  "text": "Then the paperwork writes its is.",
+  "words": [
+   {
+    "w": "Then",
+    "s": 0.0,
+    "e": 0.48
+   },
+   {
+    "w": "the",
+    "s": 0.48,
+    "e": 0.64
+   },
+   {
+    "w": "paperwork",
+    "s": 0.64,
+    "e": 1.0
+   },
+   {
+    "w": "writes",
+    "s": 1.0,
+    "e": 1.48
+   },
+   {
+    "w": "its",
+    "s": 1.48,
+    "e": 1.66
+   },
+   {
+    "w": "is.",
+    "s": 1.66,
+    "e": 1.88
+   }
+  ]
+ },
+ "m1-2.wav": {
+  "text": "then the paperwork writes itself.",
+  "words": [
+   {
+    "w": "then",
+    "s": 0.0,
+    "e": 0.3
+   },
+   {
+    "w": "the",
+    "s": 0.3,
+    "e": 0.44
+   },
+   {
+    "w": "paperwork",
+    "s": 0.44,
+    "e": 0.78
+   },
+   {
+    "w": "writes",
+    "s": 0.78,
+    "e": 1.22
+   },
+   {
+    "w": "itself.",
+    "s": 1.22,
+    "e": 1.62
+   }
+  ]
+ },
+ "m2-0.wav": {
+  "text": "A tax invoice for every order. E-invoices, credit notes, a GST memo with every reversal worked out. Donation receipts and certificates, each one drafted, signed and filed.",
+  "words": [
+   {
+    "w": "A",
+    "s": 0.0,
+    "e": 0.4
+   },
+   {
+    "w": "tax",
+    "s": 0.4,
+    "e": 0.68
+   },
+   {
+    "w": "invoice",
+    "s": 0.68,
+    "e": 1.14
+   },
+   {
+    "w": "for",
+    "s": 1.14,
+    "e": 1.36
+   },
+   {
+    "w": "every",
+    "s": 1.36,
+    "e": 1.74
+   },
+   {
+    "w": "order.",
+    "s": 1.74,
+    "e": 2.08
+   },
+   {
+    "w": "E",
+    "s": 2.36,
+    "e": 2.82
+   },
+   {
+    "w": "-invoices,",
+    "s": 2.82,
+    "e": 3.52
+   },
+   {
+    "w": "credit",
+    "s": 3.68,
+    "e": 4.06
+   },
+   {
+    "w": "notes,",
+    "s": 4.06,
+    "e": 4.46
+   },
+   {
+    "w": "a",
+    "s": 4.78,
+    "e": 5.0
+   },
+   {
+    "w": "GST",
+    "s": 5.0,
+    "e": 5.44
+   },
+   {
+    "w": "memo",
+    "s": 5.44,
+    "e": 5.74
+   },
+   {
+    "w": "with",
+    "s": 5.74,
+    "e": 6.0
+   },
+   {
+    "w": "every",
+    "s": 6.0,
+    "e": 6.44
+   },
+   {
+    "w": "reversal",
+    "s": 6.44,
+    "e": 6.94
+   },
+   {
+    "w": "worked",
+    "s": 6.94,
+    "e": 7.26
+   },
+   {
+    "w": "out.",
+    "s": 7.26,
+    "e": 7.52
+   },
+   {
+    "w": "Donation",
+    "s": 7.84,
+    "e": 8.5
+   },
+   {
+    "w": "receipts",
+    "s": 8.5,
+    "e": 8.92
+   },
+   {
+    "w": "and",
+    "s": 8.92,
+    "e": 9.1
+   },
+   {
+    "w": "certificates,",
+    "s": 9.1,
+    "e": 9.68
+   },
+   {
+    "w": "each",
+    "s": 9.92,
+    "e": 10.46
+   },
+   {
+    "w": "one",
+    "s": 10.46,
+    "e": 10.72
+   },
+   {
+    "w": "drafted,",
+    "s": 10.72,
+    "e": 11.18
+   },
+   {
+    "w": "signed",
+    "s": 11.52,
+    "e": 11.78
+   },
+   {
+    "w": "and",
+    "s": 11.78,
+    "e": 11.98
+   },
+   {
+    "w": "filed.",
+    "s": 11.98,
+    "e": 12.36
+   }
+  ]
+ },
+ "m2-1.wav": {
+  "text": "An educated urban Indian English accent is spoken in Bangalore or Mumbai. Intimate and conversational, like telling a friend a story she has lived. Never like an announcer or an advert. Breathe naturally before each sentence. Let the pace move, slower and a little lower on the problem, a small smile in the voice on the hopeful lines, lightly quicker through the lists. Real pauses at full stops, tiny ones at commas.",
+  "words": [
+   {
+    "w": "An",
+    "s": 0.0,
+    "e": 0.38
+   },
+   {
+    "w": "educated",
+    "s": 0.38,
+    "e": 0.96
+   },
+   {
+    "w": "urban",
+    "s": 0.96,
+    "e": 1.46
+   },
+   {
+    "w": "Indian",
+    "s": 1.46,
+    "e": 1.92
+   },
+   {
+    "w": "English",
+    "s": 1.92,
+    "e": 2.4
+   },
+   {
+    "w": "accent",
+    "s": 2.4,
+    "e": 2.82
+   },
+   {
+    "w": "is",
+    "s": 2.82,
+    "e": 3.0
+   },
+   {
+    "w": "spoken",
+    "s": 3.0,
+    "e": 3.34
+   },
+   {
+    "w": "in",
+    "s": 3.34,
+    "e": 3.54
+   },
+   {
+    "w": "Bangalore",
+    "s": 3.54,
+    "e": 4.04
+   },
+   {
+    "w": "or",
+    "s": 4.04,
+    "e": 4.22
+   },
+   {
+    "w": "Mumbai.",
+    "s": 4.22,
+    "e": 4.58
+   },
+   {
+    "w": "Intimate",
+    "s": 5.18,
+    "e": 5.74
+   },
+   {
+    "w": "and",
+    "s": 5.74,
+    "e": 5.94
+   },
+   {
+    "w": "conversational,",
+    "s": 5.94,
+    "e": 6.72
+   },
+   {
+    "w": "like",
+    "s": 6.92,
+    "e": 7.28
+   },
+   {
+    "w": "telling",
+    "s": 7.28,
+    "e": 7.52
+   },
+   {
+    "w": "a",
+    "s": 7.52,
+    "e": 7.7
+   },
+   {
+    "w": "friend",
+    "s": 7.7,
+    "e": 7.9
+   },
+   {
+    "w": "a",
+    "s": 7.9,
+    "e": 8.06
+   },
+   {
+    "w": "story",
+    "s": 8.06,
+    "e": 8.34
+   },
+   {
+    "w": "she",
+    "s": 8.34,
+    "e": 8.52
+   },
+   {
+    "w": "has",
+    "s": 8.52,
+    "e": 8.74
+   },
+   {
+    "w": "lived.",
+    "s": 8.74,
+    "e": 9.08
+   },
+   {
+    "w": "Never",
+    "s": 9.34,
+    "e": 9.78
+   },
+   {
+    "w": "like",
+    "s": 9.78,
+    "e": 10.02
+   },
+   {
+    "w": "an",
+    "s": 10.02,
+    "e": 10.16
+   },
+   {
+    "w": "announcer",
+    "s": 10.16,
+    "e": 10.56
+   },
+   {
+    "w": "or",
+    "s": 10.56,
+    "e": 10.8
+   },
+   {
+    "w": "an",
+    "s": 10.8,
+    "e": 10.96
+   },
+   {
+    "w": "advert.",
+    "s": 10.96,
+    "e": 11.28
+   },
+   {
+    "w": "Breathe",
+    "s": 11.58,
+    "e": 11.98
+   },
+   {
+    "w": "naturally",
+    "s": 11.98,
+    "e": 12.4
+   },
+   {
+    "w": "before",
+    "s": 12.4,
+    "e": 12.72
+   },
+   {
+    "w": "each",
+    "s": 12.72,
+    "e": 13.02
+   },
+   {
+    "w": "sentence.",
+    "s": 13.02,
+    "e": 13.46
+   },
+   {
+    "w": "Let",
+    "s": 13.76,
+    "e": 14.08
+   },
+   {
+    "w": "the",
+    "s": 14.08,
+    "e": 14.22
+   },
+   {
+    "w": "pace",
+    "s": 14.22,
+    "e": 14.46
+   },
+   {
+    "w": "move,",
+    "s": 14.46,
+    "e": 14.84
+   },
+   {
+    "w": "slower",
+    "s": 15.04,
+    "e": 15.44
+   },
+   {
+    "w": "and",
+    "s": 15.44,
+    "e": 15.66
+   },
+   {
+    "w": "a",
+    "s": 15.66,
+    "e": 15.8
+   },
+   {
+    "w": "little",
+    "s": 15.8,
+    "e": 15.98
+   },
+   {
+    "w": "lower",
+    "s": 15.98,
+    "e": 16.3
+   },
+   {
+    "w": "on",
+    "s": 16.3,
+    "e": 16.46
+   },
+   {
+    "w": "the",
+    "s": 16.46,
+    "e": 16.56
+   },
+   {
+    "w": "problem,",
+    "s": 16.56,
+    "e": 16.88
+   },
+   {
+    "w": "a",
+    "s": 17.1,
+    "e": 17.36
+   },
+   {
+    "w": "small",
+    "s": 17.36,
+    "e": 17.64
+   },
+   {
+    "w": "smile",
+    "s": 17.64,
+    "e": 17.98
+   },
+   {
+    "w": "in",
+    "s": 17.98,
+    "e": 18.16
+   },
+   {
+    "w": "the",
+    "s": 18.16,
+    "e": 18.24
+   },
+   {
+    "w": "voice",
+    "s": 18.24,
+    "e": 18.5
+   },
+   {
+    "w": "on",
+    "s": 18.5,
+    "e": 18.64
+   },
+   {
+    "w": "the",
+    "s": 18.64,
+    "e": 18.72
+   },
+   {
+    "w": "hopeful",
+    "s": 18.72,
+    "e": 19.06
+   },
+   {
+    "w": "lines,",
+    "s": 19.06,
+    "e": 19.44
+   },
+   {
+    "w": "lightly",
+    "s": 19.78,
+    "e": 20.08
+   },
+   {
+    "w": "quicker",
+    "s": 20.08,
+    "e": 20.42
+   },
+   {
+    "w": "through",
+    "s": 20.42,
+    "e": 20.64
+   },
+   {
+    "w": "the",
+    "s": 20.64,
+    "e": 20.78
+   },
+   {
+    "w": "lists.",
+    "s": 20.78,
+    "e": 21.16
+   },
+   {
+    "w": "Real",
+    "s": 21.62,
+    "e": 21.86
+   },
+   {
+    "w": "pauses",
+    "s": 21.86,
+    "e": 22.3
+   },
+   {
+    "w": "at",
+    "s": 22.3,
+    "e": 22.48
+   },
+   {
+    "w": "full",
+    "s": 22.48,
+    "e": 22.68
+   },
+   {
+    "w": "stops,",
+    "s": 22.68,
+    "e": 23.06
+   },
+   {
+    "w": "tiny",
+    "s": 23.3,
+    "e": 23.6
+   },
+   {
+    "w": "ones",
+    "s": 23.6,
+    "e": 23.88
+   },
+   {
+    "w": "at",
+    "s": 23.88,
+    "e": 24.04
+   },
+   {
+    "w": "commas.",
+    "s": 24.04,
+    "e": 24.46
+   }
+  ]
+ },
+ "m2-2.wav": {
+  "text": "A tax invoice for every order, e-invoices, credit notes, a GST memo with every reversal worked out. Donation receipts and certificates, each one drafted, signed and filed.",
+  "words": [
+   {
+    "w": "A",
+    "s": 0.0,
+    "e": 0.4
+   },
+   {
+    "w": "tax",
+    "s": 0.4,
+    "e": 0.68
+   },
+   {
+    "w": "invoice",
+    "s": 0.68,
+    "e": 1.06
+   },
+   {
+    "w": "for",
+    "s": 1.06,
+    "e": 1.28
+   },
+   {
+    "w": "every",
+    "s": 1.28,
+    "e": 1.62
+   },
+   {
+    "w": "order,",
+    "s": 1.62,
+    "e": 1.96
+   },
+   {
+    "w": "e",
+    "s": 2.66,
+    "e": 2.82
+   },
+   {
+    "w": "-invoices,",
+    "s": 2.82,
+    "e": 3.54
+   },
+   {
+    "w": "credit",
+    "s": 3.74,
+    "e": 4.0
+   },
+   {
+    "w": "notes,",
+    "s": 4.0,
+    "e": 4.48
+   },
+   {
+    "w": "a",
+    "s": 4.72,
+    "e": 4.98
+   },
+   {
+    "w": "GST",
+    "s": 4.98,
+    "e": 5.46
+   },
+   {
+    "w": "memo",
+    "s": 5.46,
+    "e": 5.74
+   },
+   {
+    "w": "with",
+    "s": 5.74,
+    "e": 5.98
+   },
+   {
+    "w": "every",
+    "s": 5.98,
+    "e": 6.56
+   },
+   {
+    "w": "reversal",
+    "s": 6.56,
+    "e": 7.06
+   },
+   {
+    "w": "worked",
+    "s": 7.06,
+    "e": 7.42
+   },
+   {
+    "w": "out.",
+    "s": 7.42,
+    "e": 7.66
+   },
+   {
+    "w": "Donation",
+    "s": 8.34,
+    "e": 8.9
+   },
+   {
+    "w": "receipts",
+    "s": 8.9,
+    "e": 9.4
+   },
+   {
+    "w": "and",
+    "s": 9.4,
+    "e": 9.56
+   },
+   {
+    "w": "certificates,",
+    "s": 9.56,
+    "e": 10.2
+   },
+   {
+    "w": "each",
+    "s": 10.4,
+    "e": 10.94
+   },
+   {
+    "w": "one",
+    "s": 10.94,
+    "e": 11.18
+   },
+   {
+    "w": "drafted,",
+    "s": 11.18,
+    "e": 11.56
+   },
+   {
+    "w": "signed",
+    "s": 11.84,
+    "e": 12.04
+   },
+   {
+    "w": "and",
+    "s": 12.04,
+    "e": 12.22
+   },
+   {
+    "w": "filed.",
+    "s": 12.22,
+    "e": 12.52
+   }
+  ]
+ },
+ "m3-0.wav": {
+  "text": "On a single batch, a loss of Rs 22,000 becomes a recovery of nearly Rs 17,000 and the distributor ends whole to the rupee.",
+  "words": [
+   {
+    "w": "On",
+    "s": 0.0,
+    "e": 0.32
+   },
+   {
+    "w": "a",
+    "s": 0.32,
+    "e": 0.42
+   },
+   {
+    "w": "single",
+    "s": 0.42,
+    "e": 0.7
+   },
+   {
+    "w": "batch,",
+    "s": 0.7,
+    "e": 1.06
+   },
+   {
+    "w": "a",
+    "s": 1.32,
+    "e": 1.34
+   },
+   {
+    "w": "loss",
+    "s": 1.34,
+    "e": 1.58
+   },
+   {
+    "w": "of",
+    "s": 1.58,
+    "e": 1.72
+   },
+   {
+    "w": "Rs",
+    "s": 1.72,
+    "e": 1.8
+   },
+   {
+    "w": "22",
+    "s": 1.8,
+    "e": 2.08
+   },
+   {
+    "w": ",000",
+    "s": 2.08,
+    "e": 2.6
+   },
+   {
+    "w": "becomes",
+    "s": 2.6,
+    "e": 3.26
+   },
+   {
+    "w": "a",
+    "s": 3.26,
+    "e": 3.5
+   },
+   {
+    "w": "recovery",
+    "s": 3.5,
+    "e": 3.88
+   },
+   {
+    "w": "of",
+    "s": 3.88,
+    "e": 4.06
+   },
+   {
+    "w": "nearly",
+    "s": 4.06,
+    "e": 4.34
+   },
+   {
+    "w": "Rs",
+    "s": 4.34,
+    "e": 4.58
+   },
+   {
+    "w": "17",
+    "s": 4.58,
+    "e": 4.9
+   },
+   {
+    "w": ",000",
+    "s": 4.9,
+    "e": 5.48
+   },
+   {
+    "w": "and",
+    "s": 5.48,
+    "e": 6.0
+   },
+   {
+    "w": "the",
+    "s": 6.0,
+    "e": 6.12
+   },
+   {
+    "w": "distributor",
+    "s": 6.12,
+    "e": 6.6
+   },
+   {
+    "w": "ends",
+    "s": 6.6,
+    "e": 6.96
+   },
+   {
+    "w": "whole",
+    "s": 6.96,
+    "e": 7.3
+   },
+   {
+    "w": "to",
+    "s": 7.3,
+    "e": 7.68
+   },
+   {
+    "w": "the",
+    "s": 7.68,
+    "e": 7.88
+   },
+   {
+    "w": "rupee.",
+    "s": 7.88,
+    "e": 8.22
+   }
+  ]
+ },
+ "m3-1.wav": {
+  "text": "On a single batch, a loss of Rs 22,000 becomes a recovery of nearly Rs 17,000. And the distributor ends whole to the rupee.",
+  "words": [
+   {
+    "w": "On",
+    "s": 0.0,
+    "e": 0.38
+   },
+   {
+    "w": "a",
+    "s": 0.38,
+    "e": 0.5
+   },
+   {
+    "w": "single",
+    "s": 0.5,
+    "e": 0.8
+   },
+   {
+    "w": "batch,",
+    "s": 0.8,
+    "e": 1.18
+   },
+   {
+    "w": "a",
+    "s": 1.38,
+    "e": 1.64
+   },
+   {
+    "w": "loss",
+    "s": 1.64,
+    "e": 1.96
+   },
+   {
+    "w": "of",
+    "s": 1.96,
+    "e": 2.14
+   },
+   {
+    "w": "Rs",
+    "s": 2.14,
+    "e": 2.26
+   },
+   {
+    "w": "22",
+    "s": 2.26,
+    "e": 2.54
+   },
+   {
+    "w": ",000",
+    "s": 2.54,
+    "e": 3.06
+   },
+   {
+    "w": "becomes",
+    "s": 3.06,
+    "e": 3.68
+   },
+   {
+    "w": "a",
+    "s": 3.68,
+    "e": 3.96
+   },
+   {
+    "w": "recovery",
+    "s": 3.96,
+    "e": 4.38
+   },
+   {
+    "w": "of",
+    "s": 4.38,
+    "e": 4.58
+   },
+   {
+    "w": "nearly",
+    "s": 4.58,
+    "e": 4.9
+   },
+   {
+    "w": "Rs",
+    "s": 4.9,
+    "e": 5.14
+   },
+   {
+    "w": "17",
+    "s": 5.14,
+    "e": 5.48
+   },
+   {
+    "w": ",000.",
+    "s": 5.48,
+    "e": 6.0
+   },
+   {
+    "w": "And",
+    "s": 6.24,
+    "e": 6.86
+   },
+   {
+    "w": "the",
+    "s": 6.86,
+    "e": 6.98
+   },
+   {
+    "w": "distributor",
+    "s": 6.98,
+    "e": 7.58
+   },
+   {
+    "w": "ends",
+    "s": 7.58,
+    "e": 7.98
+   },
+   {
+    "w": "whole",
+    "s": 7.98,
+    "e": 8.44
+   },
+   {
+    "w": "to",
+    "s": 8.44,
+    "e": 8.88
+   },
+   {
+    "w": "the",
+    "s": 8.88,
+    "e": 9.08
+   },
+   {
+    "w": "rupee.",
+    "s": 9.08,
+    "e": 9.34
+   }
+  ]
+ },
+ "m3-2.wav": {
+  "text": "On a single batch, a loss of Rs 22,000 becomes a recovery of nearly Rs 17,000 and the distributor ends whole, to the rupee.",
+  "words": [
+   {
+    "w": "On",
+    "s": 0.0,
+    "e": 0.4
+   },
+   {
+    "w": "a",
+    "s": 0.4,
+    "e": 0.52
+   },
+   {
+    "w": "single",
+    "s": 0.52,
+    "e": 0.86
+   },
+   {
+    "w": "batch,",
+    "s": 0.86,
+    "e": 1.26
+   },
+   {
+    "w": "a",
+    "s": 1.5,
+    "e": 1.78
+   },
+   {
+    "w": "loss",
+    "s": 1.78,
+    "e": 2.1
+   },
+   {
+    "w": "of",
+    "s": 2.1,
+    "e": 2.26
+   },
+   {
+    "w": "Rs",
+    "s": 2.26,
+    "e": 2.44
+   },
+   {
+    "w": "22",
+    "s": 2.44,
+    "e": 2.72
+   },
+   {
+    "w": ",000",
+    "s": 2.72,
+    "e": 3.3
+   },
+   {
+    "w": "becomes",
+    "s": 3.3,
+    "e": 3.98
+   },
+   {
+    "w": "a",
+    "s": 3.98,
+    "e": 4.24
+   },
+   {
+    "w": "recovery",
+    "s": 4.24,
+    "e": 4.66
+   },
+   {
+    "w": "of",
+    "s": 4.66,
+    "e": 4.88
+   },
+   {
+    "w": "nearly",
+    "s": 4.88,
+    "e": 5.28
+   },
+   {
+    "w": "Rs",
+    "s": 5.28,
+    "e": 5.54
+   },
+   {
+    "w": "17",
+    "s": 5.54,
+    "e": 5.96
+   },
+   {
+    "w": ",000",
+    "s": 5.96,
+    "e": 6.6
+   },
+   {
+    "w": "and",
+    "s": 6.6,
+    "e": 7.04
+   },
+   {
+    "w": "the",
+    "s": 7.04,
+    "e": 7.2
+   },
+   {
+    "w": "distributor",
+    "s": 7.2,
+    "e": 7.8
+   },
+   {
+    "w": "ends",
+    "s": 7.8,
+    "e": 8.28
+   },
+   {
+    "w": "whole,",
+    "s": 8.28,
+    "e": 8.76
+   },
+   {
+    "w": "to",
+    "s": 8.96,
+    "e": 9.24
+   },
+   {
+    "w": "the",
+    "s": 9.24,
+    "e": 9.46
+   },
+   {
+    "w": "rupee.",
+    "s": 9.46,
+    "e": 9.8
+   }
+  ]
+ },
+ "m4-0.wav": {
+  "text": "Every step is on the record, every request traced from end to end.",
+  "words": [
+   {
+    "w": "Every",
+    "s": 0.0,
+    "e": 0.44
+   },
+   {
+    "w": "step",
+    "s": 0.44,
+    "e": 0.84
+   },
+   {
+    "w": "is",
+    "s": 0.84,
+    "e": 1.36
+   },
+   {
+    "w": "on",
+    "s": 1.36,
+    "e": 1.72
+   },
+   {
+    "w": "the",
+    "s": 1.72,
+    "e": 1.9
+   },
+   {
+    "w": "record,",
+    "s": 1.9,
+    "e": 2.38
+   },
+   {
+    "w": "every",
+    "s": 2.7,
+    "e": 3.14
+   },
+   {
+    "w": "request",
+    "s": 3.14,
+    "e": 3.62
+   },
+   {
+    "w": "traced",
+    "s": 3.62,
+    "e": 4.0
+   },
+   {
+    "w": "from",
+    "s": 4.0,
+    "e": 4.32
+   },
+   {
+    "w": "end",
+    "s": 4.32,
+    "e": 4.68
+   },
+   {
+    "w": "to",
+    "s": 4.68,
+    "e": 4.86
+   },
+   {
+    "w": "end.",
+    "s": 4.86,
+    "e": 5.06
+   }
+  ]
+ },
+ "m4-1.wav": {
+  "text": "Every step is on the record, every request traced from end to end.",
+  "words": [
+   {
+    "w": "Every",
+    "s": 0.0,
+    "e": 0.7
+   },
+   {
+    "w": "step",
+    "s": 0.7,
+    "e": 1.14
+   },
+   {
+    "w": "is",
+    "s": 1.14,
+    "e": 1.4
+   },
+   {
+    "w": "on",
+    "s": 1.4,
+    "e": 1.56
+   },
+   {
+    "w": "the",
+    "s": 1.56,
+    "e": 1.68
+   },
+   {
+    "w": "record,",
+    "s": 1.68,
+    "e": 2.08
+   },
+   {
+    "w": "every",
+    "s": 2.44,
+    "e": 2.82
+   },
+   {
+    "w": "request",
+    "s": 2.82,
+    "e": 3.36
+   },
+   {
+    "w": "traced",
+    "s": 3.36,
+    "e": 3.86
+   },
+   {
+    "w": "from",
+    "s": 3.86,
+    "e": 4.14
+   },
+   {
+    "w": "end",
+    "s": 4.14,
+    "e": 4.46
+   },
+   {
+    "w": "to",
+    "s": 4.46,
+    "e": 4.6
+   },
+   {
+    "w": "end.",
+    "s": 4.6,
+    "e": 4.82
+   }
+  ]
+ },
+ "m4-2.wav": {
+  "text": "Every step is on the record. Every request traced from end to end.",
+  "words": [
+   {
+    "w": "Every",
+    "s": 0.0,
+    "e": 0.58
+   },
+   {
+    "w": "step",
+    "s": 0.58,
+    "e": 0.9
+   },
+   {
+    "w": "is",
+    "s": 0.9,
+    "e": 1.22
+   },
+   {
+    "w": "on",
+    "s": 1.22,
+    "e": 1.4
+   },
+   {
+    "w": "the",
+    "s": 1.4,
+    "e": 1.54
+   },
+   {
+    "w": "record.",
+    "s": 1.54,
+    "e": 1.98
+   },
+   {
+    "w": "Every",
+    "s": 2.2,
+    "e": 2.76
+   },
+   {
+    "w": "request",
+    "s": 2.76,
+    "e": 3.24
+   },
+   {
+    "w": "traced",
+    "s": 3.24,
+    "e": 3.66
+   },
+   {
+    "w": "from",
+    "s": 3.66,
+    "e": 3.96
+   },
+   {
+    "w": "end",
+    "s": 3.96,
+    "e": 4.3
+   },
+   {
+    "w": "to",
+    "s": 4.3,
+    "e": 4.46
+   },
+   {
+    "w": "end.",
+    "s": 4.46,
+    "e": 4.68
+   }
+  ]
+ },
+ "o1-0.wav": {
+  "text": "Every day, good food leaves a warehouse in India and never reaches a single plate.",
+  "words": [
+   {
+    "w": "Every",
+    "s": 0.0,
+    "e": 0.66
+   },
+   {
+    "w": "day,",
+    "s": 0.66,
+    "e": 1.04
+   },
+   {
+    "w": "good",
+    "s": 1.34,
+    "e": 1.78
+   },
+   {
+    "w": "food",
+    "s": 1.78,
+    "e": 2.14
+   },
+   {
+    "w": "leaves",
+    "s": 2.14,
+    "e": 2.44
+   },
+   {
+    "w": "a",
+    "s": 2.44,
+    "e": 2.62
+   },
+   {
+    "w": "warehouse",
+    "s": 2.62,
+    "e": 3.04
+   },
+   {
+    "w": "in",
+    "s": 3.04,
+    "e": 3.28
+   },
+   {
+    "w": "India",
+    "s": 3.28,
+    "e": 3.56
+   },
+   {
+    "w": "and",
+    "s": 3.56,
+    "e": 4.02
+   },
+   {
+    "w": "never",
+    "s": 4.02,
+    "e": 4.32
+   },
+   {
+    "w": "reaches",
+    "s": 4.32,
+    "e": 4.74
+   },
+   {
+    "w": "a",
+    "s": 4.74,
+    "e": 4.94
+   },
+   {
+    "w": "single",
+    "s": 4.94,
+    "e": 5.3
+   },
+   {
+    "w": "plate.",
+    "s": 5.3,
+    "e": 5.66
+   }
+  ]
+ },
+ "o1-1.wav": {
+  "text": "An educated urban Indian English accent, as spoken in Bengaluru or Mumbai. Intimate and conversational, like telling a friend a story she has lived. Never like an announcer or an advert. Breathe naturally before each sentence. Let the pace move. Slower and a little lower on the problem. A small smile in the voice on the hopeful lines. Lightly quicker through the lists. Real pauses at full stops, tiny ones at commas.",
+  "words": [
+   {
+    "w": "An",
+    "s": 0.0,
+    "e": 0.38
+   },
+   {
+    "w": "educated",
+    "s": 0.38,
+    "e": 0.88
+   },
+   {
+    "w": "urban",
+    "s": 0.88,
+    "e": 1.36
+   },
+   {
+    "w": "Indian",
+    "s": 1.36,
+    "e": 1.74
+   },
+   {
+    "w": "English",
+    "s": 1.74,
+    "e": 2.1
+   },
+   {
+    "w": "accent,",
+    "s": 2.1,
+    "e": 2.64
+   },
+   {
+    "w": "as",
+    "s": 2.82,
+    "e": 3.16
+   },
+   {
+    "w": "spoken",
+    "s": 3.16,
+    "e": 3.48
+   },
+   {
+    "w": "in",
+    "s": 3.48,
+    "e": 3.68
+   },
+   {
+    "w": "Bengaluru",
+    "s": 3.68,
+    "e": 4.22
+   },
+   {
+    "w": "or",
+    "s": 4.22,
+    "e": 4.5
+   },
+   {
+    "w": "Mumbai.",
+    "s": 4.5,
+    "e": 4.9
+   },
+   {
+    "w": "Intimate",
+    "s": 5.32,
+    "e": 6.0
+   },
+   {
+    "w": "and",
+    "s": 6.0,
+    "e": 6.2
+   },
+   {
+    "w": "conversational,",
+    "s": 6.2,
+    "e": 7.02
+   },
+   {
+    "w": "like",
+    "s": 7.22,
+    "e": 7.5
+   },
+   {
+    "w": "telling",
+    "s": 7.5,
+    "e": 7.74
+   },
+   {
+    "w": "a",
+    "s": 7.74,
+    "e": 7.92
+   },
+   {
+    "w": "friend",
+    "s": 7.92,
+    "e": 8.12
+   },
+   {
+    "w": "a",
+    "s": 8.12,
+    "e": 8.32
+   },
+   {
+    "w": "story",
+    "s": 8.32,
+    "e": 8.62
+   },
+   {
+    "w": "she",
+    "s": 8.62,
+    "e": 8.86
+   },
+   {
+    "w": "has",
+    "s": 8.86,
+    "e": 9.1
+   },
+   {
+    "w": "lived.",
+    "s": 9.1,
+    "e": 9.44
+   },
+   {
+    "w": "Never",
+    "s": 9.82,
+    "e": 10.26
+   },
+   {
+    "w": "like",
+    "s": 10.26,
+    "e": 10.48
+   },
+   {
+    "w": "an",
+    "s": 10.48,
+    "e": 10.62
+   },
+   {
+    "w": "announcer",
+    "s": 10.62,
+    "e": 11.08
+   },
+   {
+    "w": "or",
+    "s": 11.08,
+    "e": 11.4
+   },
+   {
+    "w": "an",
+    "s": 11.4,
+    "e": 11.58
+   },
+   {
+    "w": "advert.",
+    "s": 11.58,
+    "e": 11.94
+   },
+   {
+    "w": "Breathe",
+    "s": 12.42,
+    "e": 12.92
+   },
+   {
+    "w": "naturally",
+    "s": 12.92,
+    "e": 13.36
+   },
+   {
+    "w": "before",
+    "s": 13.36,
+    "e": 13.7
+   },
+   {
+    "w": "each",
+    "s": 13.7,
+    "e": 14.04
+   },
+   {
+    "w": "sentence.",
+    "s": 14.04,
+    "e": 14.52
+   },
+   {
+    "w": "Let",
+    "s": 14.88,
+    "e": 15.32
+   },
+   {
+    "w": "the",
+    "s": 15.32,
+    "e": 15.5
+   },
+   {
+    "w": "pace",
+    "s": 15.5,
+    "e": 15.84
+   },
+   {
+    "w": "move.",
+    "s": 15.84,
+    "e": 16.22
+   },
+   {
+    "w": "Slower",
+    "s": 16.56,
+    "e": 17.14
+   },
+   {
+    "w": "and",
+    "s": 17.14,
+    "e": 17.4
+   },
+   {
+    "w": "a",
+    "s": 17.4,
+    "e": 17.54
+   },
+   {
+    "w": "little",
+    "s": 17.54,
+    "e": 17.68
+   },
+   {
+    "w": "lower",
+    "s": 17.68,
+    "e": 18.02
+   },
+   {
+    "w": "on",
+    "s": 18.02,
+    "e": 18.24
+   },
+   {
+    "w": "the",
+    "s": 18.24,
+    "e": 18.38
+   },
+   {
+    "w": "problem.",
+    "s": 18.38,
+    "e": 18.76
+   },
+   {
+    "w": "A",
+    "s": 19.12,
+    "e": 19.4
+   },
+   {
+    "w": "small",
+    "s": 19.4,
+    "e": 19.7
+   },
+   {
+    "w": "smile",
+    "s": 19.7,
+    "e": 20.1
+   },
+   {
+    "w": "in",
+    "s": 20.1,
+    "e": 20.26
+   },
+   {
+    "w": "the",
+    "s": 20.26,
+    "e": 20.38
+   },
+   {
+    "w": "voice",
+    "s": 20.38,
+    "e": 20.66
+   },
+   {
+    "w": "on",
+    "s": 20.66,
+    "e": 20.9
+   },
+   {
+    "w": "the",
+    "s": 20.9,
+    "e": 21.02
+   },
+   {
+    "w": "hopeful",
+    "s": 21.02,
+    "e": 21.38
+   },
+   {
+    "w": "lines.",
+    "s": 21.38,
+    "e": 21.82
+   },
+   {
+    "w": "Lightly",
+    "s": 22.38,
+    "e": 22.94
+   },
+   {
+    "w": "quicker",
+    "s": 22.94,
+    "e": 23.28
+   },
+   {
+    "w": "through",
+    "s": 23.28,
+    "e": 23.7
+   },
+   {
+    "w": "the",
+    "s": 23.7,
+    "e": 23.86
+   },
+   {
+    "w": "lists.",
+    "s": 23.86,
+    "e": 24.2
+   },
+   {
+    "w": "Real",
+    "s": 24.86,
+    "e": 25.2
+   },
+   {
+    "w": "pauses",
+    "s": 25.2,
+    "e": 25.64
+   },
+   {
+    "w": "at",
+    "s": 25.64,
+    "e": 25.9
+   },
+   {
+    "w": "full",
+    "s": 25.9,
+    "e": 26.12
+   },
+   {
+    "w": "stops,",
+    "s": 26.12,
+    "e": 26.5
+   },
+   {
+    "w": "tiny",
+    "s": 26.86,
+    "e": 27.16
+   },
+   {
+    "w": "ones",
+    "s": 27.16,
+    "e": 27.48
+   },
+   {
+    "w": "at",
+    "s": 27.48,
+    "e": 27.68
+   },
+   {
+    "w": "commas.",
+    "s": 27.68,
+    "e": 28.14
+   }
+  ]
+ },
+ "o1-2.wav": {
+  "text": "Every day, good food leaves a warehouse in India and never reaches a single plate.",
+  "words": [
+   {
+    "w": "Every",
+    "s": 0.0,
+    "e": 0.54
+   },
+   {
+    "w": "day,",
+    "s": 0.54,
+    "e": 0.8
+   },
+   {
+    "w": "good",
+    "s": 1.0,
+    "e": 1.42
+   },
+   {
+    "w": "food",
+    "s": 1.42,
+    "e": 1.78
+   },
+   {
+    "w": "leaves",
+    "s": 1.78,
+    "e": 2.14
+   },
+   {
+    "w": "a",
+    "s": 2.14,
+    "e": 2.34
+   },
+   {
+    "w": "warehouse",
+    "s": 2.34,
+    "e": 2.82
+   },
+   {
+    "w": "in",
+    "s": 2.82,
+    "e": 3.08
+   },
+   {
+    "w": "India",
+    "s": 3.08,
+    "e": 3.4
+   },
+   {
+    "w": "and",
+    "s": 3.4,
+    "e": 3.98
+   },
+   {
+    "w": "never",
+    "s": 3.98,
+    "e": 4.22
+   },
+   {
+    "w": "reaches",
+    "s": 4.22,
+    "e": 4.66
+   },
+   {
+    "w": "a",
+    "s": 4.66,
+    "e": 4.88
+   },
+   {
+    "w": "single",
+    "s": 4.88,
+    "e": 5.24
+   },
+   {
+    "w": "plate.",
+    "s": 5.24,
+    "e": 5.6
+   }
+  ]
+ },
+ "o2-0.wav": {
+  "text": "Not because it has spoiled. Because it is running out of time.",
+  "words": [
+   {
+    "w": "Not",
+    "s": 0.0,
+    "e": 0.52
+   },
+   {
+    "w": "because",
+    "s": 0.52,
+    "e": 0.82
+   },
+   {
+    "w": "it",
+    "s": 0.82,
+    "e": 1.0
+   },
+   {
+    "w": "has",
+    "s": 1.0,
+    "e": 1.16
+   },
+   {
+    "w": "spoiled.",
+    "s": 1.16,
+    "e": 1.62
+   },
+   {
+    "w": "Because",
+    "s": 2.26,
+    "e": 2.74
+   },
+   {
+    "w": "it",
+    "s": 2.74,
+    "e": 2.9
+   },
+   {
+    "w": "is",
+    "s": 2.9,
+    "e": 3.02
+   },
+   {
+    "w": "running",
+    "s": 3.02,
+    "e": 3.26
+   },
+   {
+    "w": "out",
+    "s": 3.26,
+    "e": 3.54
+   },
+   {
+    "w": "of",
+    "s": 3.54,
+    "e": 3.7
+   },
+   {
+    "w": "time.",
+    "s": 3.7,
+    "e": 3.94
+   }
+  ]
+ },
+ "o2-1.wav": {
+  "text": "Not because it has spoiled, because it is running out of time.",
+  "words": [
+   {
+    "w": "Not",
+    "s": 0.0,
+    "e": 0.6
+   },
+   {
+    "w": "because",
+    "s": 0.6,
+    "e": 0.88
+   },
+   {
+    "w": "it",
+    "s": 0.88,
+    "e": 1.06
+   },
+   {
+    "w": "has",
+    "s": 1.06,
+    "e": 1.2
+   },
+   {
+    "w": "spoiled,",
+    "s": 1.2,
+    "e": 1.62
+   },
+   {
+    "w": "because",
+    "s": 1.9,
+    "e": 2.54
+   },
+   {
+    "w": "it",
+    "s": 2.54,
+    "e": 2.74
+   },
+   {
+    "w": "is",
+    "s": 2.74,
+    "e": 2.86
+   },
+   {
+    "w": "running",
+    "s": 2.86,
+    "e": 3.12
+   },
+   {
+    "w": "out",
+    "s": 3.12,
+    "e": 3.38
+   },
+   {
+    "w": "of",
+    "s": 3.38,
+    "e": 3.5
+   },
+   {
+    "w": "time.",
+    "s": 3.5,
+    "e": 3.68
+   }
+  ]
+ },
+ "o2-2.wav": {
+  "text": "Not because it has spoiled, because it is running out of time.",
+  "words": [
+   {
+    "w": "Not",
+    "s": 0.0,
+    "e": 0.56
+   },
+   {
+    "w": "because",
+    "s": 0.56,
+    "e": 0.94
+   },
+   {
+    "w": "it",
+    "s": 0.94,
+    "e": 1.24
+   },
+   {
+    "w": "has",
+    "s": 1.24,
+    "e": 1.4
+   },
+   {
+    "w": "spoiled,",
+    "s": 1.4,
+    "e": 1.8
+   },
+   {
+    "w": "because",
+    "s": 2.18,
+    "e": 2.76
+   },
+   {
+    "w": "it",
+    "s": 2.76,
+    "e": 2.94
+   },
+   {
+    "w": "is",
+    "s": 2.94,
+    "e": 3.1
+   },
+   {
+    "w": "running",
+    "s": 3.1,
+    "e": 3.38
+   },
+   {
+    "w": "out",
+    "s": 3.38,
+    "e": 3.66
+   },
+   {
+    "w": "of",
+    "s": 3.66,
+    "e": 3.8
+   },
+   {
+    "w": "time.",
+    "s": 3.8,
+    "e": 4.06
+   }
+  ]
+ },
+ "o3-0.wav": {
+  "text": "Too close to its date for quick commerce, too slow for the shelf. So it is written off, sent to a landfill, and its tax credit reversed.",
+  "words": [
+   {
+    "w": "Too",
+    "s": 0.0,
+    "e": 0.24
+   },
+   {
+    "w": "close",
+    "s": 0.24,
+    "e": 0.54
+   },
+   {
+    "w": "to",
+    "s": 0.54,
+    "e": 0.7
+   },
+   {
+    "w": "its",
+    "s": 0.7,
+    "e": 0.84
+   },
+   {
+    "w": "date",
+    "s": 0.84,
+    "e": 1.08
+   },
+   {
+    "w": "for",
+    "s": 1.08,
+    "e": 1.26
+   },
+   {
+    "w": "quick",
+    "s": 1.26,
+    "e": 1.48
+   },
+   {
+    "w": "commerce,",
+    "s": 1.48,
+    "e": 1.9
+   },
+   {
+    "w": "too",
+    "s": 2.14,
+    "e": 2.42
+   },
+   {
+    "w": "slow",
+    "s": 2.42,
+    "e": 2.68
+   },
+   {
+    "w": "for",
+    "s": 2.68,
+    "e": 2.84
+   },
+   {
+    "w": "the",
+    "s": 2.84,
+    "e": 2.94
+   },
+   {
+    "w": "shelf.",
+    "s": 2.94,
+    "e": 3.26
+   },
+   {
+    "w": "So",
+    "s": 3.46,
+    "e": 3.8
+   },
+   {
+    "w": "it",
+    "s": 3.8,
+    "e": 3.98
+   },
+   {
+    "w": "is",
+    "s": 3.98,
+    "e": 4.1
+   },
+   {
+    "w": "written",
+    "s": 4.1,
+    "e": 4.32
+   },
+   {
+    "w": "off,",
+    "s": 4.32,
+    "e": 4.6
+   },
+   {
+    "w": "sent",
+    "s": 4.92,
+    "e": 5.2
+   },
+   {
+    "w": "to",
+    "s": 5.2,
+    "e": 5.36
+   },
+   {
+    "w": "a",
+    "s": 5.36,
+    "e": 5.46
+   },
+   {
+    "w": "landfill,",
+    "s": 5.46,
+    "e": 5.96
+   },
+   {
+    "w": "and",
+    "s": 6.14,
+    "e": 6.4
+   },
+   {
+    "w": "its",
+    "s": 6.4,
+    "e": 6.58
+   },
+   {
+    "w": "tax",
+    "s": 6.58,
+    "e": 6.86
+   },
+   {
+    "w": "credit",
+    "s": 6.86,
+    "e": 7.24
+   },
+   {
+    "w": "reversed.",
+    "s": 7.24,
+    "e": 7.62
+   }
+  ]
+ },
+ "o3-1.wav": {
+  "text": "Too close to its date for quick commerce, too slow for the shelf. So it is written off, sent to a landfill and its tax credit reversed.",
+  "words": [
+   {
+    "w": "Too",
+    "s": 0.0,
+    "e": 0.34
+   },
+   {
+    "w": "close",
+    "s": 0.34,
+    "e": 0.68
+   },
+   {
+    "w": "to",
+    "s": 0.68,
+    "e": 0.82
+   },
+   {
+    "w": "its",
+    "s": 0.82,
+    "e": 0.98
+   },
+   {
+    "w": "date",
+    "s": 0.98,
+    "e": 1.24
+   },
+   {
+    "w": "for",
+    "s": 1.24,
+    "e": 1.44
+   },
+   {
+    "w": "quick",
+    "s": 1.44,
+    "e": 1.66
+   },
+   {
+    "w": "commerce,",
+    "s": 1.66,
+    "e": 2.12
+   },
+   {
+    "w": "too",
+    "s": 2.3,
+    "e": 2.6
+   },
+   {
+    "w": "slow",
+    "s": 2.6,
+    "e": 2.86
+   },
+   {
+    "w": "for",
+    "s": 2.86,
+    "e": 3.02
+   },
+   {
+    "w": "the",
+    "s": 3.02,
+    "e": 3.14
+   },
+   {
+    "w": "shelf.",
+    "s": 3.14,
+    "e": 3.44
+   },
+   {
+    "w": "So",
+    "s": 3.66,
+    "e": 4.14
+   },
+   {
+    "w": "it",
+    "s": 4.14,
+    "e": 4.3
+   },
+   {
+    "w": "is",
+    "s": 4.3,
+    "e": 4.42
+   },
+   {
+    "w": "written",
+    "s": 4.42,
+    "e": 4.66
+   },
+   {
+    "w": "off,",
+    "s": 4.66,
+    "e": 4.98
+   },
+   {
+    "w": "sent",
+    "s": 5.22,
+    "e": 5.5
+   },
+   {
+    "w": "to",
+    "s": 5.5,
+    "e": 5.66
+   },
+   {
+    "w": "a",
+    "s": 5.66,
+    "e": 5.76
+   },
+   {
+    "w": "landfill",
+    "s": 5.76,
+    "e": 6.22
+   },
+   {
+    "w": "and",
+    "s": 6.22,
+    "e": 6.8
+   },
+   {
+    "w": "its",
+    "s": 6.8,
+    "e": 7.0
+   },
+   {
+    "w": "tax",
+    "s": 7.0,
+    "e": 7.26
+   },
+   {
+    "w": "credit",
+    "s": 7.26,
+    "e": 7.66
+   },
+   {
+    "w": "reversed.",
+    "s": 7.66,
+    "e": 8.04
+   }
+  ]
+ },
+ "o3-2.wav": {
+  "text": "too close to its date for quick commerce, too slow for the shelf. So it is written off, sent to a landfill and its tax credit reversed.",
+  "words": [
+   {
+    "w": "too",
+    "s": 0.0,
+    "e": 0.24
+   },
+   {
+    "w": "close",
+    "s": 0.24,
+    "e": 0.6
+   },
+   {
+    "w": "to",
+    "s": 0.6,
+    "e": 0.8
+   },
+   {
+    "w": "its",
+    "s": 0.8,
+    "e": 0.96
+   },
+   {
+    "w": "date",
+    "s": 0.96,
+    "e": 1.22
+   },
+   {
+    "w": "for",
+    "s": 1.22,
+    "e": 1.44
+   },
+   {
+    "w": "quick",
+    "s": 1.44,
+    "e": 1.72
+   },
+   {
+    "w": "commerce,",
+    "s": 1.72,
+    "e": 2.18
+   },
+   {
+    "w": "too",
+    "s": 2.42,
+    "e": 2.78
+   },
+   {
+    "w": "slow",
+    "s": 2.78,
+    "e": 3.1
+   },
+   {
+    "w": "for",
+    "s": 3.1,
+    "e": 3.32
+   },
+   {
+    "w": "the",
+    "s": 3.32,
+    "e": 3.42
+   },
+   {
+    "w": "shelf.",
+    "s": 3.42,
+    "e": 3.76
+   },
+   {
+    "w": "So",
+    "s": 4.04,
+    "e": 4.52
+   },
+   {
+    "w": "it",
+    "s": 4.52,
+    "e": 4.7
+   },
+   {
+    "w": "is",
+    "s": 4.7,
+    "e": 4.82
+   },
+   {
+    "w": "written",
+    "s": 4.82,
+    "e": 5.06
+   },
+   {
+    "w": "off,",
+    "s": 5.06,
+    "e": 5.4
+   },
+   {
+    "w": "sent",
+    "s": 5.6,
+    "e": 5.94
+   },
+   {
+    "w": "to",
+    "s": 5.94,
+    "e": 6.1
+   },
+   {
+    "w": "a",
+    "s": 6.1,
+    "e": 6.22
+   },
+   {
+    "w": "landfill",
+    "s": 6.22,
+    "e": 6.7
+   },
+   {
+    "w": "and",
+    "s": 6.7,
+    "e": 7.16
+   },
+   {
+    "w": "its",
+    "s": 7.16,
+    "e": 7.36
+   },
+   {
+    "w": "tax",
+    "s": 7.36,
+    "e": 7.68
+   },
+   {
+    "w": "credit",
+    "s": 7.68,
+    "e": 8.06
+   },
+   {
+    "w": "reversed.",
+    "s": 8.06,
+    "e": 8.5
+   }
+  ]
+ },
+ "o4-0.wav": {
+  "text": "Week after week, brand after grand,",
+  "words": [
+   {
+    "w": "Week",
+    "s": 0.0,
+    "e": 0.6
+   },
+   {
+    "w": "after",
+    "s": 0.6,
+    "e": 0.86
+   },
+   {
+    "w": "week,",
+    "s": 0.86,
+    "e": 1.26
+   },
+   {
+    "w": "brand",
+    "s": 1.7,
+    "e": 1.96
+   },
+   {
+    "w": "after",
+    "s": 1.96,
+    "e": 2.32
+   },
+   {
+    "w": "grand,",
+    "s": 2.32,
+    "e": 2.66
+   }
+  ]
+ },
+ "o4-1.wav": {
+  "text": "week after week brand after brand",
+  "words": [
+   {
+    "w": "week",
+    "s": 0.0,
+    "e": 0.52
+   },
+   {
+    "w": "after",
+    "s": 0.52,
+    "e": 0.76
+   },
+   {
+    "w": "week",
+    "s": 0.76,
+    "e": 1.12
+   },
+   {
+    "w": "brand",
+    "s": 1.12,
+    "e": 1.74
+   },
+   {
+    "w": "after",
+    "s": 1.74,
+    "e": 2.06
+   },
+   {
+    "w": "brand",
+    "s": 2.06,
+    "e": 2.34
+   }
+  ]
+ },
+ "o4-2.wav": {
+  "text": "Week after week. Brand after brand.",
+  "words": [
+   {
+    "w": "Week",
+    "s": 0.0,
+    "e": 0.62
+   },
+   {
+    "w": "after",
+    "s": 0.62,
+    "e": 0.88
+   },
+   {
+    "w": "week.",
+    "s": 0.88,
+    "e": 1.24
+   },
+   {
+    "w": "Brand",
+    "s": 1.5,
+    "e": 2.12
+   },
+   {
+    "w": "after",
+    "s": 2.12,
+    "e": 2.42
+   },
+   {
+    "w": "brand.",
+    "s": 2.42,
+    "e": 2.74
+   }
+  ]
+ },
+ "o5-0.wav": {
+  "text": "What if every one of those packs could still find a home?",
+  "words": [
+   {
+    "w": "What",
+    "s": 0.0,
+    "e": 0.58
+   },
+   {
+    "w": "if",
+    "s": 0.58,
+    "e": 0.76
+   },
+   {
+    "w": "every",
+    "s": 0.76,
+    "e": 1.28
+   },
+   {
+    "w": "one",
+    "s": 1.28,
+    "e": 1.56
+   },
+   {
+    "w": "of",
+    "s": 1.56,
+    "e": 1.72
+   },
+   {
+    "w": "those",
+    "s": 1.72,
+    "e": 2.0
+   },
+   {
+    "w": "packs",
+    "s": 2.0,
+    "e": 2.34
+   },
+   {
+    "w": "could",
+    "s": 2.34,
+    "e": 2.6
+   },
+   {
+    "w": "still",
+    "s": 2.6,
+    "e": 2.94
+   },
+   {
+    "w": "find",
+    "s": 2.94,
+    "e": 3.22
+   },
+   {
+    "w": "a",
+    "s": 3.22,
+    "e": 3.38
+   },
+   {
+    "w": "home?",
+    "s": 3.38,
+    "e": 3.58
+   }
+  ]
+ },
+ "o5-1.wav": {
+  "text": "What if every one of those packs could still find a home?",
+  "words": [
+   {
+    "w": "What",
+    "s": 0.0,
+    "e": 0.46
+   },
+   {
+    "w": "if",
+    "s": 0.46,
+    "e": 0.62
+   },
+   {
+    "w": "every",
+    "s": 0.62,
+    "e": 0.98
+   },
+   {
+    "w": "one",
+    "s": 0.98,
+    "e": 1.18
+   },
+   {
+    "w": "of",
+    "s": 1.18,
+    "e": 1.32
+   },
+   {
+    "w": "those",
+    "s": 1.32,
+    "e": 1.52
+   },
+   {
+    "w": "packs",
+    "s": 1.52,
+    "e": 1.84
+   },
+   {
+    "w": "could",
+    "s": 1.84,
+    "e": 2.1
+   },
+   {
+    "w": "still",
+    "s": 2.1,
+    "e": 2.44
+   },
+   {
+    "w": "find",
+    "s": 2.44,
+    "e": 2.7
+   },
+   {
+    "w": "a",
+    "s": 2.7,
+    "e": 2.84
+   },
+   {
+    "w": "home?",
+    "s": 2.84,
+    "e": 3.02
+   }
+  ]
+ },
+ "o5-2.wav": {
+  "text": "What if every one of those packs could still find a home?",
+  "words": [
+   {
+    "w": "What",
+    "s": 0.0,
+    "e": 0.52
+   },
+   {
+    "w": "if",
+    "s": 0.52,
+    "e": 0.7
+   },
+   {
+    "w": "every",
+    "s": 0.7,
+    "e": 1.24
+   },
+   {
+    "w": "one",
+    "s": 1.24,
+    "e": 1.46
+   },
+   {
+    "w": "of",
+    "s": 1.46,
+    "e": 1.6
+   },
+   {
+    "w": "those",
+    "s": 1.6,
+    "e": 1.84
+   },
+   {
+    "w": "packs",
+    "s": 1.84,
+    "e": 2.24
+   },
+   {
+    "w": "could",
+    "s": 2.24,
+    "e": 2.76
+   },
+   {
+    "w": "still",
+    "s": 2.76,
+    "e": 3.08
+   },
+   {
+    "w": "find",
+    "s": 3.08,
+    "e": 3.38
+   },
+   {
+    "w": "a",
+    "s": 3.38,
+    "e": 3.56
+   },
+   {
+    "w": "home?",
+    "s": 3.56,
+    "e": 3.78
+   }
+  ]
+ },
+ "p1-0.wav": {
+  "text": "This is smart care.",
+  "words": [
+   {
+    "w": "This",
+    "s": 0.0,
+    "e": 0.24
+   },
+   {
+    "w": "is",
+    "s": 0.24,
+    "e": 0.38
+   },
+   {
+    "w": "smart",
+    "s": 0.38,
+    "e": 0.7
+   },
+   {
+    "w": "care.",
+    "s": 0.7,
+    "e": 0.92
+   }
+  ]
+ },
+ "p1-1.wav": {
+  "text": "This is smart clearance",
+  "words": [
+   {
+    "w": "This",
+    "s": 0.0,
+    "e": 0.54
+   },
+   {
+    "w": "is",
+    "s": 0.54,
+    "e": 0.74
+   },
+   {
+    "w": "smart",
+    "s": 0.74,
+    "e": 1.22
+   },
+   {
+    "w": "clearance",
+    "s": 1.22,
+    "e": 1.7
+   }
+  ]
+ },
+ "p1-2.wav": {
+  "text": "This is smart clearance.",
+  "words": [
+   {
+    "w": "This",
+    "s": 0.0,
+    "e": 0.54
+   },
+   {
+    "w": "is",
+    "s": 0.54,
+    "e": 0.84
+   },
+   {
+    "w": "smart",
+    "s": 0.84,
+    "e": 1.3
+   },
+   {
+    "w": "clearance.",
+    "s": 1.3,
+    "e": 1.72
+   }
+  ]
+ },
+ "p2-0.wav": {
+  "text": "Software, delivered as a service that turns write-offs into recovery.",
+  "words": [
+   {
+    "w": "Software,",
+    "s": 0.0,
+    "e": 0.8
+   },
+   {
+    "w": "delivered",
+    "s": 1.0,
+    "e": 1.4
+   },
+   {
+    "w": "as",
+    "s": 1.4,
+    "e": 1.66
+   },
+   {
+    "w": "a",
+    "s": 1.66,
+    "e": 1.76
+   },
+   {
+    "w": "service",
+    "s": 1.76,
+    "e": 2.1
+   },
+   {
+    "w": "that",
+    "s": 2.1,
+    "e": 2.32
+   },
+   {
+    "w": "turns",
+    "s": 2.32,
+    "e": 2.66
+   },
+   {
+    "w": "write",
+    "s": 2.66,
+    "e": 3.02
+   },
+   {
+    "w": "-offs",
+    "s": 3.02,
+    "e": 3.26
+   },
+   {
+    "w": "into",
+    "s": 3.26,
+    "e": 3.58
+   },
+   {
+    "w": "recovery.",
+    "s": 3.58,
+    "e": 4.0
+   }
+  ]
+ },
+ "p2-1.wav": {
+  "text": "software delivered as a service that turns write-offs into recovery.",
+  "words": [
+   {
+    "w": "software",
+    "s": 0.0,
+    "e": 0.58
+   },
+   {
+    "w": "delivered",
+    "s": 0.58,
+    "e": 1.36
+   },
+   {
+    "w": "as",
+    "s": 1.36,
+    "e": 1.64
+   },
+   {
+    "w": "a",
+    "s": 1.64,
+    "e": 1.74
+   },
+   {
+    "w": "service",
+    "s": 1.74,
+    "e": 2.1
+   },
+   {
+    "w": "that",
+    "s": 2.1,
+    "e": 2.36
+   },
+   {
+    "w": "turns",
+    "s": 2.36,
+    "e": 2.7
+   },
+   {
+    "w": "write",
+    "s": 2.7,
+    "e": 3.02
+   },
+   {
+    "w": "-offs",
+    "s": 3.02,
+    "e": 3.26
+   },
+   {
+    "w": "into",
+    "s": 3.26,
+    "e": 3.52
+   },
+   {
+    "w": "recovery.",
+    "s": 3.52,
+    "e": 3.9
+   }
+  ]
+ },
+ "p2-2.wav": {
+  "text": "software delivered as a service that turns write-offs into recovery.",
+  "words": [
+   {
+    "w": "software",
+    "s": 0.0,
+    "e": 0.58
+   },
+   {
+    "w": "delivered",
+    "s": 0.58,
+    "e": 1.04
+   },
+   {
+    "w": "as",
+    "s": 1.04,
+    "e": 1.32
+   },
+   {
+    "w": "a",
+    "s": 1.32,
+    "e": 1.4
+   },
+   {
+    "w": "service",
+    "s": 1.4,
+    "e": 1.78
+   },
+   {
+    "w": "that",
+    "s": 1.78,
+    "e": 2.18
+   },
+   {
+    "w": "turns",
+    "s": 2.18,
+    "e": 2.48
+   },
+   {
+    "w": "write",
+    "s": 2.48,
+    "e": 2.8
+   },
+   {
+    "w": "-offs",
+    "s": 2.8,
+    "e": 3.04
+   },
+   {
+    "w": "into",
+    "s": 3.04,
+    "e": 3.26
+   },
+   {
+    "w": "recovery.",
+    "s": 3.26,
+    "e": 3.6
+   }
+  ]
+ },
+ "p3-0.wav": {
+  "text": "Every brand gets its own secure workspace. From one console, a new brand is onboarded in minutes. Its stock data, its distributors, its people and its own rules.",
+  "words": [
+   {
+    "w": "Every",
+    "s": 0.0,
+    "e": 0.66
+   },
+   {
+    "w": "brand",
+    "s": 0.66,
+    "e": 1.06
+   },
+   {
+    "w": "gets",
+    "s": 1.06,
+    "e": 1.5
+   },
+   {
+    "w": "its",
+    "s": 1.5,
+    "e": 1.72
+   },
+   {
+    "w": "own",
+    "s": 1.72,
+    "e": 2.08
+   },
+   {
+    "w": "secure",
+    "s": 2.08,
+    "e": 2.52
+   },
+   {
+    "w": "workspace.",
+    "s": 2.52,
+    "e": 3.08
+   },
+   {
+    "w": "From",
+    "s": 3.4,
+    "e": 3.78
+   },
+   {
+    "w": "one",
+    "s": 3.78,
+    "e": 4.16
+   },
+   {
+    "w": "console,",
+    "s": 4.16,
+    "e": 4.74
+   },
+   {
+    "w": "a",
+    "s": 4.96,
+    "e": 5.28
+   },
+   {
+    "w": "new",
+    "s": 5.28,
+    "e": 5.48
+   },
+   {
+    "w": "brand",
+    "s": 5.48,
+    "e": 5.8
+   },
+   {
+    "w": "is",
+    "s": 5.8,
+    "e": 5.98
+   },
+   {
+    "w": "onboarded",
+    "s": 5.98,
+    "e": 6.52
+   },
+   {
+    "w": "in",
+    "s": 6.52,
+    "e": 6.66
+   },
+   {
+    "w": "minutes.",
+    "s": 6.66,
+    "e": 7.1
+   },
+   {
+    "w": "Its",
+    "s": 7.46,
+    "e": 7.66
+   },
+   {
+    "w": "stock",
+    "s": 7.66,
+    "e": 7.94
+   },
+   {
+    "w": "data,",
+    "s": 7.94,
+    "e": 8.3
+   },
+   {
+    "w": "its",
+    "s": 8.58,
+    "e": 8.88
+   },
+   {
+    "w": "distributors,",
+    "s": 8.88,
+    "e": 9.68
+   },
+   {
+    "w": "its",
+    "s": 9.94,
+    "e": 10.08
+   },
+   {
+    "w": "people",
+    "s": 10.08,
+    "e": 10.54
+   },
+   {
+    "w": "and",
+    "s": 10.54,
+    "e": 11.02
+   },
+   {
+    "w": "its",
+    "s": 11.02,
+    "e": 11.26
+   },
+   {
+    "w": "own",
+    "s": 11.26,
+    "e": 11.58
+   },
+   {
+    "w": "rules.",
+    "s": 11.58,
+    "e": 11.92
+   }
+  ]
+ },
+ "p3-1.wav": {
+  "text": "Every brand gets its own secure workspace. From one console, a new brand is onboarded in minutes. Its talk data, its distributors, its people and its own rules.",
+  "words": [
+   {
+    "w": "Every",
+    "s": 0.0,
+    "e": 0.52
+   },
+   {
+    "w": "brand",
+    "s": 0.52,
+    "e": 0.88
+   },
+   {
+    "w": "gets",
+    "s": 0.88,
+    "e": 1.22
+   },
+   {
+    "w": "its",
+    "s": 1.22,
+    "e": 1.42
+   },
+   {
+    "w": "own",
+    "s": 1.42,
+    "e": 1.72
+   },
+   {
+    "w": "secure",
+    "s": 1.72,
+    "e": 2.2
+   },
+   {
+    "w": "workspace.",
+    "s": 2.2,
+    "e": 2.8
+   },
+   {
+    "w": "From",
+    "s": 3.18,
+    "e": 3.78
+   },
+   {
+    "w": "one",
+    "s": 3.78,
+    "e": 4.04
+   },
+   {
+    "w": "console,",
+    "s": 4.04,
+    "e": 4.56
+   },
+   {
+    "w": "a",
+    "s": 4.78,
+    "e": 5.14
+   },
+   {
+    "w": "new",
+    "s": 5.14,
+    "e": 5.42
+   },
+   {
+    "w": "brand",
+    "s": 5.42,
+    "e": 5.8
+   },
+   {
+    "w": "is",
+    "s": 5.8,
+    "e": 6.04
+   },
+   {
+    "w": "onboarded",
+    "s": 6.04,
+    "e": 6.6
+   },
+   {
+    "w": "in",
+    "s": 6.6,
+    "e": 6.74
+   },
+   {
+    "w": "minutes.",
+    "s": 6.74,
+    "e": 7.16
+   },
+   {
+    "w": "Its",
+    "s": 7.5,
+    "e": 7.9
+   },
+   {
+    "w": "talk",
+    "s": 7.9,
+    "e": 8.2
+   },
+   {
+    "w": "data,",
+    "s": 8.2,
+    "e": 8.54
+   },
+   {
+    "w": "its",
+    "s": 8.92,
+    "e": 9.06
+   },
+   {
+    "w": "distributors,",
+    "s": 9.06,
+    "e": 9.88
+   },
+   {
+    "w": "its",
+    "s": 10.22,
+    "e": 10.38
+   },
+   {
+    "w": "people",
+    "s": 10.38,
+    "e": 10.8
+   },
+   {
+    "w": "and",
+    "s": 10.8,
+    "e": 11.24
+   },
+   {
+    "w": "its",
+    "s": 11.24,
+    "e": 11.44
+   },
+   {
+    "w": "own",
+    "s": 11.44,
+    "e": 11.62
+   },
+   {
+    "w": "rules.",
+    "s": 11.62,
+    "e": 11.98
+   }
+  ]
+ },
+ "p3-2.wav": {
+  "text": "Every brand gets its own secure workspace. From one console, a new brand is onboarded in minutes. Its stock data, its distributors, its people, and its own rules.",
+  "words": [
+   {
+    "w": "Every",
+    "s": 0.0,
+    "e": 0.58
+   },
+   {
+    "w": "brand",
+    "s": 0.58,
+    "e": 0.88
+   },
+   {
+    "w": "gets",
+    "s": 0.88,
+    "e": 1.18
+   },
+   {
+    "w": "its",
+    "s": 1.18,
+    "e": 1.36
+   },
+   {
+    "w": "own",
+    "s": 1.36,
+    "e": 1.56
+   },
+   {
+    "w": "secure",
+    "s": 1.56,
+    "e": 1.92
+   },
+   {
+    "w": "workspace.",
+    "s": 1.92,
+    "e": 2.42
+   },
+   {
+    "w": "From",
+    "s": 2.7,
+    "e": 2.98
+   },
+   {
+    "w": "one",
+    "s": 2.98,
+    "e": 3.24
+   },
+   {
+    "w": "console,",
+    "s": 3.24,
+    "e": 3.7
+   },
+   {
+    "w": "a",
+    "s": 3.86,
+    "e": 4.08
+   },
+   {
+    "w": "new",
+    "s": 4.08,
+    "e": 4.22
+   },
+   {
+    "w": "brand",
+    "s": 4.22,
+    "e": 4.5
+   },
+   {
+    "w": "is",
+    "s": 4.5,
+    "e": 4.7
+   },
+   {
+    "w": "onboarded",
+    "s": 4.7,
+    "e": 5.2
+   },
+   {
+    "w": "in",
+    "s": 5.2,
+    "e": 5.34
+   },
+   {
+    "w": "minutes.",
+    "s": 5.34,
+    "e": 5.7
+   },
+   {
+    "w": "Its",
+    "s": 6.0,
+    "e": 6.18
+   },
+   {
+    "w": "stock",
+    "s": 6.18,
+    "e": 6.44
+   },
+   {
+    "w": "data,",
+    "s": 6.44,
+    "e": 6.78
+   },
+   {
+    "w": "its",
+    "s": 7.12,
+    "e": 7.32
+   },
+   {
+    "w": "distributors,",
+    "s": 7.32,
+    "e": 8.04
+   },
+   {
+    "w": "its",
+    "s": 8.28,
+    "e": 8.42
+   },
+   {
+    "w": "people,",
+    "s": 8.42,
+    "e": 8.82
+   },
+   {
+    "w": "and",
+    "s": 8.9,
+    "e": 9.2
+   },
+   {
+    "w": "its",
+    "s": 9.2,
+    "e": 9.38
+   },
+   {
+    "w": "own",
+    "s": 9.38,
+    "e": 9.54
+   },
+   {
+    "w": "rules.",
+    "s": 9.54,
+    "e": 9.84
+   }
+  ]
+ },
+ "p4-0.wav": {
+  "text": "An educated urban Indian English accent, as spoken in Bangalore or Mumbai. Intimate and conversational, like telling a friend a story she has lived. Never lack an announcer or an advert. Breathe naturally before each sentence. Let the pace move. Slower and a little lower on the problem. A small smile in the voice on the hopeful lines. Lightly quicker through the lists. Real pauses at full stops. Tiny ones at commas.",
+  "words": [
+   {
+    "w": "An",
+    "s": 0.0,
+    "e": 0.14
+   },
+   {
+    "w": "educated",
+    "s": 0.14,
+    "e": 0.62
+   },
+   {
+    "w": "urban",
+    "s": 0.62,
+    "e": 1.0
+   },
+   {
+    "w": "Indian",
+    "s": 1.0,
+    "e": 1.32
+   },
+   {
+    "w": "English",
+    "s": 1.32,
+    "e": 1.66
+   },
+   {
+    "w": "accent,",
+    "s": 1.66,
+    "e": 2.16
+   },
+   {
+    "w": "as",
+    "s": 2.32,
+    "e": 2.62
+   },
+   {
+    "w": "spoken",
+    "s": 2.62,
+    "e": 2.96
+   },
+   {
+    "w": "in",
+    "s": 2.96,
+    "e": 3.18
+   },
+   {
+    "w": "Bangalore",
+    "s": 3.18,
+    "e": 3.74
+   },
+   {
+    "w": "or",
+    "s": 3.74,
+    "e": 3.94
+   },
+   {
+    "w": "Mumbai.",
+    "s": 3.94,
+    "e": 4.34
+   },
+   {
+    "w": "Intimate",
+    "s": 4.76,
+    "e": 5.38
+   },
+   {
+    "w": "and",
+    "s": 5.38,
+    "e": 5.54
+   },
+   {
+    "w": "conversational,",
+    "s": 5.54,
+    "e": 6.34
+   },
+   {
+    "w": "like",
+    "s": 6.5,
+    "e": 6.74
+   },
+   {
+    "w": "telling",
+    "s": 6.74,
+    "e": 6.96
+   },
+   {
+    "w": "a",
+    "s": 6.96,
+    "e": 7.14
+   },
+   {
+    "w": "friend",
+    "s": 7.14,
+    "e": 7.38
+   },
+   {
+    "w": "a",
+    "s": 7.38,
+    "e": 7.58
+   },
+   {
+    "w": "story",
+    "s": 7.58,
+    "e": 7.84
+   },
+   {
+    "w": "she",
+    "s": 7.84,
+    "e": 8.04
+   },
+   {
+    "w": "has",
+    "s": 8.04,
+    "e": 8.24
+   },
+   {
+    "w": "lived.",
+    "s": 8.24,
+    "e": 8.56
+   },
+   {
+    "w": "Never",
+    "s": 8.78,
+    "e": 9.16
+   },
+   {
+    "w": "lack",
+    "s": 9.16,
+    "e": 9.4
+   },
+   {
+    "w": "an",
+    "s": 9.4,
+    "e": 9.52
+   },
+   {
+    "w": "announcer",
+    "s": 9.52,
+    "e": 9.96
+   },
+   {
+    "w": "or",
+    "s": 9.96,
+    "e": 10.2
+   },
+   {
+    "w": "an",
+    "s": 10.2,
+    "e": 10.36
+   },
+   {
+    "w": "advert.",
+    "s": 10.36,
+    "e": 10.68
+   },
+   {
+    "w": "Breathe",
+    "s": 11.12,
+    "e": 11.54
+   },
+   {
+    "w": "naturally",
+    "s": 11.54,
+    "e": 12.0
+   },
+   {
+    "w": "before",
+    "s": 12.0,
+    "e": 12.34
+   },
+   {
+    "w": "each",
+    "s": 12.34,
+    "e": 12.7
+   },
+   {
+    "w": "sentence.",
+    "s": 12.7,
+    "e": 13.18
+   },
+   {
+    "w": "Let",
+    "s": 13.56,
+    "e": 13.9
+   },
+   {
+    "w": "the",
+    "s": 13.9,
+    "e": 14.08
+   },
+   {
+    "w": "pace",
+    "s": 14.08,
+    "e": 14.34
+   },
+   {
+    "w": "move.",
+    "s": 14.34,
+    "e": 14.7
+   },
+   {
+    "w": "Slower",
+    "s": 15.2,
+    "e": 15.82
+   },
+   {
+    "w": "and",
+    "s": 15.82,
+    "e": 16.08
+   },
+   {
+    "w": "a",
+    "s": 16.08,
+    "e": 16.2
+   },
+   {
+    "w": "little",
+    "s": 16.2,
+    "e": 16.34
+   },
+   {
+    "w": "lower",
+    "s": 16.34,
+    "e": 16.66
+   },
+   {
+    "w": "on",
+    "s": 16.66,
+    "e": 16.88
+   },
+   {
+    "w": "the",
+    "s": 16.88,
+    "e": 17.0
+   },
+   {
+    "w": "problem.",
+    "s": 17.0,
+    "e": 17.36
+   },
+   {
+    "w": "A",
+    "s": 17.66,
+    "e": 17.94
+   },
+   {
+    "w": "small",
+    "s": 17.94,
+    "e": 18.24
+   },
+   {
+    "w": "smile",
+    "s": 18.24,
+    "e": 18.56
+   },
+   {
+    "w": "in",
+    "s": 18.56,
+    "e": 18.72
+   },
+   {
+    "w": "the",
+    "s": 18.72,
+    "e": 18.8
+   },
+   {
+    "w": "voice",
+    "s": 18.8,
+    "e": 19.06
+   },
+   {
+    "w": "on",
+    "s": 19.06,
+    "e": 19.22
+   },
+   {
+    "w": "the",
+    "s": 19.22,
+    "e": 19.32
+   },
+   {
+    "w": "hopeful",
+    "s": 19.32,
+    "e": 19.68
+   },
+   {
+    "w": "lines.",
+    "s": 19.68,
+    "e": 20.12
+   },
+   {
+    "w": "Lightly",
+    "s": 20.54,
+    "e": 20.92
+   },
+   {
+    "w": "quicker",
+    "s": 20.92,
+    "e": 21.24
+   },
+   {
+    "w": "through",
+    "s": 21.24,
+    "e": 21.52
+   },
+   {
+    "w": "the",
+    "s": 21.52,
+    "e": 21.68
+   },
+   {
+    "w": "lists.",
+    "s": 21.68,
+    "e": 22.0
+   },
+   {
+    "w": "Real",
+    "s": 22.46,
+    "e": 22.78
+   },
+   {
+    "w": "pauses",
+    "s": 22.78,
+    "e": 23.18
+   },
+   {
+    "w": "at",
+    "s": 23.18,
+    "e": 23.36
+   },
+   {
+    "w": "full",
+    "s": 23.36,
+    "e": 23.58
+   },
+   {
+    "w": "stops.",
+    "s": 23.58,
+    "e": 23.92
+   },
+   {
+    "w": "Tiny",
+    "s": 24.16,
+    "e": 24.6
+   },
+   {
+    "w": "ones",
+    "s": 24.6,
+    "e": 24.92
+   },
+   {
+    "w": "at",
+    "s": 24.92,
+    "e": 25.1
+   },
+   {
+    "w": "commas.",
+    "s": 25.1,
+    "e": 25.54
+   }
+  ]
+ },
+ "p4-1.wav": {
+  "text": "And inside every workspace works a team that never sleeps.",
+  "words": [
+   {
+    "w": "And",
+    "s": 0.0,
+    "e": 0.42
+   },
+   {
+    "w": "inside",
+    "s": 0.42,
+    "e": 0.8
+   },
+   {
+    "w": "every",
+    "s": 0.8,
+    "e": 1.28
+   },
+   {
+    "w": "workspace",
+    "s": 1.28,
+    "e": 1.72
+   },
+   {
+    "w": "works",
+    "s": 1.72,
+    "e": 2.38
+   },
+   {
+    "w": "a",
+    "s": 2.38,
+    "e": 2.58
+   },
+   {
+    "w": "team",
+    "s": 2.58,
+    "e": 2.76
+   },
+   {
+    "w": "that",
+    "s": 2.76,
+    "e": 2.98
+   },
+   {
+    "w": "never",
+    "s": 2.98,
+    "e": 3.32
+   },
+   {
+    "w": "sleeps.",
+    "s": 3.32,
+    "e": 3.7
+   }
+  ]
+ },
+ "p4-2.wav": {
+  "text": "An educated urban Indian English accent, as spoken in Bengaluru or Mumbai.",
+  "words": [
+   {
+    "w": "An",
+    "s": 0.0,
+    "e": 0.42
+   },
+   {
+    "w": "educated",
+    "s": 0.42,
+    "e": 1.08
+   },
+   {
+    "w": "urban",
+    "s": 1.08,
+    "e": 1.58
+   },
+   {
+    "w": "Indian",
+    "s": 1.58,
+    "e": 2.0
+   },
+   {
+    "w": "English",
+    "s": 2.0,
+    "e": 2.4
+   },
+   {
+    "w": "accent,",
+    "s": 2.4,
+    "e": 2.9
+   },
+   {
+    "w": "as",
+    "s": 3.14,
+    "e": 3.48
+   },
+   {
+    "w": "spoken",
+    "s": 3.48,
+    "e": 3.84
+   },
+   {
+    "w": "in",
+    "s": 3.84,
+    "e": 4.06
+   },
+   {
+    "w": "Bengaluru",
+    "s": 4.06,
+    "e": 4.66
+   },
+   {
+    "w": "or",
+    "s": 4.66,
+    "e": 5.02
+   },
+   {
+    "w": "Mumbai.",
+    "s": 5.02,
+    "e": 5.38
+   }
+  ]
+ },
+ "m1-3.wav": {
+  "text": "Then the paperwork writes itself.",
+  "words": [
+   {
+    "w": "Then",
+    "s": 0.0,
+    "e": 0.36
+   },
+   {
+    "w": "the",
+    "s": 0.36,
+    "e": 0.52
+   },
+   {
+    "w": "paperwork",
+    "s": 0.52,
+    "e": 0.88
+   },
+   {
+    "w": "writes",
+    "s": 0.88,
+    "e": 1.36
+   },
+   {
+    "w": "itself.",
+    "s": 1.36,
+    "e": 1.7
+   }
+  ]
+ },
+ "m1-4.wav": {
+  "text": "Then the paperwork writes itself.",
+  "words": [
+   {
+    "w": "Then",
+    "s": 0.0,
+    "e": 0.48
+   },
+   {
+    "w": "the",
+    "s": 0.48,
+    "e": 0.62
+   },
+   {
+    "w": "paperwork",
+    "s": 0.62,
+    "e": 0.98
+   },
+   {
+    "w": "writes",
+    "s": 0.98,
+    "e": 1.44
+   },
+   {
+    "w": "itself.",
+    "s": 1.44,
+    "e": 1.82
+   }
+  ]
+ },
+ "m1-5.wav": {
+  "text": "Then the paperwork writes itself.",
+  "words": [
+   {
+    "w": "Then",
+    "s": 0.0,
+    "e": 0.48
+   },
+   {
+    "w": "the",
+    "s": 0.48,
+    "e": 0.64
+   },
+   {
+    "w": "paperwork",
+    "s": 0.64,
+    "e": 1.06
+   },
+   {
+    "w": "writes",
+    "s": 1.06,
+    "e": 1.58
+   },
+   {
+    "w": "itself.",
+    "s": 1.58,
+    "e": 1.96
+   }
+  ]
+ },
+ "p5-0.wav": {
+  "text": "And from the same console, the platform team watches every client, every batch and every agent live.",
+  "words": [
+   {
+    "w": "And",
+    "s": 0.0,
+    "e": 0.44
+   },
+   {
+    "w": "from",
+    "s": 0.44,
+    "e": 0.64
+   },
+   {
+    "w": "the",
+    "s": 0.64,
+    "e": 0.8
+   },
+   {
+    "w": "same",
+    "s": 0.8,
+    "e": 1.1
+   },
+   {
+    "w": "console,",
+    "s": 1.1,
+    "e": 1.7
+   },
+   {
+    "w": "the",
+    "s": 1.9,
+    "e": 2.14
+   },
+   {
+    "w": "platform",
+    "s": 2.14,
+    "e": 2.52
+   },
+   {
+    "w": "team",
+    "s": 2.52,
+    "e": 2.84
+   },
+   {
+    "w": "watches",
+    "s": 2.84,
+    "e": 3.26
+   },
+   {
+    "w": "every",
+    "s": 3.26,
+    "e": 3.6
+   },
+   {
+    "w": "client,",
+    "s": 3.6,
+    "e": 4.08
+   },
+   {
+    "w": "every",
+    "s": 4.5,
+    "e": 4.7
+   },
+   {
+    "w": "batch",
+    "s": 4.7,
+    "e": 5.08
+   },
+   {
+    "w": "and",
+    "s": 5.08,
+    "e": 5.42
+   },
+   {
+    "w": "every",
+    "s": 5.42,
+    "e": 5.7
+   },
+   {
+    "w": "agent",
+    "s": 5.7,
+    "e": 6.1
+   },
+   {
+    "w": "live.",
+    "s": 6.1,
+    "e": 6.56
+   }
+  ]
+ },
+ "p5-1.wav": {
+  "text": "And from the same console, the platform team watches every client, every batch and every agent live.",
+  "words": [
+   {
+    "w": "And",
+    "s": 0.0,
+    "e": 0.32
+   },
+   {
+    "w": "from",
+    "s": 0.32,
+    "e": 0.52
+   },
+   {
+    "w": "the",
+    "s": 0.52,
+    "e": 0.66
+   },
+   {
+    "w": "same",
+    "s": 0.66,
+    "e": 0.92
+   },
+   {
+    "w": "console,",
+    "s": 0.92,
+    "e": 1.44
+   },
+   {
+    "w": "the",
+    "s": 1.72,
+    "e": 1.94
+   },
+   {
+    "w": "platform",
+    "s": 1.94,
+    "e": 2.36
+   },
+   {
+    "w": "team",
+    "s": 2.36,
+    "e": 2.74
+   },
+   {
+    "w": "watches",
+    "s": 2.74,
+    "e": 3.2
+   },
+   {
+    "w": "every",
+    "s": 3.2,
+    "e": 3.86
+   },
+   {
+    "w": "client,",
+    "s": 3.86,
+    "e": 4.4
+   },
+   {
+    "w": "every",
+    "s": 4.66,
+    "e": 5.18
+   },
+   {
+    "w": "batch",
+    "s": 5.18,
+    "e": 5.62
+   },
+   {
+    "w": "and",
+    "s": 5.62,
+    "e": 5.98
+   },
+   {
+    "w": "every",
+    "s": 5.98,
+    "e": 6.5
+   },
+   {
+    "w": "agent",
+    "s": 6.5,
+    "e": 7.06
+   },
+   {
+    "w": "live.",
+    "s": 7.06,
+    "e": 7.64
+   }
+  ]
+ },
+ "p5-2.wav": {
+  "text": "and from the same console the platform team watches every client every batch and every agent live",
+  "words": [
+   {
+    "w": "and",
+    "s": 0.0,
+    "e": 0.34
+   },
+   {
+    "w": "from",
+    "s": 0.34,
+    "e": 0.52
+   },
+   {
+    "w": "the",
+    "s": 0.52,
+    "e": 0.68
+   },
+   {
+    "w": "same",
+    "s": 0.68,
+    "e": 0.94
+   },
+   {
+    "w": "console",
+    "s": 0.94,
+    "e": 1.48
+   },
+   {
+    "w": "the",
+    "s": 1.48,
+    "e": 1.72
+   },
+   {
+    "w": "platform",
+    "s": 1.72,
+    "e": 2.08
+   },
+   {
+    "w": "team",
+    "s": 2.08,
+    "e": 2.4
+   },
+   {
+    "w": "watches",
+    "s": 2.4,
+    "e": 2.78
+   },
+   {
+    "w": "every",
+    "s": 2.78,
+    "e": 3.38
+   },
+   {
+    "w": "client",
+    "s": 3.38,
+    "e": 3.82
+   },
+   {
+    "w": "every",
+    "s": 3.82,
+    "e": 4.42
+   },
+   {
+    "w": "batch",
+    "s": 4.42,
+    "e": 4.8
+   },
+   {
+    "w": "and",
+    "s": 4.8,
+    "e": 5.16
+   },
+   {
+    "w": "every",
+    "s": 5.16,
+    "e": 5.44
+   },
+   {
+    "w": "agent",
+    "s": 5.44,
+    "e": 5.88
+   },
+   {
+    "w": "live",
+    "s": 5.88,
+    "e": 6.36
+   }
+  ]
+ }
+}
