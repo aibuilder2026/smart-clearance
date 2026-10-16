@@ -146,10 +146,12 @@ export function Panels(root, svg) {
 
 	function update(t, shot, calm = () => 1) {
 		for (const V of P) {
-			const vis = t >= V.t0 - 0.02 && t <= V.t1 + 0.5;
+			const vis = t >= V.t0 - 0.02 && t <= V.t1 + Math.max(0.5, (V.fadeOut || 0) + 0.05);
 			if (!vis) { V.el.style.opacity = 0; V.el.style.visibility = 'hidden'; V.leads.forEach((L) => [L.path, L.glow, L.dot, L.pingC].forEach((e) => (e.style.opacity = 0))); V.packets.forEach((k) => { k.g.style.opacity = 0; if (k.lab) k.lab.style.opacity = 0; }); continue; }
 			V.el.style.visibility = 'visible';
-			const inn = spring(t - V.t0, 0.78, 13), out = eo((t - V.t1) / 0.3);
+			// cut 16: a panel may take longer to leave (fadeOut, its own seconds): it fades evenly while it slides, so a
+			// bright window does not vanish in a few frames (the record's did, before the dark bus)
+			const inn = spring(t - V.t0, 0.78, 13), out = eo((t - V.t1) / (V.fadeOut || 0.3));
 			const sx = V.side === 'r' ? 1 : -1;
 			const pw = V.el.offsetWidth, ph = V.el.offsetHeight;
 			const x0 = V.x ?? (V.side === 'r' ? W - 64 - pw : 64);
@@ -158,7 +160,7 @@ export function Panels(root, svg) {
 			const y0 = V.y ?? Math.round(Math.min(Math.max(yTop, lerp(yTop, 960 - ph, 0.5)), V.badges.length ? Math.max(yTop - 10, 905 - ph) : 1e9));
 			const dx = sx * (90 * (1 - inn) + 70 * out);
 			const rot = sx * (-16 * (1 - inn) + 12 * out);
-			V.el.style.opacity = (clamp((t - V.t0) / 0.14) * (1 - clamp(out * 1.6))).toFixed(3);
+			V.el.style.opacity = (clamp((t - V.t0) / 0.14) * (V.fadeOut ? 1 - clamp((t - V.t1) / V.fadeOut) : 1 - clamp(out * 1.6))).toFixed(3);
 			V.el.style.transform = Math.abs(rot) > 0.05 ? `translate(${(x0 + dx).toFixed(1)}px, ${y0}px) perspective(1600px) rotateY(${rot.toFixed(2)}deg)` : `translate(${Math.round(x0 + dx)}px, ${y0}px)`;
 			V.el.style.transformOrigin = V.side === 'r' ? '100% 50%' : '0 50%';
 			// the card: its words arrive as it lands; a later beat swaps them

@@ -16,6 +16,7 @@ REC = {
     'mango': VIDS / 'munchly-mango-e2e-prod-2026-10-13_09-09-12.mp4',
     'sad': VIDS / 'munchly-chips-sad-e2e-prod-2026-10-13_11-07-40.mp4',
     'admin': VIDS / 'admin-console-walk-prod-2026-10-13_12-16-11.mp4',
+    'admin2': VIDS / 'admin-console-e2e-prod-2026-10-16_10-14-51.mp4',   # cut 16: SC-226's run, Munchly Foods in the console (same layout as 'admin')
 }
 # the device screens on the 2560 x 1440 stage, measured by brightness (measure.py), inset 2 px off their edges
 DEV = {'P': (40, 182, 1078, 746), 'L': (1176, 182, 846, 1218), 'H': (2076, 180, 448, 974), 'A': (40, 182, 1928, 1202)}

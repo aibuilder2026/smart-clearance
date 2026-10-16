@@ -192,7 +192,7 @@ RECEIPT_PHOTO = REPO / 'playwright-automation-videos' / 'sampleData' / 'munchly-
 ARCH = HERE / 'build' / 'arch13'   # cut 13: cut 10's 3D film made whole, full frame, the app beside each part (arch13/, captured frame by frame)
 PWA = HERE / 'build' / 'pwa9'
 SAAS = HERE / 'build' / 'saas10'
-CAST = HERE / 'build' / 'cast15'   # cut 15: cast10 with Priya and Neha under the brand
+CAST = HERE / 'build' / 'cast16'   # cut 15: cast10 with Priya and Neha under the brand; cut 16: its title for the new line
 
 PUSH = 0.6     # a push between two people's shots
 WIPE = 0.55
@@ -294,7 +294,9 @@ def build():
     add('open-label', t0, t1, Layered(lab, [(fx.Dust(n=120, seed=21, strength=0.45), 0.8), (fx.Rays(1700, -140, strength=0.22, turn=0.015), 0.9)], vign=0.3), [
         S7.LabelRings(lab, LM, boxes, [('bb', u_bb, L_ + 0.2, card('Best before 24 Oct 2026', 'Every carton carries its batch and its date.', ('proof', 'THE LABEL'), 400, 'a'))], card_at=(64, 560)),
         Countdown(64, 712, u_bb + 0.05, L_ + 0.3, 60, 22, dur=0.7),
-        Sprite(chip_sprite('Too close for Blinkit, Zepto and Instamart', 'bad', 26), 64, 800, a('i13', 'quick') - t0 - 0.05, L_ + 0.3)])
+        Sprite(chip_sprite('Too close for Blinkit, Zepto and Instamart', 'bad', 26), 64, 800, a('i13', 'quick') - t0 - 0.05, L_ + 0.3)],
+        xin='zoom', xd=0.6)
+    S[-1].xpt = (1700, 560)     # cut 16: the camera rushes into the near stack's carton, and lands on its label
 
     t0, t1 = t1, T['i03'][0] - 0.45        # the iris opens on the lockup as the voice says its name
     L_ = t1 - t0
@@ -307,21 +309,23 @@ def build():
                              ('cloud', lambda u, e0=e0: f'{roll(u, e0 + 0.3, e0 + 0.9, 0, 849.25):,.0f} kg CO₂e', 'for food no one eats (indicative)', e0 + 0.3),
                              ('recycle', '3.2 kg', 'of plastic packaging, to EPR', e0 + 0.6),
                              ('ban', '1,580 packs', 'that never reach anyone', e0 + 0.9)],
-                 e0 + 1.25, L_ + IRIS, w=560)])
+                 e0 + 1.25, L_ + IRIS, w=560)], xin='pull', xd=0.7)
+    S[-1].xpt = (1050, 640)     # cut 16: the label shrinks into a card and drops into the bin's trail of cartons
 
     # ======================================================== 1 · what it is: agentic software as a service (cut 9: condensed)
     tA = T['t01'][0] - 0.9            # the architecture starts a beat before its line
     t0, t1 = t1, tA
     L_ = t1 - t0
     add('saas', t0, t1, PageSeq(SAAS), [], xin='iris', xd=IRIS)
+    # cut 16: the shorter line ("Agentic software as a service for FMCG.", its scene under 4 s): the workspaces on
+    # "software", the heading 0.7 s after, the three tiers lit a third of a second apart, then held before the rise
+    sw_ = a('b92', 'Software') - t0
     S[-1].cues = {'i03': a('i03') - t0, 'turns': a('i03', 'turns') - t0, 'write': a('i03', 'write') - t0, 'recovery': a('i03', 'recovery') - t0,
-                  'b91': a('b91') - t0, 'agentic': a('b91', 'Agentic') - t0, 'service': a('b91', 'service') - t0, 'fmcg': a('b91', 'FMCG') - t0,
-                  'supply': a('b91', 'FMCG') - t0 + 0.3,      # cut 14: the line no longer says 'supply chain' (the page never used it)
-                   'brands': a('b91', 'brands') - t0, 'distributors': a('b91', 'distributors') - t0,
-                  'retailers': a('b91', 'retailers') - t0, 'end': round(L_ + UP + 0.2, 3)}
+                  'b91': a('b92') - t0, 'agentic': a('b92', 'Agentic') - t0, 'service': sw_, 'fmcg': sw_ + 0.68,
+                  'supply': sw_ + 0.98, 'brands': sw_ + 1.13, 'distributors': sw_ + 1.48, 'retailers': sw_ + 1.83, 'end': round(L_ + UP + 0.2, 3)}
 
     # ======================================================== 2 · under the hood: the architecture and the Google models, in depth
-    t0, t1 = tA, T['x24'][0] - PRE['x24']
+    t0, t1 = tA, T['x26'][0] - PRE['x26']
     L_ = t1 - t0
     add('arch', t0, t1, PageSeq(ARCH), [], xin='up', xd=UP)
     S[-1].cues = arch_cues(a, t0, L_)
@@ -330,10 +334,13 @@ def build():
     t0, t1 = t1, T['n15'][0] - PRE['n15']
     L_ = t1 - t0
     add('cast', t0, t1, PageSeq(CAST), [], xin='push', xd=PUSH)
-    S[-1].cues = {'x': a('x24') - t0, 'live': a('x24', 'Live') - t0, 'production': a('x24', 'production') - t0, 'munchly': a('x24', 'Munchly') - t0,
-                  'imaginary': a('x24', 'imaginary') - t0, 'brand': a('x24', 'brand') - t0, 'two': a('x24', 'two') - t0, 'batches': a('x24', 'batches') - t0,
-                  'different': a('x24', 'different') - t0, 'distributors': a('x24', 'distributors') - t0, 'one': a('x24', 'One') - t0,
-                  'happy': a('x24', 'happy') - t0, 'sad': a('x24', 'sad') - t0, 'end': round(L_ + PUSH + 0.2, 3)}
+    # cut 16: "Today, we're going to demo two journeys, live on production: …": the title ("Two journeys, live on
+    # production.") lands as the line begins; then the brand, the stamp, the two batches (its second "two"), the two
+    # distributors (its third) and the paths, as before
+    S[-1].cues = {'x': a('x26') - t0, 'live': a('x26') - t0 + 0.12, 'production': a('x26', 'production') - t0, 'munchly': a('x26', 'Munchly') - t0,
+                  'imaginary': a('x26', 'imaginary') - t0, 'brand': a('x26', 'brand') - t0, 'two': a('x26', 'two', 1) - t0, 'batches': a('x26', 'batches') - t0,
+                  'different': a('x26', 'two', 2) - t0, 'distributors': a('x26', 'distributors') - t0, 'one': a('x26', 'One') - t0,
+                  'happy': a('x26', 'happy') - t0, 'sad': a('x26', 'sad') - t0, 'end': round(L_ + PUSH + 0.2, 3)}
 
     # ======================================================== 3b · the landing page: two ways in, and Neha into the console (cut 15)
     t0, t1 = t1, T['k01'][0] - PRE['k01']
@@ -341,12 +348,13 @@ def build():
     Lx = L_ + PUSH
     u_neha = a('n15', 'Neha') - t0
     u_press = a('n15', 'opens') - t0 + 0.05          # Neha presses Console as the voice says "opens"
-    # the landing page held (21.05: its hero clean, the pointer on Console) while both ways in are explained; the press
-    # (21.55; the page leaves at 21.6); the console opening; Sign in pressed (37.1); "Welcome, Neha"
-    hold = u_press - 0.5 * 0.5 / 0.55
-    rest = Lx - hold - 0.5 - 0.5 - 0.55
-    segs = [(21.05, 21.05, hold), (21.05, 21.6, 0.5), (22.6, 23.2, 0.5), (36.9, 37.6, 0.55), (38.2, 38.2 + min(0.75, 1.3 * rest), rest)]     # 39.0: its greeting starts to cross in
-    lw = UrlWalk('admin', 'A', segs, 600, 246, 0.66, 'smartclearance.web.app', who=who(NEHA), url_at=[(hold + 0.5, 'smartclearance-console.web.app')])
+    # cut 16, on the 16 Oct admin run (admin2; the 13 Oct walk is gone): the landing page held (69.40: its hero clean,
+    # the pointer resting on Workspace) while both ways in are explained; the pointer glides to Console and presses it
+    # (70.12; the page leaves at 70.20); the console opening; Sign in pressed (151.74), "Signing in…"; "Welcome, Neha"
+    hold = u_press - (70.12 - 69.40) * 0.6 / 0.76
+    rest = Lx - hold - 0.6 - 0.6 - 0.6
+    segs = [(69.40, 69.40, hold), (69.40, 70.16, 0.6), (70.56, 71.36, 0.6), (151.30, 152.10, 0.6), (152.96, 152.96 + min(0.74, 1.3 * rest), rest)]     # 153.76: the greeting starts to cross in
+    lw = UrlWalk('admin2', 'A', segs, 600, 246, 0.66, 'smartclearance.web.app', who=who(NEHA), url_at=[(hold + 0.6, 'smartclearance-console.web.app')])
     k_ws = card('munchly-smartclearance.web.app', "This demo's client workspace: Munchly Foods' own team, its distributors and their kiranas.", ('result', 'WORKSPACE'), 470)
     k_cs = card('smartclearance-console.web.app', "Smart-Clearance's own team: every client set up, run and watched.", ('proof', 'CONSOLE'), 470)
     add('landing', t0, t1, room('neha', t0), [
@@ -361,22 +369,26 @@ def build():
     L_ = t1 - t0
     Lx = L_ + PUSH
     b_ = [a('k01', 'stock') - t0 - 0.25, a('k01', 'people') - t0 - 0.25, a('k01', 'gates') - t0 - 0.25, a('k01', 'agents') - t0 - 0.25]
-    # the clients (103.0), Kaveri Foods opened (104.4), its first stock export mapped (114.0), its people (130.8), the
-    # SKUs' quick-commerce gates (144.6), its agents (199.0): each span of the walk with no stage card or chapter chip
-    segs = [(103.0, 104.4, 1.4), (104.4, 104.4 + b_[0] - 1.4, b_[0] - 1.4), (114.0, 114.0 + b_[1] - b_[0], b_[1] - b_[0]),
-            (130.8, 130.8 + b_[2] - b_[1], b_[2] - b_[1]), (144.6, 144.6 + b_[3] - b_[2], b_[3] - b_[2]), (199.0, 199.0 + Lx - b_[3], Lx - b_[3])]
-    cw = AW(segs, 'smartclearance-console.web.app/clients')
+    # cut 16: Munchly Foods in the console, on the 16 Oct admin run (admin2): the clients (1215.5), Munchly opened on its
+    # agents (935.0), its first stock export, 8 of 8 fields mapped (1005.8), its people (1068.6), its SKUs'
+    # quick-commerce gates (980.0, before the chapter card at 981.6), its agents again (927.0): each span with no stage mark
+    segs = [(1215.5, 1216.9, 1.4), (935.0, 935.0 + b_[0] - 1.4, b_[0] - 1.4), (1005.8, 1005.8 + b_[1] - b_[0], b_[1] - b_[0]),
+            (1068.6, 1068.6 + b_[2] - b_[1], b_[2] - b_[1]), (980.0, 980.0 + b_[3] - b_[2], b_[3] - b_[2]), (927.0, 929.0, Lx - b_[3])]
+    cw = UrlWalk('admin2', 'A', segs, 600, 246, 0.66, 'smartclearance-console.web.app/clients', who=who(NEHA))
     st = [cw.seg_start(i, Lx) for i in range(len(segs))]
+    cw.url_at = [(st[1], 'smartclearance-console.web.app/clients/munchly')]
     add('console', t0, t1, room('neha', t0), [
         cw,
         head(64, 60, 0.3, L_ + 0.3, '01 · THE CONSOLE', 'A brand, set up in minutes.', width=500, hsize=44),
         Steps(['Every client, one console', 'Stock export, mapped', 'People, invited', 'SKU gates, per SKU', 'Agents, tuned'],
               [0.3, st[2], st[3], st[4], st[5]], 64, 330, u0=0.3),
-        Ring(cw, (365, 235, 1540, 690), st[2] + 0.15, st[3] - 0.05),
-        Ring(cw, (360, 495, 1090, 225), st[3] + 0.15, st[4] - 0.05),
-        Ring(cw, (360, 812, 1545, 72), st[4] + 0.15, st[5] - 0.05),
-        Ring(cw, (1450, 540, 440, 230), st[5] + 0.15, L_ + 0.3),
-        Sprite(card('Software as a service', 'Every brand its own workspace, on its own address: kaveri-smartclearance.web.app', ('result', 'SAAS'), 470), 64, 660, 0.7, L_ + 0.3),
+        Ring(cw, (362, 736, 1548, 66), 0.35, st[1] - 0.05),          # Munchly Foods among the clients
+        Ring(cw, (494, 216, 332, 38), st[1] + 0.15, st[2] - 0.05),   # its address
+        Ring(cw, (362, 52, 1548, 356), st[2] + 0.15, st[3] - 0.05),  # its export's fields, mapped
+        Ring(cw, (1480, 100, 430, 592), st[3] + 0.15, st[4] - 0.05), # a person invited
+        Ring(cw, (1362, 432, 548, 720), st[4] + 0.15, st[5] - 0.05), # each SKU's Blinkit and Zepto gates
+        Ring(cw, (1430, 480, 480, 560), st[5] + 0.15, L_ + 0.3),     # an agent's autonomy
+        Sprite(card('Software as a service', 'Every brand its own workspace, on its own address: munchly-smartclearance.web.app', ('result', 'SAAS'), 470), 64, 660, 0.7, L_ + 0.3),
         TechTag('Cloud SQL', 'every client, every rule, on the record', 0.6, L_ + 0.3, x=64)], xin='push', xd=PUSH)
 
     # ======================================================== 5 · the workspace, installed as an app on every device (cut 9: faster)
@@ -439,7 +451,7 @@ def build():
         Ring(pw, (272, 386, 270, 190), min(u_mg - 0.05, d1 + d2 + 1.25), c1 - 0.05, accent='a', card=card('₹22,657 at stake · 22 days left', 'Munchly Mango Drink: blocked from Blinkit, Zepto and Instamart.', ('live', 'FLAGGED'), 600, 'a'), at=(64, 360)),
         Ring(pw, (272, 386, 270, 190), c1 + 0.05, L_ + 0.3, accent='a', card=card('₹26,330 at stake · 47 days left', 'Munchly Masala Chips: blocked from quick commerce too.', ('live', 'FLAGGED'), 600, 'a'), at=(64, 360)),
         TechTag('BigQuery', '28 days of sell-through, every morning', 0.6, d1),
-        TechTag('Firebase Cloud Messaging', "each flag, a push to Priya's devices", d1 + 0.2, L_ + 0.3)], xin='cut')
+        TechTag('Firebase Cloud Messaging', "each flag, a push to Priya's devices", d1 + 0.2, L_ + 0.3)], xin='wipe', xd=WIPE)    # cut 16: was a cut
 
     # ======================================================== 7 · the happy path: Munchly Mango Drink, Lakshmi Agencies
     # -- verify: Lakshmi Agencies photographs the label, Vision reads it
@@ -560,7 +572,7 @@ def build():
                    (lambda u, o=ords: f"{sum(1 for st, t in o.values() if u >= t)} of 58 shops ordered", INK)], seed=31),
         InvoiceStack(64, 742, split - 0.5, L_ + 0.3),
         Ring(pw, (258, 668, 420, 46), 0.4, split - 0.2),
-        PaperShow([inv], cx=1040, zx=1030)])
+        PaperShow([inv], cx=1040, zx=1030)], xin='wipe', xd=WIPE)    # cut 16: the same room, the screen moved on (was a cut)
 
     # -- the staff sale by UPI, and Vision's check of the receipt
     t0, t1 = t1, a('m08') - 0.3
@@ -695,16 +707,19 @@ def build():
     t0, t1 = t1, a('s06') - 0.3
     L_ = t1 - t0
     Lx = L_ + PUSH
-    # the other three signers fast-forwarded sheet to sheet: each signer's sheet from its blank pad to its signature
-    # (the moments between, the sheet closed on the certificate, flickered for a frame at this speed)
-    # cut 15: a second shorter (Rakesh's own signature at 1.3x, the fast-forward a little faster, the four signed held less)
-    seg_ff = 1.8
-    FF = [(603.5, 621.0), (624.0, 635.4), (638.5, 654.4)]
+    # cut 16: the signing in 2.5 s, one labelled fast-forward from the officer's blank pad to all four signed, sheet to
+    # sheet (the moments between, the sheet closed on the certificate, flickered for a frame at this speed); the
+    # officer's own strokes are given 0.85 s so they can be seen drawn, the three after him 1.65 s between them. The
+    # photos and the certificate before it play at about their own pace (the second the shot gave up came from its breath)
+    OFF, FF = (594.6, 598.8), [(603.5, 621.0), (624.0, 635.4), (638.5, 654.4)]
     ff_src = sum(b - a for a, b in FF)
-    rw = LW('sad', [(574.3, 576.2, 1.8), (588.8, 590.4, 1.55), (594.6, 598.8, 3.25)] + [(a, b, seg_ff * (b - a) / ff_src) for a, b in FF]
-            + [(656.0, 657.8, max(0.8, Lx - 1.8 - 1.55 - 3.25 - seg_ff))], WS + '/destroy/MF-2409-117', RAKESH)
-    q = [rw.seg_start(i, Lx) for i in range(7)]
-    q = q[:4] + [q[6]]                       # q[3]: the fast-forward's start, q[4]: the certificate signed by four
+    sign_segs = [(OFF[0], OFF[1], 0.85)] + [(a, b, 1.65 * (b - a) / ff_src) for a, b in FF]
+    seg_ff = sum(d for _, _, d in sign_segs)
+    rw = LW('sad', [(574.3, 577.8, 3.0), (588.6, 590.8, 2.0)] + sign_segs
+            + [(656.0, 657.7, max(0.8, Lx - 3.0 - 2.0 - seg_ff))], WS + '/destroy/MF-2409-117', RAKESH)
+    q_ = [rw.seg_start(i, Lx) for i in range(len(rw.segs))]
+    q = [q_[0], q_[1], q_[2], q_[2], q_[-1]]      # q[2]: the signing (the fast-forward) starts, q[4]: the certificate signed by four
+    ff_all = (OFF[1] - OFF[0]) + ff_src
     before = photo_card(EVID / 'destruction-before-540-packs.webp', 290, 218, 16)
     after = photo_card(EVID / 'destruction-after-540-packs.webp', 290, 218, 16)
     t_fly = q[4] + 0.15
@@ -714,7 +729,7 @@ def build():
         Sprite(before, 64, 250, 0.35, L_ + 0.3), Sprite(after, 374, 250, 0.6, L_ + 0.3),
         Sprite(TX('Before · 540 packs, the batch slip', 'g', 17, 560, MUTED), 66, 478, 0.5, L_ + 0.3),
         Sprite(TX('After · at the landfill, the slate', 'g', 17, 560, MUTED), 376, 478, 0.75, L_ + 0.3),
-        Badge(f'Fast-forward {ff_src / seg_ff:.0f}×', 1160, 150, q[3], q[4]),
+        Badge(f'Fast-forward {ff_all / seg_ff:.0f}×', 1160, 150, q[3], q[4]),
         Ring(rw, (40, 120, 780, 300), 0.2, q[1] - 0.05),
         Ring(rw, (146, 728, 634, 280), q[4] + 0.1, L_ + 0.3),
         Sprite(card('Orange City Enviro Services', 'An authorised agency: its officer and two independent witnesses sign with Rakesh.', ('proof', 'OCE/DC/26-27/0219'), 600), 64, 530, 1.0, L_ + 0.3),
@@ -844,7 +859,7 @@ if __name__ == '__main__':
     for s_ in sh:
         print(f'{s_.name:14} {s_.t0:7.2f} {s_.t1:7.2f}  {s_.t1 - s_.t0:5.2f}s  in:{s_.xin}')
     print('END', END)
-    for name, key in (('saas', 'saas10'), ('arch', 'arch13'), ('cast', 'cast15'), ('install', 'pwa9')):
+    for name, key in (('saas', 'saas10'), ('arch', 'arch13'), ('cast', 'cast16'), ('install', 'pwa9')):
         sh_ = next(x for x in sh if x.name == name)
         (HERE / 'build' / f'{key}-cues.json').write_text(json.dumps({k: round(v, 3) for k, v in sh_.cues.items()}))
         print(f'{key} cues ->', sh_.cues.get('end'))

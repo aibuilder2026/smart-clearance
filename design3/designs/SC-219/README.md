@@ -1,12 +1,86 @@
-# SC-219 · The working demo, cuts 9 to 15
+# SC-219 · The working demo, cuts 9 to 16
 
 A demo film of about four minutes, made from the three production recordings of 13 Oct 2026, as cut 8 (SC-218) was:
 cut 9 on the maintainer's notes on cut 8, cut 10 on four notes on cut 9, cut 11 on three notes on cut 10, then cut 12
 on a new architecture scene, after a concept round, cut 13 on cut 10's 3D architecture made whole, with the app
 beside each part, and cut 14 on Google's own logos, a chip and a bracket on each part, and the four apps on their
-screens, then cut 15 (SC-225) on the demo's cast, the landing page and Munchly's workspace address. Each
+screens, then cut 15 (SC-225) on the demo's cast, the landing page and Munchly's workspace address, and cut 16 (SC-227)
+on a review of cut 15. Each
 joins the earlier cuts in the repository root's `working-demo/` folder, with its export's date and time in its name;
 `media/` holds the latest.
+
+## Cut 16 (16 Oct 2026, SC-227)
+
+Six notes on cut 15, inside the same strict 240 s.
+
+### The brief
+
+On cut 15's export (`…_2026-10-16_10-55-33`), the maintainer's review:
+
+1. "The place where it says Cloud SQL as the record, then there is some break which is forsure transition issue."
+2. "When we are showing the Demo Setup, explain that we are going to demo a happy path and sad path starting like
+   'Today we are going to demo ...' -- make the narration more realistic and engaging."
+3. "When Neha opens console and shows around, can we make it show Munchly Food workspace on console?"
+4. "The destruction signing certificate takes about 4 seconds, can we speed it up and make it 2.5 seconds?"
+5. The "For the FMCG supply chain" scene (brands, distributors, retailers): "can we make it under 4 seconds."
+6. "All scenes must have really good transition effects to another scenes, I see some dont have any, especially the
+   1st 2 scenes."
+
+"Time limit is 240 seconds... please ensure no scene seems rushed and there are no glitches and all have really good
+professional transition effects."
+
+### What changed
+
+- **The break after "Cloud SQL as the record"** (`src/arch13/`): at the hand-over from Cloud SQL to Pub/Sub both windows
+  swapped on one frame, ghosting through each other, while the camera made the scene's fastest move, 0.6 s, from the
+  bright API to the dark bus; the frame's light fell from 74 to 31 in three frames. Now the record's bright window fades
+  evenly over 0.46 s while it slides away (a panel's new `fadeOut`, `vig.js`), the bus's window lands only after it has
+  gone, and the camera takes a full second for the move; the light falls over 0.6 s, the largest change between two
+  frames 23 where it was 34.
+- **The demo setup,** a new line: "Today, we're going to demo two journeys, live on production: Munchly Foods, an
+  imaginary brand, with two batches at two distributors. One happy path, and one sad." (Maya1, six takes; take 1, read
+  back word for word, UTMOS 4.54, 12.2 s). The cast page's title reads "Two journeys, live on production." and lands as
+  the line begins (`src/cast16/`).
+- **Munchly Foods in the console,** on SC-226's production run of 16 Oct (`admin-console-e2e-prod-2026-10-16_10-14-51`;
+  the 13 Oct walk the console and the landing page were built on is no longer on disk): the clients with Munchly's row
+  ringed, Munchly opened with its address ringed, its first stock export with 8 of 8 fields mapped, its people and the
+  invitation, its SKUs' Blinkit and Zepto gates, its agents and the Negotiator's autonomy; the address bar follows to
+  `/clients/munchly`, and the SaaS card names munchly-smartclearance.web.app. The landing page is on the same run: the
+  hero held with the pointer resting on Workspace while it is explained, then the pointer glides to Console and
+  presses it, the console opens, Sign in, "Welcome, Neha". Every span was scanned for the stage's rings, dimming and
+  chapter cards, and none shows.
+- **The signing in 2.5 s:** one labelled fast-forward (20x) from the officer's blank pad to all four signed, the
+  officer's strokes given 0.85 s so they read as drawn, the three after him 1.65 s; the photos and the certificate
+  before it play at about their own pace, and the shot is 0.6 s shorter.
+- **The SaaS line's scene in 3.85 s:** the shorter line "Agentic software as a service for FMCG." (cut 15's take 3);
+  the workspaces on "software", the heading 0.7 s after, the three tiers lit a third of a second apart, held before the
+  architecture rises. Its 1.5 s of near-empty frame is gone.
+- **A transition into every scene** (`render13.py`): the godown to the label is a zoom-through, the camera rushing into
+  the near stack's carton with the light rising, the label landing out of it; the label to the bin is a pull, the label
+  shrinking into a card that drops into the trail of cartons, a shadow under it and a light rim; the two cuts in
+  Priya's room (her sign-in to her Command Center, the orders to the scheme filling) are wipes with the light line.
+  Each has its sound (`mix13.py`), and the opening's swell lands on the zoom's flash. Only the film's first frame fades
+  in from black.
+
+### Found
+
+- The 13 Oct recordings were missing from `playwright-automation-videos/`; the maintainer restored the Mango and chips
+  runs, and the console and the landing page moved to the 16 Oct admin run.
+- The SaaS scene's ₹16,699 is a frame mid-roll from −₹22,657 to ₹16,917, not a figure.
+
+### The result
+
+- 3 min 59.3 s (239.32 s); −14.0 LUFS, −1.5 dB true peak.
+- No one-frame flash in its 5,983 frames; every window within its speed limits apart from the labelled fast-forwards
+  (the scheme filling, 34x; the signing, 20x).
+- The stage-mark scan: no hit in the new console footage; the landing page's are its dark hero and the console's green
+  Sign in button, as in cut 15.
+- Both QR codes read back (7.4 s and 238.8 s).
+- 30 of 34 lines word for word; the new line reads "we are" for "we're", and the rest are the known ones.
+- `working-demo/smart-clearance-working-demo-2026-10-16_13-00-26.mp4` (crf 17), its 720p copy, a light preview, the changed scenes
+  on their own (`…-changes.mp4`) and captions; the crf-21 copies in `media/`.
+
+**The spend:** nothing. Maya1, Whisper, UTMOS, Chromium and ffmpeg ran on this Mac.
 
 ## Cut 15 (16 Oct 2026, SC-225)
 
@@ -833,6 +907,18 @@ in `remo12/public/`):
 # then name the frames f00000.jpg … in build/arch12/ (the sequence's element-NNN.jpeg, in order)
 .venv/bin/python render12.py && .venv/bin/python mix12.py && ./export12.sh
 node qrcheck11.mjs ../media/smart-clearance-working-demo.mp4 7.6 235                # the codes, read back
+```
+
+Cut 16, after cut 15's steps (the cast page `cast16/`; the new lines voiced and picked; the console and the landing
+page read SC-226's run of 16 Oct, `kit.REC['admin2']`):
+
+```sh
+.venv/bin/python shots13.py > /dev/null
+node capture-page.mjs cast16/cast.html build/cast16 build/cast16-cues.json 25
+node capture-page.mjs saas10/saas.html build/saas10 build/saas10-cues.json 25
+node capture-page.mjs arch13/arch.html build/arch13 build/arch13-cues.json 25
+.venv/bin/python render13.py && .venv/bin/python mix13.py && ./export13.sh
+node qrcheck11.mjs ../media/smart-clearance-working-demo.mp4 7.4 238.8
 ```
 
 Cut 15, after cut 14's steps (the cast page `cast15/`; the landing page's line voiced and picked):
