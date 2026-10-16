@@ -1,0 +1,8 @@
+{
+  "model": "Qwen-Image 2.1 bf16 (local)",
+  "seed": 219132,
+  "size": 1024,
+  "aspect": "16:9",
+  "prompt": "Macro photograph of a server rack in a dark data centre: a column of slim server sleds with brushed aluminium faces and fine round ventilation perforations, each with a row of tiny green and blue activity lights, one sled pulled out slightly, its edge catching a cool rim light; macro lens, very shallow depth of field, the sleds above and below falling into soft bokeh. Photorealistic cinematic still from a professional film about cloud infrastructure, full-frame cinema camera, true-to-life materials and physically correct reflections, crisp detail, deep clean blacks, cool teal-green and blue light coming from the equipment itself, a faint atmospheric haze, calm and precise composition. No people. No text, no numbers, no lettering, no logos, no signs, no labels anywhere in the picture.",
+  "post": "saved as WebP q86 from the PNG original (src/img/, local)"
+}

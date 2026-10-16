@@ -1,0 +1,9 @@
+{
+  "model": "Qwen-Image 2.1 bf16 (local)",
+  "seed": 219141,
+  "size": 2048,
+  "aspect": "16:9",
+  "prompt": "A long, bright, immaculate hyperscale data-centre hall seen from the start of its central aisle at eye height: two rows of tall black server racks recede in perfect one-point perspective, their servers' tiny status lights glowing blue and green; above the racks, open cable trays run the full length of the hall in bold solid colours, one blue, one red, one yellow and one green, with neat bundles of cables; a high white ceiling with long rows of bright light panels and open space above the racks; white walls; a polished, very light grey floor softly reflecting the light; clean, airy and optimistic, high-key daylight-white lighting with soft shadows, a sense of order and scale. Photorealistic cinematic still from a professional film about cloud infrastructure, full-frame cinema camera, 24 mm lens, true-to-life materials and physically correct reflections, crisp detail, bright high-key lighting, clean whites and light greys with the cable trays' bold colours as the only strong colour, calm and precise composition. No people. No text, no numbers, no lettering, no logos, no signs, no labels anywhere in the picture.",
+  "post": "saved as WebP q86 from the PNG original (src/img/, local)",
+  "use": "round 2's bright hall (stopped before its motion tests)"
+}

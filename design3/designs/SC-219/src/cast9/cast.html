@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SC-219 · the live demo: two paths and the people in them</title>
+<style>
+  @font-face { font-family: 'Bricolage Grotesque'; src: url('/fonts/Bricolage.ttf'); font-weight: 200 800; }
+  @font-face { font-family: 'Geist'; src: url('/fonts/Geist.ttf'); font-weight: 100 900; }
+  :root { --bg: #050806; --ink: #ecf3ef; --ink2: #aabcb2; --ink3: #7a8c82; --g300: #73c99d; --ring: #34d380; --amber: #f7c04a; --amber2: #f2b437; --red: #e55c4a; }
+  html, body { margin: 0; padding: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--bg);
+    font-family: 'Geist', system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  #stage { position: absolute; inset: 0; overflow: hidden; }
+  /* the bay at dawn where the story starts, out of focus and graded down */
+  #bg { position: absolute; left: -60px; top: -40px; width: 2040px; height: 1160px; background: url('bg.webp') center / cover;
+    filter: blur(18px) saturate(0.75) brightness(0.36); transform-origin: 40% 40%; }
+  #grade { position: absolute; inset: 0; background: radial-gradient(130% 100% at 30% 30%, rgba(14, 24, 18, 0.1) 0%, rgba(4, 8, 6, 0.75) 72%, rgba(3, 5, 4, 0.94) 100%); }
+  #lines { position: absolute; left: 0; top: 0; overflow: visible; }
+  #ui { position: absolute; inset: 0; }
+
+  .hdr { position: absolute; left: 80px; top: 62px; }
+  .hdr .k { font: 700 16px/1 'Geist'; letter-spacing: 3px; text-transform: uppercase; color: var(--g300); display: flex; gap: 12px; align-items: center; opacity: 0; }
+  .hdr .k i { width: 9px; height: 9px; border-radius: 50%; background: var(--ring); }
+  .hdr h1 { margin: 14px 0 0; font: 700 62px/1.02 'Bricolage Grotesque'; letter-spacing: -1.4px; }
+  .hdr h1 .w { display: inline-block; opacity: 0; }
+  .hdr p { margin: 12px 0 0; font: 500 22px/1.3 'Geist'; color: var(--ink2); opacity: 0; }
+  .live { position: absolute; right: 80px; top: 70px; display: flex; gap: 10px; align-items: center; padding: 11px 18px; border-radius: 999px; opacity: 0;
+    font: 700 16px/1 'Geist'; letter-spacing: 2.2px; text-transform: uppercase; background: rgba(8, 14, 11, 0.88); border: 1.5px solid rgba(229, 92, 74, 0.55); color: #ffd6cf; }
+  .live b { width: 10px; height: 10px; border-radius: 50%; background: #ff5a47; }
+  .live span { color: var(--ink2); letter-spacing: 1.4px; }
+
+  /* a lane: the batch, the people in it, how it ends */
+  .batch { position: absolute; left: 0; top: 0; width: 352px; display: flex; gap: 14px; align-items: center; opacity: 0; }
+  .batch img { width: 108px; height: 108px; flex: none; object-fit: contain; filter: drop-shadow(0 18px 24px rgba(0,0,0,0.6)); }
+  .batch .tag { display: inline-block; padding: 6px 10px; border-radius: 999px; font: 700 13px/1 'Geist'; letter-spacing: 2px; text-transform: uppercase; }
+  .batch.happy .tag { background: rgba(52, 211, 128, 0.16); border: 1px solid rgba(115, 201, 157, 0.6); color: #bdf5d6; }
+  .batch.sad .tag { background: rgba(247, 192, 74, 0.14); border: 1px solid rgba(247, 192, 74, 0.6); color: #ffe2a3; }
+  .batch b { display: block; margin-top: 9px; font: 700 23px/1.1 'Bricolage Grotesque'; letter-spacing: -0.3px; }
+  .batch span { display: block; margin-top: 6px; font: 500 15px/1.3 'Geist'; color: var(--ink2); }
+  .person { position: absolute; left: 0; top: 0; width: 176px; display: flex; flex-direction: column; align-items: center; text-align: center; opacity: 0; }
+  .person .ph { position: relative; width: 148px; height: 148px; border-radius: 32px; overflow: hidden; border: 2px solid rgba(255, 255, 255, 0.16); box-shadow: 0 20px 44px rgba(0,0,0,0.55); background: #1a221e; }
+  .person.happy .ph { border-color: rgba(115, 201, 157, 0.7); }
+  .person.sad .ph { border-color: rgba(247, 192, 74, 0.7); }
+  .person .ph img { width: 100%; height: 100%; object-fit: cover; }
+  .person b { margin-top: 12px; font: 700 19px/1.12 'Geist'; letter-spacing: -0.2px; }
+  .person span { margin-top: 5px; font: 500 14.5px/1.25 'Geist'; color: var(--ink2); }
+  .ring { position: absolute; left: 0; top: 0; border-radius: 40px; border: 2.5px solid rgba(159, 240, 196, 0.9); opacity: 0; pointer-events: none; }
+  .ring.sad { border-color: rgba(247, 192, 74, 0.95); }
+  .end { position: absolute; left: 0; top: 0; width: 230px; padding: 14px 16px; border-radius: 18px; opacity: 0; }
+  .end.happy { background: rgba(10, 30, 20, 0.9); border: 1.5px solid rgba(115, 201, 157, 0.6); }
+  .end.sad { background: rgba(34, 24, 6, 0.9); border: 1.5px solid rgba(247, 192, 74, 0.6); }
+  .end .k { font: 700 13px/1 'Geist'; letter-spacing: 2px; text-transform: uppercase; }
+  .end.happy .k { color: var(--g300); } .end.sad .k { color: var(--amber); }
+  .end b { display: block; margin-top: 8px; font: 700 30px/1 'Bricolage Grotesque'; letter-spacing: -0.6px; font-variant-numeric: tabular-nums; }
+  .end span { display: block; margin-top: 6px; font: 500 15px/1.3 'Geist'; color: var(--ink2); }
+  .platform { position: absolute; left: 0; top: 0; width: 200px; display: flex; flex-direction: column; align-items: center; text-align: center; opacity: 0; }
+  .platform .ph { width: 132px; height: 132px; border-radius: 30px; overflow: hidden; border: 2px solid rgba(138, 180, 248, 0.7); box-shadow: 0 20px 44px rgba(0,0,0,0.55); }
+  .platform .ph img { width: 100%; height: 100%; object-fit: cover; }
+  .platform b { margin-top: 12px; font: 700 19px/1.12 'Geist'; }
+  .platform span { margin-top: 5px; font: 500 14.5px/1.25 'Geist'; color: var(--ink2); }
+  .platform .pill { margin-top: 10px; display: inline-flex; gap: 7px; align-items: center; padding: 6px 11px; border-radius: 999px; font: 650 13px/1 'Geist';
+    background: rgba(12, 22, 40, 0.9); border: 1px solid rgba(138, 180, 248, 0.55); color: #c9dcff; }
+  .platform .pill svg { width: 14px; height: 14px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bg"></div>
+  <div id="grade"></div>
+  <svg id="lines" width="1920" height="1080"></svg>
+  <div id="ui"></div>
+</div>
+<script src="icons.js"></script>
+<script src="cast.js"></script>
+</body>
+</html>

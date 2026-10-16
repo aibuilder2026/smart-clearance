@@ -2918,6 +2918,163 @@
   - **Found on the way:** the stage's own cards and chapter chips cut out of every window's spans; the signing fast-forward flickered a frame between signers, so it runs sheet to sheet; the sell-through panel's day count was stuck at one; the new discs' icons were white on white.
   - **Checks:** −14.0 LUFS, −1.5 dB true peak; no one-frame flash in any of the 5,858 frames; windows between 0.97× and 1.40× apart from two labelled fast-forwards (34×, 22×); both QR codes read back; 26 of 30 lines word for word from the final mix (the rest a spelling, the brand as "Manchli", the URL as one word, and one slice that caught the line before).
   - **Where:** `working-demo/smart-clearance-working-demo-2026-10-15_16-44-16.mp4` (crf 17), its 720p copy and captions; the crf-21 1080p, 720p and captions, the pipeline and its README in `design3/designs/SC-218/`.
+- **SC-219** (In Review, branch `SC-219-working-demo-cut9`): cuts 9 to 14 of the working demo, everything made on this Mac, with no image, video or paid model called. Cuts 13 and 14 are 3 min 58.9 s (238.92 s), as cuts 11 and 12; cut 10 was 3 min 58.8 s (238.80 s); cut 9 3 min 56.3 s (236.32 s), inside 235 to 238.
+  - **Cut 9, the request** (the maintainer's notes on cut 8):
+    - the install a little faster;
+    - before the demo, the two paths and everyone in them, animated;
+    - the brand scenes condensed into agentic SaaS for retailers and the FMCG supply chain, aesthetic;
+    - the architecture's content kept but its animation, lighting and camera rethought, cut to between 30 and under 60 s;
+    - Supply Chain tracking the batches at risk from the Command Center;
+    - the impact shot's overlap fixed;
+    - the close's QR code on the right;
+    - special care with transitions.
+
+    Then: "show a live sign in to the application for Supply chain persona", and "Only use realistic photos and videos, no cartoons please".
+  - **Cut 9, the film:**
+    - **What it is** (`saas9/`, 11.3 s, an HTML page captured frame by frame on photographs): the name turns −₹22,657 into ₹16,917 recovered, then "Agentic software as a service · For the FMCG supply chain.", each brand's workspace address, and the three tiers as photographs of the work (a packing line, a godown counter, a kirana delivery), each lit as named, with the ten agents riding the route between them.
+    - **Under the hood** (`arch9/`, 33.8 s, 0:24 to 0:58): cut 8's content, said in fewer words, as a lit three.js scene the camera flies through. The four apps' real screens on Firebase; backend-api as a server with rack lights, beside Secret Manager and Cloud SQL; the Pub/Sub ring with Cloud Scheduler's clock; ten agent pods fed by BigQuery and Cloud Storage; the Gemini core lighting Pro and Flash; the guardrails' shield and the API's own figure; a person's yes on the real Approve sheet. The scene has blueprint-to-lit parts, a mirror floor, light shafts, bloom and crisp HTML labels.
+    - **The live demo** (`cast9/`, 8 s): two lanes from the two packs, each person's photograph in the order they act, each path's outcome, and Neha's console beside both.
+    - **The install** (`pwa9/`): 7.7 s down to 5.6.
+    - **Priya signs in, live** (the mango recording): her email typed and the password filled, Sign in pressed, Welcome, then Good afternoon. Beside it, the sign-in's hops: her tablet, Firebase Authentication, an ID token, backend-api, her Command Center.
+    - **The Command Center** (16.1 s, the sad recording): the watchlist with what it tracks (days left, sell-through, quick-commerce gates, the cost of the bin) lit as named; ₹48,987 at stake; the Watcher's two Hinglish pushes landing in her screen, then lifted out; the flagged batches; the Mango Drink's card, then the Masala Chips' (held as a still, the only clean span).
+    - **The rest:** the agents' heads open on the agent at work (cut 8's Verify and staff-sale shots showed "Priya · Approve"). The impact card and BigQuery's badge no longer overlap. The close moves left, with the QR code in a column of its own at the right.
+    - **Transitions:** an iris (the brand's squircle) into the product, a rise under the hood, pushes between people, a cut where the same screen goes on, cut 8's wipe into the sad path. None blurs.
+  - **Cut 9, the voice:** eleven new Maya1 lines (b91, u02 to u06, x01, p02, q01 to q03), six takes each, every pick read back word for word; m02 is gone.
+  - **Cut 9, found on the way:**
+    - GLSL `pow(x, 2.0)` of a negative x is NaN on Metal (and `1 − dot` dipped below zero), which the bloom spread into black boxes;
+    - fading meshes still wrote depth;
+    - the floor's dark edge was sorted by its centre over the agents;
+    - the screens tripped the bloom, and a halo was sized to the 21.5-unit deck;
+    - a rounded box has no edges to outline.
+  - **Cut 9, checks:**
+    - −14.0 LUFS, −1.5 dB true peak;
+    - no one-frame flash in the 5,908 frames;
+    - windows between 0.67× and 1.4×, apart from the two labelled fast-forwards and the chips' held card;
+    - no stage marks in the new beats;
+    - both QR codes read back;
+    - 28 of 33 lines word for word from the final mix.
+  - **Cut 9, where:** `working-demo/smart-clearance-working-demo-2026-10-15_18-53-48.mp4` (crf 17), its 720p copy, a light preview and captions; its pipeline (the scene pages' photographs remade as WebP by `prep9.py`) in `design3/designs/SC-219/`, whose `media/` held its crf-21 copies until cut 10 replaced them.
+  - **Cut 10, the request** (the maintainer's notes on cut 9):
+    - the architecture (0:30 to 1:00) refined: every component properly highlighted, the motion cinematic, like a film;
+    - the use cases (1:00 to 1:05) saying that Munchly Foods is an imaginary company, with two batches at two different distributors, in 7 to 10 s;
+    - "Live", in "Live on production", said right;
+    - the first 15 s sped up to 10, and the time given to the walkthrough;
+    - at least 238 and at most 239 s.
+
+    Then: "Video should mention 9 AI agents, Watcher is a normal coding agent".
+  - **Cut 10, the film:**
+    - **The opening** (10.1 s): cut 9's godown, label and bin, faster, with a shorter second line (i13). Every figure lands before its shot cuts: the write-off rolls in on "too", the countdown runs in 0.7 s, the bin's costs and the planet's figures come a beat apart (`CostStack`'s `pace`), and the iris opens on the name as it is said.
+    - **Under the hood** (`arch10/`, 33.7 s, 0:20 to 0:54), built again as a film:
+      - a lens: depth of field on the camera's target over a depth pre-pass, anamorphic streaks, bloom, motion blur from 1 to 14 sub-frames, ACES, chromatic aberration, lens ghosts, a grade, a vignette and grain;
+      - a 2.39:1 letterbox, with each act's title and the stack's parts lit in its bars;
+      - every component highlighted as it is named: a light down on it, a ring under it, the rest dimmed, and a callout on a leader line with what it does and its real names;
+      - a keyed camera with roll and lens changes;
+      - a whoosh a move, a rise and an impact.
+    - **The use cases** (`cast10/`, 9.7 s): "Live, on production." pushed through onto Munchly Foods' card, stamped "Imaginary brand · fictional data" on "imaginary". Then a tree: two batches, two distributors (Lakshmi Agencies, Hyderabad; Rakesh Traders, Nagpur), and two paths with their people and outcomes (₹16,917; ₹11,702, with 540 packs destroyed with proof).
+    - **Nine AI agents, and the Watcher in plain code**, throughout:
+      - the voice (u17);
+      - the architecture: a grey "plain code" tier, with no beam from Gemini;
+      - what it is;
+      - the Command Center's head;
+      - the close.
+    - **Gemini on Google's Agent Platform** (u18), its new name (SC-220).
+    - **The walkthrough** runs 2 min 47.5 s, 4.5 s more than cut 9's.
+  - **Cut 10, the voice:** four new Maya1 lines (i13, u17, u18, x24).
+    - x24's "Live" is given as "Lyve", and kept once its vowel measures as /aɪ/ (`tts/vowel.py`, LPC formants; F1's 90th percentile 868 Hz) and Whisper reads "Live".
+    - i13, u18 and m08 keep takes whose consonants still read with the music under them ("date", "prices", "packs"); the takes first kept read "state", "prizes" and "bags" under the bed.
+  - **Cut 10, found on the way:**
+    - the camera flew through the Pub/Sub ring three times, and motion blur washed those frames out (up to 28% clipped): every additive light now fades within 2.4 units of the lens;
+    - the clock flared as the camera left it;
+    - 0.3 s of empty frame came before the brand card;
+    - the opening's figures landed as their shots cut.
+  - **Cut 10, checks:**
+    - −14.0 LUFS, −1.4 dB true peak;
+    - no one-frame flash in the 5,970 frames, and no burst of light left in the architecture;
+    - windows between 0.67× and 1.21×, apart from the two labelled fast-forwards and the chips' held card;
+    - no stage marks (`cardscan10.py`'s hits are the apps' own buttons);
+    - both QR codes read back;
+    - 29 of 33 lines word for word from the final mix.
+  - **Cut 10, where:** `working-demo/smart-clearance-working-demo-2026-10-15_20-34-52.mp4` (crf 17), its 720p copy, a light preview and captions, with two earlier exports kept as `…-superseded`; its pipeline in `design3/designs/SC-219/`, whose `media/` held its crf-21 copies until cut 11 replaced them.
+  - **Cut 11, the request** (the maintainer's notes on cut 10):
+    - the bin's scene runs too fast;
+    - the architecture (0:22 to 0:55): its storytelling, parts, screens and notes are fine, but the 3D animation is too much. Keep Smart-Clearance's green, but in 2D motion animation, with sound effects, and surreal;
+    - the last scene a bit condensed;
+    - "Think hard and come up with best solution"; inside cut 10's 238 to 239 s.
+  - **Cut 11, the film:**
+    - **The bin** (3.6 s, from 1.2): the voice pauses 2.4 s after "it's destroyed". The costs land 0.35 s apart, then the GST credit is taken back, the total rolls to −₹22,657 and the planet's figures follow; the whole holds before the iris.
+    - **Under the hood in 2D** (`arch11/`, 33.4 s, 0:23 to 0:56), a surreal dreamscape on the green: the camera sinks through night clouds to a still lake under a huge, low moon (Google Cloud, its cloud drawn in as named), everything mirrored in the water, rippled. Each part is a surreal object:
+      - the apps' own screens rising out of the water (Firebase);
+      - a door standing in the lake (Cloud Run), with a clock that drops onto its lintel and melts over its shoulder (Cloud Scheduler);
+      - stone tablets (Cloud SQL), and paper boats carrying the events on a lane of light (Pub/Sub);
+      - the agents as lanterns rising from their reflections, the Watcher a grey block of plain code;
+      - a cloud raining a bar chart (BigQuery), and a chest of drawers handing Vision the label photo (Cloud Storage);
+      - a star born from the moon whose violet and blue light picks each agent's model (Gemini);
+      - a pane of glass turning that light away from a coin (the guardrails);
+      - the door glowing amber with the figure, and the yes rippling across the lake as every part lights.
+
+      The camera is a 2D pan and zoom with parallax, its long moves eased out wide mid-move. Each part has its own sound: water, woody knocks, a pen, glass bells, a melting tone, a kalimba up the pentatonic for the lanterns, dry blips for the Watcher, rain, a drawer, a star's bells, glass notes for the rays, a coin, a glass chime (`mix11.DREAM_SOUND`). The notes, act titles and index are cut 10's.
+    - **The close** condensed: its card held 1.2 s after the last word (`parts.HOLD`), 5.7 s in all.
+  - **Cut 11, found on the way:**
+    - the first clouds were a white wall (now night clouds);
+    - the boats read as sparkles and lingered (now larger paper boats that give their events to the rising lanterns);
+    - the melting clock smeared into a glow (one glow behind it, not one per strip);
+    - the long moves crossed about 1,700 px a second and smeared whole frames (longer, out wide mid-move, a lighter shutter);
+    - the boats launched on top of each other, and the Cloud Storage note covered the chest.
+  - **Cut 11, checks:**
+    - −14.0 LUFS, −1.5 dB true peak;
+    - no one-frame flash in the 5,973 frames;
+    - windows between 0.67× and 1.21×, apart from the labelled fast-forwards and the chips' held card;
+    - no stage marks;
+    - both QR codes read back;
+    - 29 of 33 lines word for word, the architecture's six among them, read over the new sounds.
+  - **Cut 11, where:** `working-demo/smart-clearance-working-demo-2026-10-15_21-40-01.mp4` (crf 17), its 720p copy, a light preview and captions; the crf-21 1080p, 720p and captions, the pipeline and its README in `design3/designs/SC-219/`.
+  - **Cut 12's concept round:**
+    - **The request:** the architecture scene "more better and professional, think of Google Cloud Data center", with "animations and motion effects", in Remotion if useful; three ideas first; the rest of cut 11 stays.
+    - **Round 1:** on one board (`design3/designs/SC-219/round-cut12/board.html`), each a Remotion motion test of the scene's first two lines with the real voice and sound, plus two stills of its later beats:
+      - A, The data hall: a real camera through a data centre (Qwen-Image plates, LTX moves), the stack tracked onto its racks;
+      - B, The blueprint: an isometric floor plan in the brand's greens, built and lit in motion;
+      - C, Inside the machine: a macro product film with large type.
+
+      None was picked; the notes were "Mix A and B", "A brighter, Google look" and "One continuous shot".
+    - **Round 2:** its bright hall was made and its chained camera moves begun when the maintainer stopped it.
+    - **The pick:** "revert back the 3D remotion animation effects you did in the last video to explain the architecture and think hard and better it", "sharp and surreal and explain the flow and components, camera movement and lighting should be perfect": B made whole. `decision.md` records it.
+  - **Cut 12, the scene** (Remotion 4.0.535, `src/remo12/` `Arch12`, its own isometric renderer in SVG): the data centre as one isometric hall floating in a dark green void over its faint reflection, one camera that never cuts and turns a few degrees as it travels.
+    - It opens on one agent's bright light and pulls back as the hall rises row by row.
+    - The four apps rise at the edge (Firebase); the call runs along the floor to the core (Cloud Run's containers stack); Cloud SQL's disks stack and the records fly in.
+    - Events run Pub/Sub's spine with their names, the camera travelling with them; the Scheduler's clock ticks.
+    - The nine AI agents light one by one, each named, the Watcher grey in plain code; BigQuery's sales rise as bars and reach the Watcher and the Valuer; a label photo flies from Cloud Storage to Vision.
+    - Gemini's accelerators wake violet behind the agents, and Pro's and Flash's beams reach their agents, each taking its model's colour and chip.
+    - A glass wall rises round the API and the money, and Gemini's beam stops at it; the API works out ₹16,917.
+    - Priya's Approve screen pops up beside the desk, the cursor taps it, and the yes runs across the hall, every rack turning green.
+
+    Lit from the upper left, with rims, contact shadows, pools of light where lit parts spill, bloom, and camera motion blur on the hall only. Cut 10's notes, the index and the three acts' titles stay.
+  - **Cut 12, into the film:**
+    - the scene as a JPEG sequence in `build/arch12/`;
+    - `shots12.py`, `render12.py`, `mix12.py` and `export12.sh`, with its sounds from `events12.py`;
+    - a camera whoosh, the record's pen scratch and the spine's ticks moved off "Pub/Sub".
+  - **Cut 12, checks:**
+    - −14.0 LUFS, −1.5 dB peak;
+    - no one-frame flash in 5,973 frames;
+    - both QR codes read back;
+    - 29 of 33 lines word for word, as cut 11; u03's "Pub/Sub" is Whisper's "PupSup", though the take alone reads "PubSub".
+  - **Cut 12, where:** `working-demo/smart-clearance-working-demo-2026-10-16_00-11-41.mp4` (crf 17), its 720p copy, a light preview and captions; the crf-21 copies, the pipeline and its README in `design3/designs/SC-219/`.
+  - **Cut 13, the request** (on cut 10's export): cut 10's "3D cinematic effect" for the architecture, "with really exact sound effects"; the app's screens "sharper and better"; every component shown with animation and, where possible, its app screen ("button being clicking, notifications coming"); the whole frame, not "scoped like a movie", the text "properly highlighted"; a better Gemini orb; then "Also show Firebase authentication for identity management".
+  - **Cut 13, the scene** (`src/arch13/`: cut 10's three.js scene, its lens and camera, full frame):
+    - each part framed on one side and its app on the other, in a browser window or a phone, crisp in screen space (`vig.js`): the app's own screens captured at 2x from the live guided demo and the live sign-in page (`screens13.mjs`, `screens13.py`, `arch13/scr/`), panning and changing state inside the window, a lead to the part with the data travelling along it;
+    - Firebase's four apps loading in four windows; **Firebase Authentication** (its own block): the live workspace sign-in typed and pressed, the ID token travelling to the API, `verify_id_token ✓ · role ws-operator`; Cloud Run's call under the Command Center; the Record's audit trail arriving row by row (Cloud SQL); two lock screens' pushes landing (Pub/Sub, FCM); Run now pressed in the console (Scheduler); the agent pipeline scrolling (ADK); the Watcher's and the Valuer's BigQuery calls ringed; the label photo sent and verified (Cloud Storage); `gemini.vision.read_label` (Gemini); five channels priced and the Negotiator's counter (Pro); the label read and the Hindi offer written (Flash); the reserve ringed and a model turned off the shield (guardrails); ₹16,917 (the API); Approve tapped, Plan placed (a person's yes);
+    - the act's title over the scene on its own shade with its key words marked green; the stack's parts in a glass dock, Firebase Authentication among them;
+    - Gemini a glass orb with its blue, violet and rose turning inside, its four-point spark at the centre, a disc of motes, and Pro and Flash as labelled satellites on their own orbits, each flaring as it is named;
+    - every event its own sound (236, `mix13.py`'s `ARCH13_SOUND`): a swish per window, a key per character, clicks, taps, rows, pushes, packets and pings, confirms, a scroll, Gemini's swell and shimmer, the shield's glass.
+  - **Cut 13, found:** `pow()` in the orb's highlight returned NaN on Metal and the bloom spread it into a black frame (the shader uses no `pow()`); the screens' overlays sat under the screenshot; the typed email vanished once typed; Pro and Flash framed the orb behind the windows.
+  - **Cut 13, then** (on its first export): "labels flying across on the architecture animation", and "buy me 2-3 extra seconds for the architecture and eat that from somewhere else little by little". A frame-by-frame survey of every label found the packets' names riding their leads at up to 300 px a frame; each is now pinned at its panel's outer edge for 1.3 s while only its dot travels, a part's label fades while the camera sweeps it fast or the lens nears it, the focus stays one run through a hand-over, and Gemini's satellites orbit at half speed (no other label faster than 16 px a frame while clearly on screen). Found on the way: a marked title word went dark all at once halfway through its marker (now the ink follows the marker's edge), and the Pub/Sub badge sat on the dock. The architecture gains 2.52 s (pauses after "Firebase", "Run", "step" and "negotiates", longer breaths between its lines), taken 0.20 to 0.30 s at a time from ten other scenes; the scene keeps cut 12's clock and the cues warp the film's time onto it (`warp()` in `arch.js`).
+  - **Cut 13, checks:** −14.0 LUFS, −1.5 dB true peak; no one-frame flash in 5,973 frames and no dark frame in the scene's 904; every window within its speed limits; the stage-mark scan as cut 12's; both QR codes read back; 29 of 33 lines word for word, as cut 12 (u03's "Pub/Sub" still "Pup-Sub" to Whisper).
+  - **Cut 13, where:** `working-demo/smart-clearance-working-demo-2026-10-16_01-51-30.mp4` (crf 17), its 720p copy, a light preview, the architecture on its own (`…-architecture.mp4`) and captions; the crf-21 copies, the pipeline and its README in `design3/designs/SC-219/`; the two earlier exports kept as `…-superseded`.
+  - **Cut 14, the request** (on cut 13's export): Firebase Hosting and Authentication could barely be understood; the apps' screens to show the apps, scrolling; a chip like the app's over each Google part as it is explained; the part and its window "focussed together"; "actual google logos for each components", in the scene's colours; and 1 to 2 s from the SaaS scene into the architecture.
+  - **Cut 14, the logos:** Google Cloud's product icons, laid out large in Lucid's Google Cloud 2021 set (a scratch document, "Smart-Clearance film icons (SC-219 scratch, safe to delete)"), exported and cut into two-tone masks (`src/arch13/logos/`); Firebase's flame and Gemini's spark from simple-icons (CC0), downloaded on the maintainer's yes. On each part (faces, glass signs, discs that face the camera), in the windows' headers, the dock and the agents' tags; Gemini's orb carries its real spark.
+  - **Cut 14, the scene:** a roll-call of every part's logo on "it's all Google Cloud"; the four apps' own screens on their 3D screens, larger and scrolling from the first frame, the camera passing two at a time while a deploy light runs the deck (`src/tiles14.mjs`, `tiles14.py`, `arch13/tiles/`; cut 13's apps window gone); Firebase Authentication as a gate over the API that every request passes, Priya's ID token flashing it; each part's chip over it, on a stem; the part bracketed, the rest a shade down, its window's lead running to the bracket, the bracket gliding through each hand-over; every camera shot holding while its part is explained.
+  - **Cut 14, the time:** the SaaS line re-voiced tighter ("Agentic software as a service for FMCG brands, distributors and retailers", Maya1, take 4 of 6: word for word, the shortest at 5.69 s against 7.19 s); its 1.5 s goes to the pauses of the architecture's opening. SaaS 9.71 s (11.21), the architecture 37.46 s (35.96).
+  - **Cut 14, checks:** −14.0 LUFS, −1.5 dB true peak; no one-frame flash in 5,973 frames; window speeds as cut 13's; the stage-mark scan as before; both QR codes read back; 29 of 33 lines word for word (b91 exact; u02 now "Cloud SQL app has the record" to Whisper over any background, though the voice alone reads exactly); no label faster than the camera carries it.
+  - **Cut 14, where:** `working-demo/smart-clearance-working-demo-2026-10-16_09-46-36.mp4` (crf 17), its 720p copy, a light preview, the architecture on its own and captions; three exports from the way there kept as `…-superseded`; the crf-21 copies and the pipeline in `design3/designs/SC-219/`.
 - **SC-220** (PR #200, merged; Done): ARCHITECTURE.md purely technical, on Agent Platform, with the deck's details; the Lucid diagrams, the architecture page and its PDF, and the deck renamed.
   - **The request:** ARCHITECTURE.md "with these details" (the AI Builder Cup deck, *14 Oct v4*); "update the references of vertex AI with Agent Platform which is the new name", in the Lucidchart diagrams and pictures and in the deck; ARCHITECTURE.md "purely technical", without the references to the Jira project.
   - **The rename:** Google renamed Vertex AI to Gemini Enterprise Agent Platform on 22 Apr 2026, and Agent Engine to Agent Runtime. Nothing in the build changes: Gemini is still reached at `aiplatform.googleapis.com` under `roles/aiplatform.user`, and the google-genai SDK's `enterprise=True` (which the agents already pass) is its former `vertexai=True`.

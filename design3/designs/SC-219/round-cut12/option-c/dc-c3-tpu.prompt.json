@@ -1,0 +1,8 @@
+{
+  "model": "Qwen-Image 2.1 bf16 (local)",
+  "seed": 219133,
+  "size": 1024,
+  "aspect": "16:9",
+  "prompt": "Macro photograph of an AI accelerator board: a large square processor chip under a polished copper liquid-cooling cold plate, clear coolant tubes glowing deep violet and electric blue curving across the dark circuit board, tiny surface-mount components in sharp focus at the centre; macro lens, very shallow depth of field, cool violet and blue light, dark background. Photorealistic cinematic still from a professional film about cloud infrastructure, full-frame cinema camera, true-to-life materials and physically correct reflections, crisp detail, deep clean blacks, cool teal-green and blue light coming from the equipment itself, a faint atmospheric haze, calm and precise composition. No people. No text, no numbers, no lettering, no logos, no signs, no labels anywhere in the picture.",
+  "post": "saved as WebP q86 from the PNG original (src/img/, local)"
+}

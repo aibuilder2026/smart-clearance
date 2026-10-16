@@ -1,0 +1,8 @@
+{
+  "model": "Qwen-Image 2.1 bf16 (local)",
+  "seed": 219121,
+  "size": 2048,
+  "aspect": "16:9",
+  "prompt": "A long immaculate cold aisle in a hyperscale data centre at night, seen from the centre of the aisle at eye height: two rows of tall black open-frame server racks recede in perfect one-point perspective to a distant vanishing point, every rack packed with servers whose tiny status lights glow cool green and soft blue, thousands of points of light; bright yellow fibre-optic cable trays run overhead along both rows with neat bundles of cables dropping into the racks; a polished pale-grey concrete floor reflects the lights in long soft streaks; a faint haze catches the light. Photorealistic cinematic still from a professional film about cloud infrastructure, full-frame cinema camera, true-to-life materials and physically correct reflections, crisp detail, deep clean blacks, cool teal-green and blue light coming from the equipment itself, a faint atmospheric haze, calm and precise composition. No people. No text, no numbers, no lettering, no logos, no signs, no labels anywhere in the picture.",
+  "post": "saved as WebP q86 from the PNG original (src/img/, local)"
+}
