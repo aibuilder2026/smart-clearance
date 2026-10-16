@@ -2,12 +2,6 @@
 
 <!-- impeccable:product-schema 1 -->
 
-Written from the brief, the journey map (docs/dobara-journey-map.html, v4.1), the illustrated story
-(docs/smart-clearance-story.html, v6) and what has been built since (CLAUDE.md records every change by issue); facts
-marked *(inferred)* were not confirmed by the maintainer. Brought up to date on 11 Oct 2026 (SC-170), when the
-original plan of 2 Oct (PLAN.md) was retired and its market reasoning folded into Positioning below. The problem, the
-USP and the agentic answer, in pictures, were added on 15 Oct 2026 (SC-224).
-
 ## Why Smart-Clearance: the problem, the USP and the agentic answer
 
 **In one line:** Smart-Clearance turns a near-expiry batch from a write-off into money recovered. Ten agents on Google
@@ -15,10 +9,74 @@ Cloud find it in time, check it on the shelf, price every exit including the bin
 says yes with the money in front of them. Then the agents do the running around in the distributor's name, and they
 draw every paper and post every rupee and kilo to one ledger.
 
-The four pictures below tell it with the story's own figures, each worked out by `design3/core/money.js` and the ledger.
-Their sources are in `docs/product/source/` (`node docs/product/source/render.mjs` draws them again).
+It starts with a rule: what the law and the quick-commerce apps demand of a pack's remaining life. The four pictures
+after it tell the rest with the story's own figures, each worked out by `design3/core/money.js` and the ledger. Their
+sources are in `docs/product/source/` (`node docs/product/source/render.mjs` draws them again).
 
-### 1. The problem: a near-expiry batch has one easy exit, the bin
+### 1. The rule that starts it: FSSAI's shelf-life floor, and the apps' stricter gates
+
+**The law.** FSSAI, India's food regulator, directed e-commerce food businesses in November 2024 that packaged food
+must reach the consumer with **at least 30% of its shelf life, or 45 days, left before expiry** at the time of
+delivery ([All India Radio](https://www.newsonair.gov.in/fssai-directs-e-commerce-fbos-to-ensure-minimum-30-shelf-life-for-delivered-products-to-enhance-food-safety-standards),
+[Outlook Business](https://www.outlookbusiness.com/news/fssai-directs-online-platforms-to-deliver-food-items-with-minimum-45-day-shelf-life)).
+Food ordered from restaurants and caterers is outside it: that must simply be fresh. The direction states the two
+figures without saying which wins. Explainers read it as a sliding floor, the 45 days binding on long-life food and 30%
+on short-life food:
+
+| Food | Shelf life | The floor that binds | Left at delivery, at least |
+| --- | --- | --- | --- |
+| Fresh paneer, curd, artisanal butter | 10 days | 30% (45 days is longer than the whole life) | 3 days |
+| Biscuits, chips, packaged spices | 120 days | 45 days (30% would be 36) | 45 days |
+| The story's Masala Chips | 184 days | 30% is 55 days, so 55 if the longer figure binds | 45 to 55 days |
+| Canned food, premium ghee | 360 days | 30% is 108 days, if the longer figure binds | 45 to 108 days |
+
+Some guides read "whichever is longer", which gives the longer floors above; on that reading a 10-day product could
+never be sold online at all, which is why the sliding reading is the usual one. Either way, the floor is set at the
+consumer's door, after the warehouse, the dark store and the delivery have all taken their days.
+
+**The apps' stricter gates.** Because their dark stores turn stock in days and cannot risk delivering below that floor,
+the quick-commerce apps take stock from brands only with far more life left. As industry guides report them (not the
+platforms' own documents, and they differ):
+
+- **Zepto and Swiggy Instamart:** about **60% of the total shelf life** left at inwarding; stock below it is turned away
+  at the warehouse ([Confetti](https://confetti.design/blog/quick-commerce-readiness-checklist),
+  [CollegeDekho](https://www.collegedekho.com/articles/how-to-get-featured-on-zeptos-superfast-delivery-a-founders-guide-to-dark-store-allocation/)).
+- **Blinkit:** a fixed **90 to 120 days** left, by one checklist ([Confetti](https://confetti.design/blog/quick-commerce-readiness-checklist));
+  another describes it as 60% of life or more ([SW Cybernetics](https://swcybernetics.in/knowledge-base/blinkit-vs-zepto-vs-instamart-comparison-2026)).
+
+Smart-Clearance takes these as the client's settings, not as constants: Munchly's defaults are Blinkit 90 days and Zepto
+and Instamart 60% of life, and each SKU and each batch can carry its own.
+
+**What follows for brands and distributors.**
+
+- **Stock is shut out months before its date.** A 184-day snack is refused by Zepto and Instamart once it has less than
+  110 days left, and by Blinkit at 90. The rest of its life is spent in the distributor's godown, where normal sales
+  cannot clear it, and it comes back as an expiry claim.
+- **First expiry, first out.** Dark stores must rotate by expiry date (FEFO), not by arrival (FIFO), to avoid delivering
+  below the floor, so a short-dated batch is the first thing a platform stops taking.
+- **Dates on the listing are coming.** FSSAI is drafting rules to require the manufacturing date, expiry date and batch
+  number on quick-commerce listings, and to hold the platforms answerable for misleading label claims; as of October
+  2026 these are proposals, not notified rules, and FSSAI has said listing declarations also fall under the Department
+  of Consumer Affairs' rules ([Inc42](https://inc42.com/buzz/fssai-eyes-tighter-quick-commerce-rules-for-expiry-dates-food-labelling/),
+  [Business Standard](https://www.business-standard.com/industry/news/fssai-says-expiry-date-display-on-e-commerce-platforms-under-dca-rules-126062300948_1.html)).
+  Once in force, a batch's real dates will be visible to every buyer, and stock near its date will be harder still to
+  sell online.
+- **The write-off is the brand's.** What no channel moves in time is written off, its GST input credit reversed and its
+  disposal and EPR paid. Some quick-commerce hubs are reported to compost expired stock on site
+  ([KPMG](https://kpmg.com/in/en/blogs/2026/05/the-sustainable-frontier-how-indian-quick-commerce-can-leverage-sustainability-for-ambitious-growth.html));
+  that saves the landfill, not the money.
+
+**How Smart-Clearance answers each.**
+
+| The rule and its effect | What Smart-Clearance does |
+| --- | --- |
+| The apps' inwarding gates shut a batch out early | The Watcher checks every batch every morning against each app's gate, per SKU and per batch, and flags it while there is still time to sell it elsewhere |
+| FSSAI's floor applies at the consumer's door | The exits it uses are offline or business-to-business (kiranas, a clearance marketplace, a staff sale, a licensed food bank), each with its own days |
+| FEFO and dated listings make the true date decisive | Vision reads the batch and dates from the carton's own label photo and checks them against the stock record before anything is priced |
+| The write-off, the GST reversal and disposal | The Valuer prices every exit against the bin's true cost, and the Router splits the batch to recover the most |
+| Food left at the end | It is donated under FSSAI's surplus-food regulations (2019) with their checklist, or destroyed at the godown by an authorised agency on evidence, a signed certificate and a second yes |
+
+### 2. The problem: a near-expiry batch has one easy exit, the bin
 
 ![The problem: what happens to a short-dated batch today, what the bin costs the brand for the Mango Drink (₹22,657.20 on 1,580 packs, 339.7 kg to landfill), and why nobody fixes it](docs/product/problem.webp)
 
@@ -36,7 +94,7 @@ the quick-commerce gates, the brand's territory, what each shop can sell in a fo
 decision has to be made in days, not at a month-end review. And every move needs its paper: GST invoices, credit notes,
 the input credit kept or reversed, the FSSAI checklist, receipts, a destruction certificate, the BRSR line.
 
-### 2. The USP: it decides where every pack earns the most, and then it does the running around
+### 3. The USP: it decides where every pack earns the most, and then it does the running around
 
 ![The USP: what a distributor management system, a clearance marketplace and Smart-Clearance each do with a short-dated batch; agents decide, one person says yes, agents execute; the five exits and what happens to what none of them takes](docs/product/usp.webp)
 
@@ -47,8 +105,8 @@ Smart-Clearance does what neither can, for each batch:
   the shelf through the label photo, not the spreadsheet.
 - **It prices every exit, the bin included,** and splits one batch across them within each exit's caps, the
   quick-commerce gates and the brand's territory. The five exits are a Hindi kirana scheme from the distributor, a
-  clearance marketplace outside the territory, a staff sale at the godown, a licensed food bank, and the brand's own
-  D2C store for warehouse stock.
+  clearance marketplace outside the territory, a staff sale at the godown, a licensed food bank, and, for the brand's
+  own warehouse stock, its D2C store (not built yet).
 - **It asks for one yes,** with the money worked out in front of the supply chain lead. Nothing is listed, offered or
   shipped before it, and nothing happens in the distributor's name before his permission.
 - **It executes every channel at once, in the distributor's name.** It lists the lot, sends every shop its offer,
@@ -61,7 +119,7 @@ Smart-Clearance does what neither can, for each batch:
 
 It is software as a service: each manufacturer gets its own workspace, set up for its own supply chain.
 
-### 3. How the agentic infrastructure solves it
+### 4. How the agentic infrastructure solves it
 
 ![How the agentic infrastructure solves it: the event loop (an event, an agent woken by Pub/Sub, facts read, Gemini's words checked, backend-api deciding), each of the nine stops with the hard part, the agent and its Gemini tier, and the Google Cloud services, and the four guardrails](docs/product/agentic.webp)
 
@@ -104,7 +162,7 @@ Pro is Gemini 3.1 Pro, used where a person decides on the words: the Valuer, the
 Flash is Gemini 3.8 Flash, used for reading and drafting. ARCHITECTURE.md has the detail, and the Technical Design
 Documentation (`docs/smart-clearance-tdd.pdf`) the printed account.
 
-### 4. What it changes
+### 5. What it changes
 
 ![What it changes: the Mango Drink, from −₹22,657.20 in the bin to −₹462.90 (₹22,194.30 better); the Masala Chips, from −₹26,329.60 to +₹10 (₹26,339.60 better); and Munchly's pilot quarter of twelve batches](docs/product/outcome.webp)
 
@@ -119,6 +177,89 @@ pilot quarter (Q2 FY27) cleared twelve batches: 7 sold through, 3 destroyed at t
 at risk were sold or donated. It kept ₹16,184.29 of GST input credit and reversed ₹1,652.42. It kept 1,959.51 kg of
 food out of landfill (about 4.9 t of CO₂e, indicative) and made 872 meals through the food banks. Every batch's papers
 were drawn, signed and reviewed.
+
+## What is built, what already exists, and what only Smart-Clearance does
+
+### What already exists, and where it stops
+
+Every piece of the job is done by someone in India today. Nobody joins them up, batch by batch. From our market scan of
+October 2026:
+
+| Who | Examples | What they do | Where they stop |
+| --- | --- | --- | --- |
+| Quick-commerce apps | Blinkit, Zepto, Swiggy Instamart | Take stock with enough life left; rotate by expiry | Set the gates that shut a batch out; what they refuse goes back to the distributor |
+| Distributor management systems | Bizom, FieldAssist | Record stock, orders, salesmen's beats and claims | Record the write-off; decide nothing about a batch, and act on nothing |
+| Accounting and GST | Tally, the GST e-invoice portal | Issue invoices and credit notes, report GST | Paper a decision someone else made; nobody prices the choice first |
+| Near-expiry marketplaces | NearXpiry, EOL Stocks, Excess2Sell | List a lot for buyers, at the marketplace's price | One exit; no split, no territory guard, no view of the bin's cost, no kiranas |
+| Kirana networks | Udaan, Kirana Club, GoFig | Reach shops with their own catalogues and offers | Not a brand's short-dated batch, from its own distributor, in the shop's language, on the brand's terms |
+| Food banks | Feeding India, India FoodBanking Network | Collect and distribute surplus food, issue receipts | Take what is offered; nobody decides which packs go, or papers the GST effect |
+| Waste agencies | Authorised agencies under each state's rules | Destroy goods and certify it | Destroy on request; no evidence check, no second yes, no credit note to match |
+| AI liquidation, abroad | Spoiler Alert (US) | Prices closeouts for large brands, sells to big liquidators | Assumes a few truckload buyers; India's demand is lakhs of kiranas and small buyers |
+
+### What only Smart-Clearance does
+
+What is new is not any one exit but the decision across them, made per batch, then carried out:
+
+1. **It watches every batch against every app's gate,** per SKU and per batch, every morning, and flags it while its
+   other exits are still open.
+2. **It verifies from the shelf.** The distributor photographs the carton; Gemini reads the batch, dates and MRP as
+   printed, and the read is checked against the stock record before anything is priced.
+3. **It prices every exit against the true cost of the bin,** under Indian rules: the stock, the GST input credit
+   reversed under CGST s.17(5)(h), disposal and EPR. Every figure is worked out in code, never by a model.
+4. **It splits one batch across many exits** (a Hindi kirana scheme, a clearance marketplace outside the brand's
+   territory, a staff sale at the godown, a licensed food bank) within each exit's caps and the days left.
+5. **It asks one person for one yes,** with the money on screen, and acts in the distributor's name only after his
+   one-time permission.
+6. **It does the selling.** It lists the lot, sends every shop its offer in Hindi, counters a buyer without a model
+   ever seeing the reserve, books the food bank, and records the staff sale on its UPI receipt.
+7. **It draws every Indian paper,** signed: tax invoices with their e-invoice IRN, an invoice for every kirana order,
+   credit notes, the GST ITC memo, the FSSAI surplus-food checklist, the food bank's receipt, and the certificate of
+   destruction signed in place by its officer and witnesses.
+8. **It leaves the distributor whole** through the brand's price support, so the stock never comes back as an expiry
+   claim.
+9. **It destroys nothing on an agent's word.** What no exit takes is destroyed at the godown on two photos checked by
+   Vision, four signatures and a second yes.
+10. **It reports what happened,** batch by batch, in one ledger: the money, the GST kept and reversed, and the kilos
+    kept out of landfill as a BRSR Principle 6 row.
+11. **It is sold as software as a service:** each manufacturer gets its own workspace, set up for its own supply chain.
+
+### What is built
+
+All of it runs today as a working prototype on Google Cloud, with a fictional client, Munchly Foods, and its partners.
+
+- **The agents:** ten agents on Google ADK and Gemini on Agent Platform, along nine stops, running live on Cloud Run
+  from Pub/Sub events and Cloud Scheduler's tick. Each is evaluated on live Gemini against its own case set
+  (ARCHITECTURE.md, "The evals").
+- **The platform API, backend-api:** FastAPI on Cloud SQL for PostgreSQL 18, the system of record and the orchestrator
+  of every batch's journey, with the money rules, every audit line and every request traced.
+- **The workspace app,** installable on a laptop, tablet or phone, with pushes and a live stream:
+  - for the brand's operator: the Command Center, Batches, each batch's page (Journey, Route Room, Execution, Paperwork,
+    Record), Setup, the Ledger with its GST and BRSR exports, and the Impact dashboard;
+  - for the distributor: Today, Batches, Deliveries, Orders and label photos, the staff sale with its receipt, and the
+    destruction's evidence and signatures;
+  - for the kirana: offers in Hindi, orders and their tax invoices;
+  - for the food bank: pickups and receipts;
+  - for the marketplace buyer: the lot, bids and the Negotiator's chat.
+- **The staff console:** onboarding a client from a demo request in seven steps, its first stock export, its gates,
+  rules, people and agents; the live Overview across every client; and the controls a demo needs.
+- **The landing page,** with its 7-minute film, and **the guided demo,** a route map through four journeys on the
+  real screens.
+- **Three journeys, end to end on production,** each recorded: the Mango Drink sold through (kiranas, a staff sale, a
+  food bank), the Masala Chips sold through (kiranas and the marketplace), and the Masala Chips' slow week (most shops
+  say no, and the rest is destroyed at the godown on evidence and a second yes).
+- **The papers and the history:** every paper as a signed PDF in Tally's layout, and a pilot quarter of twelve cleared
+  batches with their papers, photos and records.
+
+### What is mocked, or not built yet
+
+- **Mocked:** ExpireSoon, the clearance marketplace; the food banks' and Tally's integrations (the papers are drawn as
+  they would be issued); UPI payments; the waste agencies, which are fictional, their certificates drawn by the
+  platform.
+- **Not built:** the brand's own D2C store as an exit for warehouse stock; WhatsApp; offers shown in languages beyond
+  Hindi and English (Outreach also drafts Marathi, which backend-api keeps but the app does not yet show); Reject on the plan (drawn, not built); the agents' autonomy levels (suggest, ask, act), which are
+  set and audited but not yet read by the live journey; a custom domain.
+- **Not modelled:** medicines; live payments; the platforms' own inwarding systems. The quick-commerce gates are the
+  client's settings, not read from the platforms.
 
 ## Platform
 
@@ -188,7 +329,7 @@ client in the console. The prototype client is Munchly Foods (snacks, beverages,
 
 Smart-Clearance routes near-expiry FMCG stock that quick-commerce apps have rejected to the exits that earn the most in
 the days it has left (an online clearance marketplace, a kirana scheme pushed from the distributor, a staff sale at the
-distributor's godown, a food bank; discount D2C only for the manufacturer's own warehouse stock), asks one person for
+distributor's godown, a food bank; discount D2C only for the manufacturer's own warehouse stock, not built yet), asks one person for
 one approval, then executes: listing, outreach, negotiation, donation booking, the papers and the impact ledger. What
 no exit takes by expiry day is settled by the client's expiry policy: destroyed at the godown by an authorised agency,
 against two photos and a second yes, with the credit note and the certificate to match. Success: the batch leaves the
@@ -246,7 +387,7 @@ legal path to donate packaged food before expiry through licensed food banks.
   journey again (DEMO.md).
 - **Devices:** phones for the distributors, the kiranas, the food bank and the buyer; Priya on her phone and her laptop;
   the staff on laptops. Pushes are the trigger for every human moment; WhatsApp is future scope.
-- **Languages:** the kiranas' offers go out in Hindi, with an English toggle. Marathi is not built.
+- **Languages:** the kiranas' offers go out in Hindi, with an English toggle. Outreach also drafts Marathi, which the app does not yet show.
 
 ## Capabilities and Constraints
 
