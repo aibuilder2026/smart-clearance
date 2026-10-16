@@ -23,7 +23,7 @@ Commands are from the repository root unless a line starts with `cd`. Setting th
 | Parity suite | `cd frontend && PUBLIC_API_BASE= corepack pnpm test:parity` | each app's build against design3 | ~40 s an app | nothing |
 | Live e2e | `backend-api/scripts/e2e.sh` | the local API and Firebase Auth | a few minutes | nothing (adds a client locally) |
 | Journey walk | `backend-api/scripts/walk.sh` | the local API and agents, over HTTP | minutes, by the day length | live Gemini, ~GBP 0.05–0.10 |
-| Journey suites | `cd frontend && corepack pnpm test:journey` (and `:mango`, `:leftover`, `:mango-leftover`, `:sad`) | the live stack, in a real browser | 6–10 min each | live Gemini, ~GBP 0.05–0.10 a run |
+| Journey suites | `cd frontend && corepack pnpm test:journey` (and `:mango`, `:leftover`, `:mango-leftover`, `:sad`, `:mango-stage`, `:admin`, `:admin-walk`, `:admin-tour`) | the live stack or production (`E2E_TARGET=prod`), in a real browser on your machine | 6–10 min each | live Gemini, ~GBP 0.05–0.10 a run |
 | Agents' evals | `agents/scripts/eval.sh` | live Gemini | the longest: one case a second, over 200 cases | ~GBP 1–2 a full run |
 
 ## The gates
@@ -164,7 +164,9 @@ journey to Impact's report, every person acting in the real UI in turn (Neha in 
 each kirana, the ExpireSoon buyer, the food bank), one page driving everyone so a run is one recording. Each checks the
 story's figures as it goes, softly, so the run reaches the end and reports every finding.
 
-### Before a run
+### Before a run, locally
+
+On production none of this is needed: see [On production, from your own machine](#on-production-from-your-own-machine).
 
 1. backend-api on :8000 (`backend-api/scripts/dev.sh`), on a world with Munchly's live workspace
    (`backend-api/scripts/hydrate.sh --reset`, or `--live-only` on a world that already has its story).
@@ -178,7 +180,7 @@ story's figures as it goes, softly, so the run reaches the end and reports every
 
 People sign in with Firebase custom tokens (`backend-api/scripts/sessions.sh`); no password is typed or printed.
 
-### The seven suites
+### The suites
 
 ```bash
 cd frontend
@@ -189,6 +191,7 @@ corepack pnpm test:journey:mango-leftover      # Munchly Mango Leftover E2E
 corepack pnpm test:journey:sad                 # Munchly Chips Sad Path E2E: three screens to the swing, one recording
 corepack pnpm test:journey:mango-stage         # Munchly Mango E2E on three screens: the happy path to the swing, one recording
 corepack pnpm test:journey:admin               # Admin and console E2E: the landing page's ways in, a demo request to a configured client, the console in full
+corepack pnpm test:journey:admin-tour          # Admin and console tour: the same in about a minute, on a client an earlier run set up
 corepack pnpm test:journey:admin-walk          # Admin and console walkthrough: the landing page to the console, monitoring, a client's data and people, gates by SKU and batch, its agents, in a few minutes
 ```
 
@@ -231,6 +234,157 @@ E2E_TARGET=prod corepack pnpm test:journey                # on production (SC-13
   findings: page errors, failed API calls, figures off the story, any NaN, `undefined` or Invalid Date on screen), a
   still for each step and the recording, under `test-results/journey/`. Runs worth keeping are copied, with their
   report, into `frontend/workspace/tests/journey/runs/<date>/`; the recordings stay local.
+
+### On production, from your own machine
+
+The journey suites can run against the deployed apps instead of a local stack:
+- the landing page, [smartclearance.web.app](https://smartclearance.web.app);
+- the console, [smartclearance-console.web.app](https://smartclearance-console.web.app);
+- Munchly's workspace, [munchly-smartclearance.web.app](https://munchly-smartclearance.web.app);
+- backend-api and the agents on Cloud Run, with live Gemini.
+
+Nothing runs locally but Playwright. **They run live in your own browser:** Playwright opens Chromium on your machine
+and drives the real apps, clicking, typing and signing people in, while you watch. The three-screen and admin suites
+lay their screens out on a stage, show it in a window as they go, and record it as one video.
+
+#### Where they are
+
+All of them live in `frontend/workspace/tests/journey/`, one Playwright project each in
+`frontend/workspace/playwright.journey.config.ts`, and run from `frontend/`:
+
+| Journey | Suite | File | Command |
+| --- | --- | --- | --- |
+| Happy path, the Mango Drink on three screens (recorded) | Munchly Mango E2E on three screens | `munchly-mango-stage.journey.ts` | `corepack pnpm test:journey:mango-stage` |
+| Happy path, the Masala Chips | Munchly Chips E2E | `munchly-chips.journey.ts` | `corepack pnpm test:journey` |
+| Sad path, the Masala Chips destroyed at the godown, on three screens (recorded) | Munchly Chips Sad Path E2E | `munchly-chips-sad.journey.ts` | `corepack pnpm test:journey:sad` |
+| Admin and console, in full (recorded) | Admin and console E2E | `admin-console.journey.ts` | `corepack pnpm test:journey:admin` |
+| Admin and console, in a few minutes (recorded) | Admin and console walkthrough | `admin-console-walk.journey.ts` | `corepack pnpm test:journey:admin-walk` |
+| Admin and console, in a minute (recorded) | Admin and console tour | `admin-console-tour.journey.ts` | `corepack pnpm test:journey:admin-tour` |
+
+The helpers they share are beside them: `auth.ts` signs people in, `stage.ts` draws and records the screens, and
+`flow.ts`, `read.ts`, `mango.ts`, `chips.ts` and `ledger.ts` hold the steps. The suites' own README
+(`frontend/workspace/tests/journey/README.md`) has every step of each, and `runs/` keeps the reports of earlier runs.
+
+#### What to install
+
+On macOS or Linux, once:
+
+| Tool | Why | Install |
+| --- | --- | --- |
+| Git | to clone the repository | `brew install git` |
+| Node.js 22.17 or later, with corepack | Playwright and the suites | `brew install node`, then `corepack enable` |
+| Playwright's Chromium | the browser the suites drive | `corepack pnpm --filter @smart-clearance/workspace exec playwright install chromium` (after `corepack pnpm install`) |
+| ffmpeg | records the three-screen and admin suites' video | `brew install ffmpeg` |
+| GitHub CLI (`gh`) | reads production's public settings (each app's API address and Firebase browser key) from the repository's variables | `brew install gh`, then `gh auth login` |
+| Google Cloud CLI | signs the journey's people in, through `backend-api/scripts/sessions.sh` | `brew install --cask google-cloud-sdk` |
+| uv | runs `sessions.sh` (it fetches its own Python) | `brew install uv` |
+
+**And access:**
+
+- **GitHub:** an account that can read `aibuilder2026/smart-clearance`'s Actions variables.
+- **Google Cloud:** a Google account in Terraform's `operators` list (`infra/prod/terraform.tfvars`), which may act as
+  `sc-api-local`. `sessions.sh` uses it to mint a Firebase custom token for each person, so no password is ever typed,
+  stored or printed. Ask the maintainer to add yours and apply.
+
+Pango, Docker, the local database and the dev servers are not needed for a production run.
+
+#### Running one, step by step
+
+1. **Get the code and its packages:**
+
+   ```bash
+   git clone https://github.com/aibuilder2026/smart-clearance.git
+   ```
+
+   ```bash
+   cd smart-clearance/frontend && corepack pnpm install
+   ```
+
+   ```bash
+   corepack pnpm --filter @smart-clearance/workspace exec playwright install chromium
+   ```
+
+2. **Sign in to GitHub and Google Cloud:**
+
+   ```bash
+   gh auth login
+   ```
+
+   ```bash
+   gcloud auth login && gcloud auth application-default login
+   ```
+
+3. **Check you can mint a session.** This should print Neha's details as JSON (keep it out of logs):
+
+   ```bash
+   ../backend-api/scripts/sessions.sh neha > /dev/null && echo ok
+   ```
+
+4. **Check production answers:**
+
+   ```bash
+   curl -s "$(gh variable get PUBLIC_API_BASE --repo aibuilder2026/smart-clearance)/readyz"
+   ```
+
+   It should print `{"ok":true}`. The first call after a quiet spell can take a few seconds, while Cloud Run starts.
+
+5. **Run a suite**, from `frontend/`, with `E2E_TARGET=prod`. `E2E_KEEP` copies the video where you name it, and
+   `{stamp}` becomes the run's start time:
+
+   The happy path, the Mango Drink on three screens (about 15 minutes; resets the journey):
+
+   ```bash
+   E2E_TARGET=prod E2E_KEEP='../../playwright-automation-videos/munchly-mango-e2e-prod-{stamp}.mp4' corepack pnpm test:journey:mango-stage
+   ```
+
+   The happy path, the Masala Chips (about 10 minutes; resets the journey; add `--headed` to watch it):
+
+   ```bash
+   E2E_TARGET=prod corepack pnpm test:journey --headed
+   ```
+
+   The sad path, the Masala Chips destroyed at the godown on three screens (about 18 minutes; resets the journey):
+
+   ```bash
+   E2E_TARGET=prod E2E_KEEP='../../playwright-automation-videos/munchly-chips-sad-e2e-prod-{stamp}.mp4' corepack pnpm test:journey:sad
+   ```
+
+   The admin and console in full (about 20 minutes; sets up a new client). This suite does not fill in `{stamp}`, so
+   name the file yourself:
+
+   ```bash
+   E2E_TARGET=prod E2E_KEEP="../../playwright-automation-videos/admin-console-e2e-prod-$(date +%F_%H-%M-%S).mp4" corepack pnpm test:journey:admin
+   ```
+
+   The admin and console in a few minutes (adds no client; saves two agent settings on Kaveri Foods):
+
+   ```bash
+   E2E_TARGET=prod E2E_KEEP='../../playwright-automation-videos/admin-console-walk-prod-{stamp}.mp4' corepack pnpm test:journey:admin-walk
+   ```
+
+6. **Watch it.** The recorded suites open a window titled for the run, "Google Chrome for Testing", at the top left of
+   your screen, showing every screen as it is recorded. If it opened behind other windows, bring it forward with
+   Cmd+Tab. The recording is made from the stage, not the window, so moving or covering the window does not spoil it.
+   `E2E_LIVE=0` runs with no window. The other suites run unseen unless given `--headed`.
+
+7. **Read the result.** The terminal says passed or failed. Each run writes `report.md` (every step and its time, the
+   figures against the plan, any findings), a still for each step and the recording, under
+   `frontend/workspace/test-results/journey/`.
+
+8. **Set production's journey day back to 24 hours.** `hydrate.sh --day-minutes` sets only the local database's, so
+   do it in the console: sign in as staff, open Clients, then Munchly Foods, press the journey-day badge, and choose
+   Real time.
+
+#### What a production run changes
+
+- **The Mango and Chips suites start Munchly's journey again** on production. Each person acts as themselves in the
+  real apps, live Gemini is called (about GBP 0.05 to 0.10 a run), and the journey is left where the run ends.
+- **Admin and console E2E sets up a new client each run,** one of the suite's fictional companies (Chambal Snacks,
+  Kaveri Foods and so on), with its demo request, people and audit lines. The console cannot delete a client.
+- **The walkthrough and the tour change two agent settings** on Kaveri Foods (the Watcher's gate, moved between 60
+  and 65 days, and the Negotiator on Act), each with its audit line. They read Munchly Foods' settings and leave them
+  as they are.
+- **Run them on the maintainer's yes only:** they change production's data and spend money.
 
 ## Which journeys to cover
 
