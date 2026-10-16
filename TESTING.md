@@ -1,5 +1,11 @@
 # Testing
 
+> [!IMPORTANT]
+> **E2E tests on production:** the happy path, sad path and admin and console journey suites can run against the live
+> apps, driven by Playwright in your own browser. The steps, the commands and what to install are in
+> **[On production, from your own machine](#on-production-from-your-own-machine)**. A run changes production's data
+> and calls live Gemini: run it on the maintainer's yes only.
+
 How every test in the repository is run, what each one proves, and which journeys to cover. There are two kinds:
 
 - **The gates** run on every pull request in CI, and before a change ships. They are fast and need no browser.
@@ -9,6 +15,33 @@ How every test in the repository is run, what each one proves, and which journey
 
 Commands are from the repository root unless a line starts with `cd`. Setting the machine up is in
 [README.md](README.md).
+
+## Contents
+
+- [At a glance](#at-a-glance)
+- [The gates](#the-gates)
+- [The browser suites: a11y, e2e and parity](#the-browser-suites-a11y-e2e-and-parity)
+  - [Before running](#before-running)
+  - [a11y](#a11y)
+  - [e2e](#e2e)
+  - [Parity](#parity)
+- [The live tests](#the-live-tests)
+  - [Live e2e: the landing page and the console on the real API](#live-e2e-the-landing-page-and-the-console-on-the-real-api)
+  - [The journey walk, over HTTP](#the-journey-walk-over-http)
+- [The journey suites](#the-journey-suites)
+  - [Before a run, locally](#before-a-run-locally)
+  - [The suites](#the-suites)
+  - [Options](#options)
+  - [After a run](#after-a-run)
+  - **[On production, from your own machine](#on-production-from-your-own-machine)** · IMPORTANT: E2E tests on production
+    - [Where they are](#where-they-are)
+    - [What to install](#what-to-install)
+    - [Running one, step by step](#running-one-step-by-step)
+    - [What a production run changes](#what-a-production-run-changes)
+- [Which journeys to cover](#which-journeys-to-cover)
+- [The agents' evals](#the-agents-evals)
+- [Reporting a run](#reporting-a-run)
+- [When something gets in the way](#when-something-gets-in-the-way)
 
 ## At a glance
 
@@ -236,6 +269,11 @@ E2E_TARGET=prod corepack pnpm test:journey                # on production (SC-13
   report, into `frontend/workspace/tests/journey/runs/<date>/`; the recordings stay local.
 
 ### On production, from your own machine
+
+> [!IMPORTANT]
+> **This runs on production.** The Mango and Chips suites start Munchly's live journey again and call live Gemini; the
+> full admin and console suite adds a new client each run; the walkthrough and the tour change two agent settings.
+> Run them on the maintainer's yes only, and set the journey day back to 24 hours afterwards (step 8).
 
 The journey suites can run against the deployed apps instead of a local stack:
 - the landing page, [smartclearance.web.app](https://smartclearance.web.app);
