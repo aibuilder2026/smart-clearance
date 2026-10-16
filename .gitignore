@@ -441,3 +441,26 @@ design3/designs/SC-219/src/tts/vo3/gemini-Gacrux-demo/*
 design3/designs/SC-219/src/tts/bake17/*
 !design3/designs/SC-219/src/tts/bake17/*.txt
 !design3/designs/SC-219/src/tts/bake17/*.json
+
+# SC-238: the landing demo film v3's pipeline ships (scripts, prompts, lines, jobs, the 3D scene, the Remotion project's
+# source, the VideoToolbox tool's Swift); keyframes, clips, captures, voice takes, builds and node_modules stay local
+!design3/designs/SC-238/src/
+design3/designs/SC-238/src/*
+!design3/designs/SC-238/src/*.py
+!design3/designs/SC-238/src/*.sh
+!design3/designs/SC-238/src/*.mjs
+!design3/designs/SC-238/src/*.json
+!design3/designs/SC-238/src/prompts/
+!design3/designs/SC-238/src/tts/
+design3/designs/SC-238/src/tts/*
+!design3/designs/SC-238/src/tts/*.py
+!design3/designs/SC-238/src/vtfx/
+design3/designs/SC-238/src/vtfx/*
+!design3/designs/SC-238/src/vtfx/*.swift
+!design3/designs/SC-238/src/agents3d/
+design3/designs/SC-238/src/agents3d/node_modules
+design3/designs/SC-238/src/agents3d/frames/
+!design3/designs/SC-238/src/film/
+design3/designs/SC-238/src/film/node_modules/
+design3/designs/SC-238/src/film/public/
+design3/designs/SC-238/src/film/out/
