@@ -28,6 +28,7 @@ Every company, person and figure in the product is fictional. Munchly Foods is t
 
 - [Documentation](#documentation)
 - [What is in the repository](#what-is-in-the-repository)
+- [Models](#models)
 - [Prerequisites](#prerequisites)
 - [Set up from scratch](#set-up-from-scratch)
 - [Start everything from the command line](#start-everything-from-the-command-line)
@@ -41,6 +42,7 @@ Every company, person and figure in the product is fictional. Munchly Foods is t
 | Document | What it covers |
 | --- | --- |
 | [PRODUCT.md](PRODUCT.md) | Why Smart-Clearance exists, in four pictures: the problem (a near-expiry batch has one easy exit, the bin, and what it really costs the brand), the USP (it prices every exit for each batch, the bin included, splits the batch across them, asks one person for one yes, then executes every channel in the distributor's name with the papers and the ledger to prove it), how ten agents on Google Cloud solve it stop by stop with the money never a model's guess, and what it changes in the story's own figures. Then the product itself: who uses it and for what, the story's batches, every surface, the principles and positioning. |
+| [The product demo, 7 minutes](https://youtu.be/DT_4G2txLF4) | The sales film on YouTube (unlisted), 6 min 50 s: the waste, the product, the agents on Google Cloud, a batch's whole journey with the people who take part, the papers, the money and the impact. The landing page plays the same film when Watch is pressed. |
 | [DEMO.md](DEMO.md) | How a judge tries it: the guided demo, then the live apps step by step with screenshots from the production recordings (`docs/demo/`): the Mango Drink's happy path, the Masala Chips' sad path destroyed against evidence, and the console. Each step says which file of the demo data set to use. |
 | [demoDataSet/README.md](demoDataSet/README.md) | The demo data set, by journey: the carton label photos with their barcodes and QR codes, the staff sale's UPI receipt, the destruction's photos at the godown and the landfill, the certificate's signatures, and a first stock export for a new client. |
 | [TESTING.md](TESTING.md) | How every test is run: the gates, the a11y, e2e and parity suites, the live tests, the journey suites and the agents' evals, with the scripts, what each needs first, and which journeys to cover. |
@@ -68,6 +70,63 @@ Every company, person and figure in the product is fictional. Munchly Foods is t
 | `.github/` | GitHub Actions: the gates on every pull request, the deploys from `main`. |
 | `docs/` | The story pages, the walkthrough page, and PRODUCT.md's pictures with their sources (`docs/product/`). |
 | `design/`, `design2/` | Earlier design rounds. Reference only. |
+
+## Models
+
+Every model call the product makes is to Gemini, on Gemini Enterprise Agent Platform (formerly Vertex AI), through the
+global endpoint; no API key exists, and each service signs in as its own service account. The films and images were
+made with Google's media models on the same platform, and with local models on this project's Mac.
+
+### The agents
+
+The agents are Google ADK pipelines on Cloud Run (`agents/`). Two Gemini tiers serve them, set per environment in
+`infra/prod` (`model_pro`, `model_flash`), since model ids move with Google's releases:
+
+- **Pro**, `gemini-3.1-pro-preview`, where a person decides on the words: the notes on each exit, the plan's
+  explanation, the Negotiator's bids;
+- **Flash**, `gemini-3.8-flash`, for reading and drafting.
+
+| Agent | Stop | Model | What the model is asked for |
+| --- | --- | --- | --- |
+| Data | Connect | Flash | The columns of a distributor's stock export it has not seen before, mapped to the fields; a layout it knows is parsed without a model. |
+| Watcher | Detect | none | Rules only: each batch's sell-through from BigQuery, projected to the day each quick-commerce app stops taking it. |
+| Vision | Verify, and at a staff sale or a destruction | Flash | The carton label photo read as printed (batch, dates, MRP, never the barcode); the staff sale's UPI receipt (each payment's reference and amount); the destruction's photos (the batch at the godown, the count, the slate at the landfill). |
+| Valuer | Value | Pro | One note per exit, on why it suits this batch now. Every price is worked out in code against the bin's true cost. |
+| Router | Decide | Pro | The split explained in plain words for the approver. The split itself is backend-api's, in code. |
+| Approval | Approve | a person | No model: one person's yes releases the plan. |
+| Outreach | Execute | Flash | The kirana scheme's offer, in Hindi, English and Marathi. |
+| Lister | Execute | Flash | The ExpireSoon listing's title and description, from the lot's public facts. |
+| Negotiator | Execute | Pro and Flash | Pro weighs each bid; Flash answers the buyer's questions. The reserve never reaches a model, and the counter is decided under it in code. |
+| Paperwork | Settle | Flash | The words of the papers. backend-api works out every figure; the PDFs are laid out from templates (WeasyPrint). |
+| Impact | Report | Flash | The BRSR narrative. backend-api posts the ledger and every figure. |
+
+**Guardrails on every call:** a fixed output schema with every field required; 30 s an attempt and up to 3 attempts
+on 429, 500, 503 and 504, with backoff; at most 12 calls a run. Words that fail their checks, or quote a figure the
+facts do not hold, are dropped, and backend-api's template stands in, so a journey never waits on a model. **The
+evals** (`agents/evals/`, on request only) run each agent on live Gemini; a judge on the Pro tier scores the words.
+[ARCHITECTURE.md](ARCHITECTURE.md) has each agent's latency and cost.
+
+### The films and images, on Google's media models
+
+Made through the tracked scripts in `design3/tools/vertex-media/`, which price every call before it is made and write
+each asset's `.prompt.json` sidecar:
+
+| Model | Id | Used for |
+| --- | --- | --- |
+| Veo 3.1 | `veo-3.1-generate-001` | Video clips at 1080p: the landing page's hero film with real people, the demo film's scenes, and the sales film's talking scenes, with their sound and lip sync. |
+| Veo 3.1 Fast | `veo-3.1-fast-generate-001` | Draft clips at 720p for the design rounds, before a final was paid for. |
+| Nano Banana 2, Gemini 3.1 Flash Image | `gemini-3.1-flash-image` | The image model: character sheets, the keyframes each Veo clip starts or ends on, and edits of them (lettering taken off, a second pair of glasses removed, a scene changed). |
+| Gemini-TTS | `gemini-2.5-pro-tts` | The narration: the sales film's Indian English voice (Sulafat, en-IN), each take read back to check every word. |
+| Lyria 2 | `lyria-002` | The music: the score's cues, under the voice. |
+| Gemini 3.8 Flash | `gemini-3.8-flash` | Eyes and ears for review: each clip watched for glitches and garbled lettering, each voice take and music cue heard, the cut reviewed minute by minute. |
+
+Spend, recorded with each round: about $120 in all ($18.76 on the hero film, $72.92 on the demo film over its three cuts, about $28 on the sales film).
+
+### Local models, at no cost
+
+On the project's Mac: **Qwen-Image 2.1** (bf16) for images, renders and photo edits, among them every carton label's
+base photo and the evidence photos; **LTX 2.5 Fast** for most video clips; **Kokoro-82M** and **Maya1** for narration;
+**Whisper** to read every voice take back, and **UTMOS** to score it.
 
 ## Prerequisites
 

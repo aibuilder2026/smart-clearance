@@ -3135,4 +3135,8 @@
   - **The same day on production,** without code changes: Munchly Mango E2E on three screens (72 steps, 14 min 12 s, no finding; `munchly-mango-e2e-prod-2026-10-16_08-48-03.mp4`) and Munchly Chips Sad Path E2E (87 steps, 19 min 1 s; `munchly-chips-sad-e2e-prod-2026-10-16_09-05-54.mp4`), every figure the story's; production's journey day back at 24 hours after each.
   - **Found:** the admin suite copies its video to `E2E_KEEP` as written, without filling in `{stamp}`; the run's files were renamed by hand.
   - **Checks:** Prettier, ESLint and the workspace type check pass.
+- **SC-229** (PR, merged): README.md links the 7-minute product demo and names every model, documentation only, asked for by the maintainer.
+  - **The documentation table** gains the product demo, [youtu.be/DT_4G2txLF4](https://youtu.be/DT_4G2txLF4) (SC-211's sales film, SC-216).
+  - **A Models section:** each agent with its stop, its Gemini tier (Pro `gemini-3.1-pro-preview`, Flash `gemini-3.8-flash`, from `infra/prod`) and what it asks the model for, as each agent's code has it; the guardrails and the evals' judge; the media models on Agent Platform, as the sidecars record them (Veo 3.1 and Veo 3.1 Fast, Nano Banana 2, Gemini-TTS, Lyria 2, Gemini 3.8 Flash as reviewer), with the spend; and the local models (Qwen-Image, LTX, Kokoro, Maya1, Whisper, UTMOS). Nano Banana Pro is in the tooling but in no sidecar, so it is not listed.
+  - **Checks:** every relative link and anchor in README.md resolves.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
