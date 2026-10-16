@@ -36,6 +36,7 @@ from parts6 import *
 from parts7 import *
 from parts8 import *
 from parts9 import *
+from parts17 import *
 import parts as _P
 import fx
 import shots7 as S7
@@ -192,12 +193,17 @@ RECEIPT_PHOTO = REPO / 'playwright-automation-videos' / 'sampleData' / 'munchly-
 ARCH = HERE / 'build' / 'arch13'   # cut 13: cut 10's 3D film made whole, full frame, the app beside each part (arch13/, captured frame by frame)
 PWA = HERE / 'build' / 'pwa9'
 SAAS = HERE / 'build' / 'saas10'
+TRAIL = HERE / 'build' / 'audit17'  # cut 17: SC-211's audit trail, on the chips' own Record (audit17/)
+OPS = HERE / 'build' / 'ops17'      # cut 17: SC-211's board, the platform watching itself (ops17/)
+FSSAI = HERE / 'build' / 'fssai17'  # cut 17: FSSAI's rule over the godown and the label (Remotion, remo12/src/fssai17/)
 CAST = HERE / 'build' / 'cast16'   # cut 15: cast10 with Priya and Neha under the brand; cut 16: its title for the new line
 
 PUSH = 0.6     # a push between two people's shots
 WIPE = 0.55
 IRIS = 0.85    # the brand's squircle opening onto what it is
 UP = 0.7       # under the hood: the next shot rises from below
+ZOOM = 0.6     # cut 17: the rush into the audit trail's "Traced end to end"
+TRACED_PILL = (980, 716)   # its centre in the audit page's frame, measured on its capture
 
 
 class UrlWalk(Walk):
@@ -264,7 +270,11 @@ def build():
         raise KeyError(f'{lid}: {word}')
 
     # ======================================================== 0 · the problem: a distributor's godown, a carton's date, the bin (cut 10: in 10 s)
-    t0, t1 = 0.0, a('i13', 'close') - 0.3
+    # cut 17 (SC-228): the godown holds through FSSAI's rule (f01). Its clip is 5.7 s, and the rule is said after it, so
+    # its last frame is pushed in slowly, softened and dimmed under the rule's card (Remotion's FssaiRule), and brought
+    # back into focus before the camera rushes into the carton. Its second round: the scene under 10 s, so the voice
+    # runs on over the cut ("… or forty-five days" over the label, whose gauge draws the 45-day line as it is said)
+    t0, t1 = 0.0, a('f01', 'or') - 0.05
     L_ = t1 - t0
     u_w, u_o = a('i01', 'write') - t0 + 0.02, a('i01', 'off') - t0 + 0.02
     u_k, u_s = a('i01', 'stock') - t0 + 0.05, a('i01', 'slowly') - t0 + 0.1
@@ -276,27 +286,36 @@ def build():
     gone = {tid: u_ for tid, u_, _ in stamps}
     gone.update({'57': u_w - 0.2, '72': u_w - 0.2, '89': u_w - 0.2, '84': u_w - 0.1, '90': u_w - 0.1, '59': u_k, '99': u_k})
     god = StampedGodown7(stamps, TAGS, scan, count, gone, L_ + 1.0)
-    add('open-godown', t0, t1, Layered(god, [], vign=0.22), [
+    f0 = T['f01'][0] - t0
+    r0 = f0 - 0.5                            # the rule's overlay: its first frame, in the shot's time
+    rule = {'dur': round(L_ + 0.7 - r0, 3), 't0': round(a('f01', 'FSSAI') - t0 - 0.3 - r0, 3), 'thirty': round(a('f01', '30') - t0 - r0, 3),
+            'fortyFive': round(L_ - 0.55 - r0, 3), 'remain': round(L_ - 0.45 - r0, 3), 't1': round(L_ + 0.15 - r0, 3)}
+    add('open-godown', t0, t1, Layered(Defocus(god, 5.0, L_ + 0.6, f0 - 0.05, L_ + 0.1), [], vign=0.22), [
         Blackout(0.0, 0.7),
         RedPulse([u_w, u_o]),
         DateTicker(64, 52, 0.35, L_ + 0.3, count[0], count[1]),
         Statement(72, 580, [('1,580 packs.', 96, INK, u_k), ('22 days left.', 96, AMBER, u_sl),
                             (lambda u, u_t=u_t: money(roll(u, u_t, u_t + 0.4, 0, 22657.2)) + ' written off.', 96, RED, u_t)],
-                  'Munchly Mango Drink · one batch, MF-2410-118 · if nothing changes', u_sl + 0.2, L_ + 0.3, gap=108)])
+                  'Munchly Mango Drink · one batch, MF-2410-118 · if nothing changes', u_sl + 0.2, f0 - 0.1, gap=108),
+        PngSeq(FSSAI / 'rule', r0, [(r0 + rule['t0'], 'card'), (r0 + rule['thirty'] - 0.08, 'pop'), (r0 + rule['fortyFive'] - 0.08, 'pop'),
+                                    (r0 + rule['remain'], 'glint')])])
     S[-1].stamps = stamps
+    S[-1].fssai = rule
 
+    # the label: the camera rushes into the near stack's carton as "forty-five days" is said; its best-before ringed, and
+    # FSSAI's minimum drawn against the batch (Remotion's FssaiBatch): its 180-day shelf life, 22 days left, under both
     t0, t1 = t1, a('i13', 'destroyed') - 0.35
     L_ = t1 - t0
     lab = Still25D('o1b-carton-macro', z=(1.06, 1.2), pan=((0, 0), (0, 0)), dur=L_, focus=(0.49, 0.47), depth_k=0.35)
     boxes = json.loads((HERE / 'build' / 'labels' / 'MF-2410-118.boxes.json').read_text())
     LM = np.float32(json.loads((HERE / 'build' / 'labels' / 'o1b.json').read_text())['H'])
-    u_bb = max(0.15, a('i13', 'date') - t0 - 0.3)
+    batch = {'dur': round(L_ + 0.8, 3), 't0': 0.3, 'days': round(a('i13', '22') - t0, 3), 'quick': round(a('i13', 'quick') - t0, 3), 't1': round(L_ + 0.75, 3)}
     add('open-label', t0, t1, Layered(lab, [(fx.Dust(n=120, seed=21, strength=0.45), 0.8), (fx.Rays(1700, -140, strength=0.22, turn=0.015), 0.9)], vign=0.3), [
-        S7.LabelRings(lab, LM, boxes, [('bb', u_bb, L_ + 0.2, card('Best before 24 Oct 2026', 'Every carton carries its batch and its date.', ('proof', 'THE LABEL'), 400, 'a'))], card_at=(64, 560)),
-        Countdown(64, 712, u_bb + 0.05, L_ + 0.3, 60, 22, dur=0.7),
-        Sprite(chip_sprite('Too close for Blinkit, Zepto and Instamart', 'bad', 26), 64, 800, a('i13', 'quick') - t0 - 0.05, L_ + 0.3)],
+        S7.LabelRings(lab, LM, boxes, [('bb', a('i13') - t0 + 0.1, L_ + 0.2, card('Best before 24 Oct 2026', 'Every carton carries its batch and its date.', ('proof', 'THE LABEL'), 400, 'a'))], card_at=(64, 560)),
+        PngSeq(FSSAI / 'batch', 0.0, [(batch['t0'], 'card'), (batch['days'] - 0.2, 'move'), (batch['quick'] - 0.1, 'drop')])],
         xin='zoom', xd=0.6)
     S[-1].xpt = (1700, 560)     # cut 16: the camera rushes into the near stack's carton, and lands on its label
+    S[-1].fssai = batch
 
     t0, t1 = t1, T['i03'][0] - 0.45        # the iris opens on the lockup as the voice says its name
     L_ = t1 - t0
@@ -337,10 +356,11 @@ def build():
     # cut 16: "Today, we're going to demo two journeys, live on production: …": the title ("Two journeys, live on
     # production.") lands as the line begins; then the brand, the stamp, the two batches (its second "two"), the two
     # distributors (its third) and the paths, as before
+    # cut 17: the sad lane lands just after its word, its pops clear of it (they masked the word's 'd')
     S[-1].cues = {'x': a('x26') - t0, 'live': a('x26') - t0 + 0.12, 'production': a('x26', 'production') - t0, 'munchly': a('x26', 'Munchly') - t0,
                   'imaginary': a('x26', 'imaginary') - t0, 'brand': a('x26', 'brand') - t0, 'two': a('x26', 'two', 1) - t0, 'batches': a('x26', 'batches') - t0,
                   'different': a('x26', 'two', 2) - t0, 'distributors': a('x26', 'distributors') - t0, 'one': a('x26', 'One') - t0,
-                  'happy': a('x26', 'happy') - t0, 'sad': a('x26', 'sad') - t0, 'end': round(L_ + PUSH + 0.2, 3)}
+                  'happy': a('x26', 'happy') - t0, 'sad': a('x26', 'sad') - t0 + 0.3, 'end': round(L_ + PUSH + 0.2, 3)}
 
     # ======================================================== 3b · the landing page: two ways in, and Neha into the console (cut 15)
     t0, t1 = t1, T['k01'][0] - PRE['k01']
@@ -372,8 +392,9 @@ def build():
     # cut 16: Munchly Foods in the console, on the 16 Oct admin run (admin2): the clients (1215.5), Munchly opened on its
     # agents (935.0), its first stock export, 8 of 8 fields mapped (1005.8), its people (1068.6), its SKUs'
     # quick-commerce gates (980.0, before the chapter card at 981.6), its agents again (927.0): each span with no stage mark
+    # (cut 17: its people from 1068.85, the stage's dimming gone by 1068.8)
     segs = [(1215.5, 1216.9, 1.4), (935.0, 935.0 + b_[0] - 1.4, b_[0] - 1.4), (1005.8, 1005.8 + b_[1] - b_[0], b_[1] - b_[0]),
-            (1068.6, 1068.6 + b_[2] - b_[1], b_[2] - b_[1]), (980.0, 980.0 + b_[3] - b_[2], b_[3] - b_[2]), (927.0, 929.0, Lx - b_[3])]
+            (1068.85, 1068.85 + b_[2] - b_[1], b_[2] - b_[1]), (980.0, 980.0 + b_[3] - b_[2], b_[3] - b_[2]), (927.0, 929.0, Lx - b_[3])]
     cw = UrlWalk('admin2', 'A', segs, 600, 246, 0.66, 'smartclearance-console.web.app/clients', who=who(NEHA))
     st = [cw.seg_start(i, Lx) for i in range(len(segs))]
     cw.url_at = [(st[1], 'smartclearance-console.web.app/clients/munchly')]
@@ -447,7 +468,7 @@ def build():
         Ring(pw, (262, 425, 470, 162), u_cost, d1 - 0.05, accent='a', card=card('₹48,987 at stake, if both are destroyed', 'The stock, the disposal, EPR and the GST credit reversed.', ('live', 'THE BIN'), 600, 'a'), at=(64, 740)),
         PushOut(pw, 'detect', d1 + 0.15, d1 + 0.85, (64, 340), 600, d1 + d2 - 0.05, own=False, src=(716, 60, 348, 108)),
         PushOut(pw, 'detect-chips', d1 + 0.5, d1 + 1.15, (64, 520), 600, d1 + d2 - 0.05, own=False, src=(716, 176, 348, 108)),
-        Ring(pw, (246, 226, 488, 52), d1 + d2 + 0.1, min(u_mg - 0.15, d1 + d2 + 1.2)),
+        # cut 17: the flagged batches' row is no longer ringed: the voice reaches the Mango Drink 0.14 s after the page turns
         Ring(pw, (272, 386, 270, 190), min(u_mg - 0.05, d1 + d2 + 1.25), c1 - 0.05, accent='a', card=card('₹22,657 at stake · 22 days left', 'Munchly Mango Drink: blocked from Blinkit, Zepto and Instamart.', ('live', 'FLAGGED'), 600, 'a'), at=(64, 360)),
         Ring(pw, (272, 386, 270, 190), c1 + 0.05, L_ + 0.3, accent='a', card=card('₹26,330 at stake · 47 days left', 'Munchly Masala Chips: blocked from quick commerce too.', ('live', 'FLAGGED'), 600, 'a'), at=(64, 360)),
         TechTag('BigQuery', '28 days of sell-through, every morning', 0.6, d1),
@@ -486,9 +507,11 @@ def build():
     # -- approve: the Valuer prices each exit, the Router splits it, Priya's one tap
     t0, t1 = t1, a('m05') - 0.3
     L_ = t1 - t0
-    pw = PW('mango', [(162.0, 165.4), (171.8, 173.0), (177.2, 178.6), (180.2, 182.6), (199.4, 200.9), (209.4, 212.4)], WS + '/route/MF-2410-118')
+    # cut 17: from 163.2, held 2.9 s, so the plan card is awaiting approval (from 164.25) long enough to be read
+    pw = PW('mango', [(163.2, 165.4, 2.9), (171.8, 173.0), (177.2, 178.6), (180.2, 182.6), (199.4, 200.9), (209.4, 212.4)], WS + '/route/MF-2410-118')
     q = [pw.seg_start(i, L_ + PUSH) for i in range(6)]
     u_placed = pw.u_of(211.3, L_ + PUSH)
+    u_ready = pw.u_of(164.3, L_ + PUSH)
     r_split, r_yes = a('m04', 'router') - t0 - 0.15, a('m04', 'approves') - t0 - 0.2
     add('approve', t0, t1, room('priya', t0), [
         pw,
@@ -501,13 +524,16 @@ def build():
         PlanFlow(64, 330, r_split, L_ + 0.3, 'packs at risk', 1580,
                  [('52 kiranas', 'the scheme', 1372, (52, 211, 128)), ('Staff sale', 'at the godown', 150, (115, 201, 157)),
                   ('Feeding India', 'donated', 58, (247, 192, 74))], w=640, h=360),
-        Ring(pw, (240, 150, 560, 160), q[0] + 1.4, q[1] - 0.05, card=card('The plan is ready', 'Priced by the Valuer, split by the Router: net ₹16,917.', ('agent', 'ROUTER'), 400), at=(64, 830)),
-        Ring(pw, (660, 574, 398, 52), q[4] + 0.2, u_placed - 0.05, accent='a', card=card('Approve · release the agents', '₹16,917 net, against −₹22,657 in the bin.', ('result', 'ONE TAP'), 400, 'a'), at=(64, 830)),
+        # cut 17: the plan's figure (the stage's own ring round the card is painted out, parts17), then the amber ring
+        # follows the press: the Route Room's Review and approve, then the sheet's Approve
+        Ring(pw, (264, 418, 346, 114), u_ready, q[1] - 0.05, card=card('The plan is ready', 'Priced by the Valuer, split by the Router: net ₹16,917.', ('agent', 'ROUTER'), 400), at=(64, 830)),
+        Ring(pw, (852, 676, 204, 44), q[4] + 0.15, q[5] - 0.05, accent='a'),
+        Ring(pw, (660, 574, 398, 52), q[5] + 0.1, u_placed - 0.05, accent='a', card=card('Approve · release the agents', '₹16,917 net, against −₹22,657 in the bin.', ('result', 'ONE TAP'), 400, 'a'), at=(64, 830)),
         Ring(pw, (662, 150, 394, 590), u_placed + 0.05, L_ + 0.3, card=card('Plan placed', '₹22,194 better than the bin. The agents set off.', ('result', 'APPROVED'), 400), at=(64, 830)),
         TechTag('Gemini 3.1 Pro', 'prices, splits and explains', r_split - 0.2, L_ + 0.3, x=64, y=H - 74)], xin='push', xd=PUSH)
 
     # -- offer: the kirana gets the offer in Hindi and orders on her phone
-    t0, t1 = t1, a('m05', 'each') - 0.3
+    t0, t1 = t1, a('m05', 'and') - 0.3    # cut 17: "… each in their own language," over her phone, her screen played at 1.3x
     L_ = t1 - t0
     Lx = L_ + PUSH
     kw_ = HW('mango', [(240.4, 241.6), (244.9, 246.6), (246.8, 248.6), (249.2, 250.6)], WS + '/offer/MF-2410-118', KIRANA)
@@ -590,7 +616,7 @@ def build():
         Payments(RX - 10, 190, 0.5, L_ + 0.3, rows=12, every=0.12),
         Ring(lw, (110, 468, 705, 160), sg[2] + 0.1, sg[3] - 0.05,
              card=card('Vision read the receipt', '18 UPI payments, ₹1,200: it matches 150 packs at ₹8.', ('agent', 'VISION'), 600), at=(64, 820)),
-        Ring(lw, (40, 300, 780, 320), sg[3] + 0.3, L_ + 0.3)], xin='push', xd=PUSH)
+        Ring(lw, (108, 636, 706, 58), sg[3] + 0.1, L_ + 0.3)], xin='push', xd=PUSH)   # cut 17: Record the sale, as it is pressed
 
     # -- the donation: Feeding India collects, and its receipt
     t0, t1 = t1, a('m09') - 0.3
@@ -645,10 +671,15 @@ def build():
         Sprite(words_sprite(kicker='04 · SAD PATH · MUNCHLY MASALA CHIPS 150 G', width=900, kcolor='a'), 64, 24, 0.2, L_ + 0.3),
         head(64, 62, 0.3, L_ + 0.3, None, 'Not every batch sells.', width=600, hsize=46),
         PushOut(kw_, 'offer-ganesh', 0.3, 1.15, (64, 170), 600, L_ + 0.3),
-        Ring(kw_, (18, 236, 396, 350), sg[1] - 0.6, sg[2] + 0.6),
+        # cut 17: the rings follow the phone's own screens (it scrolls between them): his order (the packets, the
+        # totals and Order), then its confirmation; Om Sai's Not this time and the decline it records, then the offer
+        # as it now reads
+        Ring(kw_, (12, 362, 424, 420), sg[1] + 0.05, sg[2] - 0.05),
+        Ring(kw_, (12, 452, 424, 316), sg[2] + 0.05, sg[3] - 0.05),
         Sprite(card('Shree Ganesh Kirana orders 24', 'One of two shops: 24 packets, on the van round.', ('live', 'ORDER'), 600), 64, 360, sg[1] - 0.3, L_ + 0.3),
-        Ring(kw_, (18, 560, 396, 160), o0 + 0.2, L_ + 0.3, accent='a',
-             card=card('Om Sai Provision: not this time', '35 of 38 shops say no. The window stays open 48 hours.', ('result', 'DECLINED'), 600, 'a'), at=(64, 530)),
+        RingCard(kw_, (10, 752, 428, 128), o0 + 0.2, sg[4] - 0.05, accent='a', keep=L_ + 0.3,
+                 card=card('Om Sai Provision: not this time', '35 of 38 shops say no. The window stays open 48 hours.', ('result', 'DECLINED'), 600, 'a'), at=(64, 530)),
+        Ring(kw_, (12, 246, 424, 196), sg[4] + 0.05, L_ + 0.3, accent='a'),
         KiranaMap(RX, 200, RW, 420, 'nagpur', "RAKESH TRADERS' KIRANAS · NAGPUR", 'Kalamna Market godown', 0.3, L_ + 0.3, 0.5, sad_states(1.0, o0 + 1.4),
                   [(lambda u: '2 ordered · 48 packets' if u >= 1.6 else ' ', G), (lambda u, o=o0: f"{max(1, int(round(35 * clamp((u - 1.2) / (o + 1.2)))))} said not this time" if u >= 1.2 else ' ', RED),
                    (lambda u, o=o0: '1 never answered' if u >= o + 1.4 else ' ', (160, 170, 166))], seed=7),
@@ -687,19 +718,20 @@ def build():
         Ring(pw, (265, 348, 438, 120), 0.6, L_ + 0.3, card=card('540 packets stayed at the godown', 'Neha closed the window from the console: 48 of 588 ordered.', ('live', 'EXECUTION'), 420, 'a'), at=(64, 820))],
         xin='push', xd=PUSH)
 
-    # -- expiry day: Rakesh is asked to destroy them, and prove it
-    t0, t1 = t1, a('s05') - 0.3
+    # -- expiry day: Rakesh is asked to destroy them, and prove it (cut 17: to "prove it", the signing taking the rest)
+    t0, t1 = t1, a('s04', 'prove') - 0.15
     L_ = t1 - t0
     Lx = L_ + PUSH
-    rw = LW('sad', [(550.6, 552.4), (562.4, 563.1), (573.0, 574.6), (577.2, 579.8)], WS + '/home', RAKESH)   # 551.1: the push lands; 558.7-562.3: the stage's chapter chip
+    # cut 17: Today's step held 1.1 s, so its ring can be read
+    rw = LW('sad', [(550.6, 552.4), (562.4, 563.1, 1.1), (573.0, 574.6), (577.2, 579.8)], WS + '/home', RAKESH)   # 551.1: the push lands; 558.7-562.3: the stage's chapter chip
     sg = [rw.seg_start(i, Lx) for i in range(4)]
     add('destroy-ask', t0, t1, room('rakesh', t0), [
         rw,
         head(64, 52, 0.3, L_ + 0.3, 'EXPIRY DAY', 'Destroy them, and prove it.', width=600, hsize=46, stop=7),
         PushOut(rw, 'destroy', rw.u_of(551.1, Lx), rw.u_of(551.1, Lx) + 0.75, (64, 250), 600, L_ + 0.3, own=False, src=(437, 68, 393, 120)),
         Sprite(card("Settled by Munchly's policy", "Destroyed at the godown, against evidence: two photos, an authorised agency's certificate, and a second yes.", ('proof', 'THE RULE'), 600), 64, 560, 0.9, L_ + 0.3),
-        Ring(rw, (40, 330, 780, 120), sg[1] + 0.05, sg[2] - 0.05),
-        Ring(rw, (40, 520, 780, 120), sg[3] + 0.1, L_ + 0.3),
+        Ring(rw, (110, 534, 700, 76), sg[1] + 0.05, sg[2] - 0.05),      # cut 17: the step, Destroy 540 expired packs
+        Ring(rw, (110, 386, 702, 262), sg[3] + 0.1, L_ + 0.3),          # the two photos, whole
         ProofPlan(RX, 170, 0.4, L_ + 0.3, w=RW),
         TechTag('Cloud Scheduler', 'expiry day falls due on its own', 0.6, L_ + 0.3, x=64)], xin='push', xd=PUSH)
 
@@ -715,14 +747,17 @@ def build():
     ff_src = sum(b - a for a, b in FF)
     sign_segs = [(OFF[0], OFF[1], 0.85)] + [(a, b, 1.65 * (b - a) / ff_src) for a, b in FF]
     seg_ff = sum(d for _, _, d in sign_segs)
-    rw = LW('sad', [(574.3, 577.8, 3.0), (588.6, 590.8, 2.0)] + sign_segs
-            + [(656.0, 657.7, max(0.8, Lx - 3.0 - 2.0 - seg_ff))], WS + '/destroy/MF-2409-117', RAKESH)
+    # cut 17: the photos at 1.4x, so the signing keeps its 2.5 s and the certificate, signed by four (the pointer on
+    # Send, near still), holds what is left at about 1.25x; the shot now runs from "prove it" to Vision's line
+    rest = Lx - 2.5 - 1.6 - seg_ff
+    rw = LW('sad', [(574.3, 577.8, 2.5), (588.6, 590.8, 1.6)] + sign_segs
+            + [(656.0, 656.0 + 1.25 * rest, rest)], WS + '/destroy/MF-2409-117', RAKESH)
     q_ = [rw.seg_start(i, Lx) for i in range(len(rw.segs))]
     q = [q_[0], q_[1], q_[2], q_[2], q_[-1]]      # q[2]: the signing (the fast-forward) starts, q[4]: the certificate signed by four
     ff_all = (OFF[1] - OFF[0]) + ff_src
     before = photo_card(EVID / 'destruction-before-540-packs.webp', 290, 218, 16)
     after = photo_card(EVID / 'destruction-after-540-packs.webp', 290, 218, 16)
-    t_fly = q[4] + 0.15
+    t_fly = q[4] + 0.05
     add('sign', t0, t1, room('sign', t0), [
         rw,
         head(64, 52, 0.3, L_ + 0.3, 'SETTLE · AT THE LANDFILL', 'Photographed, then signed in place.', width=600, hsize=44, stop=7),
@@ -730,12 +765,12 @@ def build():
         Sprite(TX('Before · 540 packs, the batch slip', 'g', 17, 560, MUTED), 66, 478, 0.5, L_ + 0.3),
         Sprite(TX('After · at the landfill, the slate', 'g', 17, 560, MUTED), 376, 478, 0.75, L_ + 0.3),
         Badge(f'Fast-forward {ff_all / seg_ff:.0f}×', 1160, 150, q[3], q[4]),
-        Ring(rw, (40, 120, 780, 300), 0.2, q[1] - 0.05),
+        Ring(rw, (110, 386, 702, 262), 0.2, q[1] - 0.05),             # cut 17: the two photos, whole (as the shot before)
         Ring(rw, (146, 728, 634, 280), q[4] + 0.1, L_ + 0.3),
         Sprite(card('Orange City Enviro Services', 'An authorised agency: its officer and two independent witnesses sign with Rakesh.', ('proof', 'OCE/DC/26-27/0219'), 600), 64, 530, 1.0, L_ + 0.3),
         SignSlots(RX, 240, q[2], L_ + 0.3, w=RW),
-        ServiceBadge(RX, 600, 'database', 'Cloud SQL · the case record', 'sc.cases · four signatures, as strokes', q[2], L_ + 0.3, lands=(t_fly + 0.85,), w=RW),
-        DataFly(token_card('signature', '4 signatures', 'strokes, each with its time'), win_pt(rw, (146, 728, 634, 280)), (RX + 40, 638), t_fly, 0.85)],
+        ServiceBadge(RX, 600, 'database', 'Cloud SQL · the case record', 'sc.cases · four signatures, as strokes', q[2], L_ + 0.3, lands=(t_fly + 0.7,), w=RW),
+        DataFly(token_card('signature', '4 signatures', 'strokes, each with its time'), win_pt(rw, (146, 728, 634, 280)), (RX + 40, 638), t_fly, 0.7)],
         xin='push', xd=PUSH)
 
     # -- Vision checks the photos on Rakesh's tablet, then Priya's second yes
@@ -760,8 +795,10 @@ def build():
         AgentHead(64, 52, 0.3, L_ + 0.3, [(0.3, 'you', []), (y1 + 0.6, 'paperwork', [('docs.certificate', 'OCE/DC/26-27/0219', 'ok'), ('docs.expiry_credit', 'CN/0118 · ₹13,284', 'ok')])],
                   "Priya's second yes.", width=640, call_gap=0.6),
         Ring(pw, (655, 160, 405, 560), 0.3, y1 - 0.05, card=card('Both photos, four checks, four signatures', 'Only now can the papers be issued.', ('proof', 'REVIEW'), 420), at=(64, 330)),
-        Ring(pw, (790, 676, 262, 50), y1 + 0.05, y1 + 1.0, accent='a', card=card('Approve · issue the papers', 'Her second yes.', ('result', 'ONE TAP'), 400, 'a'), at=(64, 330)),
-        Ring(pw, (650, 160, 400, 560), y1 + 1.1, L_ + 0.3, card=card('Certificate and expiry credit note', 'OCE/DC/26-27/0219 · CN/0118 ₹13,284', ('proof', 'PAPERWORK'), 400), at=(64, 330)),
+        # cut 17: Approve held while it works (the sheet slides away at 721.9), then the papers on Execution, once it
+        # has gone: the expiry settlement, its credit and its paper
+        Ring(pw, (790, 676, 262, 50), y1 + 0.05, pw.u_of(721.8, L_ + PUSH), accent='a', card=card('Approve · issue the papers', 'Her second yes.', ('result', 'ONE TAP'), 400, 'a'), at=(64, 330)),
+        Ring(pw, (244, 148, 494, 248), pw.u_of(722.05, L_ + PUSH), L_ + 0.3, card=card('Certificate and expiry credit note', 'OCE/DC/26-27/0219 · CN/0118 ₹13,284', ('proof', 'PAPERWORK'), 400), at=(64, 330)),
         ChecksPanel(64, 520, 0.4, y1 + 0.2, L_ + 0.3, w=600),
         Push(pw, 'review', 0.25, 1.9),
         cs2 := ServiceBadge(64, 850, 'hard-drive', 'Cloud Storage · the papers', 'gs://aibuilder-510213-sc-docs-prod/munchly/MF-2409-117/', y1 + 0.9, L_ + 0.3, lands=(y1 + 2.15, y1 + 2.45)),
@@ -769,24 +806,49 @@ def build():
         DataFly(token_card('file-text', 'CN/0118.pdf', 'expiry credit note · ₹13,284'), win_pt(pw, (650, 420, 400, 260)), (104, 888), y1 + 1.6, 0.85)],
         xin='push', xd=PUSH)
 
-    # ======================================================== 7 · on the record: the audit trail, and one real trace
-    t0, t1 = t1, a('s08') - 0.3
+    # ======================================================== 7 · on the record: the audit trail, one real trace, the platform watching itself
+    # cut 17 (SC-228), on the maintainer's ask: SC-211's audit trail and board (the 7-minute landing film's), brought in
+    # with the record's line, which now names Cloud Monitoring too. Three beats on its words: the chips' steps stream on
+    # "every step is on the record", fold into the audit trail on "append-only audit trail in Cloud SQL" and are
+    # exported; the camera rushes into "Traced end to end" and lands on the label photo's production trace on "every
+    # request traced in Cloud Trace"; and the board's model call times out, alerted and recovered, on "Cloud Monitoring"
+    t0, t1 = t1, a('r01', 'and', 1) - 0.15
+    L_ = t1 - t0
+    add('trail', t0, t1, PageSeq(TRAIL), [
+        TechTag('Cloud SQL', 'an append-only audit trail', a('r01', 'Cloud') - t0 - 0.1, L_ + 0.3)], xin='push', xd=PUSH)
+    # its second round, slower: the steps stream from "every" to the breath after "record" (0.7 s), the camera draws back,
+    # and the trail folds into the audit trail on "audit trail"; Export CSV pressed on "Cloud SQL"
+    fold = a('r01', 'audit') - t0 - 0.35
+    S[-1].cues = {'which': round(a('r01', 'every') - t0 - 0.1, 3), 'back': round(fold - 0.85, 3),
+                  'fold': round(fold, 3), 'click': round(a('r01', 'SQL') - t0 + 0.15, 3), 'end': round(L_ + ZOOM + 0.3, 3)}
+
+    # its second round: the trace beside the app's own audit trail, as cut 16 had it (the maintainer's ask): Priya's
+    # Record of the chips (production, record2/), the label photo's row ringed and followed into its trace and its logs
+    t0, t1 = t1, a('r01', 'Cloud', 2) - 0.4
     L_ = t1 - t0
     rec = Seqs([HERE / 'build' / 'record2'], scale=0.5)
-    rw_ = Window(None, None, [(1.9, 4.88, 2.4), (4.88, 11.28)], 96, 214, 0.78, WS + '/record/MF-2409-117', seq=rec, enter=False)
-    u_sql, u_tr = a('r01', 'Cloud') - t0 - 0.1, a('r01', 'requests') - t0 - 0.25
-    ua = max(u_sql - 1.0, 2.5)
+    rw_ = Window(None, None, [(5.6, 5.6 + L_ + ZOOM)], 96, 214, 0.78, WS + '/record/MF-2409-117', seq=rec, enter=False)
+    u_ln = 0.75
     add('audit', t0, t1, room('priya-eve', t0), [
-        head(64, 60, 0.2, L_ + 0.3, 'ON THE RECORD', 'Every step, every yes.', width=700, hsize=44),
+        head(64, 60, 0.15, L_ + 0.3, 'TRACED END TO END', 'Every request, traced.', width=700, hsize=44),
         rw_,
-        Ring(rw_, (272, 120, 892, 700), ua, u_tr - 0.15, card=card('63 steps · 3 yeses, in their names', "Every agent's run, every person's step and every yes, append-only, in Cloud SQL.", ('proof', 'AUDIT TRAIL'), 420), at=(1100, 420)),
-        Ring(rw_, (290, 436, 500, 52), u_tr - 0.1, L_ + 0.3),
-        TraceLink(rw_, (790, 462), u_tr + 0.1, L_ + 0.3, (1080, 300), elbow=1048),
-        ServiceBadge(1100, 200, 'database', 'Cloud SQL · the audit log', 'sc.audit_log · append-only, by grants and triggers', 0.4, u_tr - 0.1, w=760),
-        TracePanel(1100, 176, u_tr, u_tr + 0.4, L_ + 0.3, w=760),
-        LogPanel(1100, 786, u_tr + 2.4, L_ + 0.3, w=760),
-        TechTag('Cloud SQL', 'an append-only audit trail', u_sql, u_tr),
-        TechTag('Cloud Trace', 'OpenTelemetry, from the tap to the model', u_tr + 0.3, L_ + 0.3)], xin='push', xd=PUSH)
+        Ring(rw_, (290, 436, 500, 52), u_ln, L_ + 0.3),
+        TraceLink(rw_, (790, 462), u_ln + 0.3, L_ + 0.3, (1080, 300), elbow=1048),
+        TracePanel17(1100, 176, u_ln + 0.35, u_ln + 0.7, L_ + 0.4, w=760, play=2.2),
+        LogPanel(1100, 786, u_ln + 2.1, L_ + 0.4, w=760, gap=0.25),
+        TechTag('Cloud Trace', 'OpenTelemetry, from the tap to the model', 0.5, L_ + 0.3)], xin='zoom', xd=ZOOM)
+    S[-2].t1 = max(S[-2].t1, t0 + ZOOM)
+    S[-1].xpt = TRACED_PILL      # the rush into the audit trail's "Traced end to end"
+
+    t0, t1 = t1, a('s08') - 0.3
+    L_ = t1 - t0
+    add('ops', t0, t1, PageSeq(OPS), [
+        TechTag('Cloud Monitoring', 'alerts the platform team, with the trace', a('r01', 'monitoring') - t0 - 0.1, L_ + 0.3, x=48)],
+        xin='wipe', xd=0.5)
+    S[-1].cues = {'platform': 0.2, 'watches': round(a('r01', 'watches') - t0, 3), 'service': round(a('r01', 'watches') - t0 + 0.3, 3),
+                  'measured': round(a('r01', 'watches') - t0 + 0.05, 3), 'live': round(a('r01', 'all') - t0, 3),
+                  'failure': round(a('r01', 'alerts') - t0 - 0.05, 3), 'alerted': round(a('r01', 'moment') - t0, 3),
+                  'ask': round(L_ + 2.0, 3), 'end': round(L_ + 0.8, 3)}   # the calm after the cut: the alert and its recovery hold to it
 
     # ======================================================== 8 · the chips' swing, and Impact's ledger
     t0, t1 = t1, a('m11') - 0.3
@@ -810,7 +872,8 @@ def build():
                   'The ledger, ready for BRSR.', width=640, call_gap=1.0),
         KiloBars(64, 330, 0.5, L_ + 0.3),
         Ring(iw, (240, 248, 420, 74), q[0] + 0.1, q[1] - 0.05),
-        Ring(iw, (252, 120, 780, 300), q[2] + 0.1, L_ + 0.3, accent='a', card=card('Ready for BRSR', "Each batch's own line: kilos kept, destroyed, its evidence.", ('proof', 'BRSR'), 600, 'a'), at=(64, 728)),
+        # cut 17: the BRSR line and the kilos kept out, not the head and its tabs (the stage's ring on "BRSR line" painted out, parts17)
+        Ring(iw, (246, 230, 820, 190), q[2] + 0.1, L_ + 0.3, accent='a', card=card('Ready for BRSR', "Each batch's own line: kilos kept, destroyed, its evidence.", ('proof', 'BRSR'), 600, 'a'), at=(64, 728)),
         ServiceBadge(64, 880, 'database', 'BigQuery · the impact ledger', 'smartclearance.impact_ledger · a row per exit', a('m11', 'BigQuery') - t0 - 0.6, L_ + 0.3,
                      lands=(a('m11', 'BigQuery') - t0 + 0.75,)),
         DataFly(token_card('database', 'MF-2409-117 · ₹11,702', '131.2 kg kept out of landfill'), win_pt(iw, (240, 248, 420, 74)), (104, 918), a('m11', 'BigQuery') - t0 - 0.1, 0.85)], xin='push', xd=PUSH)
@@ -859,7 +922,11 @@ if __name__ == '__main__':
     for s_ in sh:
         print(f'{s_.name:14} {s_.t0:7.2f} {s_.t1:7.2f}  {s_.t1 - s_.t0:5.2f}s  in:{s_.xin}')
     print('END', END)
-    for name, key in (('saas', 'saas10'), ('arch', 'arch13'), ('cast', 'cast16'), ('install', 'pwa9')):
+    for name, key in (('saas', 'saas10'), ('arch', 'arch13'), ('cast', 'cast16'), ('install', 'pwa9'), ('trail', 'audit17'), ('ops', 'ops17')):
         sh_ = next(x for x in sh if x.name == name)
         (HERE / 'build' / f'{key}-cues.json').write_text(json.dumps({k: round(v, 3) for k, v in sh_.cues.items()}))
         print(f'{key} cues ->', sh_.cues.get('end'))
+    # cut 17: the props FSSAI's two overlays are rendered from (remo12, FssaiRule and FssaiBatch)
+    (HERE / 'build' / 'fssai17-rule.json').write_text(json.dumps(sh[0].fssai))
+    (HERE / 'build' / 'fssai17-batch.json').write_text(json.dumps(sh[1].fssai))
+    print('fssai props ->', sh[0].fssai, sh[1].fssai)

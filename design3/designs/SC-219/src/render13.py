@@ -98,15 +98,17 @@ def compose(kind, a, b, p, d=1, pt=None):
     if kind == 'zoom':
         # cut 16: a zoom-through. The camera rushes into a point of the outgoing shot (accelerating, the light rising),
         # the incoming lands out of that light and settles from a little larger; scaled whole, never blurred
+        # SC-228 (cut 17): the light holds at its peak from p 0.44 to 0.56, the shots changing under it, so it is a light
+        # and never a one-frame blink, whatever frame the midpoint falls on (the record's zoom peaked on one frame)
         px, py = pt or (W / 2, H / 2)
         if p < 0.5:
             q = p / 0.5
             out = _scale_about(a, 1 + 1.7 * q ** 2.4, (px, py))
-            fl = 0.82 * q ** 3
+            fl = 0.82 * min(1.0, p / 0.44) ** 3
         else:
             r = (p - 0.5) / 0.5
             out = _scale_about(b, 1.2 - 0.2 * (1 - (1 - r) ** 3), (W / 2, H / 2))
-            fl = 0.82 * (1 - r) ** 2.4
+            fl = 0.82 * (1 - max(0.0, (p - 0.56) / 0.44)) ** 2.4
         return np.clip(out * (1 - fl) + FLASH * fl, 0, 1)
     if kind == 'pull':
         # cut 16: the outgoing shot shrinks into a card that drops into the incoming one at pt (the label falls into the

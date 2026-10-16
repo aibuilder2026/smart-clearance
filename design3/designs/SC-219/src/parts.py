@@ -25,21 +25,48 @@ def _norm(w):
 # a pause inside a line (lines.json "pause": [[word, seconds]]): the take is cut after that word, in the breath before
 # the next, and the silence added; the line's length and its later words' times move with it (mix.voice cuts the audio)
 # SC-225: a negative pause tightens one: that much of the silence is cut round its middle (never more than the silence)
+# SC-228: every cut is placed on the take's own word times (mix.voice cuts the take as it was read), never on times a
+# pause before it has already moved: u02's second pause had been cut 0.55 s into "as" ("Cloud SQL a… s the record")
+# SC-228, round 2: Whisper's word times run up to 0.4 s late on Gemini's takes, so a pause cut between them could land
+# in speech ("Cloud SQL, and" was cut at -10 dB, a click into "SQL"'s tail). A pause now goes into the take's own
+# silence: the middle of the longest run under -45 dB from its word's start to just past the next word, the words after
+# it moving by their place in the line; and its word is matched exactly first ("Trace" had matched "traced")
+def _silence(lid, a, b):
+    import soundfile as _sf
+    x, sr = _sf.read(TAKE / f'{lid}.wav', dtype='float32')
+    x = x if x.ndim == 1 else x.mean(1)
+    h = int(sr * 0.01)
+    db = 20 * np.log10(np.sqrt(np.square(x[:len(x) // h * h]).reshape(-1, h).mean(1)) + 1e-9)
+    i0, i1 = max(0, int(a * 100)), min(len(db), int(b * 100))
+    best, run = None, None
+    for i in range(i0, i1):
+        if db[i] < -45:
+            run = (run[0], i) if run else (i, i)
+            if best is None or run[1] - run[0] > best[1] - best[0]: best = run
+        else:
+            run = None
+    if best is None: return (i0 + int(np.argmin(db[i0:i1]))) / 100 + 0.005
+    return (best[0] + best[1] + 1) / 200
+
 PAUSE = {}
 for _l in LINES:
+    _ws0 = ASR.get(_l['id'], {}).get('words')
     for _w, _add in _l.get('pause', []):
-        _ws = ASR.get(_l['id'], {}).get('words')
-        if _ws:
-            _k = next(i for i, w in enumerate(_ws) if _norm(w['w']).startswith(_norm(_w)))
-            _cut = (_ws[_k]['e'] + _ws[_k + 1]['s']) / 2 if _k + 1 < len(_ws) else _ws[_k]['e']
-            assert _add >= 0 or (_k + 1 < len(_ws) and -_add < _ws[_k + 1]['s'] - _ws[_k]['e'] - 0.04), f"{_l['id']}: a pause can't be cut past its silence"
-            ASR[_l['id']] = dict(ASR[_l['id']], words=[dict(w, s=w['s'] + _add, e=w['e'] + _add) if w['s'] >= _cut else w for w in _ws])
+        if _ws0:
+            _k = next((i for i, w in enumerate(_ws0) if _norm(w['w']) == _norm(_w)), None)
+            if _k is None: _k = next(i for i, w in enumerate(_ws0) if _norm(w['w']).startswith(_norm(_w)))
+            _cut = (_ws0[_k]['e'] + _ws0[_k + 1]['s']) / 2 if _k + 1 < len(_ws0) else _ws0[_k]['e']
+            assert _add >= 0 or (_k + 1 < len(_ws0) and -_add < _ws0[_k + 1]['s'] - _ws0[_k]['e'] - 0.04), f"{_l['id']}: a pause can't be cut past its silence"
+            if _add >= 0 and _k + 1 < len(_ws0) and (TAKE / f"{_l['id']}.wav").exists():
+                _cut = _silence(_l['id'], _ws0[_k]['s'], _ws0[_k + 1]['e'] + 0.2)
+            _cur = ASR[_l['id']]['words']
+            ASR[_l['id']] = dict(ASR[_l['id']], words=[dict(w, s=w['s'] + _add, e=w['e'] + _add) if i > _k else w for i, w in enumerate(_cur)])
         else:
             _cut = None
         PAUSE.setdefault(_l['id'], []).append((_cut, _add))
         DUR[_l['id']] = DUR[_l['id']] + _add
 LEAD, HOLD = 0.4, 0.08  # cut 10: the voice starts half a second in (cut 15: 0.4); cut 11: the close condensed; cut 15: the card 1.5 s, its line said over it (the QR code is up from its first)
-PRE = {'i03': 0.35, 't01': 0.15, 'x26': 0.15, 'n15': 0.1, 'k01': 0.25, 'q01': 0.5, 'm03': 0.4, 's01': 1.05, 'r01': 0.5}   # cut 9: a beat before the brand, under the hood, the live demo (cut 15: 0.15), the landing page (cut 15), the console, Priya's sign-in, the happy path's first step, the sad path and the record
+PRE = {'i03': 0.35, 't01': 0.15, 'x26': 0.15, 'n15': 0.1, 'k01': 0.25, 'q01': 0.35, 'm03': 0.3, 's01': 0.8, 'r01': 0.5}   # cut 9: a beat before the brand, under the hood, the live demo (cut 15: 0.15), the landing page (cut 15), the console, Priya's sign-in, the happy path's first step, the sad path and the record
 T = {}
 _t = LEAD
 for _l in LINES:

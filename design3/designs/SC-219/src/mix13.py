@@ -271,6 +271,16 @@ def _mix2(a, b):
     out = np.zeros(max(len(a), len(b)), np.float32); out[:len(a)] += a; out[:len(b)] += b; return out
 
 
+def alarm(level=-26):
+    """an alert: two soft two-tone beeps (SC-211's mix11, for its board in cut 17)"""
+    out = np.zeros(int(0.9 * SR), np.float32)
+    for k, f in enumerate([880.0, 660.0, 880.0, 660.0]):
+        n = int(0.14 * SR); t = np.arange(n) / SR
+        y = np.sin(2 * np.pi * f * t) * np.sin(np.pi * t / t[-1]) ** 0.6
+        i = int(k * 0.19 * SR); out[i:i + n] += y
+    return (out / (np.abs(out).max() + 1e-6) * db(level)).astype(np.float32)
+
+
 ROW_P = [1046.5, 1174.66, 1318.5, 1567.98, 1760.0]
 ARCH13_SOUND = {     # cut 13's architecture: the screens' own sounds beside the 3D scene's
     'win': lambda r: _mix2(whoosh(r, 0.42, 0.42, -31, 0.05, 0.35), pop(-33)).view(Air),
@@ -298,6 +308,9 @@ PAGE_SOUND = {
     'move': lambda r: whoosh(r, 0.7, 0.45, -31, 0.03, 0.35).view(Air), 'rise': lambda r: riser(r, 0.8, -29).view(Air),
     'impact': lambda r: boom(1.8, -22, 62.0, 38.0), 'stamp': lambda r: thud(-18),
     'land': lambda r: land(-29),   # cut 12: the call arriving at the API
+    # cut 17: SC-211's audit trail and board (audit17, ops17), as mix11 voiced them
+    'log': lambda r: tick(-35, 1760.0), 'logyes': lambda r: chime(-30, ((1174.66, 0.0), (1567.98, 0.07))),
+    'riser': lambda r: riser(r, 1.0, -30).view(Air), 'alarm': lambda r: alarm(-25), 'chime': lambda r: chime(-27),
 }
 
 
@@ -351,8 +364,6 @@ def sfx():
         if isinstance(it, P7_.Statement):
             for j, ln_ in enumerate(it.lines): lay(thud(-27 + j), og.t0 + ln_[3], pan=0.35)
     lay(boom(0.6, -24, 110.0, 60.0), lab.t0 + lab.xd / 2, pan=0.5)
-    for it in lab.items:
-        if type(it).__name__ == 'Countdown': lay(glint(-31), lab.t0 + it.u0, pan=0.3)
     ol = sh['open-landfill']
     for it in ol.items:
         if isinstance(it, P6_.CostStack):
@@ -366,7 +377,7 @@ def sfx():
             for i, r in enumerate(it.rows): lay(tick(-31, 587 * 2 ** (-i * 2 / 12)), ol.t0 + r[3] + 0.02, pan=0.7)
             lay(glint(-34), ol.t0 + it.u_foot + 0.05, pan=0.75)
     # the scene pages: their own events (what it is, under the hood, the live demo's two paths and its people, the install)
-    for name, folder in (('saas', S_.SAAS), ('arch', S_.ARCH), ('cast', S_.CAST), ('install', S_.PWA)):
+    for name, folder in (('saas', S_.SAAS), ('arch', S_.ARCH), ('cast', S_.CAST), ('install', S_.PWA), ('trail', S_.TRAIL), ('ops', S_.OPS)):
         sp = sh[name]
         for e in json.loads((folder / 'events.json').read_text()):
             kind = e.get('type') or e.get('kind')
@@ -383,6 +394,8 @@ def sfx():
                     if j > 0: lay(tick(-31, 1046 + 70 * j), s.t0 + ub, pan=0.25)
                     for i in range(len(calls)): lay(tick(-36, 1568), s.t0 + ub + 0.35 + i * it.call_gap, pan=0.2)
             if isinstance(it, P5_.TechTag): lay(glint(-37), s.t0 + it.u0 + 0.05, pan=0.8)
+            if type(it).__name__ == 'PngSeq':   # cut 17: FSSAI's overlays, each moment its sound
+                for u_, kind in it.sounds: lay(PAGE_SOUND[kind](rnd), s.t0 + u_, pan=0.4)
             if isinstance(it, P4_.Checklist):
                 for k, (_, _, u0) in enumerate(it.items): lay(tick(-30, 990 + 120 * k), s.t0 + u0 + 0.12, pan=0.35)
             if isinstance(it, P9_.TrackList):
@@ -473,11 +486,23 @@ def sfx():
     return out, air
 
 
+DUCK = {'m11': -4.0}
+
+
 def main():
     preview = '--preview' in sys.argv
     vo_raw, vo = M.voice(); env = M.envelope(vo_raw)
     hits, air = sfx()
-    mix = vo + M.music(env) + hits * (1 - 0.3 * env)[:, None] + air * (1 - 0.82 * env)[:, None]
+    mus = M.music(env)
+    # SC-228 (cut 17): the bed further down under a line it crowded: m11 ("Impact posts every batch …"), 6.6 dB under
+    # the voice on "posts" where the film's median is 13.6, read back as "hosts"; 4 dB more there, ramped over 0.3 s
+    for lid, extra in DUCK.items():
+        t0, t1 = P_.T[lid][0] - 0.3, P_.T[lid][1] + 0.2
+        k = np.ones(len(mus), np.float32); a, b = int(t0 * SR), int(t1 * SR); r = int(0.3 * SR)
+        k[a:b] = M.db(extra)
+        k[a - r:a] = np.linspace(1, M.db(extra), r); k[b:b + r] = np.linspace(M.db(extra), 1, r)
+        mus = mus * k[:, None]
+    mix = vo + mus + hits * (1 - 0.3 * env)[:, None] + air * (1 - 0.82 * env)[:, None]
     pre = B / 'mix13-pre.wav'; sf.write(pre, mix.astype(np.float32), SR, subtype='FLOAT')
     r = run(['ffmpeg', '-hide_banner', '-y', '-i', str(pre), '-af', 'loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json', '-f', 'null', '-'])
     m = json.loads(re.findall(r'\{[^{}]*\}', r.stderr)[-1])
