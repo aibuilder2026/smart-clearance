@@ -20064,456 +20064,6 @@
    }
   ]
  },
- "b91-0.wav": {
-  "text": "Agentic Software as a service for the FMCG supply chain, brands, distributors and retailers.",
-  "words": [
-   {
-    "w": "Agentic",
-    "s": 0.0,
-    "e": 0.54
-   },
-   {
-    "w": "Software",
-    "s": 0.54,
-    "e": 0.98
-   },
-   {
-    "w": "as",
-    "s": 0.98,
-    "e": 1.42
-   },
-   {
-    "w": "a",
-    "s": 1.42,
-    "e": 1.54
-   },
-   {
-    "w": "service",
-    "s": 1.54,
-    "e": 1.92
-   },
-   {
-    "w": "for",
-    "s": 1.92,
-    "e": 2.18
-   },
-   {
-    "w": "the",
-    "s": 2.18,
-    "e": 2.34
-   },
-   {
-    "w": "FMCG",
-    "s": 2.34,
-    "e": 3.28
-   },
-   {
-    "w": "supply",
-    "s": 3.28,
-    "e": 3.72
-   },
-   {
-    "w": "chain,",
-    "s": 3.72,
-    "e": 4.16
-   },
-   {
-    "w": "brands,",
-    "s": 4.42,
-    "e": 4.96
-   },
-   {
-    "w": "distributors",
-    "s": 5.28,
-    "e": 6.14
-   },
-   {
-    "w": "and",
-    "s": 6.14,
-    "e": 6.46
-   },
-   {
-    "w": "retailers.",
-    "s": 6.46,
-    "e": 7.0
-   }
-  ]
- },
- "b91-1.wav": {
-  "text": "Agentic Software as a Service for the FMCG Supply Chain Brands, Distributors and Retailers",
-  "words": [
-   {
-    "w": "Agentic",
-    "s": 0.0,
-    "e": 0.52
-   },
-   {
-    "w": "Software",
-    "s": 0.52,
-    "e": 0.98
-   },
-   {
-    "w": "as",
-    "s": 0.98,
-    "e": 1.38
-   },
-   {
-    "w": "a",
-    "s": 1.38,
-    "e": 1.52
-   },
-   {
-    "w": "Service",
-    "s": 1.52,
-    "e": 1.88
-   },
-   {
-    "w": "for",
-    "s": 1.88,
-    "e": 2.14
-   },
-   {
-    "w": "the",
-    "s": 2.14,
-    "e": 2.3
-   },
-   {
-    "w": "FMCG",
-    "s": 2.3,
-    "e": 3.18
-   },
-   {
-    "w": "Supply",
-    "s": 3.18,
-    "e": 3.66
-   },
-   {
-    "w": "Chain",
-    "s": 3.66,
-    "e": 3.96
-   },
-   {
-    "w": "Brands,",
-    "s": 3.96,
-    "e": 5.08
-   },
-   {
-    "w": "Distributors",
-    "s": 5.16,
-    "e": 6.1
-   },
-   {
-    "w": "and",
-    "s": 6.1,
-    "e": 6.38
-   },
-   {
-    "w": "Retailers",
-    "s": 6.38,
-    "e": 7.06
-   }
-  ]
- },
- "b91-2.wav": {
-  "text": "Agentic Software as a service for the FMCG supply chain. Brands, distributors and retailers.",
-  "words": [
-   {
-    "w": "Agentic",
-    "s": 0.0,
-    "e": 0.56
-   },
-   {
-    "w": "Software",
-    "s": 0.56,
-    "e": 1.0
-   },
-   {
-    "w": "as",
-    "s": 1.0,
-    "e": 1.48
-   },
-   {
-    "w": "a",
-    "s": 1.48,
-    "e": 1.6
-   },
-   {
-    "w": "service",
-    "s": 1.6,
-    "e": 1.98
-   },
-   {
-    "w": "for",
-    "s": 1.98,
-    "e": 2.2
-   },
-   {
-    "w": "the",
-    "s": 2.2,
-    "e": 2.34
-   },
-   {
-    "w": "FMCG",
-    "s": 2.34,
-    "e": 3.2
-   },
-   {
-    "w": "supply",
-    "s": 3.2,
-    "e": 3.62
-   },
-   {
-    "w": "chain.",
-    "s": 3.62,
-    "e": 4.02
-   },
-   {
-    "w": "Brands,",
-    "s": 4.32,
-    "e": 5.12
-   },
-   {
-    "w": "distributors",
-    "s": 5.26,
-    "e": 6.2
-   },
-   {
-    "w": "and",
-    "s": 6.2,
-    "e": 6.5
-   },
-   {
-    "w": "retailers.",
-    "s": 6.5,
-    "e": 6.94
-   }
-  ]
- },
- "b91-3.wav": {
-  "text": "Agentic Software as a service for the FMCG supply chain, brands, distributors and retailers.",
-  "words": [
-   {
-    "w": "Agentic",
-    "s": 0.0,
-    "e": 0.58
-   },
-   {
-    "w": "Software",
-    "s": 0.58,
-    "e": 1.04
-   },
-   {
-    "w": "as",
-    "s": 1.04,
-    "e": 1.48
-   },
-   {
-    "w": "a",
-    "s": 1.48,
-    "e": 1.62
-   },
-   {
-    "w": "service",
-    "s": 1.62,
-    "e": 2.04
-   },
-   {
-    "w": "for",
-    "s": 2.04,
-    "e": 2.3
-   },
-   {
-    "w": "the",
-    "s": 2.3,
-    "e": 2.48
-   },
-   {
-    "w": "FMCG",
-    "s": 2.48,
-    "e": 3.44
-   },
-   {
-    "w": "supply",
-    "s": 3.44,
-    "e": 3.84
-   },
-   {
-    "w": "chain,",
-    "s": 3.84,
-    "e": 4.28
-   },
-   {
-    "w": "brands,",
-    "s": 4.52,
-    "e": 5.16
-   },
-   {
-    "w": "distributors",
-    "s": 5.54,
-    "e": 6.42
-   },
-   {
-    "w": "and",
-    "s": 6.42,
-    "e": 6.72
-   },
-   {
-    "w": "retailers.",
-    "s": 6.72,
-    "e": 7.28
-   }
-  ]
- },
- "b91-4.wav": {
-  "text": "Agentic Software as a service for the FMCG supply chain, brands, distributors, and retailers.",
-  "words": [
-   {
-    "w": "Agentic",
-    "s": 0.0,
-    "e": 0.5
-   },
-   {
-    "w": "Software",
-    "s": 0.5,
-    "e": 0.92
-   },
-   {
-    "w": "as",
-    "s": 0.92,
-    "e": 1.58
-   },
-   {
-    "w": "a",
-    "s": 1.58,
-    "e": 1.72
-   },
-   {
-    "w": "service",
-    "s": 1.72,
-    "e": 2.08
-   },
-   {
-    "w": "for",
-    "s": 2.08,
-    "e": 2.3
-   },
-   {
-    "w": "the",
-    "s": 2.3,
-    "e": 2.46
-   },
-   {
-    "w": "FMCG",
-    "s": 2.46,
-    "e": 3.28
-   },
-   {
-    "w": "supply",
-    "s": 3.28,
-    "e": 3.68
-   },
-   {
-    "w": "chain,",
-    "s": 3.68,
-    "e": 4.1
-   },
-   {
-    "w": "brands,",
-    "s": 4.44,
-    "e": 5.06
-   },
-   {
-    "w": "distributors,",
-    "s": 5.54,
-    "e": 6.3
-   },
-   {
-    "w": "and",
-    "s": 6.48,
-    "e": 6.76
-   },
-   {
-    "w": "retailers.",
-    "s": 6.76,
-    "e": 7.24
-   }
-  ]
- },
- "b91-5.wav": {
-  "text": "Agentic Software as a Service for the FMCG supply chain, brands, distributors and retailers.",
-  "words": [
-   {
-    "w": "Agentic",
-    "s": 0.0,
-    "e": 0.6
-   },
-   {
-    "w": "Software",
-    "s": 0.6,
-    "e": 1.08
-   },
-   {
-    "w": "as",
-    "s": 1.08,
-    "e": 1.5
-   },
-   {
-    "w": "a",
-    "s": 1.5,
-    "e": 1.66
-   },
-   {
-    "w": "Service",
-    "s": 1.66,
-    "e": 2.04
-   },
-   {
-    "w": "for",
-    "s": 2.04,
-    "e": 2.3
-   },
-   {
-    "w": "the",
-    "s": 2.3,
-    "e": 2.46
-   },
-   {
-    "w": "FMCG",
-    "s": 2.46,
-    "e": 3.48
-   },
-   {
-    "w": "supply",
-    "s": 3.48,
-    "e": 3.9
-   },
-   {
-    "w": "chain,",
-    "s": 3.9,
-    "e": 4.3
-   },
-   {
-    "w": "brands,",
-    "s": 4.58,
-    "e": 5.22
-   },
-   {
-    "w": "distributors",
-    "s": 5.42,
-    "e": 6.32
-   },
-   {
-    "w": "and",
-    "s": 6.32,
-    "e": 6.62
-   },
-   {
-    "w": "retailers.",
-    "s": 6.62,
-    "e": 7.12
-   }
-  ]
- },
  "p02-0.wav": {
   "text": "The workspace installs as an app on any laptop, tablet or phone.",
   "words": [
@@ -30736,6 +30286,366 @@
     "w": "writes.",
     "s": 5.66,
     "e": 5.96
+   }
+  ]
+ },
+ "b91-0.wav": {
+  "text": "Agentic Software as a service for FMCG brands, distributors and retailers.",
+  "words": [
+   {
+    "w": "Agentic",
+    "s": 0.0,
+    "e": 0.52
+   },
+   {
+    "w": "Software",
+    "s": 0.52,
+    "e": 0.94
+   },
+   {
+    "w": "as",
+    "s": 0.94,
+    "e": 1.3
+   },
+   {
+    "w": "a",
+    "s": 1.3,
+    "e": 1.42
+   },
+   {
+    "w": "service",
+    "s": 1.42,
+    "e": 1.8
+   },
+   {
+    "w": "for",
+    "s": 1.8,
+    "e": 2.12
+   },
+   {
+    "w": "FMCG",
+    "s": 2.12,
+    "e": 3.24
+   },
+   {
+    "w": "brands,",
+    "s": 3.24,
+    "e": 3.76
+   },
+   {
+    "w": "distributors",
+    "s": 4.2,
+    "e": 4.92
+   },
+   {
+    "w": "and",
+    "s": 4.92,
+    "e": 5.18
+   },
+   {
+    "w": "retailers.",
+    "s": 5.18,
+    "e": 5.66
+   }
+  ]
+ },
+ "b91-1.wav": {
+  "text": "Egentic Software as a Service for FMCG Brands, Distributors and Retailers.",
+  "words": [
+   {
+    "w": "Egentic",
+    "s": 0.0,
+    "e": 0.62
+   },
+   {
+    "w": "Software",
+    "s": 0.62,
+    "e": 1.06
+   },
+   {
+    "w": "as",
+    "s": 1.06,
+    "e": 1.44
+   },
+   {
+    "w": "a",
+    "s": 1.44,
+    "e": 1.58
+   },
+   {
+    "w": "Service",
+    "s": 1.58,
+    "e": 2.06
+   },
+   {
+    "w": "for",
+    "s": 2.06,
+    "e": 2.64
+   },
+   {
+    "w": "FMCG",
+    "s": 2.64,
+    "e": 3.58
+   },
+   {
+    "w": "Brands,",
+    "s": 3.58,
+    "e": 4.18
+   },
+   {
+    "w": "Distributors",
+    "s": 4.28,
+    "e": 5.24
+   },
+   {
+    "w": "and",
+    "s": 5.24,
+    "e": 5.5
+   },
+   {
+    "w": "Retailers.",
+    "s": 5.5,
+    "e": 6.24
+   }
+  ]
+ },
+ "b91-2.wav": {
+  "text": "Agentic Software as a Service for FMCG Brands, Distributors and Retailers.",
+  "words": [
+   {
+    "w": "Agentic",
+    "s": 0.0,
+    "e": 0.54
+   },
+   {
+    "w": "Software",
+    "s": 0.54,
+    "e": 0.94
+   },
+   {
+    "w": "as",
+    "s": 0.94,
+    "e": 1.46
+   },
+   {
+    "w": "a",
+    "s": 1.46,
+    "e": 1.62
+   },
+   {
+    "w": "Service",
+    "s": 1.62,
+    "e": 2.02
+   },
+   {
+    "w": "for",
+    "s": 2.02,
+    "e": 2.64
+   },
+   {
+    "w": "FMCG",
+    "s": 2.64,
+    "e": 3.64
+   },
+   {
+    "w": "Brands,",
+    "s": 3.64,
+    "e": 4.22
+   },
+   {
+    "w": "Distributors",
+    "s": 4.36,
+    "e": 5.34
+   },
+   {
+    "w": "and",
+    "s": 5.34,
+    "e": 5.7
+   },
+   {
+    "w": "Retailers.",
+    "s": 5.7,
+    "e": 6.42
+   }
+  ]
+ },
+ "b91-3.wav": {
+  "text": "Agentic Software as a service for FMCG brands, distributors and retailers.",
+  "words": [
+   {
+    "w": "Agentic",
+    "s": 0.0,
+    "e": 0.52
+   },
+   {
+    "w": "Software",
+    "s": 0.52,
+    "e": 0.94
+   },
+   {
+    "w": "as",
+    "s": 0.94,
+    "e": 1.36
+   },
+   {
+    "w": "a",
+    "s": 1.36,
+    "e": 1.48
+   },
+   {
+    "w": "service",
+    "s": 1.48,
+    "e": 1.86
+   },
+   {
+    "w": "for",
+    "s": 1.86,
+    "e": 2.12
+   },
+   {
+    "w": "FMCG",
+    "s": 2.12,
+    "e": 3.16
+   },
+   {
+    "w": "brands,",
+    "s": 3.16,
+    "e": 3.66
+   },
+   {
+    "w": "distributors",
+    "s": 3.96,
+    "e": 4.94
+   },
+   {
+    "w": "and",
+    "s": 4.94,
+    "e": 5.18
+   },
+   {
+    "w": "retailers.",
+    "s": 5.18,
+    "e": 5.66
+   }
+  ]
+ },
+ "b91-4.wav": {
+  "text": "Agentic Software as a service for FMCG brands, distributors and retailers.",
+  "words": [
+   {
+    "w": "Agentic",
+    "s": 0.0,
+    "e": 0.52
+   },
+   {
+    "w": "Software",
+    "s": 0.52,
+    "e": 0.92
+   },
+   {
+    "w": "as",
+    "s": 0.92,
+    "e": 1.38
+   },
+   {
+    "w": "a",
+    "s": 1.38,
+    "e": 1.52
+   },
+   {
+    "w": "service",
+    "s": 1.52,
+    "e": 1.88
+   },
+   {
+    "w": "for",
+    "s": 1.88,
+    "e": 2.12
+   },
+   {
+    "w": "FMCG",
+    "s": 2.12,
+    "e": 2.98
+   },
+   {
+    "w": "brands,",
+    "s": 2.98,
+    "e": 3.42
+   },
+   {
+    "w": "distributors",
+    "s": 3.82,
+    "e": 4.56
+   },
+   {
+    "w": "and",
+    "s": 4.56,
+    "e": 4.82
+   },
+   {
+    "w": "retailers.",
+    "s": 4.82,
+    "e": 5.34
+   }
+  ]
+ },
+ "b91-5.wav": {
+  "text": "Agentic Software as a service for FMCG brands, distributors and retailers.",
+  "words": [
+   {
+    "w": "Agentic",
+    "s": 0.0,
+    "e": 0.6
+   },
+   {
+    "w": "Software",
+    "s": 0.6,
+    "e": 1.06
+   },
+   {
+    "w": "as",
+    "s": 1.06,
+    "e": 1.52
+   },
+   {
+    "w": "a",
+    "s": 1.52,
+    "e": 1.66
+   },
+   {
+    "w": "service",
+    "s": 1.66,
+    "e": 2.06
+   },
+   {
+    "w": "for",
+    "s": 2.06,
+    "e": 2.38
+   },
+   {
+    "w": "FMCG",
+    "s": 2.38,
+    "e": 3.38
+   },
+   {
+    "w": "brands,",
+    "s": 3.38,
+    "e": 3.86
+   },
+   {
+    "w": "distributors",
+    "s": 4.28,
+    "e": 5.06
+   },
+   {
+    "w": "and",
+    "s": 5.06,
+    "e": 5.32
+   },
+   {
+    "w": "retailers.",
+    "s": 5.32,
+    "e": 5.86
    }
   ]
  }

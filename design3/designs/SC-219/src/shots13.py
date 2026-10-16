@@ -269,7 +269,8 @@ def build():
     add('saas', t0, t1, PageSeq(SAAS), [], xin='iris', xd=IRIS)
     S[-1].cues = {'i03': a('i03') - t0, 'turns': a('i03', 'turns') - t0, 'write': a('i03', 'write') - t0, 'recovery': a('i03', 'recovery') - t0,
                   'b91': a('b91') - t0, 'agentic': a('b91', 'Agentic') - t0, 'service': a('b91', 'service') - t0, 'fmcg': a('b91', 'FMCG') - t0,
-                  'supply': a('b91', 'supply') - t0, 'brands': a('b91', 'brands') - t0, 'distributors': a('b91', 'distributors') - t0,
+                  'supply': a('b91', 'FMCG') - t0 + 0.3,      # cut 14: the line no longer says 'supply chain' (the page never used it)
+                   'brands': a('b91', 'brands') - t0, 'distributors': a('b91', 'distributors') - t0,
                   'retailers': a('b91', 'retailers') - t0, 'end': round(L_ + UP + 0.2, 3)}
 
     # ======================================================== 2 · under the hood: the architecture and the Google models, in depth

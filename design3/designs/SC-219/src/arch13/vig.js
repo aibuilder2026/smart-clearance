@@ -14,12 +14,16 @@ const spring = (x, zeta = 0.62, w = 15) => { if (x <= 0) return 0; const wd = w 
 const $ = (h) => { const d = document.createElement('div'); d.innerHTML = h.trim(); return d.firstElementChild; };
 export const TONE = { fire: '#ff9f45', blue: '#8ab4f8', green: '#34d380', violet: '#c58af9', amber: '#f7c04a', code: '#cfd8d3' };
 const ICON = (n) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${window.ICONS[n] || ''}</svg>`;
+// cut 14: a Google product's own logo, as a mask in the header's ink (arch.js's logos/)
+const LGURL = (n) => n === 'firebase' ? 'logos/firebase.svg' : n === 'gemini' ? 'logos/googlegemini.svg' : `logos/${n}.png`;
+const LOGO = (n) => `<i class="lg" style="-webkit-mask-image:url(${LGURL(n)});mask-image:url(${LGURL(n)})"></i>`;
 const ARROW = `<svg viewBox="0 0 28 28" width="30" height="30"><path d="M5 3 L5 22.5 L10.1 17.6 L13.6 25.4 L17 23.9 L13.5 16.2 L20.6 16.2 Z" fill="#fff" stroke="#0b0f0d" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
 const SPIN = `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9" /></svg>`;
 
 const CHROME = 38;   // the browser's bar
 const BEZ = 9;       // the phone's bezel
 
+const def_has_many = (V) => V.leads.length > 1 && !V.rectAll;
 export function Panels(root, svg) {
 	const P = [];
 	const NS = 'http://www.w3.org/2000/svg';
@@ -58,7 +62,7 @@ export function Panels(root, svg) {
 		const hd = el.querySelector('.hd'), devs = el.querySelector('.devs'), bdg = el.querySelector('.bdg');
 		const heads = [def.header, ...(def.header.swaps || [])].map((h, i) => {
 			const tn = h.tone || tone;
-			const e = $(`<div class="head" style="--tone:${TONE[tn]}"><div class="k">${ICON(h.icon)}<span>${h.k}</span></div><h2>${h.h}</h2>${h.s ? `<p>${h.s}</p>` : ''}${h.chips && h.chips.length ? `<div class="chips">${h.chips.map((c) => `<span>${c}</span>`).join('')}</div>` : ''}</div>`);
+			const e = $(`<div class="head" style="--tone:${TONE[tn]}"><div class="k">${h.logo ? LOGO(h.logo) : ICON(h.icon)}<span>${h.k}</span></div><h2>${h.h}</h2>${h.s ? `<p>${h.s}</p>` : ''}${h.chips && h.chips.length ? `<div class="chips">${h.chips.map((c) => `<span>${c}</span>`).join('')}</div>` : ''}</div>`);
 			hd.appendChild(e); return { ...h, el: e, t: i === 0 ? def.t0 : h.t, i };
 		});
 		const D = def.devices.map((d) => { const x = device(d, tone); devs.appendChild(x.el); return x; });
@@ -177,7 +181,9 @@ export function Panels(root, svg) {
 				const Dv = V.D[L.dev];
 				const r = Dv.el.getBoundingClientRect();
 				const ex = V.side === 'r' ? r.left : r.right, ey = r.top + r.height * (L.y ?? 0.42);
-				const A = shot(L.anchor(t));
+				// the lead runs to the bracket on the part, when there is one, at the side facing the window
+				const R_ = V.rect && !def_has_many(V) ? V.rect(t) : null;
+				const A = R_ ? { x: V.side === 'r' ? R_.x1 : R_.x0, y: clamp(ey, R_.y0 + 14, R_.y1 - 14), z: 0 } : shot(L.anchor(t));
 				const ok = A && A.z < 1 && A.x > -100 && A.x < W + 100 && A.y > -100 && A.y < H + 100;
 				const lp = clamp((t - V.t0 - 0.25 - 0.1 * li) / 0.45), lo = ok ? Math.min(t > V.t0 + 0.25 ? 1 : 0, 1 - clamp(out * 1.6)) * vis1 * calm(L.anchor(t)) : 0;
 				const mine = V.packets.filter((k) => k.lead === li);

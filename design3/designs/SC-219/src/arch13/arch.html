@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>SC-219 · under the hood, cut 13</title>
+<title>SC-219 · under the hood, cut 14</title>
 <style>
   @font-face { font-family: 'Bricolage Grotesque'; src: url('/fonts/Bricolage.ttf'); font-weight: 200 800; }
   @font-face { font-family: 'Geist'; src: url('/fonts/Geist.ttf'); font-weight: 100 900; }
@@ -14,7 +14,8 @@
   html, body { margin: 0; padding: 0; width: 1920px; height: 1080px; overflow: hidden; background: #000;
     font-family: 'Geist', system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
   canvas { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; display: block; }
-  #labels, #ui, #lead, #panels { position: absolute; inset: 0; pointer-events: none; }
+  #labels, #ui, #lead, #panels, #focus { position: absolute; inset: 0; pointer-events: none; }
+  #focus { z-index: 1; overflow: visible; } #labels { z-index: 2; }
   #lead { overflow: visible; z-index: 8; }
   #panels { z-index: 10; }
   #ui { z-index: 12; }
@@ -32,6 +33,30 @@
   .node.fire .tile { background: rgba(255, 159, 69, 0.14); color: #ffb470; border-color: rgba(255, 159, 69, 0.38); }
   .node.ok { border-color: rgba(52, 211, 128, 0.7); } .node.ok .tile { background: rgba(52, 211, 128, 0.2); color: #9ff0c4; }
   .node.ok b { font: 650 18px/1.05 var(--mono); letter-spacing: 0; }
+  /* cut 14: Google's own logos (their shapes, in the scene's inks), as masks over the tile's colour */
+  .lg { display: block; width: 100%; height: 100%; background: currentColor; -webkit-mask-position: center; mask-position: center;
+    -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+  .node .tile .lg { width: 24px; height: 24px; }
+  /* the part being explained: its chip over it, larger, on a stem down to the part */
+  .node.hero { padding: 11px 20px 11px 11px; border-radius: 19px; border-width: 1.5px; gap: 14px; }
+  .node.hero .tile { width: 48px; height: 48px; border-radius: 13px; } .node.hero .tile .lg { width: 30px; height: 30px; }
+  .node.hero b { font-size: 25px; } .node.hero span { font-size: 16px; }
+  .node.hero.fire { border-color: rgba(255, 159, 69, 0.75); } .node.hero.gcp { border-color: rgba(138, 180, 248, 0.75); }
+  .node.hero.grn { border-color: rgba(52, 211, 128, 0.75); } .node.hero.vio { border-color: rgba(197, 138, 249, 0.8); } .node.hero.amb { border-color: rgba(247, 192, 74, 0.8); }
+  .node.grn .tile { background: rgba(52, 211, 128, 0.14); color: #8ff0bd; border-color: rgba(52, 211, 128, 0.42); }
+  .node.vio .tile { background: rgba(197, 138, 249, 0.16); color: #e2c8ff; border-color: rgba(197, 138, 249, 0.45); }
+  .node.amb .tile { background: rgba(247, 192, 74, 0.16); color: #ffd98a; border-color: rgba(247, 192, 74, 0.45); }
+  .node.hero::after { content: ''; position: absolute; left: 50%; top: 100%; width: 2px; height: var(--stem, 34px); margin-left: -1px;
+    background: linear-gradient(var(--stemc, rgba(115, 201, 157, 0.75)), transparent); }
+  .node.hero.below::after { top: auto; bottom: 100%; background: linear-gradient(transparent, var(--stemc, rgba(115, 201, 157, 0.75))); }
+  /* the roll-call: every part's logo, named, as the voice says it's all Google Cloud */
+  .roll { position: absolute; left: 0; top: 0; display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 999px; white-space: nowrap; opacity: 0;
+    background: rgba(7, 13, 10, 0.92); border: 1.3px solid rgba(255, 255, 255, 0.2); font: 650 19px/1 'Geist'; color: #eef6f1; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55); }
+  .roll .t { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: rgba(255, 255, 255, 0.08); color: var(--c, #c9dcff); }
+  .roll .t .lg { width: 23px; height: 23px; }
+  .pill .lg { width: 26px; height: 22px; } .pill.big .lg { width: 30px; height: 25px; }
+  .ix .lg { width: 17px; height: 17px; }
+  .head .k .lg { width: 20px; height: 20px; }
 
   .agent { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; gap: 7px; width: 160px; opacity: 0; }
   .agent b { font: 650 21px/1 'Geist'; color: var(--ink); letter-spacing: -0.2px; padding: 6px 12px; border-radius: 10px;
@@ -53,6 +78,7 @@
   .sat { position: absolute; left: 0; top: 0; display: flex; gap: 8px; align-items: center; padding: 8px 13px 8px 9px; border-radius: 999px; white-space: nowrap; opacity: 0;
     font: 700 17px/1 'Geist'; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55); }
   .sat svg { width: 17px; height: 17px; }
+  .sat .lg { width: 17px; height: 17px; flex: none; } .agent .tier .lg { width: 14px; height: 14px; flex: none; }
   .sat.pro { background: rgba(34, 18, 52, 0.94); border: 1.6px solid rgba(197, 138, 249, 0.9); color: #f0e2ff; }
   .sat.flash { background: rgba(12, 24, 48, 0.94); border: 1.6px solid rgba(138, 180, 248, 0.9); color: #dbe8ff; }
 
@@ -151,6 +177,9 @@
 </head>
 <body>
 <canvas id="gl" width="1920" height="1080"></canvas>
+<svg id="focus" width="1920" height="1080" viewBox="0 0 1920 1080"><defs><filter id="fz" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="26"/></filter>
+<mask id="fm" maskUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080"><rect x="0" y="0" width="1920" height="1080" fill="#fff"/><rect id="fhole" x="0" y="0" width="0" height="0" rx="40" fill="#000" filter="url(#fz)"/></mask></defs>
+<rect id="fscrim" x="0" y="0" width="1920" height="1080" fill="#010403" opacity="0" mask="url(#fm)"/><g id="fbr" fill="none" stroke-linecap="round" opacity="0"><rect id="fbox" rx="16"/><path id="fcorner"/></g></svg>
 <div id="labels"></div>
 <svg id="lead" width="1920" height="1080" viewBox="0 0 1920 1080"></svg>
 <div id="panels"></div>

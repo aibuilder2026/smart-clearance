@@ -1,11 +1,112 @@
-# SC-219 · The working demo, cuts 9 to 13
+# SC-219 · The working demo, cuts 9 to 14
 
 A demo film of about four minutes, made from the three production recordings of 13 Oct 2026, as cut 8 (SC-218) was:
 cut 9 on the maintainer's notes on cut 8, cut 10 on four notes on cut 9, cut 11 on three notes on cut 10, then cut 12
-on a new architecture scene, after a concept round, and cut 13 on cut 10's 3D architecture made whole, with the app
-beside each part. Each
+on a new architecture scene, after a concept round, cut 13 on cut 10's 3D architecture made whole, with the app
+beside each part, and cut 14 on Google's own logos, a chip and a bracket on each part, and the four apps on their
+screens. Each
 joins the earlier cuts in the repository root's `working-demo/` folder, with its export's date and time in its name;
 `media/` holds the latest.
+
+## Cut 14 (16 Oct 2026)
+
+Cut 13's architecture refined, and 1.5 s moved into it from the scene before.
+
+### The brief
+
+On cut 13's export (`…_2026-10-16_01-51-30`), the maintainer's notes:
+
+1. "The firebase hosting and Firebase authentication can bare be understood."
+2. The four apps' screens: "this should show the snapshots of the app when the animation starts and they should
+   scrolling or doing something to make it interactive."
+3. A chip like the app's ("Console · staff set every brand up"): "I need to see these type of info on top of Google
+   components that are being explained and highlighted."
+4. "When a particular component is being explained, that component and the screenshot must be focussed together in
+   a more better way."
+5. "Try to use actual google logos for each components (but their colour and theme should be matched with the
+   animation background)."
+6. "The previous scene which metiones about SaaS platfrom runs for about 6 seconds, we can condense that to save 1-2
+   seconds and add that time to Architecture."
+
+### What changed
+
+- **Google's own logos**, recoloured to the scene's inks:
+  - Google Cloud's product icons (Google Cloud, Identity Platform, Cloud Run, Cloud SQL, Pub/Sub, Cloud Scheduler,
+    BigQuery, Cloud Storage, Agent Platform, Secret Manager, Cloud Trace, Cloud Logging, Cloud Monitoring, Cloud Build,
+    Artifact Registry), laid out large in Lucid's Google Cloud 2021 set and exported (a scratch Lucid document,
+    "Smart-Clearance film icons (SC-219 scratch, safe to delete)"), then cut into masks that keep their two tones
+    (`src/arch13/logos/*.png`);
+  - Firebase's flame and Gemini's spark from simple-icons (CC0), downloaded on the maintainer's yes
+    (`logos/firebase.svg`, `logos/googlegemini.svg`). Gemini's orb now carries its real spark.
+- **The logos everywhere:**
+  - on each part's face: Cloud Run on the API, Secret Manager on its block;
+  - on glass signs where a part has no flat face: Cloud SQL, BigQuery, Cloud Storage, Firebase on the deck;
+  - on discs that turn to the camera: Pub/Sub's hub on the ring, the scheduler beside the clock, Identity Platform
+    on the gate;
+  - in each window's header, the dock, the agents' model tags and the base services' chips.
+- **A roll-call** on "it's all Google Cloud": every part's logo, named, over it in a cascade, the camera holding on
+  the whole platform.
+- **The four apps on their screens**, from the first frame:
+  - the landing page, the console's Overview, the workspace's Command Center and the guided demo, each scrolling
+    on its own: holding, gliding, holding;
+  - the Command Center's sidebar and right-hand column stay put while its main column scrolls, as in the app;
+  - `src/tiles14.mjs` captures them from the live landing page and the live guided demo (each page's scroller
+    unfolded and shot whole, since the Command Center is live), and `src/tiles14.py` builds the strips
+    (`arch13/tiles/`).
+  - The screens are larger (3.9 by 2.44), and the camera passes them two at a time: the landing page and the
+    console, a glide, then the workspace and the demo. A light runs along the deck as Firebase deploys them, and
+    Firebase Hosting's chip follows under the pair in view. The apps window of cut 13 went, since the screens carry it.
+- **Firebase Authentication as a gate:** a ring over the API that every request passes through, Identity Platform's
+  badge on its rim. Priya signs in in the window beside it; her ID token runs to the gate, which flashes, a sweep
+  crosses it and "ID token ✓" lands; then the token runs on to the API, which checks it.
+- **Each part's chip** over it while the voice explains it, in the app chip's form, larger, on a stem down to the
+  part: its logo, its name and one line.
+- **Focus:**
+  - the part being explained is bracketed (corner marks in its ink, a faint box), the rest of the frame a shade down;
+  - its window's lead runs to the bracket's side;
+  - the bracket glides from part to part through each hand-over;
+  - every camera shot now holds while its part is explained, moving only in the hand-overs, so the chips stay up.
+- **The time:** the SaaS scene's line re-voiced tighter, "Agentic software as a service for FMCG brands,
+  distributors and retailers" (Maya1, six takes; take 4 kept: read back word for word, UTMOS 4.50 against the best
+  4.51, the shortest at 5.69 s against 7.19 s). The 1.5 s goes to the architecture's opening:
+  - the breath after "it's all Google Cloud" (0.4 to 0.75 s);
+  - the pause after "Firebase" (0.45 to 1.15 s);
+  - after "Run" (0.3 to 0.55 s);
+  - after "step" (0.3 to 0.5 s).
+
+  The SaaS scene runs 9.71 s (11.21 s before), the architecture 37.46 s (35.96 s), the film 238.92 s.
+
+### Found
+
+- The Command Center is live in the guided demo (its agents keep acting), so screens shot a second apart never lined up
+  in a stitched strip: each page's scroller is unfolded to its full height, and its frame's clipping and scaling
+  undone, and shot whole.
+- A chip faded while the camera was already setting off for the next part: every shot now holds.
+- Hand-overs on the scene's own clock ease over 0.4 s, which the opening's stretched timing made about 0.8 s, so the
+  second pair of screens lost its labels as they were shown; Firebase Hosting's beat runs on, and the screens' labels
+  take no dimming of their own.
+- The SaaS scene's frames were captured on its old cues: it was captured again on the new line's.
+- Cloud SQL's audit rows now arrive from "the record".
+
+### The result
+
+- 3 min 58.9 s (238.92 s); −14.0 LUFS, −1.5 dB true peak.
+- No one-frame flash in its 5,973 frames; window speeds as cut 13's.
+- The stage-mark scan as before (196 frames, the apps' own green buttons, a phone's dark card and the label photo).
+- Both QR codes read back.
+- 29 of 33 lines word for word. The re-voiced b91 reads exactly. u02 now reads "Cloud SQL app has the record":
+  - the voice on its own reads word for word;
+  - any background under it tips Whisper over, the music alone or the effects alone;
+  - cut 13's 0.3 s pause after "Run" gives "cloud equal" instead.
+
+  It is the same take as cut 13's.
+- No label moves faster than the camera carries it (17 px a frame at most, the bracket gliding between Pro and Flash).
+- `working-demo/smart-clearance-working-demo-2026-10-16_09-46-36.mp4` (crf 17), its 720p copy, a light preview, the
+  architecture on its own (`…-architecture.mp4`) and captions; the crf-21 copies in `media/`. Three exports from the
+  way there are kept as `…-superseded`.
+
+**The spend:** nothing. Lucid's export, Maya1, Whisper, UTMOS, Chromium and ffmpeg ran on this Mac or the connected
+Lucid account; no image, video or paid model was called.
 
 ## Cut 13 (16 Oct 2026)
 
@@ -665,6 +766,14 @@ in `remo12/public/`):
 # then name the frames f00000.jpg … in build/arch12/ (the sequence's element-NNN.jpeg, in order)
 .venv/bin/python render12.py && .venv/bin/python mix12.py && ./export12.sh
 node qrcheck11.mjs ../media/smart-clearance-working-demo.mp4 7.6 235                # the codes, read back
+```
+
+Cut 14, after cut 13's steps (its app screens from `tiles14.mjs` and `tiles14.py`; the SaaS scene captured again on
+the new line's cues; the voice's new take picked by `tts/pick.py`):
+
+```sh
+node tiles14.mjs build/tiles14 && .venv/bin/python tiles14.py build/tiles14          # the four apps' screens, only to capture them again
+node capture-page.mjs saas10/saas.html build/saas10 build/saas10-cues.json 25       # after shots13.py
 ```
 
 Cut 13, after cut 12's steps (its architecture is cut 10's three.js scene, made again in `arch13/`; its screens are in
