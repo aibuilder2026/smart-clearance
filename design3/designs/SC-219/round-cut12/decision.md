@@ -68,3 +68,9 @@ void, one camera that never cuts and turns a little as it travels, each part ris
 notes, the flow drawn between the parts (the call, the events on Pub/Sub, the Scheduler's tick, sales and photos,
 Gemini's beams), the glass round the money, and Priya's yes as a green wave through the hall. The SC-219 README's cut 12
 section has the details.
+
+## After cut 12 (16 Oct 2026)
+
+On cut 10's export the maintainer asked for its 3D cinematic architecture back, full frame, with exact sound, the app's
+screens sharp and animated beside each part, the text marked, a better Gemini orb, and Firebase Authentication shown
+for identity. That is cut 13 (the SC-219 README's "Cut 13"): cut 10's three.js scene made again in `src/arch13/`.

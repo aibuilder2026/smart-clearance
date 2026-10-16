@@ -1,10 +1,111 @@
-# SC-219 · The working demo, cuts 9 to 12
+# SC-219 · The working demo, cuts 9 to 13
 
 A demo film of about four minutes, made from the three production recordings of 13 Oct 2026, as cut 8 (SC-218) was:
 cut 9 on the maintainer's notes on cut 8, cut 10 on four notes on cut 9, cut 11 on three notes on cut 10, then cut 12
-on a new architecture scene, after a concept round. Each
+on a new architecture scene, after a concept round, and cut 13 on cut 10's 3D architecture made whole, with the app
+beside each part. Each
 joins the earlier cuts in the repository root's `working-demo/` folder, with its export's date and time in its name;
 `media/` holds the latest.
+
+## Cut 13 (16 Oct 2026)
+
+Cut 12 with the architecture scene (0:22.5 to 0:56, the lines t01, u02, u03, u17, u18 and u06) made again from cut
+10's 3D film; everything else is cut 12's.
+
+### The brief
+
+On cut 10's export (`…_2026-10-15_20-34-52`), the maintainer's notes (16 Oct 2026):
+
+1. "I want to have the 3D cinematic effect like this for the architecture with really exact sound effects."
+2. "I need the application screenshots to be displayed sharper and better in the scenes."
+3. "Every component that you show and describe there should [have] animation effects and if possible [be] associated
+   with [an] application screen (animated and having something done like button being clicking, notifications coming)."
+4. "The animation should take up the entire space and not be scoped like a movie, text should be properly highlighted."
+5. The Gemini orb: "try to make it more better".
+
+Then, while it was made: "Also show Firebase authentication for identity management".
+
+### The scene
+
+Cut 10's lit platform, its lens (depth of field, anamorphic streaks, bloom, motion blur from sub-frames, a grade) and
+its camera, now **full frame**: no letterbox. Each part the voice names is framed on one side, and the app beside it on
+the other, in a browser window or a phone:
+
+| From | The part | The app beside it, and what happens on it |
+| --- | --- | --- |
+| 0:03.4 | Firebase · Hosting: four apps | the landing page, the console, the workspace and the guided demo in four windows, each address typed in, each page loading |
+| 0:04.6 | **Firebase Authentication** (its own block at the deck's end) | the live workspace's sign-in: the pointer clicks the email field, `priya.deshmukh@munchly.example` is typed, the password, Sign in pressed and "Signing in…"; Firebase Authentication signs her in, and her ID token travels to the API |
+| 0:06.0 | Cloud Run: one API | `verify_id_token ✓ · role ws-operator` at the API; the Command Center opens on her screen, its call written under it (`GET /v1/workspaces/munchly/snapshot · 200 OK`) |
+| 0:07.5 | Cloud SQL: the record | the batch's Record tab, its audit trail arriving row by row as each line is written to the disks |
+| 0:09.1 | Pub/Sub: every step, an event | the topics racing round the ring; two lock screens, Priya's push landing (the Watcher's alert), then Lakshmi Agencies' (the label photo asked for), through Firebase Cloud Messaging |
+| 0:12.0 | Cloud Scheduler: the clock | the console's Agents tab: the pointer presses Run now on the Watcher's daily check; "Ran just now", and the console's own toast |
+| 0:13.6 | Google's ADK: nine AI agents | the console's agent pipeline scrolling past every agent and its level, as the agents rise in 3D |
+| 0:16.1 | BigQuery: sales history | the Watcher's `sellthrough.project` call, then the Valuer's `bigquery.price_history`, each ringed as the data arrives |
+| 0:17.8 | Cloud Storage: photos and papers | Lakshmi Agencies' phone: Send photo tapped, "Sending photo…", "Vision is reading the label", "Verified · matches your records" |
+| 0:19.9 | Gemini on Google's Agent Platform | the agent timeline's `gemini.vision.read_label` call ringed as "Gemini" is said |
+| 0:22.4 | Gemini 3.1 Pro: prices and negotiates | the Valuer's five channels priced, bar by bar; the buyer's phone: Bid tapped, the Negotiator's counter arriving in the chat |
+| 0:24.5 | Gemini 3.8 Flash: reads and writes | Vision's read of the label, field by field; the kirana's phone, Outreach's Hindi offer written in |
+| 0:26.2 | Guardrails: never the money | the Lister's card, its reserve "Only Munchly sees", ringed; a model reaching for the money flashes off the shield |
+| 0:28.6 | Worked out by the API: ₹16,917 | the approval sheet's ₹16,917 ringed; `money.py` |
+| 0:31.1 | A person's yes | Priya's phone: Approve tapped, "Approving the plan…", Plan placed, ₹22,194; the yes runs to the API and the platform lights |
+
+**The screens are sharp:** each is the app's own screen captured at 2x from the live guided demo (the production UI on
+its stub) and the live workspace's sign-in page (`src/screens13.mjs`, `screens13.py`, into `src/arch13/scr/`), drawn in
+screen space over the 3D, never through the lens. Inside a window the screen can pan and zoom (a camera of its own) and
+change state (before and after a press). A lead runs from each window to its part in the scene, and the data travels
+along it (the ID token, the snapshot, the events, the label photo, the counter, the approval), with a ping where it lands.
+
+**The text is marked:** the act's title stands over the scene on its own shade, its words rising, and the words that
+matter marked in green (All on **Google Cloud**; **Nine AI agents**. Two Gemini models; The models never touch **the
+money**). The stack's parts sit in a glass dock along the foot, the part being named filled green, Firebase
+Authentication among them. Each card marks its key words.
+
+**Gemini, made again:** a glass orb with Gemini's blue, violet and rose turning slowly inside it (kept under the bloom's
+threshold, so it glows and never burns to white), a bright rim and a glass highlight, its four-point spark crisp at the
+centre, a disc of fine motes turning round it, and its two models riding their own orbits as labelled satellites: Pro
+in violet, Flash in blue, each flaring as the voice names it, its beams going to the agents that use it.
+
+**The sound** is the scene's own, placed on the frame each thing happens (`build/arch13/events.json`, 236 events,
+`mix13.py`'s `ARCH13_SOUND`): a soft swish as each window lands, a key under every character typed, a click under every
+press and a tap under every finger, a tick as each audit row arrives, a chime as each push lands, a zip as each packet
+leaves and a ping where it lands, a confirm as the sign-in, the photo and the plan go through, the console's toast, a
+scroll under the pipeline, a swell and a shimmer as Gemini wakes, glass as the shield turns a model away; and cut 10's
+whooshes under the camera's moves, its title glints, the platform's hits and the yes.
+
+### How it is made
+
+- **`src/arch13/`:** `arch.html` and `arch.js` (cut 10's three.js scene, full frame, with Firebase Authentication's
+  block, the new Gemini orb, the title and the dock, the camera keyed for the full frame), `vig.js` (the windows: a
+  browser or a phone, the screen's own pan and states, the pointer and finger, typed text, veils over rows yet to
+  arrive, rings, pushes, the leads and their packets, and each one's sounds), `scr/` (the screens).
+- **Into the film:** captured frame by frame with `capture-page.mjs` on cut 12's cues (`build/arch13-cues.json`) into
+  `build/arch13/`; `shots13.py` reads it where cut 12 read `arch12/`; `render13.py`, `mix13.py`, `export13.sh`, with
+  `flash13.py`, `cardscan13.py` and `readback13.py` as cut 12's.
+
+### Found
+
+- **A black frame at Gemini:** on the Mac's GPU (Metal), `pow()` in the orb's glass highlight returned NaN for a few
+  pixels, and the bloom spread them over the whole frame. The orb's shader uses no `pow()` (a fresnel from a square
+  and a root, the highlight by repeated squaring).
+- The screens' overlays (typed text, veils, rings, pushes) sat under the screenshot; they are drawn above it.
+- The typed email vanished once typed: its typing end was read as its end.
+- The cards stretched past their screens; each card is as wide as its screens.
+- Pro and Flash framed the orb behind the windows; the camera takes the orb and the agents it lights on the free side.
+- Two windows handing over made a light wash for a few frames; a window now lands in 0.14 s and leaves in 0.3 s.
+
+### The result
+
+- 3 min 58.9 s (238.92 s), the same length as cut 12; −14.0 LUFS, −1.5 dB true peak.
+- No one-frame flash in its 5,973 frames; no dark frame in the architecture's 841; window speeds as cut 12's.
+- The stage-mark scan as cut 12's (196 frames, the apps' own green buttons, a phone's dark card and the label photo).
+- Both QR codes read back from the film's frames.
+- 29 of 33 lines word for word, as cut 12; the architecture's six lines all read back apart from u03's "Pub/Sub",
+  which Whisper writes "Pup-Sub", as before.
+- `working-demo/smart-clearance-working-demo-2026-10-16_01-19-44.mp4` (crf 17), its 720p copy, a light preview, the
+  architecture on its own (`…-architecture.mp4`) and captions; the crf-21 copies in `media/`.
+
+**The spend:** nothing. Chromium (three.js on the GPU, the captures), ffmpeg, Whisper and the film's own synths ran on
+this Mac; no image, video or paid model was called.
 
 ## Cut 12 (16 Oct 2026)
 
@@ -534,4 +635,17 @@ in `remo12/public/`):
 # then name the frames f00000.jpg … in build/arch12/ (the sequence's element-NNN.jpeg, in order)
 .venv/bin/python render12.py && .venv/bin/python mix12.py && ./export12.sh
 node qrcheck11.mjs ../media/smart-clearance-working-demo.mp4 7.6 235                # the codes, read back
+```
+
+Cut 13, after cut 12's steps (its architecture is cut 10's three.js scene, made again in `arch13/`; its screens are in
+`arch13/scr/`, and `screens13.mjs` captures them again from the live guided demo and sign-in page):
+
+```sh
+ln -s ../../../SC-210/src/eco/node_modules arch13/node_modules
+node screens13.mjs build/screens13 && .venv/bin/python screens13.py build/screens13   # only to capture the screens again
+.venv/bin/python shots13.py > /dev/null                                             # writes build/arch13-cues.json
+node capture-page.mjs arch13/arch.html build/arch13 build/arch13-cues.json 25       # the scene, frame by frame, and its sounds
+.venv/bin/python render13.py && .venv/bin/python mix13.py && ./export13.sh
+node qrcheck11.mjs ../media/smart-clearance-working-demo.mp4 7.6 235                # the codes, read back
+uv run --no-project --python .venv/bin/python --with mlx-whisper python readback13.py   # the narration, read back
 ```

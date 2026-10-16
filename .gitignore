@@ -386,6 +386,9 @@ design3/designs/SC-219/src/arch10/*.webp
 design3/designs/SC-219/src/cast10/*.webp
 !design3/designs/SC-219/src/arch11/
 design3/designs/SC-219/src/arch11/*.webp
+# cut 13's architecture: cut 10's three.js scene made again, with the app's screens it shows (scr/, captured by screens13.mjs)
+!design3/designs/SC-219/src/arch13/
+design3/designs/SC-219/src/arch13/node_modules
 !design3/designs/SC-219/src/build/
 design3/designs/SC-219/src/build/*
 !design3/designs/SC-219/src/build/screens.json
@@ -397,6 +400,7 @@ design3/designs/SC-219/src/build/*
 !design3/designs/SC-219/src/build/arch10-cues.json
 !design3/designs/SC-219/src/build/cast10-cues.json
 !design3/designs/SC-219/src/build/arch11-cues.json
+!design3/designs/SC-219/src/build/arch13-cues.json
 # cut 12's concept round: the Remotion project's source ships; its media (public/) is rebuilt by prep12c.sh
 !design3/designs/SC-219/src/remo12/
 design3/designs/SC-219/src/remo12/node_modules
