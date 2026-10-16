@@ -245,9 +245,10 @@
     { at: "21:30", who: "Paperwork", t: `the tax invoice and the credit note drafted; ${fmt.inr(D.PLAN.itcRetained)} of GST credit kept` },
   ];
   // the film: where each chapter begins (seconds), its frame, how far the page's camera leans, and where each
-  // chapter's subject is in the frame, for it to lean on
-  const FILM = { src: "one-journey.mp4", bounds: [0, 3.55, 7.35, 11.15], ar: 16 / 9, lean: 1.25,
-    at: [{ x: 0.62, y: 0.5 }, { x: 0.5, y: 0.55 }, { x: 0.72, y: 0.5 }, { x: 0.5, y: 0.5 }] };
+  // chapter's subject is in the frame, for it to lean on. Chapter 4's subject is the office monitor, which shows the
+  // workspace's own Command Center (SC-237), so phones, which see the middle of the film, lean onto it
+  const FILM = { src: "one-journey.mp4", bounds: [0, 3.55, 7.35, 9.78], ar: 16 / 9, lean: 1.25,
+    at: [{ x: 0.62, y: 0.5 }, { x: 0.5, y: 0.55 }, { x: 0.72, y: 0.5 }, { x: 0.42, y: 0.5 }] };
   const POSTER = { day: "hero-day.webp", night: "hero-night.webp" };
   // the posters' soft previews (SC-131): 48 px copies, under the film until its poster arrives
   const PREVIEW = { day: "hero-day-preview.webp", night: "hero-night-preview.webp" };
