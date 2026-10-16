@@ -32,18 +32,19 @@ const url = (files: Record<string, string>, file: string) => {
 export type Place = { x: number; y: number };
 /** the film (SC-154): about 15 s of one day of the journey, live action, in four chapters (dawn at the factory's bay,
  *  a high sun at the godown's counter, a violet dusk in the yard with the food bank's van and the staff-sale table,
- *  evening in the office), each dissolving into the next and the tail into the head, so it loops; both themes start
- *  on its first frame. Where each chapter begins, its frame, and how far and on what the page's camera leans */
+ *  evening in the office, the workspace's own Command Center on its monitor, SC-237), each dissolving into the next
+ *  and the tail into the head, so it loops; both themes start on its first frame. Where each chapter begins, its
+ *  frame, and how far and on what the page's camera leans (chapter 4 on the monitor) */
 export const FILM = {
 	src: url(clips, 'one-journey.mp4'),
-	bounds: [0, 3.55, 7.35, 11.15],
+	bounds: [0, 3.55, 7.35, 9.78],
 	ar: 16 / 9,
 	lean: 1.25,
 	at: [
 		{ x: 0.62, y: 0.5 },
 		{ x: 0.5, y: 0.55 },
 		{ x: 0.72, y: 0.5 },
-		{ x: 0.5, y: 0.5 }
+		{ x: 0.42, y: 0.5 }
 	] as Place[]
 };
 /** the demo film (SC-211's sales film, SC-164, SC-216): 6 min 50 s, the waste, the product, the agents inside the

@@ -295,10 +295,10 @@
   ];
   const FILM = {
     src: "one-journey.mp4",
-    bounds: [0, 3.55, 7.35, 11.15],
+    bounds: [0, 3.55, 7.35, 9.78],
     ar: 16 / 9,
     lean: 1.25,
-    at: [{ x: 0.62, y: 0.5 }, { x: 0.5, y: 0.55 }, { x: 0.72, y: 0.5 }, { x: 0.5, y: 0.5 }]
+    at: [{ x: 0.62, y: 0.5 }, { x: 0.5, y: 0.55 }, { x: 0.72, y: 0.5 }, { x: 0.42, y: 0.5 }]
   };
   const POSTER = { day: "hero-day.webp", night: "hero-night.webp" };
   const PREVIEW = { day: "hero-day-preview.webp", night: "hero-night-preview.webp" };

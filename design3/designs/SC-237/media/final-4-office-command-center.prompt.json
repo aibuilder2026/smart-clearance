@@ -1,0 +1,53 @@
+{
+  "name": "final-4-office-command-center",
+  "model": "veo-3.1-generate-001",
+  "location": "us-central1",
+  "service": "Vertex AI",
+  "prompt": "Photorealistic cinematic live action, exactly as in the image: evening in the small office above the godown, the warm desk lamp on and the last blue light in the window. The planner in the navy pinstripe kurta and the distributor in the light blue checked shirt, no glasses, sit side by side reading the green-and-white dashboard on the monitor; she traces the rising line on a chart with her pen and glances at him, he nods slowly and leans in, then sits back, satisfied; the bars on the dashboard tick up a little as it refreshes. Nothing is picked up or drunk; the chai tumblers stay on their tray. The camera dollies in very slowly toward the screen and the two faces, a gentle push, no handheld shake. The light does not change over the shot. 35 mm, shallow depth of field, professional and calm. No readable text, numbers, logos or lettering anywhere, on the screen or the papers.",
+  "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
+  "seed": 154224,
+  "enhance_prompt": true,
+  "resolution": "1080p",
+  "aspect": "16:9",
+  "duration_s": 8,
+  "fps": 24,
+  "generate_audio": false,
+  "person_generation": "allow_adult",
+  "inputs": [
+    {
+      "role": "first",
+      "file": "A-k3-office-dashboard.png",
+      "sha256": "665b657b4f3bd31095863998f82ec9df9f6ab04a1ea2ac072c7409427fb6f072"
+    }
+  ],
+  "watermark": "SynthID",
+  "cost_usd": 1.6,
+  "price_table_date": "2026-10-10",
+  "created": "2026-10-16",
+  "use": "SC-237: chapter 4 of the hero film, the office, with the workspace app's real Command Center on the monitor in place of the dashboard Veo drew",
+  "latency_s": 133.9,
+  "rai_filtered": {
+    "count": 0,
+    "reasons": []
+  },
+  "files": [
+    "final-4-office-command-center.mp4"
+  ],
+  "derived_from": {
+    "file": "design3/designs/SC-154/media/final-4-office-dashboard.mp4",
+    "sha256": "e8530d852d7d8228d3b9e1c70229191d9b39e6cc7a72cc69e170e1a3fc66ecec",
+    "record": "design3/designs/SC-154/media/final-4-office-dashboard.prompt.json"
+  },
+  "post": "The monitor's screen found in every frame (the pale and green pixels inside the black bezel, the convex hull cut to four corners, each side refitted through its edge points), the left corners fitted over time, the right corners carried from them through the frames her hand covers the glass; the workspace app's Command Center (the stub build, the operator at stage 8, the papers drafted; the client, people, partners, batch ids and address swapped for neutral words and the pack for the landing page's unbranded one, as the landing page names no client) captured at 1280 x 800 at 2x and warped onto it, in the glass's own white balance and falloff, with the desk lamp's warm reflection in its top-right corner, softened 0.4 px and given grain; her pen, fingers and sleeve kept in front (what is dark, skin or navy inside the screen and reaches in from beyond its edge). tools/capture.mjs, tools/screen.py",
+  "post_inputs": [
+    {
+      "file": "design3/designs/SC-237/img/command-center.webp",
+      "from": "src/cc-8.png",
+      "sha256_png": "4c1e9292c014489dcca9ccfe6942a90eb49f4f109933522d0c218bd35aa6fe9a",
+      "capture": "node tools/capture.mjs http://localhost:4291 8 1280 800 (PUBLIC_API_BASE= corepack pnpm build:workspace, vite preview --port 4291)"
+    }
+  ],
+  "post_cost_usd": 0,
+  "encode": "ffmpeg -c:v libx264 -preset slow -crf 15 -pix_fmt yuv420p -movflags +faststart",
+  "sha256": "9a9892816704071060bc77fe015dab153c3283fb2f7d67f71b8d85a4f6e2f287"
+}
