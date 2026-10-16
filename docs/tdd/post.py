@@ -21,6 +21,7 @@ FIND = [
     ("cicd", "GitHub Actions gates every change"),
     ("testing", "Proven at every layer"),
     ("observe", "One trace, from a tap"),
+    ("tdd-evals", "Each agent’s own model call, on live Gemini"),
     ("tdd-perf", "Measured on production; it runs"),
     ("tdd-decisions", "What was chosen, and why"),
     ("tdd-gaps", "What is not done yet"),
@@ -32,8 +33,8 @@ TITLES = {
     "tdd-intro": "1 Introduction", "system": "2 The system", "brief": "3 Firebase, Cloud Run and Gemini",
     "gcp": "4 Google Cloud, service by service", "agents": "5 The agents", "flow": "6 The application flow",
     "identity": "7 Identity and security", "cicd": "8 Delivery", "testing": "9 Testing and quality",
-    "observe": "10 Observability", "tdd-perf": "11 Performance, cost and scale", "tdd-decisions": "12 Design decisions",
-    "tdd-gaps": "13 Known gaps and risks", "tdd-next": "14 What comes next", "tdd-diagrams": "Appendix A: The diagrams",
+    "observe": "10 Observability", "tdd-evals": "11 The agents’ evals", "tdd-perf": "12 Performance, cost and scale",
+    "tdd-decisions": "13 Design decisions", "tdd-gaps": "14 Known gaps and risks", "tdd-next": "15 What comes next", "tdd-diagrams": "Appendix A: The diagrams",
     "tdd-glossary": "Appendix B: Glossary",
 }
 FRONT = 3  # the cover, document control and the contents
@@ -69,7 +70,7 @@ def finish(src, pages, out):
         p.insert_text((37, 30), "Smart-Clearance", fontname="hebo", fontsize=8.5, color=rgb("167a52"))
         p.insert_text((37 + pymupdf.get_text_length("Smart-Clearance ", "hebo", 8.5), 30), "· Technical Design Document",
                       fontname="helv", fontsize=8.5, color=rgb("5f6e67"))
-        right = "SC-TDD-001 · version 1.0 · 15 October 2026"
+        right = "SC-TDD-001 · version 1.1 · 16 October 2026"
         p.insert_text((w - 37 - pymupdf.get_text_length(right, "helv", 8), 30), right, fontname="helv", fontsize=8, color=rgb("5f6e67"))
         p.draw_line((37, 36), (w - 37, 36), color=rgb("dce5e0"), width=0.6)
         # the brand's four colours as the footer's rule
