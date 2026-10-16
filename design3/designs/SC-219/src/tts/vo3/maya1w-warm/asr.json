@@ -164,8 +164,8 @@
    }
   ]
  },
- "b91": {
-  "text": "Agentic Software as a service for FMCG brands, distributors and retailers.",
+ "b92": {
+  "text": "Agentic Software as a Service for FMCG",
   "words": [
    {
     "w": "Agentic",
@@ -185,42 +185,22 @@
    {
     "w": "a",
     "s": 1.38,
-    "e": 1.52
+    "e": 1.5
    },
    {
-    "w": "service",
-    "s": 1.52,
-    "e": 1.88
+    "w": "Service",
+    "s": 1.5,
+    "e": 1.86
    },
    {
     "w": "for",
-    "s": 1.88,
-    "e": 2.12
+    "s": 1.86,
+    "e": 2.16
    },
    {
     "w": "FMCG",
-    "s": 2.12,
-    "e": 2.98
-   },
-   {
-    "w": "brands,",
-    "s": 2.98,
-    "e": 3.42
-   },
-   {
-    "w": "distributors",
-    "s": 3.82,
-    "e": 4.56
-   },
-   {
-    "w": "and",
-    "s": 4.56,
-    "e": 4.82
-   },
-   {
-    "w": "retailers.",
-    "s": 4.82,
-    "e": 5.34
+    "s": 2.16,
+    "e": 3.26
    }
   ]
  },
@@ -639,108 +619,143 @@
    }
   ]
  },
- "x24": {
-  "text": "Live on production, Munchly Foods, an imaginary brand, with two batches at two different distributors. One happy path, one sad.",
+ "x26": {
+  "text": "Today, we're going to demo two journeys, Live On Production, Munchly Foods, an imaginary brand with two batches at two distributors. One happy path and one sad.",
   "words": [
    {
-    "w": "Live",
+    "w": "Today,",
     "s": 0.0,
-    "e": 0.38
+    "e": 0.3
    },
    {
-    "w": "on",
-    "s": 0.38,
-    "e": 0.58
+    "w": "we're",
+    "s": 0.54,
+    "e": 0.9
    },
    {
-    "w": "production,",
-    "s": 0.58,
-    "e": 1.06
+    "w": "going",
+    "s": 0.9,
+    "e": 1.12
+   },
+   {
+    "w": "to",
+    "s": 1.12,
+    "e": 1.3
+   },
+   {
+    "w": "demo",
+    "s": 1.3,
+    "e": 1.62
+   },
+   {
+    "w": "two",
+    "s": 1.62,
+    "e": 1.88
+   },
+   {
+    "w": "journeys,",
+    "s": 1.88,
+    "e": 2.36
+   },
+   {
+    "w": "Live",
+    "s": 2.94,
+    "e": 3.1
+   },
+   {
+    "w": "On",
+    "s": 3.1,
+    "e": 3.28
+   },
+   {
+    "w": "Production,",
+    "s": 3.28,
+    "e": 3.82
    },
    {
     "w": "Munchly",
-    "s": 1.66,
-    "e": 2.1
+    "s": 4.2,
+    "e": 4.82
    },
    {
     "w": "Foods,",
-    "s": 2.1,
-    "e": 2.48
+    "s": 4.82,
+    "e": 5.18
    },
    {
     "w": "an",
-    "s": 2.78,
-    "e": 3.08
-   },
-   {
-    "w": "imaginary",
-    "s": 3.08,
-    "e": 3.64
-   },
-   {
-    "w": "brand,",
-    "s": 3.64,
-    "e": 4.18
-   },
-   {
-    "w": "with",
-    "s": 4.38,
-    "e": 4.74
-   },
-   {
-    "w": "two",
-    "s": 4.74,
-    "e": 4.96
-   },
-   {
-    "w": "batches",
-    "s": 4.96,
-    "e": 5.5
-   },
-   {
-    "w": "at",
-    "s": 5.5,
+    "s": 5.44,
     "e": 5.76
    },
    {
-    "w": "two",
+    "w": "imaginary",
     "s": 5.76,
-    "e": 5.98
+    "e": 6.28
    },
    {
-    "w": "different",
-    "s": 5.98,
-    "e": 6.36
+    "w": "brand",
+    "s": 6.28,
+    "e": 6.8
+   },
+   {
+    "w": "with",
+    "s": 6.8,
+    "e": 7.28
+   },
+   {
+    "w": "two",
+    "s": 7.28,
+    "e": 7.5
+   },
+   {
+    "w": "batches",
+    "s": 7.5,
+    "e": 8.08
+   },
+   {
+    "w": "at",
+    "s": 8.08,
+    "e": 8.32
+   },
+   {
+    "w": "two",
+    "s": 8.32,
+    "e": 8.5
    },
    {
     "w": "distributors.",
-    "s": 6.36,
-    "e": 7.24
+    "s": 8.5,
+    "e": 9.38
    },
    {
     "w": "One",
-    "s": 7.52,
-    "e": 7.92
+    "s": 9.68,
+    "e": 10.26
    },
    {
     "w": "happy",
-    "s": 7.92,
-    "e": 8.28
+    "s": 10.26,
+    "e": 10.6
    },
    {
-    "w": "path,",
-    "s": 8.28,
-    "e": 8.68
+    "w": "path",
+    "s": 10.6,
+    "e": 11.04
+   },
+   {
+    "w": "and",
+    "s": 11.04,
+    "e": 11.44
    },
    {
     "w": "one",
-    "s": 8.92,
-    "e": 9.14
+    "s": 11.44,
+    "e": 11.68
    },
    {
     "w": "sad.",
-    "s": 9.14,
-    "e": 9.46
+    "s": 11.68,
+    "e": 12.04
    }
   ]
  },

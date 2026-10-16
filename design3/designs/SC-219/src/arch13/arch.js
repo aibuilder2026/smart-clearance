@@ -779,7 +779,7 @@ window.setCues = async (cues) => {
 
 	// the part in the light, in turn (its window beside it is the panel below)
 	const T = {
-		firebase: [S(3.85), S(6.75)], auth: [S(6.6), S(8.1)], run: [S(8.1), 7.42], sql: [7.45, 9.2], pubsub: [9.2, 11.95], sched: [11.95, 13.55],
+		firebase: [S(3.85), S(6.75)], auth: [S(6.6), S(8.1)], run: [S(8.1), 7.42], sql: [7.45, 8.9], pubsub: [9.38, 11.95], sched: [11.95, 13.55],
 		agents: [13.6, 16.1], bq: [16.1, 17.8], gcs: [17.8, 19.75], gemini: [c.u05 - 0.05, c.prices - 0.3], pro: [c.prices - 0.3, c.flash - 0.18],
 		flash: [c.flash - 0.18, c.u06 - 0.08], shield: [c.u06 - 0.08, c.api2 - 0.2], figure: [c.api2 - 0.2, c.person - 0.2], yes: [c.person - 0.2, end - 0.45],
 	};
@@ -864,7 +864,7 @@ window.setCues = async (cues) => {
 		badges: [{ t0: S(7.92), t1: S(8.7), icon: 'fingerprint', tone: 'fire', html: 'Firebase Authentication · <em>signed in</em> as priya.deshmukh@munchly.example', sound: 'done' }],
 		packets: [{ t: S(7.62), dur: SD(7.62, 0.38), dir: 'out', label: 'ID token', icon: 'key-round', tone: 'fire' }, { t: S(8.48), dur: SD(8.48, 0.4), dir: 'in', label: 'snapshot', icon: 'server', tone: 'blue' }] });
 
-	PN.add({ id: 'sql', rect: () => FOCUS.rect, side: 'l', t0: T.sql[0], t1: T.sql[1], anchor: at(sqlTop),
+	PN.add({ id: 'sql', rect: () => FOCUS.rect, side: 'l', t0: T.sql[0], t1: T.sql[1], fadeOut: 0.46, anchor: at(sqlTop),
 		header: { logo: 'sql', tone: 'blue', icon: 'database', k: 'Cloud SQL · PostgreSQL 18', h: 'The record', s: 'Every batch, case, paper and <b>audit line</b>, written in the same transaction as the change it records.', chips: ['IAM sign-in only', 'point-in-time recovery'] },
 		devices: [{ kind: 'browser', w: 800, h: 500, url: 'munchly-smartclearance.web.app',
 			layers: [{ src: SCR('record2-0'), t: -1e9, keys: [{ t: -1e9, c: [470, 560, 1104, 690] }, { t: c.record - 0.16, d: 0.01, c: [470, 560, 1104, 690] }, { t: c.record + 0.74, d: 0.9, c: [470, 900, 1104, 690] }] }],
@@ -983,8 +983,10 @@ window.setCues = async (cues) => {
 	k(S(8.45), F(V(-0.6, API_Y + 0.2, 0.3), V(-0.22, 0.3, 0.93), 10.5, 0.3, 0.5, 34), { fov: 34, roll: 0.6, hold: true });
 	k(7.3, F(V(-0.4, API_Y + 0.2, 0.3), V(-0.18, 0.28, 0.94), 10.0, 0.3, 0.5, 34), { fov: 34, roll: 0.4 });
 	k(7.8, F(V(7.0, API_Y + 0.1, 0.3), V(0.22, 0.28, 0.93), 9.4, 0.7, 0.52, 34), { fov: 34, roll: -0.8, hold: true });
-	k(8.9, F(V(7.0, API_Y + 0.1, 0.3), V(0.2, 0.26, 0.94), 8.8, 0.7, 0.52, 34), { fov: 34, roll: -0.5 });
-	k(9.5, F(busPt, V(0.78, 0.2, 0.6), 7.8, 0.7, 0.52, 38), { fov: 38, roll: 2.5, hold: true });
+	// cut 16: the record's window leaves before the bus's lands (the two had crossed on one frame), and the camera takes
+	// a second for the long move from the record to the bus, not 0.6 s, so the scene never drops dark between them
+	k(8.62, F(V(7.0, API_Y + 0.1, 0.3), V(0.2, 0.26, 0.94), 8.8, 0.7, 0.52, 34), { fov: 34, roll: -0.5 });
+	k(9.62, F(busPt, V(0.78, 0.2, 0.6), 7.8, 0.7, 0.52, 38), { fov: 38, roll: 2.5, hold: true });
 	k(11.7, F(busPt.clone().add(V(-0.6, 0, 0.3)), V(0.74, 0.22, 0.63), 7.4, 0.7, 0.52, 38), { fov: 38, roll: 1.8 });
 	k(12.3, F(CK, V(-0.55, 0.16, 0.82), 6.0, 0.3, 0.5, 36), { fov: 36, roll: -1.5, hold: true });
 	k(13.5, F(CK, V(-0.5, 0.18, 0.84), 5.6, 0.3, 0.5, 36), { fov: 36, roll: -1.2 });
@@ -1012,7 +1014,7 @@ window.setCues = async (cues) => {
 	K.forEach((k_) => { k_.hold = true; });
 	KEYS = K;
 	// a soft whoosh under each of the camera's moves
-	[S(3.6), S(5.05), S(6.35), S(8.1), 7.4, 9.05, 11.95, 13.6, 16.05, 17.75, c.u05, c.prices - 0.2, c.flash - 0.15, c.u06 - 0.05, c.api2 - 0.25, c.person - 0.25]
+	[S(3.6), S(5.05), S(6.35), S(8.1), 7.4, 8.72, 11.95, 13.6, 16.05, 17.75, c.u05, c.prices - 0.2, c.flash - 0.15, c.u06 - 0.05, c.api2 - 0.25, c.person - 0.25]
 		.forEach((t, i) => ev(t, 'move', i % 2 ? 0.35 : 0.65));
 	await Promise.all(PN.images().map((im) => (im.complete && im.naturalWidth ? null : im.decode().catch(() => null))));
 	window.renderAt(0);

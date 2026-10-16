@@ -38,7 +38,7 @@ CLICKS = [('mango', 'P', 6.62), ('mango', 'P', 200.3), ('mango', 'P', 209.7), ('
           ('sad', 'H', 260.04), ('sad', 'H', 433.72), ('sad', 'H', 459.92), ('sad', 'L', 561.18), ('sad', 'L', 573.72),
           ('sad', 'L', 574.94), ('sad', 'L', 578.56), ('sad', 'L', 589.44), ('sad', 'L', 623.08), ('sad', 'P', 721.75),
           ('admin', 'A', 105.04), ('mango', 'P', 599.8), ('sad', 'L', 656.4), ('sad', 'P', 853.8), ('sad', 'P', 863.5),
-          ('admin', 'A', 104.3), ('admin', 'A', 21.55), ('admin', 'A', 37.42)]   # cut 15: Console on the landing page, then Sign in
+          ('admin', 'A', 104.3), ('admin2', 'A', 70.12), ('admin2', 'A', 151.74)]   # cut 15: Console on the landing page, then Sign in; cut 16: on the 16 Oct run
 # the pushes the recordings themselves show arriving on a device (the Watcher's alert, the plan ready, expiry day)
 RECORDED_PUSHES = [('mango', 'P', 89.7), ('mango', 'P', 161.9), ('sad', 'L', 551.1)]
 # the scrolls the screens glide through (clicks8.py, by phase correlation; the ones under a press left out)
@@ -328,9 +328,15 @@ def sfx():
             lay(glint(-30), s.t0 + 0.35, pan=0.5)
         elif s.xin == 'up':          # under the hood: the next shot rises from below
             lay(W_(rnd, 1.0, 0.45, -25, 0.03, 0.4), s.t0 + 0.35, pan=0.5, anchor=0.45)
+        elif s.xin == 'zoom':        # cut 16: the rush into the carton, peaking on the flash
+            lay(W_(rnd, 0.7, 0.5, -26, 0.03, 0.4), s.t0 + s.xd / 2, pan=0.62, anchor=0.45)
+        elif s.xin == 'pull':        # cut 16: the label shrinks away, and lands in the bin's trail
+            lay(W_(rnd, 0.8, 0.45, -27, 0.05, 0.45), s.t0 + 0.32, pan=0.55, anchor=0.35)
+            lay(thud(-25), s.t0 + 0.62 * s.xd, pan=0.55)
     # the opening: the swell into the cut, the stamps, the calendar, the statement, the hit on the cut to the label
     og = sh['open-godown']
-    lay(R_(rnd, 2.6, -30), og.t1, anchor=2.6)
+    lab = sh['open-label']
+    lay(R_(rnd, 2.6, -30), lab.t0 + lab.xd / 2, anchor=2.6)     # cut 16: into the zoom's flash (og.t1 now runs under the zoom)
     for k, (_, u_, kind) in enumerate(getattr(og, 'stamps', [])):
         lay(thud(-16) if kind == 'big' else thud(-27), og.t0 + u_, pan=(0.62 + 0.06 * k) if kind == 'big' else (0.55 + 0.03 * k))
     lay(SP_(1.2, 16, -38, seed=91), og.t0 + 0.35, pan=0.6)
@@ -344,8 +350,7 @@ def sfx():
             lay(tick(-30, 523), og.t0 + it.c1 + 0.05, pan=0.2)
         if isinstance(it, P7_.Statement):
             for j, ln_ in enumerate(it.lines): lay(thud(-27 + j), og.t0 + ln_[3], pan=0.35)
-    lab = sh['open-label']
-    lay(boom(0.6, -24, 110.0, 60.0), lab.t0, pan=0.5)
+    lay(boom(0.6, -24, 110.0, 60.0), lab.t0 + lab.xd / 2, pan=0.5)
     for it in lab.items:
         if type(it).__name__ == 'Countdown': lay(glint(-31), lab.t0 + it.u0, pan=0.3)
     ol = sh['open-landfill']

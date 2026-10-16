@@ -38,7 +38,7 @@ def shift_y(img, dy, fill=0.0):
     return out
 
 
-def compose(kind, a, b, p, d=1):
+def compose(kind, a, b, p, d=1, pt=None):
     """the frame between the outgoing a and the incoming b, p from 0 to 1"""
     if kind == 'push':
         e = PUSH_EASE(p)
@@ -95,8 +95,55 @@ def compose(kind, a, b, p, d=1):
         rim = np.clip(1.0 - np.abs(d + 1.5) / 2.0, 0.0, 1.0)[..., None] * (1.0 - e) ** 0.5
         out = out * (1 - 0.85 * rim) + LIGHT * 0.95 * rim
         return np.clip(out, 0, 1)
+    if kind == 'zoom':
+        # cut 16: a zoom-through. The camera rushes into a point of the outgoing shot (accelerating, the light rising),
+        # the incoming lands out of that light and settles from a little larger; scaled whole, never blurred
+        px, py = pt or (W / 2, H / 2)
+        if p < 0.5:
+            q = p / 0.5
+            out = _scale_about(a, 1 + 1.7 * q ** 2.4, (px, py))
+            fl = 0.82 * q ** 3
+        else:
+            r = (p - 0.5) / 0.5
+            out = _scale_about(b, 1.2 - 0.2 * (1 - (1 - r) ** 3), (W / 2, H / 2))
+            fl = 0.82 * (1 - r) ** 2.4
+        return np.clip(out * (1 - fl) + FLASH * fl, 0, 1)
+    if kind == 'pull':
+        # cut 16: the outgoing shot shrinks into a card that drops into the incoming one at pt (the label falls into the
+        # bin's trail), a soft shadow under it and a light rim; the incoming settles from a little larger as it lands
+        e = PULL_EASE(p)
+        px, py = pt or (W / 2, H / 2)
+        out = _scale_about(b, 1.1 - 0.1 * (1 - (1 - p) ** 2), (W / 2, H / 2)) * (1 - 0.3 * (1 - p))
+        s = 1 - 0.88 * e
+        cx, cy = W / 2 + (px - W / 2) * e, H / 2 + (py - H / 2) * e
+        ang = -7.0 * e
+        M = cv2.getRotationMatrix2D((W / 2, H / 2), ang, s)
+        M[0, 2] += cx - W / 2; M[1, 2] += cy - H / 2
+        card = cv2.warpAffine(a, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
+        m = cv2.warpAffine(_ROUND, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)[..., None]
+        alpha = 1.0 if p < 0.78 else max(0.0, 1 - (p - 0.78) / 0.22)
+        if e > 0.02:     # its shadow, offset down and right, as it rises off the frame
+            sh = cv2.GaussianBlur(np.roll(np.roll(m[..., 0], int(14 * e), 0), int(9 * e), 1), (0, 0), 6 + 10 * e)[..., None]
+            out = out * (1 - 0.45 * sh * alpha)
+        rim = np.clip(m - cv2.erode(m, np.ones((3, 3), np.float32))[..., None], 0, 1) * min(1.0, e * 4)
+        out = out * (1 - m * alpha) + card * m * alpha
+        out = out * (1 - 0.8 * rim * alpha) + LIGHT * 0.8 * rim * alpha
+        return np.clip(out, 0, 1)
     return b
 
+
+def _scale_about(img, s, pt):
+    """img scaled by s about pt, whole, the frame's edge reflected where it would show"""
+    px, py = pt
+    M = np.float32([[s, 0, (1 - s) * px], [0, s, (1 - s) * py]])
+    return cv2.warpAffine(img, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+
+
+FLASH = np.array([0.93, 1.0, 0.95], np.float32)     # BGR: a light, a breath of the ring's green in it
+PULL_EASE = bezier_ease(0.5, 0.0, 0.3, 1.0)
+_ROUND = np.zeros((H, W), np.float32)
+cv2.rectangle(_ROUND, (60, 0), (W - 61, H - 1), 1.0, -1); cv2.rectangle(_ROUND, (0, 60), (W - 1, H - 61), 1.0, -1)
+for _cx, _cy in ((60, 60), (W - 61, 60), (60, H - 61), (W - 61, H - 61)): cv2.circle(_ROUND, (_cx, _cy), 60, 1.0, -1)
 
 IRIS_EASE = bezier_ease(0.6, 0.0, 0.2, 1.0)
 _yy, _xx = np.mgrid[0:H, 0:W].astype(np.float32)
@@ -113,7 +160,7 @@ def render_frame(shots, t, buf_a, buf_b):
         buf_b[:] = 0
         nxt.draw(buf_b, t)
         p = kit.clamp((t - nxt.t0) / max(1e-6, nxt.xd))
-        return compose(nxt.xin, buf_a, buf_b, p, nxt.xdir)
+        return compose(nxt.xin, buf_a, buf_b, p, nxt.xdir, getattr(nxt, 'xpt', None))
     return buf_a
 
 

@@ -387,6 +387,9 @@ design3/designs/SC-219/src/cast10/*.webp
 # cut 15: cast10 with Priya and Neha under the brand (its portraits are cast10's, rebuilt the same way)
 !design3/designs/SC-219/src/cast15/
 design3/designs/SC-219/src/cast15/*.webp
+# cut 16: cast15 with the title for the new demo-setup line
+!design3/designs/SC-219/src/cast16/
+design3/designs/SC-219/src/cast16/*.webp
 !design3/designs/SC-219/src/arch11/
 design3/designs/SC-219/src/arch11/*.webp
 # cut 13's architecture: cut 10's three.js scene made again, with the app's screens it shows (scr/, captured by screens13.mjs)
@@ -405,6 +408,7 @@ design3/designs/SC-219/src/build/*
 !design3/designs/SC-219/src/build/arch11-cues.json
 !design3/designs/SC-219/src/build/arch13-cues.json
 !design3/designs/SC-219/src/build/cast15-cues.json
+!design3/designs/SC-219/src/build/cast16-cues.json
 # cut 12's concept round: the Remotion project's source ships; its media (public/) is rebuilt by prep12c.sh
 !design3/designs/SC-219/src/remo12/
 design3/designs/SC-219/src/remo12/node_modules

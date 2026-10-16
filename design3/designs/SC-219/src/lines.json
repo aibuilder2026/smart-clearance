@@ -20,12 +20,12 @@
    "gap": 0.25
   },
   {
-   "id": "b91",
+   "id": "b92",
    "sec": "brand",
-   "text": "Agentic software as a service for FMCG brands, distributors and retailers.",
-   "say": "Agentic software as a service for F M C G brands, distributors and retailers.",
-   "gap": 0.25,
-   "take": "b91-4.wav"
+   "text": "Agentic software as a service for FMCG.",
+   "say": "Agentic software as a service for F M C G.",
+   "gap": 0.5,
+   "take": "b92-3.wav"
   },
   {
    "id": "t01",
@@ -71,12 +71,12 @@
    "gap": 0.35
   },
   {
-   "id": "x24",
+   "id": "x26",
    "sec": "cast",
-   "text": "Live on production: Munchly Foods, an imaginary brand, with two batches at two different distributors. One happy path, one sad.",
-   "say": "Lyve on production: Munch-lee Foods, an imaginary brand, with two batches at two different distributors. One happy path, one sad.",
+   "text": "Today, we're going to demo two journeys, live on production: Munchly Foods, an imaginary brand, with two batches at two distributors. One happy path, and one sad.",
+   "say": "Today, we're going to demo two journeys, lyve on production: Munch-lee Foods, an imaginary brand, with two batches at two distributors. One happy path, and one sad.",
    "gap": 0.3,
-   "take": "x24-3.wav"
+   "take": "x26-1.wav"
   },
   {
    "id": "n15",
@@ -205,7 +205,7 @@
    "id": "s05",
    "sec": "sad",
    "text": "At the landfill he photographs it, and the officer, two witnesses and Rakesh sign the certificate.",
-   "gap": 1.13,
+   "gap": 0.5,
    "pause": [
     [
      "it",
