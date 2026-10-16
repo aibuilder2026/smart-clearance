@@ -113,6 +113,18 @@
   .tdd-md a { color: var(--g-text); text-decoration: none; }
   #tdd-gaps .tdd-md ul li::marker { color: var(--amber-line); }
 
+  /* ---------- chapter 11, the evals: headings, lists in one column, the diagrams, the commands ---------- */
+  .tdd-evals h4 { margin: 3mm 0 0; font: 700 16px/1.2 var(--font-display); color: var(--fg); break-after: avoid; }
+  .tdd-evals ul, .tdd-evals ol { columns: 1; margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+  .tdd-evals ol li::marker { color: var(--primary-text); font-weight: 650; }
+  .tdd-evals p:has(> a > img) { max-width: none; break-inside: avoid; }
+  .tdd-evals p > a:has(> img) { display: flex; justify-content: center; border: 1px solid var(--line-2); border-radius: 12px; background: #fff; padding: 4mm; }
+  .tdd-evals img { display: block; max-width: 100%; max-height: 92mm; width: auto; height: auto; object-fit: contain; }
+  .tdd-evals p > em { font-size: 10.5px; color: var(--fg-3); }
+  .tdd-evals pre { margin: 0; padding: 8px 12px; background: var(--sunken); border-radius: 10px; font-size: 10.5px; overflow: hidden; }
+  .tdd-evals pre code { background: none; padding: 0; }
+  .tdd-evals td:first-child { width: 14%; }
+
   /* ---------- appendix A: the diagrams ---------- */
   .tdd-fig { break-before: page; break-inside: avoid; display: block; }
   .tdd-fig .fh { display: flex; align-items: baseline; gap: 12px; margin-bottom: 2mm; }

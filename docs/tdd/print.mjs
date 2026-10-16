@@ -18,8 +18,8 @@ const url = (p) => pathToFileURL(path.join(repo, p)).href;
 
 const META = {
   ref: 'SC-TDD-001',
-  version: '1.0',
-  date: '15 October 2026',
+  version: '1.1',
+  date: '16 October 2026',
   status: 'Issued',
 };
 
@@ -35,10 +35,11 @@ const SECTIONS = [
   { id: 'cicd', no: '8', title: 'Delivery', sub: 'GitHub Actions gates; Cloud Build ships' },
   { id: 'testing', no: '9', title: 'Testing and quality', sub: 'From a pixel to a live Gemini reply' },
   { id: 'observe', no: '10', title: 'Observability', sub: 'One trace, from a tap to an agent’s report' },
-  { id: 'tdd-perf', no: '11', title: 'Performance, cost and scale', sub: 'Measured on production, priced in INR' },
-  { id: 'tdd-decisions', no: '12', title: 'Design decisions', sub: 'What was chosen, and why' },
-  { id: 'tdd-gaps', no: '13', title: 'Known gaps and risks', sub: 'What is not done, and where it shows' },
-  { id: 'tdd-next', no: '14', title: 'What comes next', sub: 'The roadmap, area by area' },
+  { id: 'tdd-evals', no: '11', title: 'The agents’ evals', sub: 'Each agent’s model call, scored on live Gemini' },
+  { id: 'tdd-perf', no: '12', title: 'Performance, cost and scale', sub: 'Measured on production, priced in INR' },
+  { id: 'tdd-decisions', no: '13', title: 'Design decisions', sub: 'What was chosen, and why' },
+  { id: 'tdd-gaps', no: '14', title: 'Known gaps and risks', sub: 'What is not done, and where it shows' },
+  { id: 'tdd-next', no: '15', title: 'What comes next', sub: 'The roadmap, area by area' },
   { id: 'tdd-diagrams', no: 'A', title: 'Appendix A · The diagrams', sub: 'Every Lucidchart diagram, a page each' },
   { id: 'tdd-glossary', no: 'B', title: 'Appendix B · Glossary', sub: 'The domain’s words, and the stack’s' },
 ];
@@ -52,6 +53,8 @@ const NAMES = {
   'cloud-layers': 'Google Cloud, layer by layer', 'cloud-run': 'Cloud Run: two services, two jobs', 'events-and-time': 'Pub/Sub and Cloud Scheduler',
   data: 'Where the data lives', identity: 'Who signs as whom', 'agents-and-models': 'The agents and their models', 'model-call': 'A model call, bounded',
   'flow-core-loop': 'The core loop', 'flow-batch-journey': 'A batch’s journey',
+  'evals-run': 'The agents’ evals on Google Cloud', 'evals-case': 'One eval case, scored', 'evals-sets': 'The seven eval sets',
+  'evals-vision': 'How a Vision photo and its truth are made', 'evals-runs': 'The live eval runs, and what they changed',
 };
 for (const d of DIAGRAMS) {
   const file = d.src.split('/').pop().replace('.webp', '');
@@ -141,7 +144,8 @@ await page.evaluate(
         <div style="display:grid;gap:5mm;align-content:start">
           <div class="tdd-box"><h3>Revision history</h3><table>
             <thead><tr><th>Version</th><th>Date</th><th>Change</th></tr></thead>
-            <tr><td>${META.version}</td><td>${META.date}</td><td>First issue: the architecture page as a technical design document, with performance and cost, the design decisions, the known gaps, what comes next, every Lucidchart diagram and a glossary.</td></tr>
+            <tr><td>1.0</td><td>15 October 2026</td><td>First issue, with every Lucidchart diagram and a glossary.</td></tr>
+            <tr><td>${META.version}</td><td>${META.date}</td><td>Chapter 11, the agents’ evals, with five new diagrams.</td></tr>
           </table></div>
 <div class="tdd-box blue"><h3>The system it describes</h3><table>
             <tr><th>Repository</th><td>github.com/aibuilder2026/smart-clearance</td></tr>
@@ -203,10 +207,11 @@ await page.evaluate(
 
     // ---------- back matter ----------
     const back = [
-      sec('tdd-perf', '11', 'Performance, cost and scale', 'Measured on production; it runs for about ₹1,350 to ₹3,600 a month', '', `<div class="tdd-md">${frag.perf}</div>`),
-      sec('tdd-decisions', '12', 'Design decisions', 'What was chosen, and why', '', `<div class="tdd-md">${frag.decisions}</div>`),
-      sec('tdd-gaps', '13', 'Known gaps and risks', 'What is not done yet, and where it shows', '', `<div class="tdd-md">${frag.gaps}</div>`),
-      sec('tdd-next', '14', 'What comes next', 'The roadmap, area by area', '', `<div class="tdd-md">${frag.next}</div>`),
+      sec('tdd-evals', '11', 'The agents’ evals', 'Each agent’s own model call, on live Gemini, scored by code and by a judge', '', `<div class="tdd-md tdd-evals">${frag.evals}</div>`),
+      sec('tdd-perf', '12', 'Performance, cost and scale', 'Measured on production; it runs for about ₹1,350 to ₹3,600 a month', '', `<div class="tdd-md">${frag.perf}</div>`),
+      sec('tdd-decisions', '13', 'Design decisions', 'What was chosen, and why', '', `<div class="tdd-md">${frag.decisions}</div>`),
+      sec('tdd-gaps', '14', 'Known gaps and risks', 'What is not done yet, and where it shows', '', `<div class="tdd-md">${frag.gaps}</div>`),
+      sec('tdd-next', '15', 'What comes next', 'The roadmap, area by area', '', `<div class="tdd-md">${frag.next}</div>`),
       sec('tdd-diagrams', 'A', 'Appendix A', 'The diagrams', 'Every diagram in ARCHITECTURE.md, each a Lucidchart document drawn with Google Cloud’s own icons, a page each. The link under each opens its source.',
         (() => { const rows = diagrams.map((d, i) => `<tr><td>A.${i + 1}</td><td>${esc(d.title)}</td><td>${esc(d.source)}</td></tr>`); const half = Math.ceil(rows.length / 2); return `<div class="tdd-index-wrap"><table class="tdd-index">${rows.slice(0, half).join('')}</table><table class="tdd-index">${rows.slice(half).join('')}</table></div>`; })() + diagrams.map((d, i) => `<div class="tdd-fig"><div class="fh"><b>A.${i + 1}</b><h3>${esc(d.title)}</h3></div>
           <p class="cap">${esc(d.alt)}</p><div class="img"><img src="${d.src}" alt=""></div>
