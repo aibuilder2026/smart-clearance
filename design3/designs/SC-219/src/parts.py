@@ -24,6 +24,7 @@ def _norm(w):
     return re.sub(r"[^a-z0-9]", '', w.lower())
 # a pause inside a line (lines.json "pause": [[word, seconds]]): the take is cut after that word, in the breath before
 # the next, and the silence added; the line's length and its later words' times move with it (mix.voice cuts the audio)
+# SC-225: a negative pause tightens one: that much of the silence is cut round its middle (never more than the silence)
 PAUSE = {}
 for _l in LINES:
     for _w, _add in _l.get('pause', []):
@@ -31,13 +32,14 @@ for _l in LINES:
         if _ws:
             _k = next(i for i, w in enumerate(_ws) if _norm(w['w']).startswith(_norm(_w)))
             _cut = (_ws[_k]['e'] + _ws[_k + 1]['s']) / 2 if _k + 1 < len(_ws) else _ws[_k]['e']
+            assert _add >= 0 or (_k + 1 < len(_ws) and -_add < _ws[_k + 1]['s'] - _ws[_k]['e'] - 0.04), f"{_l['id']}: a pause can't be cut past its silence"
             ASR[_l['id']] = dict(ASR[_l['id']], words=[dict(w, s=w['s'] + _add, e=w['e'] + _add) if w['s'] >= _cut else w for w in _ws])
         else:
             _cut = None
         PAUSE.setdefault(_l['id'], []).append((_cut, _add))
         DUR[_l['id']] = DUR[_l['id']] + _add
-LEAD, HOLD = 0.5, 1.2   # cut 10: the voice starts half a second in; cut 11: the close condensed, its card held 1.2 s after its last word (the QR code is up from its first)
-PRE = {'i03': 0.35, 't01': 0.15, 'x24': 0.25, 'k01': 0.25, 'q01': 0.5, 'm03': 0.4, 's01': 1.05, 'r01': 0.5}   # cut 9: a beat before the brand, under the hood, the live demo, the console, Priya's sign-in, the happy path's first step, the sad path and the record
+LEAD, HOLD = 0.4, 0.08  # cut 10: the voice starts half a second in (cut 15: 0.4); cut 11: the close condensed; cut 15: the card 1.5 s, its line said over it (the QR code is up from its first)
+PRE = {'i03': 0.35, 't01': 0.15, 'x24': 0.15, 'n15': 0.1, 'k01': 0.25, 'q01': 0.5, 'm03': 0.4, 's01': 1.05, 'r01': 0.5}   # cut 9: a beat before the brand, under the hood, the live demo (cut 15: 0.15), the landing page (cut 15), the console, Priya's sign-in, the happy path's first step, the sad path and the record
 T = {}
 _t = LEAD
 for _l in LINES:

@@ -1,12 +1,79 @@
-# SC-219 · The working demo, cuts 9 to 14
+# SC-219 · The working demo, cuts 9 to 15
 
 A demo film of about four minutes, made from the three production recordings of 13 Oct 2026, as cut 8 (SC-218) was:
 cut 9 on the maintainer's notes on cut 8, cut 10 on four notes on cut 9, cut 11 on three notes on cut 10, then cut 12
 on a new architecture scene, after a concept round, cut 13 on cut 10's 3D architecture made whole, with the app
 beside each part, and cut 14 on Google's own logos, a chip and a bracket on each part, and the four apps on their
-screens. Each
+screens, then cut 15 (SC-225) on the demo's cast, the landing page and Munchly's workspace address. Each
 joins the earlier cuts in the repository root's `working-demo/` folder, with its export's date and time in its name;
 `media/` holds the latest.
+
+## Cut 15 (16 Oct 2026, SC-225)
+
+Priya and Neha in the demo's cast, a new scene on the landing page, and Munchly's workspace address said and shown,
+inside 240 s.
+
+### The brief
+
+On cut 14's export (`…_2026-10-16_09-46-36`), the maintainer's last changes:
+
+1. "Scene where you are explaining the demo setup, show the character of Priya and Neha too, they are missing."
+2. "There should be a scene where the landing page is shown and the console and workspace buttons explained briefly.
+   From there we need to show neha clicks on console to login to console."
+3. "We need some explanation to tell that for demo client workspace for kiranas, distributor and fmcg is
+   munchly-smartclearance.web.app."
+
+The time could come from the closing scene and the SaaS scene, never from the architecture or the main walkthrough.
+Asked how, the maintainer kept the SaaS scene as it was, let the close be 1.5 s and asked for the rest to be found
+subtly; then "Whole thing has to be under 240seconds strictly", and the destruction certificate's signing could give
+a little.
+
+### What changed
+
+- **The cast** (`src/cast15/`, cast10 with two cards): under Munchly Foods' card, Priya Deshmukh (Munchly · supply
+  chain, "tracks every batch, approves each plan") and Neha Kulkarni (Smart-Clearance · console, "sets the brand up:
+  data, people, agents"), each with the app's portrait, landing as the voice says "two batches".
+- **The landing page, 6.5 s,** before the console, in Neha's room:
+  - the production landing page (the admin walk's recording, 21.05 s) held while the voice says "Munchly, its
+    distributors and kiranas share its workspace. Neha opens the console." (Maya1, six takes; take 4, read back word
+    for word, its 0.78 s breath between the sentences cut to 0.40 s);
+  - the Workspace button ringed, its line running to a card: "munchly-smartclearance.web.app · This demo's client
+    workspace: Munchly Foods' own team, its distributors and their kiranas";
+  - then Console, with its card: "smartclearance-console.web.app · Smart-Clearance's own team: every client set up, run
+    and watched". Both cards stay to the end of the scene;
+  - Neha presses Console on "opens" (21.55 s), the address changes, the console opens, she presses Sign in (37.42 s)
+    and "Welcome, Neha" lands; then the console scene, unchanged. A click under each press;
+  - "Two ways in.", and Firebase Hosting's tag (the landing page, the console, every workspace).
+- **The close, 1.5 s:** the line "Try the guided demo." said over the card, which comes together 3.6 times as fast
+  (all of it in by 0.92 s), the QR code up from 0.15 s, and a 0.3 s fade to black. The landing of the mark is voiced
+  0.25 s in.
+- **The time,** against cut 14's 238.92 s: the landing page adds 6.5 s; the close gives 4.2 s (its line 2.97 s
+  shorter, its hold 1.12 s, the breath before it 0.15 s); the signing at the landfill gives 1.0 s (Rakesh's own
+  signature at 1.3x, the fast-forward 22x to 25x, the four signed held 0.16 s less); and a few tenths
+  each from the opening's lead (0.1), the breath after its first line (0.1), the bin's beat (0.3) and the cast's lead
+  and tail (0.25). The SaaS scene, the architecture and the rest of the walkthrough keep every frame.
+- `mix.py` can now tighten a pause inside a take (a negative `pause` in `lines.json`): the silence is cut round its
+  middle with a 10 ms crossfade, never past the silence.
+
+### Found
+
+- The landing page leaves at 21.6 s, so the press's segment ends there: a frame later the window was blank.
+- The kicker "THE LANDING PAGE · SMARTCLEARANCE.WEB.APP" did not fit its column; the address bar carries the address.
+
+### The result
+
+- 3 min 59.4 s (239.40 s); −14.0 LUFS, −1.5 dB true peak.
+- No one-frame flash in its 5,985 frames; every window within its speed limits apart from the two labelled
+  fast-forwards (the scheme filling, 34x; the signing, 25x).
+- The stage-mark scan: 208 frames, the 12 new ones the landing page's dark hero film in its corner and the console's
+  own green Sign in button.
+- Both QR codes read back (7.4 s and 238.95 s).
+- 31 of 34 lines word for word, the new landing line and the close among them; u02 reads exactly again. The rest as
+  before: u03's "Pub/Sub", and the brand name in s01 and s08.
+- `working-demo/smart-clearance-working-demo-2026-10-16_10-55-33.mp4` (crf 17), its 720p copy, a light preview, the
+  changed scenes on their own (`…-changes.mp4`) and captions; the crf-21 copies in `media/`.
+
+**The spend:** nothing. Maya1, Whisper, UTMOS, Chromium and ffmpeg ran on this Mac.
 
 ## Cut 14 (16 Oct 2026)
 
@@ -766,6 +833,16 @@ in `remo12/public/`):
 # then name the frames f00000.jpg … in build/arch12/ (the sequence's element-NNN.jpeg, in order)
 .venv/bin/python render12.py && .venv/bin/python mix12.py && ./export12.sh
 node qrcheck11.mjs ../media/smart-clearance-working-demo.mp4 7.6 235                # the codes, read back
+```
+
+Cut 15, after cut 14's steps (the cast page `cast15/`; the landing page's line voiced and picked):
+
+```sh
+.venv/bin/python shots13.py > /dev/null                                             # writes the pages' cues
+node capture-page.mjs cast15/cast.html build/cast15 build/cast15-cues.json 25
+node capture-page.mjs saas10/saas.html build/saas10 build/saas10-cues.json 25
+.venv/bin/python render13.py && .venv/bin/python mix13.py && ./export13.sh
+node qrcheck11.mjs ../media/smart-clearance-working-demo.mp4 7.4 238.95             # the codes, read back
 ```
 
 Cut 14, after cut 13's steps (its app screens from `tiles14.mjs` and `tiles14.py`; the SaaS scene captured again on

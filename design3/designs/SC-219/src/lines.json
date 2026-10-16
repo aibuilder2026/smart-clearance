@@ -4,13 +4,13 @@
    "id": "i01",
    "sec": "intro",
    "text": "Every day, India's food brands write off stock that sells too slowly.",
-   "gap": 0.3
+   "gap": 0.2
   },
   {
    "id": "i13",
    "sec": "intro",
    "text": "Too close to its date for quick commerce, it's destroyed.",
-   "gap": 2.35,
+   "gap": 2.05,
    "take": "i13-0.wav"
   },
   {
@@ -75,8 +75,17 @@
    "sec": "cast",
    "text": "Live on production: Munchly Foods, an imaginary brand, with two batches at two different distributors. One happy path, one sad.",
    "say": "Lyve on production: Munch-lee Foods, an imaginary brand, with two batches at two different distributors. One happy path, one sad.",
-   "gap": 0.45,
+   "gap": 0.3,
    "take": "x24-3.wav"
+  },
+  {
+   "id": "n15",
+   "sec": "landing",
+   "text": "Munchly, its distributors and kiranas share its workspace. Neha opens the console.",
+   "say": "Munch-lee, its distributors and kiranas share its workspace. Neha opens the console.",
+   "gap": 0.25,
+   "pause": [["workspace", -0.38]],
+   "take": "n15-4.wav"
   },
   {
    "id": "k01",
@@ -196,7 +205,7 @@
    "id": "s05",
    "sec": "sad",
    "text": "At the landfill he photographs it, and the officer, two witnesses and Rakesh sign the certificate.",
-   "gap": 2.13,
+   "gap": 1.13,
    "pause": [
     [
      "it",
@@ -227,14 +236,14 @@
    "id": "m11",
    "sec": "report",
    "text": "Impact posts every batch to its ledger in BigQuery, ready for BRSR.",
-   "gap": 0.6
+   "gap": 0.45
   },
   {
    "id": "d01",
    "sec": "next",
-   "text": "Try the guided demo at smartclearance-demo dot web dot app.",
+   "text": "Try the guided demo.",
    "gap": 0.0,
-   "say": "Try the guided demo at smart clearance demo dot web dot app."
+   "take": "d01-2.wav"
   }
  ],
  "note": "SC-219 cut 9: cut 8's lines where they stay (their takes reused); new: the SaaS line (b91), the architecture condensed (u02 to u06, after t01), the cast and two paths (x01), a shorter install line (p02), and Priya's sign-in and Command Center (q01 to q03), which replace m02"

@@ -38,7 +38,7 @@ CLICKS = [('mango', 'P', 6.62), ('mango', 'P', 200.3), ('mango', 'P', 209.7), ('
           ('sad', 'H', 260.04), ('sad', 'H', 433.72), ('sad', 'H', 459.92), ('sad', 'L', 561.18), ('sad', 'L', 573.72),
           ('sad', 'L', 574.94), ('sad', 'L', 578.56), ('sad', 'L', 589.44), ('sad', 'L', 623.08), ('sad', 'P', 721.75),
           ('admin', 'A', 105.04), ('mango', 'P', 599.8), ('sad', 'L', 656.4), ('sad', 'P', 853.8), ('sad', 'P', 863.5),
-          ('admin', 'A', 104.3)]
+          ('admin', 'A', 104.3), ('admin', 'A', 21.55), ('admin', 'A', 37.42)]   # cut 15: Console on the landing page, then Sign in
 # the pushes the recordings themselves show arriving on a device (the Watcher's alert, the plan ready, expiry day)
 RECORDED_PUSHES = [('mango', 'P', 89.7), ('mango', 'P', 161.9), ('sad', 'L', 551.1)]
 # the scrolls the screens glide through (clicks8.py, by phase correlation; the ones under a press left out)
@@ -463,7 +463,8 @@ def sfx():
             for k, fa in enumerate(g.fact_at): lay(glint(-33), s.t0 + fa, pan=0.3 + 0.2 * k)
     # the close: the mark lands
     e = sh['end']
-    lay(R_(rnd, 1.1, -29), e.t0 + 0.6, anchor=1.1); lay(boom(2.4, -20, 55, 34), e.t0 + 0.6); lay(glint(-31), e.t0 + 0.75, pan=0.4)
+    # cut 15: the card comes together 3.6 times as fast, so the mark lands 0.25 s in, and the boom is shorter
+    lay(R_(rnd, 0.6, -29), e.t0 + 0.25, anchor=0.6); lay(boom(1.3, -20, 55, 34), e.t0 + 0.25); lay(glint(-31), e.t0 + 0.4, pan=0.4)
     return out, air
 
 
