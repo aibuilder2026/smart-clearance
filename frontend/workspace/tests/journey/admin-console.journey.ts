@@ -240,6 +240,41 @@ const WHY = {
 		title: "A live client's journey",
 		text: "Munchly Foods runs live. Its journey runs on the prototype's own clock, so the story's best-before dates hold; staff can reset it or move it forward from here."
 	},
+	munchlyRead: {
+		tag: 'Live client',
+		title: "Munchly Foods' settings, read only",
+		text: "A live client's whole configuration in one place: its supply-chain profile, each agent's settings, its exits and guardrails, how packs are destroyed at the godown, its people, integrations and plan. Staff read it here; nothing is changed."
+	},
+	munchlyAgent: {
+		tag: 'Agents',
+		title: "One agent's settings for this client",
+		text: 'Each agent keeps its own settings per client: whether it is on, how much it may do on its own, and when it runs. Here they are only read.'
+	},
+	munchlyRules: {
+		tag: 'Rules',
+		title: "The client's exits and guardrails",
+		text: 'The exits the agents may use, with the bin as the baseline, and the limits every agent works inside: staff-sale caps, the offer window, Hindi first, a label photo before any plan.'
+	},
+	munchlyDestroy: {
+		tag: 'Rules',
+		title: 'Destroyed at the godown',
+		text: "Munchly settles packs left at the godown by destroying them there, against two photos, Vision's checks, an authorised agency and Supply Chain's second yes."
+	},
+	munchlyPeople: {
+		tag: 'People',
+		title: "Who works in Munchly's workspace",
+		text: 'Each person, the role their access gives them and whether they have signed in. Distributors, kiranas and the food bank sign in to their own part of it.'
+	},
+	munchlyPlan: {
+		tag: 'Plan',
+		title: 'Its plan and usage',
+		text: 'The plan the client is on, and what it uses: distributors, SKUs, batches tracked and what it has recovered so far.'
+	},
+	munchlyAudit: {
+		tag: 'Audit',
+		title: 'Every change, in a name',
+		text: 'Every change to the client is a line in its audit log, in the name of the person who made it. This pass added none.'
+	},
 	triggers: {
 		tag: 'Live client',
 		title: 'Every run, on demand',
@@ -1432,6 +1467,101 @@ const STEPS: Step[] = [
 				await page.waitForTimeout(500);
 			}
 			await running().done("Munchly Foods' SKUs, their gates and a batch's override");
+		}
+	},
+	{
+		id: 'munchly',
+		title: "Munchly Foods' settings and configuration, browsed and left as they are",
+		async run(s) {
+			// read only: every sheet is closed or cancelled, and no Save, switch, stepper or segment is pressed
+			const page = await s.open('neha', '/clients/munchly/supply', "browses Munchly Foods' settings, changing nothing");
+			const chain = page.locator('.wschain').first();
+			if (await chain.isVisible().catch(() => false)) await s.spot(chain, WHY.munchlyRead, 4800);
+			const edit = page.getByRole('button', { name: 'Edit', exact: true }).first();
+			if (await edit.isVisible().catch(() => false)) {
+				await s.click(edit, 700);
+				const sheet = page.getByRole('dialog', { name: 'Supply-chain profile' });
+				if (await sheet.isVisible({ timeout: 8000 }).catch(() => false)) {
+					await s.mark(
+						[
+							[
+								sheet.locator('input[name="pf-route"]').first().locator('xpath=ancestor::fieldset[1]'),
+								'Route to market'
+							],
+							[
+								sheet.locator('input[name="pf-expiry"]').first().locator('xpath=ancestor::fieldset[1]'),
+								'Expiry policy'
+							],
+							[sheet.locator('#pf-bl'), 'Blinkit gate for new SKUs'],
+							[sheet.locator('#pf-qc'), 'Zepto and Instamart gate for new SKUs']
+						],
+						WHY.profileSheet
+					);
+					await s.click(sheet.getByRole('button', { name: 'Close' }).first(), 500);
+					await expect(sheet).toBeHidden();
+				}
+			}
+			await running().done("Munchly Foods' supply-chain profile, read and closed");
+
+			await s.open('neha', '/clients/munchly/agents', "reads Munchly Foods' agents, one by one");
+			const insp = page.locator('.cs-insp');
+			for (const name of ['Watcher', 'Valuer', 'Router', 'Negotiator', 'Paperwork']) {
+				const a = page.locator('.cs-pipe .cs-open', { hasText: name }).first();
+				if (!(await a.isVisible().catch(() => false))) continue;
+				await s.click(a, 600);
+				await expect(insp.locator('.t-title3, b').first()).toBeVisible();
+				await s.spot(insp, WHY.munchlyAgent, 2600);
+			}
+			await running().done("Munchly Foods' agents' settings, read (nothing saved)");
+
+			await s.open('neha', '/clients/munchly/rules', "reads Munchly Foods' channels and rules");
+			const exits = page.locator('.list-row', { hasText: 'The bin' }).locator('xpath=..');
+			if (await exits.count()) {
+				await s.reveal(exits);
+				await read(s, exits.locator('.list-row'), 6, 300);
+				await s.spot(exits, WHY.munchlyRules, 4000);
+			}
+			const guard = page.locator('.list-row', { hasText: 'Staff sale cap' }).locator('xpath=..');
+			if (await guard.count()) {
+				await s.reveal(guard);
+				await read(s, guard.locator('.list-row'), 5, 300);
+			}
+			const godown = page.locator('.list-row', { hasText: 'Authorised agencies' }).locator('xpath=..');
+			if (await godown.count()) {
+				await s.reveal(godown);
+				await read(s, godown.locator('.list-row'), 7, 300);
+				await s.spot(godown, WHY.munchlyDestroy, 4200);
+			}
+			await running().done("Munchly Foods' exits, guardrails and destruction at the godown, read");
+
+			await s.open('neha', '/clients/munchly/people', "reads Munchly Foods' people");
+			const people = page.getByRole('region', { name: /People in/ }).first();
+			if (await people.isVisible({ timeout: 15_000 }).catch(() => false)) {
+				await s.reveal(people);
+				await s.spot(people, WHY.munchlyPeople, 4200);
+				await s.pan(people);
+			}
+			await running().done("Munchly Foods' people, read");
+
+			await s.open('neha', '/clients/munchly/integrations', "reads Munchly Foods' integrations");
+			const ints = page.locator('.list-row');
+			await read(s, ints, 6, 330);
+			if (await ints.count()) await s.spot(ints.first().locator('xpath=..'), WHY.integrations, 3600);
+			await running().done("Munchly Foods' integrations, read");
+
+			await s.open('neha', '/clients/munchly/plan', "reads Munchly Foods' plan and usage");
+			const plan = page.getByRole('group', { name: 'Plan' }).first();
+			if (await plan.isVisible().catch(() => false)) await s.spot(plan, WHY.munchlyPlan, 3600);
+			const usage = page.locator('.list-row', { hasText: 'Batches tracked' }).locator('xpath=..');
+			if (await usage.count()) await read(s, usage.locator('.list-row'), 5, 330);
+			await running().done("Munchly Foods' plan and usage, read (the plan left as it is)");
+
+			await s.open('neha', '/clients/munchly/audit', "reads Munchly Foods' audit log");
+			const log = page.locator('.list-row');
+			await expect(log.first()).toBeVisible({ timeout: 15_000 });
+			await read(s, log, 8, 300);
+			await s.spot(log.first().locator('xpath=..'), WHY.munchlyAudit, 3600);
+			await running().done("Munchly Foods' audit log, read");
 		}
 	},
 	{
