@@ -8,12 +8,18 @@ import { DataHall } from './a/DataHall';
 import { InsideMachine } from './c/InsideMachine';
 import { AStillGemini, AStillYes, CStillGemini, CStillYes } from './Stills';
 import { Arch } from './arch12/Arch';
+import { FssaiBatch, FssaiRule } from './fssai17/Fssai';
 
 const FPS = 25;
 const all = { ...litAt(99) };
 export const RemotionRoot: React.FC = () => {
 	return (
 		<>
+			{/* SC-228 (cut 17): FSSAI's rule over the opening's godown and label, transparent, timed from the voice (props) */}
+			<Composition id="FssaiRule" component={FssaiRule} durationInFrames={250} fps={FPS} width={1920} height={1080}
+				defaultProps={{ dur: 10, t0: 0.5, thirty: 3.2, fortyFive: 4.6, remain: 5.6, t1: 9.6 }} calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.dur * FPS) })} />
+			<Composition id="FssaiBatch" component={FssaiBatch} durationInFrames={150} fps={FPS} width={1920} height={1080}
+				defaultProps={{ dur: 6, t0: 0.4, days: 1.6, quick: 3.4, t1: 5.8 }} calculateMetadata={({ props }) => ({ durationInFrames: Math.round(props.dur * FPS) })} />
 			<Composition id="Arch12" component={Arch} durationInFrames={Math.round(33.64 * FPS)} fps={FPS} width={1920} height={1080} />
 			<Composition id="A-DataHall" component={DataHall} durationInFrames={Math.round(TEST_END * FPS)} fps={FPS} width={1920} height={1080} />
 			<Composition id="C-InsideMachine" component={InsideMachine} durationInFrames={Math.round(TEST_END * FPS)} fps={FPS} width={1920} height={1080} />

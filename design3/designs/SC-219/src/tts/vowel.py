@@ -10,7 +10,7 @@ from scipy.linalg import solve_toeplitz
 from scipy.signal import resample_poly
 
 HERE = Path(__file__).resolve().parent
-TAKES = HERE / 'vo3' / 'maya1w-warm'
+TAKES = HERE / 'vo3' / ((HERE / 'voice.txt').read_text().strip() if (HERE / 'voice.txt').exists() else 'maya1w-warm')   # cut 17: the chosen voice's takes
 READ = json.loads((TAKES / 'read.json').read_text())
 FS = 11025
 

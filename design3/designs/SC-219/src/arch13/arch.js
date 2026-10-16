@@ -1095,8 +1095,9 @@ function update(t) {
 
 	// the deploy's light running along the deck as the voice says Firebase, each screen flashing as it passes
 	const tf = unwarp(t);
-	const sw_ = SWEEP.t0 < 1e8 ? (tf - SWEEP.t0) / 0.95 : -1, sweepX = lerp(-11.5, 11.5, eio(clamp(sw_)));
-	const sweepAt = (x) => (sw_ > 0 && sw_ < 1.2 ? Math.exp(-((x - sweepX) ** 2) / 2.4) : 0);
+	// SC-228 (cut 17): over 1.5 s, its sheen wider, so each screen glows for a few frames (over 0.95 s a screen lit for one)
+	const sw_ = SWEEP.t0 < 1e8 ? (tf - SWEEP.t0) / 1.5 : -1, sweepX = lerp(-11.5, 11.5, eio(clamp(sw_)));
+	const sweepAt = (x) => (sw_ > 0 && sw_ < 1.2 ? Math.exp(-((x - sweepX) ** 2) / 5.0) : 0);
 	deckSweep.position.set(sweepX, DECK_Y + 0.12, 1.9); deckSweep.material.opacity = sw_ > 0 && sw_ < 1 ? Math.sin(Math.PI * sw_) * 0.95 : 0;
 	// the apps' screens: each lights in turn as the voice names the four apps, its own app on it, scrolling
 	panels.forEach((p, i) => {
@@ -1107,11 +1108,13 @@ function update(t) {
 		const op = clamp((t - a.t0) / 0.4);
 		p.screen.material.opacity = op; p.frame.material.opacity = op * 0.9; p.g.visible = op > 0.003;
 		const lit = a.lit < 1e8 ? clamp((t - a.lit) / 0.3) : 0;
-		const flash = a.lit < 1e8 && t > a.lit ? Math.exp(-(t - a.lit) / 0.35) : 0;
+		// SC-228 (cut 17): the flash eases in over 0.15 s, at half its strength: a jump from nothing to its peak in one frame spiked
+		// the bloom over the whole screen for that frame (34.2 s, the console's screen as the voice names the apps)
+		const flash = a.lit < 1e8 && t > a.lit ? sm(clamp((t - a.lit) / 0.15)) * Math.exp(-Math.max(0, t - a.lit - 0.15) / 0.35) : 0;
 		p.edge.material.opacity = op * (0.35 + 0.65 * (t > deck.t0 ? 1 : 0.3)) * (0.6 + 0.4 * lit + 0.8 * flash);
 		const busy = BEAMS['req-' + a.id].pk.reduce((m, q) => Math.max(m, t > q.t0 && t < q.t0 + 0.5 ? Math.sin(Math.PI * (t - q.t0) / 0.5) : 0), 0);
 		p.screen.material.opacity = op;
-		p.screen.material.color.copy(col(0xffffff, 0.94 * (0.62 + 0.38 * deck.dimK) * (1 + 0.12 * flash)));
+		p.screen.material.color.copy(col(0xffffff, 0.94 * (0.62 + 0.38 * deck.dimK) * (1 + 0.06 * flash)));
 		p.sheen.material.opacity = sweepAt(p.g.position.x) * 0.55 + 0.08 * busy;
 	});
 

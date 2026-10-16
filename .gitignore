@@ -390,6 +390,8 @@ design3/designs/SC-219/src/cast15/*.webp
 # cut 16: cast15 with the title for the new demo-setup line
 !design3/designs/SC-219/src/cast16/
 design3/designs/SC-219/src/cast16/*.webp
+!design3/designs/SC-219/src/audit17/
+!design3/designs/SC-219/src/ops17/
 !design3/designs/SC-219/src/arch11/
 design3/designs/SC-219/src/arch11/*.webp
 # cut 13's architecture: cut 10's three.js scene made again, with the app's screens it shows (scr/, captured by screens13.mjs)
@@ -409,6 +411,11 @@ design3/designs/SC-219/src/build/*
 !design3/designs/SC-219/src/build/arch13-cues.json
 !design3/designs/SC-219/src/build/cast15-cues.json
 !design3/designs/SC-219/src/build/cast16-cues.json
+# cut 17 (SC-228): SC-211's audit trail and board, on the chips' Record, and the cues they and FSSAI's overlays are made on
+!design3/designs/SC-219/src/build/audit17-cues.json
+!design3/designs/SC-219/src/build/ops17-cues.json
+!design3/designs/SC-219/src/build/fssai17-rule.json
+!design3/designs/SC-219/src/build/fssai17-batch.json
 # cut 12's concept round: the Remotion project's source ships; its media (public/) is rebuilt by prep12c.sh
 !design3/designs/SC-219/src/remo12/
 design3/designs/SC-219/src/remo12/node_modules
@@ -426,3 +433,11 @@ design3/designs/SC-219/src/tts/vo3/*
 !design3/designs/SC-219/src/tts/vo3/maya1w-warm/
 design3/designs/SC-219/src/tts/vo3/maya1w-warm/*
 !design3/designs/SC-219/src/tts/vo3/maya1w-warm/*.json
+# cut 17: the presenter (Gemini-TTS Gacrux): the picks, the read-backs, the fit; and the bake-off's prompt and scores
+!design3/designs/SC-219/src/tts/vo3/gemini-Gacrux-demo/
+design3/designs/SC-219/src/tts/vo3/gemini-Gacrux-demo/*
+!design3/designs/SC-219/src/tts/vo3/gemini-Gacrux-demo/*.json
+!design3/designs/SC-219/src/tts/bake17/
+design3/designs/SC-219/src/tts/bake17/*
+!design3/designs/SC-219/src/tts/bake17/*.txt
+!design3/designs/SC-219/src/tts/bake17/*.json

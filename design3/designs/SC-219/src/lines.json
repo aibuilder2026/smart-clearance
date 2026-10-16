@@ -3,15 +3,21 @@
   {
    "id": "i01",
    "sec": "intro",
-   "text": "Every day, India's food brands write off stock that sells too slowly.",
-   "gap": 0.2
+   "text": "Every day, India's food brands write off perfectly good stock, simply because it sells too slowly.",
+   "gap": 0.25
+  },
+  {
+   "id": "f01",
+   "sec": "intro",
+   "text": "And FSSAI's rule for food sold online is strict: at delivery, thirty percent of its shelf life, or forty-five days, must remain.",
+   "say": "And F S S A I's rule for food sold online is strict: at delivery, thirty percent of its shelf life, or forty-five days, must remain.",
+   "gap": 0.3
   },
   {
    "id": "i13",
    "sec": "intro",
-   "text": "Too close to its date for quick commerce, it's destroyed.",
-   "gap": 2.05,
-   "take": "i13-0.wav"
+   "text": "This batch has just twenty-two days left. Too close to its date for quick commerce, it's destroyed.",
+   "gap": 2.0
   },
   {
    "id": "i03",
@@ -22,229 +28,225 @@
   {
    "id": "b92",
    "sec": "brand",
-   "text": "Agentic software as a service for FMCG.",
-   "say": "Agentic software as a service for F M C G.",
-   "gap": 0.5,
-   "take": "b92-3.wav"
+   "text": "Agentic software as a service, for FMCG.",
+   "say": "Agentic software as a service, for F M C G.",
+   "gap": 0.4
   },
   {
    "id": "t01",
    "sec": "tech",
    "text": "Under the hood, it's all Google Cloud.",
-   "gap": 0.75
+   "gap": 0.9,
+   "tempo": 1.0
   },
   {
    "id": "u02",
    "sec": "tech",
-   "text": "Four apps on Firebase, one API on Cloud Run, Cloud SQL as the record.",
-   "gap": 0.4,
-   "pause": [["Firebase", 1.15], ["Run", 0.55]]
+   "text": "Four apps on Firebase, one API on Cloud Run, and Cloud SQL as the record.",
+   "gap": 0.7,
+   "pause": [
+    [
+     "Firebase",
+     1.15
+    ],
+    [
+     "Run",
+     0.55
+    ]
+   ],
+   "tempo": 1.0
   },
   {
    "id": "u03",
    "sec": "tech",
-   "text": "Pub/Sub carries every step; Cloud Scheduler keeps the clock.",
-   "say": "Pub Sub carries every step; Cloud Scheduler keeps the clock.",
-   "gap": 0.35,
-   "pause": [["step", 0.5]]
+   "text": "Pub/Sub carries every step, and Cloud Scheduler keeps the clock.",
+   "say": "Pub Sub carries every step, and Cloud Scheduler keeps the clock.",
+   "gap": 0.6,
+   "pause": [
+    [
+     "step",
+     0.5
+    ]
+   ],
+   "tempo": 1.0
   },
   {
    "id": "u17",
    "sec": "tech",
-   "text": "Nine AI agents on Google's ADK read sales from BigQuery and photos from Cloud Storage.",
-   "say": "Nine A I agents on Google's A D K read sales from BigQuery and photos from Cloud Storage.",
-   "gap": 0.55,
-   "take": "u17-3.wav"
+   "text": "Nine AI agents on Google's ADK read sales from BigQuery, and photos from Cloud Storage.",
+   "say": "Nine AI agents on Google's A D K read sales from BigQuery, and photos from Cloud Storage.",
+   "gap": 0.7,
+   "tempo": 1.0
   },
   {
    "id": "u18",
    "sec": "tech",
-   "text": "On Google's Agent Platform, Gemini Pro prices and negotiates, and Flash reads and writes.",
-   "gap": 0.3,
-   "pause": [["negotiates", 0.3]],
-   "take": "u18-5.wav"
+   "text": "On Google's Agent Platform, Gemini Pro prices and negotiates, while Flash reads and writes.",
+   "gap": 0.6,
+   "pause": [
+    [
+     "negotiates",
+     0.3
+    ]
+   ],
+   "tempo": 1.0
   },
   {
    "id": "u06",
    "sec": "tech",
-   "text": "The models never touch the money: the API works out every figure, and a person says yes.",
-   "gap": 0.35
+   "text": "And the models never touch the money: the API works out every figure, and a person says yes.",
+   "gap": 0.6,
+   "tempo": 1.0
   },
   {
    "id": "x26",
    "sec": "cast",
-   "text": "Today, we're going to demo two journeys, live on production: Munchly Foods, an imaginary brand, with two batches at two distributors. One happy path, and one sad.",
-   "say": "Today, we're going to demo two journeys, lyve on production: Munch-lee Foods, an imaginary brand, with two batches at two distributors. One happy path, and one sad.",
-   "gap": 0.3,
-   "take": "x26-1.wav"
+   "text": "So today, I'll walk you through two journeys, running live in production: Munchly Foods, an imaginary brand, with two batches at two distributors. One happy path, and one sad path.",
+   "gap": 0.3
   },
   {
    "id": "n15",
    "sec": "landing",
-   "text": "Munchly, its distributors and kiranas share its workspace. Neha opens the console.",
-   "say": "Munch-lee, its distributors and kiranas share its workspace. Neha opens the console.",
-   "gap": 0.25,
-   "pause": [["workspace", -0.38]],
-   "take": "n15-4.wav"
+   "text": "There are two ways in. Munchly, its distributors and its kiranas share one workspace, and Neha, from our team, opens the console.",
+   "gap": 0.25
   },
   {
    "id": "k01",
    "sec": "console",
-   "text": "In the console, Neha sets up a brand in minutes: its stock export, its people, its gates, its agents.",
-   "gap": 1.05
+   "text": "In the console, Neha can set up a brand in minutes: its stock export, its people, its quick-commerce gates, and its agents.",
+   "gap": 0.5
   },
   {
    "id": "p02",
    "sec": "live",
-   "text": "The workspace installs as an app on any laptop, tablet or phone.",
-   "gap": 0.4
+   "text": "Every workspace installs as an app, on any laptop, tablet or phone.",
+   "gap": 0.3
   },
   {
    "id": "q01",
    "sec": "live",
-   "text": "Priya, who runs Munchly's supply chain, signs in.",
-   "say": "Priya, who runs Munch-lee's supply chain, signs in.",
-   "gap": 1.35
+   "text": "Here's Priya, who runs supply chain at Munchly, signing in.",
+   "gap": 0.75
   },
   {
    "id": "q02",
    "sec": "live",
-   "text": "Her Command Center tracks every batch at risk: days left, sell-through, and the cost of the bin.",
-   "gap": 0.65
+   "text": "Her Command Center tracks every batch at risk: the days left, the sell-through, and what the bin would cost.",
+   "gap": 0.5
   },
   {
    "id": "q03",
    "sec": "live",
-   "text": "From BigQuery's sell-through, the Watcher flags two batches: the Mango Drink and the Masala Chips.",
-   "gap": 0.65
+   "text": "This morning, reading sell-through from BigQuery, the Watcher flags two batches: the Mango Drink and the Masala Chips.",
+   "gap": 0.5
   },
   {
    "id": "m03",
    "sec": "mango",
-   "text": "Lakshmi Agencies photographs the label, and Vision, on Gemini Flash, matches it to the stock export.",
+   "text": "First, the Mango Drink. Lakshmi Agencies photographs the label, and Vision, on Gemini Flash, matches it to the stock export.",
    "gap": 0.3
   },
   {
    "id": "m04",
    "sec": "mango",
-   "text": "From the batch's sales history and Munchly's own rules, the Valuer prices each exit and the Router splits it. Priya approves with one tap.",
-   "gap": 0.65,
-   "say": "From the batch's sales history and Munch-lee's own rules, the Valuer prices each exit and the Router splits it. Priya approves with one tap."
+   "text": "From the batch's sales history and Munchly's own rules, the Valuer prices every exit, and the Router splits the batch. Priya approves the plan with one tap.",
+   "gap": 0.5
   },
   {
    "id": "m05",
    "sec": "mango",
-   "text": "Outreach offers the packs to fifty-eight kiranas in their own language; each order lands on Priya's screen, live.",
-   "gap": 0.5,
-   "pause": [
-    [
-     "language",
-     0.7
-    ]
-   ]
+   "text": "Outreach offers the packs to fifty-eight kiranas, each in their own language, and every order lands on Priya's screen, live.",
+   "gap": 0.35
   },
   {
    "id": "m06",
    "sec": "mango",
-   "text": "Fifty-two shops take thirteen hundred and seventy-two packets, each with its own GST invoice.",
-   "gap": 0.55
+   "text": "Fifty-two shops take thirteen hundred and seventy-two packets, and each order gets its own GST invoice.",
+   "gap": 0.4
   },
   {
    "id": "m07",
    "sec": "mango",
-   "text": "The godown's staff buy a hundred and fifty packs by UPI, and Vision checks the receipt against the count.",
+   "text": "At the godown, staff buy a hundred and fifty packs by UPI, and Vision checks the receipt against the count.",
+   "say": "At the godown, staff buy a hundred and fifty packs by U P I, and Vision checks the receipt against the count.",
    "gap": 0.3
   },
   {
    "id": "m08",
    "sec": "mango",
    "text": "Feeding India collects the last fifty-eight packs, and issues a donation receipt.",
-   "gap": 0.8,
-   "take": "m08-0.wav"
+   "gap": 0.4
   },
   {
    "id": "m09",
    "sec": "mango",
-   "text": "Paperwork files every paper in Cloud Storage, and Lakshmi Agencies ends whole.",
-   "gap": 0.85,
-   "pause": [
-    [
-     "Storage",
-     0.5
-    ]
-   ]
+   "text": "Paperwork files every paper in Cloud Storage, and Lakshmi Agencies ends whole, to the rupee.",
+   "gap": 0.5
   },
   {
    "id": "s01",
    "sec": "sad",
-   "text": "But not every batch sells. Munchly's Masala Chips go to Rakesh Traders' kiranas in Nagpur, and just two order.",
-   "gap": 0.3,
-   "say": "But not every batch sells. Munch-lee's Masala Chips go to Rakesh Traders' kiranas in Nagpur, and just two order."
+   "text": "But not every batch sells. Munchly's Masala Chips go to Rakesh Traders' kiranas in Nagpur, and only two shops order.",
+   "gap": 0.3
   },
   {
    "id": "s02",
    "sec": "sad",
-   "text": "On ExpireSoon, an imaginary near-expiry marketplace, the Negotiator counters a bid, and seven hundred and seventy-two packs sell.",
-   "gap": 1.55,
-   "say": "On Expire Soon, an imaginary near-expiry marketplace, the Negotiator counters a bid, and seven hundred and seventy-two packs sell.",
-   "take": "s02-5.wav"
+   "text": "So on ExpireSoon, an imaginary near-expiry marketplace, the Negotiator counters a bid, and seven hundred and seventy-two packs sell.",
+   "say": "So on Expire Soon, an imaginary near-expiry marketplace, the Negotiator counters a bid, and seven hundred and seventy-two packs sell.",
+   "gap": 1.0
   },
   {
    "id": "s03",
    "sec": "sad",
-   "text": "Five hundred and forty packets are left when the window closes.",
-   "gap": 0.4
+   "text": "When the offer window closes, five hundred and forty packets are still left.",
+   "gap": 0.3
   },
   {
    "id": "s04",
    "sec": "sad",
-   "text": "On expiry day, Rakesh must destroy them through an authorised agency, and prove it.",
+   "text": "On expiry day, Rakesh has to destroy them through an authorised agency, and prove it.",
    "gap": 0.3
   },
   {
    "id": "s05",
    "sec": "sad",
-   "text": "At the landfill he photographs it, and the officer, two witnesses and Rakesh sign the certificate.",
-   "gap": 0.5,
-   "pause": [
-    [
-     "it",
-     0.6
-    ]
-   ]
+   "text": "At the landfill he photographs the destruction, and the officer, two witnesses and Rakesh sign the certificate.",
+   "gap": 1.0
   },
   {
    "id": "s06",
    "sec": "sad",
-   "text": "Vision checks the photos; only on Priya's second yes are the certificate and credit note issued.",
-   "gap": 0.8
+   "text": "Vision checks the photos, and only on Priya's second yes are the certificate and the credit note issued.",
+   "gap": 0.45
   },
   {
    "id": "r01",
    "sec": "sad",
-   "text": "Every step is on the record: an append-only audit trail in Cloud SQL, and requests traced end to end in Cloud Trace, with OpenTelemetry.",
-   "gap": 0.4
+   "text": "And every step is on the record: an append-only audit trail in Cloud SQL, and every request traced in Cloud Trace. Cloud Monitoring watches it all, and alerts the team the moment a model call fails.",
+   "gap": 0.4,
+   "take": "r01-0.wav"
   },
   {
    "id": "s08",
    "sec": "sad",
-   "text": "Even here, Munchly recovers eleven thousand seven hundred rupees, and Rakesh ends whole.",
+   "text": "Even on this sad path, Munchly recovers eleven thousand seven hundred rupees, and Rakesh ends whole.",
    "gap": 0.5,
-   "say": "Even here, Munch-lee recovers eleven thousand seven hundred rupees, and Rakesh ends whole."
+   "take": "s08-5.wav"
   },
   {
    "id": "m11",
    "sec": "report",
-   "text": "Impact posts every batch to its ledger in BigQuery, ready for BRSR.",
-   "gap": 0.45
+   "text": "And finally, Impact posts every batch to its ledger in BigQuery, ready for BRSR.",
+   "say": "And finally, Impact posts every batch to its ledger in BigQuery, ready for B R S R.",
+   "gap": 0.35
   },
   {
    "id": "d01",
    "sec": "next",
    "text": "Try the guided demo.",
-   "gap": 0.0,
-   "take": "d01-2.wav"
+   "gap": 0.0
   }
  ],
- "note": "SC-219 cut 9: cut 8's lines where they stay (their takes reused); new: the SaaS line (b91), the architecture condensed (u02 to u06, after t01), the cast and two paths (x01), a shorter install line (p02), and Priya's sign-in and Command Center (q01 to q03), which replace m02"
+ "note": "SC-228 cut 17: the narration rewritten as a presenter's demo for the judges, read by Gemini-TTS (gemini-2.5-pro-tts) as one presenter; FSSAI's rule for food sold online added to the opening (f01); 'live' said only as running now"
 }

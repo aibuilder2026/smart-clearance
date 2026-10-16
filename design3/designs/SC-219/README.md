@@ -1,13 +1,106 @@
-# SC-219 · The working demo, cuts 9 to 16
+# SC-219 · The working demo, cuts 9 to 17
 
 A demo film of about four minutes, made from the three production recordings of 13 Oct 2026, as cut 8 (SC-218) was:
 cut 9 on the maintainer's notes on cut 8, cut 10 on four notes on cut 9, cut 11 on three notes on cut 10, then cut 12
 on a new architecture scene, after a concept round, cut 13 on cut 10's 3D architecture made whole, with the app
 beside each part, and cut 14 on Google's own logos, a chip and a bracket on each part, and the four apps on their
-screens, then cut 15 (SC-225) on the demo's cast, the landing page and Munchly's workspace address, and cut 16 (SC-227)
-on a review of cut 15. Each
+screens, then cut 15 (SC-225) on the demo's cast, the landing page and Munchly's workspace address, cut 16 (SC-227)
+on a review of cut 15, and cut 17 (SC-228) on FSSAI's rule, a presenter's narration and the record scene. Each
 joins the earlier cuts in the repository root's `working-demo/` folder, with its export's date and time in its name;
 `media/` holds the latest.
+
+## Cut 17 (16 Oct 2026, SC-228)
+
+Four notes on cut 16, and a fifth while it was made, inside 238 to 240 s.
+
+### The brief
+
+On cut 16's export (`…_2026-10-16_13-00-26`), the maintainer's review:
+
+1. "I still see the scene of architecture where it says 'CloudSQL acts as the...' there is some break please review and
+   fix it."
+2. "Can we via remotion animation portrait the FSSAI guidelines in 1st 2 scenes too. The problem statement needs a
+   government regulation backing": food delivered by e-commerce and quick-commerce platforms must have 30% of its shelf
+   life, or 45 days, remaining before expiry at the time of delivery.
+3. "The pronouciation of 'Live on production': the word should be used in context of something running currently, not
+   as in alive."
+4. The demo's description a little more elaborate over the whole narration, its tone "someone giving professinal
+   demo, not robotic".
+
+Then: the voice on Gemini-TTS, as a presenter ("the narration needs to be really realistic and professional and demo
+like", a $10 cap); "Entire video must be minimum 238 and maximum 240 secondds"; and, mid-cut, the 7-minute landing
+film's tracing and monitoring scenes (SC-211's audit trail and its board) "punched in with the tracing and logging
+scene", under 240 s.
+
+### What changed
+
+- **The break after "Cloud SQL"** was in the voice, not the picture: u02's second pause was placed on word times the
+  first pause had already moved, so 0.55 s of silence was cut into "as" ("Cloud SQL a… s the record"). `parts.py` now
+  places every cut on the take's own word times; the line reads back "Cloud SQL as the record".
+- **FSSAI's rule, in the first two scenes** (Remotion, `src/remo12/src/fssai17/`, two transparent PNG sequences laid
+  over the shots by `parts17.PngSeq`):
+  - over the godown, a new line ("And FSSAI's rule for food sold online is strict: at delivery, thirty percent of its
+    shelf life, or forty-five days, must remain."). The clip ends as it begins, so its last frame is pushed in slowly,
+    softened and dimmed (`parts17.Defocus`) under the rule's card; 30% lands on "thirty", 45 days on "forty-five", and
+    the godown comes back into focus before the camera rushes into the carton;
+  - on the label, the batch against the rule: its 180-day shelf life as a bar, the 45-day and 54-day (30%) lines, the
+    batch sliding to 22 days in red on "twenty-two", and "Below both: too close to its date to sell online" on "quick
+    commerce". It replaces the 60-to-22 countdown and the "Too close for Blinkit" chip.
+
+  The film states both thresholds and shows the batch under both, so it holds whether the rule is read as either one
+  or the longer of the two.
+- **"Live":** "running live in production", in the sense of running now; take 3 of 4 says it /laɪv/ (F1 897 Hz,
+  `tts/vowel.py`, now on the chosen voice), read back word for word.
+- **The narration,** 35 lines rewritten as a presenter walking judges through a live demo (`lines.json`), on
+  Gemini-TTS (`gemini-2.5-pro-tts`, Gacrux, en-IN), with a founder-demo direction (`tts/tts17.py`, `bake17/prompt-v2.txt`):
+  - the voice from a bake-off judged by Gemini as a live presenter (SC-210's `ears.py`, `tts/judge17.sh`), UTMOS and
+    Whisper: the founder direction 7 to 7.5 of 10, a pause-at-every-comma presenter 4 to 6, Chirp 3 HD 4, cut 16's
+    Maya1 3;
+  - three takes a line, each picked by its read-back, then naturalness (`tts/pick.py`), and fitted (`tts/fit17.py`):
+    trimmed to a breath at its edges and padded before a 1.05 tempo (the architecture's six lines at 1.0, its scene
+    timed to them), so the script fits;
+  - on the final mix, Gemini rates the demo setup 9 of 10 and the record 7. The opening, a problem statement, keeps a
+    narrated cadence (4 to 5); a conversational re-voice of its three lines scored no better and ran 1.5 s longer, so
+    it was set aside (`takes-v2/`).
+- **The record scene** (r01 now "…and every request traced in Cloud Trace. Cloud Monitoring watches it all, and alerts
+  the team the moment a model call fails."), three beats on its words:
+  - SC-211's audit trail (`src/audit17/`), on the chips' own Record from production (08:17 the Watcher, 08:28 Rakesh's
+    label photo, 09:01 Priya's approval, 11:59 the destruction, 12:24 her second yes; the other steps by their day):
+    the steps stream along the trail, fold into one audit trail in Cloud SQL, and Export CSV is pressed;
+  - a zoom through its "Traced end to end" into the label photo's production trace (Cloud Trace's waterfall, played
+    over 1.9 s, `parts17.TracePanel17`) and its Cloud Logging lines;
+  - SC-211's board (`src/ops17/`), the platform watching itself: a model call times out, the alert goes to the
+    platform team with the trace, and it recovers, held to the cut. Gemini is named on Agent Platform there and in the
+    trace's key.
+- **Also:**
+  - the offer shot ends on "and", so "each in their own language" is said over her phone, its recording at 1.3x
+    (1.84x);
+  - the signing shot runs from "prove it", a full second's breath after s05, so the four signatures finish inside it
+    at 2.5 s, the photos at 1.4x;
+  - the console's people span starts at 1068.85, after the recording's own dimming;
+  - the zoom-through's light holds at its peak for three frames, the deploy light runs 1.5 s, and a screen's lit
+    flash eases in: each had made a one-frame flash;
+  - the sad lane's card lands just after "sad path", and the line ends on "sad path" (Gemini's final "d" on "sad" read
+    back as "sack");
+  - the bin's beat 0.3 s longer; the bed 4 dB further down under m11.
+
+### The result
+
+- 3 min 59.4 s (239.36 s); −14.0 LUFS, −1.3 dB true peak.
+- No one-frame flash in its 5,984 frames; every window within its speed limits apart from the two holds and the
+  labelled fast-forwards (the scheme filling, 40x; the signing, 20x).
+- The stage-mark scan: the same spans as cut 16, the apps' own green buttons.
+- Both QR codes read back (the label's GS1 link at 18.6 s, the guided demo at 238.85 s).
+- 27 of 35 lines word for word; the rest spellings ("PubSub", "centre", "Big Query", "Munchli", "Rs", "30%") and two
+  hearings: s05 "a destruction" (the take alone reads "the") and m11 "hosts" (Gemini hears "posts", twice, with high
+  confidence).
+- `working-demo/smart-clearance-working-demo-2026-10-16_15-04-57.mp4` (crf 17), its 720p copy, a light preview, the
+  changed scenes on their own (`…-changes.mp4`) and captions; the seven exports on the way in
+  `working-demo/superseded-cut17/`; the crf-21 copies in `media/`.
+
+**The spend:** about $0.80 of Gemini-TTS (some 146 takes and bake-off samples, about 25 minutes of audio, at Google's
+list price) and a few cents of Gemini's listening, against the $10 cap. Remotion, Whisper, UTMOS, Chromium and ffmpeg
+ran on this Mac.
 
 ## Cut 16 (16 Oct 2026, SC-227)
 
@@ -907,6 +1000,23 @@ in `remo12/public/`):
 # then name the frames f00000.jpg … in build/arch12/ (the sequence's element-NNN.jpeg, in order)
 .venv/bin/python render12.py && .venv/bin/python mix12.py && ./export12.sh
 node qrcheck11.mjs ../media/smart-clearance-working-demo.mp4 7.6 235                # the codes, read back
+```
+
+Cut 17, after cut 16's steps (the voice is `tts/vo3/gemini-Gacrux-demo`, named in `tts/voice.txt`; Gemini-TTS needs
+`gcloud` credentials, and costs money):
+
+```sh
+(cd tts && python3 tts17.py lines Gacrux 3)                                          # three takes a line, on Gemini-TTS
+(cd tts && uv run --no-project --python 3.12 --with torch --with torchaudio --with librosa python mos.py vo3/gemini-Gacrux-demo/takes)
+(cd tts && uv run --no-project --python ../.venv/bin/python --with mlx-whisper --with soundfile python pick.py vo3/gemini-Gacrux-demo)
+.venv/bin/python tts/fit17.py tts/vo3/gemini-Gacrux-demo 1.05                       # trimmed, padded, the tempo
+.venv/bin/python shots13.py > /dev/null                                             # the pages' cues and FSSAI's props
+(cd remo12 && npx remotion render src/index.ts FssaiRule ../build/fssai17/rule --sequence --image-format=png --props=../build/fssai17-rule.json)
+(cd remo12 && npx remotion render src/index.ts FssaiBatch ../build/fssai17/batch --sequence --image-format=png --props=../build/fssai17-batch.json)
+for p in cast16/cast saas10/saas pwa9/pwa audit17/audit ops17/ops arch13/arch; do d=${p%%/*}; node capture-page.mjs $p.html build/$d build/$d-cues.json 25; done
+.venv/bin/python render13.py && .venv/bin/python mix13.py && ./export13.sh
+node qrcheck11.mjs ../media/smart-clearance-working-demo.mp4 18.6 238.85
+uv run --no-project --python .venv/bin/python --with mlx-whisper python readback13.py
 ```
 
 Cut 16, after cut 15's steps (the cast page `cast16/`; the new lines voiced and picked; the console and the landing
