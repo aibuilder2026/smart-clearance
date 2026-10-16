@@ -49,7 +49,13 @@ def voice():
         x, sr = sf.read(VO / f"{lid}.wav", dtype="float32")
         for cut, add in sorted(P_.PAUSE.get(lid, []), key=lambda c: -(c[0] or 0)):   # parts.PAUSE: silence inside the line
             i = int((cut if cut is not None else len(x) / sr) * sr)
-            x = np.concatenate([x[:i], np.zeros(int(add * sr), np.float32), x[i:]])
+            if add >= 0:
+                x = np.concatenate([x[:i], np.zeros(int(add * sr), np.float32), x[i:]])
+            else:       # SC-225: a pause tightened, the silence cut round its middle with a 10 ms crossfade
+                n, k = int(-add * sr), int(0.01 * sr)
+                a_, b_ = x[:i - n // 2], x[i + n - n // 2:]
+                ramp_ = np.linspace(0, 1, k, dtype=np.float32)
+                x = np.concatenate([a_[:-k], a_[-k:] * (1 - ramp_) + b_[:k] * ramp_, b_[k:]])
         x = resample_poly(x, SR // 8000, sr // 8000).astype(np.float32)
         i = int(t0 * SR); vo[i:i + len(x)] += x[: N - i]
     raw = B / "vo-raw.wav"; sf.write(raw, vo, SR, subtype="FLOAT")

@@ -10799,276 +10799,6 @@
    }
   ]
  },
- "d01-0.wav": {
-  "text": "Try the guided demo at smartclearancedemo.web.app",
-  "words": [
-   {
-    "w": "Try",
-    "s": 0.0,
-    "e": 0.22
-   },
-   {
-    "w": "the",
-    "s": 0.22,
-    "e": 0.42
-   },
-   {
-    "w": "guided",
-    "s": 0.42,
-    "e": 0.76
-   },
-   {
-    "w": "demo",
-    "s": 0.76,
-    "e": 1.2
-   },
-   {
-    "w": "at",
-    "s": 1.2,
-    "e": 1.48
-   },
-   {
-    "w": "smartclearancedemo",
-    "s": 1.48,
-    "e": 2.8
-   },
-   {
-    "w": ".web",
-    "s": 2.8,
-    "e": 3.42
-   },
-   {
-    "w": ".app",
-    "s": 3.42,
-    "e": 3.94
-   }
-  ]
- },
- "d01-1.wav": {
-  "text": "Try the guided demo at smartclearancedemo.web.app",
-  "words": [
-   {
-    "w": "Try",
-    "s": 0.0,
-    "e": 0.28
-   },
-   {
-    "w": "the",
-    "s": 0.28,
-    "e": 0.46
-   },
-   {
-    "w": "guided",
-    "s": 0.46,
-    "e": 0.8
-   },
-   {
-    "w": "demo",
-    "s": 0.8,
-    "e": 1.22
-   },
-   {
-    "w": "at",
-    "s": 1.22,
-    "e": 1.54
-   },
-   {
-    "w": "smartclearancedemo",
-    "s": 1.54,
-    "e": 2.94
-   },
-   {
-    "w": ".web",
-    "s": 2.94,
-    "e": 3.66
-   },
-   {
-    "w": ".app",
-    "s": 3.66,
-    "e": 4.16
-   }
-  ]
- },
- "d01-2.wav": {
-  "text": "Try the guided demo at smartclearancedemo.web.app",
-  "words": [
-   {
-    "w": "Try",
-    "s": 0.0,
-    "e": 0.28
-   },
-   {
-    "w": "the",
-    "s": 0.28,
-    "e": 0.46
-   },
-   {
-    "w": "guided",
-    "s": 0.46,
-    "e": 0.86
-   },
-   {
-    "w": "demo",
-    "s": 0.86,
-    "e": 1.32
-   },
-   {
-    "w": "at",
-    "s": 1.32,
-    "e": 1.62
-   },
-   {
-    "w": "smartclearancedemo",
-    "s": 1.62,
-    "e": 2.98
-   },
-   {
-    "w": ".web",
-    "s": 2.98,
-    "e": 3.66
-   },
-   {
-    "w": ".app",
-    "s": 3.66,
-    "e": 4.14
-   }
-  ]
- },
- "d01-3.wav": {
-  "text": "Try the guided demo at smartclearancedemo.web.app",
-  "words": [
-   {
-    "w": "Try",
-    "s": 0.0,
-    "e": 0.28
-   },
-   {
-    "w": "the",
-    "s": 0.28,
-    "e": 0.5
-   },
-   {
-    "w": "guided",
-    "s": 0.5,
-    "e": 0.88
-   },
-   {
-    "w": "demo",
-    "s": 0.88,
-    "e": 1.34
-   },
-   {
-    "w": "at",
-    "s": 1.34,
-    "e": 1.66
-   },
-   {
-    "w": "smartclearancedemo",
-    "s": 1.66,
-    "e": 2.96
-   },
-   {
-    "w": ".web",
-    "s": 2.96,
-    "e": 3.7
-   },
-   {
-    "w": ".app",
-    "s": 3.7,
-    "e": 4.22
-   }
-  ]
- },
- "d01-4.wav": {
-  "text": "Try the guided demo at smartclearancedemo.web.app",
-  "words": [
-   {
-    "w": "Try",
-    "s": 0.0,
-    "e": 0.24
-   },
-   {
-    "w": "the",
-    "s": 0.24,
-    "e": 0.42
-   },
-   {
-    "w": "guided",
-    "s": 0.42,
-    "e": 0.76
-   },
-   {
-    "w": "demo",
-    "s": 0.76,
-    "e": 1.16
-   },
-   {
-    "w": "at",
-    "s": 1.16,
-    "e": 1.52
-   },
-   {
-    "w": "smartclearancedemo",
-    "s": 1.52,
-    "e": 2.82
-   },
-   {
-    "w": ".web",
-    "s": 2.82,
-    "e": 3.64
-   },
-   {
-    "w": ".app",
-    "s": 3.64,
-    "e": 4.2
-   }
-  ]
- },
- "d01-5.wav": {
-  "text": "Try the guided demo at smartclearancedemo.web.app",
-  "words": [
-   {
-    "w": "Try",
-    "s": 0.0,
-    "e": 0.26
-   },
-   {
-    "w": "the",
-    "s": 0.26,
-    "e": 0.44
-   },
-   {
-    "w": "guided",
-    "s": 0.44,
-    "e": 0.78
-   },
-   {
-    "w": "demo",
-    "s": 0.78,
-    "e": 1.2
-   },
-   {
-    "w": "at",
-    "s": 1.2,
-    "e": 1.52
-   },
-   {
-    "w": "smartclearancedemo",
-    "s": 1.52,
-    "e": 2.86
-   },
-   {
-    "w": ".web",
-    "s": 2.86,
-    "e": 3.56
-   },
-   {
-    "w": ".app",
-    "s": 3.56,
-    "e": 4.08
-   }
-  ]
- },
  "f01-0.wav": {
   "text": "next whatsapp more indian languages and native ios and android apps",
   "words": [
@@ -30289,6 +30019,156 @@
    }
   ]
  },
+ "d01-0.wav": {
+  "text": "Try the guided demo.",
+  "words": [
+   {
+    "w": "Try",
+    "s": 0.0,
+    "e": 0.26
+   },
+   {
+    "w": "the",
+    "s": 0.26,
+    "e": 0.42
+   },
+   {
+    "w": "guided",
+    "s": 0.42,
+    "e": 0.78
+   },
+   {
+    "w": "demo.",
+    "s": 0.78,
+    "e": 1.08
+   }
+  ]
+ },
+ "d01-1.wav": {
+  "text": "Try the guided demo.",
+  "words": [
+   {
+    "w": "Try",
+    "s": 0.0,
+    "e": 0.28
+   },
+   {
+    "w": "the",
+    "s": 0.28,
+    "e": 0.44
+   },
+   {
+    "w": "guided",
+    "s": 0.44,
+    "e": 0.82
+   },
+   {
+    "w": "demo.",
+    "s": 0.82,
+    "e": 1.12
+   }
+  ]
+ },
+ "d01-2.wav": {
+  "text": "Try the guided demo.",
+  "words": [
+   {
+    "w": "Try",
+    "s": 0.0,
+    "e": 0.26
+   },
+   {
+    "w": "the",
+    "s": 0.26,
+    "e": 0.42
+   },
+   {
+    "w": "guided",
+    "s": 0.42,
+    "e": 0.72
+   },
+   {
+    "w": "demo.",
+    "s": 0.72,
+    "e": 1.06
+   }
+  ]
+ },
+ "d01-3.wav": {
+  "text": "Try the guided demo.",
+  "words": [
+   {
+    "w": "Try",
+    "s": 0.0,
+    "e": 0.3
+   },
+   {
+    "w": "the",
+    "s": 0.3,
+    "e": 0.48
+   },
+   {
+    "w": "guided",
+    "s": 0.48,
+    "e": 0.92
+   },
+   {
+    "w": "demo.",
+    "s": 0.92,
+    "e": 1.26
+   }
+  ]
+ },
+ "d01-4.wav": {
+  "text": "Try the guided demo.",
+  "words": [
+   {
+    "w": "Try",
+    "s": 0.0,
+    "e": 0.24
+   },
+   {
+    "w": "the",
+    "s": 0.24,
+    "e": 0.4
+   },
+   {
+    "w": "guided",
+    "s": 0.4,
+    "e": 0.78
+   },
+   {
+    "w": "demo.",
+    "s": 0.78,
+    "e": 1.08
+   }
+  ]
+ },
+ "d01-5.wav": {
+  "text": "Try the guided demo.",
+  "words": [
+   {
+    "w": "Try",
+    "s": 0.0,
+    "e": 0.26
+   },
+   {
+    "w": "the",
+    "s": 0.26,
+    "e": 0.4
+   },
+   {
+    "w": "guided",
+    "s": 0.4,
+    "e": 0.78
+   },
+   {
+    "w": "demo.",
+    "s": 0.78,
+    "e": 1.06
+   }
+  ]
+ },
  "b91-0.wav": {
   "text": "Agentic Software as a service for FMCG brands, distributors and retailers.",
   "words": [
@@ -30646,6 +30526,396 @@
     "w": "retailers.",
     "s": 5.32,
     "e": 5.86
+   }
+  ]
+ },
+ "n15-0.wav": {
+  "text": "Manchli, its distributors and Kiranas share its workspace. Neha opens the console.",
+  "words": [
+   {
+    "w": "Manchli,",
+    "s": 0.0,
+    "e": 0.62
+   },
+   {
+    "w": "its",
+    "s": 0.84,
+    "e": 1.26
+   },
+   {
+    "w": "distributors",
+    "s": 1.26,
+    "e": 2.14
+   },
+   {
+    "w": "and",
+    "s": 2.14,
+    "e": 2.46
+   },
+   {
+    "w": "Kiranas",
+    "s": 2.46,
+    "e": 3.04
+   },
+   {
+    "w": "share",
+    "s": 3.04,
+    "e": 3.54
+   },
+   {
+    "w": "its",
+    "s": 3.54,
+    "e": 3.82
+   },
+   {
+    "w": "workspace.",
+    "s": 3.82,
+    "e": 4.4
+   },
+   {
+    "w": "Neha",
+    "s": 5.38,
+    "e": 5.68
+   },
+   {
+    "w": "opens",
+    "s": 5.68,
+    "e": 6.12
+   },
+   {
+    "w": "the",
+    "s": 6.12,
+    "e": 6.34
+   },
+   {
+    "w": "console.",
+    "s": 6.34,
+    "e": 6.7
+   }
+  ]
+ },
+ "n15-1.wav": {
+  "text": "Manchli, its distributors and Kiranas share its workspace. Neha opens the console.",
+  "words": [
+   {
+    "w": "Manchli,",
+    "s": 0.0,
+    "e": 0.58
+   },
+   {
+    "w": "its",
+    "s": 0.84,
+    "e": 1.42
+   },
+   {
+    "w": "distributors",
+    "s": 1.42,
+    "e": 2.24
+   },
+   {
+    "w": "and",
+    "s": 2.24,
+    "e": 2.54
+   },
+   {
+    "w": "Kiranas",
+    "s": 2.54,
+    "e": 3.08
+   },
+   {
+    "w": "share",
+    "s": 3.08,
+    "e": 3.82
+   },
+   {
+    "w": "its",
+    "s": 3.82,
+    "e": 4.04
+   },
+   {
+    "w": "workspace.",
+    "s": 4.04,
+    "e": 4.56
+   },
+   {
+    "w": "Neha",
+    "s": 5.26,
+    "e": 5.56
+   },
+   {
+    "w": "opens",
+    "s": 5.56,
+    "e": 5.98
+   },
+   {
+    "w": "the",
+    "s": 5.98,
+    "e": 6.2
+   },
+   {
+    "w": "console.",
+    "s": 6.2,
+    "e": 6.58
+   }
+  ]
+ },
+ "n15-2.wav": {
+  "text": "Manchli, its distributors and Kiranas share its workspace. Neha opens the console.",
+  "words": [
+   {
+    "w": "Manchli,",
+    "s": 0.0,
+    "e": 0.58
+   },
+   {
+    "w": "its",
+    "s": 0.8,
+    "e": 1.16
+   },
+   {
+    "w": "distributors",
+    "s": 1.16,
+    "e": 2.06
+   },
+   {
+    "w": "and",
+    "s": 2.06,
+    "e": 2.36
+   },
+   {
+    "w": "Kiranas",
+    "s": 2.36,
+    "e": 2.88
+   },
+   {
+    "w": "share",
+    "s": 2.88,
+    "e": 3.76
+   },
+   {
+    "w": "its",
+    "s": 3.76,
+    "e": 4.04
+   },
+   {
+    "w": "workspace.",
+    "s": 4.04,
+    "e": 4.62
+   },
+   {
+    "w": "Neha",
+    "s": 5.6,
+    "e": 5.9
+   },
+   {
+    "w": "opens",
+    "s": 5.9,
+    "e": 6.34
+   },
+   {
+    "w": "the",
+    "s": 6.34,
+    "e": 6.56
+   },
+   {
+    "w": "console.",
+    "s": 6.56,
+    "e": 6.92
+   }
+  ]
+ },
+ "n15-3.wav": {
+  "text": "Manchli, its distributors and Kiranas share its workspace. Neha opens the console.",
+  "words": [
+   {
+    "w": "Manchli,",
+    "s": 0.0,
+    "e": 0.62
+   },
+   {
+    "w": "its",
+    "s": 0.84,
+    "e": 1.32
+   },
+   {
+    "w": "distributors",
+    "s": 1.32,
+    "e": 2.16
+   },
+   {
+    "w": "and",
+    "s": 2.16,
+    "e": 2.48
+   },
+   {
+    "w": "Kiranas",
+    "s": 2.48,
+    "e": 3.02
+   },
+   {
+    "w": "share",
+    "s": 3.02,
+    "e": 3.92
+   },
+   {
+    "w": "its",
+    "s": 3.92,
+    "e": 4.24
+   },
+   {
+    "w": "workspace.",
+    "s": 4.24,
+    "e": 4.82
+   },
+   {
+    "w": "Neha",
+    "s": 5.64,
+    "e": 5.96
+   },
+   {
+    "w": "opens",
+    "s": 5.96,
+    "e": 6.42
+   },
+   {
+    "w": "the",
+    "s": 6.42,
+    "e": 6.64
+   },
+   {
+    "w": "console.",
+    "s": 6.64,
+    "e": 7.0
+   }
+  ]
+ },
+ "n15-4.wav": {
+  "text": "Munchly, its distributors and Kiranas share its workspace. Neha opens the console.",
+  "words": [
+   {
+    "w": "Munchly,",
+    "s": 0.0,
+    "e": 0.58
+   },
+   {
+    "w": "its",
+    "s": 0.84,
+    "e": 1.24
+   },
+   {
+    "w": "distributors",
+    "s": 1.24,
+    "e": 2.06
+   },
+   {
+    "w": "and",
+    "s": 2.06,
+    "e": 2.26
+   },
+   {
+    "w": "Kiranas",
+    "s": 2.26,
+    "e": 2.82
+   },
+   {
+    "w": "share",
+    "s": 2.82,
+    "e": 3.28
+   },
+   {
+    "w": "its",
+    "s": 3.28,
+    "e": 3.52
+   },
+   {
+    "w": "workspace.",
+    "s": 3.52,
+    "e": 4.1
+   },
+   {
+    "w": "Neha",
+    "s": 4.88,
+    "e": 5.18
+   },
+   {
+    "w": "opens",
+    "s": 5.18,
+    "e": 5.64
+   },
+   {
+    "w": "the",
+    "s": 5.64,
+    "e": 5.84
+   },
+   {
+    "w": "console.",
+    "s": 5.84,
+    "e": 6.2
+   }
+  ]
+ },
+ "n15-5.wav": {
+  "text": "Munchly, its distributors and Kiranas share its workspace. Neha opens the console.",
+  "words": [
+   {
+    "w": "Munchly,",
+    "s": 0.0,
+    "e": 0.52
+   },
+   {
+    "w": "its",
+    "s": 0.82,
+    "e": 1.26
+   },
+   {
+    "w": "distributors",
+    "s": 1.26,
+    "e": 2.1
+   },
+   {
+    "w": "and",
+    "s": 2.1,
+    "e": 2.38
+   },
+   {
+    "w": "Kiranas",
+    "s": 2.38,
+    "e": 2.9
+   },
+   {
+    "w": "share",
+    "s": 2.9,
+    "e": 3.3
+   },
+   {
+    "w": "its",
+    "s": 3.3,
+    "e": 3.54
+   },
+   {
+    "w": "workspace.",
+    "s": 3.54,
+    "e": 4.12
+   },
+   {
+    "w": "Neha",
+    "s": 4.88,
+    "e": 5.24
+   },
+   {
+    "w": "opens",
+    "s": 5.24,
+    "e": 5.7
+   },
+   {
+    "w": "the",
+    "s": 5.7,
+    "e": 5.94
+   },
+   {
+    "w": "console.",
+    "s": 5.94,
+    "e": 6.3
    }
   ]
  }

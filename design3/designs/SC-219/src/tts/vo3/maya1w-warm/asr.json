@@ -744,6 +744,71 @@
    }
   ]
  },
+ "n15": {
+  "text": "Munchly, its distributors and Kiranas share its workspace. Neha opens the console.",
+  "words": [
+   {
+    "w": "Munchly,",
+    "s": 0.0,
+    "e": 0.58
+   },
+   {
+    "w": "its",
+    "s": 0.84,
+    "e": 1.24
+   },
+   {
+    "w": "distributors",
+    "s": 1.24,
+    "e": 2.06
+   },
+   {
+    "w": "and",
+    "s": 2.06,
+    "e": 2.26
+   },
+   {
+    "w": "Kiranas",
+    "s": 2.26,
+    "e": 2.82
+   },
+   {
+    "w": "share",
+    "s": 2.82,
+    "e": 3.28
+   },
+   {
+    "w": "its",
+    "s": 3.28,
+    "e": 3.52
+   },
+   {
+    "w": "workspace.",
+    "s": 3.52,
+    "e": 4.1
+   },
+   {
+    "w": "Neha",
+    "s": 4.88,
+    "e": 5.18
+   },
+   {
+    "w": "opens",
+    "s": 5.18,
+    "e": 5.64
+   },
+   {
+    "w": "the",
+    "s": 5.64,
+    "e": 5.84
+   },
+   {
+    "w": "console.",
+    "s": 5.84,
+    "e": 6.2
+   }
+  ]
+ },
  "k01": {
   "text": "In the console, Neha sets up a brand in minutes. Its stock export, its people, its gates, its agents.",
   "words": [
@@ -2460,47 +2525,27 @@
   ]
  },
  "d01": {
-  "text": "Try the guided demo at smartclearancedemo.web.app",
+  "text": "Try the guided demo.",
   "words": [
    {
     "w": "Try",
     "s": 0.0,
-    "e": 0.28
+    "e": 0.26
    },
    {
     "w": "the",
-    "s": 0.28,
-    "e": 0.5
+    "s": 0.26,
+    "e": 0.42
    },
    {
     "w": "guided",
-    "s": 0.5,
-    "e": 0.88
+    "s": 0.42,
+    "e": 0.72
    },
    {
-    "w": "demo",
-    "s": 0.88,
-    "e": 1.34
-   },
-   {
-    "w": "at",
-    "s": 1.34,
-    "e": 1.66
-   },
-   {
-    "w": "smartclearancedemo",
-    "s": 1.66,
-    "e": 2.96
-   },
-   {
-    "w": ".web",
-    "s": 2.96,
-    "e": 3.7
-   },
-   {
-    "w": ".app",
-    "s": 3.7,
-    "e": 4.22
+    "w": "demo.",
+    "s": 0.72,
+    "e": 1.06
    }
   ]
  }

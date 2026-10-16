@@ -192,12 +192,59 @@ RECEIPT_PHOTO = REPO / 'playwright-automation-videos' / 'sampleData' / 'munchly-
 ARCH = HERE / 'build' / 'arch13'   # cut 13: cut 10's 3D film made whole, full frame, the app beside each part (arch13/, captured frame by frame)
 PWA = HERE / 'build' / 'pwa9'
 SAAS = HERE / 'build' / 'saas10'
-CAST = HERE / 'build' / 'cast10'
+CAST = HERE / 'build' / 'cast15'   # cut 15: cast10 with Priya and Neha under the brand
 
 PUSH = 0.6     # a push between two people's shots
 WIPE = 0.55
 IRIS = 0.85    # the brand's squircle opening onto what it is
 UP = 0.7       # under the hood: the next shot rises from below
+
+
+class UrlWalk(Walk):
+    """cut 15: a walk whose address changes as it goes (the landing page, then the console)"""
+    def __init__(self, *a, url_at=(), **k):
+        super().__init__(*a, **k); self.url_at, self.url0 = url_at, self.url
+    def draw(self, f, u, shot_len):
+        self.url = self.url0
+        for u_, url in self.url_at:
+            if u >= u_: self.url = url
+        super().draw(f, u, shot_len)
+
+
+class RingCard(Ring):
+    """cut 15: a ring and its line while the part is on the screen; its card stays after them, until `keep`"""
+    def __init__(self, *a, keep=None, **k):
+        super().__init__(*a, **k); self.keep = keep
+    def draw(self, f, u, shot_len):
+        card_, self.card = self.card, None
+        super().draw(f, u, shot_len)          # the ring alone
+        self.card = card_
+        cx, cy = self.at; ch, cw = card_.shape[:2]
+        ca = fade(u, self.u0 + 0.25, self.keep, 0.35, 0.3)
+        if ca <= 0.01: return
+        e = ease_out((u - self.u0 - 0.25) / 0.45)
+        if self.u0 - 0.01 <= u <= self.u1 + 0.01:
+            (rx0, ry0, rx1, ry1), _, wa = self.win.to_out(u, shot_len, self.rect)
+            p = self.pad; rx0, ry0, rx1, ry1 = rx0 - p, ry0 - p, rx1 + p, ry1 + p
+            ccx, ccy = cx + cw / 2, cy + ch / 2
+            px = clamp(ccx, rx0, rx1); py = clamp(ccy, ry0, ry1)
+            ex = cx + cw if px > cx + cw else cx if px < cx else ccx
+            ey = cy + ch if py > cy + ch else cy if py < cy else ccy
+            color = C['amber2'] if self.accent == 'a' else C['ring']
+            line(f, (ex, ey), (ex + (px - ex) * e, ey + (py - ey) * e), color, alpha=fade(u, self.u0 + 0.25, self.u1, 0.35, 0.3) * wa * 0.95, width=2.2)
+        blit(f, card_, cx, cy + 8 * (1 - e), ca)
+
+
+class EndCard15(EndCard9):
+    """cut 15: the close in 1.5 s: cut 11's card comes together 3.6 times as fast (all of it in by 0.92 s), then
+    holds while the voice says its line"""
+    K, KNEE = 3.6, 0.92
+    @classmethod
+    def warp(cls, u): return u * cls.K if u <= cls.KNEE else cls.KNEE * cls.K + (u - cls.KNEE) * 0.5
+    def __init__(self, L, words, t_demo):
+        super().__init__(self.warp(L), words, [0.0, 0.0], self.warp(t_demo))
+    def draw(self, f, u, L=None):
+        super().draw(f, self.warp(u), L)
 
 
 def build():
@@ -280,13 +327,34 @@ def build():
     S[-1].cues = arch_cues(a, t0, L_)
 
     # ======================================================== 3 · the live demo: two batches, two paths, and the people in them
-    t0, t1 = t1, T['k01'][0] - PRE['k01']
+    t0, t1 = t1, T['n15'][0] - PRE['n15']
     L_ = t1 - t0
     add('cast', t0, t1, PageSeq(CAST), [], xin='push', xd=PUSH)
     S[-1].cues = {'x': a('x24') - t0, 'live': a('x24', 'Live') - t0, 'production': a('x24', 'production') - t0, 'munchly': a('x24', 'Munchly') - t0,
                   'imaginary': a('x24', 'imaginary') - t0, 'brand': a('x24', 'brand') - t0, 'two': a('x24', 'two') - t0, 'batches': a('x24', 'batches') - t0,
                   'different': a('x24', 'different') - t0, 'distributors': a('x24', 'distributors') - t0, 'one': a('x24', 'One') - t0,
                   'happy': a('x24', 'happy') - t0, 'sad': a('x24', 'sad') - t0, 'end': round(L_ + PUSH + 0.2, 3)}
+
+    # ======================================================== 3b · the landing page: two ways in, and Neha into the console (cut 15)
+    t0, t1 = t1, T['k01'][0] - PRE['k01']
+    L_ = t1 - t0
+    Lx = L_ + PUSH
+    u_neha = a('n15', 'Neha') - t0
+    u_press = a('n15', 'opens') - t0 + 0.05          # Neha presses Console as the voice says "opens"
+    # the landing page held (21.05: its hero clean, the pointer on Console) while both ways in are explained; the press
+    # (21.55; the page leaves at 21.6); the console opening; Sign in pressed (37.1); "Welcome, Neha"
+    hold = u_press - 0.5 * 0.5 / 0.55
+    rest = Lx - hold - 0.5 - 0.5 - 0.55
+    segs = [(21.05, 21.05, hold), (21.05, 21.6, 0.5), (22.6, 23.2, 0.5), (36.9, 37.6, 0.55), (38.2, 38.2 + min(0.75, 1.3 * rest), rest)]     # 39.0: its greeting starts to cross in
+    lw = UrlWalk('admin', 'A', segs, 600, 246, 0.66, 'smartclearance.web.app', who=who(NEHA), url_at=[(hold + 0.5, 'smartclearance-console.web.app')])
+    k_ws = card('munchly-smartclearance.web.app', "This demo's client workspace: Munchly Foods' own team, its distributors and their kiranas.", ('result', 'WORKSPACE'), 470)
+    k_cs = card('smartclearance-console.web.app', "Smart-Clearance's own team: every client set up, run and watched.", ('proof', 'CONSOLE'), 470)
+    add('landing', t0, t1, room('neha', t0), [
+        lw,
+        head(64, 60, 0.2, L_ + 0.3, 'THE LANDING PAGE', 'Two ways in.', width=500, hsize=44),
+        RingCard(lw, (1752, 14, 156, 56), a('n15') - t0, u_neha - 0.15, card=k_ws, at=(64, 300), keep=L_ + 0.3),
+        RingCard(lw, (1648, 18, 104, 48), u_neha - 0.1, u_press + 0.12, card=k_cs, at=(64, 470), keep=L_ + 0.3),
+        TechTag('Firebase Hosting', 'the landing page, the console, every workspace', 0.6, L_ + 0.3, x=64)], xin='push', xd=PUSH)
 
     # ======================================================== 4 · the console: a brand set up in minutes
     t0, t1 = t1, T['p02'][0] - 0.3
@@ -629,11 +697,12 @@ def build():
     Lx = L_ + PUSH
     # the other three signers fast-forwarded sheet to sheet: each signer's sheet from its blank pad to its signature
     # (the moments between, the sheet closed on the certificate, flickered for a frame at this speed)
-    seg_ff = 2.0
+    # cut 15: a second shorter (Rakesh's own signature at 1.3x, the fast-forward a little faster, the four signed held less)
+    seg_ff = 1.8
     FF = [(603.5, 621.0), (624.0, 635.4), (638.5, 654.4)]
     ff_src = sum(b - a for a, b in FF)
-    rw = LW('sad', [(574.3, 576.2, 1.8), (588.8, 590.4, 1.55), (594.6, 598.8, 3.9)] + [(a, b, seg_ff * (b - a) / ff_src) for a, b in FF]
-            + [(656.0, 658.0, max(0.8, Lx - 1.8 - 1.55 - 3.9 - seg_ff))], WS + '/destroy/MF-2409-117', RAKESH)
+    rw = LW('sad', [(574.3, 576.2, 1.8), (588.8, 590.4, 1.55), (594.6, 598.8, 3.25)] + [(a, b, seg_ff * (b - a) / ff_src) for a, b in FF]
+            + [(656.0, 657.8, max(0.8, Lx - 1.8 - 1.55 - 3.25 - seg_ff))], WS + '/destroy/MF-2409-117', RAKESH)
     q = [rw.seg_start(i, Lx) for i in range(7)]
     q = q[:4] + [q[6]]                       # q[3]: the fast-forward's start, q[4]: the certificate signed by four
     before = photo_card(EVID / 'destruction-before-540-packs.webp', 290, 218, 16)
@@ -716,7 +785,7 @@ def build():
                       [ends, ends + 0.5, ends + 1.0], ('sad', 1009.0), bg=S7.Room('f-rakesh-L', 14, 0.62).img, t0=0.5, every=0.4)
     add('chips-result', t0, t1, res, [TechTag('Cloud SQL', 'every rupee, worked out on the record', 0.4, ends - 0.05)], xin='push', xd=PUSH)
 
-    t0, t1 = t1, a('d01') - 0.3
+    t0, t1 = t1, a('d01') - 0.15
     L_ = t1 - t0
     iw = PW('sad', [(853.2, 854.6), (862.0, 864.6), (872.6, 875.6)], WS + '/report')
     q = [iw.seg_start(i, L_ + PUSH) for i in range(3)]
@@ -732,7 +801,7 @@ def build():
         DataFly(token_card('database', 'MF-2409-117 · ₹11,702', '131.2 kg kept out of landfill'), win_pt(iw, (240, 248, 420, 74)), (104, 918), a('m11', 'BigQuery') - t0 - 0.1, 0.85)], xin='push', xd=PUSH)
 
     live = [x.name for x in S]
-    a0, a1 = live.index('console'), live.index('impact')
+    a0, a1 = live.index('landing'), live.index('impact')     # cut 15: from the landing page
     for i in range(a0, a1 + 1):
         if S[i].name in ('install', 'chips-result'): continue
         S[i].items.append(LiveTag(fin=(i == a0), fout=(i == a1)))
@@ -741,7 +810,7 @@ def build():
     t0, t1 = t1, END
     tag = ['Nine', 'AI', 'agents,', 'one', 'yes,', 'and', 'nothing', 'good', 'goes', 'to', 'waste.']
     words = [(w, 0.9 + 0.06 * i) + (((247, 192, 74),) if w == 'yes,' else ()) for i, w in enumerate(tag)]
-    add('end', t0, t1, EndCard9(t1 - t0, words, [1.7, 2.1], a('d01') - t0 - 0.1), [Blackout(t1 - t0 - 0.9, t1 - t0, into=True)], xin='push', xd=PUSH)
+    add('end', t0, t1, EndCard15(t1 - t0, words, 0.15), [Blackout(t1 - t0 - 0.3, t1 - t0, into=True)], xin='push', xd=0.35)   # cut 15: 1.5 s
     return S
 
 
@@ -775,7 +844,7 @@ if __name__ == '__main__':
     for s_ in sh:
         print(f'{s_.name:14} {s_.t0:7.2f} {s_.t1:7.2f}  {s_.t1 - s_.t0:5.2f}s  in:{s_.xin}')
     print('END', END)
-    for name, key in (('saas', 'saas10'), ('arch', 'arch13'), ('cast', 'cast10'), ('install', 'pwa9')):
+    for name, key in (('saas', 'saas10'), ('arch', 'arch13'), ('cast', 'cast15'), ('install', 'pwa9')):
         sh_ = next(x for x in sh if x.name == name)
         (HERE / 'build' / f'{key}-cues.json').write_text(json.dumps({k: round(v, 3) for k, v in sh_.cues.items()}))
         print(f'{key} cues ->', sh_.cues.get('end'))
