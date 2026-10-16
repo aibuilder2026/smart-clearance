@@ -123,20 +123,37 @@ What changed:
   - Impact's ring on the BRSR line and the kilos kept out, the stage's ring on "BRSR line" painted out;
   - a ring on screen for 0.14 s on the Command Center removed.
 
+### Round 3, on round 2's export
+
+The review (`…_19-43-28`): "between 3:36 and 3:41 where auditing and monitoring I see some voice narration misses and
+glitches"; "at 16-17 second mark, instead of saying its destroyed, please say about to be destroyed"; "rest all is fine".
+
+- **The record line's glitches** were two of its pauses, cut into speech. Whisper's word times run up to 0.4 s late on
+  Gemini's takes, and a pause was cut halfway between two of them: after "SQL," that was at −10 dB, inside the word, so
+  its tail came after the silence with a click; and the pause meant for "Trace." matched "traced" (by its first
+  letters), so the voice stopped for 1.2 s inside "every request traced … in Cloud Trace". `parts.py` now puts each
+  pause in the take's own silence (the middle of the longest run under −45 dB from its word to just past the next),
+  matches its word exactly first, and moves the words after it by their place in the line; `mix.py` fades 6 ms either
+  side of each pause. Every pause in the film now sits at −48 to −84 dB, and the line pauses only at its punctuation.
+- **The line at 0:16** reads "…too close to its date for quick commerce, it's about to be destroyed." (i13, three new
+  Gemini-TTS takes, each read back word for word; take 2 the most natural, UTMOS 4.28). It reads a little quicker, so
+  the film is 0.44 s shorter; the label's FSSAI overlay is re-rendered on its words.
+
 ### The result
 
-- 3 min 59.2 s (239.24 s); the first scene 9.9 s; −14.0 LUFS, −1.4 dB true peak.
-- No one-frame flash in its 5,981 frames; every window within its speed limits apart from the two holds and the
+- 3 min 58.8 s (238.80 s); the first scene 9.9 s; −14.0 LUFS, −1.4 dB true peak.
+- No one-frame flash in its 5,970 frames; every window within its speed limits apart from the two holds and the
   labelled fast-forwards (the scheme filling, 40x; the signing, 20x).
 - The stage-mark scan: the same 209 frames as round 1's, the apps' own green buttons.
-- Both QR codes read back (the label's GS1 link from 12.5 s to 15.5 s, the guided demo at 238.6 s).
-- 28 of 35 lines word for word; the rest spellings ("PubSub", "centre", "Big Query", "Munchli", "Rs", "30%").
-- `working-demo/smart-clearance-working-demo-2026-10-16_19-43-28.mp4` (crf 17), its 720p copy, a light preview, the
-  changed scenes on their own (`…-changes.mp4`) and captions; round 1's export (`…_15-04-57`) and the seven before it
-  in `working-demo/superseded-cut17/`; the crf-21 copies in `media/`.
+- Both QR codes read back (the label's GS1 link from 13.0 s to 14.5 s, the guided demo at 238.3 s).
+- 27 of 35 lines word for word; the rest spellings ("PubSub", "centre", "Big Query", "Munchli", "Rs", "30%"). Gemini,
+  listening to 3:28 to 3:47 and to the line at 0:16 for glitches, hears none and transcribes both exactly.
+- `working-demo/smart-clearance-working-demo-2026-10-16_20-08-27.mp4` (crf 17), its 720p copy, a light preview, the
+  two changed spots on their own (`…-changes.mp4`) and captions; the exports before it (round 2's `…_19-43-28`, round
+  1's `…_15-04-57` and the seven before them) in `working-demo/superseded-cut17/`; the crf-21 copies in `media/`.
 
-**The spend:** about $0.85 of Gemini-TTS in all (round 2 added 16 takes, about 94 s of audio, some $0.05) and a few
-cents of Gemini's listening, against the $10 cap. Remotion, Whisper, UTMOS, Chromium and ffmpeg ran on this Mac.
+**The spend:** about $0.87 of Gemini-TTS in all (round 3 added 3 takes, some $0.02) and a few cents of Gemini's
+listening, against the $10 cap. Remotion, Whisper, UTMOS, Chromium and ffmpeg ran on this Mac.
 
 ## Cut 16 (16 Oct 2026, SC-227)
 
@@ -1051,7 +1068,7 @@ Cut 17, after cut 16's steps (the voice is `tts/vo3/gemini-Gacrux-demo`, named i
 (cd remo12 && npx remotion render src/index.ts FssaiBatch ../build/fssai17/batch --sequence --image-format=png --props=../build/fssai17-batch.json)
 for p in cast16/cast saas10/saas pwa9/pwa audit17/audit ops17/ops arch13/arch; do d=${p%%/*}; node capture-page.mjs $p.html build/$d build/$d-cues.json 25; done
 .venv/bin/python render13.py && .venv/bin/python mix13.py && ./export13.sh
-node qrcheck11.mjs ../media/smart-clearance-working-demo.mp4 14.0 238.6
+node qrcheck11.mjs ../media/smart-clearance-working-demo.mp4 14.0 238.5
 uv run --no-project --python .venv/bin/python --with mlx-whisper python readback13.py
 .venv/bin/python rings17.py [shot …]                  # every ring on its frame, on contact sheets in build/rings17/
 .venv/bin/python ringsrc17.py <shot> <k> [u …] [--rect x,y,w,h]   # a ring's rect on the recording's own frame, gridded
