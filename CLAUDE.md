@@ -3176,4 +3176,8 @@
   - **Also:** the suites list gains the admin tour; "Before a run" is now "Before a run, locally"; the at-a-glance row names every suite and production. README's TESTING.md row says so, and ffmpeg joins the prerequisites.
   - **Checks:** steps 3 and 4 run as written from `frontend/`; every anchor and relative link in TESTING.md resolves.
 - **SC-234** (PR, merged): TESTING.md gains a contents section (every section and subsection, linked), an IMPORTANT alert at its top pointing to the E2E tests on production, the production entry in the contents marked IMPORTANT, and an IMPORTANT alert opening that section with what a run changes. Documentation only; every anchor resolves.
+- **SC-235** (In Review, branch `SC-235-readme-demo-deck`): README.md links the Working Prototype Demo and the pitch deck, asked for by the maintainer.
+  - **Working Prototype Demo:** cut 17 of the working demo (SC-228), on YouTube unlisted at [youtu.be/5eyNqJ3zhJQ](https://youtu.be/5eyNqJ3zhJQ), uploaded through Claude in Chrome: "Smart-Clearance: the 4-minute working demo", eight chapters in its description, English (India) captions from the cut's own SRT, AI use disclosed, embedding allowed.
+  - **The pitch deck:** the AI Builder Cup deck (16 Oct, v6, 16 slides) as `docs/smart-clearance-pitch-deck.pdf`. Read before it was committed to the public repository: it states no password (its sign-in slide says the password is shared separately), and its addresses are the fictional `.example` ones DEMO.md lists.
+  - **Checks:** every relative link in README.md resolves. Documentation only.
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.
