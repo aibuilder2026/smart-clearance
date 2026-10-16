@@ -66,3 +66,36 @@ class TracePanel17(TracePanel):
 
     def draw(self, f, u, L=None):
         super().draw(f, u if u < self.u_play else self.u_play + (u - self.u_play) * self.k, L)
+
+
+# cut 17: the journey stage's own ring round the Mango's plan card on Priya's Command Center (164.2 to 165.4), where the
+# film rings the plan's figure inside it; painted out along the ring's own edges only (the card's own greens, its pill
+# and its tracker, are left alone), from the frame just before it
+from parts5 import _unring
+for _box in ((222, 178, 764, 212), (222, 178, 258, 746), (724, 178, 764, 746), (222, 728, 764, 746)):
+    _unring('mango', 'P', 163.77, 164.0, 165.5, _box)
+# the stage's own ring round "BRSR line" on the chips' Impact tab (from about 873.7), inside the film's amber ring
+_unring('sad', 'P', 873.32, 873.5, 875.8, (250, 236, 346, 284))
+# the stage's own ring round "150 packs × ₹8 · matches your count" on Lakshmi Agencies' staff sale (from 473.5), inside
+# the film's ring round Vision's read: its pale glow is not green enough for _unring, and the panel is still under it,
+# so the band takes the clean frame's pixels wherever it differs, except the pointer's (dark, or pure white)
+import kit as _kit
+from parts import REC as _REC, DEV as _DEV
+from kit import FrameSource as _FS
+def _paint(rec, dev, t_clean, t0, t1, box):
+    x0, y0, x1, y1 = box
+    clean = {}
+    def fn(fr, t):
+        if 'f' not in clean: clean['f'] = _FS(_REC[rec], _DEV[dev]).get(t_clean).copy()
+        c = clean['f'][y0:y1, x0:x1]
+        sub = fr[y0:y1, x0:x1]
+        g = cv2.cvtColor(sub, cv2.COLOR_BGR2GRAY)
+        diff = np.abs(sub.astype(np.int16) - c.astype(np.int16)).sum(2) > 6
+        grey = (sub.max(2).astype(np.int16) - sub.min(2)) < 40                  # the pointer is black and white, the ring green
+        ptr = ((g < 110) | (sub.min(2) > 250)) & grey
+        ptr = cv2.dilate(ptr.astype(np.uint8), np.ones((3, 3), np.uint8)).astype(bool) & ((g < 110) | (sub.min(2) > 235)) & grey
+        m = diff & ~ptr
+        out = fr.copy(); out[y0:y1, x0:x1][m] = c[m]
+        return out
+    _kit.RETOUCH.setdefault((str(_REC[rec]), tuple(_DEV[dev])), []).append((t0, t1, fn))
+_paint('mango', 'L', 473.3, 473.4, 476.5, (192, 522, 822, 606))

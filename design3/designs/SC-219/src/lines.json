@@ -3,15 +3,17 @@
   {
    "id": "i01",
    "sec": "intro",
-   "text": "Every day, India's food brands write off perfectly good stock, simply because it sells too slowly.",
-   "gap": 0.25
+   "text": "Every day, India's food brands write off good stock that sells too slowly.",
+   "gap": 0.25,
+   "take": "i01-1.wav"
   },
   {
    "id": "f01",
    "sec": "intro",
-   "text": "And FSSAI's rule for food sold online is strict: at delivery, thirty percent of its shelf life, or forty-five days, must remain.",
-   "say": "And F S S A I's rule for food sold online is strict: at delivery, thirty percent of its shelf life, or forty-five days, must remain.",
-   "gap": 0.3
+   "text": "FSSAI sets a bare minimum for e-commerce: thirty percent of shelf life, or forty-five days.",
+   "say": "F S S A I sets a bare minimum for e-commerce: thirty percent of shelf life, or forty-five days.",
+   "gap": 0.3,
+   "take": "f01-1.wav"
   },
   {
    "id": "i13",
@@ -30,7 +32,7 @@
    "sec": "brand",
    "text": "Agentic software as a service, for FMCG.",
    "say": "Agentic software as a service, for F M C G.",
-   "gap": 0.4
+   "gap": 1.4
   },
   {
    "id": "t01",
@@ -212,7 +214,9 @@
    "id": "s05",
    "sec": "sad",
    "text": "At the landfill he photographs the destruction, and the officer, two witnesses and Rakesh sign the certificate.",
-   "gap": 1.0
+   "gap": 0.5,
+   "style": "Say this one a little slower and steadier than the rest, unhurried, giving each person their moment as you name them: the officer, two witnesses and Rakesh. No rush to the end.",
+   "take": "s05-1.wav"
   },
   {
    "id": "s06",
@@ -225,7 +229,21 @@
    "sec": "sad",
    "text": "And every step is on the record: an append-only audit trail in Cloud SQL, and every request traced in Cloud Trace. Cloud Monitoring watches it all, and alerts the team the moment a model call fails.",
    "gap": 0.4,
-   "take": "r01-0.wav"
+   "take": "r01-0.wav",
+   "pause": [
+    [
+     "record",
+     0.7
+    ],
+    [
+     "SQL",
+     0.4
+    ],
+    [
+     "Trace",
+     1.2
+    ]
+   ]
   },
   {
    "id": "s08",

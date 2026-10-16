@@ -1,139 +1,139 @@
 1
-00:00:00,400 --> 00:00:06,260
-Every day, India's food brands write off perfectly good stock, simply because it sells too slowly.
+00:00:00,400 --> 00:00:05,310
+Every day, India's food brands write off good stock that sells too slowly.
 
 2
-00:00:06,260 --> 00:00:15,816
-And FSSAI's rule for food sold online is strict: at delivery, thirty percent of its shelf life, or forty-five days, must remain.
+00:00:05,310 --> 00:00:11,269
+FSSAI sets a bare minimum for e-commerce: thirty percent of shelf life, or forty-five days.
 
 3
-00:00:15,866 --> 00:00:21,635
+00:00:11,319 --> 00:00:17,088
 This batch has just twenty-two days left. Too close to its date for quick commerce, it's destroyed.
 
 4
-00:00:23,735 --> 00:00:27,508
+00:00:19,188 --> 00:00:22,961
 Smart-Clearance turns that write-off into recovery.
 
 5
-00:00:27,508 --> 00:00:30,695
+00:00:22,961 --> 00:00:26,148
 Agentic software as a service, for FMCG.
 
 6
-00:00:30,995 --> 00:00:33,296
+00:00:27,448 --> 00:00:29,749
 Under the hood, it's all Google Cloud.
 
 7
-00:00:33,946 --> 00:00:40,909
+00:00:30,399 --> 00:00:37,362
 Four apps on Firebase, one API on Cloud Run, and Cloud SQL as the record.
 
 8
-00:00:41,359 --> 00:00:45,127
+00:00:37,812 --> 00:00:41,580
 Pub/Sub carries every step, and Cloud Scheduler keeps the clock.
 
 9
-00:00:45,477 --> 00:00:51,564
+00:00:41,930 --> 00:00:48,017
 Nine AI agents on Google's ADK read sales from BigQuery, and photos from Cloud Storage.
 
 10
-00:00:52,014 --> 00:00:58,535
+00:00:48,467 --> 00:00:54,988
 On Google's Agent Platform, Gemini Pro prices and negotiates, while Flash reads and writes.
 
 11
-00:00:58,885 --> 00:01:04,981
+00:00:55,338 --> 00:01:01,434
 And the models never touch the money: the API works out every figure, and a person says yes.
 
 12
-00:01:05,481 --> 00:01:15,891
+00:01:01,934 --> 00:01:12,344
 So today, I'll walk you through two journeys, running live in production: Munchly Foods, an imaginary brand, with two batches at two distributors. One happy path, and one sad path.
 
 13
-00:01:16,041 --> 00:01:24,467
+00:01:12,494 --> 00:01:20,920
 There are two ways in. Munchly, its distributors and its kiranas share one workspace, and Neha, from our team, opens the console.
 
 14
-00:01:24,717 --> 00:01:33,650
+00:01:21,170 --> 00:01:30,103
 In the console, Neha can set up a brand in minutes: its stock export, its people, its quick-commerce gates, and its agents.
 
 15
-00:01:33,900 --> 00:01:38,008
+00:01:30,353 --> 00:01:34,461
 Every workspace installs as an app, on any laptop, tablet or phone.
 
 16
-00:01:38,408 --> 00:01:42,134
+00:01:34,861 --> 00:01:38,587
 Here's Priya, who runs supply chain at Munchly, signing in.
 
 17
-00:01:42,634 --> 00:01:50,621
+00:01:39,087 --> 00:01:47,074
 Her Command Center tracks every batch at risk: the days left, the sell-through, and what the bin would cost.
 
 18
-00:01:50,871 --> 00:01:57,798
+00:01:47,324 --> 00:01:54,251
 This morning, reading sell-through from BigQuery, the Watcher flags two batches: the Mango Drink and the Masala Chips.
 
 19
-00:01:58,348 --> 00:02:07,131
+00:01:54,801 --> 00:02:03,584
 First, the Mango Drink. Lakshmi Agencies photographs the label, and Vision, on Gemini Flash, matches it to the stock export.
 
 20
-00:02:07,181 --> 00:02:16,667
+00:02:03,634 --> 00:02:13,120
 From the batch's sales history and Munchly's own rules, the Valuer prices every exit, and the Router splits the batch. Priya approves the plan with one tap.
 
 21
-00:02:16,917 --> 00:02:24,215
+00:02:13,370 --> 00:02:20,668
 Outreach offers the packs to fifty-eight kiranas, each in their own language, and every order lands on Priya's screen, live.
 
 22
-00:02:24,315 --> 00:02:30,791
+00:02:20,768 --> 00:02:27,244
 Fifty-two shops take thirteen hundred and seventy-two packets, and each order gets its own GST invoice.
 
 23
-00:02:30,941 --> 00:02:38,610
+00:02:27,394 --> 00:02:35,063
 At the godown, staff buy a hundred and fifty packs by UPI, and Vision checks the receipt against the count.
 
 24
-00:02:38,660 --> 00:02:44,104
+00:02:35,113 --> 00:02:40,557
 Feeding India collects the last fifty-eight packs, and issues a donation receipt.
 
 25
-00:02:44,254 --> 00:02:50,528
+00:02:40,707 --> 00:02:46,981
 Paperwork files every paper in Cloud Storage, and Lakshmi Agencies ends whole, to the rupee.
 
 26
-00:02:51,578 --> 00:02:59,543
+00:02:48,031 --> 00:02:55,996
 But not every batch sells. Munchly's Masala Chips go to Rakesh Traders' kiranas in Nagpur, and only two shops order.
 
 27
-00:02:59,593 --> 00:03:08,614
+00:02:56,046 --> 00:03:05,067
 So on ExpireSoon, an imaginary near-expiry marketplace, the Negotiator counters a bid, and seven hundred and seventy-two packs sell.
 
 28
-00:03:09,364 --> 00:03:13,663
+00:03:05,817 --> 00:03:10,116
 When the offer window closes, five hundred and forty packets are still left.
 
 29
-00:03:13,713 --> 00:03:19,350
+00:03:10,166 --> 00:03:15,803
 On expiry day, Rakesh has to destroy them through an authorised agency, and prove it.
 
 30
-00:03:19,400 --> 00:03:25,029
+00:03:15,853 --> 00:03:23,102
 At the landfill he photographs the destruction, and the officer, two witnesses and Rakesh sign the certificate.
 
 31
-00:03:25,779 --> 00:03:32,971
+00:03:23,352 --> 00:03:30,544
 Vision checks the photos, and only on Priya's second yes are the certificate and the credit note issued.
 
 32
-00:03:33,671 --> 00:03:46,195
+00:03:31,244 --> 00:03:46,068
 And every step is on the record: an append-only audit trail in Cloud SQL, and every request traced in Cloud Trace. Cloud Monitoring watches it all, and alerts the team the moment a model call fails.
 
 33
-00:03:46,345 --> 00:03:52,129
+00:03:46,218 --> 00:03:52,002
 Even on this sad path, Munchly recovers eleven thousand seven hundred rupees, and Rakesh ends whole.
 
 34
-00:03:52,379 --> 00:03:58,046
+00:03:52,252 --> 00:03:57,919
 And finally, Impact posts every batch to its ledger in BigQuery, ready for BRSR.
 
 35
-00:03:58,146 --> 00:03:59,537
+00:03:58,019 --> 00:03:59,410
 Try the guided demo.

@@ -76,7 +76,7 @@
 		ev(c.up, 'sweep');
 		TEN.forEach((_, i) => { if (i) ev(c.service + 0.1 + 0.12 * i, 'pop', 0.25 + 0.12 * i); });
 		[c.brands, c.distributors, c.retailers].forEach((tt, i) => { CARDS[i].t0 = c.fmcg - 0.05 + 0.2 * i; CARDS[i].lit = tt - 0.1; ev(CARDS[i].t0, 'card', [0.22, 0.5, 0.78][i]); ev(tt - 0.05, 'tick', [0.22, 0.5, 0.78][i]); });
-		c.ride = c.distributors + 0.35; ev(c.ride, 'whoosh', 0.3);
+		c.ride = c.distributors - 0.1; ev(c.ride, 'whoosh', 0.3);   // SC-228 (cut 17): the agents set off with the route, so they ride it inside the scene
 		window.renderAt(0);
 		return { events: EV, cues: c };
 	};
@@ -143,7 +143,7 @@
 		[glowP, path].forEach((p) => p.setAttribute('stroke-dashoffset', (LEN * (1 - eo(rp))).toFixed(1)));
 		BOTS.forEach((b) => {
 			const t0 = c.ride + 0.07 * b.i;
-			const q = clamp((t - t0) / 1.0);
+			const q = clamp((t - t0) / 0.9);
 			const target = (0.06 + 0.88 * b.i / 9);
 			const s = eo(q) * target;
 			const pt = path.getPointAtLength(LEN * s);

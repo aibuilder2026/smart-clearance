@@ -84,23 +84,59 @@ scene", under 240 s.
     back as "sack");
   - the bin's beat 0.3 s longer; the bed 4 dB further down under m11.
 
+### Round 2, on the maintainer's review of the first export
+
+The review (`…_2026-10-16_15-04-57`): "Overall voice tone is perfect and sounds like a demo", and six notes:
+
+1. "1st scene is 14 seconds, I want it to be condensed under 10 seconds, FSSAI rules should be stated as bare minimum
+   requirement, and it should mention e-Commerce instead of online."
+2. "At 3:25 second mark where signing is done, the voice narration breaks and seems rushed."
+3. The audit trail "should be little slower".
+4. The trace "should be accompanied with" the app's Record tab, "to show detailed traceability at appliation level".
+5. "For the FMCG supply chain": "This line should still show all the agents animating and moving in like before".
+6. "highlighting boxes seems to be not done correctly, sometimes overlapping, sometimes crossing something else out of
+   context we need to review this."
+
+What changed:
+
+- **The first scene, 9.9 s** (was 14): two lines, "Every day, India's food brands write off good stock that sells too
+  slowly." and "FSSAI sets a bare minimum for e-commerce: thirty percent of shelf life, or forty-five days." The rule's
+  card reads "The bare minimum for e-commerce, at delivery", the label's verdict "Below both: too close to its date for
+  e-commerce"; the label shot comes in under "forty-five days".
+- **The signing's line** (s05) voiced again, slower and steadier (a direction of its own in `lines.json`), with half a
+  second after it.
+- **The audit trail** runs 6 s, its steps landing further apart before they fold into Cloud SQL.
+- **The trace beside the Record:** the chips' own Record tab from production (Priya's evening room), its "Sent the label
+  photo" row ringed and linked to that request's Cloud Trace waterfall, then its Cloud Logging lines.
+- **The agents ride the route again** under "For the FMCG supply chain" (`saas10/saas.js`: they set off as the
+  distributors light, over 0.9 s, and the scene has the time for it).
+- **Every highlight reviewed** on the frame it is drawn on (`rings17.py` lays a still of every ring on contact sheets;
+  `ringsrc17.py` draws a ring's rect on the recording's own frame, with a grid, to measure it):
+  - the plan's ring is on its figure, and the recording stage's own ring round the card is painted out (`parts17`);
+    the amber ring follows the press, Route Room then sheet;
+  - the staff sale's ring is on Record the sale (it crossed the row above), and the stage's ring inside Vision's read
+    is painted out;
+  - the chips' rings follow the phone as it scrolls (his order, its confirmation, Om Sai's Not this time and the decline
+    it records, then the offer as it reads);
+  - Rakesh's step, Destroy 540 expired packs, and his two photos whole, on Today and at the landfill;
+  - after the second yes, the expiry settlement on Execution (it had ringed the agent timeline once the sheet closed);
+  - Impact's ring on the BRSR line and the kilos kept out, the stage's ring on "BRSR line" painted out;
+  - a ring on screen for 0.14 s on the Command Center removed.
+
 ### The result
 
-- 3 min 59.4 s (239.36 s); −14.0 LUFS, −1.3 dB true peak.
-- No one-frame flash in its 5,984 frames; every window within its speed limits apart from the two holds and the
+- 3 min 59.2 s (239.24 s); the first scene 9.9 s; −14.0 LUFS, −1.4 dB true peak.
+- No one-frame flash in its 5,981 frames; every window within its speed limits apart from the two holds and the
   labelled fast-forwards (the scheme filling, 40x; the signing, 20x).
-- The stage-mark scan: the same spans as cut 16, the apps' own green buttons.
-- Both QR codes read back (the label's GS1 link at 18.6 s, the guided demo at 238.85 s).
-- 27 of 35 lines word for word; the rest spellings ("PubSub", "centre", "Big Query", "Munchli", "Rs", "30%") and two
-  hearings: s05 "a destruction" (the take alone reads "the") and m11 "hosts" (Gemini hears "posts", twice, with high
-  confidence).
-- `working-demo/smart-clearance-working-demo-2026-10-16_15-04-57.mp4` (crf 17), its 720p copy, a light preview, the
-  changed scenes on their own (`…-changes.mp4`) and captions; the seven exports on the way in
-  `working-demo/superseded-cut17/`; the crf-21 copies in `media/`.
+- The stage-mark scan: the same 209 frames as round 1's, the apps' own green buttons.
+- Both QR codes read back (the label's GS1 link from 12.5 s to 15.5 s, the guided demo at 238.6 s).
+- 28 of 35 lines word for word; the rest spellings ("PubSub", "centre", "Big Query", "Munchli", "Rs", "30%").
+- `working-demo/smart-clearance-working-demo-2026-10-16_19-43-28.mp4` (crf 17), its 720p copy, a light preview, the
+  changed scenes on their own (`…-changes.mp4`) and captions; round 1's export (`…_15-04-57`) and the seven before it
+  in `working-demo/superseded-cut17/`; the crf-21 copies in `media/`.
 
-**The spend:** about $0.80 of Gemini-TTS (some 146 takes and bake-off samples, about 25 minutes of audio, at Google's
-list price) and a few cents of Gemini's listening, against the $10 cap. Remotion, Whisper, UTMOS, Chromium and ffmpeg
-ran on this Mac.
+**The spend:** about $0.85 of Gemini-TTS in all (round 2 added 16 takes, about 94 s of audio, some $0.05) and a few
+cents of Gemini's listening, against the $10 cap. Remotion, Whisper, UTMOS, Chromium and ffmpeg ran on this Mac.
 
 ## Cut 16 (16 Oct 2026, SC-227)
 
@@ -1015,8 +1051,11 @@ Cut 17, after cut 16's steps (the voice is `tts/vo3/gemini-Gacrux-demo`, named i
 (cd remo12 && npx remotion render src/index.ts FssaiBatch ../build/fssai17/batch --sequence --image-format=png --props=../build/fssai17-batch.json)
 for p in cast16/cast saas10/saas pwa9/pwa audit17/audit ops17/ops arch13/arch; do d=${p%%/*}; node capture-page.mjs $p.html build/$d build/$d-cues.json 25; done
 .venv/bin/python render13.py && .venv/bin/python mix13.py && ./export13.sh
-node qrcheck11.mjs ../media/smart-clearance-working-demo.mp4 18.6 238.85
+node qrcheck11.mjs ../media/smart-clearance-working-demo.mp4 14.0 238.6
 uv run --no-project --python .venv/bin/python --with mlx-whisper python readback13.py
+.venv/bin/python rings17.py [shot …]                  # every ring on its frame, on contact sheets in build/rings17/
+.venv/bin/python ringsrc17.py <shot> <k> [u …] [--rect x,y,w,h]   # a ring's rect on the recording's own frame, gridded
+.venv/bin/python words17.py <line> …                  # a line's words at their film times, to cue a ring on them
 ```
 
 Cut 16, after cut 15's steps (the cast page `cast16/`; the new lines voiced and picked; the console and the landing

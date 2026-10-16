@@ -4,7 +4,7 @@
 // have 30% of its shelf life, or 45 days, remaining before expiry at the time of delivery. The Mango Drink batch has
 // 22 days left of a 180-day shelf life, so it fails both thresholds (45 days, and 30% = 54 days).
 //
-//   FssaiRule   over the godown, while the voice says the rule: the rule card, its two thresholds landing on the words
+//   FssaiRule   over the godown, while the voice says the rule: the bare minimum for e-commerce, its two thresholds
 //   FssaiBatch  over the label, while the voice says the batch has 22 days: the batch's shelf life against the rule
 //
 // Every time is the overlay's own second (0 = its shot's start), from the voice's word cues (props).
@@ -50,7 +50,7 @@ export const FssaiRule: React.FC<RuleProps> = ({ t0, thirty, fortyFive, remain, 
 					<span style={{ ...KICK, fontSize: 15, letterSpacing: 2.2, color: INK.g300 }}>FSSAI · Food Safety and Standards Authority of India</span>
 				</div>
 				<div style={{ marginTop: 18, fontFamily: 'Bricolage Grotesque', fontWeight: 700, fontSize: 40, letterSpacing: -0.8, lineHeight: 1.12 }}>
-					At delivery, food sold online<br />must still have
+					The bare minimum for e-commerce,<br />at delivery
 				</div>
 				<div style={{ marginTop: 22, display: 'flex', alignItems: 'center', gap: 18 }}>
 					<Tile k={s30} big="30%" unit="" sub="of its shelf life left" />
@@ -58,7 +58,7 @@ export const FssaiRule: React.FC<RuleProps> = ({ t0, thirty, fortyFive, remain, 
 					<Tile k={s45} big="45" unit="days" sub="before its expiry date" />
 				</div>
 				<div style={{ marginTop: 18, fontSize: 17, color: INK.ink3, letterSpacing: 0.2, opacity: ramp(t, remain - 0.2, remain + 0.3) }}>
-					For food delivered by e-commerce and quick-commerce platforms
+					For food delivered through e-commerce and quick-commerce platforms
 				</div>
 			</div>
 		</AbsoluteFill>
@@ -83,14 +83,14 @@ export const FssaiBatch: React.FC<BatchProps> = ({ t0, days, quick, t1 }) => {
 		<AbsoluteFill>
 			<div style={{ ...CARD, left: 64, top: 800, width: 1100, height: 232, opacity: a, transform: `translateY(${(1 - inn) * 26}px)` }}>
 				<div style={{ position: 'absolute', left: X0, top: 20, display: 'flex', alignItems: 'baseline', gap: 16 }}>
-					<span style={{ ...KICK, color: INK.g300 }}>This batch against FSSAI's rule</span>
+					<span style={{ ...KICK, color: INK.g300 }}>This batch against FSSAI's minimum</span>
 					<span style={{ fontSize: 18, color: INK.ink3 }}>Mango Drink · a 180-day shelf life</span>
 				</div>
 				{/* the bar: the days of shelf life left, 0 at its left end; online sale needs the green zone */}
 				<div style={{ position: 'absolute', left: X0, top: 104, width: BW * bar, height: 18, borderRadius: 9, background: 'rgba(236,243,239,0.10)', overflow: 'hidden' }}>
 					<div style={{ position: 'absolute', left: xOf(54) - X0, top: 0, width: BW - (xOf(54) - X0), height: 18, background: 'rgba(95,227,161,0.34)' }} />
 				</div>
-				<div style={{ position: 'absolute', left: xOf(54) + 14, top: 74, fontSize: 17, fontWeight: 600, color: 'rgba(159,240,196,0.9)', opacity: tk54 }}>Can be sold online</div>
+				<div style={{ position: 'absolute', left: xOf(54) + 14, top: 74, fontSize: 17, fontWeight: 600, color: 'rgba(159,240,196,0.9)', opacity: tk54 }}>Meets the minimum</div>
 				<div style={{ position: 'absolute', left: X0, top: 132, fontSize: 15, color: INK.ink3, opacity: zero }}>0</div>
 				<div style={{ position: 'absolute', left: X0 + BW - 160, width: 160, textAlign: 'right', top: 132, fontSize: 15, color: INK.ink3, opacity: zero }}>180 days left</div>
 				{[{ dd: 45, k: tk45, label: '45 days', dx: -8, right: true }, { dd: 54, k: tk54, label: '54 days · 30% of 180', dx: 10, right: false }].map((m) => (
@@ -109,7 +109,7 @@ export const FssaiBatch: React.FC<BatchProps> = ({ t0, days, quick, t1 }) => {
 					background: RED_DEEP, border: `1.5px solid ${RED}`, color: '#ffd5cd', fontSize: 19, fontWeight: 650,
 					opacity: clamp(verdict * 1.3), transform: `scale(${lerp(0.9, 1, verdict)})`, transformOrigin: 'right center' }}>
 					<svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2.4} strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" /></svg>
-					Below both: too close to its date to sell online
+					Below both: too close to its date for e-commerce
 				</div>
 			</div>
 		</AbsoluteFill>
