@@ -81,8 +81,12 @@ export function Panels(root, svg) {
 			svg.appendChild(g);
 			const lab = k.label ? $(`<div class="pk" style="--tone:${TONE[k.tone || tone]}">${k.icon ? ICON(k.icon) : ''}<span>${k.label}</span></div>`) : null;
 			if (lab) root.appendChild(lab);
-			return { lead: 0, ...k, g, lab };
+			return { lead: 0, ...k, dur: Math.max(k.dur, 0.5), g, lab };
 		});
+		// a packet's name is pinned beside its window, never carried along the lead (cut 13: it flew across too fast to
+		// read): it shows as an outgoing packet leaves, or as an incoming one lands, holds 1.3 s, and gives way to the panel's next
+		const named = packets.filter((k) => k.lab).map((k) => Object.assign(k, { ls: k.dir === 'in' ? k.t + k.dur - 0.08 : k.t - 0.04 }));
+		named.forEach((k) => { const nx = named.filter((o) => o.ls > k.ls).sort((a, b) => a.ls - b.ls)[0]; k.le = Math.min(k.ls + 1.3, nx ? nx.ls : 1e9); });
 		const rolls = [...el.querySelectorAll('[data-roll]')].map((e) => ({ e, v: +e.getAttribute('data-roll'), h: e.closest('.head') }));
 		const devW = D.reduce((w, x) => w + x.outerW, 0) + 22 * Math.max(0, D.length - 1);
 		if (def.layout === 'grid') el.style.width = '822px';
@@ -136,7 +140,7 @@ export function Panels(root, svg) {
 		return { x: lerp(a.x, b.x, u), y: lerp(a.y, b.y, u), k: i };
 	}
 
-	function update(t, shot) {
+	function update(t, shot, calm = () => 1) {
 		for (const V of P) {
 			const vis = t >= V.t0 - 0.02 && t <= V.t1 + 0.5;
 			if (!vis) { V.el.style.opacity = 0; V.el.style.visibility = 'hidden'; V.leads.forEach((L) => [L.path, L.glow, L.dot, L.pingC].forEach((e) => (e.style.opacity = 0))); V.packets.forEach((k) => { k.g.style.opacity = 0; if (k.lab) k.lab.style.opacity = 0; }); continue; }
@@ -146,7 +150,8 @@ export function Panels(root, svg) {
 			const pw = V.el.offsetWidth, ph = V.el.offsetHeight;
 			const x0 = V.x ?? (V.side === 'r' ? W - 64 - pw : 64);
 			const yTop = V.top ?? (V.side === 'r' ? 70 : 178);
-			const y0 = V.y ?? Math.round(Math.max(yTop, lerp(yTop, 960 - ph, 0.5)));
+			// a panel with a badge under it sits high enough to keep the badge clear of the dock (64 px under the panel)
+			const y0 = V.y ?? Math.round(Math.min(Math.max(yTop, lerp(yTop, 960 - ph, 0.5)), V.badges.length ? Math.max(yTop - 10, 905 - ph) : 1e9));
 			const dx = sx * (90 * (1 - inn) + 70 * out);
 			const rot = sx * (-16 * (1 - inn) + 12 * out);
 			V.el.style.opacity = (clamp((t - V.t0) / 0.14) * (1 - clamp(out * 1.6))).toFixed(3);
@@ -174,7 +179,7 @@ export function Panels(root, svg) {
 				const ex = V.side === 'r' ? r.left : r.right, ey = r.top + r.height * (L.y ?? 0.42);
 				const A = shot(L.anchor(t));
 				const ok = A && A.z < 1 && A.x > -100 && A.x < W + 100 && A.y > -100 && A.y < H + 100;
-				const lp = clamp((t - V.t0 - 0.25 - 0.1 * li) / 0.45), lo = ok ? Math.min(t > V.t0 + 0.25 ? 1 : 0, 1 - clamp(out * 1.6)) * vis1 : 0;
+				const lp = clamp((t - V.t0 - 0.25 - 0.1 * li) / 0.45), lo = ok ? Math.min(t > V.t0 + 0.25 ? 1 : 0, 1 - clamp(out * 1.6)) * vis1 * calm(L.anchor(t)) : 0;
 				const mine = V.packets.filter((k) => k.lead === li);
 				if (!ok || lo <= 0) { [L.path, L.glow, L.dot, L.pingC].forEach((e) => (e.style.opacity = 0)); mine.forEach((k) => { k.g.style.opacity = 0; if (k.lab) k.lab.style.opacity = 0; }); return; }
 				const mx = (ex + A.x) / 2;
@@ -190,8 +195,15 @@ export function Panels(root, svg) {
 					const on = u > 0 && u < 1;
 					k.g.style.opacity = on ? '1' : '0';
 					if (on) { const q = eio(u); const p = L.path.getPointAtLength(len * (k.dir === 'in' ? 1 - q : q)); k.g.setAttribute('transform', `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})`);
-						if (k.lab) { k.lab.style.opacity = Math.min(1, u * 6, (1 - u) * 6).toFixed(3); k.lab.style.transform = `translate(${(p.x + 16).toFixed(1)}px, ${(p.y - 40).toFixed(1)}px)`; } }
-					else if (k.lab) k.lab.style.opacity = 0;
+					}
+					if (k.lab) {
+						const a = t < k.ls ? 0 : Math.min(clamp((t - k.ls) / 0.16), 1 - clamp((t - k.le) / 0.22)), sp = spring(t - k.ls, 0.7, 16);
+						if (a <= 0) k.lab.style.opacity = 0;
+						else { // at the panel's outer edge, so a name on the inner of two devices never sits over the other
+							const pr = V.el.getBoundingClientRect(), bw = k.lab.offsetWidth;
+							const x = V.side === 'r' ? Math.min(ex, pr.left) - 18 - bw : Math.max(ex, pr.right) + 18, y = ey - 50 + 8 * (1 - sp);
+							k.lab.style.opacity = (a * lo).toFixed(3); k.lab.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${(0.94 + 0.06 * sp).toFixed(3)})`; }
+					}
 					if (u >= 1 && u < 1 + 0.55 / k.dur && k.dir !== 'in') ping = (u - 1) * k.dur / 0.55;
 				});
 				if (ping >= 0) { L.pingC.setAttribute('cx', A.x.toFixed(1)); L.pingC.setAttribute('cy', A.y.toFixed(1)); L.pingC.setAttribute('r', (8 + 34 * eo(ping)).toFixed(1)); L.pingC.style.opacity = ((1 - ping) * 0.9).toFixed(3); }

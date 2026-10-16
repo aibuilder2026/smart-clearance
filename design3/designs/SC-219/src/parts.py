@@ -37,7 +37,7 @@ for _l in LINES:
         PAUSE.setdefault(_l['id'], []).append((_cut, _add))
         DUR[_l['id']] = DUR[_l['id']] + _add
 LEAD, HOLD = 0.5, 1.2   # cut 10: the voice starts half a second in; cut 11: the close condensed, its card held 1.2 s after its last word (the QR code is up from its first)
-PRE = {'i03': 0.35, 't01': 0.15, 'x24': 0.25, 'k01': 0.25, 'q01': 0.5, 'm03': 0.4, 's01': 1.3, 'r01': 0.5}   # cut 9: a beat before the brand, under the hood, the live demo, the console, Priya's sign-in, the happy path's first step, the sad path and the record
+PRE = {'i03': 0.35, 't01': 0.15, 'x24': 0.25, 'k01': 0.25, 'q01': 0.5, 'm03': 0.4, 's01': 1.05, 'r01': 0.5}   # cut 9: a beat before the brand, under the hood, the live demo, the console, Priya's sign-in, the happy path's first step, the sad path and the record
 T = {}
 _t = LEAD
 for _l in LINES:

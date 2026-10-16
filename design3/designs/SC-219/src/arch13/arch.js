@@ -564,10 +564,10 @@ const ACTS = [
 ].map((o) => {
 	const parts = o.h.split(/(\[[^\]]+\])/).filter(Boolean).flatMap((seg) => seg.startsWith('[') ? [{ w: seg.slice(1, -1), hl: true }] : seg.trim().split(' ').filter(Boolean).map((w) => ({ w, hl: false })));
 	// a mark's trailing stop stays outside it
-	const html = parts.map((q) => q.hl ? `<span class="w hl"><i class="mk"></i>${q.w}</span>` : `<span class="w">${q.w}</span>`).join(' ').replace(/<\/span> \./g, '</span>.');
+	const html = parts.map((q) => q.hl ? `<span class="w hl"><i class="mk"></i><span class="b">${q.w}</span><span class="ink" aria-hidden="true">${q.w}</span></span>` : `<span class="w">${q.w}</span>`).join(' ').replace(/<\/span> \./g, '</span>.');
 	const el = $(`<div class="ttl"><div class="k"><i></i>${o.k}<em>${o.n}</em></div><h1>${html}</h1></div>`);
 	document.body.appendChild(el);
-	return { ...o, el, ws: [...el.querySelectorAll('.w')], mk: el.querySelector('.mk'), t0: 1e9, t1: 1e9 };
+	return { ...o, el, ws: [...el.querySelectorAll('.w')], mk: el.querySelector('.mk'), ink: el.querySelector('.ink'), base: el.querySelector('.hl .b'), t0: 1e9, t1: 1e9 };
 });
 const INDEX = [['firebase', 'flame', 'Firebase'], ['auth', 'fingerprint', 'Firebase Auth'], ['run', 'server', 'Cloud Run'], ['sql', 'database', 'Cloud SQL'], ['pubsub', 'radio', 'Pub/Sub'], ['sched', 'clock', 'Scheduler'],
 	['agents', 'bot', 'ADK agents'], ['bq', 'chart-column', 'BigQuery'], ['gcs', 'hard-drive', 'Cloud Storage'], ['gemini', 'sparkles', 'Gemini'], ['shield', 'shield', 'Guardrails']]
@@ -607,13 +607,22 @@ function scalar(t, name, def) {
 	const va = a[name] ?? def, vb = b[name] ?? def;
 	return lerp(va, vb, eio((t - a.t) / Math.max(1e-3, b.t - a.t)));
 }
-function camAt(t) {
-	camPos.copy(hermite(t, (k) => k.p)); camTgt.copy(hermite(t, (k) => k.q));
-	camPos.x += Math.sin(t * 0.37) * 0.05; camPos.y += Math.cos(t * 0.29) * 0.04;      // a breath of a hand on the camera, never a shake
-	camera.position.copy(camPos); camera.up.set(0, 1, 0); camera.lookAt(camTgt);
-	camera.rotateZ((scalar(t, 'roll', 0) * Math.PI) / 180);
-	camera.fov = scalar(t, 'fov', 36); camera.updateProjectionMatrix(); camera.updateMatrixWorld();
+function camAt(t, cam = camera) {
+	const P = cam === camera ? camPos : new THREE.Vector3(), Q = cam === camera ? camTgt : new THREE.Vector3();
+	P.copy(hermite(t, (k) => k.p)); Q.copy(hermite(t, (k) => k.q));
+	P.x += Math.sin(t * 0.37) * 0.05; P.y += Math.cos(t * 0.29) * 0.04;      // a breath of a hand on the camera, never a shake
+	cam.position.copy(P); cam.up.set(0, 1, 0); cam.lookAt(Q);
+	cam.rotateZ((scalar(t, 'roll', 0) * Math.PI) / 180);
+	cam.fov = scalar(t, 'fov', 36); cam.updateProjectionMatrix(); cam.updateMatrixWorld();
 }
+// the camera a frame earlier: a label, or a lead's end, that would cross the screen fast fades out while it does, as
+// the lens blurs the scene under it (cut 13's first export let the agents' names and the topics fly across)
+const camPrev = new THREE.PerspectiveCamera(36, W / H, 0.1, 600);
+const projP = new THREE.Vector3();
+const speedOf = (v) => { proj.copy(v).project(camera); projP.copy(v).project(camPrev);
+	if (proj.z > 1 || projP.z > 1) return 1e3;
+	return Math.hypot((proj.x - projP.x) * 0.5 * W, (proj.y - projP.y) * 0.5 * H); };
+const calm = (v) => clamp(1 - (speedOf(v) - 7) / 14) * clamp((camera.position.distanceTo(v) - 2.6) / 1.4);
 
 // ------------------------------------------------------------------ the timeline, from the narration's cues
 let C = null, EV = [];
@@ -633,8 +642,22 @@ const SPIN = `<svg class="spin" viewBox="0 0 24 24" width="1.1em" height="1.1em"
 const approve = { t0: 1e9, click: 1e9 }, wave = { t0: 1e9 }, photoT = { t0: 1e9 }, deny = { t0: 1e9 };
 let EXPO = { t0: 0 };
 const apiTop = V(0, API_Y + 0.8, 0.9), sqlTop = V(7.0, API_Y + 0.7, 0.3), busPt = V(4.4, BUS_Y, 5.8);
+// cut 13: the scene keeps cut 12's timing (DEFAULTS, its own time) and a narration's cues warp the film's time onto it,
+// piecewise linear between the words, so a pause the voice gains is spread over what plays around it
+let WARP = [[0, 0]];
+const lerpK = (K, t, a, b) => {
+	if (K.length < 2) return t - K[0][a] + K[0][b];
+	let i = 0; while (i < K.length - 2 && t > K[i + 1][a]) i++;
+	const [p, q] = [K[i], K[i + 1]];
+	if (t <= p[a] && i === 0) return t - p[a] + p[b];
+	if (t >= q[a] && i === K.length - 2) return t - q[a] + q[b];
+	return p[b] + (t - p[a]) * (q[b] - p[b]) / (q[a] - p[a]);
+};
+const warp = (t) => lerpK(WARP, t, 0, 1), unwarp = (t) => lerpK(WARP, t, 1, 0);
 window.setCues = async (cues) => {
-	const c = Object.assign({}, DEFAULTS, cues); C = c; EV = [];
+	WARP = [[0, 0], ...Object.keys(DEFAULTS).filter((k) => cues[k] != null).map((k) => [cues[k], DEFAULTS[k]])].sort((x, y) => x[1] - y[1]);
+	for (let i = 1; i < WARP.length; i++) if (!(WARP[i][0] > WARP[i - 1][0])) throw new Error('cues out of order at ' + i);
+	const c = Object.assign({}, DEFAULTS); C = c; EV = [];
 	for (const P of Object.values(PARTS)) { P.t0 = 1e9; P.lit = 1e9; P.pulses = []; }
 	for (const b of Object.values(BEAMS)) { b.t0 = 1e9; b.pk = []; }
 	LABELS.forEach((L) => { L.t0 = 1e9; L.t1 = 1e9; });
@@ -655,11 +678,11 @@ window.setCues = async (cues) => {
 	ev(0.02, 'whoosh_in'); ev(0.35, 'sweep');
 	ACTS[0].t0 = 0.45; ACTS[0].t1 = c.u04 - 0.12; ACTS[1].t0 = c.u04 + 0.05; ACTS[1].t1 = c.u06 - 0.12; ACTS[2].t0 = c.u06 + 0.05; ACTS[2].t1 = end + 1;
 	ACTS.forEach((h) => { ev(h.t0, 'title'); ev(h.t0 + 0.62, 'mark'); });
-	show(LB.gcloud, c.google - 0.1, 'glint'); LB.gcloud.t1 = c.apps - 0.2;
+	show(LB.gcloud, c.google - 0.1, 'glint'); LB.gcloud.t1 = c.apps - 0.55;
 	APPS.forEach((a, i) => { a.t0 = 0.3 + 0.12 * i; });
 	show(deck, c.firebase - 0.15, 'thump', 0.3);
 	APPS.forEach((a, i) => { a.label.t0 = c.apps + 0.15 * i; a.label.t1 = 4.5; a.lit = c.apps - 0.05 + 0.15 * i; });
-	show(authP, 4.6, 'thump', 0.25); show(LB.auth, 4.7); LB.auth.t1 = 6.3;
+	show(authP, 4.6, 'thump', 0.25); show(LB.auth, 4.7); LB.auth.t1 = 5.75;
 	authP.pulses.push(5.98); draw('auth', 5.9, 0.4); run('auth', 6.0, 0.45, false);
 	show(api, 5.4, 'thump'); api.pulses.push(6.45);
 	show(LB.idok, 6.45, 'badge'); LB.idok.t1 = 7.4;
@@ -670,7 +693,7 @@ window.setCues = async (cues) => {
 	draw('sql', c.sql - 0.1, 0.5); run('sql', c.record - 0.35, 0.6, false); run('sql', c.record + 0.35, 0.6, false);
 	bus.t0 = c.pubsub - 0.25; ev(bus.t0, 'whoosh'); ev(c.pubsub + 0.1, 'ignite');
 	draw('pub', c.pubsub - 0.35, 0.5); run('pub', c.step - 0.3, 0.7, false);
-	TOPICS.forEach((L, i) => { L.t0 = c.step - 0.25 + 0.2 * i; L.t1 = c.scheduler - 0.1 + 0.05 * i; ev(L.t0, 'topic', 0.6 + 0.06 * i); });
+	TOPICS.forEach((L, i) => { L.t0 = c.step - 0.25 + 0.2 * i; L.t1 = 11.55 + 0.04 * i; ev(L.t0, 'topic', 0.6 + 0.06 * i); });
 	clock.t0 = c.scheduler - 0.25; ev(clock.t0, 'drop', 0.2);
 	clock.ticks0 = c.clock - 0.1; for (let k = 0; k < 4; k++) ev(clock.ticks0 + k * 0.62, 'clock', 0.2);
 	draw('tick', c.clock, 0.6); run('tick', c.clock + 0.65, 0.6, false);
@@ -736,7 +759,7 @@ window.setCues = async (cues) => {
 
 	PN.add({ id: 'pubsub', side: 'l', t0: T.pubsub[0], t1: T.pubsub[1],
 		header: { tone: 'blue', icon: 'radio', k: 'Pub/Sub', h: 'Every step, an event', s: 'Ordered and retried: the agents wake on them, <b>pushes</b> go out, and every screen updates live.', chips: ['batch.at_risk', 'journey.step', 'offer.received'] },
-		devices: [['lockpc', 266.2, 10.72], ['locklc', 232.6, 11.22]].map(([n, hh, tp]) => ({ kind: 'phone', w: 250, h: 541, layers: [{ src: SCR(n + '-0'), t: -1e9, crop: [0, 0, 656, 1420] }],
+		devices: [['lockpc', 266.2, 10.72], ['locklc', 232.6, 11.22]].map(([n, hh, tp]) => ({ kind: 'phone', w: 242, h: 523, layers: [{ src: SCR(n + '-0'), t: -1e9, crop: [0, 0, 656, 1420] }],
 			pushes: [{ src: SCR(n + '-note'), t: tp, x: 23.6, y: 421.6, w: 608.2, h: hh }] })),
 		leads: [{ dev: 0, anchor: at(busPt) }, { dev: 1, anchor: at(busPt) }],
 		badges: [{ t0: 10.9, icon: 'bell-ring', tone: 'blue', html: 'Firebase Cloud Messaging · <em>pushed</em> to each person\'s phone' }],
@@ -871,7 +894,7 @@ window.setCues = async (cues) => {
 		.forEach((t, i) => ev(t, 'move', i % 2 ? 0.35 : 0.65));
 	await Promise.all(PN.images().map((im) => (im.complete && im.naturalWidth ? null : im.decode().catch(() => null))));
 	window.renderAt(0);
-	return { events: EV.sort((x, y) => x.t - y.t), cues: c };
+	return { events: EV.map((e) => ({ ...e, t: +unwarp(e.t).toFixed(3) })).sort((x, y) => x.t - y.t), cues: c };
 };
 
 // ------------------------------------------------------------------ the scene at time t (a sub-frame's time)
@@ -879,11 +902,16 @@ const proj = new THREE.Vector3();
 const shot = (v) => { proj.copy(v).project(camera); return { x: (proj.x * 0.5 + 0.5) * W, y: (-proj.y * 0.5 + 0.5) * H, z: proj.z }; };
 function heroW(h, t) { return h.t0 > 1e8 ? 0 : sm(Math.min((t - h.t0) / 0.4, (h.t1 - t) / 0.4)); }
 const PART_HERO = { deck: ['firebase', 'yes'], auth: ['auth'], api: ['auth', 'run', 'figure', 'shield', 'yes'], sec: ['run'], sql: ['sql'], bus: ['pubsub'], clock: ['sched'], bq: ['bq'], gcs: ['gcs'], gem: ['gemini', 'pro', 'flash'] };
-function partW(names, t) { return names.reduce((m, id) => Math.max(m, heroW(HEROES[id], t)), 0); }
+function unionW(hs, t) {      // in the light while any of these is, easing only at the run's own ends
+	const iv = hs.filter((h) => h.t0 < 1e8).map((h) => [h.t0, h.t1]).sort((a, b) => a[0] - b[0]);
+	const runs = []; for (const [a, b] of iv) { if (runs.length && a <= runs[runs.length - 1][1] + 0.15) runs[runs.length - 1][1] = Math.max(runs[runs.length - 1][1], b); else runs.push([a, b]); }
+	return runs.reduce((m, [a, b]) => Math.max(m, sm(Math.min((t - a) / 0.4, (b - t) / 0.4))), 0);
+}
+function partW(names, t) { return unionW(names.map((id) => HEROES[id]), t); }
 
 function update(t) {
 	camAt(t);
-	const F = Object.values(HEROES).reduce((m, h) => Math.max(m, heroW(h, t)), 0);       // how strongly one part is the hero now
+	const F = unionW(Object.values(HEROES), t);       // how strongly one part is the hero now: held through the hand-overs
 	const dimOf = (w) => 1 - 0.62 * F * (1 - w);
 	// the scan of light, the floor, the dust, the room's light
 	const sp = clamp((t + 0.25) / 2.3);
@@ -1011,7 +1039,7 @@ function update(t) {
 	gem.halo.material.opacity = go * (0.22 + 0.35 * burst) * gem.dimK; gem.halo2.material.opacity = go * 0.12 * gem.dimK;
 	gem.light.intensity = go * (7 + 22 * burst) * gem.dimK;
 	gem.moteMat.uniforms.t.value = t; gem.moteMat.uniforms.a.value = go * 0.85 * gk;
-	for (const [o, tt, sp] of [[gem.pro, gem.proT, 0.55], [gem.flash, gem.flashT, 0.42]]) {
+	for (const [o, tt, sp] of [[gem.pro, gem.proT, 0.3], [gem.flash, gem.flashT, 0.22]]) {
 		const fl = tt < 1e8 && t > tt ? Math.exp(-(t - tt) / 0.9) : 0;
 		const an = o.ph + t * sp;
 		o.sat.position.set(Math.cos(an) * o.R, Math.sin(an) * o.R, 0);
@@ -1054,6 +1082,8 @@ function place(L, t) {
 	const kd = L.part ? clamp((L.part.dimK - 0.38) / 0.62) : 1;
 	const a = fade(t, L.t0, L.t1, 0.3, 0.3) * (L.part ? 0.04 + 0.96 * kd * kd : 1);
 	if (a <= 0.001) { L.el.style.opacity = 0; return; }
+	const kc = calm(L.anchor);
+	if (a * kc <= 0.001) { L.el.style.opacity = 0; return; }
 	proj.copy(L.anchor).project(camera);
 	if (proj.z > 1) { L.el.style.opacity = 0; return; }
 	const x = (proj.x * 0.5 + 0.5) * W + L.dx, y = (-proj.y * 0.5 + 0.5) * H + L.dy;
@@ -1064,9 +1094,10 @@ function place(L, t) {
 	const e = spring(t - L.t0, 0.7, 13);
 	L.el.style.transform = `translate(${(x + ox).toFixed(1)}px, ${(y - h * s / 2 + 10 * (1 - e)).toFixed(1)}px) scale(${s.toFixed(3)})`;
 	L.el.style.transformOrigin = '0 0';
-	L.el.style.opacity = a.toFixed(3);
+	L.el.style.opacity = (a * kc).toFixed(3);
 }
-function overlay(t) {
+function overlay(t, tp = t - 1 / FPS) {
+	camAt(tp, camPrev);
 	LABELS.forEach((L) => place(L, t));
 	AGENTS.forEach((a) => { if (a.tierEl) a.tierEl.style.opacity = clamp((t - a.tierT) / 0.3).toFixed(3); });
 	// the act's title, on its shade: the words rise, then the words that matter are marked
@@ -1076,7 +1107,11 @@ function overlay(t) {
 		h.el.style.opacity = a.toFixed(3); shade = Math.max(shade, a);
 		if (a <= 0) return;
 		h.ws.forEach((w, i) => { const e = spring(t - h.t0 - 0.06 * i, 0.74, 14); w.style.transform = `translateY(${(56 * (1 - e)).toFixed(1)}px)`; w.style.opacity = clamp((t - h.t0 - 0.06 * i) / 0.18).toFixed(3); });
-		if (h.mk) { const m = eo((t - h.t0 - 0.6) / 0.42); h.mk.style.transform = `scaleX(${m.toFixed(3)})`; h.mk.parentElement.style.color = m > 0.45 ? '#062014' : '#ffffff'; h.mk.parentElement.style.textShadow = m > 0.45 ? 'none' : ''; }
+		// the marker draws left to right, and the words turn dark only where it has reached (they went dark all at once
+		// halfway, losing the letters the marker hadn't reached against the scene)
+		if (h.mk) { const m = eo((t - h.t0 - 0.6) / 0.42); h.mk.style.transform = `scaleX(${m.toFixed(3)})`;
+			const hw = h.mk.parentElement.offsetWidth, cut = 100 * clamp((-8 + m * (hw + 16) - 2) / (hw - 4));
+			h.ink.style.clipPath = `inset(-12px ${(100 - cut).toFixed(2)}% -12px 0)`; h.base.style.clipPath = `inset(-30px -30px -30px ${cut.toFixed(2)}%)`; }
 	});
 	document.getElementById('shade').style.opacity = shade.toFixed(3);
 	// the dock: the part in the light filled green, the ones met already bright
@@ -1088,7 +1123,7 @@ function overlay(t) {
 		it.el.className = 'ix' + (i === cur && best > 0.3 ? ' on' : seen ? ' done' : '');
 	});
 	// the application beside each part
-	PN.update(t, shot);
+	PN.update(t, shot, calm);
 }
 
 // ------------------------------------------------------------------ one frame: the shutter's sub-frames summed, then the lens
@@ -1125,7 +1160,8 @@ function nearFade(m) {
 	m.needsUpdate = true;
 }
 const nearAll = () => scene.traverse((o) => (Array.isArray(o.material) ? o.material : [o.material]).forEach(nearFade));
-window.renderAt = (t) => {
+window.renderAt = (tf) => {
+	const t = warp(tf);
 	nearAll();
 	const n = blurTaps(t);
 	const ac = renderer.autoClear;
@@ -1137,9 +1173,9 @@ window.renderAt = (t) => {
 		renderer.autoClear = false; renderer.setRenderTarget(acc); accQuad.render(renderer); renderer.autoClear = ac;
 	}
 	update(t);     // the camera and the lens at the frame's own time, for what lies over the picture
-	cine.material.uniforms.seed.value = (Math.floor(t * FPS) * 0.6180339) % 1;
+	cine.material.uniforms.seed.value = (Math.floor(tf * FPS) * 0.6180339) % 1;
 	renderer.setRenderTarget(null); cine.render(renderer);
-	overlay(t);
+	overlay(t, warp(tf - 1 / FPS));
 	return { taps: n };
 };
 

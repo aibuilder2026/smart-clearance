@@ -9,8 +9,8 @@ joins the earlier cuts in the repository root's `working-demo/` folder, with its
 
 ## Cut 13 (16 Oct 2026)
 
-Cut 12 with the architecture scene (0:22.5 to 0:56, the lines t01, u02, u03, u17, u18 and u06) made again from cut
-10's 3D film; everything else is cut 12's.
+Cut 12 with the architecture scene (0:22.5 to 0:58.5, the lines t01, u02, u03, u17, u18 and u06) made again from cut
+10's 3D film, and given 2.5 s more, taken a few tenths at a time from ten other scenes; everything else is cut 12's.
 
 ### The brief
 
@@ -25,6 +25,10 @@ On cut 10's export (`…_2026-10-15_20-34-52`), the maintainer's notes (16 Oct 2
 
 Then, while it was made: "Also show Firebase authentication for identity management".
 
+On the first export (`…_2026-10-16_01-19-44`): "I see sometimes labels flying across on the architecture animation,
+can you review it careully please", and "buy me 2-3 extra seconds for the architecture and eat that from somewhere else
+little by little, dont eat all 2-3 seconds from 1 scene".
+
 ### The scene
 
 Cut 10's lit platform, its lens (depth of field, anamorphic streaks, bloom, motion blur from sub-frames, a grade) and
@@ -33,21 +37,21 @@ the other, in a browser window or a phone:
 
 | From | The part | The app beside it, and what happens on it |
 | --- | --- | --- |
-| 0:03.4 | Firebase · Hosting: four apps | the landing page, the console, the workspace and the guided demo in four windows, each address typed in, each page loading |
-| 0:04.6 | **Firebase Authentication** (its own block at the deck's end) | the live workspace's sign-in: the pointer clicks the email field, `priya.deshmukh@munchly.example` is typed, the password, Sign in pressed and "Signing in…"; Firebase Authentication signs her in, and her ID token travels to the API |
-| 0:06.0 | Cloud Run: one API | `verify_id_token ✓ · role ws-operator` at the API; the Command Center opens on her screen, its call written under it (`GET /v1/workspaces/munchly/snapshot · 200 OK`) |
-| 0:07.5 | Cloud SQL: the record | the batch's Record tab, its audit trail arriving row by row as each line is written to the disks |
-| 0:09.1 | Pub/Sub: every step, an event | the topics racing round the ring; two lock screens, Priya's push landing (the Watcher's alert), then Lakshmi Agencies' (the label photo asked for), through Firebase Cloud Messaging |
-| 0:12.0 | Cloud Scheduler: the clock | the console's Agents tab: the pointer presses Run now on the Watcher's daily check; "Ran just now", and the console's own toast |
-| 0:13.6 | Google's ADK: nine AI agents | the console's agent pipeline scrolling past every agent and its level, as the agents rise in 3D |
-| 0:16.1 | BigQuery: sales history | the Watcher's `sellthrough.project` call, then the Valuer's `bigquery.price_history`, each ringed as the data arrives |
-| 0:17.8 | Cloud Storage: photos and papers | Lakshmi Agencies' phone: Send photo tapped, "Sending photo…", "Vision is reading the label", "Verified · matches your records" |
-| 0:19.9 | Gemini on Google's Agent Platform | the agent timeline's `gemini.vision.read_label` call ringed as "Gemini" is said |
-| 0:22.4 | Gemini 3.1 Pro: prices and negotiates | the Valuer's five channels priced, bar by bar; the buyer's phone: Bid tapped, the Negotiator's counter arriving in the chat |
-| 0:24.5 | Gemini 3.8 Flash: reads and writes | Vision's read of the label, field by field; the kirana's phone, Outreach's Hindi offer written in |
-| 0:26.2 | Guardrails: never the money | the Lister's card, its reserve "Only Munchly sees", ringed; a model reaching for the money flashes off the shield |
-| 0:28.6 | Worked out by the API: ₹16,917 | the approval sheet's ₹16,917 ringed; `money.py` |
-| 0:31.1 | A person's yes | Priya's phone: Approve tapped, "Approving the plan…", Plan placed, ₹22,194; the yes runs to the API and the platform lights |
+| 0:03.7 | Firebase · Hosting: four apps | the landing page, the console, the workspace and the guided demo in four windows, each address typed in, each page loading |
+| 0:05.0 | **Firebase Authentication** (its own block at the deck's end) | the live workspace's sign-in: the pointer clicks the email field, `priya.deshmukh@munchly.example` is typed, the password, Sign in pressed and "Signing in…"; Firebase Authentication signs her in, and her ID token travels to the API |
+| 0:06.7 | Cloud Run: one API | `verify_id_token ✓ · role ws-operator` at the API; the Command Center opens on her screen, its call written under it (`GET /v1/workspaces/munchly/snapshot · 200 OK`) |
+| 0:08.5 | Cloud SQL: the record | the batch's Record tab, its audit trail arriving row by row as each line is written to the disks |
+| 0:10.4 | Pub/Sub: every step, an event | the topics racing round the ring; two lock screens, Priya's push landing (the Watcher's alert), then Lakshmi Agencies' (the label photo asked for), through Firebase Cloud Messaging |
+| 0:13.6 | Cloud Scheduler: the clock | the console's Agents tab: the pointer presses Run now on the Watcher's daily check; "Ran just now", and the console's own toast |
+| 0:15.4 | Google's ADK: nine AI agents | the console's agent pipeline scrolling past every agent and its level, as the agents rise in 3D |
+| 0:17.9 | BigQuery: sales history | the Watcher's `sellthrough.project` call, then the Valuer's `bigquery.price_history`, each ringed as the data arrives |
+| 0:19.6 | Cloud Storage: photos and papers | Lakshmi Agencies' phone: Send photo tapped, "Sending photo…", "Vision is reading the label", "Verified · matches your records" |
+| 0:21.9 | Gemini on Google's Agent Platform | the agent timeline's `gemini.vision.read_label` call ringed as "Gemini" is said |
+| 0:24.4 | Gemini 3.1 Pro: prices and negotiates | the Valuer's five channels priced, bar by bar; the buyer's phone: Bid tapped, the Negotiator's counter arriving in the chat |
+| 0:26.8 | Gemini 3.8 Flash: reads and writes | Vision's read of the label, field by field; the kirana's phone, Outreach's Hindi offer written in |
+| 0:28.7 | Guardrails: never the money | the Lister's card, its reserve "Only Munchly sees", ringed; a model reaching for the money flashes off the shield |
+| 0:31.1 | Worked out by the API: ₹16,917 | the approval sheet's ₹16,917 ringed; `money.py` |
+| 0:33.6 | A person's yes | Priya's phone: Approve tapped, "Approving the plan…", Plan placed, ₹22,194; the yes runs to the API and the platform lights |
 
 **The screens are sharp:** each is the app's own screen captured at 2x from the live guided demo (the production UI on
 its stub) and the live workspace's sign-in page (`src/screens13.mjs`, `screens13.py`, into `src/arch13/scr/`), drawn in
@@ -93,16 +97,42 @@ whooshes under the camera's moves, its title glints, the platform's hits and the
 - Pro and Flash framed the orb behind the windows; the camera takes the orb and the agents it lights on the free side.
 - Two windows handing over made a light wash for a few frames; a window now lands in 0.14 s and leaves in 0.3 s.
 
+### The labels, and 2.5 s more
+
+- **What flew:** a survey of every label's place on screen, frame by frame (where it is and how visible), found the
+  packets' names ("batch.at_risk", "Hindi offer", "counter ₹14.20", "label read") riding their leads in about a third
+  of a second, up to 300 px a frame; and the parts' labels swept by the camera as it moved fast or passed near them.
+- **Now:** a packet's name is pinned at its panel's outer edge, beside the window it comes from or reaches, shown as an
+  outgoing packet leaves or an incoming one lands, held 1.3 s, giving way to the panel's next; only its dot travels
+  (never under 0.5 s). A label on a part fades as it moves
+  faster than about 7 px a frame on screen (gone by 21) and as the lens nears it; the parts in focus are one run while
+  the light moves between them, so a label stays up through a hand-over instead of dipping and coming back. Gemini's
+  two models ride their orbits at about half the speed. On the new timing no packet name moves at all, and no other
+  label moves faster than 16 px a frame while clearly on screen (the camera carrying it).
+- **Found on the way:** a marked title word turned dark all at once halfway through its marker, so for a moment the
+  letters the marker hadn't reached vanished ("the mone ."); the dark ink now follows the marker's edge. The Pub/Sub
+  panel's badge sat on the dock; a panel with a badge now sits high enough to keep it clear, and the two phones are a
+  little smaller (242 × 523) so the card keeps its place under the title.
+- **2.5 s more:** the architecture's lines gain pauses where it is busiest (after "Firebase" and "Run", after "step",
+  after "negotiates") and longer breaths between them: 33.44 s to 35.96 s. Ten other scenes each give up 0.20 to 0.30 s
+  of their gaps (the landfill, the console, Priya's sign-in, the Command Center, the approval, the fill, Lakshmi
+  Agencies ending whole, the chips, the lot, the signing), so the film keeps its length.
+- **How:** the scene keeps cut 12's timing as its own clock, and the narration's cues warp the film's time onto it,
+  piecewise linear between the words (`warp()` in `arch.js`): a stretch of 1.2 to 1.5 times, only where a pause was
+  added; its sounds are placed back on the film's time.
+
 ### The result
 
 - 3 min 58.9 s (238.92 s), the same length as cut 12; −14.0 LUFS, −1.5 dB true peak.
-- No one-frame flash in its 5,973 frames; no dark frame in the architecture's 841; window speeds as cut 12's.
+- No one-frame flash in its 5,973 frames; no dark frame in the architecture's 904; window speeds within their limits
+  (the signing scene's last window at 1.35x, given 0.1 s back to stay under 1.4x).
 - The stage-mark scan as cut 12's (196 frames, the apps' own green buttons, a phone's dark card and the label photo).
 - Both QR codes read back from the film's frames.
 - 29 of 33 lines word for word, as cut 12; the architecture's six lines all read back apart from u03's "Pub/Sub",
   which Whisper writes "Pup-Sub", as before.
-- `working-demo/smart-clearance-working-demo-2026-10-16_01-19-44.mp4` (crf 17), its 720p copy, a light preview, the
-  architecture on its own (`…-architecture.mp4`) and captions; the crf-21 copies in `media/`.
+- `working-demo/smart-clearance-working-demo-2026-10-16_01-51-30.mp4` (crf 17), its 720p copy, a light preview, the
+  architecture on its own (`…-architecture.mp4`) and captions; the crf-21 copies in `media/`. The first two exports
+  are kept as `…_01-19-44-superseded` and `…_01-42-21-superseded` (before the panel-edge names and the marker fix).
 
 **The spend:** nothing. Chromium (three.js on the GPU, the captures), ffmpeg, Whisper and the film's own synths ran on
 this Mac; no image, video or paid model was called.
