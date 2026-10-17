@@ -454,8 +454,8 @@ def build():
     # (d) Day 0 · 09:35 · one yes: the brand's head asks, the lead approves; the Approve sheet, the tap
     s.mark('approve', a0)
     t = s.talk('d05', a0 + 0.55) + 0.25               # "Nothing to the bin?"
-    t = s.talk('d06', t + 0.3)                        # "Not one pack. Approved."
-    a1 = t + 0.5
+    t = s.talk('d06', t + 0.3, tail=0.08)             # "Not one pack. Approved." (cut on its last word: then her eyes pass the lens)
+    a1 = t + 0.08
     t = s.say('n26', a1 + 0.5)
     d = t + 0.6 - a1
     starts = win('m-approve', 'mango', 'P', [(209.0, 209.05, 1.25), (209.05, 212.4, d - 1.25)])   # (the stage's CONTROL card up to 208.9)
@@ -487,20 +487,22 @@ def build():
            rings=[R(max(a0 + 1.7, s.w('n27@0', 'offer') - 0.1), s.w('n27@0', 'Hindi'), [146, 326, 292, 92]), R(s.w('n27@0', 'Hindi') - 0.05, a0 + d - 0.05, [36, 478, 376, 116])],
            cards=[C(s.w('n27@0', 'Hindi') + 0.1, a0 + d - 0.05, [36, 478, 376, 116], 'In English', 'Today’s offer: ₹14.40 a pack',
                     'Buy 10, get 2 free. 48 hours only. Tap to order.', 'languages')])
-    t = s.talk('d07', e0 + 0.45) + 0.5                # the kirana owner: "Two free on ten. Twenty-four!"
+    t = s.talk('d07', e0 + 0.5) + 0.5                 # the kirana owner: "Two free on ten. Twenty-four!" (from the frame the offer ends on)
     a1 = t
     s.mark('lands', a1 + 1.0)
     t = s.say('n27', a1 + 0.9, part=(4.45, None))     # "Each order lands with its own GST invoice."
     dk = t + 0.35 - a1
     starts = win('m-kinvoice', 'mango', 'H', [(252.3, 254.3, dk)])
-    clip('k-invoice-bg', 'k-tail', 3.9, 5.0, dk)       # her shop behind her phone, out of focus: she is pleased
+    tk = next(x for x in s.shots if x.get('media') == 'mango-d07')   # her shop behind her phone, out of focus: the shot carries
+    k_out = round(MEDIA['mango-d07']['out'] - (tk['t1'] - a1), 3)      # on from her line, from her clip's frame at the cut
+    clip('k-invoice-bg', 'k-tail', k_out, 5.0, dk)      # (slowed: she turns to her right, so her phone sits on the left)
     s.shot('clip', a1, a1 + dk, media='k-invoice-bg', blur=True, under='m-kinvoice')
-    s.shot('win', a1, a1 + dk, media='m-kinvoice', starts=starts, lift=0.0, place={'kind': 'phone', 'cx': 1240, 'cy': 546, 'sh': 900}, clock=['Day 0', 'the scheme fills'],
+    s.shot('win', a1, a1 + dk, media='m-kinvoice', starts=starts, lift=0.0, place={'kind': 'phone', 'cx': 470, 'cy': 612, 'sh': 760}, clock=['Day 0', 'the scheme fills'],
            heads=[Hd(a1 + 0.3, a1 + dk - 0.05, 'Paperwork', 'Settle', 'flash', 'file-text', [(a1 + 0.6, 'invoice.issue → LA/26-27/0972 · ₹302'),
                   (s.w('n27@4.45', 'GST') - 0.3, 'pdf.lay_out → signed by the distributor')], done=s.w('n27@4.45', 'invoice'))],
            rings=[R(s.w('n27@4.45', 'GST') - 0.2, a1 + dk - 0.05, [34, 284, 330, 104])],
            cards=[C(s.w('n27@4.45', 'GST') + 0.05, a1 + dk - 0.05, [34, 284, 330, 104], 'Her own GST invoice', 'LA/26-27/0972 · ₹302',
-                    'Issued by the distributor as she orders, paid on delivery.', 'receipt')])
+                    'Issued by the distributor as she orders, paid on delivery.', 'receipt', side='r', w=380)])   # (her phone on the left: the card to its right)
     a1 += dk
     d_land = 1.3
     d = 6.2
@@ -561,8 +563,8 @@ def build():
     s.mark('report', a0)
     t = s.say('n30', a0 + 0.9)
     s.mark('portal', t + 0.4)
-    clip('m-report-bg', 'a3-lane', 0.2, 9.8, s.marks['portal'] - a0 + 0.1)   # the lanes the packs went to, from above
-    s.shot('clip', a0, s.marks['portal'] + 0.1, media='m-report-bg', grade='greenSoft', clock=['Best before', 'the report'])
+    clip('m-report-bg', 'a3-lane', 0.2, 9.8, s.marks['portal'] - a0)   # the lanes the packs went to, from above (to the portal's first frame)
+    s.shot('clip', a0, s.marks['portal'], media='m-report-bg', grade='greenSoft', clock=['Best before', 'the report'])
     t = s.say('n30b', t + 0.9)
     a1 = s.marks['portal']
     d = t + 1.4 - a1
@@ -625,7 +627,7 @@ def build():
     t = s.say('n34', a0 + 0.5)
     if have('r-raise'):
         clip('l-photo', 'r-raise', 0.5, 2.85, 2.0)       # (the take jumps at 3.0 s)
-        s.shot('clip', a0 + 2.0, a0 + 4.0, media='l-photo', shutter=a0 + 3.0, clock=['Expiry day', 'the evidence'])
+        s.shot('clip', a0 + 2.0, a0 + 4.0, media='l-photo', shutter=a0 + 2.0 + 1.72, clock=['Expiry day', 'the evidence'])   # (on the clip's own flash, 1.73 s in)
     else:
         ots('l-photo', 'landfill-photo', None, 2.0, 9.0, still=HERE / 'build' / 'cam-after.png')
         s.shot('ots', a0 + 2.0, a0 + 4.0, media='l-photo', clock=['Expiry day', 'the evidence'])

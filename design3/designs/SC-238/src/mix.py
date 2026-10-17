@@ -169,6 +169,27 @@ TONE_FROM = {'o0-godown-aisle-labelled.mp4': 'SC-206/src/clips/o0-godown-aisle.m
              'v-evening.mp4': 'SC-206/src/clips/s-priya-eve.mp4', 'v-foodbank.mp4': 'SC-206/src/clips/s-meera.mp4'}
 
 
+def drawn_footage():
+    """footage a scene draws itself rather than as a plan shot, as (film start, film end, media): the carton's label
+    under the cold open's last line (in the distributor's godown at dawn), the mark over the sunrise, the teams, Vision's
+    check over the landfill, the issued papers over the distributor's stack, the record's papers over what each records,
+    and its audit trail over the office: each gets its place's room tone, as a shot does"""
+    out = []
+    c = SC['cold']; d4 = next(d for d in FILM['dlg'] if d['id'] == 'd04')
+    out.append((d4['t'] + 0.52, c['t0'] + c['dur'], 'cold-d01'))
+    p = SC['platform']; tb = next(x for x in p['shots'] if x.get('media') == 'team-brand')
+    out.append((p['t0'], p['t0'] + p['marks']['console'] + 0.4, 'turn-sunrise'))
+    out.append((p['t0'] + p['marks']['teams'] - 0.15, p['t0'] + tb['t1'], 'team-bg'))
+    ch = SC['chips']; ev = next(x for x in ch['shots'] if x['kind'] == 'evidence')
+    out.append((ch['t0'] + ev['t0'], ch['t0'] + ev['t1'], 'c-evidence-bg'))
+    out.append((ch['t0'] + ch['marks']['issued'], ch['t0'] + ch['dur'], 'c-issued-bg'))
+    r = SC['record']; R = r['marks']          # (Record.tsx: each paper's footage cuts mid-slide, 0.12 s after its word)
+    cuts = [(0.0, 'r-truck'), (R['credit'] + 0.12, 'r-godown'), (R['memo'] + 0.12, 'r-office'), (R['receipts'] + 0.12, 'r-foodbank'), (R['certs'] + 0.12, 'r-landfill')]
+    for (a, m), (b, _) in zip(cuts, cuts[1:] + [(R['audit'] + 0.3, None)]): out.append((r['t0'] + a, r['t0'] + b, m))
+    out.append((r['t0'] + R['audit'], r['t0'] + R['swing'], 'r-office'))
+    return out
+
+
 def places():
     """one room tone a place: each footage shot's clip gives its room tone (its quietest moments, new phases); a place
     carries on across the cuts that stay in it, and crossfades to the next place over 0.35 s"""
@@ -199,6 +220,12 @@ def places():
             n = int((t1 - t0) * SR)
             seg = np.tile(y, (n // len(y) + 1, 1))[:n] * fades(n, 0.04, 0.04)[:, None] * g
             lay(amb, seg, t0)
+    for t0, t1, name in drawn_footage():
+        m = MEDIA.get(name)
+        y = tone_of(m['src']) if m else None
+        if y is None: print('no room tone for', name); continue
+        n = int((t1 - t0 + 0.3) * SR)
+        lay(amb, np.tile(y, (n // len(y) + 1, 1))[:n] * fades(n, 0.15, 0.15)[:, None], t0 - 0.15)
     return amb
 
 
@@ -372,8 +399,9 @@ def events():
         for sh in sc['shots']:
             t0 = T + sh['t0']
             if sh['kind'] == 'win':
-                if sh.get('enter') != 'none' and (sh.get('lift') or 0) > 0.05:
-                    add(t0 + sh['lift'], K.whoosh(rnd, 0.7, 0.35, -29, lo=0.03, hi=0.35), 0.58, 'air'); add(t0 + sh['lift'] + 0.35, K.glint(-34), 0.6)
+                if sh.get('enter') != 'none':      # (on the hits layer: the air layer is ducked away under the voice)
+                    lt = t0 + (sh.get('lift') or 0)
+                    add(lt, K.whoosh(rnd, 0.6, 0.3, -27, lo=0.03, hi=0.35), 0.58); add(lt + 0.32, K.glint(-31), 0.6)
                 for r in sh.get('rings', []): add(T + r['t0'] + 0.05, K.tick(-33, 1760.0 if r.get('tone') != 'red' else 880.0), 0.58)
                 for c in sh.get('cards', []): add(T + c['t0'], pop(-29), 0.3 if c.get('side', 'l') == 'l' else 0.7)
                 for h in sh.get('heads', []):
@@ -390,7 +418,7 @@ def events():
                 add(T + sh['shutter'], K.shutter(-20), 0.55)
             if sh['kind'] == 'evidence':
                 add(t0 + 0.5, K.whoosh(rnd, 1.9, 0.5, -32, lo=0.02, hi=0.3), 0.5, 'air')
-                for k_ in range(4): add(t0 + 0.9 + 0.5 * k_, K.tick(-30, 1760.0), 0.75)
+                for k_ in range(4): add(t0 + 0.9 + 0.5 * k_, K.tick(-26, 1760.0), 0.62); add(t0 + 0.92 + 0.5 * k_, pop(-29), 0.62)
                 add(t0 + 0.05, lib('paper-handle-1', -30), 0.3); add(t0 + 0.4, lib('paper-handle-2', -30), 0.7)
             if sh['kind'] == 'ots' and sh.get('media') == 'l-photo':
                 add(t0 + 1.0, K.shutter(-22), 0.5)
@@ -428,6 +456,13 @@ def events():
         'gate-up': lambda: K.riser(rnd, 0.8, -29), 'tap': lambda: lib('click-mouse', -22), 'rise': lambda: K.whoosh(rnd, 1.4, 0.55, -27), 'resolve': lambda: K.chime(-25),
         'spark': lambda: K.glint(-32), 'beam': lambda: K.whoosh(rnd, 0.5, 0.35, -33, lo=0.05, hi=0.4), 'land': lambda: lib('impact-soft-3', -30),
         'packs': lambda: K.sparkle(0.5, 8, -35), 'paper': lambda: lib('paper-handle-1', -30), 'coin': lambda: lib('coin-clink', -30), 'mark': lambda: K.boom(2.0, -22),
+        # the agents in 3D: the opening swell, the route drawn, Gemini's orb and its beams, the Watcher's chip, the camera's
+        # chases and its dive to the first stop, and the work at each stop
+        'swell': lambda: K.riser(rnd, 1.2, -30), 'draw': lambda: K.sparkle(1.0, 10, -32), 'orb': lambda: K.boom(1.8, -24, 96.0, 48.0),
+        'beams': lambda: K.whoosh(rnd, 0.7, 0.4, -28, lo=0.05, hi=0.45), 'chip': lambda: pop(-27), 'whoosh-chase': lambda: K.whoosh(rnd, 0.9, 0.5, -27),
+        'rows': lambda: K.tick(-30, 1318.5), 'risk': lambda: lib('error-buzz-soft', -30), 'scan': lambda: K.whoosh(rnd, 0.8, 0.45, -30, lo=0.04, hi=0.3),
+        'bars': lambda: K.tick(-29, 1567.98), 'split': lambda: K.whoosh(rnd, 0.6, 0.35, -28, lo=0.03, hi=0.35), 'fan': lambda: K.sparkle(0.8, 12, -30),
+        'sign': lambda: lib('paper-handle-2', -28), 'ledger': lambda: K.chime(-28, ((1174.66, 0.0), (1567.98, 0.07))),
     }
     for name, t0 in pages:
         p = B / f'cap-{name}' / 'events.json'
@@ -435,7 +470,7 @@ def events():
         for e in json.loads(p.read_text()):
             kind = e.get('kind') or e.get('type'); f = page_sound.get(kind)
             if f is None: continue
-            add(t0 + e['t'], f(), e.get('pan', 0.5), 'air' if kind in ('whoosh', 'whoosh_in', 'rails', 'panel', 'riser', 'beam') else 'hits')
+            add(t0 + e['t'], f(), e.get('pan', 0.5), 'air' if kind in ('whoosh_in', 'rails', 'panel', 'riser', 'beam') else 'hits')
     return ev
 
 
@@ -470,7 +505,8 @@ def main():
          '-filter_complex', graph, '-map', '[mix]', '-c:a', 'pcm_f32le', pre])
     m = measure(pre)
     ln = (f"loudnorm=I=-14:TP=-1.5:LRA=11:measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}:"
-          f"measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true,aresample=48000")
+          f"measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true,aresample=48000,"
+          f"afade=t=out:st={END - 1.8:.3f}:d=1.8:curve=qsin")   # (the film ends in silence: the card's room and the score tail out)
     final = B / 'mix.wav'
     run(['ffmpeg', '-v', 'error', '-y', '-i', pre, '-af', ln, '-ar', '48000', '-c:a', 'pcm_s24le', final])
     mo = measure(final)

@@ -142,8 +142,9 @@ export const Chips: React.FC<{ s: SceneData }> = ({ s }) => {
 							{/* the landfill itself behind the two photos, under the brand's green */}
 							<Footage name="c-evidence-bg" t0={0} t1={d} push={0.05} blur={12} grade="green" />
 							<AbsoluteFill style={{ background: 'rgba(3,10,7,0.45)' }} />
-							{[['evidence-before', 'Before · at the godown', 70, k1, -2.5], ['evidence-after-crop', 'After · at the landfill', 760, k2, 2.0]].map(([img, cap, x, k, rot]) => (
-								<div key={img as string} style={{ position: 'absolute', left: x as number, top: 120, width: 640, height: 486, borderRadius: 18, overflow: 'hidden', opacity: k as number,
+							{/* the two photos large across the top, Vision and its four checks under them, the line at the foot */}
+							{[['evidence-before', 'Before · at the godown', 150, k1, -2.5], ['evidence-after-crop', 'After · at the landfill', 990, k2, 2.0]].map(([img, cap, x, k, rot]) => (
+								<div key={img as string} style={{ position: 'absolute', left: x as number, top: 84, width: 780, height: 592, borderRadius: 18, overflow: 'hidden', opacity: k as number,
 									transform: `translateY(${(1 - (k as number)) * 40}px) rotate(${(rot as number) * (1 - (k as number))}deg) scale(${1 + 0.03 * clamp(u / d)})`, boxShadow: '0 30px 80px rgba(0,0,0,0.6)', border: '2px solid rgba(255,255,255,0.12)' }}>
 									<Img src={staticFile(`img/${img}.webp`)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
 									<div style={{ position: 'absolute', left: 16, bottom: 16, padding: '8px 14px', borderRadius: 999, background: 'rgba(0,0,0,0.62)', font: `600 19px/1 ${SANS}`, color: '#fff' }}>{cap as string}</div>
@@ -151,21 +152,21 @@ export const Chips: React.FC<{ s: SceneData }> = ({ s }) => {
 									<div style={{ position: 'absolute', left: 0, right: 0, top: `${lerp(-10, 110, ramp(u, 0.5, 2.3, EASE_IO))}%`, height: 3, background: GREEN.mint2, boxShadow: `0 0 18px ${GREEN.mint2}`, opacity: ramp(u, 0.5, 0.7) * (1 - ramp(u, 2.2, 2.4)) }} />
 								</div>
 							))}
-							<div style={{ position: 'absolute', left: 1440, top: 120, width: 420 }}>
+							<div style={{ position: 'absolute', left: 150, top: 718, width: 420 }}>
 								<AgentHead t={T} t0={ev.t0 + 0.3} t1={ev.t1} name="Vision" stop="Settle" tier="flash" icon="scan-line" done={ev.t0 + 2.6} x={0} y={0} calls={[]} />
 							</div>
-							<div style={{ position: 'absolute', left: 1440, top: 230, width: 420 }}>
+							<div style={{ position: 'absolute', left: 590, top: 712, width: 1180, display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: 44 }}>
 								{checks.map(([at, line], i) => {
 									const kk = ramp(T, at, at + 0.3, EASE);
 									return (
 										<div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '9px 0', opacity: lerp(0.25, 1, kk) }}>
-											<div style={{ width: 26, height: 26, borderRadius: 13, flex: 'none', display: 'grid', placeItems: 'center', background: kk > 0.01 ? GREEN.mint : 'rgba(255,255,255,0.08)', color: '#06140d' }}>{kk > 0.01 && <Icon name="check" size={17} sw={3} />}</div>
-											<div style={{ font: `500 21px/1.3 ${SANS}`, color: GREEN.ink }}>{line}</div>
+											<div style={{ width: 30, height: 30, borderRadius: 15, flex: 'none', display: 'grid', placeItems: 'center', background: kk > 0.01 ? GREEN.mint : 'rgba(255,255,255,0.08)', color: '#06140d', transform: `scale(${lerp(0.6, 1, kk)})` }}>{kk > 0.01 && <Icon name="check" size={19} sw={3} />}</div>
+											<div style={{ font: `600 25px/1.3 ${SANS}`, color: GREEN.ink }}>{line}</div>
 										</div>
 									);
 								})}
 							</div>
-							<div style={{ position: 'absolute', left: 70, top: 660, width: 1330, font: `600 30px/1.3 ${SANS}`, color: '#cfe2d8', opacity: ramp(u, 1.2, 1.6) }}>
+							<div style={{ position: 'absolute', left: 0, right: 0, top: 912, textAlign: 'center', font: `650 34px/1.3 ${SANS}`, color: '#dcebe3', opacity: ramp(u, 1.2, 1.6) }}>
 								Two photos, checked by Vision before anything is credited.
 							</div>
 						</AbsoluteFill>

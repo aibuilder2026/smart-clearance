@@ -6,7 +6,7 @@
 // and every alert arrives as a notification (SC-211's install scene, captured frame-exact on this narration).
 import React from 'react';
 import { AbsoluteFill, Sequence, useCurrentFrame } from 'remotion';
-import { DISPLAY, EASE, EASE_IO, Footage, GREEN, MONO, SANS, clamp, lerp, Media, ramp, springAt } from '../kit/core';
+import { DISPLAY, EASE, EASE_IO, Footage, GREEN, MONO, SANS, lerp, Media, ramp, springAt } from '../kit/core';
 import { Mark, Window, geom } from '../kit/device';
 import { PlanShots } from '../kit/plan';
 import { Rise, Scrim } from '../kit/ui';
@@ -18,7 +18,7 @@ export const Platform: React.FC<{ s: SceneData }> = ({ s }) => {
 	const W = (k: string, w: string, n = 0) => word(s, k, w, n);
 	const intro1 = M.console;                         // the mark and the line hold until the console
 	// the godown under the brand's green, behind the mark (the sunrise's own clip, carried on)
-	const markK = ramp(t, 0, 1.1, EASE);
+	const markK = ramp(t, 0.05, 1.0, EASE_IO);
 	const teamsT0 = M.teams - 0.15 + 0.3, teamsT1 = shot(s, 'team-brand').t1;   // (the sequence starts 0.3 s before teamsT0)
 	const pwa0 = teamsT1;
 	return (
@@ -28,14 +28,17 @@ export const Platform: React.FC<{ s: SceneData }> = ({ s }) => {
 				<AbsoluteFill>
 					<Footage name="turn-sunrise" t0={0} t1={intro1 + 0.4} push={0.06} pushFrom={1.06} blur={12} grade="green" />
 					<AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 42%, rgba(52,211,128,0.10), rgba(2,10,6,0.55) 70%)' }} />
+					{/* the turn's white light, fading under the mark it left (so the mark never washes out at the cut) */}
+					<AbsoluteFill style={{ background: 'radial-gradient(circle at 50% 42%, #fff6de, #ffecbe)', opacity: Math.pow(1 - ramp(t, 0, 0.45), 1.6) }} />
 					{/* the sunrise's shafts carried on behind the mark, turning slowly */}
 					<AbsoluteFill style={{ overflow: 'hidden', mixBlendMode: 'screen', opacity: 0.5 * ramp(t, 0.2, 1.4), WebkitMaskImage: 'linear-gradient(180deg, #000 0%, rgba(0,0,0,0.55) 45%, transparent 85%)' }}>
 						<div style={{ position: 'absolute', left: -480, top: -1660, width: 2880, height: 2880, transformOrigin: '50% 50%', transform: `rotate(${lerp(-3, 3, ramp(t, 0, intro1 + 0.4))}deg)`, filter: 'blur(9px)',
 							background: 'repeating-conic-gradient(from 150deg at 50% 50%, rgba(190,255,220,0.0) 0deg 5deg, rgba(190,255,220,0.10) 7deg 8deg, rgba(190,255,220,0.0) 10deg 17deg)' }} />
 					</AbsoluteFill>
 					<AbsoluteFill style={{ transformOrigin: '50% 44%', transform: `scale(${1 + 0.035 * ramp(t, 1.0, intro1 + 0.4, EASE_IO)})` }}>
-					<div style={{ position: 'absolute', left: 960 - 110, top: 300 - 110 + (1 - markK) * 20, opacity: clamp(markK * 1.4) }}>
-						<Mark size={220} draw={ramp(t, 0.05, 1.5, EASE_IO)} />
+					{/* the mark the turn's light left, picked up where it is (a match cut): it rises and grows into place */}
+					<div style={{ position: 'absolute', left: 960 - lerp(180, 220, markK) / 2, top: lerp(454, 300, markK) - lerp(180, 220, markK) / 2 }}>
+						<Mark size={lerp(180, 220, markK)} draw={1} />
 					</div>
 					<div style={{ position: 'absolute', left: 0, right: 0, top: 560, textAlign: 'center' }}>
 						<Rise t={t} t0={W('n09', 'smart') - 0.1} t1={intro1 + 0.4} text="Smart-Clearance" size={104} align="center" />

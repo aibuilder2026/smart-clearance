@@ -25,11 +25,12 @@ export const SceneView: React.FC<{ s: SceneData; finish?: boolean }> = ({ s, fin
 };
 
 // how each scene comes in and goes out: motivated, never a dissolve between two pictures and never a dip to black
-// (the first critic read every dip as a dropout). The light of the turn flashes into the mark; the install's last screen
-// pushes through into the 3D scene, and its mark pushes through into the lead's morning; the record pushes in on its
-// papers; the evening call cuts in on its ring, which starts under the record's last shot; the close pushes in.
+// (the first critic read every dip as a dropout). The turn's light leaves the mark, which the platform picks up where
+// it is, the light fading under it; the install's last screen pushes through into the 3D scene, and its mark pushes
+// through into the lead's morning; the record pushes in on its papers; the evening call cuts in on its ring, which
+// starts under the record's last shot; the close pushes in.
 const WAYS: Record<string, { in?: Way; out?: Way; inDur?: number; outDur?: number }> = {
-	bin: { in: 'push', inDur: 0.3 }, platform: { in: 'flash', inDur: 0.4, out: 'push', outDur: 0.32 }, agents: { in: 'push', inDur: 0.32, out: 'push', outDur: 0.3 },
+	bin: { in: 'push', inDur: 0.3 }, platform: { out: 'push', outDur: 0.32 }, agents: { in: 'push', inDur: 0.32, out: 'push', outDur: 0.3 },
 	mango: { in: 'push', inDur: 0.3 }, record: { in: 'push', inDur: 0.3 }, close: { in: 'push', inDur: 0.4 },
 };
 const SceneWrap: React.FC<{ s: SceneData }> = ({ s }) => {

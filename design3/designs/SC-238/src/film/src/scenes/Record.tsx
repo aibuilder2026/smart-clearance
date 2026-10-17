@@ -2,9 +2,10 @@
 // The record: every paper flat and square on a row, each landing on its word, the camera gliding along them and down
 // each while its line is ringed, over the footage of what it records (graded to the brand's green): the tax invoice and
 // its e-invoice (the truck), the credit note (the godown), the tax-credit memo (the office), the receipts (the food
-// bank), the certificate and its signatures (the landfill). Then the audit trail (SC-211's, captured frame-exact on
-// these words), then the lead's tablet at dusk: how the batch adds up against the bin, the impact ledger, the mango's
-// own line. The call: two people, one phone call, evening. The close: the line, then the card held five seconds.
+// bank), the destruction log, step by step (the landfill; the certificate itself is read with the chips). Then the
+// audit trail (SC-211's, captured frame-exact on these words), then the lead's tablet at dusk: how the batch adds up
+// against the bin, the impact ledger, the mango's own line. The call: two people, one phone call, evening. The close:
+// the line, then the card held five seconds.
 import React from 'react';
 import { AbsoluteFill, Img, Sequence, staticFile, useCurrentFrame } from 'remotion';
 import { DISPLAY, EASE, EASE_IO, Footage, GREEN, Icon, SANS, clamp, lerp, Media, ramp, springAt } from '../kit/core';
@@ -25,7 +26,7 @@ const PAPERS: Paper[] = [
 	{ img: 'paper-support', at: 'credit', bg: 'r-godown', label: 'Credit note', hi: [[60, 465, 1200, 255]], glide: 0.1 },
 	{ img: 'paper-itc', at: 'memo', bg: 'r-office', label: 'Tax-credit memo', hi: [[100, 255, 1110, 120], [100, 555, 1110, 85]], glide: 0.0 },
 	{ img: 'paper-receipt', at: 'receipts', bg: 'r-foodbank', label: 'Food bank receipt', hi: [[100, 500, 1110, 140], [100, 780, 1110, 52]], glide: 0.0 },
-	{ img: 'paper-cert', at: 'certs', bg: 'r-landfill', label: 'Certificate of destruction', hi: [[60, 985, 1200, 340], [60, 1325, 560, 200]], glide: 0.5 },
+	{ img: 'paper-cert2', at: 'certs', bg: 'r-landfill', label: 'Its destruction log, step by step', hi: [[40, 150, 1240, 345], [1030, 150, 232, 1150]], glide: 0.3 },
 ];
 const PW = 760, PH = PW * 1867 / 1320, VIS = 880, GAP = 170;
 
@@ -47,12 +48,12 @@ export const Record: React.FC<{ s: SceneData }> = ({ s }) => {
 	}
 	return (
 		<AbsoluteFill style={{ background: '#030a07' }}>
-			{/* the footage of what each paper records, under the brand's green; it cuts with the papers */}
+			{/* the footage of what each paper records, under the brand's green; it cuts mid-slide, on the camera's move */}
 			{PAPERS.map((p, i) => {
-				const t0 = i === 0 ? 0 : at[i] + 0.4, t1 = i === PAPERS.length - 1 ? papersEnd + 0.3 : at[i + 1] + 0.4;
+				const t0 = i === 0 ? 0 : at[i] + 0.12, t1 = i === PAPERS.length - 1 ? papersEnd + 0.3 : at[i + 1] + 0.12;
 				if (p.bg === PAPERS[i - 1]?.bg) return null;
 				let j = i + 1; while (j < PAPERS.length && PAPERS[j].bg === p.bg) j++;
-				const tt1 = j >= PAPERS.length ? papersEnd + 0.3 : at[j] + 0.4;
+				const tt1 = j >= PAPERS.length ? papersEnd + 0.3 : at[j] + 0.12;
 				return <Footage key={i} name={p.bg} t0={t0} t1={Math.max(t1, tt1)} push={0.06} blur={6} grade="greenSoft" />;
 			})}
 			{t < papersEnd + 0.3 && (
@@ -63,7 +64,7 @@ export const Record: React.FC<{ s: SceneData }> = ({ s }) => {
 					</div>
 					{/* reviewed: the lead's sign-off stamped on the pack */}
 					{(() => { const r0 = W('n36', 'reviewed') - 0.1, a = Math.min(ramp(t, r0, r0 + 0.25), 1 - ramp(t, M.gst - 0.2, M.gst + 0.1)); if (a <= 0) return null; const sp = springAt(t, r0, FPS, 10, 220);
-						return <div style={{ position: 'absolute', left: 1036, top: 760, transform: `rotate(-8deg) scale(${lerp(1.6, 1, clamp(sp))})`, opacity: a, padding: '12px 22px', border: '5px solid #34d380', borderRadius: 12, font: `800 46px/1 '${DISPLAY}'`, color: '#5fe3a1', background: 'rgba(4,20,12,0.6)', letterSpacing: 2 }}>REVIEWED ✓</div>; })()}
+						return <div style={{ position: 'absolute', left: 884, top: 760, transform: `rotate(-8deg) scale(${lerp(1.6, 1, clamp(sp))})`, opacity: a, padding: '12px 22px', border: '5px solid #34d380', borderRadius: 12, font: `800 46px/1 '${DISPLAY}'`, color: '#5fe3a1', background: 'rgba(4,20,12,0.6)', letterSpacing: 2 }}>REVIEWED ✓</div>; })()}
 					{/* the row of papers, flat and square, the camera on the one in focus */}
 					<AbsoluteFill style={{ transform: `translateX(${960 - PW / 2 - camX}px)` }}>
 						{PAPERS.map((p, i) => {
@@ -101,7 +102,7 @@ export const Record: React.FC<{ s: SceneData }> = ({ s }) => {
 			{/* the audit trail (audit11, captured on n37) */}
 			<Sequence from={Math.round(M.audit * FPS)} durationInFrames={Math.round(M.swing * FPS) - Math.round(M.audit * FPS)} layout="none">
 				<AbsoluteFill>
-					<Footage name="r-office" t0={0} t1={M.swing - M.audit} push={0.05} blur={14} grade="green" />
+					<Footage name="r-office" t0={0} t1={(Math.round(M.swing * FPS) - Math.round(M.audit * FPS)) / FPS} push={0.05} blur={14} grade="green" />
 					<AbsoluteFill style={{ background: 'rgba(3,10,7,0.35)' }} />
 					<Media name='audit' style={{ width: '100%', height: '100%', mixBlendMode: 'screen' }} />
 				</AbsoluteFill>

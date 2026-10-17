@@ -83,12 +83,18 @@ def insert(frame, frame_u8, quad, content):
 # ---------------------------------------------------------------- the shot
 
 def clip_time(u, a, lift, b_max, after=0.5):
-    """the clip's own second for shot second u: at its own pace until the lift is done, then half pace, back and forth"""
-    t_lift = lift + 0.7
+    """the clip's own second for shot second u: at its own pace until the lift is done, then half pace, back and forth
+    over what is left of it. A shot longer than its clip (no lift before the clip runs out) turns at the clip's end and
+    plays back over its last two seconds, then forth again, at half pace: it never holds a last frame"""
+    t_lift = min(lift + 0.7, b_max - a - 0.04)
     if u <= t_lift: return a + u
-    x = (u - t_lift) * after; span = max(0.5, b_max - (a + t_lift))
-    p = x % (2 * span); x = p if p <= span else 2 * span - p
-    return a + t_lift + x
+    x = (u - t_lift) * after
+    lo, hi = a + t_lift, b_max
+    if hi - lo < 0.5:
+        lo = max(a, hi - 2.0); span = max(0.04, hi - lo); p = x % (2 * span)
+        return hi - p if p <= span else lo + (p - span)
+    span = hi - lo; p = x % (2 * span)
+    return lo + (p if p <= span else 2 * span - p)
 
 
 def quad_at(quads, fps, tc):

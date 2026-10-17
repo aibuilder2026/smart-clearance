@@ -136,7 +136,7 @@
     const creep = clamp((t - c.click1) / Math.max(0.3, c.click2 - c.click1));
     const lx = lerp(960 - 150 * kin, 700, pb), ly = lerp(lerp(640, 560, rise) + 118 * kin, 590, pb), ls = lerp(0.9 + (0.18 + 0.05 * creep) * kin, 0.58, pb);
     const drift = Math.sin(t * 0.35) * 0.8;
-    place(laptop, lx, ly, ls, lerp(-4, 9, pb) + drift, lerp(12, 3, rise) - 1.5 * pb, clamp(t / 0.5), 1220, 806);
+    place(laptop, lx, ly, ls, lerp(-4, 9, pb) + drift, lerp(12, 3, rise) - 1.5 * pb, 1, 1220, 806);   // SC-238: there from the cut (it rises in), never a dark frame
     // Install app glows in the address bar, is clicked; the dialog; Install; the window becomes the app's own
     L.install.style.opacity = fade(t, c.progressive - 0.1, c.installed, 0.3, 0.25).toFixed(3);
     const pulse = t > c.progressive && t < c.click1 ? 0.5 + 0.5 * Math.sin((t - c.progressive) * 7) : 0;
