@@ -9,7 +9,7 @@ montage.py mixes (measured static gains, sidechain ducking, amix without normali
   voice or event from a generated clip leaks in), carried across the cuts within a place and crossfaded between places;
 - the score: SC-210's Lyria cues in D (music10/, made before; nothing generated here), one an act, looped through
   equal-power crossfades and crossfaded into the next, the bed set to -24 LUFS from a measured pass, then ducked by
-  sidechaincompress keyed on the voices' envelope (about 20 dB in the presence band, 12 under it);
+  sidechaincompress keyed on the voices' envelope (about 10 dB in the presence band, 4 under it, released over 0.65 s);
 - sound design: the editing-videos library's CC0 sounds for real actions (a click, a tap, paper handled, a notification,
   a stamp) and sounds synthesised from noise and sine tones (sfxkit.py) for the rest: every window lifting out of its
   device, every ring, card, agent at work and the calls it types, every tap on Approve, the clock turning, the
@@ -138,14 +138,14 @@ def talking():
 
 def key_env(nar_dry, talk_mono):
     """the duck's key: the voices' envelope, quick to rise, slow to fall, a little ahead of each line, held through any
-    pause under 0.7 s, so the bed rests under speech instead of pumping"""
+    pause under 1.2 s, so the bed rests under speech instead of pumping (the first critic heard it pump at 0.7 s)"""
     a = np.abs(nar_dry + talk_mono); hop = 480
     fr = a[: len(a) // hop * hop].reshape(-1, hop).max(axis=1)
     on = (fr > 0.02).astype(np.float32)
-    gap = int(0.7 * SR / hop); last = -10 ** 9; held = on.copy()
+    gap = int(1.2 * SR / hop); last = -10 ** 9; held = on.copy()
     for i, v in enumerate(on):
         if v > 0.5: last = i
-        elif i - last < gap: held[i] = 0.85
+        elif i - last < gap: held[i] = 1.0
     env, g = np.zeros_like(held), 0.0
     up, down = 1 - np.exp(-1 / (0.06 * SR / hop)), 1 - np.exp(-1 / (0.6 * SR / hop))
     for i, v in enumerate(held):
@@ -182,16 +182,16 @@ def places():
         return tones[src]
     for sc in FILM['scenes']:
         for sh in sc['shots']:
-            if sh['kind'] not in ('clip', 'ots', 'talk') or sh['kind'] == 'talk' and False: continue
+            if sh['kind'] not in ('clip', 'ots', 'talk'): continue
             m = MEDIA.get(sh.get('media', ''))
             if not m: continue
             src = m['src']
-            if sh['kind'] == 'talk': continue           # its own sound carries its room (talking())
             y = tone_of(src)
             if y is None: continue
-            t0, t1 = sc['t0'] + sh['t0'] - 0.3, sc['t0'] + sh['t1'] + 0.3
+            g = 0.6 if sh['kind'] == 'talk' else 1.0          # under a talking clip's own sound, its room a little lower
+            t0, t1 = sc['t0'] + sh['t0'] - 0.04, sc['t0'] + sh['t1'] + 0.04
             n = int((t1 - t0) * SR)
-            seg = np.tile(y, (n // len(y) + 1, 1))[:n] * fades(n, 0.35, 0.35)[:, None]
+            seg = np.tile(y, (n // len(y) + 1, 1))[:n] * fades(n, 0.04, 0.04)[:, None] * g
             lay(amb, seg, t0)
     return amb
 
@@ -255,6 +255,28 @@ def pop(level=-27):
     return (y / (np.abs(y).max() + 1e-6) * db(level)).astype(np.float32)
 
 
+def stop_hit():
+    """an agent's stop arriving: a soft low thump with a bright tick on it"""
+    b, tk = K.boom(0.9, -28, 96.0, 56.0), K.tick(-29, 1046.5)
+    st = lambda x: x if x.ndim == 2 else np.stack([x, x], 1)
+    b, tk = st(b), st(tk)
+    n = max(len(b), len(tk)); y = np.zeros((n, 2), np.float32); y[:len(b)] += b; y[:len(tk)] += tk
+    return y
+
+
+def air_bed(d, level=-33):
+    """a slow, wide air under the 3D scene: pink noise through a low band, moving gently, with a soft fifth on top"""
+    n = int(d * SR); rng = np.random.default_rng(3238)
+    w = rng.standard_normal((n, 2)).astype(np.float32)
+    w = sosfiltfilt(butter(2, [70, 900], btype='band', fs=SR, output='sos'), w, axis=0).astype(np.float32)
+    tt = np.arange(n) / SR
+    mod = (0.75 + 0.25 * np.sin(2 * np.pi * tt / 11.0))[:, None]
+    tone = (0.18 * np.sin(2 * np.pi * 110.0 * tt) + 0.12 * np.sin(2 * np.pi * 164.8 * tt))[:, None] * (0.6 + 0.4 * np.sin(2 * np.pi * tt / 7.0))[:, None]
+    y = (w / (np.sqrt(np.mean(w ** 2)) + 1e-9) * 0.5 + tone) * mod
+    y = y / (np.sqrt(np.mean(y ** 2)) + 1e-9) * db(level)
+    return (y * fades(n, 1.2, 1.5)[:, None]).astype(np.float32)
+
+
 def ringtone(level=-24):
     """a phone's ringtone, twice: a soft marimba figure (generic, no brand's)"""
     out = np.zeros(int(1.9 * SR), np.float32)
@@ -306,7 +328,9 @@ def events():
             add(T + sc['dur'] - 1.4, K.riser(rnd, 1.3, -27), 0.5, 'air')
             add(T + sc['dur'] - 0.05, K.boom(2.0, -20), 0.5)
         if sid == 'platform': add(T + 0.1, K.sparkle(1.2, 16, -30), 0.5); add(T + 1.5, K.glint(-28), 0.55)
-        if sid == 'agents': add(T - 0.4, K.whoosh(rnd, 1.2, 0.5, -26), 0.5, 'air')
+        if sid == 'agents':
+            add(T - 0.4, K.whoosh(rnd, 1.2, 0.5, -26), 0.5, 'air')
+            add(T, air_bed(sc['dur'], -33), 0.5, 'hits')
         if sid == 'mango': add(T - 0.2, K.whoosh(rnd, 0.8, 0.45, -28), 0.5, 'air')
         if sid == 'chips': add(T, K.boom(1.6, -26, 52.0, 34.0), 0.5)
         if sid == 'record': add(T - 0.5, K.riser(rnd, 0.9, -29), 0.5, 'air')
@@ -355,6 +379,8 @@ def events():
                     b = sh['badge']; add(T + b['t0'], whir(b['t1'] - b['t0'], -31), 0.5, 'air')
             if sh['kind'] == 'viewfinder':
                 add(t0 + 0.45, K.tick(-32, 2637.0), 0.5); add(T + sh['shutter'], K.shutter(-19), 0.5)
+            elif sh.get('shutter') is not None:
+                add(T + sh['shutter'], K.shutter(-20), 0.55)
             if sh['kind'] == 'evidence':
                 add(t0 + 0.5, K.whoosh(rnd, 1.9, 0.5, -32, lo=0.02, hi=0.3), 0.5, 'air')
                 for k_ in range(4): add(t0 + 0.9 + 0.5 * k_, K.tick(-30, 1760.0), 0.75)
@@ -377,7 +403,9 @@ def events():
         if sid == 'platform' and 'teams' in M:
             add(T + M['teams'] + 0.05, K.whoosh(rnd, 0.9, 0.45, -30, lo=0.02, hi=0.25), 0.5, 'air')
             for k_, x in enumerate(sorted([x for x in sc['shots'] if str(x.get('media', '')).startswith('team-') and x['kind'] == 'win'], key=lambda x: x['t0'])):
-                add(T + x['t0'] + 0.02, K.glint(-31), [0.2, 0.42, 0.62, 0.82][k_ % 4]); add(T + x['t0'] + 0.04, K.tick(-35, 1567.98), [0.2, 0.42, 0.62, 0.82][k_ % 4])
+                hi = x.get('hi', x['t0']); pan = [0.2, 0.42, 0.62, 0.82][k_ % 4]
+                add(T + x['t0'] + 0.03, K.tick(-38, 1318.5), pan)                       # (each device landing)
+                add(T + hi + 0.02, K.glint(-30), pan); add(T + hi + 0.04, K.tick(-34, 1567.98), pan)   # (lit on its word)
     # the captured pages' own events (the agents in 3D, the install, the audit trail)
     pages = [('agents3d', SC['agents']['t0']), ('pwa', SC['platform']['t0'] + [x for x in SC['platform']['shots'] if x.get('media') == 'team-brand'][0]['t1']),
              ('audit', SC['record']['t0'] + SC['record']['marks']['audit'])]
@@ -388,7 +416,9 @@ def events():
         'panel': lambda: K.whoosh(rnd, 0.7, 0.4, -30), 'rule': lambda: K.tick(-31, 1046.5), 'shield': lambda: lib('impact-wood-light', -27),
         'gate': lambda: K.chime(-25, ((783.99, 0.05), (1174.66, 0.16))), 'log': lambda: K.tick(-35, 1760.0), 'logyes': lambda: K.chime(-30, ((1174.66, 0.0), (1567.98, 0.07))),
         'stamp': lambda: lib('stamp-thud', -20), 'pop': lambda: pop(-28), 'tick': lambda: K.tick(-31, 1318.5), 'glint': lambda: K.glint(-30),
-        'riser': lambda: K.riser(rnd, 1.0, -30), 'chime': lambda: K.chime(-27), 'notif': lambda: lib('notification-1', -27), 'stop': lambda: K.tick(-31, 1046.5),
+        'riser': lambda: K.riser(rnd, 1.0, -30), 'chime': lambda: K.chime(-27), 'notif': lambda: lib('notification-1', -27),
+        'stop': lambda: stop_hit(),
+        'gate-up': lambda: K.riser(rnd, 0.8, -29), 'tap': lambda: lib('click-mouse', -22), 'rise': lambda: K.whoosh(rnd, 1.4, 0.55, -27), 'resolve': lambda: K.chime(-25),
         'spark': lambda: K.glint(-32), 'beam': lambda: K.whoosh(rnd, 0.5, 0.35, -33, lo=0.05, hi=0.4), 'land': lambda: lib('impact-soft-3', -30),
         'packs': lambda: K.sparkle(0.5, 8, -35), 'paper': lambda: lib('paper-handle-1', -30), 'coin': lambda: lib('coin-clink', -30), 'mark': lambda: K.boom(2.0, -22),
     }
@@ -425,8 +455,8 @@ def main():
     fxs = (hits * (1 - 0.3 * env)[:, None] + air * (1 - 0.75 * env)[:, None] + amb * (1 - 0.35 * env)[:, None]) * db(g_v)
     sf.write(B / 'mix-sfx.wav', fxs.astype(np.float32), SR, subtype='FLOAT')
     graph = ('[3:a]asplit=2[k1][k2];'
-             '[2:a][k1]sidechaincompress=threshold=0.02:ratio=20:attack=20:release=400[bd];'
-             '[1:a][k2]sidechaincompress=threshold=0.02:ratio=2.3:attack=20:release=400[rd];'
+             '[2:a][k1]sidechaincompress=threshold=0.02:ratio=5:attack=30:release=650[bd];'
+             '[1:a][k2]sidechaincompress=threshold=0.02:ratio=1.8:attack=30:release=650[rd];'
              '[0:a][bd][rd][4:a]amix=inputs=4:duration=first:normalize=0[mix]')
     pre = B / 'mix-pre.wav'
     run(['ffmpeg', '-v', 'error', '-y', '-i', vw, '-i', B / 'mix-bed-rest.wav', '-i', B / 'mix-bed-band.wav', '-i', B / 'mix-key.wav', '-i', B / 'mix-sfx.wav',

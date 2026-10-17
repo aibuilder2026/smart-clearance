@@ -51,7 +51,7 @@ export const Footage: React.FC<{
 	name: string; t0: number; t1: number; push?: number; pushFrom?: number; origin?: string; blur?: number | boolean; sharp?: number; rack?: number;
 	grade?: Grade; gradeIn?: number; style?: React.CSSProperties; fit?: 'cover' | 'contain'; children?: React.ReactNode; ride?: (t: number) => React.ReactNode;
 }> = ({ name, t0, t1, push = 0.045, pushFrom = 1, origin = '50% 50%', blur, sharp = 0, rack = 0.7, grade = 'none', gradeIn, style, fit = 'cover', children, ride }) => {
-	const f0 = Math.round(t0 * FPS), n = Math.max(1, Math.round((t1 - t0) * FPS));
+	const f0 = Math.round(t0 * FPS), n = Math.max(1, Math.round(t1 * FPS) - f0);   // (both ends rounded once: shots that meet leave no frame between them)
 	return (
 		<Sequence from={f0} durationInFrames={n} layout="none">
 			<FootageInner name={name} dur={t1 - t0} push={push} pushFrom={pushFrom} origin={origin} blur={blur} sharp={sharp} rack={rack} grade={grade} gradeIn={gradeIn} style={style} fit={fit} ride={ride}>{children}</FootageInner>
@@ -128,7 +128,7 @@ export const Ways: React.FC<{ id: string; t: number; dur: number; inWay?: Way; o
 
 /** a shot window in a scene: its own Sequence, its own clock (0 at t0), its ways in and out */
 export const Shot: React.FC<{ id: string; t0: number; t1: number; inWay?: Way; outWay?: Way; inDur?: number; outDur?: number; children: (t: number, dur: number) => React.ReactNode }> = ({ id, t0, t1, inWay, outWay, inDur, outDur, children }) => {
-	const f0 = Math.round(t0 * FPS), n = Math.max(1, Math.round((t1 - t0) * FPS));
+	const f0 = Math.round(t0 * FPS), n = Math.max(1, Math.round(t1 * FPS) - f0);   // (both ends rounded once: shots that meet leave no frame between them)
 	return (
 		<Sequence from={f0} durationInFrames={n} layout="none">
 			<ShotInner id={id} dur={t1 - t0} inWay={inWay} outWay={outWay} inDur={inDur} outDur={outDur}>{children}</ShotInner>

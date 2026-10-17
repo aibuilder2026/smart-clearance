@@ -75,6 +75,9 @@ CLIPS = {
     'raise-phone': HERE / 'clips/d-raise-phone.mp4', 'raise-tablet': HERE / 'clips/r-raise-tablet.mp4',
     'sunrise': HERE / 'clips/godown-sunrise.mp4', 'darkstore': HERE / 'clips/q-darkstore.mp4',
     'a1-godown': HERE / 'clips/a1-godown.mp4', 'a2-town': HERE / 'clips/a2-town.mp4', 'a3-lane': HERE / 'clips/a3-lane.mp4',
+    # after the first full-film critic: the lead at her desk reading, then tapping, her tablet's back to the camera (one
+    # woman throughout); the Nagpur distributor raising his tablet at the landfill to photograph the evidence
+    'a-desk': HERE / 'clips/a-desk.mp4', 'r-raise': HERE / 'clips/r-raise-tablet.mp4', 'k-tail': HERE / 'clips/k-order-b.mp4',
 }
 # the people with their own devices, over the shoulder (SC-206's clips, 1920 × 1088, each blank screen tracked frame by
 # frame by SC-207's track3.py): screens.py sets the app's real screen into the glass, under any finger
@@ -200,6 +203,19 @@ class Scene:
     def mark(self, name, t):
         self.marks[name] = round(t, 3); return t
 
+    def fill_tail(self, most=0.9):
+        """a scene's last shot runs to its end: a short tail of nothing would be black between two scenes"""
+        b = [x for x in self.shots if x['kind'] in ('clip', 'ots', 'talk')]
+        if not b: return
+        last = max(b, key=lambda x: x['t1']); g = round(self.end - last['t1'], 3)
+        if not (0 < g < most): return
+        m = MEDIA[last['media']]
+        if last['kind'] == 'talk': m['out'] = round(m['out'] + g, 3)
+        m['dur'] = round(m['dur'] + g, 3); last['t1'] = round(self.end, 3)
+        for w in self.shots:
+            if w['kind'] == 'win' and abs(w['t1'] + g - self.end) < 0.02 and w.get('media') and MEDIA[w['media']]['kind'] == 'win':
+                wm = MEDIA[w['media']]; a_, b_, d_ = wm['segs'][-1]; wm['segs'][-1] = (a_, b_, round(d_ + g, 3)); wm['dur'] = round(wm['dur'] + g, 3); w['t1'] = round(self.end, 3)
+
     def close_gaps(self, most=0.6):
         """no black between two shots: a gap under `most` seconds in the picture (a talking clip cut to its line, a
         shot ended a beat early) is closed by starting a talking clip that much earlier in its own take, else by holding
@@ -226,6 +242,15 @@ class Scene:
                     prev['t1'] = round(prev['t1'] + g, 3)
                 fixed = True; break
             if not fixed: break
+
+
+def have(key):
+    """a clip this film made that exists (a job not run yet leaves nothing, or an empty placeholder)"""
+    p = CLIPS[key]; return p.exists() and p.stat().st_size > 0
+
+
+# the lead's tablet in her desk clip (film px): where her screen lifts out from, as she reads (0 s) and as she taps (4 s)
+A_TABLET, A_TABLET_TAP = [390, 600, 490, 390], [215, 700, 640, 380]
 
 
 def build():
@@ -284,7 +309,7 @@ def build():
     # ---- 5. The turn: sunrise in the godown ---------------------------------------------------------------------
     s = Scene('turn', 'Turn')
     t = s.say('n08', 1.2)
-    s.end = t + 3.4
+    s.end = t + 2.2
     clip('turn-sunrise', 'sunrise', 0.0, 7.95, s.end)
     s.shot('clip', 0, s.end, media='turn-sunrise')
     S.append(s)
@@ -302,7 +327,7 @@ def build():
     # the clients; Munchly's page (its agents and their autonomy); its first stock export mapped, its distributors (one
     # held frame, the rings walking it on the words); its people (the invite panel); its own rules (a SKU's gates and a
     # batch's override)
-    starts = win('console-setup', 'admin', 'A', [(1215.2, 1216.15, b[0] - c0 - 1.6), (935.1, 936.6, 1.6), (1006.1, 1007.9, b[2] - b[0]),
+    starts = win('console-setup', 'admin', 'A', [(1215.2, 1216.15, b[0] - c0 - 1.6), (935.1, 936.6, 1.6), (1006.1, 1007.75, b[2] - b[0]),
                                                 (1069.6, 1070.2, b[3] - b[2]), (975.1, 977.1, 2.5)])
     S0 = c0
     s.shot('win', c0, c0 + MEDIA['console-setup']['dur'], media='console-setup', starts=starts, lift=1.5, place={'kind': 'laptop', 'cx': 1170, 'cy': 540, 'sw': 1320},
@@ -319,9 +344,9 @@ def build():
     starts = win('console-overview', 'admin', 'A', [(195.7, 197.35, wb - w0 - 1.45), (197.35, 198.8, 1.45), (244.55, 245.4, t + 0.6 - wb)])
     O0 = s.marks['watch'] - 0.3
     s.shot('win', O0, t + 0.6, media='console-overview', starts=starts, enter='none', place={'kind': 'laptop', 'cx': 1170, 'cy': 540, 'sw': 1320},
-           rings=[R(s.w('n10b', 'client') - 0.15, s.w('n10b', 'agent') - 0.1, [362, 265, 1546, 205]), R(s.w('n10b', 'agent') - 0.1, O0 + starts[1], [362, 500, 1546, 470]),
+           rings=[R(s.w('n10b', 'client') - 0.15, s.w('n10b', 'agent') - 0.1, [362, 265, 1546, 205]), R(s.w('n10b', 'agent') - 0.1, max(O0 + starts[1], s.w('n10b', 'agent') + 1.2), [362, 500, 1546, 470]),
                   R(O0 + starts[2] + 0.1, t + 0.6, [362, 230, 1546, 670])],
-           cards=[C(s.w('n10b', 'watches') - 0.2, O0 + starts[1], [362, 265, 1546, 205], 'Live', 'Every client, every agent', 'What they recovered, what waits for a yes, the agents at work.', 'activity', w=360)])
+           cards=[C(s.w('n10b', 'client') - 0.05, s.w('n10b', 'agent') - 0.1, [362, 265, 1546, 205], 'Live', 'Every client, every agent', 'What they recovered, what waits for a yes, the agents at work.', 'activity', w=360)])
     ots('p-neha', 'neha', 'console-setup', t + 0.6 - c0, 1.5, a=0.3)              # Neha at her laptop, the console on its screen
     s.shot('ots', c0, t + 0.6, media='p-neha', lift=1.5)
     s.mark('teams', t + 0.7)
@@ -332,10 +357,12 @@ def build():
     win('team-kirana', 'mango', 'H', [(249.6, 252.6, 3.0)]); win('team-foodbank', 'mango', 'H', [(527.0, 528.6, 3.0)])
     # each team's screen stays up until the line ends (its span plays, then holds as its person reads)
     t_end = s.vo[-1]['t'] + s.vo[-1]['dur'] + 0.5
-    for m, word in [('team-brand', 'brand'), ('team-dist', 'distributors'), ('team-kirana', 'kiranas'), ('team-foodbank', 'food')]:
-        a0 = s.w('n11', word) - 0.25
+    # the four devices rise awake in quick turn as the console leaves (no empty frame, no dark screen), and each is lit
+    # on its word
+    for k, (m, word) in enumerate([('team-brand', 'brand'), ('team-dist', 'distributors'), ('team-kirana', 'kiranas'), ('team-foodbank', 'food')]):
+        a0 = s.marks['teams'] + 0.05 + 0.22 * k
         MEDIA[m]['segs'] = [(MEDIA[m]['segs'][0][0], MEDIA[m]['segs'][0][1], round(t_end - a0, 3))]; MEDIA[m]['dur'] = round(t_end - a0, 3)
-        s.shot('win', a0, t_end, media=m)
+        s.shot('win', a0, t_end, media=m, hi=round(s.w('n11', word) - 0.15, 3))
     # behind the four teams: the town from above, under the brand's green (the aerial a2-town; until it exists, the aisle)
     a_t = s.marks['teams'] - 0.15                       # from the overview's end: the town, then each team's device on its word
     clip('team-bg', 'a2-town' if (HERE / 'clips/a2-town.mp4').exists() and (HERE / 'clips/a2-town.mp4').stat().st_size else 'aisle-plain', 0.2, 4.9, t_end - a_t)
@@ -352,7 +379,7 @@ def build():
         at = t + 1.2 if prev is None else max(t + 1.0, prev + 5.9)
         if prev is None: at = max(at, s.vo[-1]['t'] + s.vo[-1]['dur'] + 2.2)
         prev = at; t = s.say(lid, at)
-    t = s.say('n22', max(t + 1.6, prev + 5.9)); s.end = t + 6.2
+    t = s.say('n22', max(t + 1.6, prev + 5.9)); s.end = t + 4.6
     s.shot('seq', 0, s.end, media='agents3d')
     S.append(s)
 
@@ -366,9 +393,11 @@ def build():
     t = s.say('n23', 2.0)
     d = t + 2.0
     starts = win('m-detect', 'sad', 'P', [(100.6, 104.8, 2.6), (104.8, 107.05, 2.25), (107.05, 111.0, d - 4.85)])
-    clip('a-detect', 'priya-desk', 0.2, 7.9, d)        # the lead at her desk at nine, her phone in her hand; the screen lifts from her laptop
-    s.shot('clip', 0, d, media='a-detect', sharp=1.8, under='m-detect', fromRect=[40, 430, 560, 250])
-    s.shot('win', 0, d, media='m-detect', starts=starts, lift=1.8, fromRect=[40, 430, 560, 250], clock=['Day 0', 'the morning check'],
+    a_rect = A_TABLET if have('a-desk') else [40, 430, 560, 250]
+    if have('a-desk'): clip('a-detect', 'a-desk', 0.0, 2.0, d)      # the lead at her desk at nine, reading her tablet; its screen lifts out (she looks up at 1 s, by then out of focus)
+    else: clip('a-detect', 'priya-desk', 0.2, 7.9, d)
+    s.shot('clip', 0, d, media='a-detect', sharp=1.8, under='m-detect', fromRect=a_rect)
+    s.shot('win', 0, d, media='m-detect', starts=starts, lift=1.8, fromRect=a_rect, clock=['Day 0', 'the morning check'],
            heads=[Hd(0.35, d - 0.1, 'Watcher', 'Detect', 'rules', 'radar', [(0.9, 'gates.check  → 22 days left · every gate shut'),
                   (1.8, 'sellthrough.project → 1,580 packs won’t sell'), (2.7, 'pubsub.publish → batch.at_risk')], done=3.4)],
            rings=[R(s.w('n23', 'flags') - 0.15, s.w('n23', 'flags') + 1.5, [717, 58, 346, 108]), R(s.w('n23', 'one') - 0.1, d - 0.2, [270, 505, 252, 62], 'red')],
@@ -381,7 +410,7 @@ def build():
     t = s.say('n24', a0 + 0.9)
     e0 = t + 2.6
     d = e0 - a0
-    starts = win('m-verify', 'mango', 'L', [(104.8, 106.2, 1.6), (106.2, 106.4, 1.7), (120.6, 122.2, 1.5), (133.3, 134.4, d - 4.8)])
+    starts = win('m-verify', 'mango', 'L', [(104.8, 106.2, 1.6), (106.2, 106.4, 1.7), (120.6, 122.2, 1.5), (133.3, 134.15, d - 4.8)])   # (the stage's TRUST card from 134.45)
     ots('b-verify', 'lakshmi-label', 'm-verify', d, 3.55)
     s.shot('ots', a0, a0 + d, media='b-verify', lift=3.55)
     s.shot('viewfinder', a0 + 1.6, a0 + 3.3, img='label-mango', shutter=a0 + 2.7)
@@ -422,14 +451,16 @@ def build():
     a1 = t + 0.5
     t = s.say('n26', a1 + 0.5)
     d = t + 0.6 - a1
-    starts = win('m-approve', 'mango', 'P', [(209.4, 212.4, d)])
-    clip('d-approve', 'priya-approve', 1.6, 5.8, d)    # the lead with her tablet, about to tap; the sheet lifts from her tablet
-    s.shot('clip', a1, a1 + d, media='d-approve', sharp=0.55, under='m-approve', fromRect=[760, 330, 500, 390])
+    starts = win('m-approve', 'mango', 'P', [(209.0, 209.05, 1.25), (209.05, 212.4, d - 1.25)])   # (the stage's CONTROL card up to 208.9)
+    ap_rect = A_TABLET_TAP if have('a-desk') else [760, 330, 500, 390]
+    if have('a-desk'): clip('d-approve', 'a-desk', 4.0, 6.0, d)     # the lead reaches to tap; the sheet lifts from her tablet
+    else: clip('d-approve', 'priya-approve', 1.6, 5.8, d)
+    s.shot('clip', a1, a1 + d, media='d-approve', sharp=0.55, under='m-approve', fromRect=ap_rect)
     tap = a1 + winat('m-approve', 209.9, starts)
-    s.shot('win', a1, a1 + d, media='m-approve', starts=starts, lift=0.55, fromRect=[760, 330, 500, 390], clock=['Day 0', 'one yes'],
+    s.shot('win', a1, a1 + d, media='m-approve', starts=starts, lift=0.55, fromRect=ap_rect, clock=['Day 0', 'one yes'],
            heads=[Hd(a1 + 0.6, a1 + d - 0.05, 'One yes', 'Approve', 'you', 'hand', [], done=tap)],
-           rings=[R(a1 + 0.7, tap + 0.5, [662, 576, 390, 46], 'amber')],
-           cards=[C(a1 + 0.9, a1 + d - 0.05, [662, 576, 390, 46], 'Nothing moves without it', 'One tap releases the agents',
+           rings=[R(a1 + 0.75, tap + 0.35, [662, 576, 390, 46], 'amber')],
+           cards=[C(a1 + 0.9, tap + 0.45, [662, 576, 390, 46], 'Nothing moves without it', 'One tap releases the agents',
                     'The lead sees what each one will do, then approves; every tap is logged.', 'hand', 'amber')],
            taps=[tap])
     s.mark('tap', tap)
@@ -440,28 +471,39 @@ def build():
     t = s.say('n27', a0 + 1.0, part=(0.0, 4.4))
     e0 = t + 1.2
     d = e0 - a0
-    starts = win('m-offer', 'mango', 'H', [(242.9, 243.5, 1.6), (244.9, 245.8, (d - 1.6) * 0.48), (247.05, 247.85, (d - 1.6) * 0.52)])
+    starts = win('m-offer', 'mango', 'H', [(244.85, 245.05, 1.6), (245.55, 245.88, d - 1.6)])   # (the blocked page to 244.8; the stage's ring 245.9-246.5)
     ots('e-offer', 'kirana', 'm-offer', d, 1.6)
     s.shot('ots', a0, a0 + d, media='e-offer', lift=1.6)
     s.shot('win', a0, a0 + d, media='m-offer', starts=starts, lift=1.6, clock=['Day 0', 'the offer'],
            heads=[Hd(a0 + 0.3, a0 + d - 0.05, 'Outreach', 'Execute', 'flash', 'send', [(a0 + 0.7, 'offer.write → Hindi · 10 + 2 free · 48 hours'),
                   (a0 + 1.6, 'fcm.send → 58 kiranas, each in their language')], done=a0 + 2.6)],
-           rings=[R(s.w('n27@0', 'offer') - 0.1, s.w('n27@0', 'Hindi'), [140, 360, 150, 50]), R(s.w('n27@0', 'Hindi') - 0.05, a0 + d - 0.05, [38, 478, 384, 102])],
-           cards=[C(s.w('n27@0', 'Hindi') + 0.1, a0 + d - 0.05, [38, 478, 384, 102], 'In English', 'Today’s offer: ₹14.40 a pack',
+           rings=[R(max(a0 + 1.7, s.w('n27@0', 'offer') - 0.1), s.w('n27@0', 'Hindi'), [146, 326, 292, 92]), R(s.w('n27@0', 'Hindi') - 0.05, a0 + d - 0.05, [36, 478, 376, 116])],
+           cards=[C(s.w('n27@0', 'Hindi') + 0.1, a0 + d - 0.05, [36, 478, 376, 116], 'In English', 'Today’s offer: ₹14.40 a pack',
                     'Buy 10, get 2 free. 48 hours only. Tap to order.', 'languages')])
     t = s.talk('d07', e0 + 0.45) + 0.5                # the kirana owner: "Two free on ten. Twenty-four!"
     a1 = t
     s.mark('lands', a1 + 1.0)
     t = s.say('n27', a1 + 0.9, part=(4.45, None))     # "Each order lands with its own GST invoice."
-    d_land = 3.4
-    d = t + 4.9 - a1
+    dk = t + 0.35 - a1
+    starts = win('m-kinvoice', 'mango', 'H', [(252.3, 254.3, dk)])
+    clip('k-invoice-bg', 'k-tail', 3.9, 5.0, dk)       # her shop behind her phone, out of focus: she is pleased
+    s.shot('clip', a1, a1 + dk, media='k-invoice-bg', blur=True, under='m-kinvoice')
+    s.shot('win', a1, a1 + dk, media='m-kinvoice', starts=starts, lift=0.0, place={'kind': 'phone', 'cx': 1240, 'cy': 546, 'sh': 900}, clock=['Day 0', 'the scheme fills'],
+           heads=[Hd(a1 + 0.3, a1 + dk - 0.05, 'Paperwork', 'Settle', 'flash', 'file-text', [(a1 + 0.6, 'invoice.issue → LA/26-27/0972 · ₹302'),
+                  (s.w('n27@4.45', 'GST') - 0.3, 'pdf.lay_out → signed by the distributor')], done=s.w('n27@4.45', 'invoice'))],
+           rings=[R(s.w('n27@4.45', 'GST') - 0.2, a1 + dk - 0.05, [34, 284, 330, 104])],
+           cards=[C(s.w('n27@4.45', 'GST') + 0.05, a1 + dk - 0.05, [34, 284, 330, 104], 'Her own GST invoice', 'LA/26-27/0972 · ₹302',
+                    'Issued by the distributor as she orders, paid on delivery.', 'receipt')])
+    a1 += dk
+    d_land = 1.3
+    d = 6.2
     starts = win('m-orders', 'mango', 'P', [(248.5, 248.5 + d_land, d_land), (296.0, 437.0, d - d_land - 1.2), (446.4, 447.6, 1.2)])
-    clip('e-orders', 'priya-desk', 3.4, 7.9, d)        # her tap lands on the lead's Execution: the screen straight off the cut, her desk behind it
+    if have('a-desk'): clip('e-orders', 'a-desk', 4.6, 6.2, d)      # the orders land on the lead's Execution: her desk behind it
+    else: clip('e-orders', 'priya-desk', 3.4, 7.9, d)
     s.shot('clip', a1, a1 + d, media='e-orders', blur=True, under='m-orders')
     s.shot('win', a1, a1 + d, media='m-orders', starts=starts, lift=0.0, ff=[starts[1], starts[2]], clock=['Day 0', 'the scheme fills'],
-           heads=[Hd(s.w('n27@4.45', 'Each') - 0.2, a1 + d - 0.05, 'Paperwork', 'Settle', 'flash', 'file-text', [(s.w('n27@4.45', 'GST') - 0.4, 'invoice.issue → a GST invoice an order'),
-                  (a1 + starts[1] + 1.0, 'register → 52 shops · 1,372 packs')], done=a1 + starts[2] + 0.4)],
-           rings=[R(a1 + 0.6, a1 + starts[1], [262, 326, 200, 60]), R(a1 + starts[2] + 0.05, a1 + d - 0.05, [278, 666, 425, 50])],
+           heads=[Hd(a1 + 0.2, a1 + d - 0.05, 'Paperwork', 'Settle', 'flash', 'file-text', [(a1 + starts[1] + 0.4, 'register → 52 shops · 1,372 packs')], done=a1 + starts[2] + 0.4)],
+           rings=[R(a1 + 0.3, a1 + starts[1], [262, 326, 200, 60]), R(a1 + starts[2] + 0.05, a1 + d - 0.05, [278, 666, 425, 50])],
            cards=[C(a1 + starts[2] + 0.25, a1 + d - 0.05, [278, 666, 425, 50], 'The scheme filled', '52 shops, 1,372 packs',
                     'Every order with its own GST invoice, in the distributor’s name.', 'receipt')],
            badge={'t0': round(a1 + starts[1], 3), 't1': round(a1 + starts[2], 3), 'text': '1 hour 45 minutes, fast', 'icon': 'fast-forward'})
@@ -474,7 +516,7 @@ def build():
     t = s.say('n29', a1 + 0.9)
     d = t + 2.6 - a1
     wr = s.w('n29', 'receipt') - a1 - 0.2            # (534.2-541.3: the stage rings the tracker; the receipt opens on 'receipt')
-    starts = win('m-pickup', 'mango', 'H', [(529.2, 534.1, wr - 1.3), (541.5, 542.95, 1.3), (549.85, 552.1, d - wr)])
+    starts = win('m-pickup', 'mango', 'H', [(529.2, 533.95, wr - 1.3), (541.5, 542.8, 1.3), (549.85, 551.95, d - wr)])
     ots('g-pickup', 'meera', 'm-pickup', d, 0.6)
     s.shot('ots', a1, a1 + d, media='g-pickup', lift=0.6)
     s.shot('win', a1, a1 + d, media='m-pickup', starts=starts, lift=0.6, clock=['Day 1', 'the food bank'],
@@ -489,7 +531,7 @@ def build():
     t = s.say('n28', a0 + 1.6)
     d = t + 3.6 - a0                                   # (the sale recorded at its own pace after the line)
     wr = s.w('n28', 'receipt') - a0 + 0.2
-    starts = win('m-staff', 'mango', 'L', [(456.0, 456.9, 1.6), (459.6, 461.0, wr - 1.6), (473.0, 473.42, 0.9), (474.85, 476.4, 1.7), (477.6, 480.6, d - wr - 2.6)])   # (the stage's ring on the match, 473.7-474.6, left out)
+    starts = win('m-staff', 'mango', 'L', [(456.0, 456.9, 1.6), (459.6, 461.0, wr - 1.6), (473.0, 473.3, 0.9), (474.85, 476.4, 1.7), (477.6, 480.6, d - wr - 2.6)])   # (the stage's ring on the match, 473.7-474.6, left out)
     ots('f-staff', 'upi', 'm-staff', d, 1.6, still2=HERE / 'build' / 'upi-paid.png')
     s.shot('ots', a0, a0 + d, media='f-staff', lift=1.6)
     s.shot('win', a0, a0 + d, media='m-staff', starts=starts, lift=1.6, clock=['Day 1', 'the staff sale'],
@@ -511,7 +553,7 @@ def build():
     s.mark('report', a0)
     t = s.say('n30', a0 + 0.9)
     s.mark('portal', t + 0.4)
-    clip('m-report-bg', 'evening', 0.4, 7.2, s.marks['portal'] - a0 + 0.1)
+    clip('m-report-bg', 'a3-lane', 0.2, 9.8, s.marks['portal'] - a0 + 0.1)   # the lanes the packs went to, from above
     s.shot('clip', a0, s.marks['portal'] + 0.1, media='m-report-bg', grade='greenSoft', clock=['Best before', 'the report'])
     t = s.say('n30b', t + 0.9)
     a1 = s.marks['portal']
@@ -531,38 +573,40 @@ def build():
     # ---- 9. The hardest case: the chips, the lot, the window, the destruction and its second yes ----------------------
     s = Scene('chips', 'Chips')
     t = s.say('n31', 1.2)
-    clip('c-dusk', 'chips-dusk', 0.2, 4.8, t + 0.6)
-    s.shot('clip', 0, t + 0.6, media='c-dusk', sharp=2.6)
+    win('c-today', 'sad', 'L', [(108.5, 111.5, t + 0.6)])          # his Today: the chips flagged, Vision to check first
+    ots('c-dusk', 'rakesh', 'c-today', t + 0.6, t + 5.0)           # (his screen stays in the glass: it never lifts out)
+    s.shot('ots', 0, t + 0.6, media='c-dusk', sharp=2.6)
     a0 = t + 0.6
     # the lot: the buyer's phone, his bid, the Negotiator's counter, the lot won
     s.mark('lot', a0)
     t = s.say('n32', a0 + 1.0)
     d = t + 1.9 - a0
-    starts = win('c-lot', 'sad', 'H', [(429.0, 431.0, 1.4), (431.2, 432.8, 1.2), (433.0, 435.0, 1.4), (448.4, 451.5, 2.2), (459.0, 462.4, d - 6.2)])
+    starts = win('c-lot', 'sad', 'H', [(429.0, 431.0, 1.4), (431.2, 432.8, 1.2), (433.0, 435.0, 1.4), (448.4, 450.7, 2.2), (460.1, 462.4, d - 6.2)])
     ots('j-lot', 'agrawal', 'c-lot', d, 1.0)
     s.shot('ots', a0, a0 + d, media='j-lot', lift=1.0)
     s.shot('win', a0, a0 + d, media='c-lot', starts=starts, lift=1.0, clock=['Day 0', 'the lot'],
            heads=[Hd(a0 + 1.1, a0 + d - 0.05, 'Negotiator', 'Execute', 'pro', 'handshake', [(a0 + starts[2] + 0.2, 'bid.read → ₹13.00 for 772'),
                   (a0 + starts[3] + 0.1, 'listing.counter → ₹14.20 · the floor stays hidden'), (a0 + starts[4] + 0.1, '✓ won at ₹14.20 · token paid')], done=a0 + starts[4] + 0.2)],
-           rings=[R(a0 + starts[3], a0 + starts[4], [30, 880, 380, 54], 'amber'), R(a0 + starts[4] + 0.15, a0 + d - 0.05, [36, 386, 392, 66])],
-           cards=[C(a0 + starts[4] + 0.35, a0 + d - 0.05, [36, 386, 392, 66], 'Closed by an agent', '772 packs at ₹14.20',
+           rings=[R(a0 + winat('c-lot', 449.95, starts), a0 + starts[4], [36, 503, 378, 58], 'amber'),
+                  R(a0 + winat('c-lot', 461.6, starts), a0 + d - 0.05, [30, 330, 352, 76])],
+           cards=[C(a0 + winat('c-lot', 461.6, starts) + 0.2, a0 + d - 0.05, [30, 330, 352, 76], 'Closed by an agent', '772 packs at ₹14.20',
                     'Countered from the buyer’s ₹13 without ever showing the floor price; a GST invoice follows.', 'gavel')])
     t = s.talk('d10', a0 + d + 0.5) + 0.5             # the buyer: "Fourteen-twenty. Done. Truck's coming."
     a0 = t
     s.mark('truck', a0)
     clip('c-truck', 'truck', 0.3, 4.6, 3.6)
-    s.shot('clip', a0, a0 + 3.6, media='c-truck', clock=['Day 1', 'the buyer’s truck'])
+    s.shot('clip', a0, a0 + 3.6, media='c-truck', clock=['Day 1', 'the buyer’s truck'], mask=[1088, 790, 124, 54])   # (its number plate's lettering is invented: softened)
     a0 += 3.6
     # the scheme: only two shops order; the window closes on 540 packets, on the lead's tablet at dusk
     s.mark('scheme', a0)
     t = s.say('n33', a0 + 0.7)
     d = t + 1.3 - a0
-    starts = win('c-window', 'sad', 'P', [(502.2, 507.2, d - 2.0), (509.9, 511.9, 2.0)])   # (the stage's rings at 500.8-502.0 and 508.3-509.7, left out)
+    starts = win('c-window', 'sad', 'P', [(502.8, 505.8, d)])     # (the stage's ring to 502.6; a push from 506; the page scrolls at 507.6)
     ots('k-window', 'priya-eve', 'c-window', d, 0.6)
     s.shot('ots', a0, a0 + d, media='k-window', lift=0.6)
     s.shot('win', a0, a0 + d, media='c-window', starts=starts, lift=0.6, clock=['Day 2', 'the window closes'],
-           rings=[R(s.w('n33', 'two') - 0.1, s.w('n33', 'When'), [262, 420, 210, 62]), R(s.w('n33', 'When') - 0.05, a0 + d - 0.05, [290, 352, 412, 50], 'red')],
-           cards=[C(s.w('n33', 'When') + 0.2, a0 + d - 0.05, [290, 352, 412, 50], 'The window closed', '540 packets left',
+           rings=[R(s.w('n33', 'two') - 0.1, s.w('n33', 'When'), [258, 418, 200, 66]), R(s.w('n33', 'When') - 0.05, a0 + d - 0.05, [278, 348, 424, 54], 'red')],
+           cards=[C(s.w('n33', 'When') + 0.2, a0 + d - 0.05, [278, 348, 424, 54], 'The window closed', '540 packets left',
                     'Two shops ordered 48; the rest stayed at the distributor’s godown.', 'hourglass', 'red')])
     a0 += d
     # expiry day: the landfill; he photographs with his tablet (its camera's view in its glass, then full frame, the
@@ -571,9 +615,14 @@ def build():
     clip('c-landfill', 'landfill', 0.3, 2.6, 2.0)
     s.shot('clip', a0, a0 + 2.0, media='c-landfill', clock=['Expiry day', 'at the landfill'])
     t = s.say('n34', a0 + 0.5)
-    ots('l-photo', 'landfill-photo', None, 2.0, 9.0, still=HERE / 'build' / 'cam-after.png')
-    s.shot('ots', a0 + 2.0, a0 + 4.0, media='l-photo', clock=['Expiry day', 'the evidence'])
+    if have('r-raise'):
+        clip('l-photo', 'r-raise', 0.5, 2.85, 2.0)       # (the take jumps at 3.0 s)
+        s.shot('clip', a0 + 2.0, a0 + 4.0, media='l-photo', shutter=a0 + 3.0, clock=['Expiry day', 'the evidence'])
+    else:
+        ots('l-photo', 'landfill-photo', None, 2.0, 9.0, still=HERE / 'build' / 'cam-after.png')
+        s.shot('ots', a0 + 2.0, a0 + 4.0, media='l-photo', clock=['Expiry day', 'the evidence'])
     s.shot('evidence', a0 + 4.0, s.w('n34', 'certificate') - 0.3)
+    clip('c-evidence-bg', 'landfill-heap', 0.2, 4.8, s.w('n34', 'certificate') - 0.3 - (a0 + 4.0))   # the landfill behind Vision's checks
     a1 = s.w('n34', 'certificate') - 0.3
     OFF, FF = (594.6, 598.8), [(603.5, 621.0), (624.0, 635.4), (638.5, 654.4)]
     ff_src = sum(b - a for a, b in FF)
@@ -589,7 +638,7 @@ def build():
                     'On the agency’s certificate, on his tablet at the facility: each in their own box.', 'signature')],
            badge={'t0': round(a1 + starts[1], 3), 't1': round(a1 + starts[4], 3), 'text': 'Signing, fast', 'icon': 'fast-forward'})
     a0 = a1 + d
-    t = s.talk('d11', a0 + 0.5) + 0.5                 # the officer: "All four signatures. It's on record."
+    t = s.talk('d11', a0 + 0.5) + 0.5                 # the distributor, to the officer: "All four signatures. It's on record."
     a0 = t
     # the second yes: the lead at dusk, the destruction review, the amber tap
     s.mark('second', a0)
@@ -602,7 +651,7 @@ def build():
     s.shot('win', a0, a0 + d, media='c-yes', starts=starts, lift=0.6, clock=['Expiry day', 'the second yes'],
            heads=[Hd(a0 + 0.6, a0 + d - 0.05, 'A second yes', 'Settle', 'you', 'hand', [], done=tap)],
            rings=[R(a0 + 0.7, a0 + starts[1], [662, 232, 390, 200]), R(a0 + starts[1] - 0.1, tap + 0.5, [800, 678, 252, 46], 'amber')],
-           cards=[C(a0 + 0.9, a0 + d - 0.05, [662, 232, 390, 200], 'Credit waits for evidence', 'Reviewed, then approved',
+           cards=[C(a0 + 0.9, tap + 0.45, [662, 232, 390, 200], 'Credit waits for evidence', 'Reviewed, then approved',
                     'Vision’s checks, the signed certificate, what the yes will issue: all on one sheet.', 'shield-check', 'amber')],
            taps=[tap])
     s.mark('tap', tap)
@@ -611,7 +660,7 @@ def build():
     s.mark('issued', a0)
     t = s.say('n35b', a0 + 0.5)
     s.mark('whole', s.w('n35b', 'distributor') - 0.3)
-    clip('c-issued-bg', 'rakesh-tablet', 0.1, 5.0, t + 1.9 - a0)     # behind the papers: the distributor at his stack, slowed (RIFE)
+    ots('c-issued-bg', 'rakesh', 'c-today', t + 1.9 - a0, t + 9.0 - a0, a=1.0)   # behind the papers: the distributor at his stack, his Today in the glass
     s.end = t + 1.9; S.append(s)
 
     # ---- 10. The record: every paper flat and signed; the audit trail; how it adds up; the impact ledger --------------
@@ -629,11 +678,11 @@ def build():
     ots('r-tablet', 'priya-eve', 'r-swing', t + 1.4 - s.marks['swing'], 0.6, a=0.6)
     s.shot('ots', s.marks['swing'], t + 1.4, media='r-tablet', lift=0.6)
     dsw = s.marks['ledger'] - s.marks['swing']
-    starts = win('r-swing', 'mango', 'P', [(797.9, 800.3, 2.4), (808.6, 810.0, 1.7), (813.1, 816.0, dsw - 4.1)])
+    starts = win('r-swing', 'mango', 'P', [(797.9, 800.15, 2.4), (808.6, 810.0, 1.7), (813.1, 816.0, dsw - 4.1)])
     SW0 = s.marks['swing']
     s.shot('win', SW0, s.marks['ledger'], media='r-swing', starts=starts, lift=0.6, clock=['Best before', 'the ledger'],
            rings=[R(SW0 + 1.0, s.w('n38', 'bin') - 0.3, [660, 60, 390, 60]), R(s.w('n38', 'bin') - 0.3, s.marks['ledger'], [660, 205, 392, 270])],
-           cards=[C(s.w('n38', 'adds') - 0.2, s.marks['ledger'], [660, 205, 392, 270], 'How it adds up', '₹22,194 better than the bin', 'Exit by exit, against what destroying it would have cost.', 'scale', w=400)])
+           cards=[C(s.w('n38', 'adds') - 0.2, s.marks['ledger'], [660, 60, 390, 60], 'How it adds up', '₹22,194 better than the bin', 'Exit by exit, against what destroying it would have cost.', 'scale', w=400)])
     d = s.marks['kilos'] - s.marks['ledger']
     starts = win('r-ledger', 'sad', 'P', [(853.2, 854.6, 1.4), (862.0, 863.6, d - 1.4)])
     s.shot('win', s.marks['ledger'], s.marks['kilos'], media='r-ledger', starts=starts, enter='none', clock=['Best before', 'the ledger'],
@@ -642,8 +691,8 @@ def build():
     d = t + 1.4 - s.marks['kilos']
     starts = win('r-mango', 'mango', 'P', [(771.0, 776.0, d)])
     s.shot('win', s.marks['kilos'], t + 1.4, media='r-mango', starts=starts, enter='none', clock=['Best before', 'the ledger'],
-           rings=[R(s.w('n38b', 'kilos') - 0.2, t + 1.4, [250, 480, 800, 140])],
-           cards=[C(s.w('n38b', 'kilos') + 0.1, t + 1.4, [250, 480, 800, 140], 'On the mango alone', '340 kg kept out of landfill', '58 meals, from the food bank’s own receipt.', 'heart-handshake', w=400)])
+           rings=[R(s.w('n38b', 'kilos') - 0.2, s.w('n38b', 'meals') - 0.3, [716, 232, 348, 136]), R(s.w('n38b', 'meals') - 0.3, t + 1.4, [252, 468, 446, 170])],
+           cards=[C(s.w('n38b', 'kilos') + 0.1, t + 1.4, [716, 232, 348, 136], 'On the mango alone', '340 kg kept out of landfill', '58 meals, from the food bank’s own receipt.', 'heart-handshake', w=400)])
     for k, key, a, b in [('r-truck', 'truck', 0.2, 4.8), ('r-van', 'van-kirana', 0.2, 4.8), ('r-godown', 'aisle-plain', 0.2, 4.8),
                          ('r-office', 'office', 0.2, 3.6), ('r-foodbank', 'foodbank', 0.2, 6.2), ('r-landfill', 'landfill-heap', 0.2, 4.8),
                          ('r-evening', 'evening', 0.2, 7.4)]:
@@ -652,8 +701,8 @@ def build():
 
     # ---- 11. The call, weeks later ---------------------------------------------------------------------------
     s = Scene('call', 'EveningCall')
-    s.mark('ring', 0.15)
-    t = s.talk('d12', 1.0) + 0.4
+    s.mark('ring', -0.9)                              # (a J-cut: the ring starts under the record's last shot)
+    t = s.talk('d12', 0.5) + 0.4
     t = s.talk('d13', t + 0.35, tail=2.45) + 2.4       # her smile held after the line, until the close
     s.end = t; S.append(s)
 
@@ -673,6 +722,7 @@ def main():
     lines = []
     for s in S:
         if s.id in ('mango', 'chips'): s.close_gaps()
+        s.fill_tail()
         sc = {'id': s.id, 'comp': s.comp, 't0': round(T, 3), 'dur': round(s.end, 3), 'marks': s.marks, 'vo': s.vo, 'dlg': s.dl,
               'words': s.words, 'shots': s.shots}
         for v in s.vo:

@@ -423,9 +423,12 @@ const gate = (() => {
 	const s = STOP.approve, g = new THREE.Group(); g.position.copy(at(s.u, 0)); world.add(g);
 	const tg = s.tan; g.rotation.y = Math.atan2(tg.x, tg.z);
 	const amb = new THREE.MeshStandardMaterial({ color: 0x2a1d04, emissive: col(AMBER, 0.9), metalness: 0.3, roughness: 0.4, transparent: true, opacity: 0 });
-	const postL = new THREE.Mesh(new RoundedBoxGeometry(0.11, 2.5, 0.11, 2, 0.04), amb); postL.position.set(-1.22, 1.25, 0); g.add(postL);
+	const postL = new THREE.Mesh(new RoundedBoxGeometry(0.22, 2.5, 0.3, 3, 0.06), amb); postL.position.set(-1.22, 1.25, 0); g.add(postL);
 	const postR = postL.clone(); postR.position.x = 1.22; g.add(postR);
-	const lintel = new THREE.Mesh(new RoundedBoxGeometry(2.55, 0.11, 0.11, 2, 0.04), amb); lintel.position.set(0, 2.5, 0); g.add(lintel);
+	const lintel = new THREE.Mesh(new RoundedBoxGeometry(2.66, 0.22, 0.3, 3, 0.06), amb); lintel.position.set(0, 2.5, 0); g.add(lintel);
+	const plinthL = new THREE.Mesh(new RoundedBoxGeometry(0.46, 0.16, 0.5, 2, 0.05), amb); plinthL.position.set(-1.22, 0.08, 0); g.add(plinthL);
+	const plinthR = plinthL.clone(); plinthR.position.x = 1.22; g.add(plinthR);
+	const pool = glowSprite(AMBER, 3.2, 3.0); pool.position.set(0, 0.05, 0.2); pool.scale.set(3.2, 1.0, 1); g.add(pool);
 	const curtMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, toneMapped: false,
 		uniforms: { a: { value: 0 }, open: { value: 0 }, t: { value: 0 }, color: { value: col(AMBER, 1.5) } },
 		vertexShader: QV,
@@ -439,7 +442,7 @@ const gate = (() => {
 	const lamp = glowSprite(AMBER, 1.2, 3.4); lamp.position.set(0, 2.5, 0); g.add(lamp);
 	const top = new THREE.Object3D(); top.position.set(0, 2.85, 0); g.add(top);
 	AGENTS.you.slab = { top, stop: s, scale: 1, A: AGENTS.you };
-	return { g, amb, curtMat, burst, lamp, posts: [postL, postR, lintel], top };
+	return { g, amb, curtMat, burst, lamp, pool, posts: [postL, postR, lintel, plinthL, plinthR], top };
 })();
 
 // ------------------------------------------------------------------ the batch: a carton with its real label, then its streams of packs
@@ -512,7 +515,7 @@ const papers = (() => {
 const MONEY = V(-2.6, 0.55, 6.0);
 const coin = (() => {
 	const g = new THREE.Group(); g.position.copy(MONEY); world.add(g);
-	const rupee = canvasTex(256, (c, s) => { c.fillStyle = '#f7c04a'; c.beginPath(); c.arc(s / 2, s / 2, s / 2 - 4, 0, Math.PI * 2); c.fill(); c.fillStyle = '#3a2a08'; c.font = '700 150px Geist, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('₹', s / 2, s / 2 + 8); });
+	const rupee = canvasTex(256, (c, s) => { c.fillStyle = '#f7c04a'; c.beginPath(); c.arc(s / 2, s / 2, s / 2 - 4, 0, Math.PI * 2); c.fill(); c.fillStyle = '#3a2a08'; c.font = '700 150px system-ui, -apple-system, "Helvetica Neue", sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('₹', s / 2, s / 2 + 8); });
 	const mats = [new THREE.MeshStandardMaterial({ color: 0xb8892a, metalness: 0.8, roughness: 0.3, transparent: true, opacity: 0 }), new THREE.MeshStandardMaterial({ map: rupee, metalness: 0.6, roughness: 0.35, transparent: true, opacity: 0 }), new THREE.MeshStandardMaterial({ map: rupee, metalness: 0.6, roughness: 0.35, transparent: true, opacity: 0 })];
 	const d = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.62, 0.1, 64), mats); d.rotation.x = Math.PI / 2; g.add(d);
 	const shieldMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, toneMapped: false,
@@ -729,8 +732,8 @@ window.setCues = (cues) => {
 	const n22 = L('n22');
 	SHOTS.push({ t0: n22[0] - 0.3, t1: wt('n22', 'models') - 0.9, pos: V(-16, 9.5, 18), tgt: V(-2.0, 0.8, 4.0), fov: 36, focus: 21 });
 	SHOTS.push({ t0: wt('n22', 'models') - 0.1, t1: n22[1] + 0.3, pos: V(-8.5, 4.2, 12.5), tgt: MONEY.clone().add(V(0, 0.6, 0)), fov: 32, focus: 12 });
-	TL.rise2 = n22[1] + 0.4; TL.markOn = n22[1] + 2.5; C.end = Math.max(end, n22[1] + 5.2);
-	SHOTS.push({ t0: n22[1] + 3.1, t1: C.end + 1, pos: V(0, 142, 0.6), tgt: V(0, 0, -0.85), fov: 34, focus: 140, rise: true });
+	TL.rise2 = n22[1] + 0.4; TL.markOn = n22[1] + 2.5; C.end = Math.max(end, n22[1] + 4.6);
+	SHOTS.push({ t0: n22[1] + 3.1, t1: C.end + 0.2, pos: V(0, 142, 0.6), tgt: V(0, 0, -0.85), fov: 34, focus: 140, rise: true, drift: 0.07 });
 	for (let i = 1; i < SHOTS.length; i++) ev(SHOTS[i - 1].t1 + 0.05, SHOTS[i].stop && SHOTS[i - 1].stop ? 'whoosh-chase' : 'whoosh', 0.5, 0.8);
 	// the work at each stop, on its words
 	TL.data = STOP.connect.say[0] + 0.5; ev(TL.data, 'rows', 0.45);
@@ -822,11 +825,11 @@ function update(t) {
 	// the lens: focus on what the shot frames; a wide shot keeps it all sharp
 	dof.mat.uniforms.focus.value = s0.focus; dof.mat.uniforms.scale.value = s0.focus > 60 ? 0 : clamp(1.25 - s0.focus / 40, 0.3, 1.0);
 	const out = sm((t - TL.rise2) / 1.4);              // the end: the parts fade as the camera rises
-	floorMat.uniforms.k.value = lerp(0.0, 0.62, sm(t / 1.4)) * (1 - 0.55 * out);
-	deckMat.uniforms.a.value = sm((t - 0.5) / 1.5) * (1 - out);
-	dust.uniforms.t.value = t; dust.uniforms.a.value = 0.5 * sm(t / 1.5) * (1 - out);
+	floorMat.uniforms.k.value = 0.62 * (1 - 0.55 * out);
+	deckMat.uniforms.a.value = lerp(0.35, 1, sm(t / 1.5)) * (1 - out);
+	dust.uniforms.t.value = t; dust.uniforms.a.value = 0.5 * (1 - out);
 	scene.fog.density = lerp(0.010, 0.0012, sm((t - TL.rise2) / 2.0));
-	cine.material.uniforms.fadeIn.value = sm(t / 0.5);
+	cine.material.uniforms.fadeIn.value = 1;
 	// the road draws itself from the godown dot, then flows
 	roadMat.uniforms.prog.value = lerp(0, 1.0005, eio((t - TL.road0) / (TL.road1 - TL.road0)));
 	roadMat.uniforms.t.value = t;
@@ -864,7 +867,7 @@ function update(t) {
 	gate.curtMat.uniforms.a.value = gk; gate.curtMat.uniforms.t.value = t;
 	gate.curtMat.uniforms.open.value = eo((t - TL.open) / 0.7);
 	gate.burst.material.opacity = 0.9 * Math.exp(-Math.max(0, t - TL.open) * 3.5) * (t > TL.open ? 1 : 0);
-	gate.lamp.material.opacity = 0.45 * gk * (1 + 0.25 * Math.sin(t * 3));
+	gate.lamp.material.opacity = 0.45 * gk * (1 + 0.25 * Math.sin(t * 3)); gate.pool.material.opacity = 0.35 * gk;
 	// Gemini, its beams to the nine that think with it, each pulsing while its agent works
 	const ok = sm((t - TL.orb) / 1.0) * (1 - out);
 	gem.shellMat.uniforms.a.value = ok; gem.shellMat.uniforms.t.value = t; gem.star.material.opacity = 0.9 * ok; gem.halo.material.opacity = 0.45 * ok; gem.halo2.material.opacity = 0.22 * ok;
@@ -956,7 +959,8 @@ function placeChip(c, t, out) {
 	if (p.z > 1 || a * kc < 0.01) return;
 	const w = c.el.offsetWidth, h = c.el.offsetHeight;
 	const e = spring(t - (watch > work ? TL.watch : t0), 0.7, 13);
-	c.want = { x: p.x - w / 2, y: p.y - 64 - h - 14 * (1 - e), w, h, p, op: a * kc };
+	const below = c.id === 'watcher' && watch > work;
+	c.want = { x: p.x - w / 2, y: below ? p.y + 40 + 14 * (1 - e) : p.y - 64 - h - 14 * (1 - e), w, h, p, op: a * kc, below };
 }
 // the chips that show at once are laid side by side, never on top of each other, each on a stem to its own agent
 function layChips() {
@@ -970,7 +974,7 @@ function layChips() {
 	live.forEach((c) => {
 		const q = c.want; q.x = clamp(q.x, 48, W - 48 - q.w);
 		c.el.style.transform = `translate(${q.x.toFixed(1)}px, ${q.y.toFixed(1)}px)`; c.el.style.opacity = q.op.toFixed(3);
-		c.stem.setAttribute('x1', (q.x + q.w / 2).toFixed(1)); c.stem.setAttribute('y1', (q.y + q.h).toFixed(1)); c.stem.setAttribute('x2', q.p.x.toFixed(1)); c.stem.setAttribute('y2', (q.p.y - 6).toFixed(1));
+		c.stem.setAttribute('x1', (q.x + q.w / 2).toFixed(1)); c.stem.setAttribute('y1', (q.below ? q.y : q.y + q.h).toFixed(1)); c.stem.setAttribute('x2', q.p.x.toFixed(1)); c.stem.setAttribute('y2', (q.below ? q.p.y + 6 : q.p.y - 6).toFixed(1));
 		c.stem.setAttribute('opacity', (0.9 * q.op).toFixed(3)); c.dot.setAttribute('cx', q.p.x.toFixed(1)); c.dot.setAttribute('cy', q.p.y.toFixed(1)); c.dot.setAttribute('opacity', q.op.toFixed(3));
 		if (q.op > 0.2) c.box = { x: q.x, y: q.y, w: q.w, h: q.h };
 	});
@@ -996,7 +1000,7 @@ function placeCard(id, t, out) {
 	const e = spring(t - s.say[0] - 0.15, 0.72, 13);
 	c.el.style.transform = `translate(${(x + q.side * -18 * (1 - e)).toFixed(1)}px, ${y.toFixed(1)}px)`; c.el.style.opacity = (a * kc).toFixed(3);
 	c.rows.forEach((r, i) => { if (!r.querySelector('#yesbtn')) r.style.opacity = clamp((t - s.say[0] - 0.45 - i * 0.34) / 0.25).toFixed(3); });
-	if (id === 'report') { document.getElementById('kg').textContent = (339.7 * eo((t - TL.ledger) / 1.6)).toFixed(1); }
+	if (id === 'report') { document.getElementById('kg').textContent = (339.7 * eo(clamp((t - TL.ledger) / 0.9))).toFixed(1); }
 	if (id === 'approve') {
 		const btn = document.getElementById('yesbtn'); const tp = t - TL.tap;
 		btn.style.transform = tp > 0 && tp < 0.25 ? `scale(${(1 - 0.06 * Math.sin(Math.PI * tp / 0.25)).toFixed(3)})` : '';

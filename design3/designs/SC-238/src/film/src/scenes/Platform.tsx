@@ -7,7 +7,7 @@
 import React from 'react';
 import { AbsoluteFill, Sequence, useCurrentFrame } from 'remotion';
 import { DISPLAY, EASE, EASE_IO, Footage, GREEN, MONO, SANS, clamp, lerp, Media, ramp, springAt } from '../kit/core';
-import { Body, DevKind, Mark, Window, geom } from '../kit/device';
+import { Mark, Window, geom } from '../kit/device';
 import { PlanShots } from '../kit/plan';
 import { Rise, Scrim } from '../kit/ui';
 import { FPS, SceneData, media, shot, word } from '../edl';
@@ -49,38 +49,17 @@ export const Platform: React.FC<{ s: SceneData }> = ({ s }) => {
 			{/* 2 · the console: the platform lead at her laptop, the real console in its glass lifting out; then the Overview, live (plan.py's shots) */}
 			<PlanShots s={s} skip={['team-brand', 'team-dist', 'team-kirana', 'team-foodbank', 'team-bg']} />
 			{/* 3 · each team's own part, on its own device, landing on its word */}
-			<Sequence from={Math.round((teamsT0 - 0.3) * FPS)} durationInFrames={Math.round((teamsT1 - teamsT0 + 0.3) * FPS)} layout="none">
+			<Sequence from={Math.round((teamsT0 - 0.3) * FPS)} durationInFrames={Math.round(teamsT1 * FPS) - Math.round((teamsT0 - 0.3) * FPS)} layout="none">
 				<Teams s={s} t0={teamsT0 - 0.3} />
 			</Sequence>
 			{/* 4 · installed from the browser; every alert a notification (pwa11, captured on these words) */}
-			<Sequence from={Math.round(pwa0 * FPS)} durationInFrames={Math.round((s.dur - pwa0) * FPS)} layout="none">
+			<Sequence from={Math.round(pwa0 * FPS)} durationInFrames={Math.round(s.dur * FPS) - Math.round(pwa0 * FPS)} layout="none">
 				<AbsoluteFill>
 					<Media name='pwa' style={{ width: '100%', height: '100%' }} />
 				</AbsoluteFill>
 			</Sequence>
 			<div style={{ display: 'none' }}>{MONO}{SANS}{lerp(0, 1, 0)}{springAt(0, 0, FPS)}{GREEN.ink}{DISPLAY}</div>
 		</AbsoluteFill>
-	);
-};
-
-/** a device asleep: its body and dark glass rising into place, a glint crossing the glass, before its screen wakes */
-const Asleep: React.FC<{ name: string; kind: DevKind; cx: number; cy: number; sh: number; t: number; t0: number; wake: number }> = ({ name, kind, cx, cy, sh, t, t0, wake }) => {
-	const m = media(name); const [, , srcW, srcH] = m.rect!;
-	const g = geom(kind, srcW, srcH, { sh });
-	const e = EASE(ramp(t, t0, t0 + 0.5));
-	if (e <= 0) return null;
-	const glint = ramp(t, t0 + 0.2, t0 + 1.3, EASE_IO);
-	return (
-		<div style={{ position: 'absolute', left: cx - g.sw / 2 - g.b.l, top: cy - g.sh / 2 - g.b.t + (1 - e) * 40, width: g.fw, height: g.fh, opacity: e }}>
-			<Body g={g} lift={0} />
-			<div style={{ position: 'absolute', left: g.b.l, top: g.b.t, width: g.sw, height: g.sh, borderRadius: g.b.srad, overflow: 'hidden',
-				background: 'radial-gradient(ellipse at 50% 30%, #13201b, #070c0a 75%)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.05)' }}>
-				<div style={{ position: 'absolute', top: -g.sh * 0.2, bottom: -g.sh * 0.2, width: g.sw * 0.35, left: lerp(-g.sw * 0.5, g.sw * 1.2, glint), transform: 'skewX(-18deg)',
-					background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.07), rgba(255,255,255,0))' }} />
-				<div style={{ position: 'absolute', inset: 0, background: '#f4f7f5', opacity: 0.5 * Math.sin(Math.PI * clamp(wake)) }} />
-			</div>
-			{kind === 'phone' && <div style={{ position: 'absolute', left: g.b.l + g.sw / 2 - 58, top: g.b.t + 10, width: 116, height: 32, borderRadius: 16, background: '#050706' }} />}
-		</div>
 	);
 };
 
@@ -101,15 +80,17 @@ const Teams: React.FC<{ s: SceneData; t0: number }> = ({ s, t0 }) => {
 			<Footage name="team-bg" t0={0} t1={end - t0} push={0.05} blur={10} grade="green" />
 			<AbsoluteFill style={{ background: 'rgba(3,10,7,0.35)', opacity: k }} />
 			{TEAM.map((m, i) => {
-				const sh = shot(s, m.media);
+				const sh = shot(s, m.media) as ReturnType<typeof shot> & { hi?: number };
 				const lab = ramp(t, sh.t0 + 0.25, sh.t0 + 0.6, EASE);
-				// the four devices rise at once, asleep; each wakes on its word
-				const rT = t0 + 0.12 + i * 0.14;
-				const wake = ramp(t, sh.t0, sh.t0 + 0.32, EASE);
+				// each device rises awake as the console leaves; on its word a ring of light lands round it
+				const md = media(m.media); const [, , sw0, sh0] = md.rect!;
+				const g = geom(m.kind, sw0, sh0, { sh: m.sh });
+				const hi = sh.hi ?? sh.t0, kh = Math.min(ramp(t, hi, hi + 0.25, EASE), 1 - ramp(t, hi + 1.6, hi + 2.1));
 				return (
 					<React.Fragment key={m.media}>
-						{t < sh.t0 + 0.4 && <Asleep name={m.media} kind={m.kind} cx={xs[i]} cy={520} sh={m.sh} t={t} t0={rT} wake={wake} />}
-						<AbsoluteFill style={{ opacity: wake }}><Window name={m.media} kind={m.kind} t0={sh.t0 - t0} t1={sh.t1 - t0} cx={xs[i]} cy={520} sh={m.sh} enter="none" /></AbsoluteFill>
+						<Window name={m.media} kind={m.kind} t0={sh.t0 - t0} t1={sh.t1 - t0} cx={xs[i]} cy={520} sh={m.sh} />
+						{kh > 0 && <div style={{ position: 'absolute', left: xs[i] - g.fw / 2 - 12, top: 520 - g.fh / 2 - 12, width: g.fw + 24, height: g.fh + 24, borderRadius: g.b.rad + 12,
+							border: `3px solid ${GREEN.mint2}`, boxShadow: `0 0 ${30 * kh}px rgba(52,211,128,${0.55 * kh})`, opacity: kh, transform: `scale(${lerp(1.04, 1, kh)})` }} />}
 						<div style={{ position: 'absolute', left: xs[i] - 160, width: 320, top: 520 + m.sh / 2 + 46, textAlign: 'center', opacity: lab, transform: `translateY(${(1 - lab) * 12}px)`,
 							font: `700 28px/1 '${DISPLAY}'`, color: GREEN.ink }}>{m.label}</div>
 					</React.Fragment>

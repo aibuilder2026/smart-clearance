@@ -63,8 +63,10 @@ export const PlanShots: React.FC<{ s: SceneData; skip?: string[]; grade?: Record
 			const w = winOf(s, sh);
 			const lift = w?.lift ?? sh.sharp ?? 0;
 			const blur = sh.blur || w ? 16 : undefined;
+			const mk = (sh as PShot & { mask?: Rect }).mask;
 			out.push(<Footage key={sh.media} name={sh.media} t0={sh.t0} t1={sh.t1} push={sh.kind === 'ots' ? 0.02 : 0.035} blur={blur} sharp={w ? lift : sh.sharp ?? 0} rack={0.75}
-				grade={(grade[sh.media] ?? (sh.grade as Grade)) || 'none'} />);
+				grade={(grade[sh.media] ?? (sh.grade as Grade)) || 'none'}
+				ride={mk ? () => <div style={{ position: 'absolute', left: mk[0], top: mk[1], width: mk[2], height: mk[3], borderRadius: 5, backdropFilter: 'blur(7px)', WebkitBackdropFilter: 'blur(7px)', background: 'rgba(196,150,40,0.22)' }} /> : undefined} />);
 			if (w) out.push(<ShotSeq key={`${sh.media}-dim`} id={`${sh.media}-dim`} t0={sh.t0} t1={sh.t1}>{(u) => <AbsoluteFill style={{ background: '#030a07', opacity: (w.dim ?? 0.34) * ramp(u, lift, lift + 0.75, EASE_IO) }} />}</ShotSeq>);
 			continue;
 		}

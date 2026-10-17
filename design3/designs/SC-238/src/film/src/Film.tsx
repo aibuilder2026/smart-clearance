@@ -24,14 +24,13 @@ export const SceneView: React.FC<{ s: SceneData; finish?: boolean }> = ({ s, fin
 	);
 };
 
-// how each scene comes in and goes out: motivated, never a dissolve between two pictures. The bin dips to its eight
-// frames of black; the light of the turn flashes into the mark; the install's last screen dips into the dark the 3D
-// scene builds out of, and its mark pushes through into the lead's morning; the record rises out of the papers; the evening call dips
-// in and out of black
+// how each scene comes in and goes out: motivated, never a dissolve between two pictures and never a dip to black
+// (the first critic read every dip as a dropout). The light of the turn flashes into the mark; the install's last screen
+// pushes through into the 3D scene, and its mark pushes through into the lead's morning; the record pushes in on its
+// papers; the evening call cuts in on its ring, which starts under the record's last shot; the close pushes in.
 const WAYS: Record<string, { in?: Way; out?: Way; inDur?: number; outDur?: number }> = {
-	bin: { in: 'push', inDur: 0.3 }, platform: { in: 'flash', inDur: 0.4, out: 'dip', outDur: 0.32 }, agents: { out: 'push', outDur: 0.3 },
-	mango: { in: 'push', inDur: 0.3 }, record: { in: 'rise', inDur: 0.4 }, chips: { out: 'dip', outDur: 0.0 }, call: { in: 'dip', inDur: 0.35 },
-	close: { in: 'dip', inDur: 0.45 },
+	bin: { in: 'push', inDur: 0.3 }, platform: { in: 'flash', inDur: 0.4, out: 'push', outDur: 0.32 }, agents: { in: 'push', inDur: 0.32, out: 'push', outDur: 0.3 },
+	mango: { in: 'push', inDur: 0.3 }, record: { in: 'push', inDur: 0.3 }, close: { in: 'push', inDur: 0.4 },
 };
 const SceneWrap: React.FC<{ s: SceneData }> = ({ s }) => {
 	const t = useCurrentFrame() / FPS; const w = WAYS[s.id] || {};
@@ -41,7 +40,7 @@ const SceneWrap: React.FC<{ s: SceneData }> = ({ s }) => {
 export const Film: React.FC = () => (
 	<AbsoluteFill style={{ background: '#000' }}>
 		{F.scenes.map((s) => (
-			<Sequence key={s.id} from={Math.round(s.t0 * FPS)} durationInFrames={Math.round(s.dur * FPS)} name={s.id}>
+			<Sequence key={s.id} from={Math.round(s.t0 * FPS)} durationInFrames={Math.round((s.t0 + s.dur) * FPS) - Math.round(s.t0 * FPS)} name={s.id}>
 				<SceneWrap s={s} />
 			</Sequence>
 		))}

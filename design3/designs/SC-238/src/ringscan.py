@@ -83,10 +83,23 @@ def card_at_foot(f):
     return rows >= 22
 
 
+def note_card(f):
+    """the stage's note card (TRUST, CONTROL, NEGOTIATOR …): a solid block of its deep green, far larger than any button
+    the app draws in that green (a block 200 px wide on 70 rows or more)"""
+    r, g, b = f[..., 0].astype(int), f[..., 1].astype(int), f[..., 2].astype(int)
+    m = (r < 70) & (g > 90) & (g < 150) & (b > 55) & (b < 110) & (g - r > 45)
+    rows = 0
+    for row in m:
+        d = np.diff(np.concatenate([[0], row.astype(np.int8), [0]]))
+        s_, e_ = np.flatnonzero(d == 1), np.flatnonzero(d == -1)
+        if len(s_) and (e_ - s_).max() >= 200: rows += 1
+    return rows >= 70
+
+
 def flagged(f):
-    """the stage's marks in a frame: a long mint run (SC-201, SC-202), a long thin dark green or amber ring (SC-226), or
-    the dim a note casts"""
-    if dimmed(f) or card_at_foot(f): return True
+    """the stage's marks in a frame: a long mint run (SC-201, SC-202), a long thin dark green or amber ring (SC-226),
+    the dim a note casts, its note card, or a chapter's title card"""
+    if dimmed(f) or card_at_foot(f) or note_card(f): return True
     if longest(ring_mask(f)) >= RUN: return True
     for mask in (dark_mask(f), amber_mask(f)):
         h, v = thin_runs(mask, f)
@@ -124,7 +137,7 @@ def main():
             fs = list(frames(m['src'], m['rect'], a, b))
             ts = [a + j / 6 for j in range(len(fs))]
             # the span's last frame too: a span played longer than its source holds on it (media.py)
-            last = frames(m['src'], m['rect'], max(a, b - 0.06), b + 0.02, fps=25)
+            last = frames(m['src'], m['rect'], max(a, b - 0.06), b + 0.12, fps=25)   # (and just past it: a hold's frame can be sampled a frame late)
             if len(last): fs.append(last[-1]); ts.append(b)
             for f, tt in zip(fs, ts):
                 # (the title card sits at the stage's foot: over the portrait tablet's foot, or the laptop's in a one-screen run)

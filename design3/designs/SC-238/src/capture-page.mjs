@@ -33,6 +33,8 @@ const res = await page.evaluate((c) => window.setCues(c), cues);
 if (res && res.events) writeFileSync(`${out}/events.json`, JSON.stringify(res.events, null, 1));
 const END = (res && res.end) || cues.end;   // a scene may time its own end from the cues (SC-238's agents)
 const times = only && !png ? only.split(',').map(Number) : Array.from({ length: Math.round(END * FPS) }, (_, i) => i / FPS);
+// a few frames first, so the page's buffers and textures are warm before the first frame kept
+for (let w = 0; w < 4; w++) await page.evaluate((tt) => window.renderAt(tt), Math.min(0.05 * w, 0.15));
 const t0 = Date.now();
 for (let i = 0; i < times.length; i++) {
 	const t = times[i];

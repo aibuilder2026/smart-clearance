@@ -139,6 +139,9 @@ export const Chips: React.FC<{ s: SceneData }> = ({ s }) => {
 					const checks: [number, string][] = [[ev.t0 + 0.9, 'The batch read on the carton label'], [ev.t0 + 1.4, 'About 540 packs in view'], [ev.t0 + 1.9, 'The slate: the batch, 540 packets, the day'], [ev.t0 + 2.4, 'Both photos taken today']];
 					return (
 						<AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 40%, #12201a, #050a08 70%)' }}>
+							{/* the landfill itself behind the two photos, under the brand's green */}
+							<Footage name="c-evidence-bg" t0={0} t1={d} push={0.05} blur={12} grade="green" />
+							<AbsoluteFill style={{ background: 'rgba(3,10,7,0.45)' }} />
 							{[['evidence-before', 'Before · at the godown', 70, k1, -2.5], ['evidence-after-crop', 'After · at the landfill', 760, k2, 2.0]].map(([img, cap, x, k, rot]) => (
 								<div key={img as string} style={{ position: 'absolute', left: x as number, top: 120, width: 640, height: 486, borderRadius: 18, overflow: 'hidden', opacity: k as number,
 									transform: `translateY(${(1 - (k as number)) * 40}px) rotate(${(rot as number) * (1 - (k as number))}deg) scale(${1 + 0.03 * clamp(u / d)})`, boxShadow: '0 30px 80px rgba(0,0,0,0.6)', border: '2px solid rgba(255,255,255,0.12)' }}>
@@ -171,9 +174,17 @@ export const Chips: React.FC<{ s: SceneData }> = ({ s }) => {
 			</Shot>
 			{/* the signing at the facility: four signatures, in their own places */}
 			{/* the second yes: nothing is credited for them until it */}
-			{/* the papers it issues; the distributor made whole */}
+			{/* the papers it issues, one at a time and large enough to read: the expiry credit note, then the agency's
+			    certificate, the camera gliding down each to the lines the voice names; the distributor made whole */}
 			{(() => {
-				const a0 = M.issued, a1 = s.dur;
+				const a0 = M.issued, a1 = s.dur, aC = W('n35b', 'certificate') - 0.25;
+				const PW = 1162, SC = PW / 1320, VIS = 840, TOP = 92;
+				const PAP = [
+					{ img: 'paper-expiry', t0: a0 + 0.1, t1: aC, cap: 'The expiry credit note', glide: [[a0 + 0.1, 0]],
+						hi: [{ r: [60, 505, 1200, 165], t0: W('n35b', 'credit') - 0.1 }, { r: [598, 632, 692, 52], t0: W('n35b', 'credit') + 0.6 }] },
+					{ img: 'paper-cert', t0: aC, t1: a1, cap: 'The certificate of destruction', glide: [[aC, 0], [aC + 1.2, 620]],
+						hi: [{ r: [60, 408, 1200, 60], t0: aC + 0.3 }, { r: [60, 975, 1200, 335], t0: aC + 1.5 }] },
+				];
 				return (
 					<Shot id="issued" t0={a0} t1={a1}>
 						{(u) => {
@@ -181,21 +192,34 @@ export const Chips: React.FC<{ s: SceneData }> = ({ s }) => {
 							return (
 								<AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 35%, #0f2a1d, #040b07 75%)' }}>
 									<Footage name="c-issued-bg" t0={0} t1={a1 - a0} push={0.04} blur={10} grade="greenSoft" />
-									<AbsoluteFill style={{ background: 'rgba(3,10,7,0.3)' }} />
-									{[{ img: 'paper-expiry', x: 250, rot: -0.0, at: a0 + 0.15, hl: W('n35b', 'credit') - 0.1, cap: 'The expiry credit note' }, { img: 'paper-cert', x: 1010, rot: 0, at: a0 + 0.45, hl: W('n35b', 'certificate') - 0.1, cap: 'The certificate of destruction' }].map((p) => {
-										const k = springAt(T, p.at, FPS, 15, 120);
+									<AbsoluteFill style={{ background: 'rgba(3,10,7,0.34)' }} />
+									{PAP.map((p, i) => {
+										// in from the right as the last leaves to the left: one paper on screen at rest, no ghosts beside it
+										const kin = i === 0 ? springAt(T, p.t0, FPS, 16, 130) : ramp(T, p.t0 - 0.05, p.t0 + 0.45, EASE_IO);
+										const kout = i === PAP.length - 1 ? 0 : ramp(T, p.t1 - 0.05, p.t1 + 0.45, EASE_IO);
+										if (T < p.t0 - 0.1 || kout >= 1) return null;
+										const x = 960 - PW / 2 + (i === 0 ? 0 : (1 - kin) * 1100) - kout * 1100;
+										const y = TOP + (i === 0 ? (1 - kin) * 70 : 0);
+										const op = (i === 0 ? clamp(kin * 1.5) : 1) * (1 - kout * 0.9);
+										let off = 0; p.glide.forEach(([gt, gy], k) => { off = k === 0 ? gy * SC : lerp(off, gy * SC, ramp(T, gt, gt + 1.4, EASE_IO)); });
 										return (
-											<div key={p.img} style={{ position: 'absolute', left: p.x, top: 110, width: 660, opacity: clamp(k * 1.5), transform: `translateY(${(1 - k) * 80}px)` }}>
-												<div style={{ height: 760, borderRadius: 10, overflow: 'hidden', background: '#fff', boxShadow: '0 40px 90px rgba(0,0,0,0.55)' }}>
-													<Img src={staticFile(`img/${p.img}.webp`)} style={{ width: '100%', display: 'block', transform: `translateY(${-lerp(0, 120, ramp(T, p.at + 0.6, a1, EASE_IO))}px)` }} />
+											<div key={p.img} style={{ position: 'absolute', left: x, top: y, width: PW, opacity: op }}>
+												<div style={{ position: 'relative', height: VIS, borderRadius: 10, overflow: 'hidden', background: '#fff', boxShadow: '0 40px 90px rgba(0,0,0,0.55)' }}>
+													<Img src={staticFile(`img/${p.img}.webp`)} style={{ position: 'absolute', left: 0, top: -off, width: PW, height: PW * 1867 / 1320, display: 'block' }} />
+													{p.hi.map((h, k) => {
+														const a = ramp(T, h.t0, h.t0 + 0.3) * (1 - ramp(T, p.t1 - 0.3, p.t1));
+														if (a <= 0) return null;
+														const [rx, ry, rw, rh] = h.r;
+														return <div key={k} style={{ position: 'absolute', left: rx * SC - 5, top: ry * SC - off - 5, width: rw * SC + 10, height: rh * SC + 10, borderRadius: 10, border: '3px solid #34d380', background: 'rgba(52,211,128,0.10)', boxShadow: '0 0 0 7px rgba(52,211,128,0.15)', opacity: a }} />;
+													})}
 												</div>
-												{/* lit on its word */}
-												<div style={{ position: 'absolute', left: -6, top: -6, width: 672, height: 772, borderRadius: 14, border: '3px solid #34d380', boxShadow: '0 0 0 8px rgba(52,211,128,0.14)', opacity: Math.min(ramp(T, p.hl, p.hl + 0.25), 1 - ramp(T, p.hl + 1.6, p.hl + 2.0)) }} />
-												<div style={{ marginTop: 16, font: `600 22px/1 ${SANS}`, color: '#cfe2d8', textAlign: 'center' }}>{p.cap}</div>
+												<div style={{ marginTop: 18, textAlign: 'center', font: `700 30px/1 '${DISPLAY}'`, color: GREEN.ink, opacity: ramp(T, p.t0 + 0.2, p.t0 + 0.5) }}>{p.cap}</div>
 											</div>
 										);
 									})}
-									<div style={{ position: 'absolute', left: 0, right: 0, bottom: 56, textAlign: 'center', opacity: ramp(T, M.whole, M.whole + 0.4), font: `700 34px/1 '${DISPLAY}'`, color: GREEN.pale }}>The distributor is made whole</div>
+									<div style={{ position: 'absolute', left: 0, right: 0, bottom: 34, display: 'flex', justifyContent: 'center', opacity: ramp(T, M.whole, M.whole + 0.4) }}>
+										<div style={{ padding: '12px 26px', borderRadius: 999, background: 'rgba(4,20,12,0.82)', border: `1.5px solid ${GREEN.mint2}`, font: `700 30px/1 '${DISPLAY}'`, color: GREEN.pale }}>The distributor is made whole</div>
+									</div>
 								</AbsoluteFill>
 							);
 						}}

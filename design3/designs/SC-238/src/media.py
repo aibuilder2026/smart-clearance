@@ -130,6 +130,7 @@ def method_for(src, fs, fps_in, tmp):
     picks = json.loads(PICKS.read_text()) if PICKS.exists() else {}
     key = f'source:{src}'
     if key not in picks:
+        Path(tmp).mkdir(parents=True, exist_ok=True)
         meth, scores = frc.bench(fs, fps_in, tmp)
         picks[key] = {'method': meth, 'scores': {k: round(v, 2) for k, v in scores.items()}}
         PICKS.write_text(json.dumps(picks, indent=1))
@@ -143,15 +144,21 @@ def interp(fs, n_out, fps_in, meth, tmp, out):
     if len(fs) < 2:
         for i in range(n_out): shutil.copy(fs[0], out / f'{i + 1:08d}.png')
         return sorted(out.glob('*.png'))
+    rate = n_out / (len(fs) / fps_in)              # the output rate that puts n_out frames over the span
+    if meth != 'rife' and rate / fps_in > 4.0: meth = 'rife'   # VideoToolbox converts up to 4x; a slow span goes to RIFE
+    if meth != 'rife':
+        try:
+            enc = tmp / 'vt-in.mov'
+            run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(fps_in), '-i', fs[0].parent / '%08d.png', '-c:v', 'prores_ks', '-profile:v', '3', enc])
+            vo = tmp / 'vt-out.mov'; frc.vt(enc, vo, round(rate, 4))
+            run(['ffmpeg', '-v', 'error', '-y', '-i', vo, '-frames:v', str(n_out), out / '%08d.png'])
+        except SystemExit as e:
+            print(f'  VideoToolbox refused {rate:.1f} fps ({str(e)[:80]}); RIFE instead')
+            for f in out.glob('*.png'): f.unlink()
+            meth = 'rife'
     if meth == 'rife':
         src = fs[0].parent
         frc.rife(src, out, n_out)
-    else:
-        enc = tmp / 'vt-in.mov'
-        run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(fps_in), '-i', fs[0].parent / '%08d.png', '-c:v', 'prores_ks', '-profile:v', '3', enc])
-        rate = n_out / (len(fs) / fps_in)          # the output rate that puts n_out frames over the span
-        vo = tmp / 'vt-out.mov'; frc.vt(enc, vo, round(rate, 4))
-        run(['ffmpeg', '-v', 'error', '-y', '-i', vo, '-frames:v', str(n_out), out / '%08d.png'])
     got = sorted(out.glob('*.png'))
     for i in range(len(got), n_out): shutil.copy(got[-1], out / f'{i + 1:08d}.png')
     for f in sorted(out.glob('*.png'))[n_out:]: f.unlink()

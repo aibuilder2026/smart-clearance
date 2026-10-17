@@ -23,8 +23,8 @@
     ['scale', 'Valuer', 'Priced every exit', 'Day 0 · 09:21'],
     ['route', 'Router', 'Split the batch across three exits', 'Day 0 · 09:22'],
     ['user-check', 'Supply chain lead', 'Approved the plan', 'Day 0 · 09:40', 'p'],
-    ['send', 'Outreach', 'Offered 52 kiranas, in Hindi', 'Day 0 · 09:41'],
-    ['store', 'The kiranas', 'Ordered 1,372 packets', 'Day 1', 'p'],
+    ['send', 'Outreach', 'Offered 58 kiranas, in Hindi', 'Day 0 · 09:41'],
+    ['store', 'The kiranas', 'Ordered 1,372 packets', 'Day 0', 'p'],
     ['warehouse', 'The distributor', 'Recorded the staff sale, 18 UPI payments', 'Day 1', 'p'],
     ['heart-handshake', 'The food bank', 'Collected 58 packs, with a receipt', 'Day 1', 'p'],
     ['file-text', 'Paperwork', 'Drafted the credit note and GST memo', 'Day 2'],
@@ -44,7 +44,7 @@
     world.appendChild(el);
     return { el, orb: el.querySelector('.orb'), card: el.querySelector('.card'), when: el.querySelector('.when'), stem: el.querySelector('.stem'), up, person: kind === 'p', x: X0 + DX * i };
   });
-  const days = [['Day 0', 0], ['Day 1', 8], ['Day 2', 11], ['Day 3', 13]].map(([d, i]) => { const e = $(`<div class="day" style="left:${X0 + DX * i - 20}px">${d}</div>`); world.appendChild(e); return e; });
+  const days = [['Day 0', 0], ['Day 1', 9], ['Day 2', 11], ['Day 3', 13]].map(([d, i]) => { const e = $(`<div class="day" style="left:${X0 + DX * i - 20}px">${d}</div>`); world.appendChild(e); return e; });
   const kick = $('<div class="kick">The audit trail · every step, in order</div>'); ui.appendChild(kick);
   const h1 = $('<div class="h1">Which agent did what. <em>Who said yes.</em> When.</div>'); ui.appendChild(h1);
   const doc = $(`<div class="doc"><div class="k">${IC('history')}Audit trail · one batch</div><h2>The whole journey, on the record.</h2>

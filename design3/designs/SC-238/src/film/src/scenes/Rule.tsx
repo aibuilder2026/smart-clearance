@@ -40,13 +40,18 @@ export const Rule: React.FC<{ s: SceneData }> = ({ s }) => {
 	const end = s.dur;
 	const aIn = s.vo.find((v) => v.key === 'n03')!.t, bIn = s.vo.find((v) => v.key === 'n04')!.t - 0.1, cIn = s.vo.find((v) => v.key === 'n05')!.t - 0.2;
 	const fadeOut = 1 - ramp(t, end - 0.4, end);
+	// where the cards stand: FSSAI's alone and large while it is read; aside when the apps' card comes; both a strip once
+	// the batch's bar takes the frame
+	const kB = springAt(t, bIn - 0.1, FPS, 18, 110), kC = springAt(t, cIn - 0.1, FPS, 18, 110);
+	const posA = { x: lerp(lerp(430, 72, kB), 72, kC), y: lerp(lerp(140, 92, kB), 34, kC), k: lerp(lerp(1.22, 1, kB), 0.72, kC) };
+	const posB = { x: lerp(980, 72 + 868 * 0.72 + 28, kC), y: lerp(92, 34, kC), k: lerp(1, 0.72, kC) };
 	// A, FSSAI's floor
-	const aA = Math.min(ramp(t, aIn, aIn + 0.4), fadeOut) * lerp(1, 0.55, ramp(t, cIn, cIn + 0.5));
+	const aA = Math.min(ramp(t, aIn, aIn + 0.4), fadeOut);
 	const sA = springAt(t, aIn, FPS, 16, 120);
 	const k30 = springAt(t, W30 - 0.08, FPS, 13, 150), k45 = springAt(t, W45 - 0.08, FPS, 13, 150);
 	const ex = ramp(t, WLEFT, WLEFT + 0.5);
 	// B, the apps' gates
-	const aB = Math.min(ramp(t, bIn, bIn + 0.4), fadeOut) * lerp(1, 0.55, ramp(t, cIn, cIn + 0.5));
+	const aB = Math.min(ramp(t, bIn, bIn + 0.4), fadeOut);
 	const sB = springAt(t, bIn, FPS, 16, 120);
 	const k60 = springAt(t, W60 - 0.08, FPS, 13, 150), k90 = springAt(t, W90 - 0.08, FPS, 13, 150);
 	// C, this batch
@@ -78,10 +83,10 @@ export const Rule: React.FC<{ s: SceneData }> = ({ s }) => {
 					</div>
 				</>
 			)}
-			{t >= r2.t0 && <Scrim side="all" a={0.22} />}
+			{t >= r2.t0 && <Scrim side="all" a={0.12} />}
 			{/* A · FSSAI's direction */}
 			{aA > 0 && (
-				<div style={{ ...panel(aA, sA, -40, 0), left: 72, top: 92, width: 868, padding: '26px 30px 26px' }}>
+				<div style={{ ...panel(aA, sA, -40, 0), left: posA.x, top: posA.y, width: 868, padding: '26px 30px 26px', transform: `translate(${(1 - sA) * -40}px, 0px) scale(${posA.k})`, transformOrigin: '0 0' }}>
 					<div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
 						<div style={{ width: 42, height: 42, borderRadius: 12, background: 'rgba(52,211,128,0.16)', display: 'grid', placeItems: 'center' }}><Icon name="shield-check" size={25} color={GREEN.mint2} sw={2.2} /></div>
 						<div>
@@ -92,15 +97,15 @@ export const Rule: React.FC<{ s: SceneData }> = ({ s }) => {
 					<div style={{ marginTop: 20, font: `700 37px/1.12 '${DISPLAY}'`, letterSpacing: -0.6, opacity: ramp(t, aIn + 0.2, aIn + 0.6) }}>
 						Packaged food sold online must reach the consumer's door with at least
 					</div>
-					<div style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 18 }}>
+					<div style={{ marginTop: 20 * ramp(t, W30 - 0.35, W30), height: 152 * EASE(ramp(t, W30 - 0.35, W30 + 0.1)), overflow: 'visible', display: 'flex', alignItems: 'center', gap: 18 }}>
 						<Tile k={k30} big="30%" sub="of its shelf life left" glow={ramp(t, WLEFT, WLEFT + 0.4)} />
 						<span style={{ font: `700 28px/1 '${DISPLAY}'`, color: '#7a8c82', opacity: clamp(k45 * 1.5) }}>or</span>
 						<Tile k={k45} big="45" unit="days" sub="left before expiry, at delivery" glow={ramp(t, WLEFT, WLEFT + 0.4)} />
 					</div>
 					{/* the floor slides with the shelf life: two worked lives */}
-					<div style={{ marginTop: 22, opacity: ex, transform: `translateY(${(1 - ex) * 10}px)` }}>
-						<div style={{ ...KICK, fontSize: 13.5, color: '#9fb7aa' }}>The floor slides with the shelf life</div>
-						{[{ n: 'Fresh paneer', life: 10, floor: 3, why: '30% binds' }, { n: 'Chips, biscuits', life: 120, floor: 45, why: '45 days binds' }].map((r, i) => {
+					<div style={{ marginTop: 22 * ex, height: 196 * EASE(ex), overflow: 'hidden', opacity: ex, transform: `translateY(${(1 - ex) * 10}px)` }}>
+						<div style={{ ...KICK, fontSize: 13.5, color: '#9fb7aa' }}>The floor slides with the shelf life · the lower of the two</div>
+						{[{ n: 'Fresh paneer', life: 10, floor: 3, why: '30% binds' }, { n: 'Chips, biscuits', life: 120, floor: 36, why: '30% binds' }, { n: 'A mango drink', life: 180, floor: 45, why: '45 days binds' }].map((r, i) => {
 							const kk = ramp(t, WLEFT + 0.15 + i * 0.25, WLEFT + 0.75 + i * 0.25, EASE);
 							return (
 								<div key={r.n} style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -118,7 +123,7 @@ export const Rule: React.FC<{ s: SceneData }> = ({ s }) => {
 			)}
 			{/* B · the quick-commerce apps' gates */}
 			{aB > 0 && (
-				<div style={{ ...panel(aB, sB, 40, 0), left: 980, top: 92, width: 868, padding: '26px 30px 26px', borderColor: 'rgba(247,192,74,0.38)' }}>
+				<div style={{ ...panel(aB, sB, 40, 0), left: posB.x, top: posB.y, width: 868, padding: '26px 30px 26px', borderColor: 'rgba(247,192,74,0.38)', transform: `translate(${(1 - sB) * 40}px, 0px) scale(${posB.k})`, transformOrigin: '0 0' }}>
 					<div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
 						<div style={{ width: 42, height: 42, borderRadius: 12, background: 'rgba(247,192,74,0.16)', display: 'grid', placeItems: 'center' }}><Icon name="store" size={24} color={AMBER} sw={2.2} /></div>
 						<div>
@@ -129,7 +134,7 @@ export const Rule: React.FC<{ s: SceneData }> = ({ s }) => {
 					<div style={{ marginTop: 20, font: `700 37px/1.12 '${DISPLAY}'`, letterSpacing: -0.6, opacity: ramp(t, WFAR - 0.1, WFAR + 0.3) }}>
 						Far stricter than the law: they take stock only with
 					</div>
-					<div style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 18 }}>
+					<div style={{ marginTop: 20 * ramp(t, W60 - 0.35, W60), height: 152 * EASE(ramp(t, W60 - 0.35, W60 + 0.1)), display: 'flex', alignItems: 'center', gap: 18 }}>
 						<Tile k={k60} big="~60%" sub="of the shelf life left" tone="amber" />
 						<span style={{ font: `700 28px/1 '${DISPLAY}'`, color: '#7a8c82', opacity: clamp(k90 * 1.5) }}>or</span>
 						<Tile k={k90} big="90+" unit="days" sub="left, and up" tone="amber" />
@@ -141,17 +146,17 @@ export const Rule: React.FC<{ s: SceneData }> = ({ s }) => {
 			)}
 			{/* C · this batch, below every line */}
 			{aC > 0 && (
-				<div style={{ ...panel(aC, sC, 0, 30), left: 72, top: 650, width: 1776, height: 340 }}>
+				<div style={{ ...panel(aC, sC, 0, 30), left: 72, top: 540, width: 1776, height: 360, transform: `translate(0px, ${(1 - sC) * 30}px) scale(1.0)`, transformOrigin: '50% 0' }}>
 					<div style={{ position: 'absolute', left: X0, top: 26, display: 'flex', alignItems: 'baseline', gap: 18 }}>
 						<span style={{ ...KICK, color: '#73e0a6' }}>This batch</span>
 						<span style={{ font: `600 21px/1 ${SANS}`, color: '#cfe2d8' }}>a mango drink · 1,580 packs · a 180-day shelf life</span>
 					</div>
-					<div style={{ position: 'absolute', left: X0, top: 168, width: BW, height: 18, borderRadius: 9, background: 'rgba(236,243,239,0.10)', overflow: 'hidden' }}>
-						<div style={{ position: 'absolute', left: xOf(108) - X0, top: 0, width: BW - (xOf(108) - X0), height: 18, background: 'rgba(95,227,161,0.32)' }} />
-						<div style={{ position: 'absolute', left: xOf(54) - X0, top: 0, width: xOf(108) - xOf(54), height: 18, background: 'rgba(247,192,74,0.22)' }} />
+					<div style={{ position: 'absolute', left: X0, top: 166, width: BW, height: 26, borderRadius: 13, background: 'rgba(236,243,239,0.10)', overflow: 'hidden' }}>
+						<div style={{ position: 'absolute', left: xOf(108) - X0, top: 0, width: BW - (xOf(108) - X0), height: 26, background: 'rgba(95,227,161,0.32)' }} />
+						<div style={{ position: 'absolute', left: xOf(54) - X0, top: 0, width: xOf(108) - xOf(54), height: 26, background: 'rgba(247,192,74,0.22)' }} />
 					</div>
-					<div style={{ position: 'absolute', left: X0, top: 196, font: `500 16px/1 ${SANS}`, color: '#7a8c82' }}>0 days left</div>
-					<div style={{ position: 'absolute', left: X0 + BW - 220, width: 220, textAlign: 'right', top: 196, font: `500 16px/1 ${SANS}`, color: '#7a8c82' }}>180 days left · made</div>
+					<div style={{ position: 'absolute', left: X0, top: 204, font: `500 17px/1 ${SANS}`, color: '#7a8c82' }}>0 days left</div>
+					<div style={{ position: 'absolute', left: X0 + BW - 240, width: 240, textAlign: 'right', top: 204, font: `500 17px/1 ${SANS}`, color: '#7a8c82' }}>180 days left · made</div>
 					<div style={{ position: 'absolute', left: xOf(130), top: 140, font: `600 16px/1 ${SANS}`, color: GREEN.pale, opacity: ramp(t, cIn + 1.0, cIn + 1.4) }}>every app takes it</div>
 					{lines.map((m) => {
 						const k = ramp(t, m.at, m.at + 0.3);
@@ -159,8 +164,8 @@ export const Rule: React.FC<{ s: SceneData }> = ({ s }) => {
 						return (
 							<div key={m.d} style={{ position: 'absolute', left: xOf(m.d) - 1.5, top: 150, width: 3, height: 54, background: ink, opacity: k }}>
 								<div style={{ position: 'absolute', [m.up ? 'bottom' : 'top']: m.up ? 60 : 62, left: '50%', transform: 'translateX(-50%)', textAlign: 'center', whiteSpace: 'nowrap' } as React.CSSProperties}>
-									<div style={{ font: `700 19px/1 ${SANS}`, color: ink }}>{m.label}</div>
-									<div style={{ marginTop: 4, font: `500 14px/1 ${SANS}`, color: '#8ea398', letterSpacing: 0.4 }}>{m.who}</div>
+									<div style={{ font: `700 22px/1 ${SANS}`, color: ink }}>{m.label}</div>
+									<div style={{ marginTop: 5, font: `500 16px/1 ${SANS}`, color: '#8ea398', letterSpacing: 0.4 }}>{m.who}</div>
 								</div>
 							</div>
 						);
@@ -168,8 +173,8 @@ export const Rule: React.FC<{ s: SceneData }> = ({ s }) => {
 					{/* the batch: from its full life to the 22 days it has */}
 					{slide > 0 && (
 						<>
-							<div style={{ position: 'absolute', left: xOf(days) - 15, top: 162, width: 30, height: 30, borderRadius: 15, background: days < 54.5 ? RED : GREEN.mint2, boxShadow: `0 0 0 7px ${days < 54.5 ? 'rgba(255,107,87,0.28)' : 'rgba(95,227,161,0.28)'}` }} />
-							<div style={{ position: 'absolute', left: xOf(days) - 120, width: 240, top: 236, textAlign: 'center', font: `760 34px/1 '${DISPLAY}'`, color: days < 54.5 ? '#ff8a78' : GREEN.ink, whiteSpace: 'nowrap' }}>{Math.round(days)} days left</div>
+							<div style={{ position: 'absolute', left: xOf(days) - 20, top: 159, width: 40, height: 40, borderRadius: 20, background: days < 54.5 ? RED : GREEN.mint2, boxShadow: `0 0 0 7px ${days < 54.5 ? 'rgba(255,107,87,0.28)' : 'rgba(95,227,161,0.28)'}` }} />
+							<div style={{ position: 'absolute', left: xOf(days) - 160, width: 320, top: 238, textAlign: 'center', font: `760 48px/1 '${DISPLAY}'`, color: days < 54.5 ? '#ff8a78' : GREEN.ink, whiteSpace: 'nowrap' }}>{Math.round(days)} days left</div>
 						</>
 					)}
 					<div style={{ position: 'absolute', right: 30, top: 22, display: 'flex', alignItems: 'center', gap: 10, padding: '10px 18px', borderRadius: 999, background: 'rgba(255,107,87,0.16)', border: `1.5px solid ${RED}`,

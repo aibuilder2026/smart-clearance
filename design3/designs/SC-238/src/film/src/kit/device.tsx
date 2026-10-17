@@ -64,7 +64,7 @@ export type WindowProps = {
 
 /** a recording's screen in its device, lifted out of the footage and held, rings and cards on what the voice names */
 export const Window: React.FC<WindowProps> = (p) => {
-	const f0 = Math.round(p.t0 * FPS), n = Math.max(1, Math.round((p.t1 - p.t0) * FPS));
+	const f0 = Math.round(p.t0 * FPS), n = Math.max(1, Math.round(p.t1 * FPS) - f0);
 	return <Sequence from={f0} durationInFrames={n} layout="none"><WindowInner {...p} /></Sequence>;
 };
 const WindowInner: React.FC<WindowProps> = ({ name, kind, t0, t1, cx, cy, sh, sw, from, liftAt, liftDur = 0.75, out = 'none', outDur = 0.45, rings = [], cards = [], tilt = 0, children, zoom = [], quads, quadsT0, enter = 'lift' }) => {

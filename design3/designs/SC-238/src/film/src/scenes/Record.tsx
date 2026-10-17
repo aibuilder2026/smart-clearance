@@ -40,8 +40,7 @@ export const Record: React.FC<{ s: SceneData }> = ({ s }) => {
 	const IMGS = PAPERS.map((p) => p.img).filter((v, i, a) => a.indexOf(v) === i);
 	const slot = (i: number) => IMGS.indexOf(PAPERS[i].img);
 	const xOf = (i: number) => slot(i) * (PW + GAP);
-	let camX = 0, idx = 0;
-	for (let i = 0; i < at.length; i++) if (t >= at[i] - 0.1) idx = i;
+	let camX = 0;
 	for (let i = 0; i < at.length; i++) {
 		const k = ramp(t, at[i] - 0.15, at[i] + 0.4, EASE_IO);
 		camX = i === 0 ? xOf(0) : lerp(camX, xOf(i), k);
@@ -50,10 +49,10 @@ export const Record: React.FC<{ s: SceneData }> = ({ s }) => {
 		<AbsoluteFill style={{ background: '#030a07' }}>
 			{/* the footage of what each paper records, under the brand's green; it cuts with the papers */}
 			{PAPERS.map((p, i) => {
-				const t0 = i === 0 ? 0 : at[i] - 0.1, t1 = i === PAPERS.length - 1 ? papersEnd + 0.3 : at[i + 1] - 0.1;
+				const t0 = i === 0 ? 0 : at[i] + 0.4, t1 = i === PAPERS.length - 1 ? papersEnd + 0.3 : at[i + 1] + 0.4;
 				if (p.bg === PAPERS[i - 1]?.bg) return null;
 				let j = i + 1; while (j < PAPERS.length && PAPERS[j].bg === p.bg) j++;
-				const tt1 = j >= PAPERS.length ? papersEnd + 0.3 : at[j] - 0.1;
+				const tt1 = j >= PAPERS.length ? papersEnd + 0.3 : at[j] + 0.4;
 				return <Footage key={i} name={p.bg} t0={t0} t1={Math.max(t1, tt1)} push={0.06} blur={6} grade="greenSoft" />;
 			})}
 			{t < papersEnd + 0.3 && (
@@ -64,20 +63,20 @@ export const Record: React.FC<{ s: SceneData }> = ({ s }) => {
 					</div>
 					{/* reviewed: the lead's sign-off stamped on the pack */}
 					{(() => { const r0 = W('n36', 'reviewed') - 0.1, a = Math.min(ramp(t, r0, r0 + 0.25), 1 - ramp(t, M.gst - 0.2, M.gst + 0.1)); if (a <= 0) return null; const sp = springAt(t, r0, FPS, 10, 220);
-						return <div style={{ position: 'absolute', left: 1370, top: 560, transform: `rotate(-6deg) scale(${lerp(1.6, 1, clamp(sp))})`, opacity: a, padding: '12px 22px', border: '5px solid #34d380', borderRadius: 12, font: `800 46px/1 '${DISPLAY}'`, color: '#5fe3a1', background: 'rgba(4,20,12,0.6)', letterSpacing: 2 }}>REVIEWED ✓</div>; })()}
+						return <div style={{ position: 'absolute', left: 1036, top: 760, transform: `rotate(-8deg) scale(${lerp(1.6, 1, clamp(sp))})`, opacity: a, padding: '12px 22px', border: '5px solid #34d380', borderRadius: 12, font: `800 46px/1 '${DISPLAY}'`, color: '#5fe3a1', background: 'rgba(4,20,12,0.6)', letterSpacing: 2 }}>REVIEWED ✓</div>; })()}
 					{/* the row of papers, flat and square, the camera on the one in focus */}
 					<AbsoluteFill style={{ transform: `translateX(${960 - PW / 2 - camX}px)` }}>
 						{PAPERS.map((p, i) => {
 							if (PAPERS.findIndex((q) => q.img === p.img) !== i) return null;
 							const land = springAt(t, at[i] - 0.45, FPS, 16, 130);
-							const isFocus = PAPERS[idx].img === p.img;
+							const dx = Math.abs(xOf(i) - camX), near = Math.pow(clamp(1 - dx / (PW + GAP)), 0.8);
 							// the glide down the page while its line is said
 							let gl = 0;
 							PAPERS.forEach((q, k) => { if (q.img === p.img && t >= at[k] - 0.5) gl = lerp(gl, q.glide ?? 0, ramp(t, at[k] - 0.5, at[k] + 0.3, EASE_IO)); });
 							const vis = VIS;                     // the frame shows VIS px of the page; the glide moves down it
 							const off = gl * (PH - vis);
 							return (
-								<div key={p.img + i} style={{ position: 'absolute', left: xOf(i), top: 128, width: PW, height: vis, opacity: clamp(land * 1.4) * (isFocus ? 1 : 0.5), transform: `translateY(${(1 - land) * 90}px) scale(${isFocus ? 1 : 0.84})`,
+								<div key={p.img + i} style={{ position: 'absolute', left: xOf(i), top: 128, width: PW, height: vis, opacity: clamp(land * 1.4) * near, transform: `translateY(${(1 - land) * 90}px) scale(${lerp(0.9, 1, near)})`,
 									transformOrigin: '50% 0%', borderRadius: 8, overflow: 'hidden', background: '#fff', boxShadow: '0 40px 90px rgba(0,0,0,0.55)' }}>
 									<Img src={staticFile(`img/${p.img}.webp`)} style={{ position: 'absolute', left: 0, top: -off, width: PW, height: PH }} />
 									{PAPERS.map((q, k) => q.img === p.img && q.hi.map(([x, y, w, h], n) => {
@@ -100,8 +99,12 @@ export const Record: React.FC<{ s: SceneData }> = ({ s }) => {
 				</>
 			)}
 			{/* the audit trail (audit11, captured on n37) */}
-			<Sequence from={Math.round(M.audit * FPS)} durationInFrames={Math.round((M.swing - M.audit) * FPS)} layout="none">
-				<AbsoluteFill><Media name='audit' style={{ width: '100%', height: '100%' }} /></AbsoluteFill>
+			<Sequence from={Math.round(M.audit * FPS)} durationInFrames={Math.round(M.swing * FPS) - Math.round(M.audit * FPS)} layout="none">
+				<AbsoluteFill>
+					<Footage name="r-office" t0={0} t1={M.swing - M.audit} push={0.05} blur={14} grade="green" />
+					<AbsoluteFill style={{ background: 'rgba(3,10,7,0.35)' }} />
+					<Media name='audit' style={{ width: '100%', height: '100%', mixBlendMode: 'screen' }} />
+				</AbsoluteFill>
 			</Sequence>
 			{/* the lead's tablet at dusk: the swing, the ledger, the mango's own line (plan.py's shots) */}
 			<PlanShots s={s} skip={PAPERS.map((p) => p.bg)} />
@@ -136,7 +139,7 @@ export const Close: React.FC<{ s: SceneData }> = ({ s }) => {
 			<AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 45%, rgba(3,16,10,0.25), rgba(3,10,7,0.78) 80%)' }} />
 			{/* the line, word by word */}
 			<div style={{ position: 'absolute', left: 0, right: 0, top: 290, textAlign: 'center', opacity: 1 - lineOut }}>
-				<div style={{ display: 'inline-block', marginBottom: 26, opacity: ramp(t, W('n39', 'Smart') - 0.4, W('n39', 'Smart')) }}><Mark size={120} draw={ramp(t, W('n39', 'Smart') - 0.4, W('n39', 'Smart') + 0.8, EASE_IO)} /></div>
+				<div style={{ display: 'inline-block', marginBottom: 26, opacity: ramp(t, 0.15, 0.5) }}><Mark size={120} draw={ramp(t, 0.2, Math.max(1.4, W('n39', 'Smart') + 0.4), EASE_IO)} /></div>
 				<Rise t={t} t0={W('n39', 'Smart') - 0.05} text="Smart-Clearance" size={96} align="center" />
 				<div style={{ marginTop: 20 }}>
 					<Rise t={t} t0={W('n39', 'ten') - 0.05} text="Ten agents. One yes." size={60} weight={650} align="center" color={GREEN.pale} />
@@ -147,7 +150,7 @@ export const Close: React.FC<{ s: SceneData }> = ({ s }) => {
 			</div>
 			{/* the card: the guided demo, held five seconds after the last word */}
 			{card > 0 && (
-				<div style={{ position: 'absolute', left: 0, right: 0, top: 210, display: 'flex', justifyContent: 'center', opacity: card, transform: `translateY(${(1 - card) * 26}px)` }}>
+				<div style={{ position: 'absolute', left: 0, right: 0, top: 128, display: 'flex', justifyContent: 'center', opacity: card, transform: `translateY(${(1 - card) * 26}px) scale(1.3)`, transformOrigin: '50% 0' }}>
 					<div style={{ display: 'flex', gap: 54, alignItems: 'center', padding: '46px 56px', borderRadius: 32, background: 'linear-gradient(180deg, rgba(10,26,18,0.92), rgba(5,14,10,0.92))', border: '1.5px solid rgba(95,227,161,0.35)', boxShadow: '0 40px 100px rgba(0,0,0,0.5)' }}>
 						<div>
 							<div style={{ display: 'flex', alignItems: 'center', gap: 16 }}><Mark size={64} /><span style={{ font: `700 40px/1 '${DISPLAY}'`, color: GREEN.ink }}>Smart-Clearance</span></div>
