@@ -80,9 +80,16 @@
   const bokeh = Array.from({ length: 26 }, () => ({ x: R() * W, y: 120 + R() * 760, r: 14 + R() * 46, a: 0.05 + R() * 0.10, v: 6 + R() * 14, hue: R() < 0.75 ? 'g' : 'a' }));
   function drawBg(t, glow) {
     bg.clearRect(0, 0, W, H);
-    let g = bg.createRadialGradient(W / 2, -120, 40, W / 2, 380, 1150);
-    g.addColorStop(0, 'rgba(40, 92, 70, 0.75)'); g.addColorStop(0.45, 'rgba(14, 34, 26, 0.65)'); g.addColorStop(1, 'rgba(7, 11, 9, 1)');
+    // (the light above drifts across the room and breathes, so the ground is never a still gradient: r3)
+    const cx = W / 2 + 220 * Math.sin(t * 0.21), cy = 380 + 40 * Math.sin(t * 0.33 + 1.2), rr = 1150 + 90 * Math.sin(t * 0.27);
+    let g = bg.createRadialGradient(cx, -120, 40, cx, cy, rr);
+    g.addColorStop(0, 'rgba(40, 92, 70, 0.78)'); g.addColorStop(0.45, 'rgba(14, 34, 26, 0.65)'); g.addColorStop(1, 'rgba(7, 11, 9, 1)');
     bg.fillStyle = '#070b09'; bg.fillRect(0, 0, W, H); bg.fillStyle = g; bg.fillRect(0, 0, W, H);
+    // a second, warmer light crossing slowly the other way
+    const wx = W * 0.8 - 260 * Math.sin(t * 0.17);
+    g = bg.createRadialGradient(wx, 120, 10, wx, 260, 760);
+    g.addColorStop(0, 'rgba(247, 192, 74, 0.10)'); g.addColorStop(1, 'rgba(247, 192, 74, 0)');
+    bg.fillStyle = g; bg.fillRect(0, 0, W, H);
     // the floor the devices stand on: a soft horizon of light
     g = bg.createLinearGradient(0, 860, 0, 1080);
     g.addColorStop(0, 'rgba(52, 211, 128, 0.0)'); g.addColorStop(0.08, `rgba(52, 211, 128, ${0.06 + 0.05 * glow})`); g.addColorStop(1, 'rgba(7, 11, 9, 0)');

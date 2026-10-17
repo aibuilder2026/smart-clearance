@@ -196,7 +196,7 @@ export const Rule: React.FC<{ s: SceneData }> = ({ s }) => {
 					{slide > 0 && (
 						<>
 							<div style={{ position: 'absolute', left: xOf(days) - 20, top: 159, width: 40, height: 40, borderRadius: 20, background: days < 54.5 ? RED : GREEN.mint2, boxShadow: `0 0 0 7px ${days < 54.5 ? 'rgba(255,107,87,0.28)' : 'rgba(95,227,161,0.28)'}` }} />
-							<div style={{ position: 'absolute', left: xOf(days) - 160, width: 320, top: 238, textAlign: 'center', font: `760 48px/1 '${DISPLAY}'`, color: days < 54.5 ? '#ff8a78' : GREEN.ink, whiteSpace: 'nowrap' }}>{Math.round(days)} days left</div>
+							<div style={{ position: 'absolute', left: xOf(days) - 160, width: 320, top: 290, textAlign: 'center', font: `760 46px/1 '${DISPLAY}'`, color: days < 54.5 ? '#ff8a78' : GREEN.ink, whiteSpace: 'nowrap' }}>{Math.round(days)} days left</div>
 						</>
 					)}
 					<div style={{ position: 'absolute', right: 30, top: 22, display: 'flex', alignItems: 'center', gap: 10, padding: '10px 18px', borderRadius: 999, background: 'rgba(255,107,87,0.16)', border: `1.5px solid ${RED}`,

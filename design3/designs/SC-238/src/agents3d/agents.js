@@ -317,9 +317,9 @@ const roadGeo = (() => {
 })();
 const roadMat = new THREE.ShaderMaterial({
 	transparent: true, depthWrite: false, side: THREE.DoubleSide, toneMapped: false,
-	uniforms: { prog: { value: 0 }, t: { value: 0 }, len: { value: LEN }, a: { value: 1 }, glow: { value: 1 }, white: { value: 0 }, flow: { value: 1 }, pulseU: { value: -1 }, hw: { value: 0.62 } },
+	uniforms: { prog: { value: 0 }, t: { value: 0 }, len: { value: LEN }, a: { value: 1 }, glow: { value: 1 }, white: { value: 0 }, flow: { value: 1 }, pulseU: { value: -1 }, pulseA: { value: 0 }, hw: { value: 0.62 } },
 	vertexShader: ROAD_VS,
-	fragmentShader: `float sq(float x){ return x * x; } uniform float prog; uniform float t; uniform float len; uniform float a; uniform float glow; uniform float white; uniform float flow; uniform float pulseU; varying vec2 vUv; varying float vZ;
+	fragmentShader: `float sq(float x){ return x * x; } uniform float prog; uniform float t; uniform float len; uniform float a; uniform float glow; uniform float white; uniform float flow; uniform float pulseU; uniform float pulseA; varying vec2 vUv; varying float vZ;
 		void main(){
 			if (vUv.x > prog) discard;
 			float s = vUv.y * 2.0 - 1.0;
@@ -328,7 +328,7 @@ const roadMat = new THREE.ShaderMaterial({
 			float dist = vUv.x * len;
 			float chev = smoothstep(0.55, 0.0, abs(fract(dist / 1.6 - t * 0.9 * flow) - abs(s) * 0.35 - 0.3) * 3.0) * (1.0 - smoothstep(0.55, 0.95, abs(s)));
 			float head = exp(-sq((vUv.x - prog) * len * 0.6)) * step(prog, 0.999);
-			float pul = pulseU >= 0.0 ? exp(-sq((vUv.x - pulseU) * len * 0.35)) : 0.0;
+			float pul = pulseU >= 0.0 ? pulseA * exp(-sq((vUv.x - pulseU) * len * 0.35)) : 0.0;
 			vec3 green = vec3(0.20, 0.83, 0.50);
 			vec3 c = green * (0.10 + edge * 1.25 + core * 0.55 + chev * 0.32 + head * 2.2 + pul * 1.4) * glow;
 			c = mix(c, vec3(1.0) * (0.92 + 0.08 * edge), white);
@@ -745,7 +745,9 @@ window.setCues = (cues) => {
 	SHOTS.push({ t0: wt('n22', 'models') - 0.1, t1: n22[1] + 0.3, pos: V(-8.5, 4.2, 12.5), tgt: MONEY.clone().add(V(0, 0.6, 0)), fov: 32, focus: 12 });
 	TL.rise2 = n22[1] + 0.4; TL.markOn = n22[1] + 2.5; C.end = Math.max(end, n22[1] + 4.6);
 	SHOTS.push({ t0: n22[1] + 3.1, t1: C.end + 0.2, pos: V(0, 142, 0.6), tgt: V(0, 0, -0.85), fov: 34, focus: 140, rise: true, drift: 0.07 });
-	for (let i = 1; i < SHOTS.length; i++) ev(SHOTS[i - 1].t1 + 0.05, SHOTS[i].stop && SHOTS[i - 1].stop ? 'whoosh-chase' : 'whoosh', 0.5, 0.8);
+	// (each move's whoosh peaks on its fastest part, the middle of the eased move, not at its start: the dive to the first
+	// stop was silent where it moved and its sound came early)
+	for (let i = 1; i < SHOTS.length; i++) { const dm = SHOTS[i].t0 - SHOTS[i - 1].t1; ev(SHOTS[i - 1].t1 + Math.max(0.05, dm / 2 - 0.45), SHOTS[i].stop && SHOTS[i - 1].stop ? 'whoosh-chase' : 'whoosh', 0.5, 0.8); }
 	// the work at each stop, on its words
 	TL.data = STOP.connect.say[0] + 0.5; ev(TL.data, 'rows', 0.45);
 	TL.risk = STOP.detect.say[0] + 1.2; ev(TL.risk, 'risk', 0.5);
@@ -857,7 +859,10 @@ function update(t) {
 	roadMat.uniforms.t.value = t;
 	const wk = sm((t - TL.markOn + 0.4) / 1.5);
 	roadMat.uniforms.white.value = wk; roadMat.uniforms.flow.value = 1 - wk; roadMat.uniforms.hw.value = lerp(0.62, 2.55, eio((t - TL.rise2 - 0.4) / 2.4));
-	const ru = riderU(t); roadMat.uniforms.pulseU.value = t > STOPS[0].t0 - 2.2 && t < STOPS[STOPS.length - 1].t1 ? ru : -1;
+	// (the batch's glow along the road fades in and out with the journey: switched off on one frame at the last stop's end,
+// it dropped the floor's light by a quarter at once, r3's 'exposure step')
+	const ru = riderU(t); roadMat.uniforms.pulseU.value = ru;
+	roadMat.uniforms.pulseA.value = sm((t - (STOPS[0].t0 - 2.2)) / 0.6) * (1 - sm((t - STOPS[STOPS.length - 1].t1) / 1.2));
 	const dk = sm((t - TL.road0) / 0.6);
 	vis(dot.d, dot.d.material, dk); vis(dot.rg, dot.rg.material, dk); dot.glow.material.opacity = 0.6 * dk * (1 - out);
 	const pk = sm((t - TL.road1 + 0.2) / 0.6);

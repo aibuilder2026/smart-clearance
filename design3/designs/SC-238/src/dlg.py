@@ -11,7 +11,7 @@ import numpy as np, soundfile as sf
 HERE = Path(__file__).resolve().parent
 DLG = json.loads((HERE / 'lines.json').read_text())['dialogue']
 OUT, READ = HERE / 'build' / 'dlg.json', HERE / 'build' / 'dlg-read.json'
-NUM = {'22': 'twentytwo', '24': 'twentyfour', '58': 'fiftyeight', '1420': 'fourteentwenty', '14': 'fourteen', '20': 'twenty', '10': 'ten'}
+NUM = {'22': 'twentytwo', '24': 'twentyfour', '58': 'fiftyeight', '1420': 'fourteentwenty', '14': 'fourteen', '20': 'twenty', '10': 'ten', '4': 'four'}
 # words Whisper mishears in these voices, as their lines mean them (an Indian "two" heard as "do", "bill's" as "build")
 HEARD = {'do': 'two', 'build': 'bills'}
 norm = lambda w: (lambda x: NUM.get(x, x))(re.sub(r'[^a-z0-9]', '', w.lower()))

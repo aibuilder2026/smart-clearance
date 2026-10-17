@@ -119,7 +119,9 @@ def sampled_frames(m, a, b, n, out):
     out.mkdir(parents=True, exist_ok=True)
     s = (b - a) / (n / FPS)
     vf = crop_vf(m) + [f'setpts=(PTS-STARTPTS)/{s:.6f}', f'fps={FPS}']
-    run(['ffmpeg', '-v', 'error', '-y', '-ss', f'{max(0, a - 1.0):.4f}', '-i', m['src'], '-ss', f'{min(a, 1.0):.4f}', '-t', f'{b - a:.4f}',
+    # (an input seek, frame-exact when transcoding: an output -ss here comes after setpts, so a second of it skipped s
+    # seconds of the recording, and every fast-forward showed a later stretch than its span, r3's stage cards among it)
+    run(['ffmpeg', '-v', 'error', '-y', '-ss', f'{a:.4f}', '-t', f'{b - a + 0.5:.4f}', '-i', m['src'],
          '-vf', ','.join(vf), '-frames:v', str(n), '-pix_fmt', 'rgb24', out / '%08d.png'])
     fs = sorted(out.glob('*.png'))
     for i in range(len(fs), n): shutil.copy(fs[-1], out / f'{i + 1:08d}.png')
@@ -145,6 +147,16 @@ def interp(fs, n_out, fps_in, meth, tmp, out):
         for i in range(n_out): shutil.copy(fs[0], out / f'{i + 1:08d}.png')
         return sorted(out.glob('*.png'))
     rate = n_out / (len(fs) / fps_in)              # the output rate that puts n_out frames over the span
+    if meth == 'mci':
+        # (a generated clip whose fine texture boils from frame to frame defeats RIFE, which then copies the nearer frame
+        # and jumps once a source frame, r3's repeats on the bin aerial; ffmpeg's motion-compensated interpolation spreads
+        # the motion over every frame)
+        run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(fps_in), '-i', fs[0].parent / '%08d.png', '-vf',
+             f'setpts=PTS*{rate / FPS:.6f},minterpolate=fps={FPS}:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1',
+             '-frames:v', str(n_out), out / '%08d.png'])
+        got = sorted(out.glob('*.png'))
+        for i in range(len(got), n_out): shutil.copy(got[-1], out / f'{i + 1:08d}.png')
+        return sorted(out.glob('*.png'))[:n_out]
     if meth != 'rife' and rate / fps_in > 4.0: meth = 'rife'   # VideoToolbox converts up to 4x; a slow span goes to RIFE
     if meth != 'rife':
         try:
@@ -194,7 +206,7 @@ def make(name, only_ff=False):
             n = f1 - f0
             if n <= 0: continue
             md = mode(m, a, b, d)
-            cache = FF_DIR / name / f'{i:02d}'
+            cache = FF_DIR / name / f'{i:02d}-{a:.3f}-{b:.3f}'   # (keyed by its span: a span cut shorter to the same frame count must not reuse the old frames)
             if md == 'ff':
                 if cache.exists() and len(list(cache.glob('*.png'))) == n: fs = sorted(cache.glob('*.png'))
                 else:
@@ -204,7 +216,7 @@ def make(name, only_ff=False):
                 continue
             else:
                 src_fs = native_frames(m, a, b, tmp / f'in{i}')
-                meth = method_for(m['src'], src_fs, fps_in, tmp / f'b{i}') if len(src_fs) > 2 * fps_in + 1 else 'rife'
+                meth = m.get('interp') or (method_for(m['src'], src_fs, fps_in, tmp / f'b{i}') if len(src_fs) > 2 * fps_in + 1 else 'rife')
                 if md == 'hold':
                     n_play = min(n, round((b - a) / 0.9 * FPS))
                     fs = interp(src_fs, n_play, fps_in, meth, tmp, tmp / f'out{i}')
@@ -306,7 +318,7 @@ def sheets(names):
 
 def main():
     cmd = sys.argv[1] if len(sys.argv) > 1 else 'list'
-    names = sys.argv[2:] or [k for k, m in MEDIA.items() if m['kind'] != 'ots']   # screens.py makes the over-the-shoulder shots
+    names = sys.argv[2:] or [k for k, m in MEDIA.items() if m['kind'] not in ('ots', 'xcam')]   # screens.py makes the over-the-shoulder shots, xcam.py the camera's view
     if cmd == 'sheets': sheets(names)
     elif cmd == 'audio':
         for n in names: audio(n)

@@ -27,7 +27,7 @@ def fold(text, times=False):
     'app's' agree, while 'installed' still differs from 'installs'); with times, a written time as one figure (9.20 as
     nine twenty), which a written price must not be (Rs 14.20 is fourteen rupees twenty)"""
     if times: text = re.sub(r'\b(\d{1,2})[.:](\d{2})\b', lambda m_: f'{m_.group(1)}{m_.group(2)}', text)
-    ws = words(text.replace('%', ' per cent'))
+    ws = words(text.replace('%', ' per cent').replace('\u2019', "'"))   # (a curly apostrophe is the straight one: "It’s" is "It's")
     ws = [HEARD.get(w, w) for w in ws]
     return [w[:-1] if len(w) > 2 and w.endswith('s') and not w.endswith('ss') else w for w in ws]
 

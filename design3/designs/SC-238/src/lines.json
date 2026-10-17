@@ -204,7 +204,18 @@
   {
    "id": "n34",
    "act": "chips",
-   "text": "On expiry day, an authorised agency destroys them, against evidence: two photos checked by Vision, and a certificate signed on the spot by four people."
+   "text": "On expiry day, an authorised agency destroys them, and the distributor records it on his tablet: the packs slit open, buried, and covered."
+  },
+  {
+   "id": "n34b",
+   "act": "chips",
+   "text": "The photos go up, and the certificate is signed on the spot: by the agency’s officer, two witnesses, and the distributor.",
+   "say": "The photos go up, and the certificate is signed on the spot: by the agency's officer, two witnesses, and the distributor."
+  },
+  {
+   "id": "n34c",
+   "act": "chips",
+   "text": "He sends it, and Vision checks both photos against the batch and the slate."
   },
   {
    "id": "n35",
@@ -286,8 +297,11 @@
    "id": "d05",
    "act": "mango",
    "who": "the brand's head",
-   "clip": "b-approve",
-   "text": "Nothing to the bin?"
+   "clip": "b-approve-c",
+   "text": "Nothing to the bin?",
+   "takes": [
+    "b-approve"
+   ]
   },
   {
    "id": "d06",
@@ -300,28 +314,37 @@
    "id": "d07",
    "act": "mango",
    "who": "the kirana owner",
-   "clip": "k-order-b",
-   "text": "Two free with every ten!"
+   "clip": "k-order-c",
+   "text": "Two free with every ten!",
+   "takes": [
+    "k-order-b"
+   ]
   },
   {
    "id": "d08",
    "act": "mango",
    "who": "the food bank volunteer",
-   "clip": "v-dock-b",
-   "text": "Fifty-eight packs. All sealed."
+   "clip": "v-dock-c",
+   "text": "Fifty-eight packs. All sealed.",
+   "takes": [
+    "v-dock-b"
+   ]
   },
   {
    "id": "d09",
    "act": "mango",
    "who": "the shopkeeper",
-   "clip": "s-shop-b",
-   "text": "The bill's inside? Good."
+   "clip": "s-shop-d",
+   "text": "The bill's inside? Good.",
+   "takes": [
+    "s-shop-b"
+   ]
   },
   {
    "id": "d10",
    "act": "chips",
    "who": "the wholesale buyer",
-   "clip": "w-buyer-b",
+   "clip": "w-buyer-c",
    "text": "Fourteen-twenty. Done. Truck's coming.",
    "takes": [
     "w-buyer",
@@ -332,8 +355,8 @@
    "id": "d11",
    "act": "chips",
    "who": "the Nagpur distributor",
-   "clip": "r-landfill-b",
-   "text": "All four signatures.",
+   "clip": "r-say-c",
+   "text": "All four signatures. It’s on record.",
    "takes": [
     "o-landfill",
     "r-landfill",

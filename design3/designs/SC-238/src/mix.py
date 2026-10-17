@@ -117,7 +117,11 @@ def narration():
 # each talking clip's space: the room's decay (RT60, s) and how much of it is heard
 ACOUSTICS = {'d-dawn-call': (0.9, 0.2), 'l-dawn-call': (0.4, 0.12), 'b-approve': (0.45, 0.14), 'l-approve': (0.45, 0.14), 'k-order-b': (0.35, 0.12),
              'v-dock': (0.6, 0.15), 's-shop-b': (0.35, 0.12), 'w-buyer': (0.8, 0.18), 'o-landfill': (0.25, 0.06), 'd-eve-call': (0.9, 0.2),
-             'l-eve-call-b': (0.45, 0.13), 'l-dawn-call-b': (0.4, 0.12), 'v-dock-b': (0.6, 0.15)}
+             'l-eve-call-b': (0.45, 0.13), 'l-dawn-call-b': (0.4, 0.12), 'v-dock-b': (0.6, 0.15),
+             # the takes to the lens (r4): the shop, the dock, the van's shop, the warehouse (the buyer calm, so a drier room), the
+             # landfill in the open, the brand's office
+             'k-order-c': (0.35, 0.12), 'v-dock-c': (0.6, 0.14), 's-shop-d': (0.35, 0.12), 'w-buyer-c': (0.7, 0.11), 'r-say-c': (0.25, 0.05),
+             'b-approve-c': (0.45, 0.14)}
 
 
 def talking():
@@ -128,9 +132,13 @@ def talking():
             src = HERE / 'film' / 'public' / 'media' / f"{sh['media']}.wav"
             if not src.exists(): print('no sound yet for', sh['media']); continue
             lv = B / 'mixtmp' / f"{sh['media']}-lev.wav"; lv.parent.mkdir(exist_ok=True)
-            run(['ffmpeg', '-v', 'error', '-y', '-i', src, '-af', 'highpass=f=70,acompressor=threshold=-22dB:ratio=2.0:attack=8:release=160:makeup=1.5,loudnorm=I=-18:TP=-2:LRA=7',
+            # the generated voice's hiss taken out first (a spectral denoiser that tracks the noise, about 20 dB off the
+            # floor, the voice itself untouched), then levelled by a measured static gain, not a dynamic loudnorm, which
+            # raised the floor between the words
+            run(['ffmpeg', '-v', 'error', '-y', '-i', src, '-af', 'afftdn=nr=20:nf=-55:tn=1,highpass=f=70,acompressor=threshold=-22dB:ratio=2.0:attack=8:release=160:makeup=1.5',
                  '-ar', str(SR), '-ac', '2', '-c:a', 'pcm_f32le', lv])
             x, _ = sf.read(lv, dtype='float32')
+            x = x * db(-18.0 - float(measure(lv)['input_i']))
             clip = Path(MEDIA[sh['media']]['src']).stem
             rt60, wetk = ACOUSTICS.get(clip, (0.4, 0.12))
             ir = K.room_ir(rt60, pre=0.008 + 0.01 * rt60, seed=sum(map(ord, clip)))
@@ -166,7 +174,8 @@ def key_env(nar_dry, talk_mono):
 # the clips made without sound (SC-207's labelled aisle; SC-210's Veo backgrounds, made silent) take their place's room
 # tone from a sister clip of the same place: the same aisle as first made, the lead's office by day and at dusk, the food bank
 TONE_FROM = {'o0-godown-aisle-labelled.mp4': 'SC-206/src/clips/o0-godown-aisle.mp4', 'v-office.mp4': 'SC-205/src/clips/m1-priya-desk.mp4',
-             'v-evening.mp4': 'SC-206/src/clips/s-priya-eve.mp4', 'v-foodbank.mp4': 'SC-206/src/clips/s-meera.mp4'}
+             'v-evening.mp4': 'SC-206/src/clips/s-priya-eve.mp4', 'v-foodbank.mp4': 'SC-206/src/clips/s-meera.mp4',
+             'x-film.mov': 'src/clips/x-film.mp4'}   # (the filming shot's super-resolved copy carries no sound: its own take's room)
 
 
 def drawn_footage():
@@ -178,7 +187,7 @@ def drawn_footage():
     c = SC['cold']; d4 = next(d for d in FILM['dlg'] if d['id'] == 'd04')
     out.append((d4['t'] + 0.52, c['t0'] + c['dur'], 'cold-d01'))
     p = SC['platform']; tb = next(x for x in p['shots'] if x.get('media') == 'team-brand')
-    out.append((p['t0'], p['t0'] + p['marks']['console'] + 0.4, 'turn-sunrise'))
+    out.append((p['t0'], p['t0'] + p['marks']['console'] + 0.4, 'p-town'))
     out.append((p['t0'] + p['marks']['teams'] - 0.15, p['t0'] + tb['t1'], 'team-bg'))
     ch = SC['chips']; ev = next(x for x in ch['shots'] if x['kind'] == 'evidence')
     out.append((ch['t0'] + ev['t0'], ch['t0'] + ev['t1'], 'c-evidence-bg'))
@@ -205,7 +214,7 @@ def places():
             if len(x) < SR // 2 or np.sqrt(np.mean(x ** 2)) < 1e-5: tones[src] = None; return None
             y = K.room_tone(x, int(12 * SR), seed=stable(src) % 1000)
             rms = np.sqrt(np.mean(y ** 2)) + 1e-9
-            tones[src] = (y / rms * db(-40)).astype(np.float32)
+            tones[src] = (y / rms * db(-47)).astype(np.float32)     # (a bed under the scene, never heard as itself)
         return tones[src]
     for sc in FILM['scenes']:
         for sh in sc['shots']:
@@ -361,7 +370,9 @@ def events():
         if sid == 'turn':
             add(T + sc['dur'] - 1.4, K.riser(rnd, 1.3, -27), 0.5, 'air')
             add(T + sc['dur'] - 0.05, K.boom(2.0, -20), 0.5)
-        if sid == 'platform': add(T + 0.1, K.sparkle(1.2, 16, -30), 0.5); add(T + 1.5, K.glint(-28), 0.55)
+        if sid == 'platform':
+            add(T + 0.1, K.sparkle(1.2, 16, -30), 0.5); add(T + 1.5, K.glint(-28), 0.55)
+            if 'console' in M: add(T + M['console'] - 0.3, K.whoosh(rnd, 0.8, 0.45, -28, lo=0.03, hi=0.3), 0.5)   # (into the console: it cut in silence)
         if sid == 'agents':
             add(T - 0.4, K.whoosh(rnd, 1.2, 0.5, -26), 0.5, 'air')
             add(T, air_bed(sc['dur'], -33), 0.5, 'hits')
@@ -419,9 +430,10 @@ def events():
             elif sh.get('shutter') is not None:
                 add(T + sh['shutter'], K.shutter(-20), 0.55)
             if sh['kind'] == 'evidence':
-                add(t0 + 0.5, K.whoosh(rnd, 1.9, 0.5, -32, lo=0.02, hi=0.3), 0.5, 'air')
+                # (the photos land just after the voice's "and Vision", which a paper sound on the cut had covered)
+                add(t0 + 0.75, K.whoosh(rnd, 1.9, 0.5, -32, lo=0.02, hi=0.3), 0.5, 'air')
                 for k_ in range(4): add(t0 + 0.9 + 0.5 * k_, K.tick(-26, 1760.0), 0.62); add(t0 + 0.92 + 0.5 * k_, pop(-29), 0.62)
-                add(t0 + 0.05, lib('paper-handle-1', -30), 0.3); add(t0 + 0.4, lib('paper-handle-2', -30), 0.7)
+                add(t0 + 0.55, lib('paper-handle-1', -31), 0.3); add(t0 + 0.8, lib('paper-handle-2', -31), 0.7)
             if sh['kind'] == 'ots' and sh.get('media') == 'l-photo':
                 add(t0 + 1.0, K.shutter(-22), 0.5)
         # the clock chip turning over
@@ -443,6 +455,18 @@ def events():
                 hi = x.get('hi', x['t0']); pan = [0.2, 0.42, 0.62, 0.82][k_ % 4]
                 add(T + x['t0'] + 0.03, K.tick(-38, 1318.5), pan)                       # (each device landing)
                 add(T + hi + 0.02, K.glint(-30), pan); add(T + hi + 0.04, K.tick(-34, 1567.98), pan)   # (lit on its word)
+    # a cut into new footage that no other sound marks (r3 counted four silent ones): a soft whoosh under it, unless a
+    # sound already lands within a third of a second (a talking clip's own room is its cut's sound)
+    marked = sorted(t for t, *_ in ev)
+    for sc in FILM['scenes']:
+        prev = None
+        for sh in sorted([x for x in sc['shots'] if x['kind'] in ('clip', 'ots', 'evidence', 'talk')], key=lambda x: x['t0']):
+            c = sc['t0'] + sh['t0']
+            if prev is not None and sh['kind'] != 'talk' and sh.get('media') != prev.get('media') and abs(prev['t1'] - sh['t0']) < 0.08:
+                i = np.searchsorted(marked, c - 0.35)
+                if not (i < len(marked) and marked[i] <= c + 0.35):
+                    add(c - 0.18, K.whoosh(rnd, 0.55, 0.45, -31, lo=0.03, hi=0.3), 0.5)
+            prev = sh
     # the captured pages' own events (the agents in 3D, the install, the audit trail)
     pages = [('agents3d', SC['agents']['t0']), ('pwa', SC['platform']['t0'] + [x for x in SC['platform']['shots'] if x.get('media') == 'team-brand'][0]['t1']),
              ('audit', SC['record']['t0'] + SC['record']['marks']['audit'])]

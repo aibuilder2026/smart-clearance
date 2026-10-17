@@ -77,15 +77,20 @@ CLIPS = {
     'a1-godown': HERE / 'clips/a1-godown.mp4', 'a2-town': HERE / 'clips/a2-town.mp4', 'a3-lane': HERE / 'clips/a3-lane.mp4',
     # after the first full-film critic: the lead at her desk reading, then tapping, her tablet's back to the camera (one
     # woman throughout); the Nagpur distributor raising his tablet at the landfill to photograph the evidence
-    'a-desk': HERE / 'clips/a-desk.mp4', 'r-raise': HERE / 'clips/r-raise-tablet.mp4', 'k-tail': HERE / 'clips/k-order-b.mp4',
+    'a-desk': HERE / 'clips/a-desk.mp4', 'r-raise': HERE / 'clips/r-raise-tablet.mp4', 'k-tail': HERE / ('clips/k-order-c.mp4' if (HERE / 'clips/k-order-c.mp4').exists() else 'clips/k-order-b.mp4'),   # (her shop behind the invoice: the take her line is from)
     # after the verification critic: the distributor at her godown at dusk, her portal on her tablet (the portal's shot was
     # the verify shot's clip again); the mango batch itself, closer (the rule's last shot was the godown's opening footage)
     'd-portal': HERE / 'clips/d-portal.mp4', 'd-batch': HERE / 'clips/d-batch.mp4',
+    # the destruction filmed at an authorised landfill (r4, the user's notes): the place, the packs slit open and emptied,
+    # the earth over them, the officer and the witnesses signing on his tablet; the distributor's line to the lens
+    'x-est': HERE / 'clips/x-est.mp4', 'x-empty': HERE / 'clips/x-empty.mp4', 'x-cover': HERE / 'clips/x-cover.mp4',
+    'x-officer': HERE / 'clips/x-officer.mp4', 'x-witness': HERE / 'clips/x-witness.mp4', 'r-say-c': HERE / 'clips/r-say-c.mp4',
 }
 # the people with their own devices, over the shoulder (SC-206's clips, 1920 × 1088, each blank screen tracked frame by
 # frame by SC-207's track3.py): screens.py sets the app's real screen into the glass, under any finger
 OTS = {k: (LIB / f'SC-206/src/clips/s-{k}.mp4', LIB / f'SC-207/src/build/track/s-{k}.json') for k in
        ['neha', 'priya', 'priya-eve', 'lakshmi-label', 'upi', 'kirana', 'meera', 'agrawal', 'landfill-photo', 'landfill-sign', 'rakesh']}
+OTS['x-film'] = (HERE / 'build/sr/x-film.mov', HERE / 'build/track/x-film.json')   # the distributor filming at the landfill (super-resolved; track.py)
 OTS_PHONE = LIB / 'SC-207/src/build/track/s-upi-phone.json'   # the staff member's phone in front of the distributor's tablet
 NUM = {'10': 'ten', '9': 'nine', '22': 'twentytwo', '30': 'thirty', '45': 'fortyfive', '60': 'sixty', '90': 'ninety', '1': 'one', '17': 'seventeen'}
 norm = lambda w: re.sub(r'[^a-z0-9]', '', str(w).lower())
@@ -140,13 +145,14 @@ def clip(name, key, a, b, dur=None):
     return d
 
 
-def ots(name, who, win_media, d, lift, a=0.25, still=None, still2=None, dehalo=None):
+def ots(name, who, win_media, d, lift, a=0.25, still=None, still2=None, dehalo=None, patch=None):
     """a person over the shoulder with the app's screen in their device (screens.py): `win_media`'s frames from the
     shot's start (or a still), lifting out at `lift` (shot seconds); the clip at its own pace to the lift, then half
     pace, back and forth, behind the window"""
     src, trk = OTS[who]
     MEDIA[name] = {'kind': 'ots', 'src': str(src), 'track': str(trk), 'win': win_media, 'still': str(still) if still else None, 'in': a, 'dur': round(d, 3), 'lift': round(lift, 3)}
     if still2: MEDIA[name].update({'still2': str(still2), 'track2': str(OTS_PHONE)})
+    if patch: MEDIA[name]['patch'] = patch
     # (the clips whose relabelled cartons show in the background get their glow taken out: screens.py's dehalo)
     if dehalo if dehalo is not None else who in ('lakshmi-label', 'agrawal', 'meera', 'upi', 'rakesh'): MEDIA[name]['dehalo'] = True
     return d
@@ -260,6 +266,8 @@ def have(key):
 # the lead's tablet in her desk clip (film px): where her screen lifts out from, as she reads (0 s) and as she taps (4 s)
 A_TABLET, A_TABLET_TAP = [390, 600, 490, 390], [215, 700, 640, 380]
 D_PORTAL = [600, 790, 560, 290]   # the distributor's tablet at dusk (d-portal, at 3.3 s), film px
+X_OFFICER = [523, 614, 370, 383]   # the officer's tablet (x-officer), film px
+X_WITNESS = [746, 624, 314, 220]   # the witness's tablet (x-witness), film px
 
 
 def build():
@@ -309,7 +317,7 @@ def build():
     s.mark('stock', s.w('n06', 'stock')); s.mark('credit', s.w('n06', 'credit')); s.mark('destroy', s.w('n06', 'destroy'))
     s.mark('total', s.w('n06', 'twentytwo'))
     st = t + 2.6
-    clip('bin-trail', 'trail', 0.0, 6.4, st)
+    clip('bin-trail', 'trail', 0.0, 6.4, st); MEDIA['bin-trail']['interp'] = 'mci'   # (RIFE copies and jumps on this boiling aerial: r3)
     s.shot('clip', 0, st, media='bin-trail')
     t = s.say('n07', st + 0.05)
     for i, (k, key) in enumerate([('bin-factory', 'factory'), ('bin-hold', 'hold'), ('bin-heap', 'landfill-heap')]):
@@ -331,6 +339,9 @@ def build():
     s = Scene('platform', 'Platform')
     t = s.say('n09', 1.8)
     s.mark('console', t + 0.6)
+    # behind the mark: the town waking, from above (the godown was on screen at the open and at the turn: r2, r3), its
+    # cut under the turn's light; drawn by the scene, not a plan shot
+    clip('p-town', 'a2-town', 0.3, 0.3 + s.marks['console'] + 0.4, s.marks['console'] + 0.4)
     t = s.say('n10', t + 1.5)
     # the console on the 16 Oct admin run (cut 16's spans, no stage marks): the clients, the brand opened, its first
     # stock export mapped, its distributors, its people, its rules (SKU gates)
@@ -552,7 +563,7 @@ def build():
     d = t + 3.6 - a0                                   # (the sale recorded at its own pace after the line)
     wr = s.w('n28', 'receipt') - a0 + 0.2
     starts = win('m-staff', 'mango', 'L', [(456.0, 456.9, 1.6), (459.6, 461.0, wr - 1.6), (473.0, 473.3, 0.9), (474.85, 476.4, 1.7), (477.6, 480.6, d - wr - 2.6)])   # (the stage's ring on the match, 473.7-474.6, left out)
-    ots('f-staff', 'upi', 'm-staff', d, 1.6, still2=HERE / 'build' / 'upi-paid.png')
+    ots('f-staff', 'upi', 'm-staff', d, 1.6, still2=HERE / 'build' / 'upi-paid.png', patch=[[378, 450, 52, 38]])   # (a label the source drew over the staff man's jaw)
     s.shot('ots', a0, a0 + d, media='f-staff', lift=1.6)
     s.shot('win', a0, a0 + d, media='m-staff', starts=starts, lift=1.6, clock=['Day 1', 'the staff sale'],
            heads=[Hd(a0 + starts[1], a0 + d - 0.05, 'Vision', 'Execute', 'flash', 'scan-line', [(a0 + starts[1] + 0.4, 'gemini.vision.read_receipt → 18 UPI payments'),
@@ -616,12 +627,13 @@ def build():
                   R(a0 + winat('c-lot', 461.6, starts), a0 + d - 0.05, [30, 330, 352, 76])],
            cards=[C(a0 + winat('c-lot', 461.6, starts) + 0.2, a0 + d - 0.05, [30, 330, 352, 76], 'Closed by an agent', '772 packs at ₹14.20',
                     'Countered from the buyer’s ₹13 without ever showing the floor price; a GST invoice follows.', 'gavel')])
-    s.talk('d10', a0 + d + 0.5, cut=3.45)             # the buyer: "Fourteen-twenty. Done." … "Truck's coming." over his truck
+    if dlg('d10')[0] == 'w-buyer-b': s.talk('d10', a0 + d + 0.5, cut=3.45)   # (the take before: "Truck's coming." over his truck)
+    else: s.talk('d10', a0 + d + 0.5, tail=0.35)        # the buyer, calm, to the lens (r4: he shouted): the whole line on his face
     a0 = s.shots[-1]['t1']
     s.mark('truck', a0)
-    clip('c-truck', 'truck', 0.3, 4.6, 3.6)
-    s.shot('clip', a0, a0 + 3.6, media='c-truck', clock=['Day 1', 'the buyer’s truck'], mask=[1088, 790, 124, 54])   # (its number plate's lettering is invented: softened)
-    a0 += 3.6
+    clip('c-truck', 'truck', 2.4, 4.95, 3.0)            # (from 2.4 s: before it, the slip in his hand turns into a phone, r3)
+    s.shot('clip', a0, a0 + 3.0, media='c-truck', clock=['Day 1', 'the buyer’s truck'], mask=[1088, 790, 124, 54])   # (its number plate's lettering is invented: softened)
+    a0 += 3.0
     # the scheme: only two shops order; the window closes on 540 packets, on the lead's tablet at dusk
     s.mark('scheme', a0)
     t = s.say('n33', a0 + 0.7)
@@ -634,37 +646,113 @@ def build():
            cards=[C(s.w('n33', 'When') + 0.2, a0 + d - 0.05, [278, 348, 424, 54], 'The window closed', '540 packets left',
                     'Two shops ordered 48; the rest stayed at the distributor’s godown.', 'hourglass', 'red')])
     a0 += d
-    # expiry day: the landfill; he photographs with his tablet (its camera's view in its glass, then full frame, the
-    # shutter); Vision's checks on both photos; the signing at the facility; the certificate, signed by four
+    # expiry day, filmed at an authorised landfill (r4, the user's notes: the destruction filmed and uploaded, the signing
+    # seen, nothing invented): the place; over the distributor's shoulder, his tablet's camera on the packs going into the
+    # pit and the shutter (xcam.py, in its glass); the packs slit open and emptied; the earth over them; the photos up on
+    # his tablet (the app's own screen in its glass, lifting out); the officer, then the witnesses, signing on his tablet
+    # (the app's own sign sheets, lifting from it); his line to the lens; he sends it, and Vision checks both photos
     s.mark('expiry', a0)
-    clip('c-landfill', 'landfill', 0.3, 2.6, 2.0)
-    s.shot('clip', a0, a0 + 2.0, media='c-landfill', clock=['Expiry day', 'at the landfill'])
-    t = s.say('n34', a0 + 0.5)
-    if have('r-raise'):
-        clip('l-photo', 'r-raise', 0.5, 2.85, 2.0)       # (the take jumps at 3.0 s)
-        s.shot('clip', a0 + 2.0, a0 + 4.0, media='l-photo', shutter=a0 + 2.0 + 1.72, clock=['Expiry day', 'the evidence'])   # (on the clip's own flash, 1.73 s in)
+    X = all(have(k) for k in ('x-est', 'x-empty', 'x-cover', 'x-officer', 'x-witness', 'r-say-c')) and OTS['x-film'][1].exists() \
+        and any(norm(w['w']) == 'distributor' for w in ASR['n34']['words'])
+    if X:
+        t = s.say('n34', a0 + 0.6)
+        e1 = s.w('n34', 'distributor') - 0.3                # the place, to "the distributor"
+        clip('x-est', 'x-est', 0.3, 0.3 + (e1 - a0), e1 - a0)
+        s.shot('clip', a0, e1, media='x-est', clock=['Expiry day', 'the authorised landfill'])
+        e2 = s.w('n34', 'tablet', at='e') + 0.15            # over his shoulder, filming them go in; the shutter (to the end of "tablet")
+        d = e2 - e1
+        MEDIA['m-xcam'] = {'kind': 'xcam', 'src': str(CLIPS['x-empty']), 'in': 0.35, 'dur': round(d + 0.1, 3), 'shutter': round(d - 0.55, 3), 'crop': [0.28, 0.0, 1.0]}
+        ots('x-film-a', 'x-film', 'm-xcam', d, 99.0, a=0.3, dehalo=False)
+        s.shot('ots', e1, e2, media='x-film-a', shutter=e2 - 0.55)
+        e3 = s.w('n34', 'buried') - 0.2                     # the packs slit open and emptied
+        clip('x-empty', 'x-empty', 0.35, 0.35 + (e3 - e2), e3 - e2)
+        s.shot('clip', e2, e3, media='x-empty')
+        e4 = t + 0.45                                       # buried, and covered
+        clip('x-cover', 'x-cover', 0.4, min(4.85, 0.4 + (e4 - e3)), e4 - e3)
+        s.shot('clip', e3, e4, media='x-cover')
+        a1 = e4
+        # the photos go up: his tablet again, the app's own screen in its glass, the two photos landing, lifting out (the
+        # line's first phrase, then a breath while they land: cut in its own silence, 1.21-1.50 s of the take)
+        tA = s.say('n34b', a1 + 0.35, part=(0.0, 1.35))
+        s.mark('upload', a1)
+        d = tA + 1.6 - a1
+        starts = win('m-upload', 'sad', 'L', [(572.85, 574.0, 0.95), (574.0, 575.0, 1.0), (575.0, 576.8, d - 1.95)])
+        ots('x-film-b', 'x-film', 'm-upload', d, 0.5, a=3.2, dehalo=False)
+        s.shot('ots', a1, a1 + d, media='x-film-b', lift=0.5)
+        s.shot('win', a1, a1 + d, media='m-upload', starts=starts, lift=0.5, clock=['Expiry day', 'the evidence, uploaded'],
+               rings=[R(a1 + starts[1] + 0.05, a1 + d - 0.05, [100, 380, 720, 290])],
+               cards=[C(a1 + starts[2] + 0.05, a1 + d - 0.05, [100, 380, 720, 290], 'Evidence from the spot', 'Before, at the godown · after, here',
+                        'Taken on his tablet and uploaded to the batch: nothing is credited without them.', 'camera')])
+        a1 += d
+        # the signing: the agency's officer on his tablet (its back to us), his sheet lifting from it, his strokes as drawn
+        s.mark('sign', a1)
+        t = s.say('n34b', a1 + 0.1, part=(1.35, None))     # "and the certificate is signed on the spot: by the agency's officer, …"
+        d = s.w('n34b@1.35', 'two') - 0.25 - a1
+        starts = win('c-sign1', 'sad', 'L', [(590.3, 590.7, 0.85), (594.6, 598.8, d - 0.85)])
+        clip('x-sign1', 'x-officer', 0.3, min(4.85, 0.3 + d), d)
+        s.shot('clip', a1, a1 + d, media='x-sign1', sharp=0.85, under='c-sign1', fromRect=X_OFFICER)
+        s.shot('win', a1, a1 + d, media='c-sign1', starts=starts, lift=0.85, fromRect=X_OFFICER, clock=['Expiry day', 'signed on the spot'],
+               rings=[R(a1 + starts[1] + 0.1, a1 + d - 0.05, [378, 288, 440, 145])],
+               cards=[C(a1 + starts[1] + 0.3, a1 + d - 0.05, [378, 288, 440, 145], 'Signed on the spot', 'The agency’s officer',
+                        'Each signer reads what they sign, then signs in their own place on the certificate.', 'signature')])
+        a1 += d
+        # the two witnesses, then the distributor: their sheets in turn, fast, to the certificate signed by four
+        d = t + 0.6 - a1
+        FF = [(603.5, 621.0), (624.0, 635.4), (638.5, 654.4)]; ff_src = sum(b - a for a, b in FF); ffd = min(1.6, max(1.0, d - 2.0))
+        rest = d - 0.7 - ffd
+        starts = win('c-sign2', 'sad', 'L', [(602.6, 603.3, 0.7)] + [(a, b, ffd * (b - a) / ff_src) for a, b in FF] + [(655.8, 656.85, rest * 0.4), (658.1, 660.4, rest * 0.6)])
+        clip('x-sign2', 'x-witness', 0.3, min(4.85, 0.3 + d), d)
+        s.shot('clip', a1, a1 + d, media='x-sign2', sharp=0.7, under='c-sign2', fromRect=X_WITNESS)
+        s.shot('win', a1, a1 + d, media='c-sign2', starts=starts, lift=0.7, fromRect=X_WITNESS, ff=[starts[1], starts[4]],
+               rings=[R(a1 + starts[4] + 0.1, a1 + d - 0.05, [150, 735, 650, 370])],
+               cards=[C(a1 + starts[4] + 0.25, a1 + d - 0.05, [150, 735, 650, 370], 'Four signatures', 'The officer, two witnesses, the distributor',
+                        'On the agency’s certificate, on his tablet at the facility: each in their own place.', 'signature')],
+               badge={'t0': round(a1 + starts[1], 3), 't1': round(a1 + starts[4], 3), 'text': 'Signing, fast', 'icon': 'fast-forward'})
+        a0 = a1 + d
+        # his line, to the lens; then he sends it from the same tablet, and Vision checks both photos
+        t_ = s.talk('d11', a0 + 0.45, tail=0.25)
+        talk_sh = s.shots[-1]
+        tA = s.say('n34c', t_ + 0.35, part=(0.0, 1.0))      # "He sends it," (cut in its silence, 0.90-1.19 s of the take)
+        a1 = talk_sh['t1']                                  # (his take pushes in to his face: the tablet is his again over his shoulder)
+        d = tA + 0.95 - a1
+        starts = win('c-send', 'sad', 'L', [(667.9, 669.3, d * 0.55), (669.5, 670.8, d * 0.45)])
+        ots('x-film-c', 'x-film', 'c-send', d, 0.3, a=1.4, dehalo=False)
+        s.shot('ots', a1, a1 + d, media='x-film-c', lift=0.3)
+        s.shot('win', a1, a1 + d, media='c-send', starts=starts, lift=0.3, rings=[R(a1 + 0.45, a1 + d - 0.05, [110, 1140, 640, 60])])
+        a1 += d
+        t = s.say('n34c', a1 + 0.05, part=(1.0, None))     # "and Vision checks both photos against the batch and the slate."
+        s.shot('evidence', a1, t + 0.8)
+        clip('c-evidence-bg', 'x-cover', 0.6, 4.8, t + 0.8 - a1)    # the landfill behind Vision's checks: the cell, covered
+        a0 = t + 0.8
     else:
-        ots('l-photo', 'landfill-photo', None, 2.0, 9.0, still=HERE / 'build' / 'cam-after.png')
-        s.shot('ots', a0 + 2.0, a0 + 4.0, media='l-photo', clock=['Expiry day', 'the evidence'])
-    s.shot('evidence', a0 + 4.0, s.w('n34', 'certificate') - 0.3)
-    clip('c-evidence-bg', 'landfill-heap', 0.2, 4.8, s.w('n34', 'certificate') - 0.3 - (a0 + 4.0))   # the landfill behind Vision's checks
-    a1 = s.w('n34', 'certificate') - 0.3
-    OFF, FF = (594.6, 598.8), [(603.5, 621.0), (624.0, 635.4), (638.5, 654.4)]
-    ff_src = sum(b - a for a, b in FF)
-    d = t + 4.4 - a1
-    sign_segs = [(OFF[0], OFF[1], 2.3)] + [(a, b, 1.8 * (b - a) / ff_src) for a, b in FF]
-    rest = d - 4.1                                   # (the stage's ring on '4 of 4 signed', 657.0-657.9, left out)
-    starts = win('c-sign', 'sad', 'L', sign_segs + [(655.8, 656.85, rest * 0.4), (658.1, 660.4, rest * 0.6)])
-    ots('l-sign', 'landfill-sign', 'c-sign', d, 0.7)
-    s.shot('ots', a1, a1 + d, media='l-sign', lift=0.7)
-    s.shot('win', a1, a1 + d, media='c-sign', starts=starts, lift=0.7, ff=[starts[1], starts[1] + 1.8], clock=['Expiry day', 'signed on the spot'],
-           rings=[R(a1 + starts[4] + 0.2, a1 + d - 0.05, [150, 740, 640, 200])],
-           cards=[C(a1 + starts[4] + 0.4, a1 + d - 0.05, [150, 740, 640, 200], 'Signed in place', 'The officer, two witnesses, the distributor',
-                    'On the agency’s certificate, on his tablet at the facility: each in their own box.', 'signature')],
-           badge={'t0': round(a1 + starts[1], 3), 't1': round(a1 + starts[4], 3), 'text': 'Signing, fast', 'icon': 'fast-forward'})
-    a0 = a1 + d
-    t = s.talk('d11', a0 + 0.5) + 0.5                 # the distributor, to the officer: "All four signatures. It's on record."
-    a0 = t
+        clip('c-landfill', 'landfill', 0.3, 2.6, 2.0)
+        s.shot('clip', a0, a0 + 2.0, media='c-landfill', clock=['Expiry day', 'at the landfill'])
+        t = s.say('n34', a0 + 0.5)
+        if have('r-raise'):
+            clip('l-photo', 'r-raise', 0.5, 2.85, 2.0)       # (the take jumps at 3.0 s)
+            s.shot('clip', a0 + 2.0, a0 + 4.0, media='l-photo', shutter=a0 + 2.0 + 1.72, clock=['Expiry day', 'the evidence'])   # (on the clip's own flash, 1.73 s in)
+        else:
+            ots('l-photo', 'landfill-photo', None, 2.0, 9.0, still=HERE / 'build' / 'cam-after.png')
+            s.shot('ots', a0 + 2.0, a0 + 4.0, media='l-photo', clock=['Expiry day', 'the evidence'])
+        a1 = max(a0 + 6.0, t - 2.0)                     # (the take before this line's new words: a stand-in until the clips are made)
+        s.shot('evidence', a0 + 4.0, a1)
+        clip('c-evidence-bg', 'landfill-heap', 0.2, 4.8, a1 - (a0 + 4.0))   # the landfill behind Vision's checks
+        OFF, FF = (594.6, 598.8), [(603.5, 621.0), (624.0, 635.4), (638.5, 654.4)]
+        ff_src = sum(b - a for a, b in FF)
+        d = t + 4.4 - a1
+        sign_segs = [(OFF[0], OFF[1], 2.3)] + [(a, b, 1.8 * (b - a) / ff_src) for a, b in FF]
+        rest = d - 4.1                                   # (the stage's ring on '4 of 4 signed', 657.0-657.9, left out)
+        starts = win('c-sign', 'sad', 'L', sign_segs + [(655.8, 656.85, rest * 0.4), (658.1, 660.4, rest * 0.6)])
+        ots('l-sign', 'landfill-sign', 'c-sign', d, 0.7)
+        s.shot('ots', a1, a1 + d, media='l-sign', lift=0.7)
+        s.shot('win', a1, a1 + d, media='c-sign', starts=starts, lift=0.7, ff=[starts[1], starts[1] + 1.8], clock=['Expiry day', 'signed on the spot'],
+               rings=[R(a1 + starts[4] + 0.2, a1 + d - 0.05, [150, 740, 640, 200])],
+               cards=[C(a1 + starts[4] + 0.4, a1 + d - 0.05, [150, 740, 640, 200], 'Signed in place', 'The officer, two witnesses, the distributor',
+                        'On the agency’s certificate, on his tablet at the facility: each in their own box.', 'signature')],
+               badge={'t0': round(a1 + starts[1], 3), 't1': round(a1 + starts[4], 3), 'text': 'Signing, fast', 'icon': 'fast-forward'})
+        a0 = a1 + d
+        t = s.talk('d11', a0 + 0.5) + 0.5                 # the distributor, to the officer: "All four signatures. It's on record."
+        a0 = t
     # the second yes: the lead at dusk, the destruction review, the amber tap
     s.mark('second', a0)
     t = s.say('n35', a0 + 0.9)

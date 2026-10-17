@@ -1,0 +1,52 @@
+[
+ {
+  "name": "k-order-c",
+  "image": "img/k-order-c-239001.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 239101,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up in a small Indian kirana shop lit by a warm tungsten bulb and soft daylight from the street. A woman in her forties in a mustard sari with a maroon border and a red bindi stands at her counter, holding her phone at her chest with its back to the camera, and looks straight into the camera lens the whole time, as if at a customer at her counter. She tells them warmly, with a delighted smile, at a natural conversational volume, in a natural Indian English accent: \"Two free with every ten!\" and gives a small nod. Her lips shape every word in time with her voice; natural blinks; she keeps looking into the lens; her red bindi stays on her forehead. The shelves behind her stay softly out of focus. Photorealistic cinematic footage, natural skin, sharp focus on her face. Audio: her voice close and clear, the quiet hum of a small shop, no music, no other voices, no street noise."
+ },
+ {
+  "name": "v-dock-c",
+  "image": "img/v-dock-c-239002.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 239102,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up at a godown's loading dock beside a white van with its rear doors open, warm late-morning light. A young woman in a green T-shirt with her hair tied back holds a clipboard against her chest and looks straight into the camera lens the whole time. She says calmly and clearly, with a quiet, proud smile, at a natural conversational volume, in a natural Indian English accent: \"Fifty-eight packs. All sealed.\" and gives a small nod. Her lips shape every word in time with her voice; natural blinks; she keeps looking into the lens. Behind her, softly out of focus, the driver sets a sealed carton down inside the van without speaking. Photorealistic cinematic footage, natural skin, sharp focus on her face. Audio: her voice close and clear, a quiet loading dock, no engine running, no music, no other voices."
+ },
+ {
+  "name": "w-buyer-c",
+  "image": "img/w-buyer-c-239004.png",
+  "resolution": "720p",
+  "duration": 6,
+  "seed": 239104,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up in a wholesaler's warehouse among grain sacks and brown cartons, warm light from a high window. A man in his forties with a short beard, in a grey half-sleeve shirt, holds his phone low and still in his right hand and looks straight into the camera lens the whole time. He says quietly and calmly, at a low, relaxed conversational volume, with a small satisfied smile, never raising his voice, in a natural Indian English accent: \"Fourteen-twenty. Done. Truck's coming.\" His lips shape every word in time with his voice; natural blinks; one slight nod; he keeps looking into the lens; his hands stay still. Photorealistic cinematic footage, natural skin, sharp focus on his face. Audio: his voice soft, close and clear, the quiet hush of a large warehouse, no music, no other voices."
+ },
+ {
+  "name": "r-say-c",
+  "image": "img/r-say-c-239005.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 239105,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up at a landfill under an overcast grey sky, a yellow machine and the heaps softly out of focus behind. A man in his sixties with grey hair, his glasses pushed up on his head and a moustache, in a light blue checked shirt, holds a tablet flat against his chest with its back to the camera and looks straight into the camera lens the whole time. He says calmly and quietly, with quiet relief, at a natural conversational volume, in a natural Indian English accent: \"All four signatures. It's on record.\" His lips shape every word in time with his voice; natural blinks; one small nod; he keeps looking into the lens; the tablet stays still against his chest. Photorealistic cinematic footage, natural skin, sharp focus on his face. Audio: his voice close and clear, a light wind over open ground, a distant engine, no music, no other voices."
+ },
+ {
+  "name": "b-approve-c",
+  "image": "img/mcu/b-approve.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 239106,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up in a bright glass-walled office in the morning. A man in his fifties with a trimmed salt-and-pepper beard, in a navy suit and white open-collar shirt, leans on the back of an office chair beside a colleague's desk and keeps his eyes down and to the left of the frame on her and her screen the whole time, his face in three-quarter profile. He raises his eyebrows and asks quietly, in a natural Indian English accent: \"Nothing to the bin?\" then waits with a hint of a smile. His head stays steady; his lips shape every word in time with his voice; natural blinks; he never turns towards the camera and never looks into the lens. Colleagues move softly out of focus far behind him. Photorealistic cinematic footage, natural skin, sharp focus on his face. Audio: his voice close and clear, the quiet murmur of an office, no music, no other voices."
+ }
+]

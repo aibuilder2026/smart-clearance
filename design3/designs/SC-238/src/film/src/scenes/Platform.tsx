@@ -1,5 +1,5 @@
-// SC-238 · 6: the platform. The sunrise's light is the mark; it draws its route over the godown (graded to the brand's
-// green) and the line lands word by word. Every brand gets its own workspace: the platform lead at her console, the real
+// SC-238 · 6: the platform. The sunrise's light is the mark; it holds over the town waking, from above (graded to the
+// brand's green), and the line lands word by word. Every brand gets its own workspace: the platform lead at her console, the real
 // console in her laptop's glass lifting out, its clients, a brand's first stock export mapped, its distributors, its
 // people and its own rules, each ringed on its word; then the Overview, live. Each team's own part, on its own device,
 // lands on its word: the brand, the distributor, the kirana, the food bank. Then it installs straight from the browser,
@@ -17,7 +17,7 @@ export const Platform: React.FC<{ s: SceneData }> = ({ s }) => {
 	const M = s.marks;
 	const W = (k: string, w: string, n = 0) => word(s, k, w, n);
 	const intro1 = M.console;                         // the mark and the line hold until the console
-	// the godown under the brand's green, behind the mark (the sunrise's own clip, carried on)
+	// the town waking under the brand's green, behind the mark (from above; the godown was on screen twice already)
 	const markK = ramp(t, 0.05, 1.0, EASE_IO);
 	const teamsT0 = M.teams - 0.15 + 0.3, teamsT1 = shot(s, 'team-brand').t1;   // (the sequence starts 0.3 s before teamsT0)
 	const pwa0 = teamsT1;
@@ -26,19 +26,25 @@ export const Platform: React.FC<{ s: SceneData }> = ({ s }) => {
 			{/* 1 · the mark and the line */}
 			<Sequence from={0} durationInFrames={Math.round((intro1 + 0.4) * FPS)} layout="none">
 				<AbsoluteFill>
-					<Footage name="turn-sunrise" t0={0} t1={intro1 + 0.4} push={0.06} pushFrom={1.06} blur={12} grade="green" />
+					<Footage name="p-town" t0={0} t1={intro1 + 0.4} push={0.06} pushFrom={1.04} blur={12} grade="green" />
 					<AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 42%, rgba(52,211,128,0.10), rgba(2,10,6,0.55) 70%)' }} />
 					{/* the turn's white light, fading under the mark it left (so the mark never washes out at the cut) */}
 					<AbsoluteFill style={{ background: 'radial-gradient(circle at 50% 42%, #fff6de, #ffecbe)', opacity: Math.pow(1 - ramp(t, 0, 0.45), 1.6) }} />
 					{/* the sunrise's shafts carried on behind the mark, turning slowly */}
 					<AbsoluteFill style={{ overflow: 'hidden', mixBlendMode: 'screen', opacity: 0.5 * ramp(t, 0.2, 1.4), WebkitMaskImage: 'linear-gradient(180deg, #000 0%, rgba(0,0,0,0.55) 45%, transparent 85%)' }}>
-						<div style={{ position: 'absolute', left: -480, top: -1660, width: 2880, height: 2880, transformOrigin: '50% 50%', transform: `rotate(${lerp(-3, 3, ramp(t, 0, intro1 + 0.4))}deg)`, filter: 'blur(9px)',
+						<div style={{ position: 'absolute', left: -480, top: -1660, width: 2880, height: 2880, transformOrigin: '50% 50%', transform: `rotate(${lerp(-5, 5, ramp(t, 0, intro1 + 0.4))}deg)`, filter: 'blur(9px)',
 							background: 'repeating-conic-gradient(from 150deg at 50% 50%, rgba(190,255,220,0.0) 0deg 5deg, rgba(190,255,220,0.10) 7deg 8deg, rgba(190,255,220,0.0) 10deg 17deg)' }} />
 					</AbsoluteFill>
-					<AbsoluteFill style={{ transformOrigin: '50% 44%', transform: `scale(${1 + 0.035 * ramp(t, 1.0, intro1 + 0.4, EASE_IO)})` }}>
-					{/* the mark the turn's light left, picked up where it is (a match cut): it rises and grows into place */}
+					{/* (a slow push the whole hold, so the card never stands still: r3 measured a second's freeze before the console) */}
+					<AbsoluteFill style={{ transformOrigin: '50% 44%', transform: `scale(${1 + 0.075 * ramp(t, 1.0, intro1 + 0.4, EASE_IO)})` }}>
+					{/* the mark the turn's light left, picked up where it is (a match cut): it rises and grows into place; a sheen
+					    crosses it once the line has landed */}
 					<div style={{ position: 'absolute', left: 960 - lerp(180, 220, markK) / 2, top: lerp(454, 300, markK) - lerp(180, 220, markK) / 2 }}>
 						<Mark size={lerp(180, 220, markK)} draw={1} />
+						{(() => { const k = ramp(t, intro1 - 1.6, intro1 - 0.6, EASE_IO); if (k <= 0 || k >= 1) return null;
+							return <div style={{ position: 'absolute', inset: 0, borderRadius: '30%', overflow: 'hidden', mixBlendMode: 'screen', pointerEvents: 'none' }}>
+								<div style={{ position: 'absolute', top: '-40%', bottom: '-40%', width: '38%', left: `${lerp(-60, 130, k)}%`, transform: 'rotate(18deg)', background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.42), rgba(255,255,255,0))' }} />
+							</div>; })()}
 					</div>
 					<div style={{ position: 'absolute', left: 0, right: 0, top: 560, textAlign: 'center' }}>
 						<Rise t={t} t0={W('n09', 'smart') - 0.1} t1={intro1 + 0.4} text="Smart-Clearance" size={104} align="center" />

@@ -67,9 +67,30 @@ def warp_into(content, quad, size):
     return cv2.warpPerspective(content, M, size, flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
 
 
-def insert(frame, frame_u8, quad, content):
+def rounded(quad, k, size):
+    """the glass's rounded corners: a mask of the quad with its corners rounded by k of its shorter side, feathered"""
+    w, h = size
+    q = np.asarray(quad, np.float32)
+    side = min(np.linalg.norm(q[1] - q[0]), np.linalg.norm(q[3] - q[0]))
+    r = max(1.0, k * side)
+    cw, ch = 400, int(round(400 * np.linalg.norm(q[3] - q[0]) / max(1e-3, np.linalg.norm(q[1] - q[0]))))
+    rr = r * 400 / max(1e-3, np.linalg.norm(q[1] - q[0]))
+    mk = np.zeros((ch, cw), np.uint8)
+    cv2.rectangle(mk, (int(rr), 0), (cw - int(rr), ch), 255, -1); cv2.rectangle(mk, (0, int(rr)), (cw, ch - int(rr)), 255, -1)
+    for cx, cy in ((rr, rr), (cw - rr, rr), (cw - rr, ch - rr), (rr, ch - rr)): cv2.circle(mk, (int(cx), int(cy)), int(rr), 255, -1, cv2.LINE_AA)
+    M = cv2.getPerspectiveTransform(np.float32([[0, 0], [cw, 0], [cw, ch], [0, ch]]), q)
+    return cv2.warpPerspective(mk, M, (w, h), flags=cv2.INTER_LINEAR).astype(np.float32) / 255
+
+
+def insert(frame, frame_u8, quad, content, inset=0.0, corner=0.0, soft=0.0):
+    """(inset, corner, soft: for a phone, whose sharp-cornered quad overhangs its rounded glass, the content kept inside
+    the glass: the quad drawn in by `inset` of its size, its corners rounded, the edge and any thumb feathered further)"""
     h, w = frame.shape[:2]
+    if inset:
+        q = np.asarray(quad, np.float32); c = q.mean(0); quad = c + (q - c) * (1 - inset)
     m = occluders(frame_u8, quad)
+    if corner: m = m * rounded(quad, corner, (w, h))
+    if soft: m = cv2.GaussianBlur(m, (0, 0), soft)
     wc = warp_into(content, quad, (w, h))
     lum = cv2.cvtColor(frame_u8, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255
     shade = np.clip(lum / max(1e-3, float(np.median(lum[m > 0.5])) if (m > 0.5).any() else 1.0), 0.75, 1.08)[..., None]
@@ -183,16 +204,23 @@ def make(name, draft):
         for i, tc in enumerate(times):
             fr = frame_at(tc)
             if fr.shape[1] != cw or fr.shape[0] != chh: fr = cv2.resize(fr, (cw, chh), interpolation=cv2.INTER_AREA)
+            for x, y, bw, bh in m.get('patch') or []:      # (a relabelled carton's label the source drew over whoever passes in front: taken out)
+                pm = np.zeros(fr.shape[:2], np.uint8); pm[y:y + bh, x:x + bw] = 255
+                fr = cv2.inpaint(fr, pm, 6, cv2.INPAINT_TELEA)
             q = quad_at(quads, fin, tc)
             if m.get('dehalo'): fr = dehalo(fr, q)          # (the relabelled cartons' glow taken out, before the screen goes in)
             content = (next_win() if wcap is not None else stl).astype(np.float32) / 255
             f32 = fr.astype(np.float32) / 255
             insert(f32, fr, q, content)
-            if q2s is not None: insert(f32, fr, quad_at(q2s, fin, tc), st2)
+            if q2s is not None: insert(f32, fr, quad_at(q2s, fin, tc), st2, inset=0.02, corner=0.09, soft=1.4)
             out = np.clip(f32 * 255 + 0.5, 0, 255).astype(np.uint8)
-            y0 = (chh - H) // 2
-            cv2.imwrite(str(seq / f'{i + 1:08d}.png'), out[y0:y0 + H, :W] if cw == W else cv2.resize(out, (W, int(chh * W / cw)))[y0:y0 + H])
-            out_q.append(np.round(q - np.float32([0, y0]), 2).tolist())
+            if cw == W and chh >= H:                     # (SC-206's 1920 × 1088: a few rows off each edge)
+                y0 = (chh - H) // 2; frame_out = out[y0:y0 + H, :W]; q_out = q - np.float32([0, y0])
+            else:                                        # (a clip of this film's, 1920 × 1056 once super-resolved: scaled to cover)
+                k = max(W / cw, H / chh); nw, nh = int(round(cw * k)), int(round(chh * k)); x0, y0 = (nw - W) // 2, (nh - H) // 2
+                frame_out = cv2.resize(out, (nw, nh), interpolation=cv2.INTER_CUBIC)[y0:y0 + H, x0:x0 + W]; q_out = q * k - np.float32([x0, y0])
+            cv2.imwrite(str(seq / f'{i + 1:08d}.png'), frame_out)
+            out_q.append(np.round(q_out, 2).tolist())
         OUT.mkdir(parents=True, exist_ok=True); TRK.mkdir(parents=True, exist_ok=True)
         subprocess.run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(FPS), '-i', str(seq / '%08d.png'), '-vf', 'tpad=stop_mode=clone:stop=3',   # (3 frames held past the shot)
                         '-c:v', 'libx264', '-preset', 'slow' if not draft else 'veryfast',

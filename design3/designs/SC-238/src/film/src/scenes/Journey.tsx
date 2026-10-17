@@ -128,7 +128,8 @@ export const Chips: React.FC<{ s: SceneData }> = ({ s }) => {
 					})()}
 				</>
 			)}
-			<PlanShots s={s} skip={['c-dusk']} grade={{ 'c-landfill': 'cold', 'l-photo': 'cold', 'chips-d11': 'cold' }} />
+			<PlanShots s={s} skip={['c-dusk']} grade={{ 'c-landfill': 'cold', 'l-photo': 'cold', 'chips-d11': 'cold', 'x-est': 'cold', 'x-film-a': 'cold', 'x-empty': 'cold',
+				'x-cover': 'cold', 'x-film-b': 'cold', 'x-sign1': 'cold', 'x-sign2': 'cold', 'x-film-c': 'cold' }} />
 			{/* the lot: the buyer's bid, the Negotiator's counter, the lot won */}
 			{/* the scheme: only two shops order; the window closes on 540 */}
 			{/* expiry day: the landfill; he photographs the evidence; Vision's checks */}
@@ -205,12 +206,12 @@ export const Chips: React.FC<{ s: SceneData }> = ({ s }) => {
 										// (each glide point eases in over its own length, 1.4 s by default: the last drifts on to the paper's end)
 										let off = 0; p.glide.forEach(([gt, gy, gd = 1.4], k) => { off = k === 0 ? gy * SC : lerp(off, gy * SC, ramp(T, gt, gt + gd, EASE_IO)); });
 										return (
-											<div key={p.img} style={{ position: 'absolute', left: x, top: y, width: PW, opacity: op }}>
+											<div key={p.img} style={{ position: 'absolute', left: 0, top: 0, width: PW, opacity: op, transform: `translate3d(${x.toFixed(3)}px, ${y.toFixed(3)}px, 0)` }}>
 												<div style={{ position: 'relative', height: VIS, borderRadius: 10, overflow: 'hidden', background: '#fff', boxShadow: '0 40px 90px rgba(0,0,0,0.55)' }}>
 													{/* the paper and its highlights move as one: the glide down it, and a slow push in on what is read last
 													    (zoom: from, to, scale, about the paper's own line y) where a glide would only show blank paper */}
-													<div style={{ position: 'absolute', left: 0, top: -off, width: PW, height: PW * 1867 / 1320,
-														transform: p.zoom ? `scale(${lerp(1, p.zoom[2], ramp(T, p.zoom[0], p.zoom[1], EASE_IO)).toFixed(4)})` : undefined,
+													<div style={{ position: 'absolute', left: 0, top: 0, width: PW, height: PW * 1867 / 1320,
+														transform: `translate3d(0, ${(-off).toFixed(3)}px, 0)` + (p.zoom ? ` scale(${lerp(1, p.zoom[2], ramp(T, p.zoom[0], p.zoom[1], EASE_IO)).toFixed(4)})` : ''),
 														transformOrigin: p.zoom ? `50% ${(p.zoom[3] * SC).toFixed(1)}px` : undefined }}>
 														<Img src={staticFile(`img/${p.img}.webp`)} style={{ position: 'absolute', left: 0, top: 0, width: PW, height: PW * 1867 / 1320, display: 'block' }} />
 														{p.hi.map((h, k) => {

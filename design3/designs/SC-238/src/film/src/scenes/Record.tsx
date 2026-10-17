@@ -77,15 +77,19 @@ export const Record: React.FC<{ s: SceneData }> = ({ s }) => {
 							const vis = VIS;                     // the frame shows VIS px of the page; the glide moves down it
 							const off = gl * (PH - vis);
 							return (
-								<div key={p.img + i} style={{ position: 'absolute', left: xOf(i), top: 128, width: PW, height: vis, opacity: clamp(land * 1.4) * near, transform: `translateY(${(1 - land) * 90}px) scale(${lerp(0.9, 1, near)})`,
+								// (opaque once landed: the row pans as a camera would, a paper never seen through another; the one out of
+								// focus only a touch smaller. The page and its rings glide as one, by a transform, at sub-pixel steps)
+								<div key={p.img + i} style={{ position: 'absolute', left: xOf(i), top: 128, width: PW, height: vis, opacity: clamp(land * 1.4), transform: `translateY(${(1 - land) * 90}px) scale(${lerp(0.94, 1, near)})`,
 									transformOrigin: '50% 0%', borderRadius: 8, overflow: 'hidden', background: '#fff', boxShadow: '0 40px 90px rgba(0,0,0,0.55)' }}>
-									<Img src={staticFile(`img/${p.img}.webp`)} style={{ position: 'absolute', left: 0, top: -off, width: PW, height: PH }} />
-									{PAPERS.map((q, k) => q.img === p.img && q.hi.map(([x, y, w, h], n) => {
-										const a = Math.min(ramp(t, at[k] + 0.05, at[k] + 0.35), 1 - ramp(t, (at[k + 1] ?? papersEnd) - 0.15, at[k + 1] ?? papersEnd));
-										if (a <= 0) return null;
-										const sc = PW / 1320;
-										return <div key={`${k}-${n}`} style={{ position: 'absolute', left: x * sc - 4, top: y * sc - off - 4, width: w * sc + 8, height: h * sc + 8, borderRadius: 8, border: '3px solid #34d380', background: 'rgba(52,211,128,0.10)', opacity: a, boxShadow: '0 0 0 6px rgba(52,211,128,0.15)' }} />;
-									}))}
+									<div style={{ position: 'absolute', left: 0, top: 0, width: PW, height: PH, transform: `translate3d(0, ${(-off).toFixed(3)}px, 0)` }}>
+										<Img src={staticFile(`img/${p.img}.webp`)} style={{ position: 'absolute', left: 0, top: 0, width: PW, height: PH }} />
+										{PAPERS.map((q, k) => q.img === p.img && q.hi.map(([x, y, w, h], n) => {
+											const a = Math.min(ramp(t, at[k] + 0.05, at[k] + 0.35), 1 - ramp(t, (at[k + 1] ?? papersEnd) - 0.15, at[k + 1] ?? papersEnd));
+											if (a <= 0) return null;
+											const sc = PW / 1320;
+											return <div key={`${k}-${n}`} style={{ position: 'absolute', left: x * sc - 4, top: y * sc - 4, width: w * sc + 8, height: h * sc + 8, borderRadius: 8, border: '3px solid #34d380', background: 'rgba(52,211,128,0.10)', opacity: a, boxShadow: '0 0 0 6px rgba(52,211,128,0.15)' }} />;
+										}))}
+									</div>
 									<div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 60, background: 'linear-gradient(180deg, rgba(255,255,255,0), #fff)' }} />
 								</div>
 							);

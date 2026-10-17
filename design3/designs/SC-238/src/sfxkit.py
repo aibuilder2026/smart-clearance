@@ -176,6 +176,12 @@ def room_tone(x, n_out, seed):
     e = (np.abs(Z) ** 2).sum(0)
     quiet = e <= np.percentile(e, 12)
     mag = np.sqrt((np.abs(Z[:, quiet]) ** 2).mean(1))
+    # a generated clip's quietest moments are near digital silence, so what they hold above the low mids is its codec's
+    # hiss, not a room: the spectrum is held under a falling ceiling from 700 Hz (6 dB an octave, as a room's air falls),
+    # rolled off above 6 kHz and below 50 Hz (SC-238: heard as hiss once raised to a room tone's level)
+    ref = mag[(f >= 150) & (f < 700)].mean() + 1e-12
+    mag = np.minimum(mag, np.where(f > 700, ref * (np.maximum(f, 1) / 700.0) ** -1.0, np.inf))
+    mag = mag / np.sqrt(1 + (f / 6000.0) ** 8) / np.sqrt(1 + (50.0 / np.maximum(f, 1)) ** 4)
     out = []
     for sd in (seed, seed + 1):
         rng = np.random.default_rng(sd)
