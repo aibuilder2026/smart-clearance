@@ -943,12 +943,16 @@ function update(t) {
 	const ok = sm((t - TL.orb) / 1.0) * (1 - out);
 	gem.shellMat.uniforms.a.value = ok; gem.shellMat.uniforms.t.value = t; gem.star.material.opacity = 0.9 * ok; gem.halo.material.opacity = 0.45 * ok; gem.halo2.material.opacity = 0.22 * ok;
 	gem.light.intensity = 18 * ok; gem.g.rotation.y = t * 0.12; gem.g.position.y = GEM.y + Math.sin(t * 0.9) * 0.12;
+	// (SC-245: the move from the roll-call to the first stop flies through the orb, which filled the frame violet: it
+	// fades as the lens nears it, as the gate's glows do)
+	const nearO = sm((camera.position.distanceTo(gem.g.position) - 6.0) / 6.0);
+	gem.shellMat.uniforms.a.value *= nearO; gem.star.material.opacity *= nearO; gem.halo.material.opacity *= nearO; gem.halo2.material.opacity *= nearO; gem.light.intensity *= nearO;
 	let burst = 0;
 	Object.entries(BEAMS).forEach(([id, b], i) => {
 		const A = AGENTS[id]; const s = A.slab.stop;
 		const draw = eo((t - TL.beams - i * 0.16) / 0.7);
 		const work = fade(t, s.t0, s.t1 + 0.3, 0.3, 0.4);
-		b.m.uniforms.prog.value = draw; b.m.uniforms.alpha.value = (0.22 + 0.78 * work) * ok * (A.dim ? 0.35 : 1);
+		b.m.uniforms.prog.value = draw; b.m.uniforms.alpha.value = (0.22 + 0.78 * work) * ok * (A.dim ? 0.35 : 1) * nearO;
 		b.m.uniforms.pulse.value = work > 0.1 ? ((t * 0.9) % 1) : -1;
 		burst = Math.max(burst, work);
 	});
