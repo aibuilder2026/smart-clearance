@@ -136,17 +136,18 @@ export const Close: React.FC<{ s: SceneData }> = ({ s }) => {
 	const lineOut = ramp(t, M.cta - 0.5, M.cta, EASE);
 	return (
 		<AbsoluteFill style={{ background: '#03100a' }}>
-			<Footage name="close-town" t0={town.t0} t1={town.t1} push={0.07} grade="green" />
-			<AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 45%, rgba(3,16,10,0.25), rgba(3,10,7,0.78) 80%)' }} />
+			{/* the town the packs went to, seen, under the brand's green (not crushed: it is the film's last picture) */}
+			<Footage name="close-town" t0={town.t0} t1={town.t1} push={0.07} grade="greenSoft" />
+			<AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 46%, rgba(3,16,10,0.42), rgba(3,10,7,0.58) 82%)' }} />
 			{/* the line, word by word */}
-			<div style={{ position: 'absolute', left: 0, right: 0, top: 290, textAlign: 'center', opacity: 1 - lineOut }}>
-				<div style={{ display: 'inline-block', marginBottom: 26, opacity: ramp(t, 0.15, 0.5) }}><Mark size={120} draw={ramp(t, 0.2, Math.max(1.4, W('n39', 'Smart') + 0.4), EASE_IO)} /></div>
-				<Rise t={t} t0={W('n39', 'Smart') - 0.05} text="Smart-Clearance" size={96} align="center" />
-				<div style={{ marginTop: 20 }}>
-					<Rise t={t} t0={W('n39', 'ten') - 0.05} text="Ten agents. One yes." size={60} weight={650} align="center" color={GREEN.pale} />
+			<div style={{ position: 'absolute', left: 0, right: 0, top: 268, textAlign: 'center', opacity: 1 - lineOut }}>
+				<div style={{ display: 'inline-block', marginBottom: 30, opacity: ramp(t, 0.15, 0.5) }}><Mark size={156} draw={ramp(t, 0.2, Math.max(1.4, W('n39', 'Smart') + 0.4), EASE_IO)} /></div>
+				<Rise t={t} t0={W('n39', 'Smart') - 0.05} text="Smart-Clearance" size={128} align="center" />
+				<div style={{ marginTop: 24 }}>
+					<Rise t={t} t0={W('n39', 'ten') - 0.05} text="Ten agents. One yes." size={78} weight={650} align="center" color={GREEN.pale} />
 				</div>
-				<div style={{ marginTop: 12 }}>
-					<Rise t={t} t0={W('n39', 'nothing') - 0.05} text="And nothing good goes to waste." size={46} weight={600} align="center" color="#cfe2d8" />
+				<div style={{ marginTop: 16 }}>
+					<Rise t={t} t0={W('n39', 'nothing') - 0.05} text="And nothing good goes to waste." size={56} weight={600} align="center" color="#dcebe3" />
 				</div>
 			</div>
 			{/* the card: the guided demo, held five seconds after the last word */}
