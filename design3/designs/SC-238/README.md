@@ -38,17 +38,17 @@ for the interpolation; the editing-videos and business-motion-film skills for th
 | Point | Done |
 | --- | --- |
 | 1 · the working demo | The three production recordings it used (the console of 16 Oct, the mango and the chips of 13 Oct) are the film's app screens, cropped at their own pixels from each device's screen |
-| 2 · the hand through the tablet | The evidence photo the tablet shows is cropped so no hand, arm or face in it can read as reaching through the glass; the screen is set into the tablet under the man's own thumbs (`screens.py`) |
+| 2 · the hand through the tablet | The landfill photograph is now the distributor's own shot, raising his tablet with its back to the camera; the evidence photo shown after it is cropped so no hand, arm or face can read as reaching through the glass |
 | 3 · tilted papers | Every paper is the Paperwork agent's own PDF, flat and square, the camera gliding down it to the line the voice names |
-| 4 · the pointer | No pointer is drawn: the cursor is the recording's own. Every ring sits on the recording's own pixels, placed from a pixel grid of the frame (`gridframe.py`), so it lands where the app drew the thing |
-| 5 · FSSAI | The rule scene: FSSAI's direction to e-commerce food businesses (Nov 2024), its sliding floor on two shelf lives, the quick-commerce apps' stricter gates, and the batch's own 180-day life sliding to 22 days, below every line |
-| 6, 12 · transitions | Cuts on action and on sound, J and L cuts, pushes and a flash where the picture moves through, dips at the evening call; no dissolve between two pictures, no blur on a resting screen |
+| 4 · the pointer | No pointer is drawn: the cursor is the recording's own. Every ring and card is placed on a pixel grid of the recording's frame (`gridframe.py`) and timed to the span it sits on; the recording stage's own rings, dims, note cards and chapter cards are scanned out of every span (`ringscan.py`) |
+| 5 · FSSAI | The rule scene: FSSAI's direction to e-commerce food businesses (Nov 2024) large on its own first, its floor on three shelf lives (the lower of 30% and 45 days), then beside the quick-commerce apps' stricter gates, then both a strip over the batch's own 180-day life sliding to 22 days, below every line |
+| 6, 12 · transitions | Cuts on action and on sound, J and L cuts, pushes and one flash where the picture moves through; no dissolve between two pictures, no dip to black and no blur in any transition; both ends of every shot rounded to the same frame, so no black frame falls between two shots |
 | 7 · sound | A room tone for every place, a sound for every lift, ring, card, tap, call typed, clock and stamp, the captured scenes' own events, under SC-210's score ducked under every word (`mix.py`); every frame carries footage or a graphic |
 | 8 · the agents in 3D | `src/agents3d/`: the mark's route as a lit road over aerial footage of the godown, the town and the lanes (graded green), nine stops, ten agents, the amber gate, Gemini above, the rules as rails, the shield round the money |
-| 9 · screen and pop-out | A person's screen is the app's real screen set into the glass of their device (over the shoulder, tracked frame by frame); the window that lifts out of it is the same recording, from the same frame |
+| 9 · screen and pop-out | A person's screen is the app's real screen set into the glass of their device (over the shoulder, tracked frame by frame), or a device held with its back to the camera whose screen then lifts out; the window is the same recording, from the same frame. The lead holds a tablet at her desk, as her screens are a tablet's |
 | 10 · motion everywhere | Every background is footage; every graphic moves in on its word, holds while read, and leaves |
-| 11 · a short film | Two phone calls bookend it; the people speak only where a person would, one speaker a clip, shot and reverse shot, nobody to the lens (LTX made each voice with its picture) |
-| 13 · papers over green video | The record scene's papers lie over the footage of what each records (the truck, the godown, the office, the food bank, the landfill), graded green |
+| 11 · a short film | Two phone calls bookend it; the people speak only where a person would, one speaker a clip, shot and reverse shot, nobody to the lens (LTX made each voice with its picture; takes that misspoke or turned to the lens were made again); one face for each role |
+| 13 · papers over green video | The record's papers lie over the footage of what each records (the truck, the godown, the office, the food bank, the landfill), one paper at a time, graded green; the audit trail plays over the office, the evidence check over the landfill, the issued papers over the distributor at his stack |
 
 ## How it is made
 

@@ -234,7 +234,7 @@ def audio(name):
     out = OUT / f'{name}.wav'
     if not Path(m['src']).exists(): return print(f'{name}: SOURCE MISSING')
     n = bounds(m)[-1][1]
-    run(['ffmpeg', '-v', 'error', '-y', '-ss', f'{m["in"]:.4f}', '-i', m['src'], '-t', f'{n / FPS:.4f}', '-vn', '-ac', '2', '-ar', '48000',
+    run(['ffmpeg', '-v', 'error', '-y', '-ss', f'{m["in"]:.4f}', '-i', m['src'], '-t', f'{n / FPS + m.get("atail", 0):.4f}', '-vn', '-ac', '2', '-ar', '48000',
          '-c:a', 'pcm_s24le', out])
     print(f'{name}.wav: {n / FPS:.3f} s')
 

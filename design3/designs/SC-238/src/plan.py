@@ -187,14 +187,17 @@ class Scene:
         if len(hits) <= nth: raise KeyError(f'{self.id}: no "{word}" #{nth} in {key}: {[x["w"] for x in self.words[key]]}')
         return hits[nth][at]
 
-    def talk(self, did, at, lead=0.5, tail=0.55, name=None):
-        """a dialogue line, its clip cut so the line starts at scene second `at`; returns where the line ends"""
+    def talk(self, did, at, lead=0.5, tail=0.55, name=None, cut=None):
+        """a dialogue line, its clip cut so the line starts at scene second `at`; returns where the line ends. With `cut`
+        (a second of the clip) the picture ends there and the rest of the line plays on under the next shot (an L-cut)"""
         cl, s, e = dlg(did)
         name = name or f'{self.id}-{did}'
         a, b = max(0.0, s - lead), e + tail
-        talk(name, cl, a, b)
+        bp = min(b, cut) if cut else b
+        talk(name, cl, a, bp)
+        if bp < b: MEDIA[name]['atail'] = round(b - bp, 3)
         self.dl.append({'id': did, 'clip': cl, 't': round(at, 3), 's': s, 'e': e})
-        self.shots.append({'kind': 'talk', 'media': name, 't0': round(at - (s - a), 3), 't1': round(at - (s - a) + (b - a), 3), 'line': did})
+        self.shots.append({'kind': 'talk', 'media': name, 't0': round(at - (s - a), 3), 't1': round(at - (s - a) + (bp - a), 3), 'line': did})
         return at + (e - s)
 
     def shot(self, kind, t0, t1, **props):
@@ -591,8 +594,8 @@ def build():
                   R(a0 + winat('c-lot', 461.6, starts), a0 + d - 0.05, [30, 330, 352, 76])],
            cards=[C(a0 + winat('c-lot', 461.6, starts) + 0.2, a0 + d - 0.05, [30, 330, 352, 76], 'Closed by an agent', '772 packs at ₹14.20',
                     'Countered from the buyer’s ₹13 without ever showing the floor price; a GST invoice follows.', 'gavel')])
-    t = s.talk('d10', a0 + d + 0.5) + 0.5             # the buyer: "Fourteen-twenty. Done. Truck's coming."
-    a0 = t
+    s.talk('d10', a0 + d + 0.5, cut=3.45)             # the buyer: "Fourteen-twenty. Done." … "Truck's coming." over his truck
+    a0 = s.shots[-1]['t1']
     s.mark('truck', a0)
     clip('c-truck', 'truck', 0.3, 4.6, 3.6)
     s.shot('clip', a0, a0 + 3.6, media='c-truck', clock=['Day 1', 'the buyer’s truck'], mask=[1088, 790, 124, 54])   # (its number plate's lettering is invented: softened)

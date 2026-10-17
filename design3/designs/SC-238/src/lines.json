@@ -320,15 +320,24 @@
    "id": "d10",
    "act": "chips",
    "who": "the wholesale buyer",
-   "clip": "w-buyer",
-   "text": "Fourteen-twenty. Done. Truck's coming."
+   "clip": "w-buyer-b",
+   "text": "Fourteen-twenty. Done. Truck's coming.",
+   "takes": [
+    "w-buyer",
+    "w-buyer-b"
+   ]
   },
   {
    "id": "d11",
    "act": "chips",
-   "who": "the agency's officer",
-   "clip": "o-landfill",
-   "text": "All four signatures. It's on record."
+   "who": "the Nagpur distributor",
+   "clip": "r-landfill-b",
+   "text": "All four signatures.",
+   "takes": [
+    "o-landfill",
+    "r-landfill",
+    "r-landfill-b"
+   ]
   },
   {
    "id": "d12",
