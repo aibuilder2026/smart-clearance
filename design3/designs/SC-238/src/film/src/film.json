@@ -11,6 +11,9 @@
    "marks": {
     "ring": 0.12,
     "label": 7.16,
+    "card": 0.62,
+    "cut": 6.66,
+    "batch": 7.11,
     "ringbb": 7.86,
     "stamp": 9.16
    },

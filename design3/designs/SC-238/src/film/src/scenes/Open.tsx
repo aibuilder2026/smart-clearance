@@ -4,7 +4,7 @@
 // tagging each with its days to its best-before, the days running out to day 0.
 import React from 'react';
 import { AbsoluteFill, Img, staticFile, useCurrentFrame } from 'remotion';
-import { AMBER, DISPLAY, EASE, EASE_IO, Footage, GREEN, MONO, RED, SANS, Shot, clamp, lerp, ramp } from '../kit/core';
+import { AMBER, DISPLAY, EASE, EASE_IO, Footage, GREEN, Icon, MONO, RED, SANS, Shot, clamp, lerp, ramp, springAt } from '../kit/core';
 import { Ring } from '../kit/device';
 import { Stamp, jolt } from '../kit/ui';
 import { FPS, SceneData, dlg, shot } from '../edl';
@@ -15,11 +15,75 @@ const LBL = { w: 1184, h: 896, bb: [578, 398, 214, 26] as [number, number, numbe
 const LS = Math.max(1920 / LBL.w, 1080 / LBL.h), LOX = (1920 - LBL.w * LS) / 2, LOY = (1080 - LBL.h * LS) / 2;
 const lx = (x: number) => LOX + x * LS, ly = (y: number) => LOY + y * LS;
 
+// the call, as a card the film keeps up across the cut-aways (the first critic of the opening: "what is this scene?"):
+// when, how long, and who is on it, each party's own face, role and place; the one on screen lit, bars moving while they
+// speak; at the cut to the label the call ends and the card leaves. Then the batch named on its own card.
+const PARTY = [
+	{ face: 'face-distributor', role: 'The distributor', place: 'Hyderabad · at her godown' },
+	{ face: 'face-lead', role: "The brand's supply chain lead", place: 'Pune · at home' },
+];
+const GLASS: React.CSSProperties = { background: 'rgba(6,18,12,0.74)', border: '1.5px solid rgba(95,227,161,0.40)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: '0 18px 50px rgba(0,0,0,0.42)' };
+
+const Bars: React.FC<{ t: number; on: boolean }> = ({ t, on }) => (
+	<div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: 20, width: 22 }}>
+		{[0, 1, 2].map((i) => (
+			<i key={i} style={{ width: 4, borderRadius: 2, background: GREEN.mint2, height: on ? 5 + 13 * (0.5 + 0.5 * Math.sin(t * 13 + i * 1.9)) * (0.6 + 0.4 * Math.sin(t * 5.3 + i)) : 4, opacity: on ? 1 : 0.35 }} />
+		))}
+	</div>
+);
+
+const CallCard: React.FC<{ t: number; t0: number; cut: number; onScreen: (t: number) => number; speaking: (t: number) => boolean }> = ({ t, t0, cut, onScreen, speaking }) => {
+	const sp = springAt(t, t0, FPS, 16, 140), out = ramp(t, cut + 0.3, cut + 0.75, EASE_IO);
+	const a = clamp((t - t0) / 0.3) * (1 - out); if (a <= 0) return null;
+	const ended = t >= cut, secs = Math.max(0, Math.floor(Math.min(t, cut) - 0.53));
+	const who = onScreen(t);
+	return (
+		<div style={{ position: 'absolute', left: 56, top: 50, width: 600, padding: '18px 22px 16px', borderRadius: 22, boxSizing: 'border-box', opacity: a,
+			transform: `translateY(${(1 - sp) * -16 - out * 24}px)`, fontFamily: SANS, color: GREEN.ink, ...GLASS }}>
+			<div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+				<div style={{ position: 'relative', width: 34, height: 34, borderRadius: 17, display: 'grid', placeItems: 'center', background: ended ? 'rgba(255,107,87,0.20)' : 'rgba(52,211,128,0.20)' }}>
+					{!ended && <i style={{ position: 'absolute', inset: -6 * ((t * 1.1) % 1), borderRadius: '50%', border: `2px solid ${GREEN.mint2}`, opacity: 1 - ((t * 1.1) % 1) }} />}
+					<Icon name="phone" size={18} color={ended ? RED : GREEN.mint2} sw={2.4} />
+				</div>
+				<span style={{ font: `700 20px/1 ${SANS}`, letterSpacing: 0.3 }}>2 Oct · 6:10 am</span>
+				<span style={{ font: `500 17px/1 ${SANS}`, color: ended ? '#ffb3a8' : '#9fb7aa' }}>{ended ? 'Call ended' : 'On a call'}</span>
+				<span style={{ marginLeft: 'auto', font: `600 18px/1 ${MONO}`, color: '#cfe2d8', fontVariantNumeric: 'tabular-nums' }}>0:{String(secs).padStart(2, '0')}</span>
+			</div>
+			<div style={{ height: 1, background: 'rgba(255,255,255,0.09)', margin: '14px 0 12px' }} />
+			{PARTY.map((p, i) => {
+				const lit = who === i ? 1 : 0;
+				return (
+					<div key={p.role} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '6px 0', opacity: 0.46 + 0.54 * lit }}>
+						<Img src={staticFile(`img/${p.face}.webp`)} style={{ width: 50, height: 50, borderRadius: 25, objectFit: 'cover', border: `2px solid ${lit ? GREEN.mint2 : 'rgba(255,255,255,0.18)'}` }} />
+						<div style={{ flex: 1 }}>
+							<div style={{ font: `700 22px/1.1 ${SANS}` }}>{p.role}</div>
+							<div style={{ marginTop: 5, display: 'flex', alignItems: 'center', gap: 6, font: `500 17px/1 ${SANS}`, color: '#9fb7aa' }}><Icon name="map-pin" size={15} color="#9fb7aa" sw={2.2} />{p.place}</div>
+						</div>
+						<Bars t={t} on={lit > 0 && speaking(t) && !ended} />
+					</div>
+				);
+			})}
+		</div>
+	);
+};
+
+const BatchCard: React.FC<{ t: number; t0: number; t1: number }> = ({ t, t0, t1 }) => {
+	const sp = springAt(t, t0, FPS, 16, 140), a = Math.min(clamp((t - t0) / 0.3), 1 - ramp(t, t1 - 0.25, t1)); if (a <= 0) return null;
+	return (
+		<div style={{ position: 'absolute', left: 56, top: 50, width: 600, padding: '20px 24px', borderRadius: 22, boxSizing: 'border-box', opacity: a, transform: `translateY(${(1 - sp) * -16}px)`, fontFamily: SANS, color: GREEN.ink, ...GLASS }}>
+			<div style={{ display: 'flex', alignItems: 'center', gap: 10, font: `700 15px/1 ${SANS}`, letterSpacing: 3, textTransform: 'uppercase', color: '#73e0a6' }}><Icon name="package" size={17} color={GREEN.mint2} sw={2.3} />The batch</div>
+			<div style={{ marginTop: 10, font: `760 40px/1.05 '${DISPLAY}'`, letterSpacing: -0.8, opacity: ramp(t, t0 + 0.1, t0 + 0.4) }}>Mango drink, 200 ml</div>
+			<div style={{ marginTop: 8, font: `500 20px/1.3 ${SANS}`, color: '#b5c8bd', opacity: ramp(t, t0 + 0.25, t0 + 0.55) }}>1,580 packs at the distributor's godown</div>
+		</div>
+	);
+};
+
 export const ColdOpen: React.FC<{ s: SceneData }> = ({ s }) => {
 	const d4 = dlg(s, 'd04');
 	const cut = d4.t + 0.52;                                  // "Write it off, | then." the label on "then"
 	const sh = (m: string) => shot(s, m);
 	const M = s.marks;
+	const t = useCurrentFrame() / FPS;
 	return (
 		<AbsoluteFill style={{ background: '#000' }}>
 			<Footage name="cold-d01" t0={sh('cold-d01').t0} t1={sh('cold-d02').t0} push={0.035} grade="cold" />
@@ -55,6 +119,11 @@ export const ColdOpen: React.FC<{ s: SceneData }> = ({ s }) => {
 					);
 				}}
 			</Shot>
+			{/* the call's card over its pictures, then the batch's over the label (both over every picture of the cold open) */}
+			<CallCard t={t} t0={M.card} cut={cut}
+				onScreen={(u) => (u < sh('cold-d02').t0 ? 0 : u < sh('cold-d03').t0 ? 1 : u < sh('cold-d04').t0 ? 0 : 1)}
+				speaking={(u) => s.dlg.some((d) => u >= d.t && u <= d.t + (d.e - d.s))} />
+			<BatchCard t={t} t0={M.batch} t1={s.dur} />
 		</AbsoluteFill>
 	);
 };

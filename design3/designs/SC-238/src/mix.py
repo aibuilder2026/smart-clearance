@@ -375,6 +375,8 @@ def events():
         for k_ in ('stamp', 'st1', 'st2', 'st3'):
             if k_ in M: add(T + M[k_] - 0.02, lib('stamp-thud', -16), 0.5); add(T + M[k_], K.thud(-22), 0.5)
         if sid == 'cold' and 'ringbb' in M: add(T + M['ringbb'], K.tick(-30, 1318.5), 0.55)
+        if sid == 'cold' and 'card' in M:                 # the call's card in, the call ending, the batch's card
+            add(T + M['card'], K.glint(-30), 0.22); add(T + M['cut'] + 0.02, K.tick(-30, 659.25), 0.25); add(T + M['batch'], pop(-28), 0.22)
         # the bin's bill: each line lands, the total rolls
         if sid == 'bin':
             for k_ in ('stock', 'credit', 'destroy'):

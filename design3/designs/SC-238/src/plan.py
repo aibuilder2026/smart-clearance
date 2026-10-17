@@ -271,8 +271,11 @@ def build():
     t = s.talk('d01', 1.05, lead=0.52)                # the distributor at dawn: "Twenty-two days left on the mango."
     t = s.talk('d02', t + 0.45, lead=0.16) + 0.25     # the lead at home: "And quick commerce?"
     t = s.talk('d03', t + 0.35, lead=0.4)             # the distributor: "They won't take it."
-    t = s.talk('d04', t + 1.0, lead=0.45, tail=0.2)   # the lead, looking down, a beat later: "Write it off, then."
+    a4 = t + 1.0
+    t = s.talk('d04', a4, lead=0.45, tail=0.2)        # the lead, looking down, a beat later: "Write it off, then."
     s.mark('label', t + 0.2)                          # her "then" cuts to the carton's label
+    # the call's card: who is on it, where and when, from the first picture to the cut; then the batch named on its label
+    s.mark('card', 0.62); s.mark('cut', a4 + 0.52); s.mark('batch', a4 + 0.52 + 0.45)
     s.mark('ringbb', t + 0.9); s.mark('stamp', t + 2.2)
     s.end = s.marks['stamp'] + 1.5; S.append(s)
 
