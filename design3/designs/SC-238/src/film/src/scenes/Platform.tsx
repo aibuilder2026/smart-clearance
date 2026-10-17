@@ -26,7 +26,8 @@ export const Platform: React.FC<{ s: SceneData }> = ({ s }) => {
 			{/* 1 · the mark and the line */}
 			<Sequence from={0} durationInFrames={Math.round((intro1 + 0.4) * FPS)} layout="none">
 				<AbsoluteFill>
-					<Footage name="p-town" t0={0} t1={intro1 + 0.4} push={0.06} pushFrom={1.04} blur={12} grade="green" />
+					{/* (less blurred, so its streets read as a town from above: r4 took its blurred roofs for the godown's cartons) */}
+					<Footage name="p-town" t0={0} t1={intro1 + 0.4} push={0.06} pushFrom={1.04} blur={4} grade="green" />
 					<AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 42%, rgba(52,211,128,0.10), rgba(2,10,6,0.55) 70%)' }} />
 					{/* the turn's white light, fading under the mark it left (so the mark never washes out at the cut) */}
 					<AbsoluteFill style={{ background: 'radial-gradient(circle at 50% 42%, #fff6de, #ffecbe)', opacity: Math.pow(1 - ramp(t, 0, 0.45), 1.6) }} />

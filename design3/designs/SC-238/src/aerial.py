@@ -21,7 +21,7 @@ for p in PLATES:
         mov = Path(td) / f'{p}-60.mov'
         big = Path(td) / f'{p}-sr.mov'                       # super-resolved first (Apple's ×4 model, down to 1920 wide)
         subprocess.run([str(HERE / 'vtfx' / 'vtfx'), 'sr', str(src), str(big), '--width', '1920'], check=True)
-        subprocess.run([sys.executable, str(HERE / 'frc.py'), str(big), str(mov), '--fps', '60'], check=True)
+        subprocess.run([sys.executable, str(HERE / 'frc.py'), str(big), str(mov), '--fps', '60', '--method', 'vt'], check=True)   # (VideoToolbox: RIFE hitched on the boiling aerials, r4)
         if out.exists(): shutil.rmtree(out)
         out.mkdir(parents=True)
         subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(mov), '-vf', 'scale=1280:-2:flags=lanczos', '-q:v', '3', str(out / '%05d.jpg')], check=True)

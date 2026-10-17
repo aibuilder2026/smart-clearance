@@ -157,13 +157,16 @@ def interp(fs, n_out, fps_in, meth, tmp, out):
         got = sorted(out.glob('*.png'))
         for i in range(len(got), n_out): shutil.copy(got[-1], out / f'{i + 1:08d}.png')
         return sorted(out.glob('*.png'))[:n_out]
-    if meth != 'rife' and rate / fps_in > 4.0: meth = 'rife'   # VideoToolbox converts up to 4x; a slow span goes to RIFE
     if meth != 'rife':
         try:
             enc = tmp / 'vt-in.mov'
             run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(fps_in), '-i', fs[0].parent / '%08d.png', '-c:v', 'prores_ks', '-profile:v', '3', enc])
-            vo = tmp / 'vt-out.mov'; frc.vt(enc, vo, round(rate, 4))
-            run(['ffmpeg', '-v', 'error', '-y', '-i', vo, '-frames:v', str(n_out), out / '%08d.png'])
+            vo = tmp / 'vt-out.mov'
+            # (one pass at the span's own rate, however slow: vtfx takes a decimal rate and makes more than three frames
+            # between two source frames in further calls on the same pair. Until pass 11 it read the rate as a whole
+            # number, so every retimed span trapped and came out of RIFE; the frames are read back one for one)
+            frc.vt(enc, vo, round(rate, 4))
+            run(['ffmpeg', '-v', 'error', '-y', '-i', vo, '-fps_mode', 'passthrough', '-frames:v', str(n_out), out / '%08d.png'])
             got = sorted(out.glob('*.png'))
             if not got or frc.Image.open(got[0]).size != frc.Image.open(fs[0]).size: sys.exit('it changed the frame size')
         except SystemExit as e:
@@ -216,7 +219,10 @@ def make(name, only_ff=False):
                 continue
             else:
                 src_fs = native_frames(m, a, b, tmp / f'in{i}')
-                meth = m.get('interp') or (method_for(m['src'], src_fs, fps_in, tmp / f'b{i}') if len(src_fs) > 2 * fps_in + 1 else 'rife')
+                # (a generated clip, talking or not, by VideoToolbox: on their fine texture, which changes from frame to frame,
+                # RIFE copies a frame and then jumps, a hold every fifth frame on a face, r4; VideoToolbox measures even)
+                meth = m.get('interp') or ('vt' if m['kind'] in ('clip', 'talk') else
+                                           method_for(m['src'], src_fs, fps_in, tmp / f'b{i}') if len(src_fs) > 2 * fps_in + 1 else 'rife')
                 if md == 'hold':
                     n_play = min(n, round((b - a) / 0.9 * FPS))
                     fs = interp(src_fs, n_play, fps_in, meth, tmp, tmp / f'out{i}')

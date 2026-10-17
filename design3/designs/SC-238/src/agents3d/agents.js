@@ -1082,7 +1082,9 @@ const PLATE_AT = (t) => {
 async function plateFrame(P, tau) {
 	if (!P.frames) return P.ok;
 	const n2 = P.frames * 2 - 2;                               // ping-pong: a glide out and back reads as one drone's flight
-	let i = Math.floor(Math.max(0, tau) * P.fps) % n2; if (i >= P.frames) i = n2 - i;
+	// (+1e-6: frame f's time is f/60, and (f/60)*60 falls a hair under f at 98 of the scene's frames, every fifteenth in
+	// places, so the floor held one frame and skipped the next, r4's hitch in the agents)
+	let i = Math.floor(Math.max(0, tau) * P.fps + 1e-6) % n2; if (i >= P.frames) i = n2 - i;
 	if (i === P.n) return true;
 	const im = await loadImg(`bg/${P.id}/${String(i + 1).padStart(5, '0')}.jpg`);
 	if (im) { P.tex.image = im; P.tex.colorSpace = THREE.SRGBColorSpace; P.tex.needsUpdate = true; P.n = i; P.ok = true; }
@@ -1119,7 +1121,7 @@ window.renderAt = async (t) => {
 		renderer.autoClear = false; renderer.setRenderTarget(acc); accQuad.render(renderer); renderer.autoClear = ac;
 	}
 	update(t);
-	cine.material.uniforms.seed.value = (Math.floor(t * FPS) * 0.6180339) % 1;
+	cine.material.uniforms.seed.value = (Math.floor(t * FPS + 1e-6) * 0.6180339) % 1;
 	renderer.setRenderTarget(null); cine.render(renderer);
 	overlay(t);
 	return { taps: n };

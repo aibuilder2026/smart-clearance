@@ -297,10 +297,11 @@
    "id": "d05",
    "act": "mango",
    "who": "the brand's head",
-   "clip": "b-approve-c",
+   "clip": "b-approve-d",
    "text": "Nothing to the bin?",
    "takes": [
-    "b-approve"
+    "b-approve",
+    "b-approve-c"
    ]
   },
   {

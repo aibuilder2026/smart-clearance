@@ -77,16 +77,16 @@
   // ------------------------------------------------------------------ the light: a spotlight, drifting bokeh, the floor
   const bg = document.getElementById('bg').getContext('2d'), fx = document.getElementById('fx').getContext('2d');
   const R = rng(211);
-  const bokeh = Array.from({ length: 26 }, () => ({ x: R() * W, y: 120 + R() * 760, r: 14 + R() * 46, a: 0.05 + R() * 0.10, v: 6 + R() * 14, hue: R() < 0.75 ? 'g' : 'a' }));
+  const bokeh = Array.from({ length: 30 }, () => ({ x: R() * W, y: 100 + R() * 800, r: 22 + R() * 70, a: 0.09 + R() * 0.14, v: 18 + R() * 30, hue: R() < 0.75 ? 'g' : 'a' }));   // (larger, brighter and quicker: r4 still read the ground as a still gradient)
   function drawBg(t, glow) {
     bg.clearRect(0, 0, W, H);
     // (the light above drifts across the room and breathes, so the ground is never a still gradient: r3)
-    const cx = W / 2 + 220 * Math.sin(t * 0.21), cy = 380 + 40 * Math.sin(t * 0.33 + 1.2), rr = 1150 + 90 * Math.sin(t * 0.27);
+    const cx = W / 2 + 340 * Math.sin(t * 0.42), cy = 380 + 70 * Math.sin(t * 0.55 + 1.2), rr = 1150 + 140 * Math.sin(t * 0.5);
     let g = bg.createRadialGradient(cx, -120, 40, cx, cy, rr);
     g.addColorStop(0, 'rgba(40, 92, 70, 0.78)'); g.addColorStop(0.45, 'rgba(14, 34, 26, 0.65)'); g.addColorStop(1, 'rgba(7, 11, 9, 1)');
     bg.fillStyle = '#070b09'; bg.fillRect(0, 0, W, H); bg.fillStyle = g; bg.fillRect(0, 0, W, H);
     // a second, warmer light crossing slowly the other way
-    const wx = W * 0.8 - 260 * Math.sin(t * 0.17);
+    const wx = W * 0.8 - 420 * Math.sin(t * 0.33);
     g = bg.createRadialGradient(wx, 120, 10, wx, 260, 760);
     g.addColorStop(0, 'rgba(247, 192, 74, 0.10)'); g.addColorStop(1, 'rgba(247, 192, 74, 0)');
     bg.fillStyle = g; bg.fillRect(0, 0, W, H);

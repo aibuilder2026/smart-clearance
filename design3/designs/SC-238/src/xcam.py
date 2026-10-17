@@ -61,11 +61,47 @@ def chrome(img, t, shutter):
     d.text((CW / 2, 90), label, font=f2, fill=(255, 255, 255, 255), anchor='mm')
 
 
+def still(src, dur, shutter, crop, name):
+    """the camera on a still scene (the photo it takes, so the photo uploaded is the one shot): the view held in the hand,
+    drifting a few pixels and pushing in a touch, until the shutter freezes it"""
+    im = cv2.imread(str(src)); ih, iw = im.shape[:2]
+    fx, fy, fh = crop
+    h0 = fh * ih; w0 = h0 * CW / CH; x0 = min(iw - w0, fx * iw); y0 = fy * ih
+    n = round(dur * FPS)
+    with tempfile.TemporaryDirectory(dir=str(HERE / 'build')) as td:
+        seq = Path(td) / 'seq'; seq.mkdir()
+        frozen = None
+        for i in range(n):
+            t = i / FPS; tv = min(t, shutter)
+            z = 1.0 + 0.05 * min(1.0, tv / max(0.1, shutter))
+            w, h = w0 / z, h0 / z
+            cx = x0 + w0 / 2 - 12 * min(1.0, tv / max(0.1, shutter)) + 2.4 * np.sin(tv * 5.1) + 1.6 * np.sin(tv * 8.3 + 1.0)
+            cy = y0 + h0 / 2 + 1.8 * np.sin(tv * 4.3 + 0.5) + 1.2 * np.cos(tv * 7.7)
+            cx = float(np.clip(cx, w / 2, iw - w / 2)); cy = float(np.clip(cy, h / 2, ih - h / 2))
+            M = np.float32([[CW / w, 0, -(cx - w / 2) * CW / w], [0, CH / h, -(cy - h / 2) * CH / h]])
+            view = cv2.warpAffine(im, M, (CW, CH), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REFLECT)
+            if t >= shutter:
+                if frozen is None: frozen = view.copy()
+                view = frozen
+            img = Image.fromarray(cv2.cvtColor(view, cv2.COLOR_BGR2RGB)).convert('RGBA')
+            chrome(img, t, shutter)
+            arr = np.asarray(img.convert('RGB')).astype(np.float32)
+            if t >= shutter:
+                fl = float(np.exp(-(t - shutter) * 9.0)); arr = arr * (1 - fl) + 255 * fl
+            cv2.imwrite(str(seq / f'{i + 1:08d}.png'), cv2.cvtColor(np.clip(arr, 0, 255).astype(np.uint8), cv2.COLOR_RGB2BGR))
+        out = HERE / 'film' / 'public' / 'media' / f'{name}.mp4'
+        subprocess.run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(FPS), '-i', str(seq / '%08d.png'), '-vf', 'tpad=stop_mode=clone:stop=3',
+                        '-c:v', 'libx264', '-preset', 'slow', '-crf', '12', '-pix_fmt', 'yuv420p', str(out)], check=True)
+    print(f'{name}: {n} frames, the still {src.name}, the shutter at {shutter:.2f} s')
+
+
 def main():
     import json
     name = sys.argv[1] if len(sys.argv) > 1 else 'm-xcam'
     m = json.loads((HERE / 'build' / 'media.json').read_text())[name]
     src, a, dur, shutter = Path(m['src']), float(m['in']), float(m['dur']), float(m['shutter'])
+    if src.suffix.lower() in ('.webp', '.png', '.jpg'):
+        return still(src, dur, shutter, m['crop'], name)
     cw_, ch_, fin, cdur = frc.probe(src)
     fx, fy, fh = m['crop']
     h = int(round(fh * ch_)); w = int(round(h * CW / CH)); y = int(round(fy * ch_)); x = min(cw_ - w, int(round(fx * cw_)))

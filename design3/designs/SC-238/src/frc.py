@@ -73,6 +73,11 @@ def vt(src_mov, out_mov, fps):
     run([str(VTFX), 'frc', str(src_mov), str(out_mov), '--fps', str(fps)])
 
 
+def vt_times(src_mov, out_mov, times_txt, fps=60):
+    """one frame at each source time in times_txt (seconds from the clip's first frame, ascending), written at fps"""
+    run([str(VTFX), 'frc', str(src_mov), str(out_mov), '--fps', str(fps), '--times', str(times_txt)])
+
+
 def psnr(a, b):
     m = ((a.astype(np.float32) - b.astype(np.float32)) ** 2).mean()
     return 10 * np.log10(255 ** 2 / max(m, 1e-9))
@@ -93,11 +98,14 @@ def bench(fs, fps_in, tmp):
     # RIFE: m frames -> 2m (output i at i/2 of the input: odd outputs are the rebuilt ones)
     r = rife(half, tmp / 'b-rife', 2 * m)
     scores['rife'] = float(np.mean([psnr(small(f), small(r[i])) for i, f in real if i < len(r)]))
-    # VT: the half at half the rate, doubled
+    # VT: the half doubled (written at the source's own rate and doubled, since vtfx takes only a whole source rate:
+    # 12.5 fps, half a 25 fps recording, was read as 13, every phase off)
     hm = tmp / 'b-half.mov'
-    run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(fps_in / 2), '-i', str(half / '%08d.png'), '-c:v', 'prores_ks', '-profile:v', '3', str(hm)])
-    vo = tmp / 'b-vt.mov'; vt(hm, vo, fps_in)
-    vd = tmp / 'b-vt'; vd.mkdir(); run(['ffmpeg', '-v', 'error', '-y', '-i', str(vo), str(vd / '%08d.png')])
+    run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(fps_in), '-i', str(half / '%08d.png'), '-c:v', 'prores_ks', '-profile:v', '3', str(hm)])
+    vo = tmp / 'b-vt.mov'
+    try: vt(hm, vo, 2 * fps_in)
+    except SystemExit: scores['vt'] = 0.0; return max(scores, key=scores.get), scores
+    vd = tmp / 'b-vt'; vd.mkdir(); run(['ffmpeg', '-v', 'error', '-y', '-i', str(vo), '-fps_mode', 'passthrough', str(vd / '%08d.png')])
     v = sorted(vd.glob('*.png'))
     # (VideoToolbox can hand back a frame a pixel narrower than an odd-sized screen crop: it cannot make that source,
     # since resizing the app's text by a pixel would soften every glyph)

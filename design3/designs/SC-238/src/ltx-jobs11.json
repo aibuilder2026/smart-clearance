@@ -1,0 +1,22 @@
+[
+ {
+  "name": "x-est-c",
+  "image": "img/x-est-c-239302.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 239311,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A slow, steady push-in on a wide establishing shot of an authorised municipal sanitary landfill on the edge of an Indian city on an overcast morning: a freshly dug pit of grey-brown earth in the foreground, a yellow backhoe loader at the left with its engine idling, a plain white tipper truck at the far edge of the pit, two workers in orange high-visibility vests standing together, and an older man with short grey hair, glasses pushed up on his head and a grey moustache, in a light blue checked shirt, standing at the pit's edge looking down at a tablet in his hands; low heaps behind, a line of trees far off, black kites circling slowly in the pale grey sky. The people barely move; the truck stays parked; the ground stays still. Photorealistic documentary footage, muted true-to-life colours, soft diffused light. Audio: wind over open ground, a diesel engine idling far off, kites calling faintly, no music, no voices."
+ },
+ {
+  "name": "b-approve-d",
+  "image": "img/b-approve-d-239303.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 239312,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up in a bright glass-walled office in the morning. A man in his fifties with a trimmed salt-and-pepper beard, in a navy suit and white open-collar shirt, leans on the back of an office chair beside a colleague's desk, his face in three-quarter profile turned to the left of the frame, and keeps his eyes down and to the left on her screen the whole time. He raises his eyebrows and asks quietly, in a natural Indian English accent: \"Nothing to the bin?\" then waits with a hint of a smile, still looking down to the left at her. His head stays turned to the left; his lips shape every word in time with his voice; natural blinks; he never turns towards the camera and never looks into the lens. Colleagues move softly out of focus far behind him. Photorealistic cinematic footage, natural skin, sharp focus on his face. Audio: his voice close and clear, the quiet murmur of an office, no music, no other voices."
+ }
+]

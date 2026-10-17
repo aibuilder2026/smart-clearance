@@ -109,9 +109,9 @@ def dehalo(fr, quad=None, ring=24, strength=1.0):
     hsv = cv2.cvtColor(fr, cv2.COLOR_BGR2HSV)
     lab = ((hsv[..., 2] > 200) & (hsv[..., 1] < 45)).astype(np.uint8)
     h, w = lab.shape
-    if quad is not None:
-        poly = np.zeros((h, w), np.uint8); cv2.fillConvexPoly(poly, np.int32(np.round(quad)), 1)
-        lab[cv2.dilate(poly, np.ones((61, 61), np.uint8)) > 0] = 0
+    for qd in ([] if quad is None else quad if isinstance(quad, list) else [quad]):   # (every device's glass, not only the main one:
+        poly = np.zeros((h, w), np.uint8); cv2.fillConvexPoly(poly, np.int32(np.round(qd)), 1)   # the staff phone's blank screen
+        lab[cv2.dilate(poly, np.ones((61, 61), np.uint8)) > 0] = 0                               # read as a label and got a box round it, r4)
     lab = cv2.morphologyEx(lab, cv2.MORPH_CLOSE, np.ones((11, 11), np.uint8))
     n, cc, st, _ = cv2.connectedComponentsWithStats(lab, 8)
     L = np.zeros((h, w), np.uint8)
@@ -184,11 +184,18 @@ def make(name, draft):
             cfr = read_frames(src)
             frame_at = lambda tc: cfr[int(np.clip(round(tc * fin), 0, len(cfr) - 1))]
         else:
-            ins = frc.frames(src, 0, 0, tmp / 'in', fin)
-            dense = len(ins) * 5                       # 5× the clip's rate (120 fps): every shot time is within 1/240 s
-            frc.rife(tmp / 'in', tmp / 'dense', dense)
-            dfr = sorted((tmp / 'dense').glob('*.png'))
-            frame_at = lambda tc: cv2.imread(str(dfr[int(np.clip(round(tc / dur * len(dfr)), 0, len(dfr) - 1))]))
+            # (VideoToolbox at each of the shot's own clip times, back and forth: RIFE, on these generated clips' boiling
+            # texture, copied a frame and then jumped, r4; and the nearest of 96 frames a second stepped 1, 2, 2, 1, 2)
+            enc = tmp / 'in.mov'
+            subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(src), '-an', '-c:v', 'prores_ks', '-profile:v', '3', str(enc)], check=True)
+            uniq = sorted(set(round(tc, 6) for tc in times)); (tmp / 'times.txt').write_text('\n'.join(f'{t:.6f}' for t in uniq))
+            frc.vt_times(enc, tmp / 'exact.mov', tmp / 'times.txt', FPS)
+            (tmp / 'exact').mkdir()
+            subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(tmp / 'exact.mov'), '-fps_mode', 'passthrough', '-q:v', '1', str(tmp / 'exact' / '%08d.png')], check=True)
+            efr = sorted((tmp / 'exact').glob('*.png'))
+            if len(efr) != len(uniq): sys.exit(f'{name}: {len(efr)} frames for {len(uniq)} times')
+            at_ = {t: i for i, t in enumerate(uniq)}
+            frame_at = lambda tc: cv2.imread(str(efr[at_[round(tc, 6)]]))
         wcap = cv2.VideoCapture(str(win)) if win else None      # the window's frames, read as they are needed
         last_w = [None]
         def next_win():
@@ -208,7 +215,7 @@ def make(name, draft):
                 pm = np.zeros(fr.shape[:2], np.uint8); pm[y:y + bh, x:x + bw] = 255
                 fr = cv2.inpaint(fr, pm, 6, cv2.INPAINT_TELEA)
             q = quad_at(quads, fin, tc)
-            if m.get('dehalo'): fr = dehalo(fr, q)          # (the relabelled cartons' glow taken out, before the screen goes in)
+            if m.get('dehalo'): fr = dehalo(fr, [q] + ([quad_at(q2s, fin, tc)] if q2s is not None else []))   # (the relabelled cartons' glow taken out, before the screens go in)
             content = (next_win() if wcap is not None else stl).astype(np.float32) / 255
             f32 = fr.astype(np.float32) / 255
             insert(f32, fr, q, content)
@@ -227,7 +234,7 @@ def make(name, draft):
                         '-crf', '12' if not draft else '16', '-g', '60', '-pix_fmt', 'yuv420p', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709',
                         '-movflags', '+faststart', str(OUT / f'{name}.mp4')], check=True)
         (TRK / f'{name}.json').write_text(json.dumps({'fps': FPS, 'n': n, 'quads': out_q}))
-    print(f'{name}: {n} frames ({"draft" if draft else "RIFE"}), {src.name} with {m.get("win") or still.name}')
+    print(f'{name}: {n} frames ({"draft" if draft else "VideoToolbox"}), {src.name} with {m.get("win") or still.name}')
 
 
 def main():

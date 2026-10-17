@@ -83,7 +83,8 @@ CLIPS = {
     'd-portal': HERE / 'clips/d-portal.mp4', 'd-batch': HERE / 'clips/d-batch.mp4',
     # the destruction filmed at an authorised landfill (r4, the user's notes): the place, the packs slit open and emptied,
     # the earth over them, the officer and the witnesses signing on his tablet; the distributor's line to the lens
-    'x-est': HERE / 'clips/x-est.mp4', 'x-empty': HERE / 'clips/x-empty.mp4', 'x-cover': HERE / 'clips/x-cover.mp4',
+    # (the wide shot's distributor at the pit's edge is the man of his close shots in x-est-c: r4)
+    'x-est': HERE / ('clips/x-est-c.mp4' if (HERE / 'clips/x-est-c.mp4').exists() else 'clips/x-est.mp4'), 'x-empty': HERE / 'clips/x-empty.mp4', 'x-cover': HERE / 'clips/x-cover.mp4',
     'x-officer': HERE / 'clips/x-officer.mp4', 'x-witness': HERE / 'clips/x-witness.mp4', 'r-say-c': HERE / 'clips/r-say-c.mp4',
 }
 # the people with their own devices, over the shoulder (SC-206's clips, 1920 × 1088, each blank screen tracked frame by
@@ -266,6 +267,7 @@ def have(key):
 # the lead's tablet in her desk clip (film px): where her screen lifts out from, as she reads (0 s) and as she taps (4 s)
 A_TABLET, A_TABLET_TAP = [390, 600, 490, 390], [215, 700, 640, 380]
 D_PORTAL = [600, 790, 560, 290]   # the distributor's tablet at dusk (d-portal, at 3.3 s), film px
+EVIDENCE_AFTER = REPO / 'frontend/workspace/tests/journey/evidence/MF-2409-117-after-540.webp'   # the after photo the run uploaded (his camera's view)
 X_OFFICER = [523, 614, 370, 383]   # the officer's tablet (x-officer), film px
 X_WITNESS = [746, 624, 314, 220]   # the witness's tablet (x-witness), film px
 
@@ -317,7 +319,7 @@ def build():
     s.mark('stock', s.w('n06', 'stock')); s.mark('credit', s.w('n06', 'credit')); s.mark('destroy', s.w('n06', 'destroy'))
     s.mark('total', s.w('n06', 'twentytwo'))
     st = t + 2.6
-    clip('bin-trail', 'trail', 0.0, 6.4, st); MEDIA['bin-trail']['interp'] = 'mci'   # (RIFE copies and jumps on this boiling aerial: r3)
+    clip('bin-trail', 'trail', 0.0, 5.0, st)            # (its 5 s, slowed by VideoToolbox in two passes: RIFE copied and jumped, mci held two frames in seven)
     s.shot('clip', 0, st, media='bin-trail')
     t = s.say('n07', st + 0.05)
     for i, (k, key) in enumerate([('bin-factory', 'factory'), ('bin-hold', 'hold'), ('bin-heap', 'landfill-heap')]):
@@ -655,18 +657,22 @@ def build():
     X = all(have(k) for k in ('x-est', 'x-empty', 'x-cover', 'x-officer', 'x-witness', 'r-say-c')) and OTS['x-film'][1].exists() \
         and any(norm(w['w']) == 'distributor' for w in ASR['n34']['words'])
     if X:
-        t = s.say('n34', a0 + 0.6)
-        e1 = s.w('n34', 'distributor') - 0.3                # the place, to "the distributor"
+        # the line in two, cut in its own pause after "them," (3.63-3.94 s of the take), so the emptying has its time;
+        # the order is the app's: the packs emptied into the pit, the "after" photo of them with the slate (the photo
+        # uploaded: the camera's view is it, r4), then the earth over them
+        tA = s.say('n34', a0 + 0.6, part=(0.0, 3.8))       # "On expiry day, an authorised agency destroys them,"
+        e1 = s.w('n34@0', 'destroys') - 0.25                # the place
         clip('x-est', 'x-est', 0.3, 0.3 + (e1 - a0), e1 - a0)
         s.shot('clip', a0, e1, media='x-est', clock=['Expiry day', 'the authorised landfill'])
-        e2 = s.w('n34', 'tablet', at='e') + 0.15            # over his shoulder, filming them go in; the shutter (to the end of "tablet")
-        d = e2 - e1
-        MEDIA['m-xcam'] = {'kind': 'xcam', 'src': str(CLIPS['x-empty']), 'in': 0.35, 'dur': round(d + 0.1, 3), 'shutter': round(d - 0.55, 3), 'crop': [0.28, 0.0, 1.0]}
+        t = s.say('n34', tA + 0.8, part=(3.8, None))        # "and the distributor records it on his tablet: the packs slit open, buried, and covered."
+        e2 = s.w('n34@3.8', 'distributor') - 0.3            # the packs slit open and emptied into the pit
+        clip('x-empty', 'x-empty', 0.35, 0.35 + (e2 - e1), e2 - e1)
+        s.shot('clip', e1, e2, media='x-empty')
+        e3 = s.w('n34@3.8', 'tablet', at='e') + 0.15        # over his shoulder: his camera on the pit, the slate held up; the shutter
+        d = e3 - e2
+        MEDIA['m-xcam'] = {'kind': 'xcam', 'src': str(EVIDENCE_AFTER), 'in': 0.0, 'dur': round(d + 0.1, 3), 'shutter': round(d - 0.55, 3), 'crop': [0.475, 0.0, 1.0]}
         ots('x-film-a', 'x-film', 'm-xcam', d, 99.0, a=0.3, dehalo=False)
-        s.shot('ots', e1, e2, media='x-film-a', shutter=e2 - 0.55)
-        e3 = s.w('n34', 'buried') - 0.2                     # the packs slit open and emptied
-        clip('x-empty', 'x-empty', 0.35, 0.35 + (e3 - e2), e3 - e2)
-        s.shot('clip', e2, e3, media='x-empty')
+        s.shot('ots', e2, e3, media='x-film-a', shutter=e3 - 0.55)
         e4 = t + 0.45                                       # buried, and covered
         clip('x-cover', 'x-cover', 0.4, min(4.85, 0.4 + (e4 - e3)), e4 - e3)
         s.shot('clip', e3, e4, media='x-cover')
@@ -709,9 +715,12 @@ def build():
                         'On the agency’s certificate, on his tablet at the facility: each in their own place.', 'signature')],
                badge={'t0': round(a1 + starts[1], 3), 't1': round(a1 + starts[4], 3), 'text': 'Signing, fast', 'icon': 'fast-forward'})
         a0 = a1 + d
-        # his line, to the lens; then he sends it from the same tablet, and Vision checks both photos
-        t_ = s.talk('d11', a0 + 0.45, tail=0.25)
+        # his line, to the lens, cut as his eyes drop on "It's on record." (the line plays on over his tablet, an L-cut: r4);
+        # on the signing window's own last frame, so it never lingers over his face; then he sends it from the same tablet,
+        # and Vision checks both photos
+        t_ = s.talk('d11', a0 + 0.5, tail=0.25, cut=3.75 if dlg('d11')[0] == 'r-say-c' else None)
         talk_sh = s.shots[-1]
+        s.mark('signed', a0)
         tA = s.say('n34c', t_ + 0.35, part=(0.0, 1.0))      # "He sends it," (cut in its silence, 0.90-1.19 s of the take)
         a1 = talk_sh['t1']                                  # (his take pushes in to his face: the tablet is his again over his shoulder)
         d = tA + 0.95 - a1
