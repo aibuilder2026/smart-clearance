@@ -15,7 +15,7 @@ montage.py mixes (measured static gains, sidechain ducking, amix without normali
   device, every ring, card, agent at work and the calls it types, every tap on Approve, the clock turning, the
   fast-forwards, the shutter, the stamps, the phone rings, each scene's way in, and the events the captured pages
   report (the agents in 3D, the install, the audit trail);
-- amix (normalize=0), then two-pass loudnorm to -14 LUFS, -1 dBTP, LRA 11, at 48 kHz.
+- amix (normalize=0), then two-pass loudnorm to -14 LUFS, -1.5 dBTP (headroom for the AAC encode), LRA 11, at 48 kHz.
 
    uv run --with numpy --with scipy --with soundfile python mix.py [--film path.mov] [--out path.mp4]"""
 import argparse, json, re, subprocess, sys
@@ -432,7 +432,7 @@ def main():
     run(['ffmpeg', '-v', 'error', '-y', '-i', vw, '-i', B / 'mix-bed-rest.wav', '-i', B / 'mix-bed-band.wav', '-i', B / 'mix-key.wav', '-i', B / 'mix-sfx.wav',
          '-filter_complex', graph, '-map', '[mix]', '-c:a', 'pcm_f32le', pre])
     m = measure(pre)
-    ln = (f"loudnorm=I=-14:TP=-1.0:LRA=11:measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}:"
+    ln = (f"loudnorm=I=-14:TP=-1.5:LRA=11:measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}:"
           f"measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true,aresample=48000")
     final = B / 'mix.wav'
     run(['ffmpeg', '-v', 'error', '-y', '-i', pre, '-af', ln, '-ar', '48000', '-c:a', 'pcm_s24le', final])

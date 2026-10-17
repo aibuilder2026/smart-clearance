@@ -80,7 +80,7 @@ const WindowInner: React.FC<WindowProps> = ({ name, kind, t0, t1, cx, cy, sh, sw
 	let tgt: number[][] = [[X0, Y0], [X0 + g.sw, Y0], [X0 + g.sw, Y0 + g.sh], [X0, Y0 + g.sh]];
 	// a slow camera drift on the held screen: it is never a resting picture
 	const hold = clamp((t - la - liftDur) / Math.max(1, t1 - la - liftDur));
-	let S = 1 + 0.018 * EASE_IO(hold);
+	let S = 1 + 0.03 * EASE_IO(hold);
 	let zx = 0, zy = 0, op = 1, dy = 0;
 	for (const z of zoom) {
 		const kz = Math.min(ramp(t, z.t0, z.t0 + 0.7, EASE_IO), 1 - ramp(t, z.t1 - 0.6, z.t1, EASE_IO));

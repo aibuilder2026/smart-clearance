@@ -6,7 +6,7 @@
 #    nohup ./finish-quality.sh > build/finish-quality.log 2>&1 &
 set -eu
 cd "$(dirname "$0")"
-while pgrep -f "[g]pu-queue[2345]?.sh|[f]inish-gpu.sh" >/dev/null; do sleep 30; done
+while pgrep -f "[g]pu-queue[23456]?.sh|[f]inish-gpu.sh" >/dev/null; do sleep 30; done
 step(){ echo "== $1 $(date +%H:%M:%S)"; }
 step plan;     uv run -q python plan.py | tail -1
 step sr;       uv run -q --with numpy --with pillow python media.py sr

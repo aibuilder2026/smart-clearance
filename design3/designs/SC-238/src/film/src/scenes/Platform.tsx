@@ -26,8 +26,14 @@ export const Platform: React.FC<{ s: SceneData }> = ({ s }) => {
 			{/* 1 · the mark and the line */}
 			<Sequence from={0} durationInFrames={Math.round((intro1 + 0.4) * FPS)} layout="none">
 				<AbsoluteFill>
-					<Footage name="turn-sunrise" t0={0} t1={intro1 + 0.4} push={0.04} pushFrom={1.06} blur={18} grade="green" />
+					<Footage name="turn-sunrise" t0={0} t1={intro1 + 0.4} push={0.06} pushFrom={1.06} blur={12} grade="green" />
 					<AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 42%, rgba(52,211,128,0.10), rgba(2,10,6,0.55) 70%)' }} />
+					{/* the sunrise's shafts carried on behind the mark, turning slowly */}
+					<AbsoluteFill style={{ overflow: 'hidden', mixBlendMode: 'screen', opacity: 0.5 * ramp(t, 0.2, 1.4), WebkitMaskImage: 'linear-gradient(180deg, #000 0%, rgba(0,0,0,0.55) 45%, transparent 85%)' }}>
+						<div style={{ position: 'absolute', left: -480, top: -1660, width: 2880, height: 2880, transformOrigin: '50% 50%', transform: `rotate(${lerp(-3, 3, ramp(t, 0, intro1 + 0.4))}deg)`, filter: 'blur(9px)',
+							background: 'repeating-conic-gradient(from 150deg at 50% 50%, rgba(190,255,220,0.0) 0deg 5deg, rgba(190,255,220,0.10) 7deg 8deg, rgba(190,255,220,0.0) 10deg 17deg)' }} />
+					</AbsoluteFill>
+					<AbsoluteFill style={{ transformOrigin: '50% 44%', transform: `scale(${1 + 0.035 * ramp(t, 1.0, intro1 + 0.4, EASE_IO)})` }}>
 					<div style={{ position: 'absolute', left: 960 - 110, top: 300 - 110 + (1 - markK) * 20, opacity: clamp(markK * 1.4) }}>
 						<Mark size={220} draw={ramp(t, 0.05, 1.5, EASE_IO)} />
 					</div>
@@ -37,6 +43,7 @@ export const Platform: React.FC<{ s: SceneData }> = ({ s }) => {
 					<div style={{ position: 'absolute', left: 0, right: 0, top: 708, textAlign: 'center' }}>
 						<Rise t={t} t0={W('n09', 'agentic') - 0.05} t1={intro1 + 0.4} text="Agentic software that turns write-offs into recovery." size={44} weight={600} align="center" color="#cfe2d8" marks={['recovery.']} />
 					</div>
+					</AbsoluteFill>
 				</AbsoluteFill>
 			</Sequence>
 			{/* 2 · the console: the platform lead at her laptop, the real console in its glass lifting out; then the Overview, live (plan.py's shots) */}

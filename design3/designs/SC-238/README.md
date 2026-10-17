@@ -50,6 +50,23 @@ for the interpolation; the editing-videos and business-motion-film skills for th
 | 11 · a short film | Two phone calls bookend it; the people speak only where a person would, one speaker a clip, shot and reverse shot, nobody to the lens (LTX made each voice with its picture) |
 | 13 · papers over green video | The record scene's papers lie over the footage of what each records (the truck, the godown, the office, the food bank, the landfill), graded green |
 
+## How it is made
+
+Everything is driven by one edit decision list, so the picture and the sound read the same cue sheet.
+
+| Step | Script | What it does |
+| --- | --- | --- |
+| The plan | `src/plan.py` | The edit decision list: every scene, shot, line, ring, card, agent head and clock chip, timed on the narration's own words (Whisper's word times); writes `film/src/film.json`, `build/media.json` and `build/timeline.txt`; closes any gap between two shots |
+| The voice | `src/tts/` | The narrator, Maya1 run locally (the working demo's warm Indian storyteller), three takes a line, picked by Whisper's read-back and UTMOS |
+| The people | `src/gen-qwen*.sh`, `src/gen-ltx.py` | Qwen-Image keyframes (edits of the earlier films' cast sheets, so each face stays itself), then LTX 2.5 talking clips at 720p with their own voices; every take read back by Whisper (`src/dlg.py`) and retaken where it misspoke |
+| The app's screens | `src/media.py` | Each device's screen cropped at its own pixels from the production recordings, span by span: near its own pace interpolated to 60 fps, longer than its span played at 0.9× and held, a fast-forward sampled straight; `src/ringscan.py` keeps the recording stage's own rings, dims and title cards out of every span |
+| Over the shoulder | `src/screens.py` | The app's real screen set into the glass of the device a person holds (SC-206's clips, SC-207's tracked quads), under any finger, the same frames carrying on in the window that lifts out of it |
+| The clips at 60 fps | `src/media.py`, `src/frc.py`, `src/vtfx/` | Low-resolution clips super-resolved by Apple's VideoToolbox (×4, down to 1920), then interpolated to 60 fps by RIFE 4.26 or VideoToolbox's frame-rate conversion, whichever rebuilds the clip's own frames better |
+| The agents in 3D | `src/agents3d/`, `src/aerial.py`, `src/capture-page.mjs` | A three.js scene over aerial footage (LTX, super-resolved, 60 fps), captured frame-exact on the narration's cues, its sounds' events kept for the mix |
+| The film | `src/film/` | Remotion 4: the kit (`kit/`: footage with its push and rack focus, the device windows and their lift-out, rings, cards, agent heads, the clock, the ways in and out) and twelve scenes; rendered to ProRes 422 HQ at 1920 × 1080, 60 fps |
+| The sound | `src/mix.py`, `src/sfxkit.py` | The narration, the people in their own rooms, a room tone for every place, SC-210's score ducked under every word, the editing-videos library's CC0 sounds and synthesised ones on every event; two-pass loudnorm to −14 LUFS, −1.5 dBTP |
+| The deliverables | `src/export.py` | The master (H.264 High, crf 17, 60 fps, AAC 320 kb/s), a 720p copy, a phone preview and the captions |
+
 ## The film
 
 To be filled in at the final export.

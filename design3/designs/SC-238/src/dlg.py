@@ -11,7 +11,9 @@ import numpy as np, soundfile as sf
 HERE = Path(__file__).resolve().parent
 DLG = json.loads((HERE / 'lines.json').read_text())['dialogue']
 OUT, READ = HERE / 'build' / 'dlg.json', HERE / 'build' / 'dlg-read.json'
-NUM = {'22': 'twentytwo', '24': 'twentyfour', '58': 'fiftyeight', '1420': 'fourteentwenty', '14': 'fourteen', '20': 'twenty'}
+NUM = {'22': 'twentytwo', '24': 'twentyfour', '58': 'fiftyeight', '1420': 'fourteentwenty', '14': 'fourteen', '20': 'twenty', '10': 'ten'}
+# words Whisper mishears in these voices, as their lines mean them (an Indian "two" heard as "do", "bill's" as "build")
+HEARD = {'do': 'two', 'build': 'bills'}
 norm = lambda w: (lambda x: NUM.get(x, x))(re.sub(r'[^a-z0-9]', '', w.lower()))
 
 
@@ -34,14 +36,14 @@ def audio(clip):
 
 def tighten(a, sr, s, e):
     """the line's edges on the audio: the speech floor is the clip's 60th-percentile window level; a window counts as
-    speech above floor + 12 dB; the start is the first such window from 0.35 s before Whisper's start, the end the last
+    speech above floor + 10 dB (a soft first word sits near +12); the start is the first such window from 0.35 s before Whisper's start, the end the last
     one up to 0.45 s after its end"""
     hop = int(0.02 * sr)
     n = len(a) // hop
     rms = np.array([np.sqrt(np.mean(a[i * hop:(i + 1) * hop] ** 2) + 1e-12) for i in range(n)])
     db = 20 * np.log10(rms)
     floor = np.percentile(db, 60)
-    on = db > max(floor + 12, -42)
+    on = db > max(floor + 10, -42)
     i0, i1 = max(0, int((s - 0.35) / 0.02)), min(n - 1, int((e + 0.45) / 0.02))
     idx = [i for i in range(i0, i1 + 1) if on[i]]
     if not idx: return s, e
@@ -63,7 +65,7 @@ def main():
         used = 0
         for d in [d for d in DLG if d['clip'] == c]:
             want = tokens(d['text'])
-            ws = [norm(w['w']) for w in words]
+            ws = [HEARD.get(norm(w['w']), norm(w['w'])) for w in words]
             best = None
             for i in range(used, len(ws)):            # the line's words in order, loosely: the most of them from here
                 j, k, hit = i, 0, []

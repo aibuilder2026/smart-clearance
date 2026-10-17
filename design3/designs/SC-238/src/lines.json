@@ -1,352 +1,352 @@
 {
-  "voice": "the narrator: Maya1, locally, SC-207's 'warm' description (an Indian woman telling a story at a conversational pace), three takes a line, the best by Whisper's read-back",
-  "note": "r1, after the storyboard critic (review/r0-storyboard.md). Numbers as they are spoken. No client, person, product brand, workspace address or batch id in the words (SC-28). 'say' overrides 'text' for the voice.",
-  "lines": [
-    {
-      "id": "n01",
-      "act": "cold",
-      "text": "Every morning in India, good food runs out of time."
-    },
-    {
-      "id": "n02",
-      "act": "rule",
-      "text": "Not spoiled. Just short on days."
-    },
-    {
-      "id": "n03",
-      "act": "rule",
-      "text": "India's food regulator says packaged food sold online must reach your door with at least thirty per cent of its shelf life, or forty-five days, still left."
-    },
-    {
-      "id": "n04",
-      "act": "rule",
-      "text": "And the quick-commerce apps usually ask for far more: about sixty per cent of the shelf life, or ninety days and up."
-    },
-    {
-      "id": "n05",
-      "act": "rule",
-      "text": "This batch has twenty-two days. It is below every line."
-    },
-    {
-      "id": "n06",
-      "act": "bin",
-      "text": "If it is written off, the brand loses the stock, reverses its tax credit and pays to destroy it: twenty-two thousand rupees, on one batch."
-    },
-    {
-      "id": "n07",
-      "act": "bin",
-      "text": "Week after week. Brand after brand."
-    },
-    {
-      "id": "n08",
-      "act": "turn",
-      "text": "What if every one of those packs could still find a home?"
-    },
-    {
-      "id": "n09",
-      "act": "platform",
-      "text": "This is Smart-Clearance: agentic software that turns write-offs into recovery.",
-      "say": "This is Smart Clearance: agentic software that turns write-offs into recovery."
-    },
-    {
-      "id": "n10",
-      "act": "platform",
-      "text": "Every brand gets its own workspace, set up from one console in minutes: its stock data, its distributors, its people and its own rules."
-    },
-    {
-      "id": "n10b",
-      "act": "platform",
-      "text": "From the console, the platform team watches every client, every agent and every batch, live."
-    },
-    {
-      "id": "n11",
-      "act": "platform",
-      "text": "Each team sees its own part, the brand, the distributors, the kiranas and the food banks, installed on any phone, tablet or laptop."
-    },
-    {
-      "id": "n11b",
-      "act": "platform",
-      "text": "No app store needed: it installs straight from the browser, and every alert arrives as a notification."
-    },
-    {
-      "id": "n12",
-      "act": "agents",
-      "text": "Inside every workspace works a team that never sleeps."
-    },
-    {
-      "id": "n13",
-      "act": "agents",
-      "text": "Ten agents. Nine think with Gemini, on Google's Agent Platform. The Watcher runs on plain rules."
-    },
-    {
-      "id": "n14",
-      "act": "agents",
-      "stop": "connect",
-      "text": "The Data agent reads each distributor's stock export."
-    },
-    {
-      "id": "n15",
-      "act": "agents",
-      "stop": "detect",
-      "text": "Every morning, the Watcher checks each batch's sell-through against the apps' gates."
-    },
-    {
-      "id": "n16",
-      "act": "agents",
-      "stop": "verify",
-      "text": "Vision reads the label from one photo."
-    },
-    {
-      "id": "n17",
-      "act": "agents",
-      "stop": "value",
-      "text": "The Valuer prices every exit, the bin included."
-    },
-    {
-      "id": "n18",
-      "act": "agents",
-      "stop": "decide",
-      "text": "The Router splits the batch where it earns the most."
-    },
-    {
-      "id": "n19",
-      "act": "agents",
-      "stop": "approve",
-      "text": "Then it stops, at a person. Nothing moves without one yes."
-    },
-    {
-      "id": "n20",
-      "act": "agents",
-      "stop": "execute",
-      "text": "Outreach takes the offer to the kiranas. The Lister and the Negotiator work a marketplace, when a batch has the days."
-    },
-    {
-      "id": "n21",
-      "act": "agents",
-      "stop": "settle",
-      "text": "Paperwork draws every paper."
-    },
-    {
-      "id": "n21b",
-      "act": "agents",
-      "stop": "report",
-      "text": "And Impact counts the good it does."
-    },
-    {
-      "id": "n22",
-      "act": "agents",
-      "stop": "rails",
-      "text": "And all of it runs on the brand's own rules, for dates, prices and credit. The models never touch the money."
-    },
-    {
-      "id": "n23",
-      "act": "mango",
-      "text": "At nine, the Watcher flags a mango drink: fifteen hundred and eighty packs that won't sell in time."
-    },
-    {
-      "id": "n24",
-      "act": "mango",
-      "text": "The distributor sends one photo. Vision checks the label against the stock."
-    },
-    {
-      "id": "n25",
-      "act": "mango",
-      "text": "By nine twenty, the plan is priced: the kiranas, a staff sale and a food bank, and nothing to the bin."
-    },
-    {
-      "id": "n26",
-      "act": "mango",
-      "text": "One tap, and the agents go to work."
-    },
-    {
-      "id": "n27",
-      "act": "mango",
-      "text": "Outreach sends the distributor's kiranas the offer, in Hindi. Each order lands with its own GST invoice.",
-      "say": "Outreach sends the distributor's kiranas the offer, in Hindi. Each order lands with its own G S T invoice."
-    },
-    {
-      "id": "n28",
-      "act": "mango",
-      "text": "The next day, the staff buy their share by UPI, and Vision checks the receipt against the count.",
-      "say": "The next day, the staff buy their share by U P I, and Vision checks the receipt against the count."
-    },
-    {
-      "id": "n29",
-      "act": "mango",
-      "text": "A food bank collects what is closest to its date, with its own receipt."
-    },
-    {
-      "id": "n30",
-      "act": "mango",
-      "text": "Instead of a twenty-two-thousand-rupee loss, nearly seventeen thousand recovered, and the distributor ends whole."
-    },
-    {
-      "id": "n30b",
-      "act": "mango",
-      "text": "The distributor sees it all on her own portal: every order, every paper and every rupee credited."
-    },
-    {
-      "id": "n31",
-      "act": "chips",
-      "text": "Not every batch is that easy. In Nagpur, a batch of chips is split two ways: a lot on a near-expiry marketplace, and a scheme for the kiranas."
-    },
-    {
-      "id": "n32",
-      "act": "chips",
-      "text": "The Negotiator closes the lot at fourteen rupees twenty a pack, without ever showing the floor price."
-    },
-    {
-      "id": "n33",
-      "act": "chips",
-      "text": "But only two shops order. When the window closes, five hundred and forty packets are left."
-    },
-    {
-      "id": "n34",
-      "act": "chips",
-      "text": "On expiry day, an authorised agency destroys them, against evidence: two photos checked by Vision, and a certificate signed on the spot by four people."
-    },
-    {
-      "id": "n35",
-      "act": "chips",
-      "text": "And nothing is credited for them until a second yes."
-    },
-    {
-      "id": "n35b",
-      "act": "chips",
-      "text": "Only then are the expiry credit note and the certificate issued, and the distributor is made whole."
-    },
-    {
-      "id": "n36",
-      "act": "record",
-      "text": "Every paper is drawn, signed where it must be, and reviewed: GST invoices and e-invoices, credit notes, the tax-credit memo, receipts and certificates.",
-      "say": "Every paper is drawn, signed where it must be, and reviewed: G S T invoices and e-invoices, credit notes, the tax-credit memo, receipts and certificates."
-    },
-    {
-      "id": "n37",
-      "act": "record",
-      "text": "And every step is on the record: which agent did what, who said yes, and when."
-    },
-    {
-      "id": "n38",
-      "act": "record",
-      "text": "Every rupee adds up against what the bin would have cost, and every batch posts to an impact ledger, ready for the brand's sustainability report."
-    },
-    {
-      "id": "n38b",
-      "act": "record",
-      "text": "On the mango alone: three hundred and forty kilos kept out of landfill, and fifty-eight meals."
-    },
-    {
-      "id": "n39",
-      "act": "close",
-      "text": "Smart-Clearance. Ten agents. One yes. And nothing good goes to waste.",
-      "say": "Smart Clearance. Ten agents. One yes. And nothing good goes to waste."
-    },
-    {
-      "id": "n40",
-      "act": "close",
-      "text": "Try the guided demo."
-    }
-  ],
-  "dialogue": [
-    {
-      "id": "d01",
-      "act": "cold",
-      "who": "the distributor",
-      "clip": "d-dawn-call",
-      "text": "Twenty-two days left on the mango.",
-      "take": "first line of the distributor's dawn take"
-    },
-    {
-      "id": "d02",
-      "act": "cold",
-      "who": "the supply chain lead",
-      "clip": "l-dawn-call",
-      "text": "And quick commerce?",
-      "take": "first line of the lead's dawn take"
-    },
-    {
-      "id": "d03",
-      "act": "cold",
-      "who": "the distributor",
-      "clip": "d-dawn-call",
-      "text": "They won't take it.",
-      "take": "second line of the distributor's dawn take"
-    },
-    {
-      "id": "d04",
-      "act": "cold",
-      "who": "the supply chain lead",
-      "clip": "l-dawn-call",
-      "text": "Write it off, then.",
-      "take": "second line of the lead's dawn take"
-    },
-    {
-      "id": "d05",
-      "act": "mango",
-      "who": "the brand's head",
-      "clip": "b-approve",
-      "text": "Nothing to the bin?"
-    },
-    {
-      "id": "d06",
-      "act": "mango",
-      "who": "the supply chain lead",
-      "clip": "l-approve",
-      "text": "Not one pack. Approved."
-    },
-    {
-      "id": "d07",
-      "act": "mango",
-      "who": "the kirana owner",
-      "clip": "k-order-b",
-      "text": "Two free with every ten!"
-    },
-    {
-      "id": "d08",
-      "act": "mango",
-      "who": "the food bank volunteer",
-      "clip": "v-dock",
-      "text": "Fifty-eight packs. All sealed."
-    },
-    {
-      "id": "d09",
-      "act": "mango",
-      "who": "the shopkeeper",
-      "clip": "s-shop-b",
-      "text": "The bill's inside? Good."
-    },
-    {
-      "id": "d10",
-      "act": "chips",
-      "who": "the wholesale buyer",
-      "clip": "w-buyer",
-      "text": "Fourteen-twenty. Done. Truck's coming."
-    },
-    {
-      "id": "d11",
-      "act": "chips",
-      "who": "the agency's officer",
-      "clip": "o-landfill",
-      "text": "All four signatures. It's on record."
-    },
-    {
-      "id": "d12",
-      "act": "close",
-      "who": "the distributor",
-      "clip": "d-eve-call",
-      "text": "Every credit note came on time.",
-      "takes": [
-        "d-eve-call",
-        "d-eve-call-b"
-      ]
-    },
-    {
-      "id": "d13",
-      "act": "close",
-      "who": "the supply chain lead",
-      "clip": "l-eve-call-b",
-      "text": "Not one pack wasted."
-    }
-  ]
+ "voice": "the narrator: Maya1, locally, SC-207's 'warm' description (an Indian woman telling a story at a conversational pace), three takes a line, the best by Whisper's read-back",
+ "note": "r1, after the storyboard critic (review/r0-storyboard.md). Numbers as they are spoken. No client, person, product brand, workspace address or batch id in the words (SC-28). 'say' overrides 'text' for the voice.",
+ "lines": [
+  {
+   "id": "n01",
+   "act": "cold",
+   "text": "Every morning in India, good food runs out of time."
+  },
+  {
+   "id": "n02",
+   "act": "rule",
+   "text": "Not spoiled. Just short on days."
+  },
+  {
+   "id": "n03",
+   "act": "rule",
+   "text": "India's food regulator says packaged food sold online must reach your door with at least thirty per cent of its shelf life, or forty-five days, still left."
+  },
+  {
+   "id": "n04",
+   "act": "rule",
+   "text": "And the quick-commerce apps usually ask for far more: about sixty per cent of the shelf life, or ninety days and up."
+  },
+  {
+   "id": "n05",
+   "act": "rule",
+   "text": "This batch has twenty-two days. It is below every line."
+  },
+  {
+   "id": "n06",
+   "act": "bin",
+   "text": "If it is written off, the brand loses the stock, reverses its tax credit and pays to destroy it: twenty-two thousand rupees, on one batch."
+  },
+  {
+   "id": "n07",
+   "act": "bin",
+   "text": "Week after week. Brand after brand."
+  },
+  {
+   "id": "n08",
+   "act": "turn",
+   "text": "What if every one of those packs could still find a home?"
+  },
+  {
+   "id": "n09",
+   "act": "platform",
+   "text": "This is Smart-Clearance: agentic software that turns write-offs into recovery.",
+   "say": "This is Smart Clearance: agentic software that turns write-offs into recovery."
+  },
+  {
+   "id": "n10",
+   "act": "platform",
+   "text": "Every brand gets its own workspace, set up from one console in minutes: its stock data, its distributors, its people and its own rules."
+  },
+  {
+   "id": "n10b",
+   "act": "platform",
+   "text": "From the console, the platform team watches every client, every agent and every batch, live."
+  },
+  {
+   "id": "n11",
+   "act": "platform",
+   "text": "Each team sees its own part, the brand, the distributors, the kiranas and the food banks, installed on any phone, tablet or laptop."
+  },
+  {
+   "id": "n11b",
+   "act": "platform",
+   "text": "No app store needed: it installs straight from the browser, and every alert arrives as a notification."
+  },
+  {
+   "id": "n12",
+   "act": "agents",
+   "text": "Inside every workspace works a team that never sleeps."
+  },
+  {
+   "id": "n13",
+   "act": "agents",
+   "text": "Ten agents. Nine think with Gemini, on Google's Agent Platform. The Watcher runs on plain rules."
+  },
+  {
+   "id": "n14",
+   "act": "agents",
+   "stop": "connect",
+   "text": "The Data agent reads each distributor's stock export."
+  },
+  {
+   "id": "n15",
+   "act": "agents",
+   "stop": "detect",
+   "text": "Every morning, the Watcher checks each batch's sell-through against the apps' gates."
+  },
+  {
+   "id": "n16",
+   "act": "agents",
+   "stop": "verify",
+   "text": "Vision reads the label from one photo."
+  },
+  {
+   "id": "n17",
+   "act": "agents",
+   "stop": "value",
+   "text": "The Valuer prices every exit, the bin included."
+  },
+  {
+   "id": "n18",
+   "act": "agents",
+   "stop": "decide",
+   "text": "The Router splits the batch where it earns the most."
+  },
+  {
+   "id": "n19",
+   "act": "agents",
+   "stop": "approve",
+   "text": "Then it stops, at a person. Nothing moves without one yes."
+  },
+  {
+   "id": "n20",
+   "act": "agents",
+   "stop": "execute",
+   "text": "Outreach takes the offer to the kiranas. The Lister and the Negotiator work a marketplace, when a batch has the days."
+  },
+  {
+   "id": "n21",
+   "act": "agents",
+   "stop": "settle",
+   "text": "Paperwork draws every paper."
+  },
+  {
+   "id": "n21b",
+   "act": "agents",
+   "stop": "report",
+   "text": "And Impact counts the good it does."
+  },
+  {
+   "id": "n22",
+   "act": "agents",
+   "stop": "rails",
+   "text": "And all of it runs on the brand's own rules, for dates, prices and credit. The models never touch the money."
+  },
+  {
+   "id": "n23",
+   "act": "mango",
+   "text": "At nine, the Watcher flags a mango drink: fifteen hundred and eighty packs that won't sell in time."
+  },
+  {
+   "id": "n24",
+   "act": "mango",
+   "text": "The distributor sends one photo. Vision checks the label against the stock."
+  },
+  {
+   "id": "n25",
+   "act": "mango",
+   "text": "By nine twenty, the plan is priced: the kiranas, a staff sale and a food bank, and nothing to the bin."
+  },
+  {
+   "id": "n26",
+   "act": "mango",
+   "text": "One tap, and the agents go to work."
+  },
+  {
+   "id": "n27",
+   "act": "mango",
+   "text": "Outreach sends the distributor's kiranas the offer, in Hindi. Each order lands with its own GST invoice.",
+   "say": "Outreach sends the distributor's kiranas the offer, in Hindi. Each order lands with its own G S T invoice."
+  },
+  {
+   "id": "n28",
+   "act": "mango",
+   "text": "The next day, the staff buy their share by UPI, and Vision checks the receipt against the count.",
+   "say": "The next day, the staff buy their share by U P I, and Vision checks the receipt against the count."
+  },
+  {
+   "id": "n29",
+   "act": "mango",
+   "text": "A food bank collects what is closest to its date, with its own receipt."
+  },
+  {
+   "id": "n30",
+   "act": "mango",
+   "text": "Instead of a twenty-two-thousand-rupee loss, nearly seventeen thousand recovered, and the distributor ends whole."
+  },
+  {
+   "id": "n30b",
+   "act": "mango",
+   "text": "The distributor sees it all on her own portal: every order, every paper and every rupee credited."
+  },
+  {
+   "id": "n31",
+   "act": "chips",
+   "text": "Not every batch is that easy. In Nagpur, a batch of chips is split two ways: a lot on a near-expiry marketplace, and a scheme for the kiranas."
+  },
+  {
+   "id": "n32",
+   "act": "chips",
+   "text": "The Negotiator closes the lot at fourteen rupees twenty a pack, without ever showing the floor price."
+  },
+  {
+   "id": "n33",
+   "act": "chips",
+   "text": "But only two shops order. When the window closes, five hundred and forty packets are left."
+  },
+  {
+   "id": "n34",
+   "act": "chips",
+   "text": "On expiry day, an authorised agency destroys them, against evidence: two photos checked by Vision, and a certificate signed on the spot by four people."
+  },
+  {
+   "id": "n35",
+   "act": "chips",
+   "text": "And nothing is credited for them until a second yes."
+  },
+  {
+   "id": "n35b",
+   "act": "chips",
+   "text": "Only then are the expiry credit note and the certificate issued, and the distributor is made whole."
+  },
+  {
+   "id": "n36",
+   "act": "record",
+   "text": "Every paper is drawn, signed where it must be, and reviewed: GST invoices and e-invoices, credit notes, the tax-credit memo, receipts and certificates.",
+   "say": "Every paper is drawn, signed where it must be, and reviewed: G S T invoices and e-invoices, credit notes, the tax-credit memo, receipts and certificates."
+  },
+  {
+   "id": "n37",
+   "act": "record",
+   "text": "And every step is on the record: which agent did what, who said yes, and when."
+  },
+  {
+   "id": "n38",
+   "act": "record",
+   "text": "Every rupee adds up against what the bin would have cost, and every batch posts to an impact ledger, ready for the brand's sustainability report."
+  },
+  {
+   "id": "n38b",
+   "act": "record",
+   "text": "On the mango alone: three hundred and forty kilos kept out of landfill, and fifty-eight meals."
+  },
+  {
+   "id": "n39",
+   "act": "close",
+   "text": "Smart-Clearance. Ten agents. One yes. And nothing good goes to waste.",
+   "say": "Smart Clearance. Ten agents. One yes. And nothing good goes to waste."
+  },
+  {
+   "id": "n40",
+   "act": "close",
+   "text": "Try the guided demo."
+  }
+ ],
+ "dialogue": [
+  {
+   "id": "d01",
+   "act": "cold",
+   "who": "the distributor",
+   "clip": "d-dawn-call",
+   "text": "Twenty-two days left on the mango.",
+   "take": "first line of the distributor's dawn take"
+  },
+  {
+   "id": "d02",
+   "act": "cold",
+   "who": "the supply chain lead",
+   "clip": "l-dawn-call",
+   "text": "And quick commerce?",
+   "take": "first line of the lead's dawn take"
+  },
+  {
+   "id": "d03",
+   "act": "cold",
+   "who": "the distributor",
+   "clip": "d-dawn-call",
+   "text": "They won't take it.",
+   "take": "second line of the distributor's dawn take"
+  },
+  {
+   "id": "d04",
+   "act": "cold",
+   "who": "the supply chain lead",
+   "clip": "l-dawn-call",
+   "text": "Write it off, then.",
+   "take": "second line of the lead's dawn take"
+  },
+  {
+   "id": "d05",
+   "act": "mango",
+   "who": "the brand's head",
+   "clip": "b-approve",
+   "text": "Nothing to the bin?"
+  },
+  {
+   "id": "d06",
+   "act": "mango",
+   "who": "the supply chain lead",
+   "clip": "l-approve",
+   "text": "Not one pack. Approved."
+  },
+  {
+   "id": "d07",
+   "act": "mango",
+   "who": "the kirana owner",
+   "clip": "k-order-b",
+   "text": "Two free with every ten!"
+  },
+  {
+   "id": "d08",
+   "act": "mango",
+   "who": "the food bank volunteer",
+   "clip": "v-dock",
+   "text": "Fifty-eight packs. All sealed."
+  },
+  {
+   "id": "d09",
+   "act": "mango",
+   "who": "the shopkeeper",
+   "clip": "s-shop-b",
+   "text": "The bill's inside? Good."
+  },
+  {
+   "id": "d10",
+   "act": "chips",
+   "who": "the wholesale buyer",
+   "clip": "w-buyer",
+   "text": "Fourteen-twenty. Done. Truck's coming."
+  },
+  {
+   "id": "d11",
+   "act": "chips",
+   "who": "the agency's officer",
+   "clip": "o-landfill",
+   "text": "All four signatures. It's on record."
+  },
+  {
+   "id": "d12",
+   "act": "close",
+   "who": "the distributor",
+   "clip": "d-eve-call-b",
+   "text": "Every credit note came on time.",
+   "takes": [
+    "d-eve-call",
+    "d-eve-call-b"
+   ]
+  },
+  {
+   "id": "d13",
+   "act": "close",
+   "who": "the supply chain lead",
+   "clip": "l-eve-call-b",
+   "text": "Not one pack wasted."
+  }
+ ]
 }
