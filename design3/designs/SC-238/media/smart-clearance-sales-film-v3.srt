@@ -1,0 +1,255 @@
+1
+00:00:01,050 --> 00:00:02,820
+— Twenty-two days left on the mango.
+
+2
+00:00:03,020 --> 00:00:04,110
+— And quick commerce?
+
+3
+00:00:04,460 --> 00:00:05,390
+— They won't take it.
+
+4
+00:00:06,140 --> 00:00:07,210
+— Write it off, then.
+
+5
+00:00:11,560 --> 00:00:14,923
+Every morning in India, good food runs out of time.
+
+6
+00:00:19,160 --> 00:00:22,695
+Not spoiled. Just short on days.
+
+7
+00:00:23,445 --> 00:00:34,446
+India's food regulator says packaged food sold online must reach your door with at least thirty per cent of its shelf life, or forty-five days, still left.
+
+8
+00:00:35,296 --> 00:00:42,629
+And the quick-commerce apps usually ask for far more: about sixty per cent of the shelf life, or ninety days and up.
+
+9
+00:00:43,579 --> 00:00:48,078
+This batch has twenty-two days. It is below every line.
+
+10
+00:00:50,928 --> 00:01:01,699
+If it is written off, the brand loses the stock, reverses its tax credit and pays to destroy it: twenty-two thousand rupees, on one batch.
+
+11
+00:01:04,099 --> 00:01:06,964
+Week after week. Brand after brand.
+
+12
+00:01:08,239 --> 00:01:11,672
+What if every one of those packs could still find a home?
+
+13
+00:01:15,422 --> 00:01:20,875
+This is Smart-Clearance: agentic software that turns write-offs into recovery.
+
+14
+00:01:22,125 --> 00:01:32,181
+Every brand gets its own workspace, set up from one console in minutes: its stock data, its distributors, its people and its own rules.
+
+15
+00:01:32,931 --> 00:01:40,172
+From the console, the platform team watches every client, every agent and every batch, live.
+
+16
+00:01:41,122 --> 00:01:51,375
+Each team sees its own part, the brand, the distributors, the kiranas and the food banks, installed on any phone, tablet or laptop.
+
+17
+00:01:52,225 --> 00:01:59,032
+No app store needed: it installs straight from the browser, and every alert arrives as a notification.
+
+18
+00:02:01,682 --> 00:02:05,471
+Inside every workspace works a team that never sleeps.
+
+19
+00:02:06,821 --> 00:02:15,239
+Ten agents. Nine think with Gemini, on Google's Agent Platform. The Watcher runs on plain rules.
+
+20
+00:02:17,189 --> 00:02:21,243
+The Data agent reads each distributor's stock export.
+
+21
+00:02:23,089 --> 00:02:28,803
+Every morning, the Watcher checks each batch's sell-through against the apps' gates.
+
+22
+00:02:29,553 --> 00:02:32,374
+Vision reads the label from one photo.
+
+23
+00:02:35,453 --> 00:02:39,737
+The Valuer prices every exit, the bin included.
+
+24
+00:02:41,353 --> 00:02:44,757
+The Router splits the batch where it earns the most.
+
+25
+00:02:47,253 --> 00:02:52,666
+Then it stops, at a person. Nothing moves without one yes.
+
+26
+00:02:53,416 --> 00:03:01,492
+Outreach takes the offer to the kiranas. The Lister and the Negotiator work a marketplace, when a batch has the days.
+
+27
+00:03:02,242 --> 00:03:04,489
+Paperwork draws every paper.
+
+28
+00:03:08,142 --> 00:03:10,456
+And Impact counts the good it does.
+
+29
+00:03:14,042 --> 00:03:21,968
+And all of it runs on the brand's own rules, for dates, prices and credit. The models never touch the money.
+
+30
+00:03:28,318 --> 00:03:34,991
+At nine, the Watcher flags a mango drink: fifteen hundred and eighty packs that won't sell in time.
+
+31
+00:03:37,641 --> 00:03:43,035
+The distributor sends one photo. Vision checks the label against the stock.
+
+32
+00:03:46,885 --> 00:03:54,925
+By nine twenty, the plan is priced: the kiranas, a staff sale and a food bank, and nothing to the bin.
+
+33
+00:03:57,425 --> 00:03:58,435
+— Nothing to the bin?
+
+34
+00:03:58,735 --> 00:04:02,305
+— Not one pack. Approved.
+
+35
+00:04:02,635 --> 00:04:05,728
+One tap, and the agents go to work.
+
+36
+00:04:07,078 --> 00:04:11,728
+Outreach sends the distributor's kiranas the offer, in Hindi.
+
+37
+00:04:13,178 --> 00:04:14,788
+— Two free with every ten!
+
+38
+00:04:15,938 --> 00:04:19,923
+Each order lands with its own GST invoice.
+
+39
+00:04:26,773 --> 00:04:30,183
+— Fifty-eight packs. All sealed.
+
+40
+00:04:31,483 --> 00:04:36,365
+A food bank collects what is closest to its date, with its own receipt.
+
+41
+00:04:40,315 --> 00:04:47,390
+The next day, the staff buy their share by UPI, and Vision checks the receipt against the count.
+
+42
+00:04:53,240 --> 00:04:56,310
+— The bill's inside? Good.
+
+43
+00:04:57,560 --> 00:05:04,727
+Instead of a twenty-two-thousand-rupee loss, nearly seventeen thousand recovered, and the distributor ends whole.
+
+44
+00:05:05,377 --> 00:05:12,807
+The distributor sees it all on her own portal: every order, every paper and every rupee credited.
+
+45
+00:05:15,157 --> 00:05:25,629
+Not every batch is that easy. In Nagpur, a batch of chips is split two ways: a lot on a near-expiry marketplace, and a scheme for the kiranas.
+
+46
+00:05:26,979 --> 00:05:33,651
+The Negotiator closes the lot at fourteen rupees twenty a pack, without ever showing the floor price.
+
+47
+00:05:35,801 --> 00:05:40,491
+— Fourteen-twenty. Done. Truck's coming.
+
+48
+00:05:44,291 --> 00:05:50,830
+But only two shops order. When the window closes, five hundred and forty packets are left.
+
+49
+00:05:52,480 --> 00:06:02,911
+On expiry day, an authorised agency destroys them, and the distributor records it on his tablet: the packs slit open, buried, and covered.
+
+50
+00:06:03,461 --> 00:06:05,061
+The photos go up, and
+
+51
+00:06:06,511 --> 00:06:14,236
+the certificate is signed on the spot: by the agency’s officer, two witnesses, and the distributor.
+
+52
+00:06:15,036 --> 00:06:18,786
+— All four signatures. It’s on record.
+
+53
+00:06:18,886 --> 00:06:20,136
+He sends it, and
+
+54
+00:06:20,886 --> 00:06:24,888
+Vision checks both photos against the batch and the slate.
+
+55
+00:06:26,338 --> 00:06:30,269
+And nothing is credited for them until a second yes.
+
+56
+00:06:33,519 --> 00:06:40,545
+Only then are the expiry credit note and the certificate issued, and the distributor is made whole.
+
+57
+00:06:43,195 --> 00:06:56,019
+Every paper is drawn, signed where it must be, and reviewed: GST invoices and e-invoices, credit notes, the tax-credit memo, receipts and certificates.
+
+58
+00:06:59,769 --> 00:07:05,905
+And every step is on the record: which agent did what, who said yes, and when.
+
+59
+00:07:08,055 --> 00:07:18,411
+Every rupee adds up against what the bin would have cost, and every batch posts to an impact ledger, ready for the brand's sustainability report.
+
+60
+00:07:19,061 --> 00:07:26,635
+On the mango alone: three hundred and forty kilos kept out of landfill, and fifty-eight meals.
+
+61
+00:07:28,285 --> 00:07:30,775
+— Every credit note arrived on time.
+
+62
+00:07:31,275 --> 00:07:33,065
+— Not one pack went to waste.
+
+63
+00:07:36,615 --> 00:07:42,858
+Smart-Clearance. Ten agents. One yes. And nothing good goes to waste.
+
+64
+00:07:43,808 --> 00:07:45,463
+Try the guided demo.

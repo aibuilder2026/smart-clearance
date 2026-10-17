@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SC-211 · installed as an app</title>
+<style>
+  @font-face { font-family: 'Bricolage Grotesque'; src: url('/fonts/Bricolage.ttf'); font-weight: 200 800; }
+  @font-face { font-family: 'Geist'; src: url('/fonts/Geist.ttf'); font-weight: 100 900; }
+  :root { --bg: #070b09; --ink: #ecf3ef; --ink2: #aabcb2; --ink3: #7a8c82; --g300: #73c99d; --ring: #34d380; --amber2: #f7c04a;
+          --brand: #167a52; }
+  html, body { margin: 0; padding: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--bg);
+    font-family: 'Geist', system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  canvas { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+  #stage { position: absolute; inset: 0; perspective: 2200px; perspective-origin: 50% 40%; }
+  .dev { position: absolute; left: 0; top: 0; transform-origin: 50% 50%; will-change: transform, opacity;
+    -webkit-box-reflect: below 6px linear-gradient(transparent 76%, rgba(255, 255, 255, 0.14)); }
+  .screen { position: absolute; overflow: hidden; background: #f4f7f5; }
+  .screen img.shot { position: absolute; left: 0; top: 0; width: 100%; height: auto; display: block; }
+  .glare { position: absolute; inset: -10%; pointer-events: none; opacity: 0;
+    background: linear-gradient(105deg, rgba(255,255,255,0) 35%, rgba(255,255,255,0.20) 47%, rgba(255,255,255,0.05) 53%, rgba(255,255,255,0) 62%); }
+
+  /* the laptop: lid, bezel and screen, then its deck */
+  .laptop .lid { position: absolute; left: 0; top: 0; width: 1220px; height: 780px; border-radius: 26px; background: #121815;
+    box-shadow: 0 0 0 2px #2a332e inset, 0 40px 90px rgba(0,0,0,0.6); }
+  .laptop .screen { left: 18px; top: 18px; width: 1184px; height: 744px; border-radius: 12px; }
+  .laptop .deck { position: absolute; left: -80px; top: 780px; width: 1380px; height: 26px; border-radius: 0 0 22px 22px;
+    background: linear-gradient(180deg, #3a443f, #1b221e); box-shadow: 0 26px 60px rgba(0,0,0,0.55); }
+  .laptop .deck::after { content: ''; position: absolute; left: 610px; top: 0; width: 160px; height: 9px; border-radius: 0 0 10px 10px; background: #252d29; }
+
+  /* the browser, Chrome-like and unbranded */
+  .tabbar { position: absolute; left: 0; top: 0; right: 0; height: 40px; background: #dde3e0; }
+  .tab { position: absolute; left: 92px; top: 7px; width: 250px; height: 33px; border-radius: 10px 10px 0 0; background: #fff;
+    display: flex; align-items: center; gap: 9px; padding: 0 12px; box-sizing: border-box; font: 500 14px/1 'Geist'; color: #1d2722; }
+  .tab img { width: 17px; height: 17px; }
+  .tab .x { margin-left: auto; width: 14px; height: 14px; color: #6b7a72; }
+  .lights { position: absolute; left: 16px; top: 14px; display: flex; gap: 8px; }
+  .lights i { width: 12px; height: 12px; border-radius: 50%; background: #b9c3be; display: block; }
+  .toolbar { position: absolute; left: 0; right: 0; top: 40px; height: 50px; background: #fff; border-bottom: 1px solid #e3e8e5;
+    display: flex; align-items: center; gap: 14px; padding: 0 14px; box-sizing: border-box; color: #56655d; }
+  .toolbar svg { width: 19px; height: 19px; flex: none; }
+  .omni { flex: 1; height: 34px; border-radius: 17px; background: #eff3f1; display: flex; align-items: center; gap: 9px; padding: 0 8px 0 14px;
+    font: 500 15.5px/1 'Geist'; color: #1d2722; }
+  .omni .host { color: #1d2722; } .omni .lockic { width: 15px; height: 15px; color: #56655d; }
+  .install { margin-left: auto; height: 26px; border-radius: 13px; display: flex; align-items: center; gap: 7px; padding: 0 11px 0 9px;
+    font: 600 13.5px/1 'Geist'; color: var(--brand); background: rgba(22, 122, 82, 0.10); border: 1px solid rgba(22, 122, 82, 0.35); opacity: 0; }
+  .install svg { width: 16px; height: 16px; }
+  .content { position: absolute; left: 0; right: 0; top: 90px; bottom: 0; overflow: hidden; background: #f4f7f5; }
+  .titlebar { position: absolute; left: 0; right: 0; top: 0; height: 36px; background: #f6f8f7; border-bottom: 1px solid #e3e8e5; opacity: 0;
+    display: flex; align-items: center; justify-content: center; gap: 8px; font: 600 14px/1 'Geist'; color: #1d2722; }
+  .titlebar img { width: 17px; height: 17px; }
+  .titlebar .lights { top: 12px; }
+
+  .dialog { position: absolute; right: 54px; top: 84px; width: 430px; padding: 22px 22px 18px; box-sizing: border-box; border-radius: 16px;
+    background: #fff; box-shadow: 0 24px 60px rgba(0,0,0,0.30), 0 2px 8px rgba(0,0,0,0.18); color: #1d2722; opacity: 0; transform-origin: 90% 0%; }
+  .dialog h4 { margin: 0 0 16px; font: 650 20px/1.2 'Geist'; }
+  .dialog .app { display: flex; align-items: center; gap: 14px; }
+  .dialog .app img { width: 46px; height: 46px; }
+  .dialog .app b { display: block; font: 650 17px/1.2 'Geist'; } .dialog .app span { display: block; margin-top: 4px; font: 400 14px/1.2 'Geist'; color: #5c6b63; }
+  .dialog .row { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+  .btn { height: 38px; padding: 0 18px; border-radius: 19px; display: flex; align-items: center; font: 650 15px/1 'Geist'; }
+  .btn.primary { background: var(--brand); color: #fff; } .btn.ghost { color: #2b3a33; border: 1px solid #cfd8d3; }
+
+  .dock { position: absolute; left: 50%; bottom: 14px; height: 66px; padding: 0 12px; border-radius: 22px; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 11px; background: rgba(240, 245, 242, 0.62); border: 1px solid rgba(255,255,255,0.7);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25); backdrop-filter: blur(14px); opacity: 0; }
+  .ico { width: 48px; height: 48px; border-radius: 13px; position: relative; display: grid; place-items: center; flex: none; }
+  .ico svg { width: 24px; height: 24px; color: rgba(255,255,255,0.82); }
+  .ico img { width: 100%; height: 100%; }
+  .ico .run { position: absolute; left: 50%; bottom: -8px; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: #3a4a42; opacity: 0; }
+
+  /* the tablet and the phone: their frames, home screens and the app */
+  .tablet .frame, .phone .frame { position: absolute; left: 0; top: 0; background: #111714; box-shadow: 0 0 0 2px #2b3530 inset, 0 40px 90px rgba(0,0,0,0.6); }
+  .tablet .frame { width: 540px; height: 760px; border-radius: 40px; }
+  .tablet .screen { left: 20px; top: 20px; width: 500px; height: 720px; border-radius: 22px; }
+  .phone .frame { width: 300px; height: 630px; border-radius: 50px; }
+  .phone .screen { left: 12px; top: 12px; width: 276px; height: 606px; border-radius: 40px; }
+  .home { position: absolute; inset: 0; background: radial-gradient(120% 80% at 30% 10%, #2b7d5c 0%, #0f3c2c 46%, #071a12 100%); }
+  .home::after { content: ''; position: absolute; inset: 0; background: linear-gradient(160deg, rgba(255,255,255,0.10), rgba(255,255,255,0) 40%); }
+  .status { position: absolute; left: 0; right: 0; top: 0; height: 30px; display: flex; align-items: center; justify-content: space-between; padding: 0 22px;
+    font: 600 13px/1 'Geist'; color: #fff; }
+  .status .r { display: flex; gap: 6px; } .status svg { width: 15px; height: 15px; }
+  .grid { position: absolute; display: grid; }
+  .tablet .grid { left: 46px; top: 76px; grid-template-columns: repeat(5, 64px); gap: 34px 26px; }
+  .phone .grid { left: 24px; top: 70px; grid-template-columns: repeat(4, 50px); gap: 26px 17px; }
+  .tablet .ico { width: 64px; height: 64px; border-radius: 16px; } .phone .ico { width: 50px; height: 50px; border-radius: 13px; }
+  .lbl { position: absolute; left: 50%; top: 100%; margin-top: 5px; transform: translateX(-50%); white-space: nowrap; font: 500 10.5px/1 'Geist'; color: #fff; opacity: 0.9; }
+  .newapp { position: absolute; }
+  .appview { position: absolute; inset: 0; opacity: 0; background: #f4f7f5; }
+  .appview img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .banner { position: absolute; opacity: 0; }
+
+  /* the large copies of each notification, above its device */
+  .note { position: absolute; width: 470px; opacity: 0; filter: drop-shadow(0 18px 40px rgba(0,0,0,0.45)); }
+  .note img { width: 100%; display: block; }
+  .tail { position: absolute; width: 2px; background: linear-gradient(180deg, rgba(115,201,157,0.9), rgba(115,201,157,0)); opacity: 0; transform-origin: 50% 0; }
+
+  .kick { position: absolute; left: 0; right: 0; top: 44px; text-align: center; font: 700 15px/1 'Geist'; letter-spacing: 3px; text-transform: uppercase; color: var(--g300); opacity: 0; }
+  .h1 { position: absolute; left: 0; right: 0; top: 72px; text-align: center; font: 700 60px/1.05 'Bricolage Grotesque'; letter-spacing: -1px; opacity: 0; white-space: nowrap; }
+  .h1.low { top: auto; bottom: 64px; }
+  .chip { position: absolute; display: flex; align-items: center; gap: 9px; padding: 10px 16px 10px 12px; border-radius: 999px; white-space: nowrap;
+    background: rgba(10, 16, 13, 0.88); border: 1px solid rgba(115, 201, 157, 0.35); font: 600 17px/1 'Geist'; color: var(--ink); opacity: 0; transform: translateX(-50%); }
+  .chip svg { width: 18px; height: 18px; color: var(--ring); }
+  .cursor { position: absolute; left: 0; top: 0; z-index: 30; width: 34px; height: 34px; opacity: 0; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.55)); }
+  .ripple { position: absolute; left: 0; top: 0; z-index: 29; border-radius: 50%; border: 3px solid var(--ring); opacity: 0; }
+</style>
+</head>
+<body>
+<canvas id="bg" width="1920" height="1080"></canvas>
+<div id="stage"></div>
+<canvas id="fx" width="1920" height="1080" style="mix-blend-mode: screen"></canvas>
+<div id="ui"></div>
+<script src="icons.js"></script>
+<script src="pwa.js"></script>
+</body>
+</html>

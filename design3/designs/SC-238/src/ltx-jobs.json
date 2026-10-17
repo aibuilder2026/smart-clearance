@@ -1,0 +1,172 @@
+[
+ {
+  "name": "d-dawn-call",
+  "image": "img/mcu/d-dawn-call.png",
+  "resolution": "720p",
+  "duration": 10,
+  "seed": 238301,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up in a distributor's godown at dawn. A woman in her fifties with a grey-streaked braid, in a teal silk sari with a gold border, stands beside stacked brown cartons in cold blue first light, holding a phone to her ear, looking off to the left of the frame. She says into the phone, calmly and clearly, in a natural Indian English accent: \"Twenty-two days left on the mango.\" Then she falls silent and listens for a few seconds, her eyes drifting to the cartons beside her, her face tired. Then she says quietly: \"They won't take it.\" and lowers her eyes. Her lips shape every word in time with her voice; small natural head movements and natural blinks; she never looks into the camera. Dust drifts slowly through the shafts of light behind her; nothing else moves. Photorealistic cinematic footage, natural skin, sharp focus on her face. Audio: her voice close and clear, the hum of ceiling fans in a large godown, distant birds outside, no music, no other voices."
+ },
+ {
+  "name": "l-dawn-call",
+  "image": "img/mcu/l-dawn-call.png",
+  "resolution": "720p",
+  "duration": 8,
+  "seed": 238302,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up at home at dawn. A woman in her thirties with her hair in a low bun, in a navy pinstripe kurta, stands by a window with a sheer curtain, cool first light outside and a warm lamp behind her, holding a phone to her ear, looking off to the right of the frame. She asks into the phone, clearly, in a natural Indian English accent: \"And quick commerce?\" Then she listens for two seconds, her face falling. Then she says, resigned: \"Write it off, then.\" and looks down. Her lips shape every word in time with her voice; small natural head movements and natural blinks; she never looks into the camera. The curtain stirs slightly; nothing else moves. Photorealistic cinematic footage, natural skin, sharp focus on her face. Audio: her voice close and clear, a quiet flat in the early morning, birds outside, a pressure cooker whistling far away, no music, no other voices."
+ },
+ {
+  "name": "b-approve",
+  "image": "img/mcu/b-approve.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 238303,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up in a bright glass-walled office in the morning. A man in his fifties with a trimmed salt-and-pepper beard, in a navy suit and white open-collar shirt, leans on the back of an office chair and looks down to the left of the frame at a colleague's screen. He raises his eyebrows and asks, clearly, in a natural Indian English accent: \"Nothing to the bin?\" Then he looks at her, waiting, with a hint of a smile. His lips shape every word in time with his voice; natural blinks; he never looks into the camera. Colleagues move softly out of focus far behind him. Photorealistic cinematic footage, natural skin, sharp focus on his face. Audio: his voice close and clear, a quiet open-plan office, no music, no other voices."
+ },
+ {
+  "name": "l-approve",
+  "image": "img/mcu/l-approve.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 238304,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up in a bright office in the morning. A woman in her thirties with her hair in a low bun, in a navy pinstripe kurta with an ID lanyard, sits at her desk holding a tablet low with its back to the camera. She looks up over her right shoulder to the right of the frame at a colleague standing beside her and says with a calm, confident smile, in a natural Indian English accent: \"Not one pack. Approved.\" Then she looks back down at the tablet. Her lips shape every word in time with her voice; natural blinks; she never looks into the camera. Soft morning daylight from the window. Photorealistic cinematic footage, natural skin, sharp focus on her face. Audio: her voice close and clear, a quiet office, no music, no other voices."
+ },
+ {
+  "name": "k-order",
+  "image": "img/mcu/k-order.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 238305,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up in a small Indian kirana shop lit by a warm tungsten bulb. A woman in her forties in a mustard sari with a maroon border and a red bindi stands at her counter holding her phone at her chest with its back to the camera. She turns her head to the right of the frame and calls out cheerfully into the shop, in a natural Indian English accent: \"Two free on ten. Twenty-four!\" Her lips shape every word in time with her voice; a delighted expression; natural blinks; she never looks into the camera. The shelves of goods behind her stay softly out of focus. Photorealistic cinematic footage, natural skin, sharp focus on her face. Audio: her voice clear, a busy street outside the shop door, a scooter passing, no music, no other voices."
+ },
+ {
+  "name": "w-buyer",
+  "image": "img/mcu/w-buyer.png",
+  "resolution": "720p",
+  "duration": 6,
+  "seed": 238306,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up in a wholesaler's warehouse among grain sacks and brown cartons, warm light from a high window with dust in the air. A man in his forties with a short beard, in a grey half-sleeve shirt, glances at the phone in his hand, then turns his head to the left of the frame and calls out to a worker, decisive and pleased, in a natural Indian English accent: \"Fourteen-twenty. Done. Truck's coming.\" His lips shape every word in time with his voice; natural blinks; he never looks into the camera. Photorealistic cinematic footage, natural skin, sharp focus on his face. Audio: his voice clear, the echo of a large warehouse, sacks being stacked far off, no music, no other voices."
+ },
+ {
+  "name": "o-landfill",
+  "image": "img/mcu/o-landfill.png",
+  "resolution": "720p",
+  "duration": 6,
+  "seed": 238307,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up at a landfill under an overcast grey sky, a yellow excavator softly out of focus behind. A man in his forties with short black hair and a clipped moustache, in a navy uniform jacket with an ID badge, holds a tablet against his chest and looks to the right of the frame at the man who has just signed. He nods once and says firmly, in a natural Indian English accent: \"All four signatures. It's on record.\" His lips shape every word in time with his voice; natural blinks; he never looks into the camera. Photorealistic cinematic footage, natural skin, sharp focus on his face. Audio: his voice clear, wind over open ground, a distant excavator, no music, no other voices."
+ },
+ {
+  "name": "v-dock",
+  "image": "img/mcu/v-dock.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 238308,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up at a godown's loading dock beside a white van with its rear doors open, warm late-morning light. A young woman in a green T-shirt with her hair tied back holds a clipboard against her chest and looks to the left of the frame at the driver. She says clearly and brightly, in a natural Indian English accent: \"Fifty-eight packs. All sealed.\" and gives a small nod. Her lips shape every word in time with her voice; natural blinks; she never looks into the camera. Behind her the driver keeps loading a sealed carton into the van without speaking. Photorealistic cinematic footage, natural skin, sharp focus on her face. Audio: her voice clear, a van's engine idling, a carton sliding on a steel floor, no music, no other voices."
+ },
+ {
+  "name": "s-shop",
+  "image": "img/mcu/s-shop.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 238309,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up at a kirana counter crowded with shelves of snacks, warm morning light from the street. A man in his fifties with a moustache, in a cream kurta, holds a plain brown carton just handed to him across his counter and looks to the left of the frame at the delivery man. He asks with a warm smile, in a natural Indian English accent: \"Bill's in the box? Good.\" and nods. His lips shape every word in time with his voice; natural blinks; he never looks into the camera. Photorealistic cinematic footage, natural skin, sharp focus on his face. Audio: his voice clear, a street outside the shop, a bicycle bell far off, no music, no other voices."
+ },
+ {
+  "name": "d-eve-call",
+  "image": "img/mcu/d-eve-call.png",
+  "resolution": "720p",
+  "duration": 6,
+  "seed": 238310,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up in a distributor's godown in the evening, warm golden low sunlight through the open shutter, the cartons glowing amber. A woman in her fifties with a grey-streaked braid, in a teal silk sari with a gold border, holds a phone to her ear and looks off to the left of the frame. She says with a relieved, warm smile, in a natural Indian English accent: \"Every credit note came on time.\" Then she listens, smiling. Her lips shape every word in time with her voice; natural blinks; she never looks into the camera. Dust glows in the low sun behind her; nothing else moves. Photorealistic cinematic footage, natural skin, sharp focus on her face. Audio: her voice close and clear, a quiet godown in the evening, birds outside, no music, no other voices."
+ },
+ {
+  "name": "l-eve-call",
+  "image": "img/mcu/l-eve-call.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 238311,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up in an office in the evening, a warm desk lamp beside her and city lights coming on through the window under a deep blue dusk. A woman in her thirties with her hair in a low bun, in a navy pinstripe kurta with an ID lanyard, holds a phone to her ear and looks off to the right of the frame. She smiles and says warmly, in a natural Indian English accent: \"Not one of your packs wasted.\" Her lips shape every word in time with her voice; natural blinks; she never looks into the camera. Photorealistic cinematic footage, natural skin, sharp focus on her face. Audio: her voice close, a quiet office at dusk, the city faint outside, no music, no other voices."
+ },
+ {
+  "name": "d-raise-phone",
+  "image": "img/d-raise-phone.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 238312,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium shot in a distributor's godown in the morning. A woman in her fifties with a grey-streaked braid, in a teal silk sari, holds her phone up in both hands, its back to the camera, steadies it towards a carton on the stack in front of her and takes a photo, her eyes on the screen, concentrating. She does not speak and never looks into the camera. Dust drifts in the light from the high windows; nothing else moves. Photorealistic cinematic footage, natural skin. Audio: the hum of ceiling fans, a soft camera shutter click, no music, no voices."
+ },
+ {
+  "name": "r-raise-tablet",
+  "image": "img/r-raise-tablet.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 238313,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium shot at a landfill under an overcast grey sky. A man in his sixties in a blue checked shirt with his glasses pushed up on his head holds a tablet up at eye level in both hands, its back to the camera, steadies it and photographs the heap in front of him, concentrating. He does not speak and never looks into the camera. A gust of wind moves his shirt; the excavator works far off; nothing falls or slides. Photorealistic cinematic footage, natural skin. Audio: wind over open ground, a distant excavator, a soft camera shutter click, no music, no voices."
+ },
+ {
+  "name": "godown-sunrise",
+  "image": "img/godown-sunrise.png",
+  "resolution": "720p",
+  "duration": 8,
+  "seed": 238314,
+  "camera": "dolly_in",
+  "audio": true,
+  "prompt": "A very slow dolly forward down a distributor's godown aisle between tall racks of brown cartons as the sunrise grows: warm golden light strengthens through the high roof windows, the shafts of light brightening and the dust in them glowing gold, the concrete floor catching the light. Far down the aisle the yellow forklift stands still with its load while two workers in orange vests walk slowly away from the camera. Nothing slides, falls or tumbles. Photorealistic cinematic footage. Audio: morning birds outside, the soft hum of a large building waking, distant footsteps, no music, no voices."
+ },
+ {
+  "name": "a1-godown",
+  "image": "img/a1-godown.png",
+  "resolution": "540p",
+  "duration": 10,
+  "camera": "dolly_right",
+  "audio": false,
+  "seed": 238321,
+  "prompt": "A slow, steady top-down drone shot gliding sideways high above an Indian distributor's godown yard at dawn: two long pale metal warehouse roofs, a concrete yard with parked delivery trucks and stacked pallets of brown cardboard cartons, two small workers walking across the yard, one truck slowly reversing, long soft shadows, cool blue dawn light warming at one edge, light haze. The camera looks straight down and drifts smoothly to the side without rotating or tilting. Realistic documentary aerial footage, natural motion."
+ },
+ {
+  "name": "a2-town",
+  "image": "img/a2-town.png",
+  "resolution": "540p",
+  "duration": 10,
+  "camera": "dolly_right",
+  "audio": false,
+  "seed": 238322,
+  "prompt": "A slow, steady top-down drone shot gliding sideways high above a dense Indian town in the early morning: flat concrete rooftops with black water tanks and washing lines, narrow lanes, a main road where scooters and an auto-rickshaw move along slowly, small people walking, a few trees swaying gently, warm golden morning sunlight with long shadows, light haze. The camera looks straight down and drifts smoothly to the side without rotating or tilting. Realistic documentary aerial footage, natural motion."
+ },
+ {
+  "name": "a3-lane",
+  "image": "img/a3-lane.png",
+  "resolution": "540p",
+  "duration": 10,
+  "camera": "dolly_right",
+  "audio": false,
+  "seed": 238323,
+  "prompt": "A slow, steady top-down drone shot gliding along above a narrow Indian market street in the morning: small grocery shops on both sides with shutters rolled up and plain coloured awnings, crates and sacks in front, shoppers walking, a shopkeeper carrying a carton, scooters passing slowly, a small white delivery van parked, warm sunlight and soft shadows. The camera looks straight down and drifts smoothly along the street without rotating or tilting. Realistic documentary aerial footage, natural motion."
+ }
+]

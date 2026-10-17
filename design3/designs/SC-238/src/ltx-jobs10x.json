@@ -1,0 +1,72 @@
+[
+ {
+  "name": "s-shop-d",
+  "image": "img/s-shop-d-239021.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 239107,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up behind the counter of a small Indian kirana shop in soft daylight. A shopkeeper in his forties with black hair and a moustache, in a cream kurta with rolled sleeves, holds a plain brown carton with a plain white label, just handed to him, and looks straight into the camera lens the whole time, as if at the delivery man in front of his counter. He asks warmly, at a natural conversational volume, in a natural Indian English accent: \"The bill's inside? Good.\" and nods with a pleased smile. His lips shape every word in time with his voice; natural blinks; he keeps looking into the lens; the carton stays still in his hands. The shelves behind him stay softly out of focus. Photorealistic cinematic footage, natural skin, sharp focus on his face. Audio: his voice close and clear, a quiet street outside the shop, no music, no other voices."
+ },
+ {
+  "name": "x-est",
+  "image": "img/x-est-239012.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 239206,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A slow, steady push-in on a wide establishing shot of an authorised municipal sanitary landfill on the edge of an Indian city on an overcast morning: a freshly dug pit of grey-brown earth in the foreground, a yellow backhoe loader at the left with its engine idling, a plain white tipper truck at the far edge of the pit, two workers in orange high-visibility vests standing together, and an older man with grey hair in a light blue shirt at the pit's edge looking down at a tablet in his hands; low heaps behind, a line of trees far off, black kites circling slowly in the pale grey sky. The people barely move; the ground stays still. Photorealistic documentary footage, muted true-to-life colours, soft diffused light. Audio: wind over open ground, a diesel engine idling far off, kites calling faintly, no music, no voices."
+ },
+ {
+  "name": "x-film",
+  "image": "img/x-film-239011.png",
+  "resolution": "720p",
+  "duration": 6,
+  "seed": 239201,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off over-the-shoulder shot from just behind the right shoulder of an Indian man in his sixties with short grey hair and glasses pushed up on his head, in a light blue checked shirt, at the edge of a muddy landfill pit on an overcast morning. He holds a grey tablet up in both hands, steady, filming what is in front of him; the tablet's screen stays a plain, evenly lit bright white the whole time, with nothing on it, and his thumbs stay on its outer edges. Beyond the tablet, softly out of focus, a worker in an orange high-visibility vest lifts red snack packets out of an opened brown carton and drops them into the pit, and a yellow backhoe loader idles. The camera does not move. Photorealistic documentary footage, muted true-to-life colours, soft diffused light. Audio: wind over open ground, a diesel engine idling, packets rustling far off, no music, no voices."
+ },
+ {
+  "name": "x-empty",
+  "image": "img/x-empty-239011.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 239202,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium shot at the edge of a freshly dug landfill pit of grey-brown earth on an overcast morning. A worker in an orange high-visibility vest, a cloth dust mask and grey work gloves crouches at the pit's edge holding a plain brown cardboard carton slit open along its top and slowly tips it further, and small plain red foil snack packets slide out of it and fall into the pit onto the many red packets already lying on the muddy earth. Behind him, softly out of focus, a second worker carries another opened carton, and a yellow backhoe loader stands beyond. The packets stay plain red and the carton stays plain brown. Photorealistic documentary footage, muted true-to-life colours, soft diffused light. Audio: packets rustling and dropping onto earth, light wind, a diesel engine idling far off, no music, no voices."
+ },
+ {
+  "name": "x-cover",
+  "image": "img/x-cover-239011.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 239203,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium-wide shot into a freshly dug landfill pit of grey-brown earth on an overcast morning: small red snack packets lie on the floor of the pit, and the wide steel bucket of a yellow front loader moves slowly and steadily forward, low over the ground, pushing a rolling wave of dark earth across the pit and over the red packets until they are buried; a little dust lifts and drifts away. The machine moves slowly; nothing else moves. Photorealistic documentary footage, muted true-to-life colours, soft diffused light. Audio: a diesel engine working, earth and gravel scraping and rolling, no music, no voices."
+ },
+ {
+  "name": "x-officer",
+  "image": "img/x-officer-239011.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 239204,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up at a landfill on an overcast morning. An Indian man in his fifties with a neat short grey beard and rimless glasses, in a navy blue work jacket over a white shirt with a white lanyard, holds a grey tablet at chest height with its back to the camera and signs his name on its screen with his right index finger, looking down at it with quiet concentration; his finger stays on the far side of the tablet, on its screen, out of sight behind it. Then he looks up, satisfied, and gives a small nod. The landfill and a yellow excavator are softly out of focus behind him. Photorealistic documentary footage, muted true-to-life colours, soft diffused light. Natural skin, sharp focus on his face. Audio: light wind over open ground, a diesel engine far off, no music, no voices."
+ },
+ {
+  "name": "x-witness",
+  "image": "img/x-witness-239011.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 239205,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium shot at a landfill on an overcast morning. An Indian woman in her forties in a beige cotton salwar kameez with a dupatta holds a grey tablet at chest height with its back to the camera and signs on its screen with her right index finger, looking down at it, her fingertip on the far side of the tablet, out of sight behind it; beside her an Indian man in his thirties in a white shirt watches the tablet, waiting his turn. Then she looks up and nods to him. Nobody's hand passes through the tablet. The landfill and a yellow backhoe are softly out of focus behind them. Photorealistic documentary footage, muted true-to-life colours, soft diffused light. Natural skin, sharp focus on their faces. Audio: light wind over open ground, a diesel engine far off, no music, no voices."
+ }
+]

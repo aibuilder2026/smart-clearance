@@ -1,0 +1,404 @@
+"""SC-238: the film's media, from build/media.json (plan.py). Every clip, talking clip and app window is made at 25 fps
+to exactly its shot's length, so Remotion plays everything at its own rate and nothing judders. A frame is made only where
+a span is slowed down: everywhere else the film shows the source's own frames (pass 12: at 60 fps three frames in five were
+made, and on the generated clips' fine texture they read as noise).
+
+  clip  a generated clip's span (24 fps), cover-scaled to 1920 × 1080 (lanczos, a light unsharp):
+          - near its own pace (0.9 to 1.3 source frames an output frame): its own frames one for one, 4% quicker at
+            25 fps, the span slid back where the clip ends before its last frame;
+          - quicker: the nearest of its own frames;
+          - slower: interpolated to 25 fps over the time the cut gives it (a slow drift);
+  talk  a talking clip's span in real time, 24 to 25 fps by VideoToolbox, with its own sound cut on the same frames (a
+        WAV beside it)
+  win   a device's screen cropped from a production recording (25 fps, 2560 × 1440), each span in turn:
+          - at its own pace (0.97× to 1.03×): the recording's own frames, one for one;
+          - quicker, to 2.2×: the nearest of its own frames;
+          - a little slower (0.85× to 0.97×): interpolated;
+          - longer than its span (under 0.85×): played at 0.9× and held on its last frame (a person reading);
+          - a fast-forward (2.2× and up): sampled straight from the recording, no interpolation;
+        at the device's own size (Remotion places and scales it)
+
+The interpolator is RIFE 4.26 (rife-ncnn-vulkan, the Apple GPU) or Apple's VideoToolbox frame-rate conversion, whichever
+rebuilds the source's own dropped frames better (frc.py's bench, once per source, kept in build/frc-picks.json).
+
+   uv run --with numpy --with pillow python media.py sheets [names…]     contact sheets of every window's spans, for review (CPU)
+   python3 media.py audio               the talking clips' sound (CPU)
+   python3 media.py ff                  the fast-forward spans (CPU, no interpolation)
+   python3 media.py make [names…]       everything else (the GPU: run it once LTX and Qwen are done)
+   python3 media.py sr [names…]          super-resolve the low-resolution clips first (the Apple GPU and Neural Engine)
+   python3 media.py list                what is made and what is missing
+
+Out: film/public/media/<name>.mp4 (H.264, 25 fps; windows 4:4:4) and <name>.wav for talking clips."""
+import json, math, shutil, subprocess, sys, tempfile
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+import frc  # noqa: E402
+
+MEDIA = json.loads((HERE / 'build' / 'media.json').read_text())
+SR_DIR = HERE / 'build' / 'sr'
+VTFX = HERE / 'vtfx' / 'vtfx'
+
+
+def sr_src(src):
+    """a low-resolution clip's super-resolved copy (Apple's on-device ×4 model, then down to 1920 wide), once made;
+    a clip already 1920 wide, or taller than the model takes (1080), is used as it is"""
+    p = SR_DIR / f'{Path(src).stem}.mov'
+    return str(p) if p.exists() and p.stat().st_size > 0 else src
+
+
+def needs_sr(src):
+    if not Path(src).exists() or Path(src).stat().st_size == 0: return False
+    w, h, _, _ = frc.probe(src)
+    return w < 1900 and h <= 1080
+
+
+def make_sr(names):
+    SR_DIR.mkdir(parents=True, exist_ok=True)
+    done = set()
+    for n in names:
+        m = MEDIA[n]
+        if m['kind'] not in ('clip', 'talk'): continue
+        src = m['src']
+        if src in done or not needs_sr(src): continue
+        done.add(src)
+        out = SR_DIR / f'{Path(src).stem}.mov'
+        if out.exists() and out.stat().st_mtime > Path(src).stat().st_mtime: print(f'{Path(src).name}: super-resolved'); continue
+        run([VTFX, 'sr', src, out, '--width', '1920'])
+        print(f'{Path(src).name}: super-resolved → {out.name}')
+OUT = HERE / 'film' / 'public' / 'media'
+SHEETS = HERE / 'build' / 'sheets'
+FF_DIR = HERE / 'build' / 'ff'
+PICKS = HERE / 'build' / 'frc-picks.json'
+FPS = 25
+W, H = 1920, 1080
+
+
+def run(cmd, **kw):
+    r = subprocess.run([str(c) for c in cmd], capture_output=True, text=True, **kw)
+    if r.returncode: sys.exit(f'failed: {" ".join(map(str, cmd))}\n{r.stderr[-2500:]}')
+    return r
+
+
+def spans(m):
+    """(a, b, d) spans in the source's seconds, each played over d seconds"""
+    if m['kind'] == 'win': return [tuple(s) for s in m['segs']]
+    return [(m['in'], m['out'], m['dur'])]
+
+
+def bounds(m):
+    """each span's output frames [f0, f1): cumulative times rounded once, so the window's total is exact"""
+    out, u = [], 0.0
+    for a, b, d in spans(m):
+        out.append((round(u * FPS), round((u + d) * FPS))); u += d
+    return out
+
+
+def mode(m, a, b, d, fps_in=None):
+    s = (b - a) / d
+    if m['kind'] == 'win':
+        if s >= 2.2: return 'ff'
+        if s < 0.85: return 'hold'
+        if 0.97 <= s <= 1.03: return 'native'
+        return 'nearest' if s > 1.03 else 'interp'
+    # a talking take in real time, so the lips keep to the sound: VideoToolbox's 24 to 25 (the nearest of its own frames
+    # showed one twice a second, which on a take of a second and a half read as a stall: pass 12's motion check)
+    if m['kind'] == 'talk': return 'interp'
+    r = s * (fps_in or 24) / FPS                        # source frames an output frame
+    if 0.9 <= r <= 1.3: return 'native'                 # (to 1.3: a quick insert at 1.2 skipped one frame in five, unevenly)
+    return 'nearest' if r > 1.3 else 'interp'
+
+
+def run_frames(m, a, n, fps_in, total_s, out):
+    """n of the source's own frames one for one from a (slid back where the source ends first)"""
+    total = int(round(total_s * fps_in))
+    i0 = max(0, min(int(round(a * fps_in)), total - n))
+    fs = native_frames(m, i0 / fps_in, (i0 + n + 1) / fps_in, out)
+    if not fs: sys.exit(f'no frames at {a}')
+    return [fs[min(i, len(fs) - 1)] for i in range(n)]
+
+
+def nearest_frames(m, a, b, n, fps_in, out):
+    """n output frames over (a, b), each the nearest of the source's own"""
+    fs = native_frames(m, a, b, out)
+    if not fs: sys.exit(f'no frames at {a}')
+    return [fs[min(len(fs) - 1, int(round(i * (b - a) / n * fps_in)))] for i in range(n)]
+
+
+def crop_vf(m):
+    if m['kind'] != 'win': return []
+    x, y, w, h = m['rect']
+    return [f'crop={w}:{h}:{x}:{y}']
+
+
+def cover_vf():
+    return [f'scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos', f'crop={W}:{H}', 'unsharp=5:5:0.12:5:5:0.0']
+
+
+def native_frames(m, a, b, out):
+    """the span's own frames at the source's rate, cropped for a window"""
+    out.mkdir(parents=True, exist_ok=True)
+    vf = crop_vf(m)
+    run(['ffmpeg', '-v', 'error', '-y', '-ss', f'{max(0, a - 1.0):.4f}', '-i', m['src'], '-ss', f'{min(a, 1.0):.4f}', '-t', f'{b - a:.4f}']
+        + (['-vf', ','.join(vf)] if vf else []) + ['-fps_mode', 'passthrough', '-pix_fmt', 'rgb24', out / '%08d.png'])
+    return sorted(out.glob('*.png'))
+
+
+def sampled_frames(m, a, b, n, out):
+    """n frames straight from the recording, evenly over (a, b): a fast-forward"""
+    out.mkdir(parents=True, exist_ok=True)
+    s = (b - a) / (n / FPS)
+    vf = crop_vf(m) + [f'setpts=(PTS-STARTPTS)/{s:.6f}', f'fps={FPS}']
+    # (an input seek, frame-exact when transcoding: an output -ss here comes after setpts, so a second of it skipped s
+    # seconds of the recording, and every fast-forward showed a later stretch than its span, r3's stage cards among it)
+    run(['ffmpeg', '-v', 'error', '-y', '-ss', f'{a:.4f}', '-t', f'{b - a + 0.5:.4f}', '-i', m['src'],
+         '-vf', ','.join(vf), '-frames:v', str(n), '-pix_fmt', 'rgb24', out / '%08d.png'])
+    fs = sorted(out.glob('*.png'))
+    for i in range(len(fs), n): shutil.copy(fs[-1], out / f'{i + 1:08d}.png')
+    return sorted(out.glob('*.png'))[:n]
+
+
+def method_for(src, fs, fps_in, tmp):
+    picks = json.loads(PICKS.read_text()) if PICKS.exists() else {}
+    key = f'source:{src}'
+    if key not in picks:
+        Path(tmp).mkdir(parents=True, exist_ok=True)
+        meth, scores = frc.bench(fs, fps_in, tmp)
+        picks[key] = {'method': meth, 'scores': {k: round(v, 2) for k, v in scores.items()}}
+        PICKS.write_text(json.dumps(picks, indent=1))
+        print(f'  bench {Path(src).name}: {picks[key]}')
+    return picks[key]['method']
+
+
+def interp(fs, n_out, fps_in, meth, tmp, out):
+    """the frames rebuilt at n_out evenly spaced times over the span (RIFE's -n, or VT at the needed rate)"""
+    out.mkdir(parents=True, exist_ok=True)
+    if len(fs) < 2:
+        for i in range(n_out): shutil.copy(fs[0], out / f'{i + 1:08d}.png')
+        return sorted(out.glob('*.png'))
+    rate = n_out / (len(fs) / fps_in)              # the output rate that puts n_out frames over the span
+    if meth == 'mci':
+        # (a generated clip whose fine texture boils from frame to frame defeats RIFE, which then copies the nearer frame
+        # and jumps once a source frame, r3's repeats on the bin aerial; ffmpeg's motion-compensated interpolation spreads
+        # the motion over every frame)
+        run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(fps_in), '-i', fs[0].parent / '%08d.png', '-vf',
+             f'setpts=PTS*{rate / FPS:.6f},minterpolate=fps={FPS}:mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1',
+             '-frames:v', str(n_out), out / '%08d.png'])
+        got = sorted(out.glob('*.png'))
+        for i in range(len(got), n_out): shutil.copy(got[-1], out / f'{i + 1:08d}.png')
+        return sorted(out.glob('*.png'))[:n_out]
+    if meth != 'rife':
+        try:
+            enc = tmp / 'vt-in.mov'
+            run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(fps_in), '-i', fs[0].parent / '%08d.png', '-c:v', 'prores_ks', '-profile:v', '3', enc])
+            vo = tmp / 'vt-out.mov'
+            # (one pass at the span's own rate, however slow: vtfx takes a decimal rate and makes more than three frames
+            # between two source frames in further calls on the same pair. Until pass 11 it read the rate as a whole
+            # number, so every retimed span trapped and came out of RIFE; the frames are read back one for one)
+            frc.vt(enc, vo, round(rate, 4))
+            run(['ffmpeg', '-v', 'error', '-y', '-i', vo, '-fps_mode', 'passthrough', '-frames:v', str(n_out), out / '%08d.png'])
+            got = sorted(out.glob('*.png'))
+            if not got or frc.Image.open(got[0]).size != frc.Image.open(fs[0]).size: sys.exit('it changed the frame size')
+        except SystemExit as e:
+            print(f'  VideoToolbox refused {rate:.1f} fps ({str(e)[:80]}); RIFE instead')
+            for f in out.glob('*.png'): f.unlink()
+            meth = 'rife'
+    if meth == 'rife':
+        src = fs[0].parent
+        frc.rife(src, out, n_out)
+    got = sorted(out.glob('*.png'))
+    for i in range(len(got), n_out): shutil.copy(got[-1], out / f'{i + 1:08d}.png')
+    for f in sorted(out.glob('*.png'))[n_out:]: f.unlink()
+    return sorted(out.glob('*.png'))
+
+
+def encode(seq_dir, out, m):
+    vf = [] if m['kind'] == 'win' else cover_vf()
+    pix = 'yuv444p' if m['kind'] == 'win' else 'yuv420p'
+    prof = ['-profile:v', 'high444'] if pix == 'yuv444p' else ['-profile:v', 'high']
+    run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(FPS), '-i', seq_dir / '%08d.png'] + (['-vf', ','.join(vf)] if vf else [])
+        + ['-c:v', 'libx264', '-preset', 'slow', '-crf', '10', '-g', '50', '-bf', '2', '-pix_fmt', pix] + prof
+        + ['-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709', '-movflags', '+faststart', out])
+
+
+def make(name, only_ff=False):
+    m = MEDIA[name]
+    out = OUT / f'{name}.mp4'
+    drafts = json.loads(DRAFTS.read_text()) if DRAFTS.exists() else {}
+    made = json.loads(MADE.read_text()) if MADE.exists() else {}
+    key = json.dumps(m, sort_keys=True)
+    if out.exists() and name not in drafts and made.get(name) == key and not only_ff:
+        return print(f'{name}: made')
+    if not Path(m['src']).exists(): return print(f'{name}: SOURCE MISSING {m["src"]}')
+    if m['kind'] != 'win': m = {**m, 'src': sr_src(m['src'])}
+    w, h, fps_in, src_dur = frc.probe(m['src'])
+    with tempfile.TemporaryDirectory(dir=str(HERE / 'build')) as td:
+        tmp = Path(td); seq = tmp / 'seq'; seq.mkdir()
+        k = 0
+        for i, ((a, b, d), (f0, f1)) in enumerate(zip(spans(m), bounds(m))):
+            n = f1 - f0
+            if n <= 0: continue
+            md = mode(m, a, b, d, fps_in)
+            cache = FF_DIR / name / f'{i:02d}-{a:.3f}-{b:.3f}'   # (keyed by its span: a span cut shorter to the same frame count must not reuse the old frames)
+            if md == 'ff':
+                if cache.exists() and len(list(cache.glob('*.png'))) == n: fs = sorted(cache.glob('*.png'))
+                else:
+                    if cache.exists(): shutil.rmtree(cache)
+                    fs = sampled_frames(m, a, b, n, cache)
+            elif only_ff:
+                continue
+            elif md == 'native':
+                fs = run_frames(m, a, n, fps_in, src_dur, tmp / f'in{i}')
+            elif md == 'nearest':
+                fs = nearest_frames(m, a, b, n, fps_in, tmp / f'in{i}')
+            else:
+                src_fs = native_frames(m, a, b, tmp / f'in{i}')
+                # (a generated clip, talking or not, by VideoToolbox: on their fine texture, which changes from frame to frame,
+                # RIFE copies a frame and then jumps, a hold every fifth frame on a face, r4; VideoToolbox measures even)
+                meth = m.get('interp') or ('vt' if m['kind'] in ('clip', 'talk') else
+                                           method_for(m['src'], src_fs, fps_in, tmp / f'b{i}') if len(src_fs) > 2 * fps_in + 1 else 'rife')
+                if md == 'hold':
+                    n_play = min(n, round((b - a) / 0.9 * FPS))
+                    fs = interp(src_fs, n_play, fps_in, meth, tmp, tmp / f'out{i}')
+                    fs = fs + [fs[-1]] * (n - n_play)
+                else:
+                    fs = interp(src_fs, n, fps_in, meth, tmp, tmp / f'out{i}')
+            for f in fs:
+                k += 1
+                dst = seq / f'{k:08d}.png'
+                try: dst.hardlink_to(f)
+                except OSError: shutil.copy(f, dst)
+        if only_ff: return
+        total = bounds(m)[-1][1]
+        assert k == total, (name, k, total)
+        for _ in range(PAD):                       # (held past the shot's end)
+            k += 1; shutil.copy(seq / f'{k - 1:08d}.png', seq / f'{k:08d}.png')
+        OUT.mkdir(parents=True, exist_ok=True)
+        encode(seq, out, m)
+    drafts = json.loads(DRAFTS.read_text()) if DRAFTS.exists() else {}
+    if drafts.pop(name, None) is not None: DRAFTS.write_text(json.dumps(drafts, indent=1))
+    made = json.loads(MADE.read_text()) if MADE.exists() else {}
+    made[name] = key; MADE.write_text(json.dumps(made, indent=1))   # (made at full quality from exactly this spec)
+    if m['kind'] == 'talk': audio(name)
+    print(f'{name}: {total} frames ({total / FPS:.3f} s)')
+
+
+def audio(name):
+    m = MEDIA[name]
+    if m['kind'] != 'talk': return
+    OUT.mkdir(parents=True, exist_ok=True)
+    out = OUT / f'{name}.wav'
+    if not Path(m['src']).exists(): return print(f'{name}: SOURCE MISSING')
+    n = bounds(m)[-1][1]
+    run(['ffmpeg', '-v', 'error', '-y', '-ss', f'{m["in"]:.4f}', '-i', m['src'], '-t', f'{n / FPS + m.get("atail", 0):.4f}', '-vn', '-ac', '2', '-ar', '48000',
+         '-c:a', 'pcm_s24le', out])
+    print(f'{name}.wav: {n / FPS:.3f} s')
+
+
+DRAFTS = HERE / 'build' / 'drafts.json'
+PAD = 3   # frames of the last frame held past the shot's end: a shot that rounds a frame long never shows black
+MADE = HERE / 'build' / 'made.json'
+
+
+def draft(name):
+    """a quick stand-in at the same frames, for building the cut while the GPU is busy: each span sampled straight at
+    60 fps (no interpolation; a hold played at 0.9× and its last frame cloned), encoded fast. make() replaces it."""
+    m = MEDIA[name]
+    out = OUT / f'{name}.mp4'
+    if not Path(m['src']).exists(): return print(f'{name}: SOURCE MISSING (no draft)')
+    drafts = json.loads(DRAFTS.read_text()) if DRAFTS.exists() else {}
+    key = json.dumps(m, sort_keys=True)
+    if out.exists() and drafts.get(name) == key: return print(f'{name}: draft made')
+    OUT.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=str(HERE / 'build')) as td:
+        tmp = Path(td); parts = []
+        sb = list(zip(spans(m), bounds(m)))
+        for i, ((a, b, d), (f0, f1)) in enumerate(sb):
+            n = f1 - f0
+            if n <= 0: continue
+            md = mode(m, a, b, d)
+            sp = 0.9 if md == 'hold' else (b - a) / (n / FPS)
+            if i == len(sb) - 1: n += PAD
+            vf = crop_vf(m) + [f'setpts=(PTS-STARTPTS)/{sp:.6f}', f'fps={FPS}', 'tpad=stop_mode=clone:stop_duration=30'] + ([] if m['kind'] == 'win' else cover_vf())
+            part = tmp / f'p{i:02d}.mp4'
+            # (the span read as an input option: as an output option -t would cap the slowed span at its source length)
+            run(['ffmpeg', '-v', 'error', '-y', '-ss', f'{max(0, a - 1.0):.4f}', '-t', f'{min(a, 1.0) + b - a + 0.2:.4f}', '-i', m['src'], '-ss', f'{min(a, 1.0):.4f}',
+                 '-vf', ','.join(vf), '-frames:v', str(n), '-an', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '16', '-pix_fmt', 'yuv420p', '-r', str(FPS), part])
+            parts.append(part)
+        lst = tmp / 'list.txt'; lst.write_text(''.join(f"file '{p}'\n" for p in parts))
+        run(['ffmpeg', '-v', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', lst, '-c', 'copy', '-movflags', '+faststart', out])
+    n_got = int(run(['ffprobe', '-v', 'error', '-count_frames', '-select_streams', 'v:0', '-show_entries', 'stream=nb_read_frames', '-of', 'csv=p=0', out]).stdout.strip() or 0)
+    want = bounds(m)[-1][1] + PAD
+    if m['kind'] == 'talk': audio(name)
+    drafts[name] = key; DRAFTS.write_text(json.dumps(drafts, indent=1))
+    print(f'{name}: draft {n_got} frames (want {want}){"" if n_got == want else "  MISMATCH"}')
+
+
+def sheets(names):
+    """three frames a span (start, middle, end; five on a fast-forward), labelled, one sheet a window"""
+    SHEETS.mkdir(parents=True, exist_ok=True)
+    for name in names:
+        m = MEDIA[name]
+        if m['kind'] != 'win': continue
+        tmp = Path(tempfile.mkdtemp(dir=str(HERE / 'build')))
+        imgs = []
+        for i, (a, b, d) in enumerate(spans(m)):
+            md = mode(m, a, b, d)
+            ts = [a + (b - a) * f for f in ([0.02, 0.25, 0.5, 0.75, 0.98] if md == 'ff' else [0.02, 0.5, 0.98])]
+            for j, t in enumerate(ts):
+                p = tmp / f's{i} {md} {(b - a) / d:.2f}x at {t:.1f}s ({i:02d}{j}).jpg'
+                run(['ffmpeg', '-v', 'error', '-y', '-ss', f'{t:.3f}', '-i', m['src'], '-frames:v', '1', '-vf', ','.join(crop_vf(m)), '-q:v', '3', p])
+                imgs.append(p)
+        cols = 5 if m['dev'] in ('H', 'L') else 3
+        width = 260 if m['dev'] in ('H', 'L') else 520
+        run([sys.executable, HERE / 'sheet.py', SHEETS / f'{name}.jpg'] + imgs + ['--cols', str(cols), '--w', str(width)])
+        shutil.rmtree(tmp)
+        print(f'sheet {name}: {len(imgs)} frames')
+
+
+def main():
+    cmd = sys.argv[1] if len(sys.argv) > 1 else 'list'
+    names = sys.argv[2:] or [k for k, m in MEDIA.items() if m['kind'] not in ('ots', 'xcam')]   # screens.py makes the over-the-shoulder shots, xcam.py the camera's view
+    if cmd == 'sheets': sheets(names)
+    elif cmd == 'audio':
+        for n in names: audio(n)
+    elif cmd == 'ff':
+        for n in names:
+            m = MEDIA[n]
+            if m['kind'] == 'win' and any(mode(m, *s) == 'ff' for s in spans(m)): make(n, only_ff=True); print(f'{n}: fast-forward frames')
+    elif cmd == 'make':
+        for n in names: make(n)
+    elif cmd == 'peek':
+        peek(sys.argv[2], sys.argv[3], float(sys.argv[4]), float(sys.argv[5]), float(sys.argv[6]))
+    elif cmd == 'sr':
+        make_sr(names)
+    elif cmd == 'draft':
+        for n in names: draft(n)
+    elif cmd == 'list':
+        for n, m in MEDIA.items():
+            out = OUT / f'{n}.mp4'
+            st = 'made' if out.exists() else ('source missing' if not Path(m['src']).exists() else 'to make')
+            print(f'{n:16s} {m["kind"]:5s} {m["dur"]:6.2f}s  {st}')
+
+
+
+def peek(rec, dev, t0, t1, step, out=None):
+    """frames of a recording's device screen from t0 to t1 every step seconds, on one sheet (build/sheets/peek-…)"""
+    sys.path.insert(0, str(HERE)); import plan
+    m = {'kind': 'win', 'rect': plan.DEV[dev], 'src': str(plan.REC[rec])}
+    tmp = Path(tempfile.mkdtemp(dir=str(HERE / 'build')))
+    imgs, t = [], t0
+    while t <= t1 + 1e-6:
+        p = tmp / f'{rec} {dev} at {t:.2f}s.jpg'
+        run(['ffmpeg', '-v', 'error', '-y', '-ss', f'{t:.3f}', '-i', m['src'], '-frames:v', '1', '-vf', ','.join(crop_vf(m)), '-q:v', '3', p])
+        imgs.append(p); t += step
+    out = out or SHEETS / f'peek-{rec}-{dev}-{t0:.1f}.jpg'
+    cols = 6 if dev in ('H', 'L') else 4
+    run([sys.executable, HERE / 'sheet.py', out] + imgs + ['--cols', str(cols), '--w', 260 if dev in ('H', 'L') else 420])
+    shutil.rmtree(tmp)
+    print(out)
+
+
+if __name__ == '__main__':
+    main()

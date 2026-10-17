@@ -27,6 +27,8 @@ design3/designs/*/round-*/src/
 !design3/designs/*/option-*/motion.mp4
 !design3/designs/*/round-*/option-*/motion.mp4
 !design3/designs/*/media/*.mp4
+# SC-238's film stays local, never pushed (the maintainer's call): its captions are kept, its videos are not
+design3/designs/SC-238/media/*.mp4
 
 # frontend (SC-27): build output, test reports and local env files
 frontend/**/.svelte-kit/
@@ -441,3 +443,34 @@ design3/designs/SC-219/src/tts/vo3/gemini-Gacrux-demo/*
 design3/designs/SC-219/src/tts/bake17/*
 !design3/designs/SC-219/src/tts/bake17/*.txt
 !design3/designs/SC-219/src/tts/bake17/*.json
+
+# SC-238: the landing demo film v3's pipeline ships (scripts, prompts, lines, jobs, the 3D scene, the Remotion project's
+# source, the VideoToolbox tool's Swift); keyframes, clips, captures, voice takes, builds and node_modules stay local
+!design3/designs/SC-238/src/
+design3/designs/SC-238/src/*
+!design3/designs/SC-238/src/*.py
+!design3/designs/SC-238/src/*.sh
+!design3/designs/SC-238/src/*.mjs
+!design3/designs/SC-238/src/*.json
+!design3/designs/SC-238/src/prompts/
+!design3/designs/SC-238/src/tts/
+design3/designs/SC-238/src/tts/*
+!design3/designs/SC-238/src/tts/*.py
+!design3/designs/SC-238/src/vtfx/
+design3/designs/SC-238/src/vtfx/*
+!design3/designs/SC-238/src/vtfx/*.swift
+!design3/designs/SC-238/src/agents3d/
+design3/designs/SC-238/src/agents3d/node_modules
+design3/designs/SC-238/src/agents3d/frames/
+design3/designs/SC-238/src/agents3d/label.webp
+design3/designs/SC-238/src/agents3d/bg.jpg
+design3/designs/SC-238/src/agents3d/bg/
+!design3/designs/SC-238/src/film/
+design3/designs/SC-238/src/film/node_modules/
+design3/designs/SC-238/src/film/public/
+design3/designs/SC-238/src/film/out/
+# SC-211's install and audit scenes, recaptured on this film's narration
+!design3/designs/SC-238/src/pwa11/
+!design3/designs/SC-238/src/audit11/
+# the talking scenes made here ship beside the film (media/talk/), past the root's *.mp4
+!design3/designs/SC-238/media/talk/*.mp4

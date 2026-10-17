@@ -1,0 +1,46 @@
+[
+ {
+  "name": "d-mango-pack3",
+  "image": "img/d-mango-pack5-238902.png",
+  "resolution": "720p",
+  "duration": 6,
+  "seed": 238921,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up in a distributor's godown in soft early-morning daylight from the open rolling shutter. A woman in her fifties with a grey-streaked braid, in a teal silk sari with a gold border and a beaded necklace, holds a small plain yellow drink carton up in her right hand. She tilts its top towards her and reads the date printed there, her lips pressed together, then lowers it a little and looks down at the stacked brown cartons beside her, thoughtful and worried. She does not speak and never looks into the camera. The carton stays plain yellow, with no printing facing the camera. Photorealistic cinematic footage, natural skin, sharp focus on her face and the carton. Audio: the quiet room tone of a godown in the early morning, a distant shutter rattling, no music, no voices.",
+  "out": "clips/d-mango-pack3.mp4"
+ },
+ {
+  "name": "l-dawn-call-b",
+  "image": "img/l-dawn-call2-238902.png",
+  "resolution": "720p",
+  "duration": 8,
+  "seed": 238922,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up at home at dawn. A woman in her thirties with her hair in a low bun, in a navy pinstripe kurta, stands by a window with a sheer curtain, cool first light outside and a warm lamp behind her, holding a phone to her ear, looking off to the right of the frame. She asks into the phone, clearly, in a natural Indian English accent: \"And quick commerce?\" Then she listens for two seconds, her face falling. Then she says, resigned: \"Write it off, then.\" and looks down. Her lips shape every word in time with her voice; small natural head movements and natural blinks; she never looks into the camera. The curtain stirs slightly; nothing else moves. Photorealistic cinematic footage, natural skin, sharp focus on her face. Audio: her voice close and clear, a quiet flat in the early morning, birds outside, no music, no other voices.",
+  "out": "clips/l-dawn-call-b.mp4"
+ },
+ {
+  "name": "v-dock-b",
+  "image": "img/v-dock2-238902.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 238923,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up at a godown's loading dock beside a white van with its rear doors open, warm late-morning light. A young woman in a green T-shirt with her hair tied back holds a clipboard against her chest and keeps looking to the left of the frame at the driver loading the van, her face in three-quarter profile the whole time. She says to him clearly and brightly, in a natural Indian English accent: \"Fifty-eight packs. All sealed.\" and gives a small nod. Her lips shape every word in time with her voice; natural blinks; she never turns her head towards the camera and never looks into the lens. Behind her the driver keeps loading a sealed carton into the van without speaking. Photorealistic cinematic footage, natural skin, sharp focus on her face. Audio: her voice clear, a van's engine idling, a carton sliding on a steel floor, no music, no other voices.",
+  "out": "clips/v-dock-b.mp4"
+ },
+ {
+  "name": "d-portal",
+  "image": "img/d-portal-238903.png",
+  "resolution": "720p",
+  "duration": 6,
+  "seed": 238924,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up in a distributor's godown in the evening, warm golden low sunlight through the open shutter, the stacked cartons glowing amber. A woman in her fifties with a grey-streaked braid, in a teal silk sari with a gold border, holds a tablet low in both hands with its back to the camera and reads its screen, scrolling once with her thumb, then a small satisfied smile spreads across her face and she nods slightly to herself. She does not speak and never looks into the camera. Photorealistic cinematic footage, natural skin, sharp focus on her face. Audio: the quiet room tone of a godown in the evening, distant traffic, a bird outside, no music, no voices.",
+  "out": "clips/d-portal.mp4"
+ }
+]

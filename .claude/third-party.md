@@ -17,3 +17,14 @@ Claude Code asks once before it starts a project MCP server from `.mcp.json`. Ag
 ThreeUI's free Community catalog (github.com/MengTo/threeui, MIT, Copyright (c) 2026 Meng To) reaches Claude Code through the maintainer's own `threeui-community` plugin. It is installed at user scope from `~/projects/threeui-community-plugin`, and serves a copy pinned to `68802d5` from `~/threeui-community`. Nothing from it is installed in this repo.
 
 Code adapted from it keeps the MIT notice beside it. The first is `design3/designs/SC-30/THIRD_PARTY_NOTICES.md`, for SC-30's options 1 and 2; those are designs only, and the built hero uses no ThreeUI code.
+
+## Film-making skills (SC-238)
+
+The maintainer asked for the best director, cinematography and editing skills before the landing demo film v3 (16 Oct 2026). The aitmpl.com catalog had none (only a generic ffmpeg video-editor agent), so they were found on GitHub, each read in full first: Markdown references, plus scripts that only call a local ffmpeg; no hooks, settings or MCP servers. They are installed at user scope (`~/.claude/skills/`), like the ffmpeg skills; nothing from them is in this repo.
+
+| Skill | Where | Source, pinned | License | Use |
+| --- | --- | --- | --- | --- |
+| `cinematic-director` (2.1.0) | `~/.claude/skills/cinematic-director/` | [wuwangzhang1216/DirectorSKILL](https://github.com/wuwangzhang1216/DirectorSKILL) `c65ae0d` | MIT | The director's pipeline: subtext, beats, director's book, blocking, shot list, keyframe and motion prompts, sound and dialogue plan, edit plan with transition engineering for generated clips, a coded failure manual |
+| `editing-videos` (2.0.0) | `~/.claude/skills/editing-videos/` | [kmilo93sd/agent-video-editor](https://github.com/kmilo93sd/agent-video-editor) `8e32c0a` | MIT; its sound library and graphics CC0 | An editor's judgment with sourced numbers (pacing, J and L cuts, levels, ducking, SFX, color) and a CC0 library of 113 sound effects and 15 music tracks, each measured |
+| `business-motion-film` | `~/.claude/skills/business-motion-film/` | [echris6/motion-video-kit](https://github.com/echris6/motion-video-kit) `e4b1c00` | MIT | Premium launch-film motion grammar, Three.js patterns, projected overlays (labels pinned to 3D anchors), audio rules and an independent-critic review loop |
+| `video` | `~/.claude/skills/video/` | [smixs/visual-skills](https://github.com/smixs/visual-skills) `92be33a` | CC BY 4.0 (Serge Shima; attribution kept in its `NOTICE`) | Dramaturgy for generated film: the scene formula, Murch's rule of six, blocking, montage and the rhythm ladder |

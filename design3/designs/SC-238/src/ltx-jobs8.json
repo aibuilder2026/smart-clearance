@@ -1,0 +1,13 @@
+[
+ {
+  "name": "r-landfill-b",
+  "image": "img/r-landfill-say.png",
+  "resolution": "720p",
+  "duration": 6,
+  "seed": 238823,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up at a landfill under an overcast grey sky, a yellow excavator and the heaps softly out of focus behind. A man in his sixties with grey hair, his glasses pushed up on his head and a moustache, in a light blue checked shirt, holds a tablet against his chest with its back to the camera and keeps looking to the left of the frame at the officer who has just signed, his face in three-quarter profile the whole time. He nods once and says firmly, in a natural Indian English accent: \"All four signatures. It's on record.\" His lips shape every word in time with his voice; natural blinks; he never turns his head towards the camera and never looks into the lens. Photorealistic cinematic footage, natural skin, sharp focus on his face. Audio: his voice clear, wind over open ground, a distant excavator, no music, no other voices.",
+  "out": "clips/r-landfill-b.mp4"
+ }
+]

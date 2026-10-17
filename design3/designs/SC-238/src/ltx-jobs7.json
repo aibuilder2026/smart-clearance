@@ -1,0 +1,43 @@
+[
+ {
+  "name": "a-desk",
+  "image": "img/a-desk.png",
+  "resolution": "720p",
+  "duration": 8,
+  "seed": 238811,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium shot in a bright office in the morning. A woman in her thirties with her hair in a low bun, in a navy pinstripe kurta with an ID lanyard, sits at her desk holding a tablet in both hands with its back to the camera, reading its screen closely with a slight frown of concern. She reads on, then nods to herself, and taps the screen once with her right forefinger, a small decisive smile. She does not speak and never looks into the camera. Soft morning daylight from the window; a laptop and a cup of coffee on the desk; nothing else moves. Photorealistic cinematic footage, natural skin, natural hands with five fingers. Audio: a quiet office in the morning, the soft tap on glass, far-off traffic, no music, no voices."
+ },
+ {
+  "name": "r-raise-tablet",
+  "image": "img/r-raise-tablet.png",
+  "resolution": "720p",
+  "duration": 6,
+  "seed": 238812,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium shot at a landfill under an overcast grey sky. A man in his sixties in a blue checked shirt with his glasses pushed up on his head holds a tablet up at eye level in both hands, its back to the camera, steadies it and photographs the heap in front of him, concentrating, then lowers it a little to check the photo on its screen and nods. He does not speak and never looks into the camera. A gust of wind moves his shirt; the excavator works far off; nothing falls or slides. Photorealistic cinematic footage, natural skin. Audio: wind over open ground, a distant excavator, a soft camera shutter click, no music, no voices."
+ },
+ {
+  "name": "r-landfill",
+  "image": "img/r-landfill-say.png",
+  "resolution": "720p",
+  "duration": 6,
+  "seed": 238813,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up at a landfill under an overcast grey sky, a yellow excavator and the heaps softly out of focus behind. A man in his sixties with grey hair, his glasses pushed up on his head and a moustache, in a light blue checked shirt, holds a tablet against his chest with its back to the camera and looks to the left of the frame at the officer who has just signed. He nods once and says firmly, in a natural Indian English accent: \"All four signatures. It's on record.\" His lips shape every word in time with his voice; natural blinks; he never looks into the camera. Photorealistic cinematic footage, natural skin, sharp focus on his face. Audio: his voice clear, wind over open ground, a distant excavator, no music, no other voices."
+ },
+ {
+  "name": "w-buyer-b",
+  "image": "img/mcu/w-buyer.png",
+  "resolution": "720p",
+  "duration": 6,
+  "seed": 238814,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up in a wholesaler's warehouse among grain sacks and brown cartons, warm light from a high window with dust in the air. A man in his forties with a short beard, in a grey half-sleeve shirt, already looking to the left of the frame at a worker, his hands empty and still, calls out to him, decisive and pleased, in a natural Indian English accent: \"Fourteen-twenty. Done. Truck's coming.\" His lips shape every word in time with his voice; his eyes stay open between natural blinks; he never turns his head and never looks into the camera. Photorealistic cinematic footage, natural skin, sharp focus on his face. Audio: his voice clear, the echo of a large warehouse, sacks being stacked far off, no music, no other voices.",
+  "out": "clips/w-buyer-b.mp4"
+ }
+]

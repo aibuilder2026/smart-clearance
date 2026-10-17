@@ -1,0 +1,24 @@
+[
+ {
+  "name": "d-batch",
+  "image": "img/d-batch-238905.png",
+  "resolution": "720p",
+  "duration": 6,
+  "seed": 238925,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A slow, gentle push-in on a close-up insert in a distributor's godown in soft early-morning daylight: an open brown carton full of small plain yellow drink packs standing in neat rows, plain brown cartons stacked behind. A woman's hand with a teal silk sari's border at the wrist reaches in from the right and lifts one pack out, turning it slightly, her figure soft and out of focus behind. The packs stay plain yellow, with no printing. Photorealistic cinematic footage, shallow depth of field, sharp focus on the packs. Audio: the quiet room tone of a godown in the morning, a pack rustling, no music, no voices.",
+  "out": "clips/d-batch.mp4"
+ },
+ {
+  "name": "l-dawn-call-c",
+  "image": "img/l-dawn-call2-238902.png",
+  "resolution": "720p",
+  "duration": 8,
+  "seed": 238926,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up at home at dawn. A woman in her thirties with her hair in a low bun, in a navy pinstripe kurta, stands by a window with a sheer curtain, cool first light outside and a warm lamp behind her, holding a phone to her ear, looking off to the right of the frame. She asks into the phone, clearly, in a natural Indian English accent, saying the word commerce distinctly: \"And quick commerce?\" Then she listens for two seconds, her face falling, the phone still at her ear. Then she says into the phone, resigned: \"Write it off, then.\" and looks down, keeping the phone to her ear the whole time. Her lips shape every word in time with her voice; small natural head movements and natural blinks; she never looks into the camera. The curtain stirs slightly; nothing else moves. Photorealistic cinematic footage, natural skin, sharp focus on her face. Audio: her voice close and clear, a quiet flat in the early morning, birds outside, no music, no other voices.",
+  "out": "clips/l-dawn-call-c.mp4"
+ }
+]
