@@ -60,7 +60,7 @@ CLIPS = {
     'hold': LIB / 'SC-205/src/clips/i2-hold.mp4',
     'landfill': LIB / 'SC-205/src/clips/i3-landfill.mp4',
     'aisle': LIB / 'SC-207/src/clips/o0-godown-aisle-labelled.mp4',
-    'mango-pack': HERE / 'clips/d-mango-pack2.mp4',                      # this film's: the distributor reads a pack's date (pass 6's keyframe)    # the godown dolly, every carton's label tracked
+    'mango-pack': HERE / 'clips/d-mango-pack3.mp4',                      # this film's: the distributor reads a pack's date (pass 9: an edit of her own dawn keyframe, no glasses)
     'aisle-plain': LIB / 'SC-206/src/clips/o0-godown-aisle.mp4',
     'van-kirana': LIB / 'SC-208/src/clips/dl-kirana.mp4',              # the van round at a kirana
     'truck': LIB / 'SC-208/src/clips/dl-truck.mp4',                    # the buyer's truck loaded
@@ -78,6 +78,9 @@ CLIPS = {
     # after the first full-film critic: the lead at her desk reading, then tapping, her tablet's back to the camera (one
     # woman throughout); the Nagpur distributor raising his tablet at the landfill to photograph the evidence
     'a-desk': HERE / 'clips/a-desk.mp4', 'r-raise': HERE / 'clips/r-raise-tablet.mp4', 'k-tail': HERE / 'clips/k-order-b.mp4',
+    # after the verification critic: the distributor at her godown at dusk, her portal on her tablet (the portal's shot was
+    # the verify shot's clip again); the mango batch itself, closer (the rule's last shot was the godown's opening footage)
+    'd-portal': HERE / 'clips/d-portal.mp4', 'd-batch': HERE / 'clips/d-batch.mp4',
 }
 # the people with their own devices, over the shoulder (SC-206's clips, 1920 × 1088, each blank screen tracked frame by
 # frame by SC-207's track3.py): screens.py sets the app's real screen into the glass, under any finger
@@ -137,13 +140,15 @@ def clip(name, key, a, b, dur=None):
     return d
 
 
-def ots(name, who, win_media, d, lift, a=0.25, still=None, still2=None):
+def ots(name, who, win_media, d, lift, a=0.25, still=None, still2=None, dehalo=None):
     """a person over the shoulder with the app's screen in their device (screens.py): `win_media`'s frames from the
     shot's start (or a still), lifting out at `lift` (shot seconds); the clip at its own pace to the lift, then half
     pace, back and forth, behind the window"""
     src, trk = OTS[who]
     MEDIA[name] = {'kind': 'ots', 'src': str(src), 'track': str(trk), 'win': win_media, 'still': str(still) if still else None, 'in': a, 'dur': round(d, 3), 'lift': round(lift, 3)}
     if still2: MEDIA[name].update({'still2': str(still2), 'track2': str(OTS_PHONE)})
+    # (the clips whose relabelled cartons show in the background get their glow taken out: screens.py's dehalo)
+    if dehalo if dehalo is not None else who in ('lakshmi-label', 'agrawal', 'meera', 'upi', 'rakesh'): MEDIA[name]['dehalo'] = True
     return d
 
 
@@ -254,6 +259,7 @@ def have(key):
 
 # the lead's tablet in her desk clip (film px): where her screen lifts out from, as she reads (0 s) and as she taps (4 s)
 A_TABLET, A_TABLET_TAP = [390, 600, 490, 390], [215, 700, 640, 380]
+D_PORTAL = [640, 640, 460, 400]   # the distributor's tablet at dusk (d-portal), film px: measured on the clip once made
 
 
 def build():
@@ -284,12 +290,13 @@ def build():
     s.mark('gates', t + 0.4); t = s.say('n04', t + 1.1)
     s.mark('batch', t + 0.5); t = s.say('n05', t + 1.2)
     s.end = t + 2.6
-    d1 = clip('rule-mango', 'mango-pack' if (HERE / 'clips/d-mango-pack2.mp4').exists() else 'mango-godown', 0.2, 5.15, s.marks['fssai'] + 0.6)     # the distributor with the mango's open carton
+    d1 = clip('rule-mango', 'mango-pack', 0.2, 4.4, s.marks['fssai'] + 0.6)     # the distributor reads the mango's date (from 4.8 s the take looks into the lens)
     s.shot('clip', 0, d1, media='rule-mango')
     d2 = s.marks['batch'] - d1
     clip('rule-darkstore', 'darkstore', 0.0, 9.95, d2)                               # the dark store turning a carton away
     s.shot('clip', d1, d1 + d2, media='rule-darkstore', grade='green')
-    clip('rule-batch', 'aisle', 0.0, 5.95, s.end - d1 - d2)                          # back to the batch itself: its cartons, closer (Rule.tsx)
+    if have('d-batch'): clip('rule-batch', 'd-batch', 0.2, 5.8, s.end - d1 - d2)    # back to the batch itself: its open carton of packs, close (Rule.tsx)
+    else: clip('rule-batch', 'aisle', 0.0, 5.95, s.end - d1 - d2)
     s.shot('clip', d1 + d2, s.end, media='rule-batch', grade='green')
     S.append(s)
 
@@ -570,9 +577,14 @@ def build():
     d = t + 1.4 - a1
     wp, wc = s.w('n30b', 'paper') - a1 - 0.5, s.w('n30b', 'rupee') - a1 - 0.4
     starts = win('m-portal', 'mango', 'L', [(748.0, 749.9, wp), (750.4, 750.95, wc - wp), (751.4, 755.2, d - wc)])   # (the stage's ring on the Papers tab at 750.0 and on the signature from 755.5, left out)
-    ots('i-portal', 'lakshmi-label', 'm-portal', d, 0.5, a=2.4)
-    s.shot('ots', a1, a1 + d, media='i-portal', lift=0.5)
-    s.shot('win', a1, a1 + d, media='m-portal', starts=starts, lift=0.5, clock=['Best before', 'her portal'],
+    pf = None
+    if have('d-portal'):                                # at her godown at dusk, reading her portal on her tablet (its back to us)
+        clip('i-portal', 'd-portal', 0.3, 5.8, d); pf = D_PORTAL
+        s.shot('clip', a1, a1 + d, media='i-portal', sharp=0.5, under='m-portal', fromRect=pf)
+    else:
+        ots('i-portal', 'lakshmi-label', 'm-portal', d, 0.5, a=2.4)
+        s.shot('ots', a1, a1 + d, media='i-portal', lift=0.5)
+    s.shot('win', a1, a1 + d, media='m-portal', starts=starts, lift=0.5, clock=['Best before', 'her portal'], **({'fromRect': pf} if pf else {}),
            rings=[R(a1 + 0.7, a1 + starts[1], [106, 522, 712, 30]), R(a1 + starts[1] + 0.1, a1 + starts[2], [95, 296, 260, 200]), R(a1 + starts[2] + 0.3, a1 + d - 0.05, [394, 776, 404, 26])],
            cards=[C(a1 + 0.9, a1 + starts[1], [106, 522, 712, 30], 'Her own portal', 'She ends whole: ₹0 lost',
                     'What each exit took, what was credited, and what she paid, line by line.', 'wallet'),

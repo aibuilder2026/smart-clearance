@@ -6591,7 +6591,7 @@
   "rule-mango": {
    "kind": "clip",
    "in": 0.2,
-   "out": 5.15,
+   "out": 4.4,
    "dur": 4.835
   },
   "rule-darkstore": {
@@ -6871,7 +6871,8 @@
    "still": null,
    "in": 0.25,
    "dur": 8.644,
-   "lift": 3.55
+   "lift": 3.55,
+   "dehalo": true
   },
   "m-plan": {
    "kind": "win",
@@ -7104,7 +7105,8 @@
    "still": null,
    "in": 0.25,
    "dur": 8.132,
-   "lift": 0.6
+   "lift": 0.6,
+   "dehalo": true
   },
   "m-staff": {
    "kind": "win",
@@ -7154,7 +7156,8 @@
    "dur": 12.025,
    "lift": 1.6,
    "still2": "/Users/arundutta/projects/smart-clearance/design3/designs/SC-238/src/build/upi-paid.png",
-   "track2": "/Users/arundutta/projects/smart-clearance/.claude/worktrees/SC-205-demo-film/design3/designs/SC-207/src/build/track/s-upi-phone.json"
+   "track2": "/Users/arundutta/projects/smart-clearance/.claude/worktrees/SC-205-demo-film/design3/designs/SC-207/src/build/track/s-upi-phone.json",
+   "dehalo": true
   },
   "m-van": {
    "kind": "clip",
@@ -7210,7 +7213,8 @@
    "still": null,
    "in": 2.4,
    "dur": 9.08,
-   "lift": 0.5
+   "lift": 0.5,
+   "dehalo": true
   },
   "c-today": {
    "kind": "win",
@@ -7238,7 +7242,8 @@
    "still": null,
    "in": 0.25,
    "dur": 12.022,
-   "lift": 16.422
+   "lift": 16.422,
+   "dehalo": true
   },
   "c-lot": {
    "kind": "win",
@@ -7286,7 +7291,8 @@
    "still": null,
    "in": 0.25,
    "dur": 9.322,
-   "lift": 1.0
+   "lift": 1.0,
+   "dehalo": true
   },
   "chips-d10": {
    "kind": "talk",
@@ -7446,7 +7452,8 @@
    "still": null,
    "in": 1.0,
    "dur": 9.176,
-   "lift": 16.276
+   "lift": 16.276,
+   "dehalo": true
   },
   "r-tablet": {
    "kind": "ots",

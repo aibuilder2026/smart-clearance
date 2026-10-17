@@ -80,6 +80,38 @@ def insert(frame, frame_u8, quad, content):
     return m
 
 
+def dehalo(fr, quad=None, ring=24, strength=1.0):
+    """the relabelled cartons' bright fringe (SC-206's clips: each label pasted with a glow round it) taken back to the
+    background around it. Labels are small, bright, near-white rectangles carrying print (text, a barcode, a QR; a
+    highlight carries none), never the device's screen: each keeps its own pixels, a touch under the scene's light, and in
+    a ring round it the excess over the local background is taken out, feathered from its edge"""
+    hsv = cv2.cvtColor(fr, cv2.COLOR_BGR2HSV)
+    lab = ((hsv[..., 2] > 200) & (hsv[..., 1] < 45)).astype(np.uint8)
+    h, w = lab.shape
+    if quad is not None:
+        poly = np.zeros((h, w), np.uint8); cv2.fillConvexPoly(poly, np.int32(np.round(quad)), 1)
+        lab[cv2.dilate(poly, np.ones((61, 61), np.uint8)) > 0] = 0
+    lab = cv2.morphologyEx(lab, cv2.MORPH_CLOSE, np.ones((11, 11), np.uint8))
+    n, cc, st, _ = cv2.connectedComponentsWithStats(lab, 8)
+    L = np.zeros((h, w), np.uint8)
+    for i in range(1, n):
+        x, y, bw, bh, a = st[i]
+        if not (700 <= a <= 60000): continue
+        if a / float(bw * bh) < 0.6 or not (0.6 <= bw / float(bh) <= 3.6): continue
+        if (hsv[y:y + bh, x:x + bw, 2] < 150).mean() < 0.03: continue
+        L[y:y + bh, x:x + bw] = 1
+    if not L.any(): return fr
+    far = cv2.dilate(L, np.ones((2 * ring + 7, 2 * ring + 7), np.uint8))
+    wgt = (1 - far).astype(np.float32)
+    f = fr.astype(np.float32)
+    bg = cv2.blur(f * wgt[..., None], (81, 81)) / np.maximum(cv2.blur(wgt, (81, 81))[..., None], 1e-3)
+    d = cv2.distanceTransform((1 - L).astype(np.uint8), cv2.DIST_L2, 5)
+    fe = np.clip(1 - (d - 1.5) / ring, 0, 1) * (d > 1.5)
+    f = f - np.clip(f - bg, 0, None) * (strength * fe)[..., None]
+    f[L > 0] *= 0.93
+    return np.clip(f + 0.5, 0, 255).astype(np.uint8)
+
+
 # ---------------------------------------------------------------- the shot
 
 def clip_time(u, a, lift, b_max, after=0.5):
@@ -152,6 +184,7 @@ def make(name, draft):
             fr = frame_at(tc)
             if fr.shape[1] != cw or fr.shape[0] != chh: fr = cv2.resize(fr, (cw, chh), interpolation=cv2.INTER_AREA)
             q = quad_at(quads, fin, tc)
+            if m.get('dehalo'): fr = dehalo(fr, q)          # (the relabelled cartons' glow taken out, before the screen goes in)
             content = (next_win() if wcap is not None else stl).astype(np.float32) / 255
             f32 = fr.astype(np.float32) / 255
             insert(f32, fr, q, content)
