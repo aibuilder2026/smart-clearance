@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ENDED, chapterAt, clock, filmPlayer, loadYouTube, type YouTubeApi } from '#lib/landing/youtube.ts';
 
 // the demo film's theatre (SC-164): YouTube only after Watch, on its no-cookie host; its chapters from the film's own
-// timeline (SC-211's sales film, design3/designs/SC-211/src/transcript11.py, SC-216)
+// timeline (SC-238's landing film v3, design3/designs/SC-238/src/transcript12.py, SC-242)
 const here = dirname(fileURLToPath(import.meta.url));
 const words = JSON.parse(readFileSync(join(here, '../../../../design3/site/assets/media/demo-film.json'), 'utf8')) as {
 	duration: number;
@@ -15,36 +15,32 @@ const words = JSON.parse(readFileSync(join(here, '../../../../design3/site/asset
 };
 
 describe("the film's words", () => {
-	it('are its thirteen chapters from 0:00, in order, each long enough to be a YouTube chapter, and its 48 lines', () => {
+	it('are its nine chapters from 0:00, in order, each long enough to be a YouTube chapter, and its 64 lines', () => {
 		const starts = words.chapters.map((c) => c.at);
-		expect(words.runtime).toBe('6:50');
-		expect(starts).toHaveLength(13);
+		expect(words.runtime).toBe('7:50');
+		expect(starts).toHaveLength(9);
 		expect(starts[0]).toBe(0);
 		starts.forEach((s, i) => expect((starts[i + 1] ?? words.duration) - s).toBeGreaterThanOrEqual(10));
-		expect(words.chapters.flatMap((c) => c.lines)).toHaveLength(48);
+		expect(words.chapters.flatMap((c) => c.lines)).toHaveLength(64);
 		expect(words.chapters.map((c) => `${clock(c.at)} ${c.title}`)).toEqual([
-			'0:00 The waste',
-			'0:38 Smart-Clearance, as a service',
-			'1:01 Every team, on any device',
-			'1:39 Ten agents',
-			'2:21 Guardrails and one yes',
-			'3:04 Flagged, read and planned',
-			'3:41 The kiranas',
-			'4:05 The staff sale and the food bank',
-			'4:23 The marketplace',
-			'4:44 The hardest case',
-			'5:10 The paperwork and the money',
-			'5:42 The record and the impact',
-			'6:18 The close'
+			'0:00 Twenty-two days left',
+			'0:18 The rule',
+			'0:50 The cost of the bin',
+			'1:13 Smart-Clearance, as a service',
+			'2:00 Ten agents and one yes',
+			'3:26 The happy path',
+			'5:14 The hard case',
+			'6:42 Every paper and every rupee',
+			'7:27 The close'
 		]);
 	});
 	it('mark the chapter a time falls in', () => {
 		const starts = words.chapters.map((c) => c.at);
 		expect(chapterAt(0, starts)).toBe(0);
-		expect(chapterAt(82, starts)).toBe(2);
-		expect(chapterAt(200, starts)).toBe(5);
-		expect(chapterAt(360, starts)).toBe(11);
-		expect(chapterAt(405, starts)).toBe(12);
+		expect(chapterAt(82, starts)).toBe(3);
+		expect(chapterAt(200, starts)).toBe(4);
+		expect(chapterAt(360, starts)).toBe(6);
+		expect(chapterAt(405, starts)).toBe(7);
 	});
 	it('name no client, in the chapters the theatre shows or in any line of the film (SC-28)', () => {
 		const said = words.chapters.flatMap((c) => [c.title, ...c.lines.map((l) => l.text)]).join(' ');
