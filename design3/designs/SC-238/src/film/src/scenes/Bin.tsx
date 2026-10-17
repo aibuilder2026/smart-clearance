@@ -22,12 +22,12 @@ export const Bin: React.FC<{ s: SceneData }> = ({ s }) => {
 				<>
 					<Scrim side="r" a={0.72} />
 					<Scrim side="b" a={0.55} />
-					<div style={{ position: 'absolute', left: 92, bottom: 110 }}>
+					<div style={{ position: 'absolute', left: 92, bottom: 190 }}>
 						<Kicker t={t} t0={wOff - 0.4} t1={tr.t1} text="One batch · 1,580 packs · 22 days left" color="#ff9d8c" />
 						<div style={{ height: 18 }} />
 						<Rise t={t} t0={wOff - 0.15} t1={tr.t1} text="If it is written off…" size={84} />
 					</div>
-					<Bill t={t} t0={M.stock - 0.5} t1={tr.t1 - 0.05} x={1196} y={150} w={640} dp={0} title="What the bin costs the brand, on one batch"
+					<Bill t={t} t0={M.stock - 0.5} t1={tr.t1 - 0.05} x={1196} y={214} w={640} dp={0} title="What the bin costs the brand, on one batch"
 						rows={[
 							{ at: M.stock, label: 'The stock, at cost', sub: '1,580 packs × ₹11.00', v: -17380, tone: 'red' },
 							{ at: M.credit, label: 'GST input credit reversed', sub: 'as the law requires on goods destroyed', v: -869, tone: 'red' },
@@ -52,8 +52,8 @@ export const Bin: React.FC<{ s: SceneData }> = ({ s }) => {
 					</Shot>
 				);
 			})}
-			{/* the eight frames of silence: black */}
-			{t >= shot(s, 'bin-heap').t1 && <AbsoluteFill style={{ background: '#000' }} />}
+			{/* (SC-245: the heap, darkening, where eight black frames were) */}
+			<AbsoluteFill style={{ background: '#000', opacity: 0.7 * ramp(t, shot(s, 'bin-heap').t1 - 0.2, shot(s, 'bin-heap').t1, EASE) }} />
 		</AbsoluteFill>
 	);
 };
@@ -70,7 +70,7 @@ export const Turn: React.FC<{ s: SceneData }> = ({ s }) => {
 		<AbsoluteFill style={{ background: '#000' }}>
 			<Footage name="turn-sunrise" t0={sh.t0} t1={sh.t1} push={0.08} origin="50% 42%" />
 			<AbsoluteFill style={{ opacity: ramp(t, 0, 0.6) * (1 - swell), background: 'linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0) 40%, rgba(0,0,0,0.45))' }} />
-			<div style={{ position: 'absolute', left: 0, right: 0, bottom: 120, textAlign: 'center', opacity: 1 - swell }}>
+			<div style={{ position: 'absolute', left: 0, right: 0, bottom: 190, textAlign: 'center', opacity: 1 - swell }}>
 				<Rise t={t} t0={word(s, 'n08', 'What') - 0.05} t1={end - 0.6} text="What if every pack could still find a home?" size={64} align="center" marks={['home?']} markColor="#ffe3a3" />
 			</div>
 			{/* the light: a bloom from the roof that whitens the frame and leaves the mark */}

@@ -180,6 +180,13 @@ def make(name, draft):
     # only the half pace after the lift is made)
     a0 = round(m['in'] * fin) / fin
     times = [clip_time(i / fin, a0, m['lift'] * fin / FPS, b_max) for i in range(n)]
+    if m.get('tmap'):   # (SC-245) the clip's own seconds at shot seconds, given: [[u, clip_t], …], linear between
+        km = m['tmap']
+        def tm(u):
+            for (u0, c0), (u1, c1) in zip(km, km[1:]):
+                if u <= u1: return c0 + (c1 - c0) * max(0.0, u - u0) / max(1e-6, u1 - u0)
+            return km[-1][1]
+        times = [round(tm(i / FPS), 6) for i in range(n)]
     with tempfile.TemporaryDirectory(dir=str(HERE / 'build')) as td:
         tmp = Path(td)
         # the clip at 25 fps over its times: RIFE at the needed instants (one pass over the span it covers), or nearest

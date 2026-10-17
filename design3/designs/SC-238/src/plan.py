@@ -74,7 +74,8 @@ CLIPS = {
     'rakesh-tablet': LIB / 'SC-206/src/clips/s-rakesh.mp4',
     # this film's own (clips/, LTX 2.5 at 720p, 24 fps)
     'raise-phone': HERE / 'clips/d-raise-phone.mp4', 'raise-tablet': HERE / 'clips/r-raise-tablet.mp4',
-    'sunrise': HERE / 'clips/godown-sunrise.mp4', 'darkstore': HERE / 'clips/q-darkstore.mp4',
+    'sunrise': HERE / 'clips/godown-sunrise-empty-245111.mp4',   # (SC-245: the take before had two workers facing the camera while they walked away from it)
+     'darkstore': HERE / 'clips/q-darkstore.mp4',
     'a1-godown': HERE / 'clips/a1-godown.mp4', 'a2-town': HERE / 'clips/a2-town.mp4', 'a3-lane': HERE / 'clips/a3-lane.mp4',
     # after the first full-film critic: the lead at her desk reading, then tapping, her tablet's back to the camera (one
     # woman throughout); the Nagpur distributor raising his tablet at the landfill to photograph the evidence
@@ -146,7 +147,7 @@ def clip(name, key, a, b, dur=None):
     return d
 
 
-def ots(name, who, win_media, d, lift, a=0.25, still=None, still2=None, dehalo=None, patch=None):
+def ots(name, who, win_media, d, lift, a=0.25, still=None, still2=None, dehalo=None, patch=None, tmap=None):
     """a person over the shoulder with the app's screen in their device (screens.py): `win_media`'s frames from the
     shot's start (or a still), lifting out at `lift` (shot seconds); the clip at its own pace to the lift, then half
     pace, back and forth, behind the window"""
@@ -154,6 +155,7 @@ def ots(name, who, win_media, d, lift, a=0.25, still=None, still2=None, dehalo=N
     MEDIA[name] = {'kind': 'ots', 'src': str(src), 'track': str(trk), 'win': win_media, 'still': str(still) if still else None, 'in': a, 'dur': round(d, 3), 'lift': round(lift, 3)}
     if still2: MEDIA[name].update({'still2': str(still2), 'track2': str(OTS_PHONE)})
     if patch: MEDIA[name]['patch'] = patch
+    if tmap: MEDIA[name]['tmap'] = [[round(u, 3), round(c, 3)] for u, c in tmap]
     # (the clips whose relabelled cartons show in the background get their glow taken out: screens.py's dehalo)
     if dehalo if dehalo is not None else who in ('lakshmi-label', 'agrawal', 'meera', 'upi', 'rakesh'): MEDIA[name]['dehalo'] = True
     return d
@@ -323,8 +325,9 @@ def build():
     t = s.say('n07', st + 0.05)
     for i, (k, key) in enumerate([('bin-factory', 'factory'), ('bin-hold', 'hold'), ('bin-heap', 'landfill-heap')]):
         a = st + i * 0.95
-        clip(k, key, 1.0, 2.2, 0.95)
-        s.shot('clip', a, a + 0.95, media=k); s.mark(f'st{i + 1}', a + 0.28)
+        d_ = 0.95 + (0.14 if i == 2 else 0)   # (SC-245: the heap holds through the eight frames of silence: no black frame)
+        clip(k, key, 1.0, 2.2 + (0.14 if i == 2 else 0), d_)
+        s.shot('clip', a, a + d_, media=k); s.mark(f'st{i + 1}', a + 0.28)
     s.end = st + 3 * 0.95 + 0.14       # eight frames of silence, then the sunrise
     S.append(s)
 
@@ -355,7 +358,7 @@ def build():
     starts = win('console-setup', 'admin', 'A', [(1215.2, 1216.15, b[0] - c0 - 1.6), (935.1, 936.6, 1.6), (1006.1, 1007.75, b[2] - b[0]),
                                                 (1069.6, 1070.2, b[3] - b[2]), (975.1, 977.1, 2.5)])
     S0 = c0
-    s.shot('win', c0, c0 + MEDIA['console-setup']['dur'], media='console-setup', starts=starts, lift=1.5, place={'kind': 'laptop', 'cx': 1170, 'cy': 540, 'sw': 1320},
+    s.shot('win', c0, c0 + MEDIA['console-setup']['dur'], media='console-setup', starts=starts, lift=1.5, place={'kind': 'laptop', 'cx': 990, 'cy': 530, 'sw': 1200},
            rings=[R(S0 + 2.3, S0 + starts[1], [362, 755, 1546, 80]), R(S0 + starts[1] + 0.2, S0 + starts[2], [1100, 780, 290, 40]),
                   R(b[0] - 0.1, b[1] - 0.15, [380, 40, 1520, 400]), R(b[1] - 0.15, b[2] - 0.05, [1158, 860, 745, 335]),
                   R(b[2], S0 + starts[4], [1490, 105, 410, 590]), R(S0 + starts[4] + 0.3, S0 + MEDIA['console-setup']['dur'], [1110, 290, 730, 230])],
@@ -372,7 +375,7 @@ def build():
     cs = next(x for x in s.shots if x.get('media') == 'console-setup')
     cs['t1'] = round(min(cs['t1'], O0), 3)
     for x in cs['rings'] + cs['cards']: x['t1'] = round(min(x['t1'], O0), 3)
-    s.shot('win', O0, t + 0.6, media='console-overview', starts=starts, enter='none', place={'kind': 'laptop', 'cx': 1170, 'cy': 540, 'sw': 1320},
+    s.shot('win', O0, t + 0.6, media='console-overview', starts=starts, enter='none', place={'kind': 'laptop', 'cx': 990, 'cy': 530, 'sw': 1200},
            rings=[R(s.w('n10b', 'client') - 0.15, s.w('n10b', 'agent') - 0.1, [362, 265, 1546, 205]), R(s.w('n10b', 'agent') - 0.1, max(O0 + starts[1], s.w('n10b', 'agent') + 1.2), [362, 500, 1546, 470]),
                   R(O0 + starts[2] + 0.1, t + 0.6, [362, 230, 1546, 670])],
            cards=[C(s.w('n10b', 'client') - 0.05, t + 0.55, [362, 230, 1546, 740], 'Live', 'Every client, every agent', 'What they recovered, what waits for a yes, the agents at work.', 'activity', w=360)])   # (the whole page: it stays while its rings walk it)
@@ -406,7 +409,7 @@ def build():
     prev = None
     for lid in ['n14', 'n15', 'n16', 'n17', 'n18', 'n19', 'n20', 'n21', 'n21b']:
         at = t + 1.2 if prev is None else max(t + 1.0, prev + 5.9)
-        if prev is None: at = max(at, s.vo[-1]['t'] + s.vo[-1]['dur'] + 2.2)
+        if prev is None: at = max(at, s.vo[-1]['t'] + s.vo[-1]['dur'] + 2.8)   # (SC-245: the roll-call's cards land before the first stop)
         prev = at; t = s.say(lid, at)
     t = s.say('n22', max(t + 1.6, prev + 5.9)); s.end = t + 4.6
     s.shot('seq', 0, s.end, media='agents3d')
@@ -610,8 +613,14 @@ def build():
     # ---- 9. The hardest case: the chips, the lot, the window, the destruction and its second yes ----------------------
     s = Scene('chips', 'Chips')
     t = s.say('n31', 1.2)
-    win('c-today', 'sad', 'L', [(108.5, 111.5, t + 0.6)])          # his Today: the chips flagged, Vision to check first
-    ots('c-dusk', 'rakesh', 'c-today', t + 0.6, t + 5.0)           # (his screen stays in the glass: it never lifts out)
+    # his Today, live: the chips batch arrives, flagged by the Watcher, and its request follows (SC-245: at its own pace,
+    # where the earlier cut held three seconds of it over twelve)
+    win('c-today', 'sad', 'L', [(105.5, 105.5 + 1.03 * (t + 0.6), t + 0.6)])
+    # (SC-245: the take's thumbs come onto the glass from 2.5 s and press where his screen has nothing; the 5 s take,
+    # turned back and forth over twelve, pressed it again and again. Only its first 2.2 s are used, both thumbs on the
+    # bezel: a slow, steady read while his screen shows the batch arriving, then back and forth under the rack focus)
+    sp = s.w('n31', 'split')                                       # (the rack focus starts here)
+    ots('c-dusk', 'rakesh', 'c-today', t + 0.6, t + 5.0, tmap=[(0, 0.25), (sp, 2.42), (sp + (t + 0.6 - sp) / 2, 1.2), (t + 0.6, 2.0)])
     s.shot('ots', 0, t + 0.6, media='c-dusk', sharp=2.6)
     a0 = t + 0.6
     # the lot: the buyer's phone, his bid, the Negotiator's counter, the lot won

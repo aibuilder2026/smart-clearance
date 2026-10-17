@@ -6,7 +6,7 @@ import React from 'react';
 import { AbsoluteFill, Img, staticFile, useCurrentFrame } from 'remotion';
 import { AMBER, DISPLAY, EASE, EASE_IO, Footage, GREEN, Icon, MONO, RED, SANS, Shot, clamp, lerp, ramp, springAt } from '../kit/core';
 import { Ring } from '../kit/device';
-import { Stamp, jolt } from '../kit/ui';
+import { SAFE, Stamp, jolt } from '../kit/ui';
 import { FPS, SceneData, dlg, shot } from '../edl';
 import { useTrack } from './tracks';
 
@@ -38,8 +38,8 @@ const CallCard: React.FC<{ t: number; t0: number; cut: number; onScreen: (t: num
 	const ended = t >= cut, secs = Math.max(0, Math.floor(Math.min(t, cut) - 0.53));
 	const who = onScreen(t);
 	return (
-		<div style={{ position: 'absolute', left: 56, top: 50, width: 600, padding: '18px 22px 16px', borderRadius: 22, boxSizing: 'border-box', opacity: a,
-			transform: `translateY(${(1 - sp) * -16 - out * 24}px)`, fontFamily: SANS, color: GREEN.ink, ...GLASS }}>
+		<div style={{ position: 'absolute', right: SAFE.right, bottom: SAFE.bottom, width: 600, padding: '18px 22px 16px', borderRadius: 22, boxSizing: 'border-box', opacity: a,
+			transform: `translateY(${(1 - sp) * 16 + out * 24}px)`, fontFamily: SANS, color: GREEN.ink, ...GLASS }}>
 			<div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
 				<div style={{ position: 'relative', width: 34, height: 34, borderRadius: 17, display: 'grid', placeItems: 'center', background: ended ? 'rgba(255,107,87,0.20)' : 'rgba(52,211,128,0.20)' }}>
 					{!ended && <i style={{ position: 'absolute', inset: -6 * ((t * 1.1) % 1), borderRadius: '50%', border: `2px solid ${GREEN.mint2}`, opacity: 1 - ((t * 1.1) % 1) }} />}
@@ -70,7 +70,7 @@ const CallCard: React.FC<{ t: number; t0: number; cut: number; onScreen: (t: num
 const BatchCard: React.FC<{ t: number; t0: number; t1: number }> = ({ t, t0, t1 }) => {
 	const sp = springAt(t, t0, FPS, 16, 140), a = Math.min(clamp((t - t0) / 0.3), 1 - ramp(t, t1 - 0.25, t1)); if (a <= 0) return null;
 	return (
-		<div style={{ position: 'absolute', left: 56, top: 50, width: 600, padding: '20px 24px', borderRadius: 22, boxSizing: 'border-box', opacity: a, transform: `translateY(${(1 - sp) * -16}px)`, fontFamily: SANS, color: GREEN.ink, ...GLASS }}>
+		<div style={{ position: 'absolute', right: SAFE.right, bottom: SAFE.bottom, width: 600, padding: '20px 24px', borderRadius: 22, boxSizing: 'border-box', opacity: a, transform: `translateY(${(1 - sp) * 16}px)`, fontFamily: SANS, color: GREEN.ink, ...GLASS }}>
 			<div style={{ display: 'flex', alignItems: 'center', gap: 10, font: `700 15px/1 ${SANS}`, letterSpacing: 3, textTransform: 'uppercase', color: '#73e0a6' }}><Icon name="package" size={17} color={GREEN.mint2} sw={2.3} />The batch</div>
 			<div style={{ marginTop: 10, font: `760 40px/1.05 '${DISPLAY}'`, letterSpacing: -0.8, opacity: ramp(t, t0 + 0.1, t0 + 0.4) }}>Mango drink, 200 ml</div>
 			<div style={{ marginTop: 8, font: `500 20px/1.3 ${SANS}`, color: '#b5c8bd', opacity: ramp(t, t0 + 0.25, t0 + 0.55) }}>1,580 packs at the distributor's godown</div>
@@ -133,6 +133,10 @@ export const ColdOpen: React.FC<{ s: SceneData }> = ({ s }) => {
 // 2 Oct, the Poha 200)
 const DAYS = { mango: [53, 22], poha: [231, 200] } as const;
 const DATES = ['1 Sep', '8 Sep', '15 Sep', '22 Sep', '29 Sep', '2 Oct'];
+const DAY_OF = [0, 7, 14, 21, 28, 31];      // each date's day from 1 Sep: the tags step with the date chip, a week at a time
+// (SC-245: the tags read as shaky: their days changed every frame, their scale every frame (the text re-drawn each time)
+// and twelve crowded the frame. Now each keeps one size, the six clearest are tagged, and the days step with the date.)
+const TAGGED = 6;
 
 export const Godown: React.FC<{ s: SceneData }> = ({ s }) => {
 	const t = useCurrentFrame() / FPS;
@@ -142,7 +146,16 @@ export const Godown: React.FC<{ s: SceneData }> = ({ s }) => {
 	const scan0 = 0.55, scan1 = 2.7, count0 = 3.7, count1 = 6.5;
 	const scanX = (u: number) => lerp(-200, 2120, EASE_IO(clamp((u - scan0) / (scan1 - scan0))));
 	const ck = EASE_IO(clamp((t - count0) / (count1 - count0)));
-	const date = DATES[Math.min(DATES.length - 1, Math.floor(ck * (DATES.length - 1) + 0.0001))];
+	const step = Math.min(DATES.length - 1, Math.floor(ck * (DATES.length - 1) + 0.0001));
+	const date = DATES[step];
+	// when the date last stepped, for the numbers' flip
+	const stepAt = step === 0 ? -1 : (() => { let lo = count0, hi = count1; for (let k = 0; k < 30; k++) { const m = (lo + hi) / 2; if (Math.floor(EASE_IO(clamp((m - count0) / (count1 - count0))) * (DATES.length - 1) + 0.0001) >= step) hi = m; else lo = m; } return hi; })();
+	const flip = step === 0 ? 1 : ramp(t, stepAt, stepAt + 0.22, EASE);
+	// each track's one size (its median width) and the clearest few
+	const sizes = tr ? Object.fromEntries(Object.entries(tr.tracks).map(([id, k]) => { const ws = k.f.filter(Boolean).map((v) => v![2]).sort((a, b) => a - b); return [id, ws.length ? ws[Math.floor(ws.length / 2)] : 0]; })) : {};
+	// (the six longest in the frame's middle, not the ones the dolly carries out at its edge)
+	const inFrame = tr ? Object.fromEntries(Object.entries(tr.tracks).map(([id, k]) => [id, k.f.filter((v) => v && v[0] > 160 && v[0] < 1760).length])) : {};
+	const keep = new Set(Object.entries(inFrame).sort((a, b) => b[1] - a[1] || sizes[b[0]] - sizes[a[0]]).slice(0, TAGGED).map(([id]) => id));
 	return (
 		<AbsoluteFill style={{ background: '#000' }}>
 			<Footage name="godown-aisle" t0={m.t0} t1={m.t1} push={0.03} ride={(u) => {
@@ -157,22 +170,23 @@ export const Godown: React.FC<{ s: SceneData }> = ({ s }) => {
 						background: 'linear-gradient(90deg, rgba(95,227,161,0) 0%, rgba(95,227,161,0.10) 40%, rgba(160,255,210,0.55) 50%, rgba(95,227,161,0.10) 60%, rgba(95,227,161,0) 100%)', mixBlendMode: 'screen' }} />);
 				}
 				for (const [id, trk] of Object.entries(tr.tracks)) {
+					if (!keep.has(id)) continue;
 					const a = trk.f[i], b = trk.f[j] || a; if (!a || !b) continue;
-					const cx = lerp(a[0], b[0], k), top = lerp(a[1], b[1], k) - 4, w = lerp(a[2], b[2], k);
+					const cx = lerp(a[0], b[0], k), top = lerp(a[1], b[1], k) - 4;
 					if (cx < -40 || cx > 1960) continue;
 					const tOn = scan0 + (scan1 - scan0) * clamp((cx + 200) / 2320) * 0.95;   // when the scan passes it
 					if (u < tOn) continue;
 					const kind = trk.kind as 'mango' | 'poha';
 					const [d0, d1] = DAYS[kind];
-					const days = Math.round(lerp(d0, d1, ck));
+					const days = Math.round(d0 - (d0 - d1) * DAY_OF[step] / 31);
 					const ink = kind === 'poha' ? GREEN.mint2 : days >= 30 ? AMBER : RED;
-					const sc = clamp(w / 120, 0.55, 1.15);
+					const sc = clamp(sizes[id] / 80, 0.8, 1.15);
 					const ap = ramp(u, tOn, tOn + 0.25, EASE);
 					out.push(
 						<div key={id} style={{ position: 'absolute', left: cx, top: top - 8, transform: `translate(-50%, -100%) scale(${sc * lerp(0.7, 1, ap)})`, transformOrigin: '50% 100%', opacity: ap }}>
 							<div style={{ padding: '7px 12px 8px', borderRadius: 10, background: 'rgba(6,14,10,0.84)', border: `2px solid ${ink}`, whiteSpace: 'nowrap', textAlign: 'center' }}>
 								<div style={{ font: `700 13px/1 ${SANS}`, letterSpacing: 1.6, color: ink }}>{kind === 'mango' ? 'MANGO DRINK' : 'INSTANT POHA'}</div>
-								<div style={{ marginTop: 4, font: `760 30px/1 '${DISPLAY}'`, color: '#f4f8f5', fontVariantNumeric: 'tabular-nums' }}>{days} <span style={{ font: `700 16px/1 ${SANS}`, letterSpacing: 1.2 }}>DAYS</span></div>
+								<div style={{ marginTop: 4, font: `760 30px/1 '${DISPLAY}'`, color: '#f4f8f5', fontVariantNumeric: 'tabular-nums', opacity: flip, transform: `translateY(${((1 - flip) * 8).toFixed(2)}px)` }}>{days} <span style={{ font: `700 16px/1 ${SANS}`, letterSpacing: 1.2 }}>DAYS</span></div>
 							</div>
 							<div style={{ width: 2, height: 16, margin: '0 auto', background: ink }} />
 						</div>,
@@ -181,7 +195,7 @@ export const Godown: React.FC<{ s: SceneData }> = ({ s }) => {
 				return <AbsoluteFill>{out}</AbsoluteFill>;
 			}} />
 			{/* the date: the month running out to day 0 */}
-			<div style={{ position: 'absolute', left: '50%', top: 54, transform: 'translateX(-50%)', opacity: Math.min(ramp(t, count0 - 0.6, count0 - 0.2), 1 - ramp(t, s.dur - 0.25, s.dur)),
+			<div style={{ position: 'absolute', right: SAFE.right, bottom: SAFE.bottom, opacity: Math.min(ramp(t, count0 - 0.6, count0 - 0.2), 1 - ramp(t, s.dur - 0.25, s.dur)),
 				display: 'flex', alignItems: 'center', gap: 14, padding: '12px 22px', borderRadius: 999, background: 'rgba(6,14,10,0.78)', border: '1.5px solid rgba(255,255,255,0.16)',
 				font: `700 24px/1 ${SANS}`, color: '#eef4f0', fontVariantNumeric: 'tabular-nums' }}>
 				<span style={{ font: `600 15px/1 ${MONO}`, color: '#9fb7aa', letterSpacing: 1 }}>TODAY</span>{date} 2026

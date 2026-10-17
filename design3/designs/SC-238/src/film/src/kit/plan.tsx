@@ -11,10 +11,11 @@ import { FPS, SceneData, Shot, media } from '../edl';
 
 export type Place = { kind: DevKind; cx: number; cy: number; sh?: number; sw?: number };
 export const PLACE: Record<string, Place> = {
-	P: { kind: 'tablet', cx: 1165, cy: 556, sh: 770 },
-	L: { kind: 'tablet', cx: 1260, cy: 546, sh: 884 },
-	H: { kind: 'phone', cx: 1300, cy: 546, sh: 884 },
-	A: { kind: 'laptop', cx: 1170, cy: 540, sw: 1320 },
+	// (SC-245: a little left of where they were, so the agent at work and the clock have the foot's right)
+	P: { kind: 'tablet', cx: 900, cy: 540, sh: 680 },
+	L: { kind: 'tablet', cx: 1030, cy: 540, sh: 860 },
+	H: { kind: 'phone', cx: 1050, cy: 540, sh: 860 },
+	A: { kind: 'laptop', cx: 990, cy: 530, sw: 1200 },
 };
 type Head = { t0: number; t1: number; name: string; stop: string; tier: Tier; icon: string; calls?: [number, string][]; done?: number };
 type PShot = Shot & { lift?: number; fromRect?: Rect; rings?: RingDef[]; cards?: CardDef[]; heads?: Head[]; clock?: [string, string];
@@ -55,7 +56,7 @@ export const SceneClock: React.FC<{ s: SceneData; t: number }> = ({ s, t }) => {
 	return <Clock t={t} t0={seg.t0 + 0.15} t1={seg.t1} label={cur.label} sub={cur.sub} flip={flip} />;
 };
 
-export const Badge: React.FC<{ t: number; t0: number; t1: number; text: string; icon?: string; x?: number; y?: number }> = ({ t, t0, t1, text, icon = 'fast-forward', x = 1290, y = 112 }) => {
+export const Badge: React.FC<{ t: number; t0: number; t1: number; text: string; icon?: string; x?: number; y?: number }> = ({ t, t0, t1, text, icon = 'fast-forward', x = 1290, y = 210 }) => {
 	const a = Math.min(ramp(t, t0, t0 + 0.2), 1 - ramp(t, t1 - 0.2, t1)); if (a <= 0) return null;
 	return (
 		<div style={{ position: 'absolute', left: x, top: y, opacity: a, display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', borderRadius: 999, background: 'rgba(5,14,10,0.84)', border: `1.5px solid ${GREEN.mint2}88`, font: `700 18px/1 ${SANS}`, color: '#eaf3ee' }}>

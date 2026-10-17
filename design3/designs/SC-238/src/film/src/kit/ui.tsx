@@ -7,15 +7,18 @@ import { AMBER, DISPLAY, EASE, GREEN, Icon, MONO, RED, SANS, clamp, lerp, ramp, 
 import { Typed } from './device';
 import { FPS } from '../edl';
 
+/** SC-245: where the corner furniture sits: the foot's right, above YouTube's controls and clear of its header */
+export const SAFE = { right: 56, bottom: 200 } as const;
+
 const fadeIO = (t: number, t0: number, t1: number, fi = 0.3, fo = 0.35) => Math.min(ramp(t, t0, t0 + fi), 1 - ramp(t, t1 - fo, t1));
 
-/** the journey's clock: Day n · hh:mm, top right; a new time flips in */
+/** the journey's clock: Day n · hh:mm, at the foot's right (SC-245: clear of YouTube's header over the top of the frame); a new time flips in */
 export const Clock: React.FC<{ t: number; t0: number; t1: number; label: string; sub?: string; flip?: number }> = ({ t, t0, t1, label, sub, flip = 1 }) => {
 	const a = fadeIO(t, t0, t1, 0.35, 0.4); if (a <= 0) return null;
 	const sp = springAt(t, t0, FPS, 16, 140);
 	return (
-		<div style={{ position: 'absolute', right: 56, top: 50, display: 'flex', alignItems: 'center', gap: 12, padding: '11px 18px 11px 14px', borderRadius: 999, opacity: a,
-			transform: `translateY(${(1 - sp) * -16}px)`, background: 'rgba(6,18,12,0.72)', border: '1.5px solid rgba(95,227,161,0.42)', backdropFilter: 'blur(8px)',
+		<div style={{ position: 'absolute', right: SAFE.right, bottom: SAFE.bottom, display: 'flex', alignItems: 'center', gap: 12, padding: '11px 18px 11px 14px', borderRadius: 999, opacity: a,
+			transform: `translateY(${(1 - sp) * 16}px)`, background: 'rgba(6,18,12,0.72)', border: '1.5px solid rgba(95,227,161,0.42)', backdropFilter: 'blur(8px)',
 			boxShadow: '0 14px 40px rgba(0,0,0,0.35)', fontFamily: SANS, color: GREEN.ink }}>
 			<Icon name="clock" size={20} color={GREEN.mint2} sw={2.3} />
 			<span style={{ font: `700 21px/1 ${SANS}`, letterSpacing: 0.4, fontVariantNumeric: 'tabular-nums', display: 'inline-block', opacity: flip, transform: `translateY(${(1 - flip) * 8}px)` }}>{label}</span>
@@ -31,8 +34,8 @@ const TIER: Record<Tier, { ink: string; glow: string; model: string; icon: strin
 	rules: { ink: '#aab6b0', glow: 'rgba(170,182,176,0.4)', model: 'plain rules, no model', icon: 'braces' },
 	you: { ink: AMBER, glow: 'rgba(247,192,74,0.5)', model: 'a person', icon: 'hand' },
 };
-/** an agent at work, top left: its orb turning while it runs, its name, its stop and model, and its calls typed in */
-export const AgentHead: React.FC<{ t: number; t0: number; t1: number; name: string; stop: string; tier: Tier; icon: string; calls?: [number, string][]; done?: number; x?: number; y?: number }> = ({ t, t0, t1, name, stop, tier, icon, calls = [], done, x = 56, y = 48 }) => {
+/** an agent at work, at the foot's right over the clock (SC-245): its orb turning while it runs, its name, its stop and model, and its calls typed in */
+export const AgentHead: React.FC<{ t: number; t0: number; t1: number; name: string; stop: string; tier: Tier; icon: string; calls?: [number, string][]; done?: number; x?: number; y?: number }> = ({ t, t0, t1, name, stop, tier, icon, calls = [], done, x, y }) => {
 	const a = fadeIO(t, t0, t1, 0.3, 0.4); if (a <= 0) return null;
 	const T = TIER[tier];
 	const sp = springAt(t, t0, FPS, 15, 150);
@@ -40,7 +43,7 @@ export const AgentHead: React.FC<{ t: number; t0: number; t1: number; name: stri
 	const spin = (t - t0) * 140;
 	const ok = done !== undefined ? ramp(t, done, done + 0.3) : 0;
 	return (
-		<div style={{ position: 'absolute', left: x, top: y, opacity: a, transform: `translateX(${(1 - sp) * -30}px)`, fontFamily: SANS, color: GREEN.ink }}>
+		<div style={{ position: 'absolute', ...(x !== undefined ? { left: x, top: y } : { right: SAFE.right, bottom: SAFE.bottom + 70 }), display: 'flex', flexDirection: x !== undefined ? 'column' : 'column-reverse', alignItems: x !== undefined ? 'flex-start' : 'flex-end', opacity: a, transform: `translateX(${(1 - sp) * (x !== undefined ? -30 : 30)}px)`, fontFamily: SANS, color: GREEN.ink }}>
 			<div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 22px 12px 12px', borderRadius: 999, background: 'rgba(6,16,11,0.74)',
 				border: `1.5px solid ${T.ink}66`, backdropFilter: 'blur(10px)', boxShadow: `0 16px 46px rgba(0,0,0,0.4), 0 0 ${working ? 26 : 10}px ${T.glow}` }}>
 				<div style={{ position: 'relative', width: 54, height: 54 }}>
@@ -58,7 +61,7 @@ export const AgentHead: React.FC<{ t: number; t0: number; t1: number; name: stri
 				</div>
 			</div>
 			{calls.length > 0 && (
-				<div style={{ marginTop: 12, marginLeft: 22, padding: '12px 16px', borderRadius: 14, background: 'rgba(4,10,7,0.66)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(8px)' }}>
+				<div style={{ margin: x !== undefined ? '12px 0 0 22px' : '0 22px 12px 0', maxWidth: 480, padding: '12px 16px', borderRadius: 14, background: 'rgba(4,10,7,0.66)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(8px)' }}>
 					{calls.map(([ct, line], i) => <Typed key={i} t={t} t0={ct} text={line} style={{ color: line.startsWith('✓') ? GREEN.mint2 : '#cfe2d8', fontSize: 16.5 }} />)}
 				</div>
 			)}

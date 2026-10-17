@@ -59,10 +59,11 @@
   .rule svg { width: 18px; height: 18px; color: var(--amber); }
 
   /* the act's title, top left, on its own shade */
-  #shade { position: absolute; left: 0; top: 0; width: 1200px; height: 320px; pointer-events: none;
-    background: radial-gradient(120% 100% at 0% 0%, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.42) 40%, rgba(0, 0, 0, 0) 74%); opacity: 0; }
-  .ttl { position: absolute; left: 80px; top: 84px; opacity: 0; }
-  .ttl .k { font: 700 15px/1 'Geist'; letter-spacing: 3.4px; text-transform: uppercase; color: var(--g300); display: flex; gap: 12px; align-items: center; }
+  /* (SC-245: the act's title at the foot's right, clear of YouTube's header over the top of the frame) */
+  #shade { position: absolute; right: 0; bottom: 0; width: 1300px; height: 440px; pointer-events: none;
+    background: radial-gradient(120% 100% at 100% 100%, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.42) 40%, rgba(0, 0, 0, 0) 74%); opacity: 0; }
+  .ttl { position: absolute; right: 96px; bottom: 150px; opacity: 0; text-align: right; }
+  .ttl .k { font: 700 15px/1 'Geist'; letter-spacing: 3.4px; text-transform: uppercase; color: var(--g300); display: flex; gap: 12px; align-items: center; justify-content: flex-end; }
   .ttl .k i { width: 9px; height: 9px; border-radius: 50%; background: var(--ring); }
   .ttl h1 { margin: 14px 0 0; font: 700 58px/1.02 'Bricolage Grotesque'; letter-spacing: -1.2px; color: #fff; white-space: nowrap; text-shadow: 0 2px 18px rgba(0, 0, 0, 0.75); }
   .ttl h1 .w { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: 12px; margin-bottom: -12px; }
@@ -71,7 +72,7 @@
   .ttl h1 .am { color: var(--amber); }
 
   /* the nine stops, a glass index along the foot */
-  #idx { position: absolute; left: 50%; bottom: 34px; display: flex; gap: 6px; padding: 7px; border-radius: 999px; transform: translateX(-50%); opacity: 0;
+  #idx { position: absolute; left: 50%; bottom: 92px; display: flex; gap: 6px; padding: 7px; border-radius: 999px; transform: translateX(-50%); opacity: 0;
     background: rgba(5, 10, 8, 0.78); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6); }
   .ix { display: flex; align-items: center; gap: 7px; padding: 9px 13px 9px 10px; border-radius: 999px; font: 600 15.5px/1 'Geist'; color: #8fa198; white-space: nowrap; border: 1px solid transparent; }
   .ix svg { width: 16px; height: 16px; }
@@ -80,6 +81,27 @@
   .ix.on { color: #04150c; background: linear-gradient(180deg, #6ef0ad, #34d380); border-color: rgba(255, 255, 255, 0.35); font-weight: 700; }
   .ix.on svg { color: #04150c; }
   .ix.on.amb { background: linear-gradient(180deg, #ffd77a, #f2b437); }
+
+  /* SC-245: the roll-call, every agent on screen before the tour: ten cards rise in turn on "Ten agents", Gemini's beams
+     land on the nine that think with it, the Watcher steps forward on "plain rules", then each card flies to its station */
+  #roll { position: absolute; inset: 0; pointer-events: none; }
+  #rshade { position: absolute; inset: 0; opacity: 0; background: radial-gradient(70% 60% at 50% 66%, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0.3) 55%, rgba(0, 0, 0, 0) 100%); }
+  #rfx { position: absolute; inset: 0; overflow: visible; }
+  .rc { position: absolute; left: 0; top: 0; width: 164px; height: 214px; box-sizing: border-box; padding: 16px 12px 14px; border-radius: 22px;
+    background: linear-gradient(180deg, rgba(17, 30, 23, 0.96), rgba(6, 12, 9, 0.96)); border: 1.5px solid rgba(115, 201, 157, 0.38);
+    box-shadow: 0 26px 64px rgba(0, 0, 0, 0.62); display: flex; flex-direction: column; align-items: center; text-align: center;
+    opacity: 0; overflow: hidden; will-change: transform, opacity; transform-origin: 50% 100%; }
+  .rc .n { position: absolute; left: 13px; top: 12px; font: 700 12px/1 var(--mono); color: var(--ink3); letter-spacing: 0.5px; }
+  .rc .ic { width: 62px; height: 62px; border-radius: 18px; display: grid; place-items: center; margin-top: 10px; flex: none; }
+  .rc .ic svg { width: 32px; height: 32px; }
+  .rc.pro .ic { background: rgba(197, 138, 249, 0.16); color: #e4ccff; border: 1px solid rgba(197, 138, 249, 0.55); }
+  .rc.flash .ic { background: rgba(138, 180, 248, 0.16); color: #d6e5ff; border: 1px solid rgba(138, 180, 248, 0.55); }
+  .rc.rules .ic { background: rgba(52, 211, 128, 0.16); color: #a8f2c9; border: 1px solid rgba(52, 211, 128, 0.55); }
+  .rc b { margin-top: 13px; font: 700 22px/1.05 'Bricolage Grotesque'; color: #fff; letter-spacing: -0.3px; white-space: nowrap; }
+  .rc .job { margin-top: 7px; font: 600 14px/1.25 'Geist'; color: var(--ink2); }
+  .rc .tier { margin-top: auto; font: 700 13px/1 'Geist'; padding: 6px 9px; border-radius: 999px; display: flex; gap: 5px; align-items: center; white-space: nowrap; opacity: 0; }
+  .rc .tier svg { width: 13px; height: 13px; }
+  .rc .sh { position: absolute; top: -30px; bottom: -30px; left: 0; width: 56px; background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0)); }
 </style>
 <script type="importmap">
 { "imports": { "three": "./node_modules/three/build/three.module.js", "three/addons/": "./node_modules/three/examples/jsm/" } }
@@ -89,6 +111,7 @@
 <canvas id="gl" width="1920" height="1080"></canvas>
 <svg id="stems" width="1920" height="1080" viewBox="0 0 1920 1080"></svg>
 <div id="ov"></div>
+<div id="roll"><div id="rshade"></div><svg id="rfx" width="1920" height="1080" viewBox="0 0 1920 1080"></svg></div>
 <div id="shade"></div>
 <div id="ttl"></div>
 <div id="idx"></div>

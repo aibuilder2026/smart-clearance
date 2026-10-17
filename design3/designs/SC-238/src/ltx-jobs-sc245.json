@@ -1,0 +1,22 @@
+[
+ {
+  "name": "godown-sunrise-empty-245111",
+  "image": "img/godown-sunrise-empty-245101.png",
+  "resolution": "720p",
+  "duration": 8,
+  "seed": 245111,
+  "camera": "dolly_in",
+  "audio": true,
+  "prompt": "A very slow dolly forward down a distributor's godown aisle between tall racks of brown cartons as the sunrise grows: warm golden light strengthens through the high roof windows, the shafts of light brightening and the dust in them glowing gold, the concrete floor catching the light. Far down the aisle the yellow forklift stands parked with its seated driver and its load of cartons; the aisle is empty, no one walks in it. Every rack, carton, pallet and the forklift keep their shape and their place; nothing appears, vanishes, moves, slides or tumbles; only the light and the dust change. Photorealistic cinematic footage. Audio: morning birds outside, the soft hum of a large building waking, no music, no voices."
+ },
+ {
+  "name": "godown-sunrise-empty-245112",
+  "image": "img/godown-sunrise-empty-245101.png",
+  "resolution": "720p",
+  "duration": 8,
+  "seed": 245112,
+  "camera": "dolly_in",
+  "audio": true,
+  "prompt": "A very slow dolly forward down a distributor's godown aisle between tall racks of brown cartons as the sunrise grows: warm golden light strengthens through the high roof windows, the shafts of light brightening and the dust in them glowing gold, the concrete floor catching the light. Far down the aisle the yellow forklift stands parked with its seated driver and its load of cartons; the aisle is empty, no one walks in it. Every rack, carton, pallet and the forklift keep their shape and their place; nothing appears, vanishes, moves, slides or tumbles; only the light and the dust change. Photorealistic cinematic footage. Audio: morning birds outside, the soft hum of a large building waking, no music, no voices."
+ }
+]

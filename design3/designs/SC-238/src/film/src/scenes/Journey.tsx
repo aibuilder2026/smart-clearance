@@ -32,7 +32,7 @@ const Viewfinder: React.FC<{ t0: number; t1: number; shutter: number; img: strin
 						<circle cx={960} cy={985} r={44} fill="none" stroke="#fff" strokeWidth={6} />
 						<circle cx={960} cy={985} r={T >= shutter && T < shutter + 0.18 ? 30 : 35} fill="#fff" />
 					</svg>
-					<div style={{ position: 'absolute', left: 60, top: 54, padding: '10px 16px', borderRadius: 999, background: 'rgba(0,0,0,0.55)', font: `600 20px/1 ${SANS}`, color: '#fff' }}>One carton label, close up</div>
+					<div style={{ position: 'absolute', right: 60, top: 210, padding: '10px 16px', borderRadius: 999, background: 'rgba(0,0,0,0.55)', font: `600 20px/1 ${SANS}`, color: '#fff' }}>One carton label, close up</div>
 					<AbsoluteFill style={{ background: '#fff', opacity: flash }} />
 				</AbsoluteFill>
 			);
@@ -99,7 +99,7 @@ export const Chips: React.FC<{ s: SceneData }> = ({ s }) => {
 			{t < dusk.t1 && (
 				<>
 					<Shot id="dusk-dim" t0={splitIn} t1={dusk.t1}>{(u) => <AbsoluteFill style={{ background: '#050a08', opacity: 0.45 * ramp(u, 0, 0.8) }} />}</Shot>
-					<div style={{ position: 'absolute', left: 92, bottom: 110, opacity: 1 - ramp(t, splitIn - 0.3, splitIn) }}>
+					<div style={{ position: 'absolute', left: 92, bottom: 190, opacity: 1 - ramp(t, splitIn - 0.3, splitIn) }}>
 						<Rise t={t} t0={W('n31', 'Not') - 0.05} t1={splitIn} text="Not every batch is that easy." size={72} />
 					</div>
 					{/* the split: 1,360 at risk, a lot of 772 and a scheme of 588 */}
