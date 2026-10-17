@@ -295,7 +295,7 @@ def build():
     d2 = s.marks['batch'] - d1
     clip('rule-darkstore', 'darkstore', 0.0, 9.95, d2)                               # the dark store turning a carton away
     s.shot('clip', d1, d1 + d2, media='rule-darkstore', grade='green')
-    if have('d-batch'): clip('rule-batch', 'd-batch', 0.2, 5.8, s.end - d1 - d2)    # back to the batch itself: its open carton of packs, close (Rule.tsx)
+    if have('d-batch'): clip('rule-batch', 'd-batch', 0.2, 2.4, s.end - d1 - d2)    # back to the batch itself: a pack lifted from its open carton (after 2.4 s the take reshapes the pack)
     else: clip('rule-batch', 'aisle', 0.0, 5.95, s.end - d1 - d2)
     s.shot('clip', d1 + d2, s.end, media='rule-batch', grade='green')
     S.append(s)

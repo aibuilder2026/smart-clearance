@@ -6615,8 +6615,8 @@
   },
   "rule-batch": {
    "kind": "clip",
-   "in": 0.0,
-   "out": 5.95,
+   "in": 0.2,
+   "out": 2.4,
    "dur": 7.549
   },
   "bin-trail": {
