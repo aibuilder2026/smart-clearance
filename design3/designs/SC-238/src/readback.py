@@ -4,7 +4,7 @@ the script (lines.json), figures by their value and spellings folded as the take
 score is under it, so a line that reads back here is heard over the music.
 
    uv run --python 3.12 --with mlx-whisper --with soundfile --with numpy python readback.py build/mix.wav [report.json]"""
-import sys, json, subprocess
+import re, sys, json, subprocess
 from pathlib import Path
 import numpy as np
 import mlx_whisper
@@ -25,6 +25,7 @@ HEARD = {'do': 'two', 'build': 'bill', 'plane': 'plain'}
 def fold(text):
     """the take picker's words, '%' read as 'per cent', a homophone as its word, and a final s dropped (so 'apps'' and
     'app's' agree, while 'installed' still differs from 'installs')"""
+    text = re.sub(r'\b(\d{1,2})[.:](\d{2})\b', lambda m_: f'{m_.group(1)}{m_.group(2)}', text)   # (a time read as one figure: 9.20 as nine twenty)
     ws = words(text.replace('%', ' per cent'))
     ws = [HEARD.get(w, w) for w in ws]
     return [w[:-1] if len(w) > 2 and w.endswith('s') and not w.endswith('ss') else w for w in ws]

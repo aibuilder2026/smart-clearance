@@ -512,8 +512,9 @@ def main():
     mo = measure(final)
     print(f"mixed: voice {g_v:+.1f} dB, bed {g_m:+.1f} dB; pre {m['input_i']} LUFS -> {mo['input_i']} LUFS, TP {mo['input_tp']}")
     if a.audio_only or not Path(a.film).exists(): return
-    run(['ffmpeg', '-v', 'error', '-y', '-i', a.film, '-i', final, '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'pcm_s24le', '-shortest', a.out])
-    print('muxed', a.out)
+    out = Path(a.out).with_suffix('.mov') if Path(a.film).suffix == '.mov' else Path(a.out)   # (a ProRes master goes in a .mov: mp4 cannot hold it)
+    run(['ffmpeg', '-v', 'error', '-y', '-i', a.film, '-i', final, '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'pcm_s24le', '-shortest', out])
+    print('muxed', out)
 
 
 if __name__ == '__main__':

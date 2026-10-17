@@ -27,6 +27,8 @@ design3/designs/*/round-*/src/
 !design3/designs/*/option-*/motion.mp4
 !design3/designs/*/round-*/option-*/motion.mp4
 !design3/designs/*/media/*.mp4
+# SC-238's film stays local, never pushed (the maintainer's call): its captions are kept, its videos are not
+design3/designs/SC-238/media/*.mp4
 
 # frontend (SC-27): build output, test reports and local env files
 frontend/**/.svelte-kit/

@@ -4,7 +4,7 @@
 # business-motion-film skill's frozen-time at 10 fps, the reading holds among them), its loudness (integrated, range,
 # true peak), and every spoken line read back from the mix (readback.py).
 #    ./final-checks.sh build/out/<master>.mp4 build/mix.wav > build/final-checks.txt
-set -euo pipefail
+set -eu   # (no pipefail: head closing its pipe early is not a failure)
 cd "$(dirname "$0")"
 m="$1"; mix="${2:-build/mix.wav}"
 SK=~/.claude/skills/business-motion-film/scripts

@@ -69,4 +69,24 @@ Everything is driven by one edit decision list, so the picture and the sound rea
 
 ## The film
 
-To be filled in at the final export.
+**7 min 31.8 s** (451.82 s), 1920 × 1080 at 60 fps (27,109 frames), every clip interpolated to 60 fps by RIFE, mixed to
+−14.1 LUFS (range 6.4 LU, true peak −1.5 dB).
+
+| File | Where |
+| --- | --- |
+| The master (H.264 High, crf 17, AAC 320 kb/s, 340 MB), a 720p copy, a phone preview and the captions | `landing-demo/sales-film/smart-clearance-sales-film-v3-2026-10-17_09-26-27*` |
+| A 1080p copy, the 720p copy and the captions, beside this record | [`media/`](media/) |
+
+The videos stay on this Mac and are never pushed (the maintainer's call; `.gitignore` keeps `media/*.mp4` out); the
+captions are committed.
+
+**Checked on the master** (`src/final-checks.sh`, `src/readback.py`):
+
+- no black frame but the opening's half second on the ring;
+- every spoken line, 46 narrated and 13 spoken by the people, read back word for word from the final mix by Whisper;
+- 22 s of still stretches a second or longer, the longest 2.7 s, each a reading hold on an app screen under its slow
+  drift; no frozen footage;
+- three critics: the first on the full cut (`review/r1-film-critic.md`), a verification of its fixes
+  (`review/r2-verify.md`), and the master's (`review/r3-verify.md`).
+
+Nothing was spent: every image, clip, voice and render was made on this Mac.
