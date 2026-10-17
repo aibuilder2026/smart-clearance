@@ -22,10 +22,11 @@ SR = 16000
 HEARD = {'do': 'two', 'build': 'bill', 'plane': 'plain'}
 
 
-def fold(text):
+def fold(text, times=False):
     """the take picker's words, '%' read as 'per cent', a homophone as its word, and a final s dropped (so 'apps'' and
-    'app's' agree, while 'installed' still differs from 'installs')"""
-    text = re.sub(r'\b(\d{1,2})[.:](\d{2})\b', lambda m_: f'{m_.group(1)}{m_.group(2)}', text)   # (a time read as one figure: 9.20 as nine twenty)
+    'app's' agree, while 'installed' still differs from 'installs'); with times, a written time as one figure (9.20 as
+    nine twenty), which a written price must not be (Rs 14.20 is fourteen rupees twenty)"""
+    if times: text = re.sub(r'\b(\d{1,2})[.:](\d{2})\b', lambda m_: f'{m_.group(1)}{m_.group(2)}', text)
     ws = words(text.replace('%', ' per cent'))
     ws = [HEARD.get(w, w) for w in ws]
     return [w[:-1] if len(w) > 2 and w.endswith('s') and not w.endswith('ss') else w for w in ws]
@@ -55,13 +56,17 @@ def main():
         a = spans[0][0]
         want = LINES[lid]['text']
         got = ' '.join(heard(audio, x0 - 0.08, x1 + 0.3) for x0, x1 in sorted(spans))
-        w, g = fold(want), fold(got)
         # the cut can catch the last word of the line before or the first of the next: the line is read back when its
-        # own words appear in order inside what was heard
-        i = 0
-        for x in g:
-            if i < len(w) and x == w[i]: i += 1
-        ok = i == len(w)
+        # own words appear in order inside what was heard (a written time folded, or not)
+        def matched(w, g):
+            i = 0
+            for x in g:
+                if i < len(w) and x == w[i]: i += 1
+            return i, len(w)
+        (i, nw), (i2, nw2) = matched(fold(want), fold(got)), matched(fold(want, True), fold(got, True))
+        if i2 == nw2 and i != nw: i, nw = i2, nw2
+        ok = i == nw
+        w = [None] * nw
         rows.append({'kind': kind, 'id': lid, 't': round(a, 2), 'want': want, 'heard': got, 'exact': ok, 'matched': f'{i}/{len(w)}'})
         print(f"{'ok ' if ok else 'XX '} {lid:5s} {a:7.2f}  {got}" + ('' if ok else f"\n        want: {want}"))
     n = sum(r['exact'] for r in rows)
