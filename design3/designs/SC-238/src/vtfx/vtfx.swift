@@ -5,6 +5,9 @@
 // so a lip-synced line stays where it was. Out: ProRes 422 HQ, BT.709.
 //
 //   vtfx frc in.mp4 out.mov [--fps 60] [--start s] [--dur d] [--quality normal|quality]
+//   vtfx sr in.mp4 out.mov [--width 1920]     Apple's on-device super resolution (VTSuperResolutionScaler, ×4, the
+//                                             video model: each frame with the one before it), then down to --width
+//                                             with an averaging downsample; same frame rate, ProRes 422 HQ
 //   vtfx info in.mp4
 import Foundation
 import AVFoundation
@@ -147,6 +150,70 @@ func frc(_ inPath: String, _ outPath: String) async throws {
     print("frc \(inPath) \(w)x\(h) \(inFps)→\(outFps) fps: \(i + 1) frames in, \(k) out (\(kept) kept, \(made) made)")
 }
 
+
+func sr(_ inPath: String, _ outPath: String) async throws {
+    let asset = AVURLAsset(url: URL(fileURLWithPath: inPath))
+    guard let vt = try await asset.loadTracks(withMediaType: .video).first else { die("no video") }
+    let size = try await vt.load(.naturalSize)
+    let fps = try await vt.load(.nominalFrameRate)
+    let w = Int(size.width), h = Int(size.height)
+    let outW = Int(arg("--width", "1920")!)!
+    let outH = Int((Double(h) * Double(outW) / Double(w) / 2).rounded()) * 2
+    guard let cfg = VTSuperResolutionScalerConfiguration(frameWidth: w, frameHeight: h, scaleFactor: 4, inputType: .video, usePrecomputedFlow: false,
+                                                         qualityPrioritization: .normal, revision: VTSuperResolutionScalerConfiguration.defaultRevision)
+    else { die("sr config \(w)x\(h)") }
+    if cfg.configurationModelStatus != .ready { die("sr model not ready (status \(cfg.configurationModelStatus.rawValue)): nothing is downloaded here") }
+    let reader = try AVAssetReader(asset: asset)
+    let vout = AVAssetReaderTrackOutput(track: vt, outputSettings: [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA])
+    vout.alwaysCopiesSampleData = false
+    reader.add(vout)
+    let proc = VTFrameProcessor()
+    try proc.startSession(configuration: cfg)
+    defer { proc.endSession() }
+    let half = kCVPixelFormatType_64RGBAHalf
+    let srcPool = makePool(cfg.sourcePixelBufferAttributes, w: w, h: h, format: half)
+    let dstPool = makePool(cfg.destinationPixelBufferAttributes, w: w * 4, h: h * 4, format: half)
+    let outPool = makePool([:], w: outW, h: outH, format: kCVPixelFormatType_32BGRA)
+    var xfer: VTPixelTransferSession?
+    VTPixelTransferSessionCreate(allocator: nil, pixelTransferSessionOut: &xfer)
+    guard let xfer else { die("transfer") }
+    VTSessionSetProperty(xfer, key: kVTPixelTransferPropertyKey_DownsamplingMode, value: kVTDownsamplingMode_Average)
+    try? FileManager.default.removeItem(atPath: outPath)
+    let writer = try AVAssetWriter(outputURL: URL(fileURLWithPath: outPath), fileType: .mov)
+    let vin = AVAssetWriterInput(mediaType: .video, outputSettings: [
+        AVVideoCodecKey: AVVideoCodecType.proRes422HQ, AVVideoWidthKey: outW, AVVideoHeightKey: outH, AVVideoColorPropertiesKey: bt709,
+    ])
+    vin.expectsMediaDataInRealTime = false
+    let adaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: vin, sourcePixelBufferAttributes: [
+        kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA, kCVPixelBufferWidthKey as String: outW, kCVPixelBufferHeightKey as String: outH,
+    ])
+    writer.add(vin)
+    guard reader.startReading() else { die("read: \(String(describing: reader.error))") }
+    writer.startWriting()
+    writer.startSession(atSourceTime: .zero)
+    let rate = CMTimeScale(fps.rounded())
+    var prevSrc: VTFrameProcessorFrame? = nil, prevOut: VTFrameProcessorFrame? = nil
+    var n = 0
+    while let sb = vout.copyNextSampleBuffer() {
+        guard let pb = CMSampleBufferGetImageBuffer(sb) else { continue }
+        let cur = newBuffer(srcPool); VTPixelTransferSessionTransferImage(xfer, from: pb, to: cur)
+        let pts = CMTime(value: CMTimeValue(n), timescale: rate)
+        let src = VTFrameProcessorFrame(buffer: cur, presentationTimeStamp: pts)!
+        let dst = VTFrameProcessorFrame(buffer: newBuffer(dstPool), presentationTimeStamp: pts)!
+        guard let params = VTSuperResolutionScalerParameters(sourceFrame: src, previousFrame: prevSrc, previousOutputFrame: prevOut, opticalFlow: nil,
+                                                               submissionMode: .sequential, destinationFrame: dst) else { die("sr params at \(n)") }
+        try await proc.process(parameters: params)
+        let o = newBuffer(outPool); VTPixelTransferSessionTransferImage(xfer, from: dst.buffer, to: o)
+        while !vin.isReadyForMoreMediaData { usleep(2000) }
+        if !adaptor.append(o, withPresentationTime: pts) { die("append \(n): \(String(describing: writer.error))") }
+        prevSrc = src; prevOut = dst; n += 1
+    }
+    vin.markAsFinished()
+    await writer.finishWriting()
+    if writer.status != .completed { die("write: \(String(describing: writer.error))") }
+    print("sr \(inPath) \(w)x\(h) ×4 → \(outW)x\(outH): \(n) frames at \(rate) fps")
+}
+
 extension CMSampleBuffer {
     func offsettingTiming(by off: CMTime) throws -> CMSampleBuffer {
         var count: CMItemCount = 0
@@ -167,6 +234,7 @@ Task {
     do {
         switch a[1] {
         case "frc": try await frc(a[2], a[3])
+        case "sr": try await sr(a[2], a[3])
         case "info":
             let asset = AVURLAsset(url: URL(fileURLWithPath: a[2]))
             let vt = try await asset.loadTracks(withMediaType: .video).first!

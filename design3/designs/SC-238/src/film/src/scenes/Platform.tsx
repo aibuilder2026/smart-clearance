@@ -7,10 +7,10 @@
 import React from 'react';
 import { AbsoluteFill, Sequence, useCurrentFrame } from 'remotion';
 import { DISPLAY, EASE, EASE_IO, Footage, GREEN, MONO, SANS, clamp, lerp, Media, ramp, springAt } from '../kit/core';
-import { Mark, Window } from '../kit/device';
+import { Body, DevKind, Mark, Window, geom } from '../kit/device';
 import { PlanShots } from '../kit/plan';
 import { Rise, Scrim } from '../kit/ui';
-import { FPS, SceneData, shot, word } from '../edl';
+import { FPS, SceneData, media, shot, word } from '../edl';
 
 export const Platform: React.FC<{ s: SceneData }> = ({ s }) => {
 	const t = useCurrentFrame() / FPS;
@@ -19,7 +19,7 @@ export const Platform: React.FC<{ s: SceneData }> = ({ s }) => {
 	const intro1 = M.console;                         // the mark and the line hold until the console
 	// the godown under the brand's green, behind the mark (the sunrise's own clip, carried on)
 	const markK = ramp(t, 0, 1.1, EASE);
-	const teamsT0 = W('n11', 'brand') - 0.25, teamsT1 = shot(s, 'team-brand').t1;
+	const teamsT0 = M.teams - 0.15 + 0.3, teamsT1 = shot(s, 'team-brand').t1;   // (the sequence starts 0.3 s before teamsT0)
 	const pwa0 = teamsT1;
 	return (
 		<AbsoluteFill style={{ background: '#03100a' }}>
@@ -56,6 +56,27 @@ export const Platform: React.FC<{ s: SceneData }> = ({ s }) => {
 	);
 };
 
+/** a device asleep: its body and dark glass rising into place, a glint crossing the glass, before its screen wakes */
+const Asleep: React.FC<{ name: string; kind: DevKind; cx: number; cy: number; sh: number; t: number; t0: number; wake: number }> = ({ name, kind, cx, cy, sh, t, t0, wake }) => {
+	const m = media(name); const [, , srcW, srcH] = m.rect!;
+	const g = geom(kind, srcW, srcH, { sh });
+	const e = EASE(ramp(t, t0, t0 + 0.5));
+	if (e <= 0) return null;
+	const glint = ramp(t, t0 + 0.2, t0 + 1.3, EASE_IO);
+	return (
+		<div style={{ position: 'absolute', left: cx - g.sw / 2 - g.b.l, top: cy - g.sh / 2 - g.b.t + (1 - e) * 40, width: g.fw, height: g.fh, opacity: e }}>
+			<Body g={g} lift={0} />
+			<div style={{ position: 'absolute', left: g.b.l, top: g.b.t, width: g.sw, height: g.sh, borderRadius: g.b.srad, overflow: 'hidden',
+				background: 'radial-gradient(ellipse at 50% 30%, #13201b, #070c0a 75%)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.05)' }}>
+				<div style={{ position: 'absolute', top: -g.sh * 0.2, bottom: -g.sh * 0.2, width: g.sw * 0.35, left: lerp(-g.sw * 0.5, g.sw * 1.2, glint), transform: 'skewX(-18deg)',
+					background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.07), rgba(255,255,255,0))' }} />
+				<div style={{ position: 'absolute', inset: 0, background: '#f4f7f5', opacity: 0.5 * Math.sin(Math.PI * clamp(wake)) }} />
+			</div>
+			{kind === 'phone' && <div style={{ position: 'absolute', left: g.b.l + g.sw / 2 - 58, top: g.b.t + 10, width: 116, height: 32, borderRadius: 16, background: '#050706' }} />}
+		</div>
+	);
+};
+
 const TEAM: { media: string; word: string; label: string; kind: 'tablet' | 'phone'; sh: number }[] = [
 	{ media: 'team-brand', word: 'brand', label: 'The brand', kind: 'tablet', sh: 370 },
 	{ media: 'team-dist', word: 'distributors', label: 'The distributor', kind: 'tablet', sh: 540 },
@@ -75,15 +96,22 @@ const Teams: React.FC<{ s: SceneData; t0: number }> = ({ s, t0 }) => {
 			{TEAM.map((m, i) => {
 				const sh = shot(s, m.media);
 				const lab = ramp(t, sh.t0 + 0.25, sh.t0 + 0.6, EASE);
+				// the four devices rise at once, asleep; each wakes on its word
+				const rT = t0 + 0.12 + i * 0.14;
+				const wake = ramp(t, sh.t0, sh.t0 + 0.32, EASE);
 				return (
 					<React.Fragment key={m.media}>
-						<Window name={m.media} kind={m.kind} t0={sh.t0 - t0} t1={sh.t1 - t0} cx={xs[i]} cy={520} sh={m.sh} />
+						{t < sh.t0 + 0.4 && <Asleep name={m.media} kind={m.kind} cx={xs[i]} cy={520} sh={m.sh} t={t} t0={rT} wake={wake} />}
+						<AbsoluteFill style={{ opacity: wake }}><Window name={m.media} kind={m.kind} t0={sh.t0 - t0} t1={sh.t1 - t0} cx={xs[i]} cy={520} sh={m.sh} enter="none" /></AbsoluteFill>
 						<div style={{ position: 'absolute', left: xs[i] - 160, width: 320, top: 520 + m.sh / 2 + 46, textAlign: 'center', opacity: lab, transform: `translateY(${(1 - lab) * 12}px)`,
 							font: `700 28px/1 '${DISPLAY}'`, color: GREEN.ink }}>{m.label}</div>
 					</React.Fragment>
 				);
 			})}
 			<Scrim side="t" a={0.4} />
+			<div style={{ position: 'absolute', left: 0, right: 0, top: 70, textAlign: 'center' }}>
+				<Rise t={t} t0={word(s, 'n11', 'Each') - 0.05} t1={word(s, 'n11', 'installed') - 0.15} text="Each team sees its own part" size={46} weight={650} align="center" />
+			</div>
 			<div style={{ position: 'absolute', left: 0, right: 0, top: 70, textAlign: 'center' }}>
 				<Rise t={t} t0={word(s, 'n11', 'installed') - 0.1} t1={end + 1} text="Installed on any phone, tablet or laptop." size={46} weight={650} align="center" />
 			</div>

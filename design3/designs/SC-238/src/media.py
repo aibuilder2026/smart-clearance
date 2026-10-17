@@ -17,6 +17,7 @@ rebuilds the source's own dropped frames better (frc.py's bench, once per source
    python3 media.py audio               the talking clips' sound (CPU)
    python3 media.py ff                  the fast-forward spans (CPU, no interpolation)
    python3 media.py make [names…]       everything else (the GPU: run it once LTX and Qwen are done)
+   python3 media.py sr [names…]          super-resolve the low-resolution clips first (the Apple GPU and Neural Engine)
    python3 media.py list                what is made and what is missing
 
 Out: film/public/media/<name>.mp4 (H.264, 60 fps; windows 4:4:4) and <name>.wav for talking clips."""
@@ -28,6 +29,36 @@ sys.path.insert(0, str(HERE))
 import frc  # noqa: E402
 
 MEDIA = json.loads((HERE / 'build' / 'media.json').read_text())
+SR_DIR = HERE / 'build' / 'sr'
+VTFX = HERE / 'vtfx' / 'vtfx'
+
+
+def sr_src(src):
+    """a low-resolution clip's super-resolved copy (Apple's on-device ×4 model, then down to 1920 wide), once made;
+    a clip already 1920 wide, or taller than the model takes (1080), is used as it is"""
+    p = SR_DIR / f'{Path(src).stem}.mov'
+    return str(p) if p.exists() and p.stat().st_size > 0 else src
+
+
+def needs_sr(src):
+    if not Path(src).exists() or Path(src).stat().st_size == 0: return False
+    w, h, _, _ = frc.probe(src)
+    return w < 1900 and h <= 1080
+
+
+def make_sr(names):
+    SR_DIR.mkdir(parents=True, exist_ok=True)
+    done = set()
+    for n in names:
+        m = MEDIA[n]
+        if m['kind'] not in ('clip', 'talk'): continue
+        src = m['src']
+        if src in done or not needs_sr(src): continue
+        done.add(src)
+        out = SR_DIR / f'{Path(src).stem}.mov'
+        if out.exists() and out.stat().st_mtime > Path(src).stat().st_mtime: print(f'{Path(src).name}: super-resolved'); continue
+        run([VTFX, 'sr', src, out, '--width', '1920'])
+        print(f'{Path(src).name}: super-resolved → {out.name}')
 OUT = HERE / 'film' / 'public' / 'media'
 SHEETS = HERE / 'build' / 'sheets'
 FF_DIR = HERE / 'build' / 'ff'
@@ -143,6 +174,7 @@ def make(name, only_ff=False):
     if out.exists() and name not in drafts and out.stat().st_mtime > (HERE / 'build' / 'media.json').stat().st_mtime and not only_ff:
         return print(f'{name}: made')
     if not Path(m['src']).exists(): return print(f'{name}: SOURCE MISSING {m["src"]}')
+    if m['kind'] != 'win': m = {**m, 'src': sr_src(m['src'])}
     w, h, fps_in, _ = frc.probe(m['src'])
     with tempfile.TemporaryDirectory(dir=str(HERE / 'build')) as td:
         tmp = Path(td); seq = tmp / 'seq'; seq.mkdir()
@@ -267,6 +299,8 @@ def main():
         for n in names: make(n)
     elif cmd == 'peek':
         peek(sys.argv[2], sys.argv[3], float(sys.argv[4]), float(sys.argv[5]), float(sys.argv[6]))
+    elif cmd == 'sr':
+        make_sr(names)
     elif cmd == 'draft':
         for n in names: draft(n)
     elif cmd == 'list':

@@ -53,7 +53,10 @@ export const Badge: React.FC<{ t: number; t0: number; t1: number; text: string; 
 export const PlanShots: React.FC<{ s: SceneData; skip?: string[]; grade?: Record<string, Grade> }> = ({ s, skip = [], grade = {} }) => {
 	const t = useCurrentFrame() / FPS;
 	const out: React.ReactNode[] = [];
-	for (const sh of s.shots as PShot[]) {
+	// footage first, windows over it: a person's shot never covers the screen lifted out of their device
+	const rank = (k: string) => (k === 'win' ? 1 : 0);
+	const shots = [...(s.shots as PShot[])].sort((a, b) => rank(a.kind) - rank(b.kind));
+	for (const sh of shots) {
 		if (!sh.media || skip.includes(sh.media)) continue;
 		if (sh.kind === 'talk') { out.push(<Footage key={sh.media} name={sh.media} t0={sh.t0} t1={sh.t1} push={0.035} origin="50% 40%" grade={grade[sh.media] ?? 'none'} />); continue; }
 		if (sh.kind === 'clip' || sh.kind === 'ots') {

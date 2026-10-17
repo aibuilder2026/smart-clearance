@@ -157,6 +157,12 @@ def key_env(nar_dry, talk_mono):
 
 # ---------------------------------------------------------------- the places
 
+# the clips made without sound (SC-207's labelled aisle; SC-210's Veo backgrounds, made silent) take their place's room
+# tone from a sister clip of the same place: the same aisle as first made, the lead's office by day and at dusk, the food bank
+TONE_FROM = {'o0-godown-aisle-labelled.mp4': 'SC-206/src/clips/o0-godown-aisle.mp4', 'v-office.mp4': 'SC-205/src/clips/m1-priya-desk.mp4',
+             'v-evening.mp4': 'SC-206/src/clips/s-priya-eve.mp4', 'v-foodbank.mp4': 'SC-206/src/clips/s-meera.mp4'}
+
+
 def places():
     """one room tone a place: each footage shot's clip gives its room tone (its quietest moments, new phases); a place
     carries on across the cuts that stay in it, and crossfades to the next place over 0.35 s"""
@@ -165,7 +171,10 @@ def places():
     def tone_of(src):
         if src not in tones:
             try: x = load(src)
-            except SystemExit: tones[src] = None; return None
+            except SystemExit: x = np.zeros((0, 2), np.float32)
+            if (len(x) < SR // 2 or np.sqrt(np.mean(x ** 2)) < 1e-5) and Path(src).name in TONE_FROM:
+                try: x = load(str(Path(src).parents[3] / TONE_FROM[Path(src).name]))   # a silent clip: its place's tone from a sister clip
+                except SystemExit: x = np.zeros((0, 2), np.float32)
             if len(x) < SR // 2 or np.sqrt(np.mean(x ** 2)) < 1e-5: tones[src] = None; return None
             y = K.room_tone(x, int(12 * SR), seed=abs(hash(src)) % 1000)
             rms = np.sqrt(np.mean(y ** 2)) + 1e-9
@@ -189,9 +198,11 @@ def places():
 
 # ---------------------------------------------------------------- the score
 
-ACTS = [('waste', ['waste-2102'], 'cold', 'label'), ('reveal', ['reveal-2101'], 'turn', None), ('eco', ['eco-2102'], 'agents', None),
-        ('journey', ['journey-2101', 'journey-2102', 'journey-2101', 'journey-2102'], 'mango', None), ('papers', ['papers-2101'], 'record', None),
-        ('close', ['close-2102'], 'call', None)]
+# each act's cue, its two takes alternating so a long act never loops one take on itself
+ACTS = [('waste', ['waste-2102', 'waste-2101'], 'cold', 'label'), ('reveal', ['reveal-2101', 'reveal-2102'], 'turn', None),
+        ('eco', ['eco-2102', 'eco-2101', 'eco-2102'], 'agents', None),
+        ('journey', ['journey-2101', 'journey-2102', 'journey-2101', 'journey-2102', 'journey-2101', 'journey-2102'], 'mango', None),
+        ('papers', ['papers-2101', 'papers-2102'], 'record', None), ('close', ['close-2102'], 'call', None)]
 
 
 def score():
@@ -362,6 +373,11 @@ def events():
             add(T + M['gst'] - 1.3, lib('stamp-thud', -22), 0.7)
         if sid == 'chips' and 'issued' in M:
             add(T + M['issued'] + 0.2, lib('paper-shuffle', -27), 0.5)
+        # the four teams' devices rising asleep together, then each screen waking on its word
+        if sid == 'platform' and 'teams' in M:
+            add(T + M['teams'] + 0.05, K.whoosh(rnd, 0.9, 0.45, -30, lo=0.02, hi=0.25), 0.5, 'air')
+            for k_, x in enumerate(sorted([x for x in sc['shots'] if str(x.get('media', '')).startswith('team-') and x['kind'] == 'win'], key=lambda x: x['t0'])):
+                add(T + x['t0'] + 0.02, K.glint(-31), [0.2, 0.42, 0.62, 0.82][k_ % 4]); add(T + x['t0'] + 0.04, K.tick(-35, 1567.98), [0.2, 0.42, 0.62, 0.82][k_ % 4])
     # the captured pages' own events (the agents in 3D, the install, the audit trail)
     pages = [('agents3d', SC['agents']['t0']), ('pwa', SC['platform']['t0'] + [x for x in SC['platform']['shots'] if x.get('media') == 'team-brand'][0]['t1']),
              ('audit', SC['record']['t0'] + SC['record']['marks']['audit'])]

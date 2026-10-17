@@ -33,7 +33,7 @@ const Tile: React.FC<{ k: number; big: string; unit?: string; sub: string; tone?
 
 export const Rule: React.FC<{ s: SceneData }> = ({ s }) => {
 	const t = useCurrentFrame() / FPS;
-	const r1 = shot(s, 'rule-mango'), r2 = shot(s, 'rule-darkstore');
+	const r1 = shot(s, 'rule-mango'), r2 = shot(s, 'rule-darkstore'), r3 = shot(s, 'rule-batch');
 	const W30 = word(s, 'n03', 'thirty'), W45 = word(s, 'n03', 'fortyfive'), WDOOR = word(s, 'n03', 'door'), WLEFT = voEnd(s, 'n03') - 0.4;
 	const W60 = word(s, 'n04', 'sixty'), W90 = word(s, 'n04', 'ninety'), WFAR = word(s, 'n04', 'far');
 	const W22 = word(s, 'n05', 'twentytwo'), WBELOW = word(s, 'n05', 'below');
@@ -67,6 +67,8 @@ export const Rule: React.FC<{ s: SceneData }> = ({ s }) => {
 		<AbsoluteFill style={{ background: '#000' }}>
 			<Footage name="rule-mango" t0={r1.t0} t1={r1.t1} push={0.05} origin="55% 45%" />
 			<Footage name="rule-darkstore" t0={r2.t0} t1={r2.t1} push={0.06} grade="green" />
+			{/* the batch's own cartons again, closer than the godown's wide (the labelled stack on the right) */}
+			<Footage name="rule-batch" t0={r3.t0} t1={r3.t1} push={0.06} pushFrom={1.24} origin="74% 56%" grade="green" />
 			{t < r1.t1 && (
 				<>
 					<Scrim side="b" a={0.62} />

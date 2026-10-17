@@ -103,10 +103,10 @@ export const Ways: React.FC<{ id: string; t: number; dur: number; inWay?: Way; o
 		const u = 1 - k;   // 1 at the cut, 0 away from it
 		const e = u * u;   // the move eases into and out of the cut
 		switch (way) {
-			case 'whipL': tx += (entering ? 1 : -1) * W * 0.32 * e; bx += 90 * u; break;   // the picture travels to the left
-			case 'whipR': tx += (entering ? -1 : 1) * W * 0.32 * e; bx += 90 * u; break;
-			case 'whipU': ty += (entering ? 1 : -1) * H * 0.3 * e; by += 80 * u; break;
-			case 'push': sc *= entering ? lerp(1, 1.18, e) : lerp(1, 1.22, e); bx += 18 * u; by += 18 * u; break;   // through the frame
+			case 'whipL': tx += (entering ? 1 : -1) * W * 0.32 * e; break;   // the picture travels to the left (crisp: no blur between shots)
+			case 'whipR': tx += (entering ? -1 : 1) * W * 0.32 * e; break;
+			case 'whipU': ty += (entering ? 1 : -1) * H * 0.3 * e; break;
+			case 'push': sc *= entering ? lerp(1, 1.18, e) : lerp(1, 1.22, e); break;   // through the frame, crisp
 			case 'pull': sc *= entering ? lerp(1, 0.9, e) : lerp(1, 1.08, e); break;
 			case 'rise': ty += (entering ? 1 : -1) * 70 * e; op *= entering ? clamp(k * 1.6) : clamp(k * 1.6); break;
 			case 'flash': white = Math.max(white, Math.pow(u, 1.6)); break;

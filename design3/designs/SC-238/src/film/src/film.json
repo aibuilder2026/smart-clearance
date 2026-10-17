@@ -562,8 +562,15 @@
     {
      "kind": "clip",
      "t0": 4.835,
-     "t1": 31.768,
+     "t1": 24.219,
      "media": "rule-darkstore",
+     "grade": "green"
+    },
+    {
+     "kind": "clip",
+     "t0": 24.219,
+     "t1": 31.768,
+     "media": "rule-batch",
      "grade": "green"
     }
    ]
@@ -3350,7 +3357,7 @@
       250
      ],
      "clock": [
-      "Day 0 \u00b7 09:00",
+      "Day 0",
       "the morning check"
      ],
      "heads": [
@@ -3447,7 +3454,7 @@
      ],
      "lift": 3.55,
      "clock": [
-      "Day 0 \u00b7 09:20",
+      "Day 0",
       "the label photo"
      ],
      "heads": [
@@ -3514,14 +3521,14 @@
     {
      "kind": "ots",
      "t0": 19.067,
-     "t1": 30.557,
+     "t1": 30.787,
      "media": "c-plan",
      "lift": 1.3
     },
     {
      "kind": "win",
      "t0": 19.067,
-     "t1": 30.557,
+     "t1": 30.787,
      "media": "m-plan",
      "starts": [
       0.0,
@@ -3532,7 +3539,7 @@
      ],
      "lift": 1.3,
      "clock": [
-      "Day 0 \u00b7 09:22",
+      "Day 0",
       "the plan"
      ],
      "heads": [
@@ -3709,7 +3716,7 @@
       390
      ],
      "clock": [
-      "Day 0 \u00b7 09:40",
+      "Day 0",
       "one yes"
      ],
      "heads": [
@@ -3778,7 +3785,7 @@
      ],
      "lift": 1.6,
      "clock": [
-      "Day 0 \u00b7 09:41",
+      "Day 0",
       "the offer"
      ],
      "heads": [
@@ -3873,7 +3880,7 @@
       8.335
      ],
      "clock": [
-      "Day 0 \u00b7 10:32",
+      "Day 0",
       "the scheme fills"
      ],
      "heads": [
@@ -3946,8 +3953,8 @@
     {
      "kind": "talk",
      "media": "mango-d08",
-     "t0": 59.195,
-     "t1": 62.365,
+     "t0": 59.145,
+     "t1": 62.465,
      "line": "d08"
     },
     {
@@ -3969,7 +3976,7 @@
      ],
      "lift": 0.6,
      "clock": [
-      "Day 0 \u00b7 11:12",
+      "Day 1",
       "the food bank"
      ],
      "rings": [
@@ -4033,7 +4040,7 @@
      ],
      "lift": 1.6,
      "clock": [
-      "Day 1 \u00b7 Sat 3 Oct",
+      "Day 1",
       "the staff sale"
      ],
      "heads": [
@@ -4106,7 +4113,7 @@
      "t1": 84.622,
      "media": "m-van",
      "clock": [
-      "Day 1 \u00b7 Sat 3 Oct",
+      "Day 2",
       "the van round"
      ]
     },
@@ -4114,7 +4121,7 @@
      "kind": "talk",
      "media": "mango-d09",
      "t0": 84.622,
-     "t1": 87.172,
+     "t1": 87.222,
      "line": "d09"
     },
     {
@@ -4124,8 +4131,8 @@
      "media": "m-report-bg",
      "grade": "greenSoft",
      "clock": [
-      "Day 22 \u00b7 Sat 24 Oct",
-      "best before"
+      "Best before",
+      "the report"
      ]
     },
     {
@@ -4147,7 +4154,7 @@
      ],
      "lift": 0.5,
      "clock": [
-      "Day 22 \u00b7 Sat 24 Oct",
+      "Best before",
       "her portal"
      ],
      "rings": [
@@ -4890,7 +4897,7 @@
      ],
      "lift": 1.0,
      "clock": [
-      "Day 0 \u00b7 10:40",
+      "Day 0",
       "the lot"
      ],
      "heads": [
@@ -4972,7 +4979,7 @@
      "t1": 29.444,
      "media": "c-truck",
      "clock": [
-      "Day 1 \u00b7 Sat 3 Oct",
+      "Day 1",
       "the buyer\u2019s truck"
      ]
     },
@@ -4994,7 +5001,7 @@
      ],
      "lift": 0.6,
      "clock": [
-      "Day 0 \u00b7 10:54",
+      "Day 2",
       "the window closes"
      ],
      "rings": [
@@ -5045,7 +5052,7 @@
      "t1": 39.733,
      "media": "c-landfill",
      "clock": [
-      "Expiry day \u00b7 18 Nov",
+      "Expiry day",
       "at the landfill"
      ]
     },
@@ -5055,7 +5062,7 @@
      "t1": 41.733,
      "media": "l-photo",
      "clock": [
-      "Expiry day \u00b7 18 Nov",
+      "Expiry day",
       "the evidence"
      ]
     },
@@ -5090,7 +5097,7 @@
       4.1
      ],
      "clock": [
-      "Expiry day \u00b7 18 Nov",
+      "Expiry day",
       "signed on the spot"
      ],
      "rings": [
@@ -5154,7 +5161,7 @@
      ],
      "lift": 0.6,
      "clock": [
-      "Expiry day \u00b7 18 Nov",
+      "Expiry day",
       "the second yes"
      ],
      "heads": [
@@ -5689,7 +5696,7 @@
      ],
      "lift": 0.6,
      "clock": [
-      "Day 22 \u00b7 Sat 24 Oct",
+      "Best before",
       "the ledger"
      ],
      "rings": [
@@ -5744,7 +5751,7 @@
      ],
      "enter": "none",
      "clock": [
-      "Day 22 \u00b7 Sat 24 Oct",
+      "Best before",
       "the ledger"
      ],
      "rings": [
@@ -5788,7 +5795,7 @@
      ],
      "enter": "none",
      "clock": [
-      "Day 22 \u00b7 Sat 24 Oct",
+      "Best before",
       "the ledger"
      ],
      "rings": [
@@ -5862,7 +5869,7 @@
      "kind": "talk",
      "media": "call-d13",
      "t0": 2.57,
-     "t1": 5.22,
+     "t1": 7.12,
      "line": "d13"
     }
    ]
@@ -6512,7 +6519,13 @@
    "kind": "clip",
    "in": 0.0,
    "out": 9.95,
-   "dur": 26.933
+   "dur": 19.384
+  },
+  "rule-batch": {
+   "kind": "clip",
+   "in": 0.0,
+   "out": 5.95,
+   "dur": 7.549
   },
   "bin-trail": {
    "kind": "clip",
@@ -6556,8 +6569,8 @@
    ],
    "segs": [
     [
-     1215.25,
-     1216.55,
+     1215.2,
+     1216.15,
      4.7
     ],
     [
@@ -6701,7 +6714,7 @@
    "kind": "clip",
    "in": 0.2,
    "out": 4.9,
-   "dur": 8.613
+   "dur": 11.153
   },
   "m-detect": {
    "kind": "win",
@@ -6766,7 +6779,7 @@
     ],
     [
      133.3,
-     134.7,
+     134.4,
      3.844
     ]
    ],
@@ -6815,10 +6828,10 @@
     [
      199.4,
      200.9,
-     2.07
+     2.3
     ]
    ],
-   "dur": 11.49
+   "dur": 11.72
   },
   "c-plan": {
    "kind": "ots",
@@ -6826,7 +6839,7 @@
    "win": "m-plan",
    "still": null,
    "in": 1.4,
-   "dur": 11.49,
+   "dur": 11.72,
    "lift": 1.3
   },
   "mango-d05": {
@@ -6884,7 +6897,7 @@
     ],
     [
      244.9,
-     245.95,
+     245.8,
      2.4
     ],
     [
@@ -6947,9 +6960,9 @@
   },
   "mango-d08": {
    "kind": "talk",
-   "in": 0.08,
-   "out": 3.25,
-   "dur": 3.17
+   "in": 0.03,
+   "out": 3.35,
+   "dur": 3.32
   },
   "m-pickup": {
    "kind": "win",
@@ -7048,8 +7061,8 @@
   "mango-d09": {
    "kind": "talk",
    "in": 0.1,
-   "out": 2.65,
-   "dur": 2.55
+   "out": 2.7,
+   "dur": 2.6
   },
   "m-report-bg": {
    "kind": "clip",
@@ -7301,6 +7314,12 @@
    "dur": 7.581,
    "lift": 0.6
   },
+  "c-issued-bg": {
+   "kind": "clip",
+   "in": 0.1,
+   "out": 5.0,
+   "dur": 9.176
+  },
   "r-tablet": {
    "kind": "ots",
    "track": "/Users/arundutta/projects/smart-clearance/.claude/worktrees/SC-205-demo-film/design3/designs/SC-207/src/build/track/s-priya-eve.json",
@@ -7328,7 +7347,7 @@
     ],
     [
      808.6,
-     810.3,
+     810.0,
      1.7
     ],
     [
@@ -7433,8 +7452,8 @@
   "call-d13": {
    "kind": "talk",
    "in": 0.1,
-   "out": 2.75,
-   "dur": 2.65
+   "out": 4.65,
+   "dur": 4.55
   },
   "close-town": {
    "kind": "clip",

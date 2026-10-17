@@ -7,7 +7,7 @@ import plan, ringscan
 rec, dev, t0, t1 = sys.argv[1], sys.argv[2], float(sys.argv[3]), float(sys.argv[4]); mn = float(sys.argv[5]) if len(sys.argv) > 5 else 1.0
 fs = ringscan.frames(str(plan.REC[rec]), plan.DEV[dev], t0, t1)
 cards = ringscan.chapter_cards(str(plan.REC[rec]))
-bad = [ringscan.flagged(f) or (dev in ('L', 'A') and any(c0 <= t0 + i / 6 <= c1 for c0, c1 in cards)) for i, f in enumerate(fs)]
+bad = [ringscan.flagged(f) for f in fs]
 runs, s = [], None
 for i, b in enumerate(bad + [True]):
     if not b and s is None: s = i

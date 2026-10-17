@@ -27,7 +27,7 @@ export function geom(kind: DevKind, srcW: number, srcH: number, size: { sh?: num
 }
 
 /** the device's body: bezel, glass edge, the laptop's deck or the monitor's stand, a soft shadow under it */
-const Body: React.FC<{ g: ReturnType<typeof geom>; lift: number }> = ({ g, lift }) => {
+export const Body: React.FC<{ g: ReturnType<typeof geom>; lift: number }> = ({ g, lift }) => {
 	const { kind, fw, fh, b } = g;
 	const metal = kind === 'phone' ? 'linear-gradient(160deg,#2a2f2d,#121514 55%,#1d2120)' : kind === 'tablet' ? 'linear-gradient(160deg,#2b302e,#151817 60%,#202422)' : 'linear-gradient(180deg,#1c201f,#0e1110)';
 	return (

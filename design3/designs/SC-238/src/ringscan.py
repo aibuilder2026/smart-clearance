@@ -61,12 +61,32 @@ def chapter_cards(src):
     """the stage's title card for each chapter (its foot, 3.6 s from the chapter's start): from the run's chapters.json"""
     if src not in CHAPTERS:
         p = Path(src).with_suffix('.chapters.json')
-        CHAPTERS[src] = [(c['start'] - 0.3, c['start'] + 4.4) for c in json.loads(p.read_text())] if p.exists() else []
+        CHAPTERS[src] = [(c['start'] - 2.2, c['start'] + 4.6) for c in json.loads(p.read_text())] if p.exists() else []   # (the card shows up to 2 s before its recorded start)
     return CHAPTERS[src]
 
 
+def dimmed(f):
+    """the stage dims the rest of a screen while a note is up: the app's own light chrome (the top strip and the left
+    edge, near white in every app) falls to grey"""
+    top = f[:50, :, :].astype(np.float32).mean(); left = f[:, :40, :].astype(np.float32).mean()
+    return max(top, left) < 175
+
+
+def card_at_foot(f):
+    """the stage's chapter title card: a near-black pill across the foot of the screen (SC-197's lower third)"""
+    foot = f[-170:, :, :].astype(np.int32).sum(2) < 150
+    rows = 0
+    for r in foot:
+        d = np.diff(np.concatenate([[0], r.astype(np.int8), [0]]))
+        s_, e_ = np.flatnonzero(d == 1), np.flatnonzero(d == -1)
+        if len(s_) and (e_ - s_).max() >= 220: rows += 1
+    return rows >= 22
+
+
 def flagged(f):
-    """the stage's ring in a frame: a long mint run (SC-201, SC-202), or a long thin dark green line (SC-226)"""
+    """the stage's marks in a frame: a long mint run (SC-201, SC-202), a long thin dark green or amber ring (SC-226), or
+    the dim a note casts"""
+    if dimmed(f) or card_at_foot(f): return True
     if longest(ring_mask(f)) >= RUN: return True
     for mask in (dark_mask(f), amber_mask(f)):
         h, v = thin_runs(mask, f)
@@ -101,12 +121,13 @@ def main():
         m = MEDIA[name]; hits = []
         for i, (a, b, d) in enumerate(m['segs']):
             if (b - a) / d >= 2.2: continue          # a fast-forward: frames flash past
-            fs = frames(m['src'], m['rect'], a, b)
-            cards = chapter_cards(m['src'])
-            for j, f in enumerate(fs):
-                tt = a + j / 6
+            fs = list(frames(m['src'], m['rect'], a, b))
+            ts = [a + j / 6 for j in range(len(fs))]
+            # the span's last frame too: a span played longer than its source holds on it (media.py)
+            last = frames(m['src'], m['rect'], max(a, b - 0.06), b + 0.02, fps=25)
+            if len(last): fs.append(last[-1]); ts.append(b)
+            for f, tt in zip(fs, ts):
                 # (the title card sits at the stage's foot: over the portrait tablet's foot, or the laptop's in a one-screen run)
-                if m['dev'] in ('L', 'A') and any(c0 <= tt <= c1 for c0, c1 in cards): hits.append((i, round(tt, 2), -1)); continue
                 if flagged(f): hits.append((i, round(tt, 2), longest(ring_mask(f))))
         out[name] = hits
         if hits:

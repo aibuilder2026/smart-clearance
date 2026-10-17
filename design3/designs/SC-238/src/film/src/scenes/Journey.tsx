@@ -139,7 +139,7 @@ export const Chips: React.FC<{ s: SceneData }> = ({ s }) => {
 					const checks: [number, string][] = [[ev.t0 + 0.9, 'The batch read on the carton label'], [ev.t0 + 1.4, 'About 540 packs in view'], [ev.t0 + 1.9, 'The slate: the batch, 540 packets, the day'], [ev.t0 + 2.4, 'Both photos taken today']];
 					return (
 						<AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 40%, #12201a, #050a08 70%)' }}>
-							{[['evidence-before', 'Before · at the godown', 70, k1, -2.5], ['evidence-after', 'After · at the landfill', 760, k2, 2.0]].map(([img, cap, x, k, rot]) => (
+							{[['evidence-before', 'Before · at the godown', 70, k1, -2.5], ['evidence-after-crop', 'After · at the landfill', 760, k2, 2.0]].map(([img, cap, x, k, rot]) => (
 								<div key={img as string} style={{ position: 'absolute', left: x as number, top: 120, width: 640, height: 486, borderRadius: 18, overflow: 'hidden', opacity: k as number,
 									transform: `translateY(${(1 - (k as number)) * 40}px) rotate(${(rot as number) * (1 - (k as number))}deg) scale(${1 + 0.03 * clamp(u / d)})`, boxShadow: '0 30px 80px rgba(0,0,0,0.6)', border: '2px solid rgba(255,255,255,0.12)' }}>
 									<Img src={staticFile(`img/${img}.webp`)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -180,15 +180,17 @@ export const Chips: React.FC<{ s: SceneData }> = ({ s }) => {
 							const T = a0 + u;
 							return (
 								<AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 35%, #0f2a1d, #040b07 75%)' }}>
-									<Footage name="m-yes" t0={0} t1={a1 - a0} push={0.02} blur={22} grade="greenSoft" />
-									<AbsoluteFill style={{ background: 'rgba(3,10,7,0.55)' }} />
-									{[{ img: 'paper-expiry', x: 250, rot: -0.0, at: W('n35b', 'credit') - 0.2, cap: 'The expiry credit note' }, { img: 'paper-cert', x: 1010, rot: 0, at: W('n35b', 'certificate') - 0.2, cap: 'The certificate of destruction' }].map((p) => {
+									<Footage name="c-issued-bg" t0={0} t1={a1 - a0} push={0.04} blur={10} grade="greenSoft" />
+									<AbsoluteFill style={{ background: 'rgba(3,10,7,0.3)' }} />
+									{[{ img: 'paper-expiry', x: 250, rot: -0.0, at: a0 + 0.15, hl: W('n35b', 'credit') - 0.1, cap: 'The expiry credit note' }, { img: 'paper-cert', x: 1010, rot: 0, at: a0 + 0.45, hl: W('n35b', 'certificate') - 0.1, cap: 'The certificate of destruction' }].map((p) => {
 										const k = springAt(T, p.at, FPS, 15, 120);
 										return (
 											<div key={p.img} style={{ position: 'absolute', left: p.x, top: 110, width: 660, opacity: clamp(k * 1.5), transform: `translateY(${(1 - k) * 80}px)` }}>
 												<div style={{ height: 760, borderRadius: 10, overflow: 'hidden', background: '#fff', boxShadow: '0 40px 90px rgba(0,0,0,0.55)' }}>
 													<Img src={staticFile(`img/${p.img}.webp`)} style={{ width: '100%', display: 'block', transform: `translateY(${-lerp(0, 120, ramp(T, p.at + 0.6, a1, EASE_IO))}px)` }} />
 												</div>
+												{/* lit on its word */}
+												<div style={{ position: 'absolute', left: -6, top: -6, width: 672, height: 772, borderRadius: 14, border: '3px solid #34d380', boxShadow: '0 0 0 8px rgba(52,211,128,0.14)', opacity: Math.min(ramp(T, p.hl, p.hl + 0.25), 1 - ramp(T, p.hl + 1.6, p.hl + 2.0)) }} />
 												<div style={{ marginTop: 16, font: `600 22px/1 ${SANS}`, color: '#cfe2d8', textAlign: 'center' }}>{p.cap}</div>
 											</div>
 										);

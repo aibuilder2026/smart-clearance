@@ -54,11 +54,11 @@ export const Record: React.FC<{ s: SceneData }> = ({ s }) => {
 				if (p.bg === PAPERS[i - 1]?.bg) return null;
 				let j = i + 1; while (j < PAPERS.length && PAPERS[j].bg === p.bg) j++;
 				const tt1 = j >= PAPERS.length ? papersEnd + 0.3 : at[j] - 0.1;
-				return <Footage key={i} name={p.bg} t0={t0} t1={Math.max(t1, tt1)} push={0.06} blur={9} grade="green" />;
+				return <Footage key={i} name={p.bg} t0={t0} t1={Math.max(t1, tt1)} push={0.06} blur={6} grade="greenSoft" />;
 			})}
 			{t < papersEnd + 0.3 && (
 				<>
-					<AbsoluteFill style={{ background: 'rgba(3,10,7,0.28)' }} />
+					<AbsoluteFill style={{ background: 'rgba(3,10,7,0.2)' }} />
 					<div style={{ position: 'absolute', left: 0, right: 0, top: 46, textAlign: 'center' }}>
 						<Rise t={t} t0={W('n36', 'Every') - 0.05} t1={papersEnd} text="Every paper drawn, signed and reviewed" size={46} weight={700} align="center" />
 					</div>
