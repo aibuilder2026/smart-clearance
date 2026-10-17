@@ -39,11 +39,16 @@ const SceneWrap: React.FC<{ s: SceneData }> = ({ s }) => {
 
 export const Film: React.FC = () => (
 	<AbsoluteFill style={{ background: '#000' }}>
-		{F.scenes.map((s) => (
-			<Sequence key={s.id} from={Math.round(s.t0 * FPS)} durationInFrames={Math.round((s.t0 + s.dur) * FPS) - Math.round(s.t0 * FPS)} name={s.id}>
-				<SceneWrap s={s} />
-			</Sequence>
-		))}
+		{F.scenes.map((s) => {
+			// a scene's length in whole frames, from both its ends rounded once: inside it, its last shots run to that
+			// frame (its own dur rounded alone can fall a frame short, which showed the bare background)
+			const f0 = Math.round(s.t0 * FPS), n = Math.round((s.t0 + s.dur) * FPS) - f0;
+			return (
+				<Sequence key={s.id} from={f0} durationInFrames={n} name={s.id}>
+					<SceneWrap s={{ ...s, dur: n / FPS, shots: s.shots.map((sh) => (sh.t1 >= s.dur - 0.002 ? { ...sh, t1: n / FPS + 1 / FPS } : sh)) }} />
+				</Sequence>
+			);
+		})}
 		<Finish />
 	</AbsoluteFill>
 );

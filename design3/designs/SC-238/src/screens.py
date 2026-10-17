@@ -155,7 +155,8 @@ def make(name, draft):
             cv2.imwrite(str(seq / f'{i + 1:08d}.png'), out[y0:y0 + H, :W] if cw == W else cv2.resize(out, (W, int(chh * W / cw)))[y0:y0 + H])
             out_q.append(np.round(q - np.float32([0, y0]), 2).tolist())
         OUT.mkdir(parents=True, exist_ok=True); TRK.mkdir(parents=True, exist_ok=True)
-        subprocess.run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(FPS), '-i', str(seq / '%08d.png'), '-c:v', 'libx264', '-preset', 'slow' if not draft else 'veryfast',
+        subprocess.run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(FPS), '-i', str(seq / '%08d.png'), '-vf', 'tpad=stop_mode=clone:stop=3',   # (3 frames held past the shot)
+                        '-c:v', 'libx264', '-preset', 'slow' if not draft else 'veryfast',
                         '-crf', '12' if not draft else '16', '-g', '60', '-pix_fmt', 'yuv420p', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709',
                         '-movflags', '+faststart', str(OUT / f'{name}.mp4')], check=True)
         (TRK / f'{name}.json').write_text(json.dumps({'fps': FPS, 'n': n, 'quads': out_q}))

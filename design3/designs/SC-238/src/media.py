@@ -217,6 +217,8 @@ def make(name, only_ff=False):
         if only_ff: return
         total = bounds(m)[-1][1]
         assert k == total, (name, k, total)
+        for _ in range(PAD):                       # (held past the shot's end)
+            k += 1; shutil.copy(seq / f'{k - 1:08d}.png', seq / f'{k:08d}.png')
         OUT.mkdir(parents=True, exist_ok=True)
         encode(seq, out, m)
     drafts = json.loads(DRAFTS.read_text()) if DRAFTS.exists() else {}
@@ -240,6 +242,7 @@ def audio(name):
 
 
 DRAFTS = HERE / 'build' / 'drafts.json'
+PAD = 3   # frames of the last frame held past the shot's end: a shot that rounds a frame long never shows black
 MADE = HERE / 'build' / 'made.json'
 
 
@@ -255,11 +258,13 @@ def draft(name):
     OUT.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=str(HERE / 'build')) as td:
         tmp = Path(td); parts = []
-        for i, ((a, b, d), (f0, f1)) in enumerate(zip(spans(m), bounds(m))):
+        sb = list(zip(spans(m), bounds(m)))
+        for i, ((a, b, d), (f0, f1)) in enumerate(sb):
             n = f1 - f0
             if n <= 0: continue
             md = mode(m, a, b, d)
             sp = 0.9 if md == 'hold' else (b - a) / (n / FPS)
+            if i == len(sb) - 1: n += PAD
             vf = crop_vf(m) + [f'setpts=(PTS-STARTPTS)/{sp:.6f}', f'fps={FPS}', 'tpad=stop_mode=clone:stop_duration=30'] + ([] if m['kind'] == 'win' else cover_vf())
             part = tmp / f'p{i:02d}.mp4'
             # (the span read as an input option: as an output option -t would cap the slowed span at its source length)
@@ -269,7 +274,7 @@ def draft(name):
         lst = tmp / 'list.txt'; lst.write_text(''.join(f"file '{p}'\n" for p in parts))
         run(['ffmpeg', '-v', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', lst, '-c', 'copy', '-movflags', '+faststart', out])
     n_got = int(run(['ffprobe', '-v', 'error', '-count_frames', '-select_streams', 'v:0', '-show_entries', 'stream=nb_read_frames', '-of', 'csv=p=0', out]).stdout.strip() or 0)
-    want = bounds(m)[-1][1]
+    want = bounds(m)[-1][1] + PAD
     if m['kind'] == 'talk': audio(name)
     drafts[name] = key; DRAFTS.write_text(json.dumps(drafts, indent=1))
     print(f'{name}: draft {n_got} frames (want {want}){"" if n_got == want else "  MISMATCH"}')
