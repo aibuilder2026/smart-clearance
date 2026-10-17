@@ -117,7 +117,7 @@ def narration():
 # each talking clip's space: the room's decay (RT60, s) and how much of it is heard
 ACOUSTICS = {'d-dawn-call': (0.9, 0.2), 'l-dawn-call': (0.4, 0.12), 'b-approve': (0.45, 0.14), 'l-approve': (0.45, 0.14), 'k-order-b': (0.35, 0.12),
              'v-dock': (0.6, 0.15), 's-shop-b': (0.35, 0.12), 'w-buyer': (0.8, 0.18), 'o-landfill': (0.25, 0.06), 'd-eve-call': (0.9, 0.2),
-             'l-eve-call-b': (0.45, 0.13)}
+             'l-eve-call-b': (0.45, 0.13), 'l-dawn-call-b': (0.4, 0.12), 'v-dock-b': (0.6, 0.15)}
 
 
 def talking():

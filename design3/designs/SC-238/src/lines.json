@@ -262,7 +262,7 @@
    "id": "d02",
    "act": "cold",
    "who": "the supply chain lead",
-   "clip": "l-dawn-call",
+   "clip": "l-dawn-call-b",
    "text": "And quick commerce?",
    "take": "first line of the lead's dawn take"
   },
@@ -278,7 +278,7 @@
    "id": "d04",
    "act": "cold",
    "who": "the supply chain lead",
-   "clip": "l-dawn-call",
+   "clip": "l-dawn-call-b",
    "text": "Write it off, then.",
    "take": "second line of the lead's dawn take"
   },
@@ -307,7 +307,7 @@
    "id": "d08",
    "act": "mango",
    "who": "the food bank volunteer",
-   "clip": "v-dock",
+   "clip": "v-dock-b",
    "text": "Fifty-eight packs. All sealed."
   },
   {
