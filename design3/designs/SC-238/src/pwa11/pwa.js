@@ -130,7 +130,11 @@
     // the laptop: rises, is installed on, then draws back to the left
     const rise = eo(t / 0.9);
     const pb = sm((t - c.pull) / 0.95);
-    const lx = lerp(960, 700, pb), ly = lerp(lerp(640, 560, rise), 590, pb), ls = lerp(0.9, 0.58, pb);
+    // SC-238: the camera leans in on the address bar as the pointer goes to Install app, creeps on through the dialog,
+    // and settles back as the window becomes the app's own (its dock in view), before the pull to the three devices
+    const kin = sm((t - c.progressive) / Math.max(0.4, c.click1 - c.progressive)) * (1 - sm((t - c.click2 - 0.15) / 0.55));
+    const creep = clamp((t - c.click1) / Math.max(0.3, c.click2 - c.click1));
+    const lx = lerp(960 - 150 * kin, 700, pb), ly = lerp(lerp(640, 560, rise) + 118 * kin, 590, pb), ls = lerp(0.9 + (0.18 + 0.05 * creep) * kin, 0.58, pb);
     const drift = Math.sin(t * 0.35) * 0.8;
     place(laptop, lx, ly, ls, lerp(-4, 9, pb) + drift, lerp(12, 3, rise) - 1.5 * pb, clamp(t / 0.5), 1220, 806);
     // Install app glows in the address bar, is clicked; the dialog; Install; the window becomes the app's own
