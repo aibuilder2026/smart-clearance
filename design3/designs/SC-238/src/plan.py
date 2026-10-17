@@ -259,7 +259,7 @@ def have(key):
 
 # the lead's tablet in her desk clip (film px): where her screen lifts out from, as she reads (0 s) and as she taps (4 s)
 A_TABLET, A_TABLET_TAP = [390, 600, 490, 390], [215, 700, 640, 380]
-D_PORTAL = [640, 640, 460, 400]   # the distributor's tablet at dusk (d-portal), film px: measured on the clip once made
+D_PORTAL = [600, 790, 560, 290]   # the distributor's tablet at dusk (d-portal, at 3.3 s), film px
 
 
 def build():
@@ -579,7 +579,7 @@ def build():
     starts = win('m-portal', 'mango', 'L', [(748.0, 749.9, wp), (750.4, 750.95, wc - wp), (751.4, 755.2, d - wc)])   # (the stage's ring on the Papers tab at 750.0 and on the signature from 755.5, left out)
     pf = None
     if have('d-portal'):                                # at her godown at dusk, reading her portal on her tablet (its back to us)
-        clip('i-portal', 'd-portal', 0.3, 5.8, d); pf = D_PORTAL
+        clip('i-portal', 'd-portal', 3.2, 5.0, d); pf = D_PORTAL     # (smiling down at it: before 3 s the take turns her away, after 5 s towards the lens)
         s.shot('clip', a1, a1 + d, media='i-portal', sharp=0.5, under='m-portal', fromRect=pf)
     else:
         ots('i-portal', 'lakshmi-label', 'm-portal', d, 0.5, a=2.4)

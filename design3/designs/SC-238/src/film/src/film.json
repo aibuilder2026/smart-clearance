@@ -4199,11 +4199,18 @@
      ]
     },
     {
-     "kind": "ots",
+     "kind": "clip",
      "t0": 97.479,
      "t1": 106.559,
      "media": "i-portal",
-     "lift": 0.5
+     "sharp": 0.5,
+     "under": "m-portal",
+     "fromRect": [
+      600,
+      790,
+      560,
+      290
+     ]
     },
     {
      "kind": "win",
@@ -4219,6 +4226,12 @@
      "clock": [
       "Best before",
       "her portal"
+     ],
+     "fromRect": [
+      600,
+      790,
+      560,
+      290
      ],
      "rings": [
       {
@@ -7207,14 +7220,10 @@
    "dur": 9.08
   },
   "i-portal": {
-   "kind": "ots",
-   "track": "/Users/arundutta/projects/smart-clearance/.claude/worktrees/SC-205-demo-film/design3/designs/SC-207/src/build/track/s-lakshmi-label.json",
-   "win": "m-portal",
-   "still": null,
-   "in": 2.4,
-   "dur": 9.08,
-   "lift": 0.5,
-   "dehalo": true
+   "kind": "clip",
+   "in": 3.2,
+   "out": 5.0,
+   "dur": 9.08
   },
   "c-today": {
    "kind": "win",
