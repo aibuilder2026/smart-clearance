@@ -1,0 +1,9 @@
+{
+  "model": "Qwen-Image 2.1 bf16 (local), edit",
+  "seed": 239,
+  "size": 1024,
+  "steps": 40,
+  "input": "o0-godown-load-in.webp: the last frame (142) of SC-219's clips/o0-godown-aisle-labelled-two.mp4 (cut 17's opening godown), the 384 x 384 crop at x 1100, y 470, upscaled to 1024 with Lanczos",
+  "prompt": "Remove the worker in the orange safety vest completely. In his place show what was behind him: the right end of the stack of cardboard cartons on the forklift's pallet, with its straight vertical edge and the pallet's wooden base continuing down to the floor, and beyond its edge the hazy warehouse aisle and the shelving behind, and the glossy concrete floor with soft reflections where his feet were. Match the surrounding cartons, light and haze exactly. Keep everything else exactly the same: the cartons, their labels, the pallets on the right, the framing and the colours.",
+  "post": "saved as lossless WebP from the PNG output; SC-219/src/unworker.py scales it back to 384 x 384 and uses its load (left of the load's right edge, x 1250.5 in that frame), carried to each frame by the load's own motion"
+}
