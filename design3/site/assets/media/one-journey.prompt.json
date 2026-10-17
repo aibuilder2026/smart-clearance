@@ -76,7 +76,7 @@
       "latency_s": 157.0
     },
     {
-      "name": "final-4-office-command-center",
+      "name": "final-4-office-dashboard",
       "model": "veo-3.1-generate-001",
       "prompt": "Photorealistic cinematic live action, exactly as in the image: evening in the small office above the godown, the warm desk lamp on and the last blue light in the window. The planner in the navy pinstripe kurta and the distributor in the light blue checked shirt, no glasses, sit side by side reading the green-and-white dashboard on the monitor; she traces the rising line on a chart with her pen and glances at him, he nods slowly and leans in, then sits back, satisfied; the bars on the dashboard tick up a little as it refreshes. Nothing is picked up or drunk; the chai tumblers stay on their tray. The camera dollies in very slowly toward the screen and the two faces, a gentle push, no handheld shake. The light does not change over the shot. 35 mm, shallow depth of field, professional and calm. No readable text, numbers, logos or lettering anywhere, on the screen or the papers.",
       "negative_prompt": "text, lettering, logo, brand name, label, watermark, subtitles, children",
@@ -105,7 +105,7 @@
   "watermark": "SynthID",
   "cost_usd_clips": 6.4,
   "price_table_date": "2026-10-10",
-  "created": "2026-10-16",
-  "use": "smartclearance.web.app's hero film (SC-154): one day of the journey with real people, in four chapters, looping through a dissolve; both themes start on its first frame. SC-237: chapter 3 cut to the take's clean seconds (1.65 to 4.58 s), where no packet vanishes from a hand and no clipboard appears in one, and chapter 4 longer, the workspace app's real Command Center on the office monitor. The drafts the design round was picked on, and the earlier takes, are in design3/designs/SC-154/media",
-  "designed_in": "design3/designs/SC-154, design3/designs/SC-237"
+  "created": "2026-10-17",
+  "use": "smartclearance.web.app's hero film (SC-154): one day of the journey with real people, in four chapters, looping through a dissolve; both themes start on its first frame. SC-237: chapter 3 cut to the take's clean seconds (1.65 to 4.58 s), where no packet vanishes from a hand and no clipboard appears in one, and chapter 4 longer (0.3 to 5.97 s). SC-243: chapter 4's monitor as Veo filmed it, its plain green dashboard moving with the camera (SC-237's tracked Command Center read as jittery). The drafts the design round was picked on, and the earlier takes, are in design3/designs/SC-154/media",
+  "designed_in": "design3/designs/SC-154, design3/designs/SC-237, design3/designs/SC-243"
 }

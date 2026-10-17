@@ -26,12 +26,12 @@
       "sha256": "aeeabf4b0bdd317201c6ecb904c870bb79a8150af187e5c3db887636d4f688a1"
     },
     {
-      "file": "SC-237/media/final-4-office-command-center.mp4",
+      "file": "SC-154/media/final-4-office-dashboard.mp4",
       "in": 0.3,
       "out": 5.97,
       "source_duration": 8.0,
       "len": 5.67,
-      "sha256": "9a9892816704071060bc77fe015dab153c3283fb2f7d67f71b8d85a4f6e2f287"
+      "sha256": "e8530d852d7d8228d3b9e1c70229191d9b39e6cc7a72cc69e170e1a3fc66ecec"
     }
   ],
   "xfade_s": 0.5,
@@ -48,6 +48,6 @@
   ],
   "expected_duration_s": 15.2,
   "duration_s": 15.208,
-  "mb": 6.16,
-  "command": "ffmpeg -y -hide_banner -loglevel error -i SC-154/media/final-1-bay-dawn-v3.mp4 -i SC-154/media/final-2-godown-noon.mp4 -i SC-154/media/final-3-yard-dusk-v2.mp4 -i SC-237/media/final-4-office-command-center.mp4 -filter_complex [0:v]trim=start=0.2:end=4.5,setpts=PTS-STARTPTS,fps=24,scale=1920:1080:flags=lanczos:force_original_aspect_ratio=increase,crop=1920:1080,setsar=1[v0];[1:v]trim=start=0.1:end=4.4,setpts=PTS-STARTPTS,fps=24,scale=1920:1080:flags=lanczos:force_original_aspect_ratio=increase,crop=1920:1080,setsar=1[v1];[2:v]trim=start=1.65:end=4.58,setpts=PTS-STARTPTS,fps=24,scale=1920:1080:flags=lanczos:force_original_aspect_ratio=increase,crop=1920:1080,setsar=1[v2];[3:v]trim=start=0.3:end=5.97,setpts=PTS-STARTPTS,fps=24,scale=1920:1080:flags=lanczos:force_original_aspect_ratio=increase,crop=1920:1080,setsar=1[v3];[v0][v1]xfade=transition=fade:duration=0.5:offset=3.8[x1];[x1][v2]xfade=transition=fade:duration=0.5:offset=7.6[x2];[x2][v3]xfade=transition=fade:duration=0.5:offset=10.03[x3];[0:v]trim=start=0.2:end=0.783,setpts=PTS-STARTPTS,fps=24,scale=1920:1080:flags=lanczos:force_original_aspect_ratio=increase,crop=1920:1080,setsar=1[head];[x3][head]xfade=transition=fade:duration=0.5:offset=15.2[lp];[lp]trim=start=0.5833,setpts=PTS-STARTPTS[cut];[cut]fps=24,eq=contrast=1.03:saturation=1.06,format=yuv420p[out] -map [out] -an -c:v libx264 -preset slow -profile:v high -crf 27 -movflags +faststart /Users/arundutta/projects/smart-clearance/design3/site/assets/media/one-journey.mp4"
+  "mb": 6.0,
+  "command": "ffmpeg -y -hide_banner -loglevel error -i SC-154/media/final-1-bay-dawn-v3.mp4 -i SC-154/media/final-2-godown-noon.mp4 -i SC-154/media/final-3-yard-dusk-v2.mp4 -i SC-154/media/final-4-office-dashboard.mp4 -filter_complex [0:v]trim=start=0.2:end=4.5,setpts=PTS-STARTPTS,fps=24,scale=1920:1080:flags=lanczos:force_original_aspect_ratio=increase,crop=1920:1080,setsar=1[v0];[1:v]trim=start=0.1:end=4.4,setpts=PTS-STARTPTS,fps=24,scale=1920:1080:flags=lanczos:force_original_aspect_ratio=increase,crop=1920:1080,setsar=1[v1];[2:v]trim=start=1.65:end=4.58,setpts=PTS-STARTPTS,fps=24,scale=1920:1080:flags=lanczos:force_original_aspect_ratio=increase,crop=1920:1080,setsar=1[v2];[3:v]trim=start=0.3:end=5.97,setpts=PTS-STARTPTS,fps=24,scale=1920:1080:flags=lanczos:force_original_aspect_ratio=increase,crop=1920:1080,setsar=1[v3];[v0][v1]xfade=transition=fade:duration=0.5:offset=3.8[x1];[x1][v2]xfade=transition=fade:duration=0.5:offset=7.6[x2];[x2][v3]xfade=transition=fade:duration=0.5:offset=10.03[x3];[0:v]trim=start=0.2:end=0.783,setpts=PTS-STARTPTS,fps=24,scale=1920:1080:flags=lanczos:force_original_aspect_ratio=increase,crop=1920:1080,setsar=1[head];[x3][head]xfade=transition=fade:duration=0.5:offset=15.2[lp];[lp]trim=start=0.5833,setpts=PTS-STARTPTS[cut];[cut]fps=24,eq=contrast=1.03:saturation=1.06,format=yuv420p[out] -map [out] -an -c:v libx264 -preset slow -profile:v high -crf 27 -movflags +faststart ../site/assets/media/one-journey.mp4"
 }
