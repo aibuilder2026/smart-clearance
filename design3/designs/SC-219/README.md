@@ -5,9 +5,29 @@ cut 9 on the maintainer's notes on cut 8, cut 10 on four notes on cut 9, cut 11 
 on a new architecture scene, after a concept round, cut 13 on cut 10's 3D architecture made whole, with the app
 beside each part, and cut 14 on Google's own logos, a chip and a bracket on each part, and the four apps on their
 screens, then cut 15 (SC-225) on the demo's cast, the landing page and Munchly's workspace address, cut 16 (SC-227)
-on a review of cut 15, and cut 17 (SC-228) on FSSAI's rule, a presenter's narration and the record scene. Each
+on a review of cut 15, and cut 17 (SC-228) on FSSAI's rule, a presenter's narration and the record scene, with the opening godown's second worker painted out
+(SC-239). Each
 joins the earlier cuts in the repository root's `working-demo/` folder, with its export's date and time in its name;
 `media/` holds the latest.
+
+## Cut 17, one worker in the godown (17 Oct 2026, SC-239)
+
+**The maintainer's note on cut 17:** the opening scene is fine, "but there is glitch where the hands seems to be
+merging". In the opening godown's LTX clip two workers walk side by side behind the forklift's pallet; from about its
+frame 30 the left one's arm fuses into the other's, and the dolly carries the pallet's edge over him until only a
+sliver of vest is left beside the other (frames 40 to 58).
+
+**The fix** (`src/unworker.py`): he is painted out, so one worker walks the aisle throughout. A clean plate of the empty
+aisle, a local Qwen-Image edit of the clip's frame 0 with no workers (`../SC-239/o0-godown-plate.webp`, its input and
+sidecar beside it), is aligned to each of frames 0 to 70 by a similarity fitted on the static racks and the aisle above
+the heads, its light matched to the frame around the band, and fills the band between the pallet's right edge (measured
+on the top carton each frame, smoothed) and a line just left of the remaining worker, from above the heads down through
+the floor's reflections, feathered wider on the glossy floor. `clips/o0-godown-aisle-labelled.mp4` is written again
+(the two-worker clip kept beside it as `-two`); nothing else in the film changes, and the sound is cut 17's.
+
+**Checks:** the band before and after at every sixth frame, close-ups of the seam at the pallet's edge, the remaining
+worker's arm and the pallet's foot, and time slices of five rows over the first 80 frames, which show no flicker or
+step; the film rendered again and its opening compared frame for frame with cut 17's.
 
 ## Cut 17 (16 Oct 2026, SC-228)
 
@@ -1067,6 +1087,7 @@ Cut 17, after cut 16's steps (the voice is `tts/vo3/gemini-Gacrux-demo`, named i
 (cd remo12 && npx remotion render src/index.ts FssaiRule ../build/fssai17/rule --sequence --image-format=png --props=../build/fssai17-rule.json)
 (cd remo12 && npx remotion render src/index.ts FssaiBatch ../build/fssai17/batch --sequence --image-format=png --props=../build/fssai17-batch.json)
 for p in cast16/cast saas10/saas pwa9/pwa audit17/audit ops17/ops arch13/arch; do d=${p%%/*}; node capture-page.mjs $p.html build/$d build/$d-cues.json 25; done
+.venv/bin/python unworker.py                                                        # SC-239: the godown's second worker painted out (after cartons.py)
 .venv/bin/python render13.py && .venv/bin/python mix13.py && ./export13.sh
 node qrcheck11.mjs ../media/smart-clearance-working-demo.mp4 14.0 238.5
 uv run --no-project --python .venv/bin/python --with mlx-whisper python readback13.py
