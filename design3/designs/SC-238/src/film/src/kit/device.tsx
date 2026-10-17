@@ -59,6 +59,9 @@ export type WindowProps = {
 	quads?: string; quadsT0?: number; enter?: 'lift' | 'none';
 	/** how it leaves: 'down' into its device, 'push' through, or just ends at t1 */
 	out?: 'none' | 'down' | 'away'; outDur?: number;
+	/** the held screen's slow drift (scene s): by default from its lift to its end; windows that hand over on one device
+	 *  share one, so the device keeps its size as its screen changes */
+	drift?: [number, number];
 	rings?: RingDef[]; cards?: CardDef[]; tilt?: number; children?: React.ReactNode; zoom?: { t0: number; t1: number; r: Rect; k?: number }[];
 };
 
@@ -67,7 +70,7 @@ export const Window: React.FC<WindowProps> = (p) => {
 	const f0 = Math.round(p.t0 * FPS), n = Math.max(1, Math.round(p.t1 * FPS) - f0);
 	return <Sequence from={f0} durationInFrames={n} layout="none"><WindowInner {...p} /></Sequence>;
 };
-const WindowInner: React.FC<WindowProps> = ({ name, kind, t0, t1, cx, cy, sh, sw, from, liftAt, liftDur = 0.75, out = 'none', outDur = 0.45, rings = [], cards = [], tilt = 0, children, zoom = [], quads, quadsT0, enter = 'lift' }) => {
+const WindowInner: React.FC<WindowProps> = ({ name, kind, t0, t1, cx, cy, sh, sw, from, liftAt, liftDur = 0.75, out = 'none', outDur = 0.45, drift, rings = [], cards = [], tilt = 0, children, zoom = [], quads, quadsT0, enter = 'lift' }) => {
 	const t = useCurrentFrame() / FPS + t0;   // scene seconds
 	const m = media(name); const [, , srcW, srcH] = m.rect!;
 	const g = geom(kind, srcW, srcH, sh ? { sh } : { sw: sw! });
@@ -79,7 +82,8 @@ const WindowInner: React.FC<WindowProps> = ({ name, kind, t0, t1, cx, cy, sh, sw
 	const X0 = cx - g.sw / 2, Y0 = cy - g.sh / 2;
 	let tgt: number[][] = [[X0, Y0], [X0 + g.sw, Y0], [X0 + g.sw, Y0 + g.sh], [X0, Y0 + g.sh]];
 	// a slow camera drift on the held screen: it is never a resting picture
-	const hold = clamp((t - la - liftDur) / Math.max(1, t1 - la - liftDur));
+	const [d0, d1] = drift ?? [la + liftDur, t1];
+	const hold = clamp((t - d0) / Math.max(1, d1 - d0));
 	let S = 1 + 0.03 * EASE_IO(hold);
 	let zx = 0, zy = 0, op = 1, dy = 0;
 	for (const z of zoom) {

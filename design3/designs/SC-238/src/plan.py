@@ -343,9 +343,14 @@ def build():
     t = s.say('n10b', t + 1.0)                          # the platform team watches every client, live
     s.mark('watch', s.vo[-1]['t'])
     # the Overview live (figures, agents at work), its scroll to Food by day, then every client's batches
-    w0, wb = s.marks['watch'] - 0.3, s.w('n10b', 'batch') - 0.25
+    # (the Overview takes the laptop a beat into the line, so the rules screen and its card are read first; the setup
+    # screen, its last ring and its card leave as it does)
+    w0, wb = s.marks['watch'] + 0.35, s.w('n10b', 'batch') - 0.25
     starts = win('console-overview', 'admin', 'A', [(195.7, 197.35, wb - w0 - 1.45), (197.35, 198.8, 1.45), (244.55, 245.4, t + 0.6 - wb)])
-    O0 = s.marks['watch'] - 0.3
+    O0 = w0
+    cs = next(x for x in s.shots if x.get('media') == 'console-setup')
+    cs['t1'] = round(min(cs['t1'], O0), 3)
+    for x in cs['rings'] + cs['cards']: x['t1'] = round(min(x['t1'], O0), 3)
     s.shot('win', O0, t + 0.6, media='console-overview', starts=starts, enter='none', place={'kind': 'laptop', 'cx': 1170, 'cy': 540, 'sw': 1320},
            rings=[R(s.w('n10b', 'client') - 0.15, s.w('n10b', 'agent') - 0.1, [362, 265, 1546, 205]), R(s.w('n10b', 'agent') - 0.1, max(O0 + starts[1], s.w('n10b', 'agent') + 1.2), [362, 500, 1546, 470]),
                   R(O0 + starts[2] + 0.1, t + 0.6, [362, 230, 1546, 670])],

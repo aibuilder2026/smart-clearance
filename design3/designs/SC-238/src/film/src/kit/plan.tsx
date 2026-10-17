@@ -23,6 +23,21 @@ type PShot = Shot & { lift?: number; fromRect?: Rect; rings?: RingDef[]; cards?:
 /** the person's shot under a window: the window whose t0 is this shot's, or that names it */
 const winOf = (s: SceneData, bg: PShot) => s.shots.find((w) => w.kind === 'win' && (Math.abs(w.t0 - bg.t0) < 0.02 || (bg as PShot).under === w.media)) as PShot | undefined;
 
+/** a window's place on screen: its device's, as the shot moves it */
+const placeOf = (w: PShot) => ({ ...PLACE[media(w.media!).dev!], ...(w.place || {}) });
+
+/** windows that hand over on one device (the next comes in with no lift as this one ends, in the same place) share one
+ *  drift, from the first one's lift to the last one's end, so the device keeps its size as its screen changes */
+const chainDrift = (s: SceneData, w: PShot): [number, number] | undefined => {
+	const wins = (s.shots as PShot[]).filter((x) => x.kind === 'win');
+	const same = (a: PShot, b: PShot) => JSON.stringify(placeOf(a)) === JSON.stringify(placeOf(b));
+	let first = w, last = w;
+	for (let p = wins.find((x) => x !== first && first.enter === 'none' && same(x, first) && x.t0 < first.t0 && x.t1 >= first.t0 - 0.02); p; p = wins.find((x) => x !== first && first.enter === 'none' && same(x, first) && x.t0 < first.t0 && x.t1 >= first.t0 - 0.02)) first = p;
+	for (let q = wins.find((x) => x !== last && x.enter === 'none' && same(x, last) && x.t0 > last.t0 && x.t0 <= last.t1 + 0.02); q; q = wins.find((x) => x !== last && x.enter === 'none' && same(x, last) && x.t0 > last.t0 && x.t0 <= last.t1 + 0.02)) last = q;
+	if (first === w && last === w) return undefined;
+	return [first.t0 + (first.lift ?? 0) + 0.75, last.t1];
+};
+
 /** the journey's clock, one chip a scene: it comes in with the first shot that names a time, stays up while the shots
  *  that follow name one (its words turning over in place as the time moves on), and leaves when they stop */
 export const SceneClock: React.FC<{ s: SceneData; t: number }> = ({ s, t }) => {
@@ -71,11 +86,11 @@ export const PlanShots: React.FC<{ s: SceneData; skip?: string[]; grade?: Record
 			continue;
 		}
 		if (sh.kind === 'win') {
-			const m = media(sh.media); const pl = { ...PLACE[m.dev!], ...(sh.place || {}) };
+			const pl = placeOf(sh);
 			const bg = (s.shots as PShot[]).find((b) => (b.kind === 'ots' || b.kind === 'clip') && (Math.abs(b.t0 - sh.t0) < 0.02 || b.under === sh.media));
 			const isOts = bg?.kind === 'ots';
 			out.push(<Window key={sh.media} name={sh.media} kind={pl.kind} t0={sh.t0} t1={sh.t1} cx={pl.cx} cy={pl.cy} sh={pl.sh} sw={pl.sw} liftAt={sh.t0 + (sh.lift ?? 0)}
-				quads={isOts ? bg!.media : undefined} quadsT0={bg?.t0} from={!isOts ? sh.fromRect : undefined} rings={sh.rings} cards={sh.cards} enter={sh.enter} />);
+				quads={isOts ? bg!.media : undefined} quadsT0={bg?.t0} from={!isOts ? sh.fromRect : undefined} rings={sh.rings} cards={sh.cards} enter={sh.enter} drift={chainDrift(s, sh)} />);
 			for (const [i, h] of (sh.heads || []).entries()) out.push(<AgentHead key={`${sh.media}-h${i}`} t={t} {...h} />);
 			if (sh.badge) out.push(<Badge key={`${sh.media}-b`} t={t} {...sh.badge} />);
 		}
