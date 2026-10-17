@@ -180,9 +180,9 @@ export const Chips: React.FC<{ s: SceneData }> = ({ s }) => {
 				const a0 = M.issued, a1 = s.dur, aC = W('n35b', 'certificate') - 0.25;
 				const PW = 1162, SC = PW / 1320, VIS = 840, TOP = 92;
 				const PAP = [
-					{ img: 'paper-expiry', t0: a0 + 0.1, t1: aC, cap: 'The expiry credit note', glide: [[a0 + 0.1, 0]],
+					{ img: 'paper-expiry', t0: a0 + 0.1, t1: aC, cap: 'The expiry credit note', glide: [[a0 + 0.1, 0], [a0 + 0.6, 110, 2.6]],
 						hi: [{ r: [60, 505, 1200, 165], t0: W('n35b', 'credit') - 0.1 }, { r: [598, 632, 692, 52], t0: W('n35b', 'credit') + 0.6 }] },
-					{ img: 'paper-cert', t0: aC, t1: a1, cap: 'The certificate of destruction', glide: [[aC, 0], [aC + 1.2, 620]],
+					{ img: 'paper-cert', t0: aC, t1: a1, cap: 'The certificate of destruction', glide: [[aC, 0], [aC + 1.2, 620]], zoom: [aC + 2.4, a1, 1.06, 1140],
 						hi: [{ r: [60, 408, 1200, 60], t0: aC + 0.3 }, { r: [60, 975, 1200, 335], t0: aC + 1.5 }] },
 				];
 				return (
@@ -201,17 +201,24 @@ export const Chips: React.FC<{ s: SceneData }> = ({ s }) => {
 										const x = 960 - PW / 2 + (i === 0 ? 0 : (1 - kin) * 1100) - kout * 1100;
 										const y = TOP + (i === 0 ? (1 - kin) * 70 : 0);
 										const op = (i === 0 ? clamp(kin * 1.5) : 1) * (1 - kout * 0.9);
-										let off = 0; p.glide.forEach(([gt, gy], k) => { off = k === 0 ? gy * SC : lerp(off, gy * SC, ramp(T, gt, gt + 1.4, EASE_IO)); });
+										// (each glide point eases in over its own length, 1.4 s by default: the last drifts on to the paper's end)
+										let off = 0; p.glide.forEach(([gt, gy, gd = 1.4], k) => { off = k === 0 ? gy * SC : lerp(off, gy * SC, ramp(T, gt, gt + gd, EASE_IO)); });
 										return (
 											<div key={p.img} style={{ position: 'absolute', left: x, top: y, width: PW, opacity: op }}>
 												<div style={{ position: 'relative', height: VIS, borderRadius: 10, overflow: 'hidden', background: '#fff', boxShadow: '0 40px 90px rgba(0,0,0,0.55)' }}>
-													<Img src={staticFile(`img/${p.img}.webp`)} style={{ position: 'absolute', left: 0, top: -off, width: PW, height: PW * 1867 / 1320, display: 'block' }} />
-													{p.hi.map((h, k) => {
-														const a = ramp(T, h.t0, h.t0 + 0.3) * (1 - ramp(T, p.t1 - 0.3, p.t1));
-														if (a <= 0) return null;
-														const [rx, ry, rw, rh] = h.r;
-														return <div key={k} style={{ position: 'absolute', left: rx * SC - 5, top: ry * SC - off - 5, width: rw * SC + 10, height: rh * SC + 10, borderRadius: 10, border: '3px solid #34d380', background: 'rgba(52,211,128,0.10)', boxShadow: '0 0 0 7px rgba(52,211,128,0.15)', opacity: a }} />;
-													})}
+													{/* the paper and its highlights move as one: the glide down it, and a slow push in on what is read last
+													    (zoom: from, to, scale, about the paper's own line y) where a glide would only show blank paper */}
+													<div style={{ position: 'absolute', left: 0, top: -off, width: PW, height: PW * 1867 / 1320,
+														transform: p.zoom ? `scale(${lerp(1, p.zoom[2], ramp(T, p.zoom[0], p.zoom[1], EASE_IO)).toFixed(4)})` : undefined,
+														transformOrigin: p.zoom ? `50% ${(p.zoom[3] * SC).toFixed(1)}px` : undefined }}>
+														<Img src={staticFile(`img/${p.img}.webp`)} style={{ position: 'absolute', left: 0, top: 0, width: PW, height: PW * 1867 / 1320, display: 'block' }} />
+														{p.hi.map((h, k) => {
+															const a = ramp(T, h.t0, h.t0 + 0.3) * (1 - ramp(T, p.t1 - 0.3, p.t1));
+															if (a <= 0) return null;
+															const [rx, ry, rw, rh] = h.r;
+															return <div key={k} style={{ position: 'absolute', left: rx * SC - 5, top: ry * SC - 5, width: rw * SC + 10, height: rh * SC + 10, borderRadius: 10, border: '3px solid #34d380', background: 'rgba(52,211,128,0.10)', boxShadow: '0 0 0 7px rgba(52,211,128,0.15)', opacity: a }} />;
+														})}
+													</div>
 												</div>
 												<div style={{ marginTop: 18, textAlign: 'center', font: `700 30px/1 '${DISPLAY}'`, color: GREEN.ink, opacity: ramp(T, p.t0 + 0.2, p.t0 + 0.5) }}>{p.cap}</div>
 											</div>
