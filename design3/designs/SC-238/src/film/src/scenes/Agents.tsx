@@ -9,7 +9,13 @@ import { FPS, SceneData } from '../edl';
 
 export const Agents3D: React.FC<{ s: SceneData }> = ({ s }) => {
 	const t = useCurrentFrame() / FPS;
-	if (hasMedia('agents3d')) return <AbsoluteFill><Media name="agents3d" style={{ width: '100%', height: '100%' }} /></AbsoluteFill>;
+	// the scene builds out of the dark (its own fade from black); its first frames, still the page warming up, stay black
+	if (hasMedia('agents3d')) return (
+		<AbsoluteFill style={{ background: '#000' }}>
+			<Media name="agents3d" style={{ width: '100%', height: '100%' }} />
+			<AbsoluteFill style={{ background: '#000', opacity: 1 - Math.min(1, Math.max(0, (t - 0.16) / 0.12)) }} />
+		</AbsoluteFill>
+	);
 	const cur = [...s.vo].reverse().find((v) => v.t <= t);
 	return (
 		<AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 40%, #0d2c1f, #020805 75%)', display: 'grid', placeItems: 'center', fontFamily: SANS, color: GREEN.ink }}>

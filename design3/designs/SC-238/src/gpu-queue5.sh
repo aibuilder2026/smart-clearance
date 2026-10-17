@@ -4,7 +4,7 @@
 # date (ltx-jobs5.json); after the retakes and the 3D scene's footage and capture (finish-gpu.sh).
 set -u
 cd "$(dirname "$0")"
-while pgrep -f "[g]pu-queue[234]?.sh|[f]inish-gpu.sh" >/dev/null; do sleep 30; done
+while pgrep -f "[g]pu-queue[234]?.sh|[f]inish-gpu.sh" >/dev/null || [ -f build/hold-gpu ]; do sleep 30; done   # (build/hold-gpu: a render has the GPU)
 echo "== qwen7 $(date +%H:%M:%S)"; ./gen-qwen7.sh
 for i in $(seq 1 50); do [ -f build/go-ltx5 ] && break; sleep 30; done
 echo "== ltx5 $(date +%H:%M:%S)"; ~/.local/bin/uv run --python 3.12 --script gen-ltx.py ltx-jobs5.json

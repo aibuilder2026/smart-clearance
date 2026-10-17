@@ -4,6 +4,6 @@
 # end on a word that cannot be misheard: "arrived on time", "went to waste".
 set -u
 cd "$(dirname "$0")"
-while pgrep -f "[g]pu-queue[2345]?.sh|[f]inish-gpu.sh" >/dev/null; do sleep 30; done
+while pgrep -f "[g]pu-queue[2345]?.sh|[f]inish-gpu.sh" >/dev/null || [ -f build/hold-gpu ]; do sleep 30; done   # (build/hold-gpu: a render has the GPU)
 echo "== ltx6 $(date +%H:%M:%S)"; ~/.local/bin/uv run --python 3.12 --script gen-ltx.py ltx-jobs6.json
 echo "== queue6 done $(date +%H:%M:%S)"
