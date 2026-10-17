@@ -418,31 +418,37 @@ STOPS.forEach((s) => {
 	});
 });
 const ALL_SLABS = STOPS.flatMap((s) => s.slabs);
-// the person's gate across the road at the Approve stop: two slim amber posts and a lintel of light, a curtain that parts
+// the person's gate across the road at the Approve stop: an arch of bronze, lit along its inner edge, a curtain that parts
 const gate = (() => {
 	const s = STOP.approve, g = new THREE.Group(); g.position.copy(at(s.u, 0)); world.add(g);
 	const tg = s.tan; g.rotation.y = Math.atan2(tg.x, tg.z);
-	const amb = new THREE.MeshStandardMaterial({ color: 0x2a1d04, emissive: col(AMBER, 0.9), metalness: 0.3, roughness: 0.4, transparent: true, opacity: 0 });
-	const postL = new THREE.Mesh(new RoundedBoxGeometry(0.22, 2.5, 0.3, 3, 0.06), amb); postL.position.set(-1.22, 1.25, 0); g.add(postL);
+	// (SC-238: bronze posts the scene's light shades, lit along their inner faces: a gate with a shape, not a flat amber frame)
+	const amb = new THREE.MeshStandardMaterial({ color: 0x6a4810, emissive: col(AMBER, 0.28), metalness: 0.65, roughness: 0.32, transparent: true, opacity: 0 });
+	const stripMat = new THREE.MeshBasicMaterial({ color: col(AMBER, 1.6), transparent: true, opacity: 0, toneMapped: false });
+	const postL = new THREE.Mesh(new RoundedBoxGeometry(0.22, 1.6, 0.3, 3, 0.06), amb); postL.position.set(-1.22, 0.8, 0); g.add(postL);
 	const postR = postL.clone(); postR.position.x = 1.22; g.add(postR);
-	const lintel = new THREE.Mesh(new RoundedBoxGeometry(2.66, 0.22, 0.3, 3, 0.06), amb); lintel.position.set(0, 2.5, 0); g.add(lintel);
+	const lintel = new THREE.Mesh(new THREE.TorusGeometry(1.22, 0.12, 20, 64, Math.PI), amb); lintel.position.set(0, 1.6, 0); g.add(lintel);   // (the arch)
 	const plinthL = new THREE.Mesh(new RoundedBoxGeometry(0.46, 0.16, 0.5, 2, 0.05), amb); plinthL.position.set(-1.22, 0.08, 0); g.add(plinthL);
 	const plinthR = plinthL.clone(); plinthR.position.x = 1.22; g.add(plinthR);
+	const stripL = new THREE.Mesh(new THREE.BoxGeometry(0.04, 1.5, 0.06), stripMat); stripL.position.set(-1.09, 0.85, 0); g.add(stripL);
+	const stripR = stripL.clone(); stripR.position.x = 1.09; g.add(stripR);
+	const stripT = new THREE.Mesh(new THREE.TorusGeometry(1.09, 0.022, 8, 96, Math.PI), stripMat); stripT.position.set(0, 1.6, 0); g.add(stripT);
 	const pool = glowSprite(AMBER, 3.2, 3.0); pool.position.set(0, 0.05, 0.2); pool.scale.set(3.2, 1.0, 1); g.add(pool);
 	const curtMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, toneMapped: false,
 		uniforms: { a: { value: 0 }, open: { value: 0 }, t: { value: 0 }, color: { value: col(AMBER, 1.5) } },
 		vertexShader: QV,
 		fragmentShader: `float sq(float x){ return x * x; } uniform float a; uniform float open; uniform float t; uniform vec3 color; varying vec2 vUv;
 			void main(){ float x = abs(vUv.x - 0.5) * 2.0; if (x < open) discard;
+			float xw = (vUv.x - 0.5) * 2.33, yw = vUv.y * 2.8 + 0.05; if (yw > 1.6 && xw * xw + (yw - 1.6) * (yw - 1.6) > 1.1 * 1.1) discard;
 			float l1 = 0.5 + 0.5 * sin(vUv.y * 150.0 - t * 4.0); float l2 = l1 * l1; float l4 = l2 * l2; float edge = exp(-sq((x - open) * 30.0));
 			float fall = smoothstep(0.0, 0.12, vUv.y) * (0.55 + 0.45 * vUv.y);
 			gl_FragColor = vec4(color, a * fall * (0.05 + 0.11 * l4 + edge * 0.9 * step(0.001, open))); }` });
-	const curtain = nd(new THREE.Mesh(new THREE.PlaneGeometry(2.33, 2.4), curtMat)); curtain.position.set(0, 1.25, 0); g.add(curtain);
-	const burst = glowSprite(AMBER, 2.4, 7); burst.position.set(0, 1.3, 0); g.add(burst);
-	const lamp = glowSprite(AMBER, 1.2, 3.4); lamp.position.set(0, 2.5, 0); g.add(lamp);
-	const top = new THREE.Object3D(); top.position.set(0, 2.85, 0); g.add(top);
+	const curtain = nd(new THREE.Mesh(new THREE.PlaneGeometry(2.33, 2.8), curtMat)); curtain.position.set(0, 1.45, 0); g.add(curtain);
+	const burst = glowSprite(AMBER, 1.3, 4.2); burst.position.set(0, 1.3, 0); g.add(burst);
+	const lamp = glowSprite(AMBER, 1.2, 3.4); lamp.position.set(0, 2.82, 0); g.add(lamp);
+	const top = new THREE.Object3D(); top.position.set(0, 3.1, 0); g.add(top);
 	AGENTS.you.slab = { top, stop: s, scale: 1, A: AGENTS.you };
-	return { g, amb, curtMat, burst, lamp, pool, posts: [postL, postR, lintel, plinthL, plinthR], top };
+	return { g, amb, stripMat, curtMat, burst, lamp, pool, posts: [postL, postR, lintel, plinthL, plinthR, stripL, stripR, stripT], top };
 })();
 
 // ------------------------------------------------------------------ the batch: a carton with its real label, then its streams of packs
@@ -515,7 +521,12 @@ const papers = (() => {
 const MONEY = V(-2.6, 0.55, 6.0);
 const coin = (() => {
 	const g = new THREE.Group(); g.position.copy(MONEY); world.add(g);
-	const rupee = canvasTex(256, (c, s) => { c.fillStyle = '#f7c04a'; c.beginPath(); c.arc(s / 2, s / 2, s / 2 - 4, 0, Math.PI * 2); c.fill(); c.fillStyle = '#3a2a08'; c.font = '700 150px system-ui, -apple-system, "Helvetica Neue", sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('₹', s / 2, s / 2 + 8); });
+	// (the rupee drawn as strokes: a canvas font may lack ₹ in a headless browser, which drew "AU")
+	const rupee = canvasTex(256, (c, s) => { c.fillStyle = '#f7c04a'; c.beginPath(); c.arc(s / 2, s / 2, s / 2 - 4, 0, Math.PI * 2); c.fill();
+		c.translate(s / 2, s / 2); c.rotate(-Math.PI / 2); c.translate(-s / 2, -s / 2);   // (the cap's UVs turn the picture a quarter)
+		c.strokeStyle = '#3a2a08'; c.lineWidth = 17; c.lineCap = 'round'; c.lineJoin = 'round'; c.beginPath();
+		c.moveTo(78, 66); c.lineTo(182, 66); c.moveTo(78, 100); c.lineTo(182, 100);
+		c.moveTo(98, 66); c.bezierCurveTo(168, 66, 168, 136, 98, 136); c.lineTo(88, 136); c.lineTo(166, 202); c.stroke(); });
 	const mats = [new THREE.MeshStandardMaterial({ color: 0xb8892a, metalness: 0.8, roughness: 0.3, transparent: true, opacity: 0 }), new THREE.MeshStandardMaterial({ map: rupee, metalness: 0.6, roughness: 0.35, transparent: true, opacity: 0 }), new THREE.MeshStandardMaterial({ map: rupee, metalness: 0.6, roughness: 0.35, transparent: true, opacity: 0 })];
 	const d = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.62, 0.1, 64), mats); d.rotation.x = Math.PI / 2; g.add(d);
 	const shieldMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, toneMapped: false,
@@ -696,7 +707,7 @@ function stopShot(s) {
 		case 'verify': return rel(R_.clone().setY(RY + 0.72), s, 92, 9, 3.6, 30);
 		case 'value': return rel(mid(0.5, 1.0), s, 26, 22, 9.0);
 		case 'decide': return rel(R_.clone().addScaledVector(s.tan, 1.4).setY(0.6), s, 160, 50, 10.5);
-		case 'approve': { const tgt = at(s.u + 0.004, 1.2), pos = at(s.u - 0.088, 2.1).addScaledVector(leftAt(s.u - 0.088), -0.35); return { pos, tgt, fov: 34, focus: pos.distanceTo(tgt) }; }
+		case 'approve': { const tgt = at(s.u + 0.004, 1.0), pos = at(s.u - 0.088, 1.95); return { pos, tgt, fov: 34, focus: pos.distanceTo(tgt) }; }
 		case 'execute': return rel(mid(0.5, 1.0), s, -40, 24, 9.5);
 		case 'settle': return rel(mid(0.55, 0.9), s, -62, 24, 7.6);
 		default: return rel(mid(0.5, 1.0), s, -118, 18, 8.2);
@@ -772,7 +783,8 @@ function riderU(t) {
 // ------------------------------------------------------------------ the camera: held shots, a chase between stops, eased moves elsewhere
 function chaseAt(t) {
 	const u = riderU(t), l = leftAt(u);
-	const pos = at(u - 0.046, 1.95).addScaledVector(l, 0.8), tgt = at(u + 0.035, 0.55);
+	const side = 0.8 * sm(Math.abs(u - 0.046 - STOP.approve.u) / 0.06);   // (through the gate's middle, never past a post)
+	const pos = at(u - 0.046, 1.95).addScaledVector(l, side), tgt = at(u + 0.035, 0.55);
 	return { pos, tgt, fov: 42, focus: pos.distanceTo(at(u, RY + 0.62)) };
 }
 function blendShot(a, b, k) {
@@ -793,10 +805,20 @@ function shotAt(t) {
 		if (t < b.t0) {
 			const k = (t - a.t1) / Math.max(0.01, b.t0 - a.t1);
 			const A_ = held(a, a.t1);
+			if (a.stop && b.stop && a.stop.id === 'approve') {
+				// out of the gate: a straight push through its middle as the curtain parts, then up into the next stop's shot
+				// (along the road's own centre line, which curves at the gate: a straight line between two points cut the corner by a post)
+				const s0 = STOP.approve, P1 = { pos: at(s0.u + 0.022, 1.95), tgt: at(s0.u + 0.07, 1.1), fov: A_.fov, focus: 6 };
+				if (k < 0.5) { const e = sm(k / 0.5); const pos = at(lerp(s0.u - 0.088, s0.u + 0.022, e), 1.95), tgt = at(lerp(s0.u + 0.004, s0.u + 0.07, e), lerp(1.0, 1.1, e));
+					return { pos, tgt, fov: A_.fov, focus: lerp(A_.focus, 6, e), moving: true }; }
+				const e = sm((k - 0.5) / 0.5), sP = blendShot(P1, b, e);
+				sP.pos.y += Math.sin(Math.PI * e) * 1.5; return { ...sP, moving: true };
+			}
 			if (a.stop && b.stop && a.stop.id !== 'execute') {
-				// a chase: from the stop's shot down behind the batch, along the road, and up into the next stop's shot
+				// a chase: from the stop's shot down behind the batch, along the road, and up into the next stop's shot (out of
+				// the gate, a longer, gentler push: through it as it parts, never a whip)
 				const c = chaseAt(t);
-				const s1 = blendShot(A_, c, sm(k / 0.42));
+				const s1 = blendShot(A_, c, sm(k / (a.stop.id === 'approve' ? 0.55 : 0.42)));
 				return { ...blendShot(s1, b, sm((k - 0.58) / 0.42)), moving: true };
 			}
 			const e = b.rise ? eio(k) : sm(k);
@@ -864,10 +886,15 @@ function update(t) {
 	// the gate: up before its stop, the curtain parting on the tap
 	const gk = sm((t - TL.gateUp) / 0.8) * (1 - out);
 	gate.posts.forEach((m) => { m.visible = gk > 0.01; }); gate.amb.opacity = gk;
-	gate.curtMat.uniforms.a.value = gk; gate.curtMat.uniforms.t.value = t;
-	gate.curtMat.uniforms.open.value = eo((t - TL.open) / 0.7);
-	gate.burst.material.opacity = 0.9 * Math.exp(-Math.max(0, t - TL.open) * 3.5) * (t > TL.open ? 1 : 0);
+	// (the curtain parts quickly and fades as it parts: gone before the camera passes through, never a wash of amber)
+	gate.curtMat.uniforms.a.value = gk * (1 - 0.9 * sm((t - TL.open - 0.05) / 0.32)); gate.curtMat.uniforms.t.value = t;
+	gate.curtMat.uniforms.open.value = eo((t - TL.open) / 0.4);
+	gate.burst.material.opacity = 0.32 * Math.exp(-Math.max(0, t - TL.open) * 3.0) * (t > TL.open ? 1 : 0);
+	gate.stripMat.opacity = gk * (0.75 + 0.25 * Math.exp(-Math.max(0, t - TL.open) * 2.0) * (t > TL.open ? 1 : 0));
 	gate.lamp.material.opacity = 0.45 * gk * (1 + 0.25 * Math.sin(t * 3)); gate.pool.material.opacity = 0.35 * gk;
+	// (its glows fade as the camera nears the arch: an additive sprite at the lens fills the frame with amber)
+	const nearG = sm((camera.position.distanceTo(gate.g.position.clone().setY(gate.g.position.y + 1.3)) - 1.2) / 2.6);
+	gate.lamp.material.opacity *= nearG; gate.pool.material.opacity *= nearG; gate.burst.material.opacity *= nearG;
 	// Gemini, its beams to the nine that think with it, each pulsing while its agent works
 	const ok = sm((t - TL.orb) / 1.0) * (1 - out);
 	gem.shellMat.uniforms.a.value = ok; gem.shellMat.uniforms.t.value = t; gem.star.material.opacity = 0.9 * ok; gem.halo.material.opacity = 0.45 * ok; gem.halo2.material.opacity = 0.22 * ok;
@@ -933,7 +960,7 @@ function update(t) {
 	const rk2 = eio((t - TL.rails) / 2.6) * (1 - sm((t - TL.markOn) / 1.0));
 	RAILS.forEach((r) => { r.m.uniforms.prog.value = rk2; r.m.uniforms.alpha.value = rk2 > 0 ? 0.85 : 0; r.m.uniforms.pulse.value = rk2 >= 1 ? ((t * 0.5) % 1) : -1; });
 	const mk = fade(t, TL.rails + 1.2, TL.rise2 + 0.6, 0.6, 0.8);
-	coin.mats.forEach((m) => { m.opacity = mk; }); coin.d.visible = mk > 0.004; coin.d.rotation.z = t * 0.6;
+	coin.mats.forEach((m) => { m.opacity = mk; }); coin.d.visible = mk > 0.004; coin.d.rotation.z = 0.25 * Math.sin(t * 0.7);   // (it turns a little about the vertical to catch the light; the rupee stays upright)
 	coin.shieldMat.uniforms.a.value = mk; coin.shieldMat.uniforms.t.value = t;
 	const hit = t > TL.deny ? Math.exp(-(t - TL.deny) * 3.2) : 0;
 	coin.shieldMat.uniforms.hit.value = hit; coin.flash.material.opacity = 0.9 * hit;
@@ -960,7 +987,7 @@ function placeChip(c, t, out) {
 	const w = c.el.offsetWidth, h = c.el.offsetHeight;
 	const e = spring(t - (watch > work ? TL.watch : t0), 0.7, 13);
 	const below = c.id === 'watcher' && watch > work;
-	c.want = { x: p.x - w / 2, y: below ? p.y + 40 + 14 * (1 - e) : p.y - 64 - h - 14 * (1 - e), w, h, p, op: a * kc, below };
+	c.want = { x: p.x - w / 2, y: below ? p.y + 150 + 14 * (1 - e) : p.y - 64 - h - 14 * (1 - e), w, h, p, op: a * kc, below };
 }
 // the chips that show at once are laid side by side, never on top of each other, each on a stem to its own agent
 function layChips() {
@@ -1065,9 +1092,12 @@ async function loadBg(t) {
 
 // ------------------------------------------------------------------ one frame: the shutter's sub-frames summed, then the lens
 const PROBE = [V(0, 1, 0), V(-10, 0, -8), V(10, 0, 8), V(0, 6, 0), V(-8, 0, 10), V(8, 0, -10), V(0, GY, 0)];
+// (through the gate the shutter is shorter: a clean push, not a smear)
+const shutterAt = (t) => (TL.open && t > TL.open && t < TL.open + 2.6 ? SHUTTER * 0.45 : SHUTTER);
 function blurTaps(t) {
-	camAt(t - SHUTTER / 2); const a = PROBE.map(shot);
-	camAt(t + SHUTTER / 2); const b = PROBE.map(shot);
+	const SH = shutterAt(t);
+	camAt(t - SH / 2); const a = PROBE.map(shot);
+	camAt(t + SH / 2); const b = PROBE.map(shot);
 	let px = 0;
 	for (let i = 0; i < PROBE.length; i++) if (a[i].z < 1 && b[i].z < 1) px = Math.max(px, Math.hypot(a[i].x - b[i].x, a[i].y - b[i].y));
 	return clamp(Math.ceil(px / 3), 1, 12);
@@ -1078,7 +1108,7 @@ window.renderAt = async (t) => {
 	const ac = renderer.autoClear;
 	renderer.setRenderTarget(acc); renderer.setClearColor(0x000000, 1); renderer.clear();
 	for (let i = 0; i < n; i++) {
-		update(n === 1 ? t : t + SHUTTER * ((i + 0.5) / n - 0.5));
+		update(n === 1 ? t : t + shutterAt(t) * ((i + 0.5) / n - 0.5));
 		composer.render();
 		accQuad.material.uniforms.t.value = composer.readBuffer.texture; accQuad.material.uniforms.w.value = 1 / n;
 		renderer.autoClear = false; renderer.setRenderTarget(acc); accQuad.render(renderer); renderer.autoClear = ac;
