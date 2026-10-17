@@ -109,10 +109,10 @@
     } }, /* @__PURE__ */ React.createElement("span", { className: "lr-main" }, /* @__PURE__ */ React.createElement("span", { className: "lr-title" }, t)), /* @__PURE__ */ React.createElement(Icon, { name: "chevron-right", size: 18, className: "chev" })))), /* @__PURE__ */ React.createElement("a", { className: "btn btn-primary btn-lg btn-block", ...linkProps(LINKS.app), onClick: () => setSheet(false) }, "Workspace"), /* @__PURE__ */ React.createElement("a", { className: "btn btn-secondary btn-lg btn-block", ...linkProps(LINKS.console), onClick: () => setSheet(false) }, "Console"))));
   }
   const DEMO_FILM = Object.assign({
-    youtube: "DT_4G2txLF4",
-    runtime: "6:50",
-    label: "Watch the 7-minute demo",
-    title: "The 7-minute demo",
+    youtube: "XacZtguT8Xg",
+    runtime: "7:50",
+    label: "Watch the 8-minute demo",
+    title: "The 8-minute demo",
     sub: "The whole journey, end to end",
     poster: "film-poster.webp",
     thumb: "film-thumb.webp",

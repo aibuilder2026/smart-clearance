@@ -33,14 +33,14 @@ export const variables = defineEnvVars({
 		public: true,
 		static: true,
 		schema: (value) => {
-			if (!value) return 'DT_4G2txLF4';
+			if (!value) return 'XacZtguT8Xg';
 			if (value === 'off') return undefined;
 			if (!/^[\w-]{11}$/.test(value))
 				throw new Error(`PUBLIC_DEMO_FILM is a YouTube video id (11 characters): ${value}`);
 			return value;
 		},
 		description:
-			"The demo film's YouTube video id (unlisted), played in the theatre over the page (SC-164). Default: youtu.be/DT_4G2txLF4, SC-211's sales film (SC-216); `off` makes Watch open the guided demo."
+			"The demo film's YouTube video id (unlisted), played in the theatre over the page (SC-164). Default: youtu.be/XacZtguT8Xg, SC-238's landing film v3 (SC-242); `off` makes Watch open the guided demo."
 	},
 	PUBLIC_APP_URL: {
 		public: true,

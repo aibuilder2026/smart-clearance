@@ -47,16 +47,17 @@ export const FILM = {
 		{ x: 0.42, y: 0.5 }
 	] as Place[]
 };
-/** the demo film (SC-211's sales film, SC-164, SC-216): 6 min 50 s, the waste, the product, the agents inside the
- *  brand's rules and one yes, the journey through every exit, the paperwork, the record and the impact, played from
- *  YouTube (unlisted) in a theatre over the page. Its poster is the office scene the film closes on, the brand and its
- *  distributor at the dashboard; the film names no client either (SC-28). Its chapters and captions (`words`) are read
- *  when the theatre first opens. Until its id is set (PUBLIC_DEMO_FILM), Watch opens the guided demo */
+/** the demo film (SC-238's landing film v3, SC-164, SC-242): 7 min 50 s at 25 fps, a batch with twenty-two days left
+ *  that no app will take, the rule and the cost of the bin, the product, ten agents and one yes, the happy path and the
+ *  hard case, every paper and every rupee, played from YouTube (unlisted) in a theatre over the page. Its poster is the
+ *  office scene of SC-211's film, the brand and its distributor at the dashboard; the film names no client either
+ *  (SC-28). Its chapters and captions (`words`) are read when the theatre first opens. Until its id is set
+ *  (PUBLIC_DEMO_FILM), Watch opens the guided demo */
 export const DEMO_FILM = {
 	youtube: PUBLIC_DEMO_FILM ?? null,
-	runtime: '6:50',
-	label: 'Watch the 7-minute demo',
-	title: 'The 7-minute demo',
+	runtime: '7:50',
+	label: 'Watch the 8-minute demo',
+	title: 'The 8-minute demo',
 	sub: 'The whole journey, end to end',
 	poster: url(stills, 'film-poster.webp'),
 	thumb: url(stills, 'film-thumb.webp'),
