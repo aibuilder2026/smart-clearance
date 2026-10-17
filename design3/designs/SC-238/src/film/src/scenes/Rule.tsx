@@ -43,8 +43,9 @@ export const Rule: React.FC<{ s: SceneData }> = ({ s }) => {
 	// where the cards stand: FSSAI's alone and large while it is read; aside when the apps' card comes; both a strip once
 	// the batch's bar takes the frame
 	const kB = springAt(t, bIn - 0.1, FPS, 18, 110), kC = springAt(t, cIn - 0.1, FPS, 18, 110);
-	const posA = { x: lerp(lerp(430, 72, kB), 72, kC), y: lerp(lerp(140, 92, kB), 34, kC), k: lerp(lerp(1.22, 1, kB), 0.72, kC) };
-	const posB = { x: lerp(980, 72 + 868 * 0.72 + 28, kC), y: lerp(92, 34, kC), k: lerp(1, 0.72, kC) };
+	// (side by side they stand in the middle of the frame, not along its top: footage above and below them)
+	const posA = { x: lerp(lerp(430, 72, kB), 72, kC), y: lerp(lerp(140, 196, kB), 34, kC), k: lerp(lerp(1.22, 1, kB), 0.72, kC) };
+	const posB = { x: lerp(980, 72 + 868 * 0.72 + 28, kC), y: lerp(196, 34, kC), k: lerp(1, 0.72, kC) };
 	// A, FSSAI's floor
 	const aA = Math.min(ramp(t, aIn, aIn + 0.4), fadeOut);
 	const sA = springAt(t, aIn, FPS, 16, 120);
@@ -139,7 +140,28 @@ export const Rule: React.FC<{ s: SceneData }> = ({ s }) => {
 						<span style={{ font: `700 28px/1 '${DISPLAY}'`, color: '#7a8c82', opacity: clamp(k90 * 1.5) }}>or</span>
 						<Tile k={k90} big="90+" unit="days" sub="left, and up" tone="amber" />
 					</div>
-					<div style={{ marginTop: 20, font: `500 18px/1.35 ${SANS}`, color: '#9fb7aa', opacity: ramp(t, W90 + 0.6, W90 + 1.0) }}>
+					{/* the gate on the same three lives, beside the floor: line for line, how much more the apps ask */}
+					{(() => {
+						const eb = ramp(t, W90 + 0.25, W90 + 0.75);
+						return (
+							<div style={{ marginTop: 22 * eb, height: 196 * EASE(eb), overflow: 'hidden', opacity: eb, transform: `translateY(${(1 - eb) * 10}px)` }}>
+								<div style={{ ...KICK, fontSize: 13.5, color: '#d8c08a' }}>The gate on the same lives · about 60% of each</div>
+								{[{ n: 'Fresh paneer', life: 10 }, { n: 'Chips, biscuits', life: 120 }, { n: 'A mango drink', life: 180 }].map((r, i) => {
+									const kk = ramp(t, W90 + 0.4 + i * 0.25, W90 + 1.0 + i * 0.25, EASE), gate = Math.round(r.life * 0.6);
+									return (
+										<div key={r.n} style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 16 }}>
+											<div style={{ width: 230, font: `600 19px/1.15 ${SANS}` }}>{r.n}<div style={{ font: `500 15px/1 ${SANS}`, color: '#8ea398', marginTop: 4 }}>a {r.life}-day life</div></div>
+											<div style={{ position: 'relative', width: 360, height: 14, borderRadius: 7, background: 'rgba(236,243,239,0.10)' }}>
+												<div style={{ position: 'absolute', left: 0, top: 0, height: 14, width: 360 * 0.6 * kk, borderRadius: 7, background: 'rgba(247,192,74,0.72)' }} />
+											</div>
+											<div style={{ font: `700 19px/1 ${SANS}`, color: '#ffd98a', whiteSpace: 'nowrap', opacity: kk }}>{gate} days <span style={{ fontWeight: 500, color: '#8ea398' }}>· about 60%</span></div>
+										</div>
+									);
+								})}
+							</div>
+						);
+					})()}
+					<div style={{ marginTop: 18, font: `500 18px/1.35 ${SANS}`, color: '#9fb7aa', opacity: ramp(t, W90 + 0.9, W90 + 1.3) }}>
 						A dark store turns stock in days, so it turns away anything short-dated long before its date.
 					</div>
 				</div>

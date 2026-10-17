@@ -1,0 +1,13 @@
+[
+ {
+  "name": "d-batch",
+  "image": "img/d-batch-238905.png",
+  "resolution": "720p",
+  "duration": 6,
+  "seed": 238925,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A slow, gentle push-in on a close-up insert in a distributor's godown in soft early-morning daylight: an open brown carton full of small plain yellow drink packs standing in neat rows, plain brown cartons stacked behind. A woman's hand with a teal silk sari's border at the wrist reaches in from the right and lifts one pack out, turning it slightly, her figure soft and out of focus behind. The packs stay plain yellow, with no printing. Photorealistic cinematic footage, shallow depth of field, sharp focus on the packs. Audio: the quiet room tone of a godown in the morning, a pack rustling, no music, no voices.",
+  "out": "clips/d-batch.mp4"
+ }
+]
