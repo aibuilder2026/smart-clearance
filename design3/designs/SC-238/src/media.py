@@ -1,11 +1,19 @@
-"""SC-238: the film's media, from build/media.json (plan.py). Every clip, talking clip and app window is made at 60 fps
-to exactly its shot's length, so Remotion plays everything at its own rate and nothing judders.
+"""SC-238: the film's media, from build/media.json (plan.py). Every clip, talking clip and app window is made at 25 fps
+to exactly its shot's length, so Remotion plays everything at its own rate and nothing judders. A frame is made only where
+a span is slowed down: everywhere else the film shows the source's own frames (pass 12: at 60 fps three frames in five were
+made, and on the generated clips' fine texture they read as noise).
 
-  clip  a generated clip's span (24 fps), interpolated to 60 fps over the time the cut gives it (a slow drift where
-        the shot is longer than the span), cover-scaled to 1920 × 1080 (lanczos, a light unsharp)
-  talk  a talking clip's span, at its own pace (24 → 60 fps), with its own sound cut on the same frames (a WAV beside it)
+  clip  a generated clip's span (24 fps), cover-scaled to 1920 × 1080 (lanczos, a light unsharp):
+          - near its own pace (0.9 to 1.3 source frames an output frame): its own frames one for one, 4% quicker at
+            25 fps, the span slid back where the clip ends before its last frame;
+          - quicker: the nearest of its own frames;
+          - slower: interpolated to 25 fps over the time the cut gives it (a slow drift);
+  talk  a talking clip's span in real time, 24 to 25 fps by VideoToolbox, with its own sound cut on the same frames (a
+        WAV beside it)
   win   a device's screen cropped from a production recording (25 fps, 2560 × 1440), each span in turn:
-          - near its own pace (0.85× to 2.2×): interpolated to 60 fps;
+          - at its own pace (0.97× to 1.03×): the recording's own frames, one for one;
+          - quicker, to 2.2×: the nearest of its own frames;
+          - a little slower (0.85× to 0.97×): interpolated;
           - longer than its span (under 0.85×): played at 0.9× and held on its last frame (a person reading);
           - a fast-forward (2.2× and up): sampled straight from the recording, no interpolation;
         at the device's own size (Remotion places and scales it)
@@ -20,7 +28,7 @@ rebuilds the source's own dropped frames better (frc.py's bench, once per source
    python3 media.py sr [names…]          super-resolve the low-resolution clips first (the Apple GPU and Neural Engine)
    python3 media.py list                what is made and what is missing
 
-Out: film/public/media/<name>.mp4 (H.264, 60 fps; windows 4:4:4) and <name>.wav for talking clips."""
+Out: film/public/media/<name>.mp4 (H.264, 25 fps; windows 4:4:4) and <name>.wav for talking clips."""
 import json, math, shutil, subprocess, sys, tempfile
 from pathlib import Path
 
@@ -63,7 +71,7 @@ OUT = HERE / 'film' / 'public' / 'media'
 SHEETS = HERE / 'build' / 'sheets'
 FF_DIR = HERE / 'build' / 'ff'
 PICKS = HERE / 'build' / 'frc-picks.json'
-FPS = 60
+FPS = 25
 W, H = 1920, 1080
 
 
@@ -87,12 +95,35 @@ def bounds(m):
     return out
 
 
-def mode(m, a, b, d):
+def mode(m, a, b, d, fps_in=None):
     s = (b - a) / d
     if m['kind'] == 'win':
         if s >= 2.2: return 'ff'
         if s < 0.85: return 'hold'
-    return 'interp'
+        if 0.97 <= s <= 1.03: return 'native'
+        return 'nearest' if s > 1.03 else 'interp'
+    # a talking take in real time, so the lips keep to the sound: VideoToolbox's 24 to 25 (the nearest of its own frames
+    # showed one twice a second, which on a take of a second and a half read as a stall: pass 12's motion check)
+    if m['kind'] == 'talk': return 'interp'
+    r = s * (fps_in or 24) / FPS                        # source frames an output frame
+    if 0.9 <= r <= 1.3: return 'native'                 # (to 1.3: a quick insert at 1.2 skipped one frame in five, unevenly)
+    return 'nearest' if r > 1.3 else 'interp'
+
+
+def run_frames(m, a, n, fps_in, total_s, out):
+    """n of the source's own frames one for one from a (slid back where the source ends first)"""
+    total = int(round(total_s * fps_in))
+    i0 = max(0, min(int(round(a * fps_in)), total - n))
+    fs = native_frames(m, i0 / fps_in, (i0 + n + 1) / fps_in, out)
+    if not fs: sys.exit(f'no frames at {a}')
+    return [fs[min(i, len(fs) - 1)] for i in range(n)]
+
+
+def nearest_frames(m, a, b, n, fps_in, out):
+    """n output frames over (a, b), each the nearest of the source's own"""
+    fs = native_frames(m, a, b, out)
+    if not fs: sys.exit(f'no frames at {a}')
+    return [fs[min(len(fs) - 1, int(round(i * (b - a) / n * fps_in)))] for i in range(n)]
 
 
 def crop_vf(m):
@@ -157,13 +188,16 @@ def interp(fs, n_out, fps_in, meth, tmp, out):
         got = sorted(out.glob('*.png'))
         for i in range(len(got), n_out): shutil.copy(got[-1], out / f'{i + 1:08d}.png')
         return sorted(out.glob('*.png'))[:n_out]
-    if meth != 'rife' and rate / fps_in > 4.0: meth = 'rife'   # VideoToolbox converts up to 4x; a slow span goes to RIFE
     if meth != 'rife':
         try:
             enc = tmp / 'vt-in.mov'
             run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(fps_in), '-i', fs[0].parent / '%08d.png', '-c:v', 'prores_ks', '-profile:v', '3', enc])
-            vo = tmp / 'vt-out.mov'; frc.vt(enc, vo, round(rate, 4))
-            run(['ffmpeg', '-v', 'error', '-y', '-i', vo, '-frames:v', str(n_out), out / '%08d.png'])
+            vo = tmp / 'vt-out.mov'
+            # (one pass at the span's own rate, however slow: vtfx takes a decimal rate and makes more than three frames
+            # between two source frames in further calls on the same pair. Until pass 11 it read the rate as a whole
+            # number, so every retimed span trapped and came out of RIFE; the frames are read back one for one)
+            frc.vt(enc, vo, round(rate, 4))
+            run(['ffmpeg', '-v', 'error', '-y', '-i', vo, '-fps_mode', 'passthrough', '-frames:v', str(n_out), out / '%08d.png'])
             got = sorted(out.glob('*.png'))
             if not got or frc.Image.open(got[0]).size != frc.Image.open(fs[0]).size: sys.exit('it changed the frame size')
         except SystemExit as e:
@@ -184,7 +218,7 @@ def encode(seq_dir, out, m):
     pix = 'yuv444p' if m['kind'] == 'win' else 'yuv420p'
     prof = ['-profile:v', 'high444'] if pix == 'yuv444p' else ['-profile:v', 'high']
     run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(FPS), '-i', seq_dir / '%08d.png'] + (['-vf', ','.join(vf)] if vf else [])
-        + ['-c:v', 'libx264', '-preset', 'slow', '-crf', '10', '-g', '60', '-bf', '2', '-pix_fmt', pix] + prof
+        + ['-c:v', 'libx264', '-preset', 'slow', '-crf', '10', '-g', '50', '-bf', '2', '-pix_fmt', pix] + prof
         + ['-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709', '-movflags', '+faststart', out])
 
 
@@ -198,14 +232,14 @@ def make(name, only_ff=False):
         return print(f'{name}: made')
     if not Path(m['src']).exists(): return print(f'{name}: SOURCE MISSING {m["src"]}')
     if m['kind'] != 'win': m = {**m, 'src': sr_src(m['src'])}
-    w, h, fps_in, _ = frc.probe(m['src'])
+    w, h, fps_in, src_dur = frc.probe(m['src'])
     with tempfile.TemporaryDirectory(dir=str(HERE / 'build')) as td:
         tmp = Path(td); seq = tmp / 'seq'; seq.mkdir()
         k = 0
         for i, ((a, b, d), (f0, f1)) in enumerate(zip(spans(m), bounds(m))):
             n = f1 - f0
             if n <= 0: continue
-            md = mode(m, a, b, d)
+            md = mode(m, a, b, d, fps_in)
             cache = FF_DIR / name / f'{i:02d}-{a:.3f}-{b:.3f}'   # (keyed by its span: a span cut shorter to the same frame count must not reuse the old frames)
             if md == 'ff':
                 if cache.exists() and len(list(cache.glob('*.png'))) == n: fs = sorted(cache.glob('*.png'))
@@ -214,9 +248,16 @@ def make(name, only_ff=False):
                     fs = sampled_frames(m, a, b, n, cache)
             elif only_ff:
                 continue
+            elif md == 'native':
+                fs = run_frames(m, a, n, fps_in, src_dur, tmp / f'in{i}')
+            elif md == 'nearest':
+                fs = nearest_frames(m, a, b, n, fps_in, tmp / f'in{i}')
             else:
                 src_fs = native_frames(m, a, b, tmp / f'in{i}')
-                meth = m.get('interp') or (method_for(m['src'], src_fs, fps_in, tmp / f'b{i}') if len(src_fs) > 2 * fps_in + 1 else 'rife')
+                # (a generated clip, talking or not, by VideoToolbox: on their fine texture, which changes from frame to frame,
+                # RIFE copies a frame and then jumps, a hold every fifth frame on a face, r4; VideoToolbox measures even)
+                meth = m.get('interp') or ('vt' if m['kind'] in ('clip', 'talk') else
+                                           method_for(m['src'], src_fs, fps_in, tmp / f'b{i}') if len(src_fs) > 2 * fps_in + 1 else 'rife')
                 if md == 'hold':
                     n_play = min(n, round((b - a) / 0.9 * FPS))
                     fs = interp(src_fs, n_play, fps_in, meth, tmp, tmp / f'out{i}')

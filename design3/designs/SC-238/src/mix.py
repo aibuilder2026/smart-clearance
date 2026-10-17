@@ -121,7 +121,24 @@ ACOUSTICS = {'d-dawn-call': (0.9, 0.2), 'l-dawn-call': (0.4, 0.12), 'b-approve':
              # the takes to the lens (r4): the shop, the dock, the van's shop, the warehouse (the buyer calm, so a drier room), the
              # landfill in the open, the brand's office
              'k-order-c': (0.35, 0.12), 'v-dock-c': (0.6, 0.14), 's-shop-d': (0.35, 0.12), 'w-buyer-c': (0.7, 0.11), 'r-say-c': (0.25, 0.05),
-             'b-approve-c': (0.45, 0.14)}
+             'b-approve-c': (0.45, 0.14), 'b-approve-d': (0.45, 0.14)}
+
+
+# a take whose words themselves carry a wash of noise from 5 kHz up, generated with the voice (so the denoiser, which
+# learns the noise between the words, leaves it): shelved and its top rolled off. The kirana's hissed (r4: its 6 kHz band
+# 19 dB under the voice's body, the others 26-37); the volunteer's was next
+TALK_EQ = {'k-order-c': ',highshelf=f=5000:g=-9:t=q:w=0.7,lowpass=f=10000:p=2', 'v-dock-c': ',highshelf=f=5500:g=-4:t=q:w=0.7'}
+
+
+def air_ratio(path):
+    """how far a talking clip's band from 6 kHz up sits under its 0-1.5 kHz band in its voiced frames, in dB (the narrator
+    about 50; a take whose words hiss, under 30)"""
+    x = load(path, mono=True)
+    from scipy.signal import stft
+    f, _, Z = stft(x, SR, nperseg=2048, noverlap=1536)
+    P = np.abs(Z) ** 2; e = P.sum(0); v = e > np.percentile(e, 60)
+    lo, hi = P[(f < 1500)][:, v].sum(), P[(f >= 6000)][:, v].sum()
+    return float(10 * np.log10(lo / (hi + 1e-12) + 1e-12))
 
 
 def talking():
@@ -135,7 +152,8 @@ def talking():
             # the generated voice's hiss taken out first (a spectral denoiser that tracks the noise, about 20 dB off the
             # floor, the voice itself untouched), then levelled by a measured static gain, not a dynamic loudnorm, which
             # raised the floor between the words
-            run(['ffmpeg', '-v', 'error', '-y', '-i', src, '-af', 'afftdn=nr=20:nf=-55:tn=1,highpass=f=70,acompressor=threshold=-22dB:ratio=2.0:attack=8:release=160:makeup=1.5',
+            eq = TALK_EQ.get(Path(MEDIA[sh['media']]['src']).stem, '')
+            run(['ffmpeg', '-v', 'error', '-y', '-i', src, '-af', f'afftdn=nr=24:nf=-58:tn=1,highpass=f=70{eq},acompressor=threshold=-22dB:ratio=2.0:attack=8:release=160:makeup=1.5',
                  '-ar', str(SR), '-ac', '2', '-c:a', 'pcm_f32le', lv])
             x, _ = sf.read(lv, dtype='float32')
             x = x * db(-18.0 - float(measure(lv)['input_i']))
@@ -214,7 +232,7 @@ def places():
             if len(x) < SR // 2 or np.sqrt(np.mean(x ** 2)) < 1e-5: tones[src] = None; return None
             y = K.room_tone(x, int(12 * SR), seed=stable(src) % 1000)
             rms = np.sqrt(np.mean(y ** 2)) + 1e-9
-            tones[src] = (y / rms * db(-47)).astype(np.float32)     # (a bed under the scene, never heard as itself)
+            tones[src] = (y / rms * db(-54)).astype(np.float32)     # (a bed under the scene, never heard as itself; pass 12: 7 dB under -47, the maintainer asked for less background noise)
         return tones[src]
     for sc in FILM['scenes']:
         for sh in sc['shots']:
@@ -224,7 +242,7 @@ def places():
             src = m['src']
             y = tone_of(src)
             if y is None: continue
-            g = 0.6 if sh['kind'] == 'talk' else 1.0          # under a talking clip's own sound, its room a little lower
+            g = 0.45 if sh['kind'] == 'talk' else 1.0         # under a talking clip's own sound, its room lower still
             t0, t1 = sc['t0'] + sh['t0'] - 0.04, sc['t0'] + sh['t1'] + 0.04
             n = int((t1 - t0) * SR)
             seg = np.tile(y, (n // len(y) + 1, 1))[:n] * fades(n, 0.04, 0.04)[:, None] * g
@@ -359,6 +377,7 @@ def events():
     """every sound the picture calls for, as (film second, layer, sound, pan)"""
     ev = []
     def add(t, y, pan=0.5, layer='hits'): ev.append((t, layer, y, pan))
+    chip_ticks = []                     # (the clock chip's tick, 0.18 s after its cut: it marks the chip, not the cut)
     rnd = np.random.default_rng(238)
     for sc in FILM['scenes']:
         T, M = sc['t0'], sc['marks']
@@ -375,7 +394,7 @@ def events():
             if 'console' in M: add(T + M['console'] - 0.3, K.whoosh(rnd, 0.8, 0.45, -28, lo=0.03, hi=0.3), 0.5)   # (into the console: it cut in silence)
         if sid == 'agents':
             add(T - 0.4, K.whoosh(rnd, 1.2, 0.5, -26), 0.5, 'air')
-            add(T, air_bed(sc['dur'], -33), 0.5, 'hits')
+            add(T, air_bed(sc['dur'], -40), 0.5, 'hits')   # (pass 12: 7 dB lower, less background noise)
         if sid == 'mango': add(T - 0.2, K.whoosh(rnd, 0.8, 0.45, -28), 0.5, 'air')
         if sid == 'chips': add(T, K.boom(1.6, -26, 52.0, 34.0), 0.5)
         if sid == 'record': add(T - 0.5, K.riser(rnd, 0.9, -29), 0.5, 'air')
@@ -439,13 +458,15 @@ def events():
         # the clock chip turning over
         prev = None
         for sh in sorted([x for x in sc['shots'] if x.get('clock')], key=lambda x: x['t0']):
-            if sh['clock'][0] != prev: add(T + sh['t0'] + 0.18, lib('clock-tick', -34), 0.85)
+            if sh['clock'][0] != prev: add(T + sh['t0'] + 0.18, lib('clock-tick', -34), 0.85); chip_ticks.append(T + sh['t0'] + 0.18)
             prev = sh['clock'][0]
         # the record's papers landing, and the review's stamp
         if sid == 'record':
             for k_, at in enumerate([x for x in ('gst', 'einv', 'credit', 'memo', 'receipts', 'certs') if x in M]):
                 add(T + M[at] - 0.3, lib('paper-handle-1' if k_ % 2 else 'paper-handle-2', -27), 0.5)
             add(T + M['gst'] - 1.3, lib('stamp-thud', -22), 0.7)
+        if sid == 'chips' and 'signed' in M:                # the signed certificate's window leaving on the cut to his face
+            add(T + M['signed'] - 0.22, K.whoosh(rnd, 0.5, 0.6, -29, lo=0.03, hi=0.35), 0.4)
         if sid == 'chips' and 'issued' in M:
             add(T + M['issued'] + 0.2, lib('paper-shuffle', -27), 0.5)
         # the four teams' devices rising asleep together, then each screen waking on its word
@@ -457,7 +478,8 @@ def events():
                 add(T + hi + 0.02, K.glint(-30), pan); add(T + hi + 0.04, K.tick(-34, 1567.98), pan)   # (lit on its word)
     # a cut into new footage that no other sound marks (r3 counted four silent ones): a soft whoosh under it, unless a
     # sound already lands within a third of a second (a talking clip's own room is its cut's sound)
-    marked = sorted(t for t, *_ in ev)
+    # (the chip's tick does not count: on its own it reached the cut into the window closing 0.22 s late, r4)
+    marked = sorted(t for t, *_ in ev if not any(abs(t - c) < 1e-6 for c in chip_ticks))
     for sc in FILM['scenes']:
         prev = None
         for sh in sorted([x for x in sc['shots'] if x['kind'] in ('clip', 'ots', 'evidence', 'talk')], key=lambda x: x['t0']):

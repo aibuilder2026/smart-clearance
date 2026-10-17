@@ -1,5 +1,5 @@
 {
- "fps": 60,
+ "fps": 25,
  "w": 1920,
  "h": 1080,
  "scenes": [
@@ -7029,8 +7029,7 @@
    "kind": "clip",
    "in": 0.0,
    "out": 6.4,
-   "dur": 13.621,
-   "interp": "mci"
+   "dur": 13.621
   },
   "bin-factory": {
    "kind": "clip",

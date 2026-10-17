@@ -7,7 +7,7 @@ half speed, back and forth (it is out of focus by then), so a long window keeps 
 The insert is SC-206's (vfx.py: occluders, warp_into, insert), here as it was: within the screen's quad, only pixels the
 colour of the blank screen are replaced, and an occluder that reaches in from the quad's edge (a finger) stays in front.
 
-Out: film/public/media/<name>.mp4 (60 fps, 1920 × 1080: the clip's 1088 rows cropped 4 off each edge) and
+Out: film/public/media/<name>.mp4 (25 fps, 1920 × 1080: the clip's 1088 rows cropped 4 off each edge) and
 film/public/track/<name>.json (the screen's quad for every frame, in film pixels, for the Remotion lift-out).
 
    uv run --with numpy --with opencv-python-headless --with pillow python screens.py [--draft] [names…]
@@ -24,7 +24,7 @@ import frc  # noqa: E402
 MEDIA = json.loads((HERE / 'build' / 'media.json').read_text())
 OUT = HERE / 'film' / 'public' / 'media'
 TRK = HERE / 'film' / 'public' / 'track'
-FPS = 60
+FPS = 25
 W, H = 1920, 1080
 
 
@@ -109,9 +109,9 @@ def dehalo(fr, quad=None, ring=24, strength=1.0):
     hsv = cv2.cvtColor(fr, cv2.COLOR_BGR2HSV)
     lab = ((hsv[..., 2] > 200) & (hsv[..., 1] < 45)).astype(np.uint8)
     h, w = lab.shape
-    if quad is not None:
-        poly = np.zeros((h, w), np.uint8); cv2.fillConvexPoly(poly, np.int32(np.round(quad)), 1)
-        lab[cv2.dilate(poly, np.ones((61, 61), np.uint8)) > 0] = 0
+    for qd in ([] if quad is None else quad if isinstance(quad, list) else [quad]):   # (every device's glass, not only the main one:
+        poly = np.zeros((h, w), np.uint8); cv2.fillConvexPoly(poly, np.int32(np.round(qd)), 1)   # the staff phone's blank screen
+        lab[cv2.dilate(poly, np.ones((61, 61), np.uint8)) > 0] = 0                               # read as a label and got a box round it, r4)
     lab = cv2.morphologyEx(lab, cv2.MORPH_CLOSE, np.ones((11, 11), np.uint8))
     n, cc, st, _ = cv2.connectedComponentsWithStats(lab, 8)
     L = np.zeros((h, w), np.uint8)
@@ -175,20 +175,31 @@ def make(name, draft):
     cw, chh = tj['size']
     _, _, fin, dur = frc.probe(src)
     b_max = dur - 0.06
-    times = [clip_time(i / FPS, m['in'], m['lift'], b_max) for i in range(n)]
+    # (at its own pace the clip's own frames one for one, 4% quicker at 25 fps: from a frame of its own, each output frame
+    # a source frame on, the lift at the same shot second; VideoToolbox hands a time on a source frame back as it is, so
+    # only the half pace after the lift is made)
+    a0 = round(m['in'] * fin) / fin
+    times = [clip_time(i / fin, a0, m['lift'] * fin / FPS, b_max) for i in range(n)]
     with tempfile.TemporaryDirectory(dir=str(HERE / 'build')) as td:
         tmp = Path(td)
-        # the clip at 60 fps over its times: RIFE at the needed instants (one pass over the span it covers), or nearest
+        # the clip at 25 fps over its times: RIFE at the needed instants (one pass over the span it covers), or nearest
         lo, hi = min(times), max(times)
         if draft:
             cfr = read_frames(src)
             frame_at = lambda tc: cfr[int(np.clip(round(tc * fin), 0, len(cfr) - 1))]
         else:
-            ins = frc.frames(src, 0, 0, tmp / 'in', fin)
-            dense = len(ins) * 5                       # 5× the clip's rate (120 fps): every shot time is within 1/240 s
-            frc.rife(tmp / 'in', tmp / 'dense', dense)
-            dfr = sorted((tmp / 'dense').glob('*.png'))
-            frame_at = lambda tc: cv2.imread(str(dfr[int(np.clip(round(tc / dur * len(dfr)), 0, len(dfr) - 1))]))
+            # (VideoToolbox at each of the shot's own clip times, back and forth: RIFE, on these generated clips' boiling
+            # texture, copied a frame and then jumped, r4; and the nearest of 96 frames a second stepped 1, 2, 2, 1, 2)
+            enc = tmp / 'in.mov'
+            subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(src), '-an', '-c:v', 'prores_ks', '-profile:v', '3', str(enc)], check=True)
+            uniq = sorted(set(round(tc, 6) for tc in times)); (tmp / 'times.txt').write_text('\n'.join(f'{t:.6f}' for t in uniq))
+            frc.vt_times(enc, tmp / 'exact.mov', tmp / 'times.txt', FPS)
+            (tmp / 'exact').mkdir()
+            subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(tmp / 'exact.mov'), '-fps_mode', 'passthrough', '-q:v', '1', str(tmp / 'exact' / '%08d.png')], check=True)
+            efr = sorted((tmp / 'exact').glob('*.png'))
+            if len(efr) != len(uniq): sys.exit(f'{name}: {len(efr)} frames for {len(uniq)} times')
+            at_ = {t: i for i, t in enumerate(uniq)}
+            frame_at = lambda tc: cv2.imread(str(efr[at_[round(tc, 6)]]))
         wcap = cv2.VideoCapture(str(win)) if win else None      # the window's frames, read as they are needed
         last_w = [None]
         def next_win():
@@ -208,7 +219,7 @@ def make(name, draft):
                 pm = np.zeros(fr.shape[:2], np.uint8); pm[y:y + bh, x:x + bw] = 255
                 fr = cv2.inpaint(fr, pm, 6, cv2.INPAINT_TELEA)
             q = quad_at(quads, fin, tc)
-            if m.get('dehalo'): fr = dehalo(fr, q)          # (the relabelled cartons' glow taken out, before the screen goes in)
+            if m.get('dehalo'): fr = dehalo(fr, [q] + ([quad_at(q2s, fin, tc)] if q2s is not None else []))   # (the relabelled cartons' glow taken out, before the screens go in)
             content = (next_win() if wcap is not None else stl).astype(np.float32) / 255
             f32 = fr.astype(np.float32) / 255
             insert(f32, fr, q, content)
@@ -224,10 +235,10 @@ def make(name, draft):
         OUT.mkdir(parents=True, exist_ok=True); TRK.mkdir(parents=True, exist_ok=True)
         subprocess.run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(FPS), '-i', str(seq / '%08d.png'), '-vf', 'tpad=stop_mode=clone:stop=3',   # (3 frames held past the shot)
                         '-c:v', 'libx264', '-preset', 'slow' if not draft else 'veryfast',
-                        '-crf', '12' if not draft else '16', '-g', '60', '-pix_fmt', 'yuv420p', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709',
+                        '-crf', '12' if not draft else '16', '-g', '50', '-pix_fmt', 'yuv420p', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709',
                         '-movflags', '+faststart', str(OUT / f'{name}.mp4')], check=True)
         (TRK / f'{name}.json').write_text(json.dumps({'fps': FPS, 'n': n, 'quads': out_q}))
-    print(f'{name}: {n} frames ({"draft" if draft else "RIFE"}), {src.name} with {m.get("win") or still.name}')
+    print(f'{name}: {n} frames ({"draft" if draft else "VideoToolbox"}), {src.name} with {m.get("win") or still.name}')
 
 
 def main():

@@ -1,5 +1,5 @@
-"""SC-238: the film's deliverables from the silent master (Remotion, ProRes 422 HQ, 1920 × 1080, 60 fps) and its mix
-(mix.py, 48 kHz, -14 LUFS): the master MP4 (H.264 High, crf 17, 60 fps, BT.709, AAC 320 kb/s), a 720p copy, a phone
+"""SC-238: the film's deliverables from the silent master (Remotion, ProRes 422 HQ, 1920 × 1080, 25 fps) and its mix
+(mix.py, 48 kHz, -14 LUFS): the master MP4 (H.264 High, crf 17, 25 fps, BT.709, AAC 320 kb/s), a 720p copy, a phone
 preview, and the captions (.srt, the narration and the people's lines, from film.json), stamped with the time made.
 The stitch-videos-ffmpeg skill's export notes hold: yuv420p for players, faststart, no sharpen on generated footage.
 
@@ -60,12 +60,12 @@ def main():
     color = ['-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709']
     full = OUT / f'{name}.mp4'
     run(['ffmpeg', '-v', 'error', '-y', '-i', master, '-i', mix, '-map', '0:v', '-map', '1:a', '-c:v', 'libx264', '-preset', 'slow', '-crf', '17', '-profile:v', 'high',
-         '-pix_fmt', 'yuv420p', '-r', '60', *color, '-c:a', 'aac', '-b:a', '320k', '-ar', '48000', '-movflags', '+faststart', '-shortest', full])
+         '-pix_fmt', 'yuv420p', '-r', '25', *color, '-c:a', 'aac', '-b:a', '320k', '-ar', '48000', '-movflags', '+faststart', '-shortest', full])
     p720 = OUT / f'{name}-720p.mp4'
     run(['ffmpeg', '-v', 'error', '-y', '-i', full, '-vf', 'scale=1280:720:flags=lanczos', '-c:v', 'libx264', '-preset', 'slow', '-crf', '20', '-pix_fmt', 'yuv420p', *color,
          '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', p720])
     phone = OUT / f'{name}-phone.mp4'
-    run(['ffmpeg', '-v', 'error', '-y', '-i', full, '-vf', 'scale=960:540:flags=lanczos,fps=30', '-c:v', 'libx264', '-preset', 'slow', '-crf', '26', '-pix_fmt', 'yuv420p', *color,
+    run(['ffmpeg', '-v', 'error', '-y', '-i', full, '-vf', 'scale=960:540:flags=lanczos,fps=25', '-c:v', 'libx264', '-preset', 'slow', '-crf', '26', '-pix_fmt', 'yuv420p', *color,
          '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', phone])
     srt(OUT / f'{name}.srt')
     # the design record keeps a 1080p copy at a size git can hold, its 720p and its captions

@@ -1,5 +1,5 @@
 """SC-238: the distributor's tablet filming the destruction at the landfill. Its camera's view of the packs going into
-the pit (a clip, cropped to the tablet's portrait screen, RIFE to 60 fps), under the app's camera (the step at the top;
+the pit (a clip, cropped to the tablet's portrait screen, its own frames at 25 fps), under the app's camera (the step at the top;
 Cancel, the shutter and Upload at the foot, as the app's own camera step has them), then the shutter pressed: the
 button dips, a white flash, the view frozen as the photo, "Photo taken" at the top. The frame is the distributor's
 tablet window's (846 × 1218), so screens.py sets it into the glass exactly as it sets the app's screen.
@@ -17,7 +17,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import frc  # noqa: E402
 
-FPS, CW, CH = 60, 846, 1218
+FPS, CW, CH = 25, 846, 1218
 FONT = str(HERE / 'film' / 'public' / 'fonts' / 'Geist.ttf')
 
 
@@ -74,7 +74,8 @@ def main():
         tmp = Path(td)
         span = min(shutter + 0.1, cdur - a - 0.05)
         ins = frc.frames(src, a, span, tmp / 'in', fin)
-        live = frc.rife(tmp / 'in', tmp / 'live', max(n_live, len(ins)))
+        # (its own frames, the nearest to each output time: RIFE only where the clip is too short for its time)
+        live = ins if len(ins) >= 0.9 * n_live else frc.rife(tmp / 'in', tmp / 'live', max(n_live, len(ins)))
         seq = tmp / 'seq'; seq.mkdir()
         frozen = None
         for i in range(n):

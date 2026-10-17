@@ -11,7 +11,7 @@
 // shield keeps the money from the models. Then the camera rises and the road becomes the mark.
 //
 // The working demo's lens (SC-219 arch13): depth of field, anamorphic streaks, bloom, a 180-degree shutter summed from
-// sub-frames, ACES, a grade and grain. Nothing runs on its own clock: renderAt(t) draws scene time t (60 fps), and
+// sub-frames, ACES, a grade and grain. Nothing runs on its own clock: renderAt(t) draws scene time t (25 fps), and
 // setCues(cues) takes the narration's line times (and, where given, its word times) and returns the scene's sounds.
 import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
@@ -20,7 +20,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { Pass, FullScreenQuad } from 'three/addons/postprocessing/Pass.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
-const W = 1920, H = 1080, FPS = 60, SHUTTER = 0.5 / FPS;
+const W = 1920, H = 1080, FPS = 25, SHUTTER = 0.5 / FPS;
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const sm = (x) => { x = clamp(x); return x * x * x * (x * (x * 6 - 15) + 10); };
 const eo = (x) => { x = clamp(x); return 1 - (1 - x) * (1 - x) * (1 - x); };
@@ -240,7 +240,7 @@ world.add(new THREE.Mesh(new THREE.SphereGeometry(700, 48, 24), new THREE.Shader
 })));
 const GY = -9, GW = 150, GH = GW * 9 / 16;   // the town lies nine units under the road, 150 units across
 const PLATES = ['a1-godown', 'a2-town', 'a3-lane'];
-const BG = PLATES.map((id) => ({ id, frames: 0, fps: 60, tex: new THREE.Texture(), n: -1, ok: false }));
+const BG = PLATES.map((id) => ({ id, frames: 0, fps: 25, tex: new THREE.Texture(), n: -1, ok: false }));
 const floorMat = new THREE.ShaderMaterial({
 	uniforms: { mapA: { value: BG[0].tex }, mapB: { value: BG[1].tex }, mixAB: { value: 0 }, hasA: { value: 0 }, hasB: { value: 0 }, k: { value: 0 }, gw: { value: GW }, gh: { value: GH } },
 	vertexShader: 'varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }',
@@ -1082,7 +1082,9 @@ const PLATE_AT = (t) => {
 async function plateFrame(P, tau) {
 	if (!P.frames) return P.ok;
 	const n2 = P.frames * 2 - 2;                               // ping-pong: a glide out and back reads as one drone's flight
-	let i = Math.floor(Math.max(0, tau) * P.fps) % n2; if (i >= P.frames) i = n2 - i;
+	// (+1e-6: frame f's time is f/fps, and (f/fps)*fps falls a hair under f at 98 of the scene's frames, every fifteenth in
+	// places, so the floor held one frame and skipped the next, r4's hitch in the agents)
+	let i = Math.floor(Math.max(0, tau) * P.fps + 1e-6) % n2; if (i >= P.frames) i = n2 - i;
 	if (i === P.n) return true;
 	const im = await loadImg(`bg/${P.id}/${String(i + 1).padStart(5, '0')}.jpg`);
 	if (im) { P.tex.image = im; P.tex.colorSpace = THREE.SRGBColorSpace; P.tex.needsUpdate = true; P.n = i; P.ok = true; }
@@ -1119,7 +1121,7 @@ window.renderAt = async (t) => {
 		renderer.autoClear = false; renderer.setRenderTarget(acc); accQuad.render(renderer); renderer.autoClear = ac;
 	}
 	update(t);
-	cine.material.uniforms.seed.value = (Math.floor(t * FPS) * 0.6180339) % 1;
+	cine.material.uniforms.seed.value = (Math.floor(t * FPS + 1e-6) * 0.6180339) % 1;
 	renderer.setRenderTarget(null); cine.render(renderer);
 	overlay(t);
 	return { taps: n };
@@ -1132,7 +1134,7 @@ window.renderAt = async (t) => {
 	if (label) { carton.face.map = label; carton.face.needsUpdate = true; }
 	for (const P of BG) {
 		const meta = await fetch(`bg/${P.id}/meta.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null);
-		if (meta) { P.frames = meta.frames; P.fps = meta.fps || 60; continue; }
+		if (meta) { P.frames = meta.frames; P.fps = meta.fps || 25; continue; }
 		const still = await loadImg(`bg/${P.id}.jpg`);              // a plate's still, until its footage exists
 		if (still) { P.tex.image = still; P.tex.colorSpace = THREE.SRGBColorSpace; P.tex.needsUpdate = true; P.ok = true; }
 	}

@@ -3,8 +3,17 @@
 // frame), and the four between are made by the model at phases 0.4, 0.8, 0.2 and 0.6 of their source interval. The
 // picture only (an AVAssetWriter fed video before audio stalls); frc.sh copies the clip's own audio back on with ffmpeg,
 // so a lip-synced line stays where it was. Out: ProRes 422 HQ, BT.709.
+// --fps is a decimal, kept as an exact fraction (163.452 is 40863/250 frames a second), since a span retimed to its shot
+// is rarely a whole rate: Int("59.9") was nil, and every such call trapped (exit 133), so media.py fell back to RIFE on
+// every retimed clip. A slow span puts more frames between two source frames than one call makes (the model takes at
+// most --max-phases, 3); the rest are made by further calls on the same pair, its references unchanged, so no frame is
+// ever made from a made one.
 //
-//   vtfx frc in.mp4 out.mov [--fps 60] [--start s] [--dur d] [--quality normal|quality]
+// --times a file of source times (seconds from the clip's first frame, ascending, one a line) makes one frame at each,
+// written at --fps: a shot that plays its clip at its own pace, then slower, back and forth (screens.py), takes every
+// frame at its own instant. (Pass 11 first took the nearest of 96 a second, and the steps went 1, 2, 2, 1, 2: a judder.)
+//
+//   vtfx frc in.mp4 out.mov [--fps 60] [--start s] [--dur d] [--quality normal|quality] [--max-phases 3] [--times f]
 //   vtfx sr in.mp4 out.mov [--width 1920]     Apple's on-device super resolution (VTSuperResolutionScaler, ×4, the
 //                                             video model: each frame with the one before it), then down to --width
 //                                             with an averaging downsample; same frame rate, ProRes 422 HQ
@@ -48,15 +57,38 @@ let bt709: [String: Any] = [
     AVVideoYCbCrMatrixKey: AVVideoYCbCrMatrix_ITU_R_709_2,
 ]
 
+// a decimal rate as a reduced fraction p/q: "60" is 60/1, "163.452" is 40863/250
+func rational(_ s: String) -> (Int, Int) {
+    let parts = s.split(separator: ".", omittingEmptySubsequences: false).map(String.init)
+    guard parts.count <= 2, let whole = Int(parts[0].isEmpty ? "0" : parts[0]), whole >= 0 else { die("--fps \(s)") }
+    var p = whole, q = 1
+    if parts.count == 2 {
+        guard !parts[1].isEmpty, parts[1].count <= 6, let f = Int(parts[1]) else { die("--fps \(s)") }
+        for _ in 0..<parts[1].count { q *= 10 }
+        p = whole * q + f
+    }
+    func gcd(_ a: Int, _ b: Int) -> Int { b == 0 ? a : gcd(b, a % b) }
+    let g = gcd(p, q)
+    guard p > 0, p / g <= Int(Int32.max) else { die("--fps \(s)") }
+    return (p / g, q / g)
+}
+
 func frc(_ inPath: String, _ outPath: String) async throws {
-    let outFps = Int(arg("--fps", "60")!)!
+    let (outP, outQ) = rational(arg("--fps", "60")!)    // the output rate: outP/outQ frames a second
+    let maxPhases = max(1, Int(arg("--max-phases", "3")!) ?? 3)
+    let wantT: [Double]? = arg("--times").map { path in
+        guard let txt = try? String(contentsOfFile: path, encoding: .utf8) else { die("--times \(path)") }
+        return txt.split(whereSeparator: \.isNewline).compactMap { Double($0.trimmingCharacters(in: .whitespaces)) }
+    }
+    if let W = wantT { guard !W.isEmpty, zip(W, W.dropFirst()).allSatisfy({ $0 <= $1 }) else { die("--times: empty, or not ascending") } }
     let asset = AVURLAsset(url: URL(fileURLWithPath: inPath))
     guard let vt = try await asset.loadTracks(withMediaType: .video).first else { die("no video") }
     let size = try await vt.load(.naturalSize)
     let nominal = try await vt.load(.nominalFrameRate)
     let inFps = Int(nominal.rounded())
     let w = Int(size.width), h = Int(size.height)
-    guard inFps > 0, outFps > inFps else { die("fps \(inFps) -> \(outFps)") }
+    guard abs(Double(nominal) - Double(inFps)) < 0.01 else { die("a source at \(nominal) fps: only whole source rates") }
+    guard inFps > 0, wantT != nil || outP > inFps * outQ else { die("fps \(inFps) -> \(outP)/\(outQ)") }
 
     let reader = try AVAssetReader(asset: asset)
     if let s = arg("--start") {
@@ -89,6 +121,9 @@ func frc(_ inPath: String, _ outPath: String) async throws {
         AVVideoCodecKey: AVVideoCodecType.proRes422HQ, AVVideoWidthKey: w, AVVideoHeightKey: h, AVVideoColorPropertiesKey: bt709,
     ])
     vin.expectsMediaDataInRealTime = false
+    // (the track's own timescale is the output rate's numerator: on the writer's default, 1/600 s, a 96 or 163.452 fps
+    // frame lands on uneven ticks, and ffmpeg then reads the file at 600 fps, every frame six times over)
+    vin.mediaTimeScale = CMTimeScale(outP)
     let adaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: vin, sourcePixelBufferAttributes: [
         kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA, kCVPixelBufferWidthKey as String: w, kCVPixelBufferHeightKey as String: h,
     ])
@@ -97,12 +132,13 @@ func frc(_ inPath: String, _ outPath: String) async throws {
     writer.startWriting()
     writer.startSession(atSourceTime: .zero)
 
-    // frames in, in order; out at k/outFps. For source interval i (frames i, i+1), each k with floor(k*in/out) == i.
+    // frames in, in order; out at k*outQ/outP s. Source frame i is at i/inFps: output k lies in the interval (i-1, i]
+    // while k*outQ*inFps < i*outP, at phase (k*outQ*inFps - (i-1)*outP)/outP of it.
     func toHalf(_ s: CVPixelBuffer) -> CVPixelBuffer { let d = newBuffer(srcPool); VTPixelTransferSessionTransferImage(xfer, from: s, to: d); return d }
     func toBGRA(_ s: CVPixelBuffer) -> CVPixelBuffer { let d = newBuffer(outPool); VTPixelTransferSessionTransferImage(xfer, from: s, to: d); return d }
     func append(_ pb: CVPixelBuffer, _ k: Int) {
         while !vin.isReadyForMoreMediaData { usleep(2000) }
-        if !adaptor.append(pb, withPresentationTime: CMTime(value: CMTimeValue(k), timescale: CMTimeScale(outFps))) { die("append \(k): \(String(describing: writer.error))") }
+        if !adaptor.append(pb, withPresentationTime: CMTime(value: CMTimeValue(k * outQ), timescale: CMTimeScale(outP))) { die("append \(k): \(String(describing: writer.error))") }
     }
     var prev: CVPixelBuffer? = nil       // the half-float source frame i
     var prevBGRA: CVPixelBuffer? = nil
@@ -110,44 +146,64 @@ func frc(_ inPath: String, _ outPath: String) async throws {
     var k = 0                            // next output frame
     var first = true
     var made = 0, kept = 0
+    var ti = 0                           // (--times) the next wanted time
     while let sb = vout.copyNextSampleBuffer() {
         guard let pb = CMSampleBufferGetImageBuffer(sb) else { continue }
         let cur = toHalf(pb)
         i += 1
         if let p = prev {
-            // outputs strictly inside (i-1, i): phases (k*in - (i-1)*out)/out
+            // outputs strictly inside (i-1, i): phases (k*in - (i-1)*out)/out; or, with --times, each wanted time before i
             var phases: [Float] = [], ks: [Int] = []
-            while k * inFps < i * outFps {
-                let num = k * inFps - (i - 1) * outFps
-                if num == 0 { append(prevBGRA!, k); kept += 1 } else { phases.append(Float(num) / Float(outFps)); ks.append(k) }
-                k += 1
+            if let W = wantT {
+                while ti < W.count && W[ti] * Double(inFps) < Double(i) - 1e-6 {
+                    let ph = max(0, W[ti] * Double(inFps) - Double(i - 1))
+                    if ph < 1e-4 { append(prevBGRA!, k); kept += 1 } else { phases.append(Float(ph)); ks.append(k) }
+                    k += 1; ti += 1
+                }
+            } else {
+                while k * outQ * inFps < i * outP {
+                    let num = k * outQ * inFps - (i - 1) * outP
+                    if num == 0 { append(prevBGRA!, k); kept += 1 } else { phases.append(Float(Double(num) / Double(outP))); ks.append(k) }
+                    k += 1
+                }
             }
             if !phases.isEmpty {
-                let dsts = phases.map { _ in VTFrameProcessorFrame(buffer: newBuffer(dstPool), presentationTimeStamp: .zero)! }
                 let a = VTFrameProcessorFrame(buffer: p, presentationTimeStamp: CMTime(value: CMTimeValue(i - 1), timescale: CMTimeScale(inFps)))!
                 let b = VTFrameProcessorFrame(buffer: cur, presentationTimeStamp: CMTime(value: CMTimeValue(i), timescale: CMTimeScale(inFps)))!
-                guard let params = VTFrameRateConversionParameters(sourceFrame: a, nextFrame: b, opticalFlow: nil, interpolationPhase: phases,
-                                                                    submissionMode: first ? .sequentialReferencesUnchanged : .sequential, destinationFrames: dsts)
-                else { die("params at \(i)") }
-                if first {
-                    // the model's first call returns a broken frame: prime it on this pair and throw the result away
-                    let warm = phases.map { _ in VTFrameProcessorFrame(buffer: newBuffer(dstPool), presentationTimeStamp: .zero)! }
-                    if let wp = VTFrameRateConversionParameters(sourceFrame: a, nextFrame: b, opticalFlow: nil, interpolationPhase: phases,
-                                                                submissionMode: .random, destinationFrames: warm) { try await proc.process(parameters: wp) }
+                var j0 = 0
+                while j0 < phases.count {                    // at most maxPhases a call; later calls on the same pair
+                    let j1 = min(j0 + maxPhases, phases.count)
+                    let ph = Array(phases[j0..<j1])
+                    let dsts = ph.map { _ in VTFrameProcessorFrame(buffer: newBuffer(dstPool), presentationTimeStamp: .zero)! }
+                    guard let params = VTFrameRateConversionParameters(sourceFrame: a, nextFrame: b, opticalFlow: nil, interpolationPhase: ph,
+                                                                        submissionMode: (first || j0 > 0) ? .sequentialReferencesUnchanged : .sequential,
+                                                                        destinationFrames: dsts)
+                    else { die("params at \(i) (\(ph.count) phases)") }
+                    if first {
+                        // the model's first call returns a broken frame: prime it on this pair and throw the result away
+                        let warm = ph.map { _ in VTFrameProcessorFrame(buffer: newBuffer(dstPool), presentationTimeStamp: .zero)! }
+                        if let wp = VTFrameRateConversionParameters(sourceFrame: a, nextFrame: b, opticalFlow: nil, interpolationPhase: ph,
+                                                                    submissionMode: .random, destinationFrames: warm) { try await proc.process(parameters: wp) }
+                    }
+                    try await proc.process(parameters: params)
+                    first = false
+                    for (j, d) in dsts.enumerated() { append(toBGRA(d.buffer), ks[j0 + j]); made += 1 }
+                    j0 = j1
                 }
-                try await proc.process(parameters: params)
-                first = false
-                for (j, d) in dsts.enumerated() { append(toBGRA(d.buffer), ks[j]); made += 1 }
             }
         }
         prev = cur; prevBGRA = toBGRA(cur)
     }
-    // the last source frame, where an output falls on it
-    if let pbB = prevBGRA, k * inFps == i * outFps { append(pbB, k); kept += 1; k += 1 }
+    // the last source frame, where an output falls on it (with --times, every wanted time from it on)
+    if let pbB = prevBGRA {
+        if let W = wantT { while ti < W.count { append(pbB, k); kept += 1; k += 1; ti += 1 } }
+        else if k * outQ * inFps == i * outP { append(pbB, k); kept += 1; k += 1 }
+    }
     vin.markAsFinished()
     await writer.finishWriting()
     if writer.status != .completed { die("write: \(String(describing: writer.error))") }
-    print("frc \(inPath) \(w)x\(h) \(inFps)→\(outFps) fps: \(i + 1) frames in, \(k) out (\(kept) kept, \(made) made)")
+    let outRate = outQ == 1 ? "\(outP)" : String(format: "%.4f", Double(outP) / Double(outQ))
+    print("frc \(inPath) \(w)x\(h) \(inFps)→\(outRate) fps: \(i + 1) frames in, \(k) out (\(kept) kept, \(made) made)")
 }
 
 

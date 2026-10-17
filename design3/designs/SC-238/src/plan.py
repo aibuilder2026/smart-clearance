@@ -5,7 +5,7 @@ Each scene is laid out in its own seconds: its narration placed with the pauses 
 the clips say it, the words the picture lands on, and its shots: a person's clip (`clip`), a talking clip (`talk`), the
 app's own screen from the production recordings (`win`: the device's screen cropped from the 2560 × 1440 stage, each
 span played for the time the cut gives it), a still (`img`) or a scene of its own (`comp`). Every clip and window is
-made at 60 fps to exactly its shot's length (media.py), so nothing plays at an odd rate.
+made at 25 fps to exactly its shot's length (media.py), so nothing plays at an odd rate.
 
 Out: film/src/film.json (the Remotion film reads it), film/public/film.json, build/media.json (what media.py makes),
 build/cues-agents.json (the 3D scene's cues) and build/timeline.txt.
@@ -59,7 +59,8 @@ CLIPS = {
     'landfill-sign': LIB / 'SC-205/src/clips/c4-landfill-sign.mp4',    # 1024 × 576
     'hold': LIB / 'SC-205/src/clips/i2-hold.mp4',
     'landfill': LIB / 'SC-205/src/clips/i3-landfill.mp4',
-    'aisle': LIB / 'SC-207/src/clips/o0-godown-aisle-labelled.mp4',
+    # (SC-239's: the labelled aisle with its two walking workers painted out, whose hands merged as the load passed)
+    'aisle': LIB / 'SC-219/src/clips/o0-godown-aisle-labelled.mp4',
     'mango-pack': HERE / 'clips/d-mango-pack3.mp4',                      # this film's: the distributor reads a pack's date (pass 9: an edit of her own dawn keyframe, no glasses)
     'aisle-plain': LIB / 'SC-206/src/clips/o0-godown-aisle.mp4',
     'van-kirana': LIB / 'SC-208/src/clips/dl-kirana.mp4',              # the van round at a kirana
@@ -139,7 +140,7 @@ def winat(name, src_t, starts):
 
 
 def clip(name, key, a, b, dur=None):
-    """a clip's span (a, b in its own seconds), played over `dur` seconds (its own length when left out), 60 fps"""
+    """a clip's span (a, b in its own seconds), played over `dur` seconds (its own length when left out), 25 fps"""
     d = round(dur if dur is not None else b - a, 3)
     MEDIA[name] = {'kind': 'clip', 'src': str(CLIPS[key]), 'in': a, 'out': b, 'dur': d}
     return d
@@ -317,7 +318,7 @@ def build():
     s.mark('stock', s.w('n06', 'stock')); s.mark('credit', s.w('n06', 'credit')); s.mark('destroy', s.w('n06', 'destroy'))
     s.mark('total', s.w('n06', 'twentytwo'))
     st = t + 2.6
-    clip('bin-trail', 'trail', 0.0, 6.4, st); MEDIA['bin-trail']['interp'] = 'mci'   # (RIFE copies and jumps on this boiling aerial: r3)
+    clip('bin-trail', 'trail', 0.0, 6.4, st)            # (slowed by VideoToolbox at its own rate: RIFE copied and jumped on this boiling aerial, r3, and ffmpeg's mci strayed at 25 fps, pass 12)
     s.shot('clip', 0, st, media='bin-trail')
     t = s.say('n07', st + 0.05)
     for i, (k, key) in enumerate([('bin-factory', 'factory'), ('bin-hold', 'hold'), ('bin-heap', 'landfill-heap')]):
@@ -806,7 +807,7 @@ def build():
     s.shot('win', s.marks['kilos'], t + 1.4, media='r-mango', starts=starts, enter='none', clock=['Best before', 'the ledger'],
            rings=[R(s.w('n38b', 'kilos') - 0.2, s.w('n38b', 'meals') - 0.3, [716, 232, 348, 136]), R(s.w('n38b', 'meals') - 0.3, t + 1.4, [252, 468, 446, 170])],
            cards=[C(s.w('n38b', 'kilos') + 0.1, t + 1.4, [716, 232, 348, 136], 'On the mango alone', '340 kg kept out of landfill', '58 meals, from the food bank’s own receipt.', 'heart-handshake', w=400)])
-    for k, key, a, b in [('r-truck', 'truck', 0.2, 4.8), ('r-van', 'van-kirana', 0.2, 4.8), ('r-godown', 'aisle-plain', 0.2, 4.8),
+    for k, key, a, b in [('r-truck', 'truck', 0.2, 4.8), ('r-van', 'van-kirana', 0.2, 4.8), ('r-godown', 'aisle', 0.2, 4.8),
                          ('r-office', 'office', 0.2, 3.6), ('r-foodbank', 'foodbank', 0.2, 6.2), ('r-landfill', 'landfill-heap', 0.2, 4.8),
                          ('r-evening', 'evening', 0.2, 7.4)]:
         clip(k, key, a, b, None)
@@ -831,7 +832,7 @@ def build():
 
 def main():
     S = build()
-    T = 0.0; out = {'fps': 60, 'w': 1920, 'h': 1080, 'scenes': [], 'vo': [], 'dlg': []}
+    T = 0.0; out = {'fps': 25, 'w': 1920, 'h': 1080, 'scenes': [], 'vo': [], 'dlg': []}
     lines = []
     for s in S:
         if s.id in ('mango', 'chips'): s.close_gaps()

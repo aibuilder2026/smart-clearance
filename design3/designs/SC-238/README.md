@@ -33,6 +33,17 @@ No architecture section; the entire journey; super-real video and speech; a high
 thoroughly; local tools only; 450 to 480 seconds. **Added during the work:** 60 fps, smooth and never laggy, with RIFE
 for the interpolation; the editing-videos and business-motion-film skills for the review.
 
+**Pass 12 (17 Oct 2026), on the 14:49 master:**
+
+1. The opening godown's fix from the working demo (SC-239): its two walking workers, whose hands merged as the
+   forklift's load passed, painted out.
+2. "Have the video at 25fps as before, 60fps is causing noise. I need you to make it smooth and background noise less."
+3. "No other changes needed, everything is fine in terms of content."
+
+The film keeps the 14:49 master's edit, frame for frame in time. Pass 11's work after it (VideoToolbox at fractional
+rates and exact clip times, the motion check, and r4's content changes) was kept aside on the branch
+`SC-238-pass11-wip`; only its tooling fixes are in this pass.
+
 ## How each point was met
 
 | Point | Done |
@@ -59,37 +70,43 @@ Everything is driven by one edit decision list, so the picture and the sound rea
 | The plan | `src/plan.py` | The edit decision list: every scene, shot, line, ring, card, agent head and clock chip, timed on the narration's own words (Whisper's word times); writes `film/src/film.json`, `build/media.json` and `build/timeline.txt`; closes any gap between two shots |
 | The voice | `src/tts/` | The narrator, Maya1 run locally (the working demo's warm Indian storyteller), three takes a line, picked by Whisper's read-back and UTMOS |
 | The people | `src/gen-qwen*.sh`, `src/gen-ltx.py` | Qwen-Image keyframes (edits of the earlier films' cast sheets, so each face stays itself), then LTX 2.5 talking clips at 720p with their own voices; every take read back by Whisper (`src/dlg.py`) and retaken where it misspoke |
-| The app's screens | `src/media.py` | Each device's screen cropped at its own pixels from the production recordings, span by span: near its own pace interpolated to 60 fps, longer than its span played at 0.9× and held, a fast-forward sampled straight from its own span (an input seek; an output seek after the speed-up had skipped tens of seconds), cached by that span; `src/ringscan.py` keeps the recording stage's own rings, dims and title cards out of every span |
+| The app's screens | `src/media.py` | Each device's screen cropped at its own pixels from the production recordings, span by span at 25 fps: at its own pace the recording's own frames one for one, quicker the nearest of them, a little slower interpolated, longer than its span played at 0.9× and held, a fast-forward sampled straight from its own span (an input seek; an output seek after the speed-up had skipped tens of seconds), cached by that span; `src/ringscan.py` keeps the recording stage's own rings, dims and title cards out of every span |
 | Over the shoulder | `src/screens.py`, `src/track.py`, `src/xcam.py` | The app's real screen set into the glass of the device a person holds (SC-206's clips with SC-207's tracked quads, and this film's own filming shot, its blank screen followed frame by frame by `track.py`), under any finger, the same frames carrying on in the window that lifts out of it; the distributor's camera view at the landfill is `xcam.py`'s, the app's camera over the footage of the packs going in |
-| The clips at 60 fps | `src/media.py`, `src/frc.py`, `src/vtfx/` | Low-resolution clips super-resolved by Apple's VideoToolbox (×4, down to 1920), then interpolated to 60 fps by RIFE 4.26 or VideoToolbox's frame-rate conversion, whichever rebuilds the clip's own frames better; the bin's aerial, whose fine texture boils from frame to frame so that RIFE copies a frame and jumps, by ffmpeg's motion-compensated interpolation |
-| The agents in 3D | `src/agents3d/`, `src/aerial.py`, `src/capture-page.mjs` | A three.js scene over aerial footage (LTX, super-resolved, 60 fps), captured frame-exact on the narration's cues, its sounds' events kept for the mix |
-| The film | `src/film/` | Remotion 4: the kit (`kit/`: footage with its push and rack focus, the device windows and their lift-out, rings, cards, agent heads, the clock, the ways in and out) and twelve scenes; rendered to ProRes 422 HQ at 1920 × 1080, 60 fps |
+| The clips at 25 fps | `src/media.py`, `src/screens.py`, `src/xcam.py`, `src/frc.py`, `src/vtfx/`, `src/cadence.py` | Low-resolution clips super-resolved by Apple's VideoToolbox (×4, down to 1920). Then each span shows its source's own frames wherever it can (pass 12): a clip near its own pace one for one (4% quicker at 25 fps), a talking take in real time on the nearest of its own frames (so the lips keep to the sound), the person behind an over-the-shoulder device one for one until the window lifts. Only a span slowed down is interpolated, by VideoToolbox at its own rate (`vtfx` keeps a decimal rate as a fraction, and makes a frame at any clip time with `--times`). `cadence.py` measures every shot's frame-to-frame shift and stops the build on a judder. `vtfx` is built from its source (`swiftc -O -o src/vtfx/vtfx src/vtfx/vtfx.swift`, macOS 15.4 or later; the binary is not committed) |
+| The agents in 3D | `src/agents3d/`, `src/aerial.py`, `src/capture-page.mjs` | A three.js scene over aerial footage (LTX, super-resolved, its own frames one for one at 25 fps), captured frame-exact on the narration's cues at 25 fps, its sounds' events kept for the mix |
+| The film | `src/film/` | Remotion 4: the kit (`kit/`: footage with its push and rack focus, the device windows and their lift-out, rings, cards, agent heads, the clock, the ways in and out) and twelve scenes; rendered to ProRes 422 HQ at 1920 × 1080, 25 fps |
 | The sound | `src/mix.py`, `src/sfxkit.py` | The narration, the people in their own rooms, a room tone for every place, SC-210's score ducked under every word, the editing-videos library's CC0 sounds and synthesised ones on every event; two-pass loudnorm to −14 LUFS, −1.5 dBTP |
-| The deliverables | `src/export.py` | The master (H.264 High, crf 17, 60 fps, AAC 320 kb/s), a 720p copy, a phone preview and the captions |
+| The deliverables | `src/export.py` | The master (H.264 High, crf 17, 25 fps, AAC 320 kb/s), a 720p copy, a phone preview and the captions |
 
 ## The film
 
-**7 min 50.4 s** (470.42 s), 1920 × 1080 at 60 fps (28,225 frames), every clip interpolated to 60 fps, mixed to
-−14.0 LUFS (range 6.3 LU, true peak −1.5 dB).
+**7 min 50.4 s** (470.40 s), 1920 × 1080 at 25 fps (11,760 frames), mixed to −14.0 LUFS (range 6.3 LU, true peak
+−1.5 dB). Pass 12's master keeps the 14:49 master's edit; its frames are the sources' own wherever a span plays at its
+own pace (a slowed span alone is interpolated), its godown has no walking workers (SC-239), and its background is quieter.
 
 | File | Where |
 | --- | --- |
-| The master (H.264 High, crf 17, AAC 320 kb/s, 366 MB), a 720p copy, a phone preview and the captions | `landing-demo/sales-film/smart-clearance-sales-film-v3-2026-10-17_14-49-26*` (earlier masters in `superseded-v3/` beside it) |
+| The master (H.264 High, crf 17, 25 fps, AAC 320 kb/s, 343 MB), a 720p copy, a phone preview and the captions | `landing-demo/sales-film/smart-clearance-sales-film-v3-2026-10-17_19-31-37*` (earlier masters in `superseded-v3/` beside it) |
 | A 1080p copy, the 720p copy and the captions, beside this record | [`media/`](media/) |
 
 The videos stay on this Mac and are never pushed (the maintainer's call; `.gitignore` keeps `media/*.mp4` out); the
 captions are committed.
 
-**Checked on the master** (`src/final-checks.sh`, `src/readback.py`):
+**Checked on the master** (`src/final-checks.sh`, `src/readback.py`, `src/cadence.py`):
 
+- the motion check on every clip, take and over-the-shoulder shot, and on the 3D and install scenes: no judder (every
+  step within 0.22 of its neighbours, the limit 0.40). Its first run stopped the build on five shots: the two short call
+  takes, which showed a frame twice a second (now 24 to 25 fps by VideoToolbox, in real time), the bin's aerial (ffmpeg's
+  interpolation, now VideoToolbox's) and its two quick inserts (now their own frames one for one);
 - no black frame but the opening's half second on the ring;
-- every spoken line, 48 narrated and 13 spoken by the people, read back word for word from the final mix by Whisper;
-- 21 s of still stretches a second or longer, the longest 2.7 s, each a reading hold on an app screen under its slow
-  drift; no frozen footage;
-- no scene hisses: the 6 to 14 kHz floor of every shot sits at −70 dBFS or below in the final mix (it reached −42 under
-  the room tones copied from generated clips);
+- 60 of 61 lines word for word in the read-back of the whole mix; the one other, "He sends it, and Vision checks…",
+  heard as "Anvision" there, reads word for word on its own, as it does in the 14:49 master;
+- near-still samples 50.9 s, against the 14:49 master's 49.3 s: the reading holds on the app's screens; no frozen footage;
+- the background: in the gaps between lines 1 dB lower, the band from 6 kHz up 2 to 3.4 dB lower across the film (its
+  tenth percentile −75.3 dBFS, from −71.9);
+- the godown shot at 0:10 and the credit note's backdrop at 6:51 read with no walking workers;
 - four critics: the first on the full cut (`review/r1-film-critic.md`), a verification of its fixes
-  (`review/r2-verify.md`), the 451.8 s master's (`review/r3-verify.md`), and this master's, on the maintainer's four
+  (`review/r2-verify.md`), the 451.8 s master's (`review/r3-verify.md`), and the 14:49 master's, on the maintainer's four
   notes and the third's list (`review/r4-verify.md`).
 
 Nothing was spent: every image, clip, voice and render was made on this Mac.
