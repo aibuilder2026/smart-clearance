@@ -31,7 +31,8 @@ await page.goto(`http://127.0.0.1:${port}/${pagePath}`);
 await page.waitForFunction(() => window.pageReady === true, null, { timeout: 30000 });
 const res = await page.evaluate((c) => window.setCues(c), cues);
 if (res && res.events) writeFileSync(`${out}/events.json`, JSON.stringify(res.events, null, 1));
-const times = only && !png ? only.split(',').map(Number) : Array.from({ length: Math.round(cues.end * FPS) }, (_, i) => i / FPS);
+const END = (res && res.end) || cues.end;   // a scene may time its own end from the cues (SC-238's agents)
+const times = only && !png ? only.split(',').map(Number) : Array.from({ length: Math.round(END * FPS) }, (_, i) => i / FPS);
 const t0 = Date.now();
 for (let i = 0; i < times.length; i++) {
 	const t = times[i];

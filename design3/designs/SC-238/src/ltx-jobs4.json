@@ -1,0 +1,46 @@
+[
+ {
+  "name": "k-order-b",
+  "image": "img/mcu/k-order.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 238325,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up in a small Indian kirana shop lit by a warm tungsten bulb. A woman in her forties in a mustard sari with a maroon border and a red bindi stands at her counter holding her phone at her chest with its back to the camera. She turns her head to the right of the frame and calls out cheerfully into the shop, in a natural Indian English accent: \"Two free with every ten!\" Her lips shape every word in time with her voice; a delighted expression; natural blinks; she never looks into the camera. The shelves of goods behind her stay softly out of focus. Photorealistic cinematic footage, natural skin, sharp focus on her face. Audio: her voice clear, a busy street outside the shop door, a scooter passing, no music, no other voices.",
+  "out": "clips/k-order-b.mp4"
+ },
+ {
+  "name": "l-eve-call-b",
+  "image": "img/mcu/l-eve-call.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 238326,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up in an office in the evening, a warm desk lamp beside her and city lights coming on through the window under a deep blue dusk. A woman in her thirties with her hair in a low bun, in a navy pinstripe kurta with an ID lanyard, holds a phone to her ear and looks off to the right of the frame. She smiles and says warmly, in a natural Indian English accent: \"Not one pack wasted.\" Her lips shape every word in time with her voice; natural blinks; she never looks into the camera. Photorealistic cinematic footage, natural skin, sharp focus on her face. Audio: her voice close, a quiet office at dusk, the city faint outside, no music, no other voices.",
+  "out": "clips/l-eve-call-b.mp4"
+ },
+ {
+  "name": "d-eve-call-b",
+  "image": "img/mcu/d-eve-call.png",
+  "resolution": "720p",
+  "duration": 6,
+  "seed": 238327,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up in a distributor's godown in the evening, warm golden low sunlight through the open shutter, the cartons glowing amber. A woman in her fifties with a grey-streaked braid, in a teal silk sari with a gold border, holds a phone to her ear and looks off to the left of the frame. She says with a relieved, warm smile, in a natural Indian English accent: \"Every credit note came on time.\" Then she listens, smiling. Her lips shape every word in time with her voice; natural blinks; she never looks into the camera. Dust glows in the low sun behind her; nothing else moves. Photorealistic cinematic footage, natural skin, sharp focus on her face. Audio: her voice close and clear, a quiet godown in the evening, birds outside, no music, no other voices.",
+  "out": "clips/d-eve-call-b.mp4"
+ },
+ {
+  "name": "s-shop-b",
+  "image": "img/mcu/s-shop.png",
+  "resolution": "720p",
+  "duration": 5,
+  "seed": 238328,
+  "camera": "static",
+  "audio": true,
+  "prompt": "A locked-off medium close-up at a kirana counter crowded with shelves of snacks, warm morning light from the street. A man in his fifties with a moustache, in a cream kurta, holds a plain brown carton just handed to him across his counter and looks to the left of the frame at the delivery man. He asks with a warm smile, in a natural Indian English accent: \"The bill's inside? Good.\" and nods. His lips shape every word in time with his voice; natural blinks; he never looks into the camera. Photorealistic cinematic footage, natural skin, sharp focus on his face. Audio: his voice clear, a street outside the shop, a bicycle bell far off, no music, no other voices.",
+  "out": "clips/s-shop-b.mp4"
+ }
+]

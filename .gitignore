@@ -460,7 +460,15 @@ design3/designs/SC-238/src/vtfx/*
 !design3/designs/SC-238/src/agents3d/
 design3/designs/SC-238/src/agents3d/node_modules
 design3/designs/SC-238/src/agents3d/frames/
+design3/designs/SC-238/src/agents3d/label.webp
+design3/designs/SC-238/src/agents3d/bg.jpg
+design3/designs/SC-238/src/agents3d/bg/
 !design3/designs/SC-238/src/film/
 design3/designs/SC-238/src/film/node_modules/
 design3/designs/SC-238/src/film/public/
 design3/designs/SC-238/src/film/out/
+# SC-211's install and audit scenes, recaptured on this film's narration
+!design3/designs/SC-238/src/pwa11/
+!design3/designs/SC-238/src/audit11/
+# the talking scenes made here ship beside the film (media/talk/), past the root's *.mp4
+!design3/designs/SC-238/media/talk/*.mp4
