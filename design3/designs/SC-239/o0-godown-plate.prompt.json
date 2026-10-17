@@ -1,0 +1,9 @@
+{
+  "model": "Qwen-Image 2.1 bf16 (local), edit",
+  "seed": 238,
+  "size": 1024,
+  "steps": 40,
+  "input": "o0-godown-plate-in.webp: frame 0 of SC-219's clips/o0-godown-aisle-labelled.mp4 (cut 17's opening godown), the 384 x 384 crop at x 988, y 488, upscaled to 1024 with Lanczos",
+  "prompt": "Remove the two workers in orange safety vests walking down the aisle, completely. In their place show the empty warehouse aisle that was behind them: the hazy, bright far end of the aisle, the tall shelving racks receding into the haze, and the glossy concrete floor with its soft reflections, matching the surrounding light and haze exactly. Keep everything else exactly the same: the stacked cardboard cartons on the left, the pallets on the right, the camera, the framing and the colours.",
+  "post": "saved as lossless WebP from the PNG output, after a small dark speck the edit left on the floor (at 665, 760 of the 1024 output) was inpainted out (OpenCV Telea); SC-219/src/unworker.py scales it back to 384 x 384 and uses it for what stands still behind the workers, aligned to each frame on the scene round them"
+}
