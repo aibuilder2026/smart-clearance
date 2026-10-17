@@ -56,6 +56,7 @@ distributors hold two batches that won't sell before their best-before date.
 - [Journey 1 · the happy path: the Mango Drink sells through](#journey-1--the-happy-path-the-mango-drink-sells-through)
 - [Journey 2 · the sad path: the Masala Chips are destroyed against evidence](#journey-2--the-sad-path-the-masala-chips-are-destroyed-against-evidence)
 - [The console: watch every client, set one up](#the-console-watch-every-client-set-one-up)
+- [Sign out of the console and the workspace](#sign-out-of-the-console-and-the-workspace)
 - [When you finish](#when-you-finish)
 - [Known limits](#known-limits)
 
@@ -171,7 +172,8 @@ Each person keeps their own sign-in, so use three:
 2. **A private (incognito) window: the distributor.** Lakshmi Agencies for journey 1, Rakesh Traders for journey 2.
    In Chrome all incognito windows share one session, so keep it to one person.
 3. **A phone, or a second browser: everyone else, one at a time.** That's the kiranas, Meera and Agrawal Wholesale.
-   Before the next person signs in, press your avatar (top right) to open **Profile**, then **Sign out**.
+   Before the next person signs in, sign the last one out: press your avatar (top right) to open **Profile**, then
+   **Sign out** ([how, with pictures](#sign-out-of-the-console-and-the-workspace)).
 
 The first sign-in on a device opens on a splash, then on the notifications step. Press **Turn on notifications** to get
 the pushes, or **Not now**.
@@ -549,6 +551,30 @@ The approval is always on. On a live client, the same tab holds the journey's co
 **Close now** and **Report now**, and on a demo workspace **Fill the scheme**.
 
 <img src="docs/demo/console-5-agents.webp" width="560" alt="A client's agents: each with Suggest, Ask or Act, the Watcher's settings saved">
+
+## Sign out of the console and the workspace
+
+Each app keeps its own sign-in, so sign out of each one on its own. Signing out of one leaves the other signed in.
+
+**The console (Neha).**
+
+1. Press your name at the foot of the sidebar (on a phone, your avatar in the top bar). The **Account** sheet opens,
+   with your email and how you sign in.
+2. Press **Sign out**.
+3. The splash reads "Signing you out", then "Signed out", and the console's sign-in page opens.
+
+<img src="docs/demo/signout-1-console-account.webp" width="560" alt="The console's Account sheet over the Overview: Neha Kulkarni, her email and password, and Sign out under the pointer"> <img src="docs/demo/signout-2-console-signing-out.webp" width="560" alt="The console's splash: Smart-Clearance Console, Signing you out, Until next time, Neha">
+
+**The workspace (Priya, a distributor, a kirana, Meera or Agrawal Wholesale).**
+
+1. Press your avatar in the top right of any screen. **Profile** opens: who you are, your workspace and the clock.
+2. Scroll to the foot of Profile. Under **Account**, press **Sign out** ("Back to munchly-smartclearance.web.app").
+3. The splash reads "Signing you out", then "Signed out", and Munchly Foods' sign-in page opens, ready for the next
+   person.
+
+<img src="docs/demo/signout-3-workspace-profile.webp" width="190" alt="A kirana's Profile on a phone, opened from the avatar in the top right"> <img src="docs/demo/signout-4-workspace-sign-out.webp" width="190" alt="The foot of Profile: under Account, Sign out, Back to munchly-smartclearance.web.app"> <img src="docs/demo/signout-5-workspace-signing-out.webp" width="190" alt="The workspace's splash: Munchly Foods, Signing you out">
+
+In a private (incognito) window, closing every private window signs you out as well.
 
 ## When you finish
 
