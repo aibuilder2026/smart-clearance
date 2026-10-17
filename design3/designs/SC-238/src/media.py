@@ -171,7 +171,9 @@ def make(name, only_ff=False):
     m = MEDIA[name]
     out = OUT / f'{name}.mp4'
     drafts = json.loads(DRAFTS.read_text()) if DRAFTS.exists() else {}
-    if out.exists() and name not in drafts and out.stat().st_mtime > (HERE / 'build' / 'media.json').stat().st_mtime and not only_ff:
+    made = json.loads(MADE.read_text()) if MADE.exists() else {}
+    key = json.dumps(m, sort_keys=True)
+    if out.exists() and name not in drafts and made.get(name) == key and not only_ff:
         return print(f'{name}: made')
     if not Path(m['src']).exists(): return print(f'{name}: SOURCE MISSING {m["src"]}')
     if m['kind'] != 'win': m = {**m, 'src': sr_src(m['src'])}
@@ -212,6 +214,8 @@ def make(name, only_ff=False):
         encode(seq, out, m)
     drafts = json.loads(DRAFTS.read_text()) if DRAFTS.exists() else {}
     if drafts.pop(name, None) is not None: DRAFTS.write_text(json.dumps(drafts, indent=1))
+    made = json.loads(MADE.read_text()) if MADE.exists() else {}
+    made[name] = key; MADE.write_text(json.dumps(made, indent=1))   # (made at full quality from exactly this spec)
     if m['kind'] == 'talk': audio(name)
     print(f'{name}: {total} frames ({total / FPS:.3f} s)')
 
@@ -229,6 +233,7 @@ def audio(name):
 
 
 DRAFTS = HERE / 'build' / 'drafts.json'
+MADE = HERE / 'build' / 'made.json'
 
 
 def draft(name):

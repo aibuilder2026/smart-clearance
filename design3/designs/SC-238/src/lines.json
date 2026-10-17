@@ -334,19 +334,25 @@
    "id": "d12",
    "act": "close",
    "who": "the distributor",
-   "clip": "d-eve-call-b",
-   "text": "Every credit note came on time.",
+   "clip": "d-eve-call-c",
+   "text": "Every credit note arrived on time.",
    "takes": [
     "d-eve-call",
-    "d-eve-call-b"
+    "d-eve-call-b",
+    "d-eve-call-c"
    ]
   },
   {
    "id": "d13",
    "act": "close",
    "who": "the supply chain lead",
-   "clip": "l-eve-call-b",
-   "text": "Not one pack wasted."
+   "clip": "l-eve-call-c",
+   "text": "Not one pack went to waste.",
+   "takes": [
+    "l-eve-call",
+    "l-eve-call-b",
+    "l-eve-call-c"
+   ]
   }
  ]
 }

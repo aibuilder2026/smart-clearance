@@ -29,9 +29,6 @@ for _id, _l in LINES.items():      # a line not voiced and picked yet: its lengt
         print(f'(estimated {_id}: {DUR[_id]} s)')
 DLGS = {d['id']: d for d in json.loads((HERE / 'lines.json').read_text())['dialogue']}
 MEAS = json.loads((HERE / 'build' / 'dlg.json').read_text()) if (HERE / 'build' / 'dlg.json').exists() else {}
-# a line Whisper reads short (a word misheard at its end), measured by ear and on the waveform instead
-for _id, (_c, _s, _e) in {'d12': ('d-eve-call-b', 2.22, 4.30)}.items():
-    if MEAS.get(_id, {}).get('clip') == _c: MEAS[_id].update({'s': _s, 'e': _e})
 # a line's place in its clip until the clip exists and dlg.py has measured it
 EST = {'d01': ('d-dawn-call', 0.52, 2.04), 'd03': ('d-dawn-call', 9.30, 9.98), 'd02': ('l-dawn-call', 0.16, 1.02), 'd04': ('l-dawn-call', 4.94, 5.74),
        'd05': ('b-approve', 0.6, 1.9), 'd06': ('l-approve', 0.6, 2.4), 'd07': ('k-order-b', 0.6, 2.4), 'd08': ('v-dock', 0.6, 2.6),
