@@ -99,7 +99,10 @@ def bench(fs, fps_in, tmp):
     vo = tmp / 'b-vt.mov'; vt(hm, vo, fps_in)
     vd = tmp / 'b-vt'; vd.mkdir(); run(['ffmpeg', '-v', 'error', '-y', '-i', str(vo), str(vd / '%08d.png')])
     v = sorted(vd.glob('*.png'))
-    scores['vt'] = float(np.mean([psnr(small(f), small(v[i])) for i, f in real if i < len(v)]))
+    # (VideoToolbox can hand back a frame a pixel narrower than an odd-sized screen crop: it cannot make that source,
+    # since resizing the app's text by a pixel would soften every glyph)
+    if not v or small(v[0]).shape != small(use[0]).shape: scores['vt'] = 0.0
+    else: scores['vt'] = float(np.mean([psnr(small(f), small(v[i])) for i, f in real if i < len(v)]))
     return max(scores, key=scores.get), scores
 
 

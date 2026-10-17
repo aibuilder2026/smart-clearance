@@ -338,7 +338,6 @@ def build():
                   R(b[0] - 0.1, b[1] - 0.15, [380, 40, 1520, 400]), R(b[1] - 0.15, b[2] - 0.05, [1158, 860, 745, 335]),
                   R(b[2], S0 + starts[4], [1490, 105, 410, 590]), R(S0 + starts[4] + 0.3, S0 + MEDIA['console-setup']['dur'], [1110, 290, 730, 230])],
            cards=[C(S0 + 2.4, S0 + starts[1], [362, 755, 1546, 80], 'One console', 'Every brand, its own workspace', 'Its own address, its own data, its own rules.', 'building-2', w=360),
-                  C(b[0] + 0.1, b[1] - 0.15, [380, 40, 1520, 400], 'Its stock data', 'Mapped by the Data agent', 'The distributor’s own export: every field read, 8 of 8 mapped.', 'database', w=360),
                   C(S0 + starts[4] + 0.4, S0 + MEDIA['console-setup']['dur'], [1110, 290, 730, 230], 'Its own rules', 'Gates per SKU, and per batch', 'What each app takes, set by the brand: the Watcher reads it every morning.', 'shield-check', w=360)])
     t = s.say('n10b', t + 1.0)                          # the platform team watches every client, live
     s.mark('watch', s.vo[-1]['t'])
@@ -354,7 +353,7 @@ def build():
     s.shot('win', O0, t + 0.6, media='console-overview', starts=starts, enter='none', place={'kind': 'laptop', 'cx': 1170, 'cy': 540, 'sw': 1320},
            rings=[R(s.w('n10b', 'client') - 0.15, s.w('n10b', 'agent') - 0.1, [362, 265, 1546, 205]), R(s.w('n10b', 'agent') - 0.1, max(O0 + starts[1], s.w('n10b', 'agent') + 1.2), [362, 500, 1546, 470]),
                   R(O0 + starts[2] + 0.1, t + 0.6, [362, 230, 1546, 670])],
-           cards=[C(s.w('n10b', 'client') - 0.05, s.w('n10b', 'agent') - 0.1, [362, 265, 1546, 205], 'Live', 'Every client, every agent', 'What they recovered, what waits for a yes, the agents at work.', 'activity', w=360)])
+           cards=[C(s.w('n10b', 'client') - 0.05, t + 0.55, [362, 230, 1546, 740], 'Live', 'Every client, every agent', 'What they recovered, what waits for a yes, the agents at work.', 'activity', w=360)])   # (the whole page: it stays while its rings walk it)
     ots('p-neha', 'neha', 'console-setup', t + 0.6 - c0, 1.5, a=0.3)              # Neha at her laptop, the console on its screen
     s.shot('ots', c0, t + 0.6, media='p-neha', lift=1.5)
     s.mark('teams', t + 0.7)
@@ -505,7 +504,8 @@ def build():
     a1 += dk
     d_land = 1.3
     d = 6.2
-    starts = win('m-orders', 'mango', 'P', [(248.5, 248.5 + d_land, d_land), (296.0, 437.0, d - d_land - 1.2), (446.4, 447.6, 1.2)])
+    d_full = 2.1                                        # (the filled scheme held while its card is read)
+    starts = win('m-orders', 'mango', 'P', [(248.5, 248.5 + d_land, d_land), (296.0, 437.0, d - d_land - d_full), (446.4, 447.6, d_full)])
     if have('a-desk'): clip('e-orders', 'a-desk', 4.6, 6.2, d)      # the orders land on the lead's Execution: her desk behind it
     else: clip('e-orders', 'priya-desk', 3.4, 7.9, d)
     s.shot('clip', a1, a1 + d, media='e-orders', blur=True, under='m-orders')
@@ -589,7 +589,7 @@ def build():
     s.mark('lot', a0)
     t = s.say('n32', a0 + 1.0)
     d = t + 1.9 - a0
-    starts = win('c-lot', 'sad', 'H', [(429.0, 431.0, 1.4), (431.2, 432.8, 1.2), (433.0, 435.0, 1.4), (448.4, 450.7, 2.2), (460.1, 462.4, d - 6.2)])
+    starts = win('c-lot', 'sad', 'H', [(429.0, 431.0, 1.4), (431.2, 432.8, 1.2), (433.0, 435.0, 1.4), (448.4, 450.7, 2.2), (460.9, 462.4, d - 6.2)])   # (from the accept already pressed: the win and its card sooner)
     ots('j-lot', 'agrawal', 'c-lot', d, 1.0)
     s.shot('ots', a0, a0 + d, media='j-lot', lift=1.0)
     s.shot('win', a0, a0 + d, media='c-lot', starts=starts, lift=1.0, clock=['Day 0', 'the lot'],

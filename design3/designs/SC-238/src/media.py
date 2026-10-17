@@ -152,6 +152,8 @@ def interp(fs, n_out, fps_in, meth, tmp, out):
             run(['ffmpeg', '-v', 'error', '-y', '-framerate', str(fps_in), '-i', fs[0].parent / '%08d.png', '-c:v', 'prores_ks', '-profile:v', '3', enc])
             vo = tmp / 'vt-out.mov'; frc.vt(enc, vo, round(rate, 4))
             run(['ffmpeg', '-v', 'error', '-y', '-i', vo, '-frames:v', str(n_out), out / '%08d.png'])
+            got = sorted(out.glob('*.png'))
+            if not got or frc.Image.open(got[0]).size != frc.Image.open(fs[0]).size: sys.exit('it changed the frame size')
         except SystemExit as e:
             print(f'  VideoToolbox refused {rate:.1f} fps ({str(e)[:80]}); RIFE instead')
             for f in out.glob('*.png'): f.unlink()

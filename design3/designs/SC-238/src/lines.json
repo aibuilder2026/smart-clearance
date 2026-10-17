@@ -66,7 +66,8 @@
   {
    "id": "n11b",
    "act": "platform",
-   "text": "No app store needed: it installs straight from the browser, and every alert arrives as a notification."
+   "text": "No app store needed: it installs straight from the browser, and every alert arrives as a notification.",
+   "take": "n11b-2.wav"
   },
   {
    "id": "n12",

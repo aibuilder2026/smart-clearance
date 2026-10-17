@@ -9,7 +9,8 @@ montage.py mixes (measured static gains, sidechain ducking, amix without normali
   voice or event from a generated clip leaks in), carried across the cuts within a place and crossfaded between places;
 - the score: SC-210's Lyria cues in D (music10/, made before; nothing generated here), one an act, looped through
   equal-power crossfades and crossfaded into the next, the bed set to -24 LUFS from a measured pass, then ducked by
-  sidechaincompress keyed on the voices' envelope (about 10 dB in the presence band, 4 under it, released over 0.65 s);
+  sidechaincompress keyed on the voices' envelope (about 10 dB from the presence band up through the sibilants, 1 to
+  9.5 kHz, 4 elsewhere, released over 0.65 s);
 - sound design: the editing-videos library's CC0 sounds for real actions (a click, a tap, paper handled, a notification,
   a stamp) and sounds synthesised from noise and sine tones (sfxkit.py) for the rest: every window lifting out of its
   device, every ring, card, agent at work and the calls it types, every tap on Approve, the clock turning, the
@@ -18,7 +19,7 @@ montage.py mixes (measured static gains, sidechain ducking, amix without normali
 - amix (normalize=0), then two-pass loudnorm to -14 LUFS, -1.5 dBTP (headroom for the AAC encode), LRA 11, at 48 kHz.
 
    uv run --with numpy --with scipy --with soundfile python mix.py [--film path.mov] [--out path.mp4]"""
-import argparse, json, re, subprocess, sys
+import argparse, hashlib, json, re, subprocess, sys
 from pathlib import Path
 import numpy as np, soundfile as sf
 from scipy.signal import butter, fftconvolve, resample_poly, sosfiltfilt
@@ -53,8 +54,13 @@ def measure(path):
     return json.loads(re.findall(r'\{[^{}]*\}', r.stderr)[-1])
 
 
+def stable(text):
+    """a number from a name that is the same in every run (Python's own hash is salted per process)"""
+    return int(hashlib.md5(str(text).encode()).hexdigest()[:8], 16)
+
+
 def load(path, mono=False):
-    tmp = B / 'mixtmp' / f'{Path(path).stem}-{abs(hash(str(path))) % 10 ** 8}.wav'
+    tmp = B / 'mixtmp' / f'{Path(path).stem}-{stable(path) % 10 ** 8}{"-m" if mono else ""}.wav'
     tmp.parent.mkdir(exist_ok=True)
     if not tmp.exists():
         run(['ffmpeg', '-v', 'error', '-y', '-i', path, '-vn', '-ar', str(SR), '-ac', '1' if mono else '2', '-c:a', 'pcm_f32le', tmp])
@@ -176,7 +182,7 @@ def places():
                 try: x = load(str(Path(src).parents[3] / TONE_FROM[Path(src).name]))   # a silent clip: its place's tone from a sister clip
                 except SystemExit: x = np.zeros((0, 2), np.float32)
             if len(x) < SR // 2 or np.sqrt(np.mean(x ** 2)) < 1e-5: tones[src] = None; return None
-            y = K.room_tone(x, int(12 * SR), seed=abs(hash(src)) % 1000)
+            y = K.room_tone(x, int(12 * SR), seed=stable(src) % 1000)
             rms = np.sqrt(np.mean(y ** 2)) + 1e-9
             tones[src] = (y / rms * db(-40)).astype(np.float32)
         return tones[src]
@@ -233,7 +239,8 @@ def score():
     b0 = SC['bin']['t0'] + SC['bin']['dur'] - 0.14; i0, i1 = int((b0 - 0.25) * SR), int((b0 + 0.14) * SR)
     track[i0:i1] *= np.linspace(1, 0, i1 - i0)[:, None] ** 2
     t_end = int((END - 3.0) * SR); track[t_end:] *= (np.linspace(1, 0, N - t_end) ** 1.5)[:, None]
-    band = sosfiltfilt(butter(2, [1200, 5000], btype='bandpass', fs=SR, output='sos'), track, axis=0).astype(np.float32)
+    # (the band ducked hard runs from the presence range up through the sibilants, so no shimmer in the score masks an s)
+    band = sosfiltfilt(butter(2, [1000, 9500], btype='bandpass', fs=SR, output='sos'), track, axis=0).astype(np.float32)
     return track - band, band
 
 
