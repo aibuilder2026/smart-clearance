@@ -74,7 +74,7 @@ rates and exact clip times, the motion check, and r4's content changes) was kept
    and each agent at work with its calls typed above it. The landscape tablet, the portrait tablet, the phone and the
    laptop each moved a little left to clear it. A window's card stays between 200 px from the top and 330 px from the
    foot. The bin's bill, the teams' and the audit trail's titles moved below the header. The install page's words
-   moved to the foot's right. The papers' title moved to the paper's left, so it never covers a signature. The
+   moved to its clear column at the top right, below the header, as its laptop fills the foot. The papers' title moved to the paper's left, so it never covers a signature. The
    captions along the foot moved up above the controls.
 5. No blank or resting frame: the bin's eight black frames are now its heap, darkening. A held app screen drifts 5%
    (it was 3%). The rule's last strip, the teams' row and the audit trail each drift as they are read.
@@ -119,13 +119,13 @@ Everything is driven by one edit decision list, so the picture and the sound rea
 
 ## The film
 
-**7 min 50.4 s** (470.40 s), 1920 × 1080 at 25 fps (11,760 frames), mixed to −14.0 LUFS (range 6.3 LU, true peak
-−1.5 dB). Pass 12's master keeps the 14:49 master's edit; its frames are the sources' own wherever a span plays at its
-own pace (a slowed span alone is interpolated), its godown has no walking workers (SC-239), and its background is quieter.
+**7 min 51.0 s** (471.00 s), 1920 × 1080 at 25 fps (11,775 frames), mixed to −14.0 LUFS (range 6.3 LU, true peak
+−1.4 dB). Pass 13's master (SC-245) keeps pass 12's edit; the agents scene is 0.6 s longer for the roll-call, so every
+scene after it starts 0.6 s later.
 
 | File | Where |
 | --- | --- |
-| The master (H.264 High, crf 17, 25 fps, AAC 320 kb/s, 343 MB), a 720p copy, a phone preview and the captions | `landing-demo/sales-film/smart-clearance-sales-film-v3-2026-10-17_19-31-37*` (earlier masters in `superseded-v3/` beside it) |
+| The master (H.264 High, crf 17, 25 fps, AAC 320 kb/s, 332 MB), a 720p copy, a phone preview and the captions | `landing-demo/sales-film/smart-clearance-sales-film-v3-2026-10-18_01-08-51*` (earlier masters in `superseded-v3/` beside it) |
 | A 1080p copy, the 720p copy and the captions, beside this record | [`media/`](media/) |
 
 The videos stay on this Mac and are never pushed (the maintainer's call; `.gitignore` keeps `media/*.mp4` out); the
@@ -140,7 +140,12 @@ captions are committed.
 - no black frame but the opening's half second on the ring;
 - 60 of 61 lines word for word in the read-back of the whole mix; the one other, "He sends it, and Vision checks…",
   heard as "Anvision" there, reads word for word on its own, as it does in the 14:49 master;
-- near-still samples 50.9 s, against the 14:49 master's 49.3 s: the reading holds on the app's screens; no frozen footage;
+- near-still samples 33.6 s on pass 13's master (50.9 s on pass 12's): held screens, the rule's last strip, the teams'
+  row and the audit trail now drift; no frozen footage;
+- pass 13 (SC-245), each note checked on the master's own frames: the sunrise aisle at 1:07 with no one in it; the
+  roll-call and sharp agents at 2:06, the orb fading as the camera passes it; the distributor at 5:18 holding his tablet
+  with both thumbs on the bezel while his Today updates; the godown's tags steady at 0:16; nothing under YouTube's
+  header; the ring scan as pass 12's (no stage mark on his new screen span);
 - the background: in the gaps between lines 1 dB lower, the band from 6 kHz up 2 to 3.4 dB lower across the film (its
   tenth percentile −75.3 dBFS, from −71.9);
 - the godown shot at 0:10 and the credit note's backdrop at 6:51 read with no walking workers;
