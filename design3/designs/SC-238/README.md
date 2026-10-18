@@ -44,6 +44,45 @@ The film keeps the 14:49 master's edit, frame for frame in time. Pass 11's work 
 rates and exact clip times, the motion check, and r4's content changes) was kept aside on the branch
 `SC-238-pass11-wip`; only its tooling fixes are in this pass.
 
+**Pass 13 (18 Oct 2026, SC-245), on the pass 12 master as it plays on YouTube; no change to the story or the script:**
+
+1. 1:07, the turn's sunrise: the take's two workers faced the camera while they drifted away from it, so they read as
+   walking backwards. The aisle was taken again with no one in it: a local Qwen-Image edit of the take's own keyframe
+   without the workers (`img/godown-sunrise-empty-245101.png`, `prompts/sc245/`), then LTX 2.5 on it with only the
+   light moving (`clips/godown-sunrise-empty-245111.mp4`; `ltx-jobs-sc245.json`). The forklift stays parked, backlit.
+   Painting the workers out was not possible: the take's whole aisle reshapes as the camera moves.
+2. 2:06, the agents in 3D:
+   - **The roll-call** (`agents3d/`): on "Ten agents" the ten rise one by one as large cards, each with its number,
+     icon, name and job, on a route that draws under them. On "Gemini" a beam runs from the orb to each of the nine
+     that think with it, and its model's pill comes up. On "Watcher" the Watcher steps forward with "Plain rules" while
+     the rest dim. As the line ends, each card flies down into its station, which flares as it lands. Then the tour of
+     the stops, as before; the first stop waits 0.6 s longer for the cards to land.
+   - **Sharp agents:** the depth-of-field pass read each agent's lit outline (a line, hidden from its depth pass) as
+     far background and blurred it by up to 14 px. The agents' slabs and icons now write the focus distance into that
+     pass, so they stay sharp. The blur is shallower (8 px at most), the shutter shorter (0.3 of a frame) and the colour
+     fringe half.
+   - **The orb:** the move from the roll-call to the first stop flew through Gemini's orb, which filled the frame
+     violet for a few frames. The orb and its beams now fade as the lens nears them.
+3. 5:18, the distributor's tablet at dusk: his 5 s take has both thumbs come onto the glass at 2.5 s, the left one
+   pressing where his screen has nothing. Turned back and forth over a 12 s shot, it pressed there again and again.
+   His screen has no control at that spot anywhere in this part of his recording, so the press can't be made true.
+   The shot now uses only the take's first 2.2 s, both thumbs on the bezel: a slow, steady read (`screens.py`'s
+   `tmap`). His screen plays his recording at its own pace: the chips batch arrives on his Today, flagged by the
+   Watcher, and its request follows. It no longer holds three seconds over twelve.
+4. YouTube's header covers the top of the frame. The pop-overs that sat there moved to the foot's right, above
+   YouTube's controls (`SAFE` in `kit/ui.tsx`): the call card, the batch card, the godown's date, the journey's clock,
+   and each agent at work with its calls typed above it. The landscape tablet, the portrait tablet, the phone and the
+   laptop each moved a little left to clear it. A window's card stays between 200 px from the top and 330 px from the
+   foot. The bin's bill, the teams' and the audit trail's titles moved below the header. The install page's words
+   moved to the foot's right. The papers' title moved to the paper's left, so it never covers a signature. The
+   captions along the foot moved up above the controls.
+5. No blank or resting frame: the bin's eight black frames are now its heap, darkening. A held app screen drifts 5%
+   (it was 3%). The rule's last strip, the teams' row and the audit trail each drift as they are read.
+6. 0:16, the godown's tags read as shaky: their days changed every frame, their scale changed every frame (so their
+   text was drawn again each time), and twelve crowded the frame. Each tag now keeps one size, the six that stay
+   longest in the middle of the frame are tagged, and the days step a week at a time with the date chip, each step
+   flipping in.
+
 ## How each point was met
 
 | Point | Done |
