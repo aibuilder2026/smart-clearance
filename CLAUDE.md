@@ -3233,5 +3233,6 @@
     - the foot's captions sit above the controls.
   - **No blank or resting frame:** the bin's black frames are its heap, darkening; held screens and three held graphics drift. Near-still time 33.6 s, from 50.9.
   - **0:16, the godown's tags:** one size each, six of them, the days stepping a week at a time with the date.
-  - **Checks:** 471.00 s, −14.0 LUFS, −1.4 dB peak; 60 of 61 lines word for word; the motion check clean; the ring scan as pass 12's; each note checked on the master's frames. The master is `landing-demo/sales-film/smart-clearance-sales-film-v3-2026-10-18_01-08-51.mp4` (local). The YouTube upload and the landing page's theatre are not yet updated.
+  - **Checks:** 471.00 s, −14.0 LUFS, −1.4 dB peak; 60 of 61 lines word for word; the motion check clean; the ring scan as pass 12's; each note checked on the master's frames. The master is `landing-demo/sales-film/smart-clearance-sales-film-v3-2026-10-18_01-08-51.mp4` (local).
+  - **On YouTube and the landing page:** [youtu.be/q5yKvs-b5l4](https://youtu.be/q5yKvs-b5l4), unlisted, uploaded through Claude in Chrome with its chapters (regenerated, every scene after the agents 0.6 s later) and captions; the landing page's theatre plays it (design3 `site.jsx`, the port's `env.ts` and `media.ts`, 7:51). youtu.be/XacZtguT8Xg stays as it was. The frontend gate passes (api 86, core 408, admin 22, console 2, demo 9, workspace 115).
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

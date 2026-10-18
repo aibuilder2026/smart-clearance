@@ -17,7 +17,7 @@ const words = JSON.parse(readFileSync(join(here, '../../../../design3/site/asset
 describe("the film's words", () => {
 	it('are its nine chapters from 0:00, in order, each long enough to be a YouTube chapter, and its 64 lines', () => {
 		const starts = words.chapters.map((c) => c.at);
-		expect(words.runtime).toBe('7:50');
+		expect(words.runtime).toBe('7:51');
 		expect(starts).toHaveLength(9);
 		expect(starts[0]).toBe(0);
 		starts.forEach((s, i) => expect((starts[i + 1] ?? words.duration) - s).toBeGreaterThanOrEqual(10));
@@ -31,7 +31,7 @@ describe("the film's words", () => {
 			'3:26 The happy path',
 			'5:14 The hard case',
 			'6:42 Every paper and every rupee',
-			'7:27 The close'
+			'7:28 The close'
 		]);
 	});
 	it('mark the chapter a time falls in', () => {
