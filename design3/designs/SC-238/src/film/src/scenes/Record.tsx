@@ -10,7 +10,7 @@ import React from 'react';
 import { AbsoluteFill, Img, Sequence, staticFile, useCurrentFrame } from 'remotion';
 import { DISPLAY, EASE, EASE_IO, Footage, GREEN, Icon, SANS, clamp, lerp, Media, ramp, springAt } from '../kit/core';
 import { Mark } from '../kit/device';
-import { Clock, Rise } from '../kit/ui';
+import { Clock, Rise, SAFE } from '../kit/ui';
 import { PlanShots } from '../kit/plan';
 import { FPS, SceneData, shot, voEnd, word } from '../edl';
 
@@ -59,8 +59,8 @@ export const Record: React.FC<{ s: SceneData }> = ({ s }) => {
 			{t < papersEnd + 0.3 && (
 				<>
 					<AbsoluteFill style={{ background: 'rgba(3,10,7,0.2)' }} />
-					<div style={{ position: 'absolute', left: 0, right: 0, top: 46, textAlign: 'center' }}>
-						<Rise t={t} t0={W('n36', 'Every') - 0.05} t1={papersEnd} text="Every paper drawn, signed and reviewed" size={46} weight={700} align="center" />
+					<div style={{ position: 'absolute', left: SAFE.right, bottom: SAFE.bottom, width: 470, padding: '16px 26px', borderRadius: 18, boxSizing: 'border-box', background: 'rgba(4,12,8,0.82)', border: '1.5px solid rgba(95,227,161,0.35)', zIndex: 5, opacity: Math.min(ramp(t, W('n36', 'Every') - 0.15, W('n36', 'Every') + 0.15), 1 - ramp(t, papersEnd - 0.3, papersEnd)) }}>
+						<Rise t={t} t0={W('n36', 'Every') - 0.05} t1={papersEnd} text="Every paper drawn, signed and reviewed" size={40} weight={700} align="left" />
 					</div>
 					{/* reviewed: the lead's sign-off stamped on the pack */}
 					{(() => { const r0 = W('n36', 'reviewed') - 0.1, a = Math.min(ramp(t, r0, r0 + 0.25), 1 - ramp(t, M.gst - 0.2, M.gst + 0.1)); if (a <= 0) return null; const sp = springAt(t, r0, FPS, 10, 220);
@@ -108,7 +108,7 @@ export const Record: React.FC<{ s: SceneData }> = ({ s }) => {
 				<AbsoluteFill>
 					<Footage name="r-office" t0={0} t1={(Math.round(M.swing * FPS) - Math.round(M.audit * FPS)) / FPS} push={0.05} blur={14} grade="green" />
 					<AbsoluteFill style={{ background: 'rgba(3,10,7,0.35)' }} />
-					<Media name='audit' style={{ width: '100%', height: '100%', mixBlendMode: 'screen' }} />
+					<Media name='audit' style={{ width: '100%', height: '100%', mixBlendMode: 'screen', transform: `scale(${(1 + 0.05 * EASE_IO(clamp((t - M.audit) / Math.max(1, M.swing - M.audit)))).toFixed(4)})` }} />
 				</AbsoluteFill>
 			</Sequence>
 			{/* the lead's tablet at dusk: the swing, the ledger, the mango's own line (plan.py's shots) */}

@@ -3,8 +3,11 @@
 YouTube cannot replace the file of an existing video, so the landing film v3 went up as a new unlisted video and the
 landing page's theatre is pointed at it. SC-211's sales film (youtu.be/DT_4G2txLF4) stays on YouTube as it was.
 
-The film is [youtu.be/XacZtguT8Xg](https://youtu.be/XacZtguT8Xg): "Smart-Clearance: the 8-minute demo", unlisted on
-the maintainer's channel (@arundutta3411). YouTube shows it as 7:51.
+The film is [youtu.be/q5yKvs-b5l4](https://youtu.be/q5yKvs-b5l4): "Smart-Clearance: the 8-minute demo", unlisted on
+the maintainer's channel (@arundutta3411), pass 13's master (SC-245, 18 Oct 2026): 7:52 on YouTube, its nine chapters
+from `transcript12.py` and its English (India) captions, set and uploaded the same way as below. The pass 12 cut,
+[youtu.be/XacZtguT8Xg](https://youtu.be/XacZtguT8Xg), stays on YouTube as it was, and is what the steps below
+describe.
 
 **How it went up (17 Oct 2026, through Claude in Chrome):**
 

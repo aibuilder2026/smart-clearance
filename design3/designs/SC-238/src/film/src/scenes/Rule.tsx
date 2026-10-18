@@ -5,7 +5,7 @@
 // sliding to 22 days, below every line. Every figure lands on its word.
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
-import { DISPLAY, EASE, Footage, GREEN, Icon, RED, SANS, clamp, lerp, ramp, springAt } from '../kit/core';
+import { DISPLAY, EASE, EASE_IO, Footage, GREEN, Icon, RED, SANS, clamp, lerp, ramp, springAt } from '../kit/core';
 import { Rise, Scrim } from '../kit/ui';
 import { FPS, SceneData, shot, voEnd, word } from '../edl';
 
@@ -78,7 +78,7 @@ export const Rule: React.FC<{ s: SceneData }> = ({ s }) => {
 			{t < r1.t1 && (
 				<>
 					<Scrim side="b" a={0.62} />
-					<div style={{ position: 'absolute', left: 92, bottom: 96 }}>
+					<div style={{ position: 'absolute', left: 92, bottom: 190 }}>
 						<Rise t={t} t0={word(s, 'n02', 'Not') - 0.05} t1={r1.t1} text="Not spoiled." size={84} />
 						<Rise t={t} t0={word(s, 'n02', 'Just') - 0.05} t1={r1.t1} text="Just short on days." size={84} color={GREEN.pale} />
 					</div>
@@ -168,7 +168,7 @@ export const Rule: React.FC<{ s: SceneData }> = ({ s }) => {
 			)}
 			{/* C · this batch, below every line */}
 			{aC > 0 && (
-				<div style={{ ...panel(aC, sC, 0, 30), left: 72, top: 540, width: 1776, height: 360, transform: `translate(0px, ${(1 - sC) * 30}px) scale(1.0)`, transformOrigin: '50% 0' }}>
+				<div style={{ ...panel(aC, sC, 0, 30), left: 72, top: 540, width: 1776, height: 360, transform: `translate(0px, ${(1 - sC) * 30}px) scale(${(1 + 0.035 * EASE_IO(clamp((t - cIn) / Math.max(1, end - cIn)))).toFixed(4)})`, transformOrigin: '50% 40%' }}>
 					<div style={{ position: 'absolute', left: X0, top: 26, display: 'flex', alignItems: 'baseline', gap: 18 }}>
 						<span style={{ ...KICK, color: '#73e0a6' }}>This batch</span>
 						<span style={{ font: `600 21px/1 ${SANS}`, color: '#cfe2d8' }}>a mango drink · 1,580 packs · a 180-day shelf life</span>

@@ -1,7 +1,7 @@
 {
  "film": "SC-238 · the landing film v3, Twenty-Two Days",
- "duration": 470.4,
- "runtime": "7:50",
+ "duration": 471.0,
+ "runtime": "7:51",
  "opening": "Near-expiry stock, routed by AI agents. One yes from a person.",
  "chapters": [
   {
@@ -119,43 +119,43 @@
      "text": "Ten agents. Nine think with Gemini, on Google's Agent Platform. The Watcher runs on plain rules."
     },
     {
-     "at": 137.2,
+     "at": 137.8,
      "text": "The Data agent reads each distributor's stock export."
     },
     {
-     "at": 143.1,
+     "at": 143.7,
      "text": "Every morning, the Watcher checks each batch's sell-through against the apps' gates."
     },
     {
-     "at": 149.6,
+     "at": 150.2,
      "text": "Vision reads the label from one photo."
     },
     {
-     "at": 155.5,
+     "at": 156.1,
      "text": "The Valuer prices every exit, the bin included."
     },
     {
-     "at": 161.4,
+     "at": 162.0,
      "text": "The Router splits the batch where it earns the most."
     },
     {
-     "at": 167.3,
+     "at": 167.9,
      "text": "Then it stops, at a person. Nothing moves without one yes."
     },
     {
-     "at": 173.4,
+     "at": 174.0,
      "text": "Outreach takes the offer to the kiranas. The Lister and the Negotiator work a marketplace, when a batch has the days."
     },
     {
-     "at": 182.2,
+     "at": 182.8,
      "text": "Paperwork draws every paper."
     },
     {
-     "at": 188.1,
+     "at": 188.7,
      "text": "And Impact counts the good it does."
     },
     {
-     "at": 194.0,
+     "at": 194.6,
      "text": "And all of it runs on the brand's own rules, for dates, prices and credit. The models never touch the money."
     }
    ]
@@ -164,66 +164,66 @@
    "id": "ch-5",
    "n": 5,
    "title": "The happy path",
-   "at": 206.3,
+   "at": 206.9,
    "lines": [
     {
-     "at": 208.3,
+     "at": 208.9,
      "text": "At nine, the Watcher flags a mango drink: fifteen hundred and eighty packs that won't sell in time."
     },
     {
-     "at": 217.6,
+     "at": 218.2,
      "text": "The distributor sends one photo. Vision checks the label against the stock."
     },
     {
-     "at": 226.9,
+     "at": 227.5,
      "text": "By nine twenty, the plan is priced: the kiranas, a staff sale and a food bank, and nothing to the bin."
     },
     {
-     "at": 237.4,
+     "at": 238.0,
      "text": "The brand's head: “Nothing to the bin?”"
     },
     {
-     "at": 238.7,
+     "at": 239.3,
      "text": "The supply chain lead: “Not one pack. Approved.”"
     },
     {
-     "at": 242.6,
+     "at": 243.2,
      "text": "One tap, and the agents go to work."
     },
     {
-     "at": 247.1,
+     "at": 247.7,
      "text": "Outreach sends the distributor's kiranas the offer, in Hindi."
     },
     {
-     "at": 253.2,
+     "at": 253.8,
      "text": "A kirana owner: “Two free with every ten!”"
     },
     {
-     "at": 255.9,
+     "at": 256.5,
      "text": "Each order lands with its own GST invoice."
     },
     {
-     "at": 266.8,
+     "at": 267.4,
      "text": "A food bank volunteer: “Fifty-eight packs. All sealed.”"
     },
     {
-     "at": 271.5,
+     "at": 272.1,
      "text": "A food bank collects what is closest to its date, with its own receipt."
     },
     {
-     "at": 280.3,
+     "at": 280.9,
      "text": "The next day, the staff buy their share by UPI, and Vision checks the receipt against the count."
     },
     {
-     "at": 293.2,
+     "at": 293.8,
      "text": "A shopkeeper: “The bill's inside? Good.”"
     },
     {
-     "at": 297.6,
+     "at": 298.2,
      "text": "Instead of a twenty-two-thousand-rupee loss, nearly seventeen thousand recovered, and the distributor ends whole."
     },
     {
-     "at": 305.4,
+     "at": 306.0,
      "text": "The distributor sees it all on her own portal: every order, every paper and every rupee credited."
     }
    ]
@@ -232,54 +232,54 @@
    "id": "ch-6",
    "n": 6,
    "title": "The hard case",
-   "at": 314.0,
+   "at": 314.6,
    "lines": [
     {
-     "at": 315.2,
+     "at": 315.8,
      "text": "Not every batch is that easy. In Nagpur, a batch of chips is split two ways: a lot on a near-expiry marketplace, and a scheme for the kiranas."
     },
     {
-     "at": 327.0,
+     "at": 327.6,
      "text": "The Negotiator closes the lot at fourteen rupees twenty a pack, without ever showing the floor price."
     },
     {
-     "at": 335.8,
+     "at": 336.4,
      "text": "A wholesale buyer: “Fourteen-twenty. Done. Truck's coming.”"
     },
     {
-     "at": 344.3,
+     "at": 344.9,
      "text": "But only two shops order. When the window closes, five hundred and forty packets are left."
     },
     {
-     "at": 352.5,
+     "at": 353.1,
      "text": "On expiry day, an authorised agency destroys them, and the distributor records it on his tablet: the packs slit open, buried, and covered."
     },
     {
-     "at": 363.5,
+     "at": 364.1,
      "text": "The photos go up, and"
     },
     {
-     "at": 366.5,
+     "at": 367.1,
      "text": "the certificate is signed on the spot: by the agency’s officer, two witnesses, and the distributor."
     },
     {
-     "at": 375.0,
+     "at": 375.6,
      "text": "The distributor, at the landfill: “All four signatures. It’s on record.”"
     },
     {
-     "at": 378.9,
+     "at": 379.5,
      "text": "He sends it, and"
     },
     {
-     "at": 380.9,
+     "at": 381.5,
      "text": "Vision checks both photos against the batch and the slate."
     },
     {
-     "at": 386.3,
+     "at": 386.9,
      "text": "And nothing is credited for them until a second yes."
     },
     {
-     "at": 393.5,
+     "at": 394.1,
      "text": "Only then are the expiry credit note and the certificate issued, and the distributor is made whole."
     }
    ]
@@ -288,22 +288,22 @@
    "id": "ch-7",
    "n": 7,
    "title": "Every paper and every rupee",
-   "at": 402.2,
+   "at": 402.8,
    "lines": [
     {
-     "at": 403.2,
+     "at": 403.8,
      "text": "Every paper is drawn, signed where it must be, and reviewed: GST invoices and e-invoices, credit notes, the tax-credit memo, receipts and certificates."
     },
     {
-     "at": 419.8,
+     "at": 420.4,
      "text": "And every step is on the record: which agent did what, who said yes, and when."
     },
     {
-     "at": 428.1,
+     "at": 428.7,
      "text": "Every rupee adds up against what the bin would have cost, and every batch posts to an impact ledger, ready for the brand's sustainability report."
     },
     {
-     "at": 439.1,
+     "at": 439.7,
      "text": "On the mango alone: three hundred and forty kilos kept out of landfill, and fifty-eight meals."
     }
    ]
@@ -312,22 +312,22 @@
    "id": "ch-8",
    "n": 8,
    "title": "The close",
-   "at": 447.8,
+   "at": 448.4,
    "lines": [
     {
-     "at": 448.3,
+     "at": 448.9,
      "text": "The distributor: “Every credit note arrived on time.”"
     },
     {
-     "at": 451.3,
+     "at": 451.9,
      "text": "The supply chain lead: “Not one pack went to waste.”"
     },
     {
-     "at": 456.6,
+     "at": 457.2,
      "text": "Smart-Clearance. Ten agents. One yes. And nothing good goes to waste."
     },
     {
-     "at": 463.8,
+     "at": 464.4,
      "text": "Try the guided demo."
     }
    ]

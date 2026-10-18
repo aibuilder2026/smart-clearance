@@ -44,6 +44,45 @@ The film keeps the 14:49 master's edit, frame for frame in time. Pass 11's work 
 rates and exact clip times, the motion check, and r4's content changes) was kept aside on the branch
 `SC-238-pass11-wip`; only its tooling fixes are in this pass.
 
+**Pass 13 (18 Oct 2026, SC-245), on the pass 12 master as it plays on YouTube; no change to the story or the script:**
+
+1. 1:07, the turn's sunrise: the take's two workers faced the camera while they drifted away from it, so they read as
+   walking backwards. The aisle was taken again with no one in it: a local Qwen-Image edit of the take's own keyframe
+   without the workers (`img/godown-sunrise-empty-245101.png`, `prompts/sc245/`), then LTX 2.5 on it with only the
+   light moving (`clips/godown-sunrise-empty-245111.mp4`; `ltx-jobs-sc245.json`). The forklift stays parked, backlit.
+   Painting the workers out was not possible: the take's whole aisle reshapes as the camera moves.
+2. 2:06, the agents in 3D:
+   - **The roll-call** (`agents3d/`): on "Ten agents" the ten rise one by one as large cards, each with its number,
+     icon, name and job, on a route that draws under them. On "Gemini" a beam runs from the orb to each of the nine
+     that think with it, and its model's pill comes up. On "Watcher" the Watcher steps forward with "Plain rules" while
+     the rest dim. As the line ends, each card flies down into its station, which flares as it lands. Then the tour of
+     the stops, as before; the first stop waits 0.6 s longer for the cards to land.
+   - **Sharp agents:** the depth-of-field pass read each agent's lit outline (a line, hidden from its depth pass) as
+     far background and blurred it by up to 14 px. The agents' slabs and icons now write the focus distance into that
+     pass, so they stay sharp. The blur is shallower (8 px at most), the shutter shorter (0.3 of a frame) and the colour
+     fringe half.
+   - **The orb:** the move from the roll-call to the first stop flew through Gemini's orb, which filled the frame
+     violet for a few frames. The orb and its beams now fade as the lens nears them.
+3. 5:18, the distributor's tablet at dusk: his 5 s take has both thumbs come onto the glass at 2.5 s, the left one
+   pressing where his screen has nothing. Turned back and forth over a 12 s shot, it pressed there again and again.
+   His screen has no control at that spot anywhere in this part of his recording, so the press can't be made true.
+   The shot now uses only the take's first 2.2 s, both thumbs on the bezel: a slow, steady read (`screens.py`'s
+   `tmap`). His screen plays his recording at its own pace: the chips batch arrives on his Today, flagged by the
+   Watcher, and its request follows. It no longer holds three seconds over twelve.
+4. YouTube's header covers the top of the frame. The pop-overs that sat there moved to the foot's right, above
+   YouTube's controls (`SAFE` in `kit/ui.tsx`): the call card, the batch card, the godown's date, the journey's clock,
+   and each agent at work with its calls typed above it. The landscape tablet, the portrait tablet, the phone and the
+   laptop each moved a little left to clear it. A window's card stays between 200 px from the top and 330 px from the
+   foot. The bin's bill, the teams' and the audit trail's titles moved below the header. The install page's words
+   moved to its clear column at the top right, below the header, as its laptop fills the foot. The papers' title moved to the paper's left, so it never covers a signature. The
+   captions along the foot moved up above the controls.
+5. No blank or resting frame: the bin's eight black frames are now its heap, darkening. A held app screen drifts 5%
+   (it was 3%). The rule's last strip, the teams' row and the audit trail each drift as they are read.
+6. 0:16, the godown's tags read as shaky: their days changed every frame, their scale changed every frame (so their
+   text was drawn again each time), and twelve crowded the frame. Each tag now keeps one size, the six that stay
+   longest in the middle of the frame are tagged, and the days step a week at a time with the date chip, each step
+   flipping in.
+
 ## How each point was met
 
 | Point | Done |
@@ -80,13 +119,13 @@ Everything is driven by one edit decision list, so the picture and the sound rea
 
 ## The film
 
-**7 min 50.4 s** (470.40 s), 1920 × 1080 at 25 fps (11,760 frames), mixed to −14.0 LUFS (range 6.3 LU, true peak
-−1.5 dB). Pass 12's master keeps the 14:49 master's edit; its frames are the sources' own wherever a span plays at its
-own pace (a slowed span alone is interpolated), its godown has no walking workers (SC-239), and its background is quieter.
+**7 min 51.0 s** (471.00 s), 1920 × 1080 at 25 fps (11,775 frames), mixed to −14.0 LUFS (range 6.3 LU, true peak
+−1.4 dB). Pass 13's master (SC-245) keeps pass 12's edit; the agents scene is 0.6 s longer for the roll-call, so every
+scene after it starts 0.6 s later.
 
 | File | Where |
 | --- | --- |
-| The master (H.264 High, crf 17, 25 fps, AAC 320 kb/s, 343 MB), a 720p copy, a phone preview and the captions | `landing-demo/sales-film/smart-clearance-sales-film-v3-2026-10-17_19-31-37*` (earlier masters in `superseded-v3/` beside it) |
+| The master (H.264 High, crf 17, 25 fps, AAC 320 kb/s, 332 MB), a 720p copy, a phone preview and the captions | `landing-demo/sales-film/smart-clearance-sales-film-v3-2026-10-18_01-08-51*` (earlier masters in `superseded-v3/` beside it) |
 | A 1080p copy, the 720p copy and the captions, beside this record | [`media/`](media/) |
 
 The videos stay on this Mac and are never pushed (the maintainer's call; `.gitignore` keeps `media/*.mp4` out); the
@@ -101,7 +140,12 @@ captions are committed.
 - no black frame but the opening's half second on the ring;
 - 60 of 61 lines word for word in the read-back of the whole mix; the one other, "He sends it, and Vision checks…",
   heard as "Anvision" there, reads word for word on its own, as it does in the 14:49 master;
-- near-still samples 50.9 s, against the 14:49 master's 49.3 s: the reading holds on the app's screens; no frozen footage;
+- near-still samples 33.6 s on pass 13's master (50.9 s on pass 12's): held screens, the rule's last strip, the teams'
+  row and the audit trail now drift; no frozen footage;
+- pass 13 (SC-245), each note checked on the master's own frames: the sunrise aisle at 1:07 with no one in it; the
+  roll-call and sharp agents at 2:06, the orb fading as the camera passes it; the distributor at 5:18 holding his tablet
+  with both thumbs on the bezel while his Today updates; the godown's tags steady at 0:16; nothing under YouTube's
+  header; the ring scan as pass 12's (no stage mark on his new screen span);
 - the background: in the gaps between lines 1 dB lower, the band from 6 kHz up 2 to 3.4 dB lower across the film (its
   tenth percentile −75.3 dBFS, from −71.9);
 - the godown shot at 0:10 and the credit note's backdrop at 6:51 read with no walking workers;

@@ -6,7 +6,7 @@
 // and every alert arrives as a notification (SC-211's install scene, captured frame-exact on this narration).
 import React from 'react';
 import { AbsoluteFill, Sequence, useCurrentFrame } from 'remotion';
-import { DISPLAY, EASE, EASE_IO, Footage, GREEN, MONO, SANS, lerp, Media, ramp, springAt } from '../kit/core';
+import { DISPLAY, EASE, EASE_IO, Footage, GREEN, MONO, SANS, clamp, lerp, Media, ramp, springAt } from '../kit/core';
 import { Mark, Window, geom } from '../kit/device';
 import { PlanShots } from '../kit/plan';
 import { Rise, Scrim } from '../kit/ui';
@@ -83,11 +83,13 @@ const Teams: React.FC<{ s: SceneData; t0: number }> = ({ s, t0 }) => {
 	const end = shot(s, 'team-brand').t1;
 	// the four devices across the frame, each landing on its word, the row easing left as each arrives
 	const xs = [330, 835, 1255, 1630];
+	const CY = 572;                              // (SC-245: the row lower, its title under YouTube's header)
 	const k = ramp(t, t0, t0 + 0.6, EASE);
 	return (
 		<AbsoluteFill>
 			<Footage name="team-bg" t0={0} t1={end - t0} push={0.05} blur={10} grade="green" />
 			<AbsoluteFill style={{ background: 'rgba(3,10,7,0.35)', opacity: k }} />
+			<AbsoluteFill style={{ transform: `scale(${(1 + 0.045 * EASE_IO(clamp((t - t0) / Math.max(1, end - t0)))).toFixed(4)})`, transformOrigin: '50% 55%' }}>
 			{TEAM.map((m, i) => {
 				const sh = shot(s, m.media) as ReturnType<typeof shot> & { hi?: number };
 				const lab = ramp(t, sh.t0 + 0.25, sh.t0 + 0.6, EASE);
@@ -97,19 +99,20 @@ const Teams: React.FC<{ s: SceneData; t0: number }> = ({ s, t0 }) => {
 				const hi = sh.hi ?? sh.t0, kh = Math.min(ramp(t, hi, hi + 0.25, EASE), 1 - ramp(t, hi + 1.6, hi + 2.1));
 				return (
 					<React.Fragment key={m.media}>
-						<Window name={m.media} kind={m.kind} t0={sh.t0 - t0} t1={sh.t1 - t0} cx={xs[i]} cy={520} sh={m.sh} />
-						{kh > 0 && <div style={{ position: 'absolute', left: xs[i] - g.fw / 2 - 12, top: 520 - g.fh / 2 - 12, width: g.fw + 24, height: g.fh + 24, borderRadius: g.b.rad + 12,
+						<Window name={m.media} kind={m.kind} t0={sh.t0 - t0} t1={sh.t1 - t0} cx={xs[i]} cy={CY} sh={m.sh} />
+						{kh > 0 && <div style={{ position: 'absolute', left: xs[i] - g.fw / 2 - 12, top: CY - g.fh / 2 - 12, width: g.fw + 24, height: g.fh + 24, borderRadius: g.b.rad + 12,
 							border: `3px solid ${GREEN.mint2}`, boxShadow: `0 0 ${30 * kh}px rgba(52,211,128,${0.55 * kh})`, opacity: kh, transform: `scale(${lerp(1.04, 1, kh)})` }} />}
-						<div style={{ position: 'absolute', left: xs[i] - 160, width: 320, top: 520 + m.sh / 2 + 46, textAlign: 'center', opacity: lab, transform: `translateY(${(1 - lab) * 12}px)`,
+						<div style={{ position: 'absolute', left: xs[i] - 160, width: 320, top: CY + m.sh / 2 + 40, textAlign: 'center', opacity: lab, transform: `translateY(${(1 - lab) * 12}px)`,
 							font: `700 28px/1 '${DISPLAY}'`, color: GREEN.ink }}>{m.label}</div>
 					</React.Fragment>
 				);
 			})}
+			</AbsoluteFill>
 			<Scrim side="t" a={0.4} />
-			<div style={{ position: 'absolute', left: 0, right: 0, top: 70, textAlign: 'center' }}>
+			<div style={{ position: 'absolute', left: 0, right: 0, top: 196, textAlign: 'center' }}>
 				<Rise t={t} t0={word(s, 'n11', 'Each') - 0.05} t1={word(s, 'n11', 'installed') - 0.15} text="Each team sees its own part" size={46} weight={650} align="center" />
 			</div>
-			<div style={{ position: 'absolute', left: 0, right: 0, top: 70, textAlign: 'center' }}>
+			<div style={{ position: 'absolute', left: 0, right: 0, top: 196, textAlign: 'center' }}>
 				<Rise t={t} t0={word(s, 'n11', 'installed') - 0.1} t1={end + 1} text="Installed on any phone, tablet or laptop." size={46} weight={650} align="center" />
 			</div>
 		</AbsoluteFill>

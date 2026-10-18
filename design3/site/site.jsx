@@ -116,9 +116,9 @@
   // page, which stays where it was. It plays from YouTube, unlisted, on the no-cookie host: nothing of YouTube loads
   // before Watch. Its poster is the office scene of SC-211's film, the brand and its distributor at the dashboard; the
   // film names no client either (SC-28). Without an id, Watch opens the guided demo.
-  // The film is youtu.be/XacZtguT8Xg, unlisted, on the maintainer's channel (@arundutta3411); SC-211's sales film,
-  // youtu.be/DT_4G2txLF4, stays there as it was
-  const DEMO_FILM = Object.assign({ youtube: "XacZtguT8Xg", runtime: "7:50", label: "Watch the 8-minute demo", title: "The 8-minute demo", sub: "The whole journey, end to end",
+  // The film is youtu.be/q5yKvs-b5l4, unlisted, on the maintainer's channel (@arundutta3411): pass 13 of SC-238's film
+  // (SC-245). Its earlier cut, youtu.be/XacZtguT8Xg, and SC-211's sales film, youtu.be/DT_4G2txLF4, stay there as they were
+  const DEMO_FILM = Object.assign({ youtube: "q5yKvs-b5l4", runtime: "7:51", label: "Watch the 8-minute demo", title: "The 8-minute demo", sub: "The whole journey, end to end",
     poster: "film-poster.webp", thumb: "film-thumb.webp", words: "demo-film.json" }, window.SC3_FILM || {});
   const clock = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
   // the film's chapters and captions (design3/designs/SC-238/src/transcript12.py, from the film's own timeline), read

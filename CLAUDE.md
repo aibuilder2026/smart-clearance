@@ -3218,4 +3218,21 @@
   - **Checks:** the frontend gate passes (api 86, core 408, admin 22, console 2, demo 9, workspace 115); the built landing page, played in the browser pane, opens the theatre on `youtube-nocookie.com/embed/XacZtguT8Xg` with its nine chapters and captions, with no console errors. The browser suites were not run (SC-55).
   - **Hosting:** design3's `dist/` is rebuilt. The live landing page follows on the merge to `main`.
 - **SC-243** (In Review, branch `SC-243-hero-ch4-steady-screen`; bug found by the maintainer): the hero film's 4th scene, the office monitor, looked jittery. SC-237's tracked Command Center shimmered at the hero's size. On the maintainer's pick, chapter 4 is Veo's own take again (SC-154's `final-4-office-dashboard.mp4`, the same span, 0.3 to 5.97 s), its plain green dashboard moving with the camera. `one-journey.mp4` was made again by `assemble.py`: 15.21 s, 6.00 MB, the same joins, chapter starts and first frame (the posters stand). Chapter 3's fix stays. The port imports the film from design3, so `frontend/` is unchanged. The record is in `design3/designs/SC-243/`.
+- **SC-245** (In Review, branch `SC-245-landing-film-v3-fixes`): the landing film v3's pass 13, the maintainer's notes on it as it plays on YouTube; no change to the story or the script. Made on this Mac; nothing spent.
+  - **1:07, the sunrise aisle:** its two workers faced the camera while drifting away from it. The aisle is taken again with no one in it: a Qwen-Image edit of the take's keyframe, then LTX 2.5 with only the light moving; the forklift stays parked. Painting them out wasn't possible, as the take's aisle reshapes as the camera moves.
+  - **2:06, the agents in 3D:**
+    - a roll-call: on "Ten agents" the ten rise as large cards, Gemini's beams land on the nine on "Gemini", the Watcher steps forward on "plain rules", then each card flies into its station;
+    - the agents stay sharp: the DOF pass had read their lit outlines as far background. The blur is shallower, the shutter shorter, the fringe halved;
+    - the orb and its beams fade as the camera flies past them, where the orb had filled the frame violet.
+  - **5:18, the distributor's tablet:** his take's thumbs pressed empty glass, again and again as the 5 s take turned back and forth over 12 s. His screen has no control at that spot, so the shot uses only the take's thumb-free 2.2 s (`screens.py` `tmap`), and his Today plays live: the chips batch arrives, flagged.
+  - **Clear of YouTube's header:**
+    - the call and batch cards, the godown's date, the journey's clock and each agent at work moved to the foot's right (`SAFE` in `kit/ui.tsx`), the windows a little left;
+    - cards, the bin's bill and the teams' and audit titles sit below the header;
+    - the install page's words sit in its clear column;
+    - the papers' title sits beside the paper;
+    - the foot's captions sit above the controls.
+  - **No blank or resting frame:** the bin's black frames are its heap, darkening; held screens and three held graphics drift. Near-still time 33.6 s, from 50.9.
+  - **0:16, the godown's tags:** one size each, six of them, the days stepping a week at a time with the date.
+  - **Checks:** 471.00 s, −14.0 LUFS, −1.4 dB peak; 60 of 61 lines word for word; the motion check clean; the ring scan as pass 12's; each note checked on the master's frames. The master is `landing-demo/sales-film/smart-clearance-sales-film-v3-2026-10-18_01-08-51.mp4` (local).
+  - **On YouTube and the landing page:** [youtu.be/q5yKvs-b5l4](https://youtu.be/q5yKvs-b5l4), unlisted, uploaded through Claude in Chrome with its chapters (regenerated, every scene after the agents 0.6 s later) and captions; the landing page's theatre plays it (design3 `site.jsx`, the port's `env.ts` and `media.ts`, 7:51). youtu.be/XacZtguT8Xg stays as it was. The frontend gate passes (api 86, core 408, admin 22, console 2, demo 9, workspace 115).
 - The seven pinned artifacts were shared in #smart-clearance. Sharing them with two teammates as commenters is still to be done by hand on claude.ai.

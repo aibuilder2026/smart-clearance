@@ -84,7 +84,7 @@ const WindowInner: React.FC<WindowProps> = ({ name, kind, t0, t1, cx, cy, sh, sw
 	// a slow camera drift on the held screen: it is never a resting picture
 	const [d0, d1] = drift ?? [la + liftDur, t1];
 	const hold = clamp((t - d0) / Math.max(1, d1 - d0));
-	let S = 1 + 0.03 * EASE_IO(hold);
+	let S = 1 + 0.05 * EASE_IO(hold);   // (SC-245: 3% read as a still picture where a span held)
 	let zx = 0, zy = 0, op = 1, dy = 0;
 	for (const z of zoom) {
 		const kz = Math.min(ramp(t, z.t0, z.t0 + 0.7, EASE_IO), 1 - ramp(t, z.t1 - 0.6, z.t1, EASE_IO));
@@ -182,11 +182,11 @@ const Card: React.FC<{ t: number; c: CardDef; frame: { x: number; y: number; fw:
 	const [rx, ry, rw, rh] = c.at;
 	const side = c.side ?? 'r';
 	const ax = side === 'r' ? px(rx + rw) + 10 : px(rx) - 10, ay = py(ry + rh / 2);
-	const w = c.w ?? 440;
+	const w = c.w ?? 400;
 	const right = frame.x + frame.fw / 2 + (frame.fw / 2) * s;
 	const left = frame.x + frame.fw / 2 - (frame.fw / 2) * s;
 	const cx = side === 'r' ? Math.min(1920 - w - 56, right + 46) : Math.max(56, left - 46 - w);
-	const cy = Math.max(70, Math.min(1080 - 250, ay - 70 + (c.dy ?? 0)));
+	const cy = Math.max(200, Math.min(1080 - 330, ay - 70 + (c.dy ?? 0)));   // (SC-245: below YouTube's header, above its controls)
 	const ex = side === 'r' ? cx : cx + w, ey = cy + 46;
 	const lead = ramp(t, c.t0 + 0.1, c.t0 + 0.5, EASE);
 	const path = `M ${ex} ${ey} C ${(ex + ax) / 2} ${ey}, ${(ex + ax) / 2} ${ay}, ${ax} ${ay}`;

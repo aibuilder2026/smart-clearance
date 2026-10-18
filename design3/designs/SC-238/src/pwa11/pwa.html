@@ -94,9 +94,11 @@
   .note img { width: 100%; display: block; }
   .tail { position: absolute; width: 2px; background: linear-gradient(180deg, rgba(115,201,157,0.9), rgba(115,201,157,0)); opacity: 0; transform-origin: 50% 0; }
 
-  .kick { position: absolute; left: 0; right: 0; top: 44px; text-align: center; font: 700 15px/1 'Geist'; letter-spacing: 3px; text-transform: uppercase; color: var(--g300); opacity: 0; }
-  .h1 { position: absolute; left: 0; right: 0; top: 72px; text-align: center; font: 700 60px/1.05 'Bricolage Grotesque'; letter-spacing: -1px; opacity: 0; white-space: nowrap; }
-  .h1.low { top: auto; bottom: 64px; }
+  /* (SC-245: the words in the clear column at the top right, below YouTube's header, which covers the top of the frame;
+     the last line in the band under the devices, as it was) */
+  .kick { position: absolute; right: 64px; top: 200px; text-align: right; z-index: 5; font: 700 15px/1 'Geist'; letter-spacing: 3px; text-transform: uppercase; color: var(--g300); opacity: 0; }
+  .h1 { position: absolute; right: 64px; top: 228px; max-width: 420px; text-align: right; z-index: 5; font: 700 50px/1.08 'Bricolage Grotesque'; letter-spacing: -1px; opacity: 0; }
+  .h1.low { top: auto; bottom: 96px; left: 0; right: 0; max-width: none; text-align: center; white-space: nowrap; font-size: 56px; }
   .chip { position: absolute; display: flex; align-items: center; gap: 9px; padding: 10px 16px 10px 12px; border-radius: 999px; white-space: nowrap;
     background: rgba(10, 16, 13, 0.88); border: 1px solid rgba(115, 201, 157, 0.35); font: 600 17px/1 'Geist'; color: var(--ink); opacity: 0; transform: translateX(-50%); }
   .chip svg { width: 18px; height: 18px; color: var(--ring); }

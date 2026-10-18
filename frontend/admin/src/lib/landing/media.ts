@@ -47,7 +47,7 @@ export const FILM = {
 		{ x: 0.42, y: 0.5 }
 	] as Place[]
 };
-/** the demo film (SC-238's landing film v3, SC-164, SC-242): 7 min 50 s at 25 fps, a batch with twenty-two days left
+/** the demo film (SC-238's landing film v3, SC-164, SC-242, SC-245): 7 min 51 s at 25 fps, a batch with twenty-two days left
  *  that no app will take, the rule and the cost of the bin, the product, ten agents and one yes, the happy path and the
  *  hard case, every paper and every rupee, played from YouTube (unlisted) in a theatre over the page. Its poster is the
  *  office scene of SC-211's film, the brand and its distributor at the dashboard; the film names no client either
@@ -55,7 +55,7 @@ export const FILM = {
  *  (PUBLIC_DEMO_FILM), Watch opens the guided demo */
 export const DEMO_FILM = {
 	youtube: PUBLIC_DEMO_FILM ?? null,
-	runtime: '7:50',
+	runtime: '7:51',
 	label: 'Watch the 8-minute demo',
 	title: 'The 8-minute demo',
 	sub: 'The whole journey, end to end',

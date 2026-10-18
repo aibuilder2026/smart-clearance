@@ -20,7 +20,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { Pass, FullScreenQuad } from 'three/addons/postprocessing/Pass.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
-const W = 1920, H = 1080, FPS = 25, SHUTTER = 0.5 / FPS;
+const W = 1920, H = 1080, FPS = 25, SHUTTER = 0.3 / FPS;   // (SC-245: 0.5 smeared the agents in the chases)
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const sm = (x) => { x = clamp(x); return x * x * x * (x * (x * 6 - 15) + 10); };
 const eo = (x) => { x = clamp(x); return 1 - (1 - x) * (1 - x) * (1 - x); };
@@ -66,7 +66,7 @@ class DOFPass extends Pass {
 			vertexShader: 'varying float vZ; void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.0); vZ = -mv.z; gl_Position = projectionMatrix * mv; }',
 			fragmentShader: 'varying float vZ; void main(){ gl_FragColor = vec4(vZ, 0.0, 0.0, 1.0); }' });
 		this.mat = new THREE.ShaderMaterial({
-			uniforms: { tColor: { value: null }, tDepth: { value: this.depthRT.texture }, px: { value: new THREE.Vector2(1 / W, 1 / H) }, focus: { value: 20 }, scale: { value: 0 }, maxBlur: { value: 14 } },
+			uniforms: { tColor: { value: null }, tDepth: { value: this.depthRT.texture }, px: { value: new THREE.Vector2(1 / W, 1 / H) }, focus: { value: 20 }, scale: { value: 0 }, maxBlur: { value: 8 } },
 			vertexShader: QV,
 			fragmentShader: `uniform sampler2D tColor; uniform sampler2D tDepth; uniform vec2 px; uniform float focus; uniform float scale; uniform float maxBlur; varying vec2 vUv;
 				const float GA = 2.39996323;
@@ -146,7 +146,7 @@ const accQuad = new FullScreenQuad(new THREE.ShaderMaterial({ uniforms: { t: { v
 	fragmentShader: 'uniform sampler2D t; uniform float w; varying vec2 vUv; void main(){ gl_FragColor = vec4(texture2D(t, vUv).rgb * w, 1.0); }',
 	blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor, depthTest: false, depthWrite: false, transparent: true }));
 const cine = new FullScreenQuad(new THREE.ShaderMaterial({
-	uniforms: { t: { value: acc.texture }, seed: { value: 0 }, grain: { value: 0.024 }, vig: { value: 0.40 }, ca: { value: 0.005 }, exposure: { value: 1 }, fadeIn: { value: 1 } },
+	uniforms: { t: { value: acc.texture }, seed: { value: 0 }, grain: { value: 0.018 }, vig: { value: 0.40 }, ca: { value: 0.0022 }, exposure: { value: 1 }, fadeIn: { value: 1 } },
 	vertexShader: QV,
 	fragmentShader: `uniform sampler2D t; uniform float seed; uniform float grain; uniform float vig; uniform float ca; uniform float exposure; uniform float fadeIn; varying vec2 vUv;
 		vec3 fit(vec3 v){ vec3 a = v * (v + 0.0245786) - 0.000090537; vec3 b = v * (0.983729 * v + 0.4329510) + 0.238081; return a / b; }
@@ -388,6 +388,9 @@ const AGENTS = {
 	impact: { name: 'Impact', icon: 'leaf', tier: 'flash', model: 'Gemini Flash' },
 };
 const SLAB_W = 1.35, SLAB_H = 1.8;
+const SHARP_DEPTH = new THREE.ShaderMaterial({ side: THREE.DoubleSide, uniforms: { focus: dof.mat.uniforms.focus },
+	vertexShader: 'void main(){ gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+	fragmentShader: 'uniform float focus; void main(){ gl_FragColor = vec4(focus, 0.0, 0.0, 1.0); }' });
 const slabMat = () => new THREE.MeshStandardMaterial({ color: 0x0c1712, metalness: 0.35, roughness: 0.22, transparent: true, opacity: 0, emissive: 0x03100a, depthWrite: false });
 STOPS.forEach((s) => {
 	const p = at(s.u), l = leftAt(s.u), tg = tanAt(s.u);
@@ -407,10 +410,10 @@ STOPS.forEach((s) => {
 		const A = AGENTS[id];
 		const xo = n === 3 ? (i - 1) * 1.7 : 0, zo = n === 3 && i !== 1 ? -0.5 : 0, sc = n === 3 && i !== 1 ? 0.84 : 1;
 		const sg = new THREE.Group(); sg.position.set(xo, 0, zo); sg.rotation.y = n === 3 ? (1 - i) * 0.32 : 0; sg.scale.setScalar(sc); g.add(sg);
-		const body = new THREE.Mesh(new RoundedBoxGeometry(SLAB_W, SLAB_H, 0.1, 3, 0.07), slabMat()); body.position.y = SLAB_H / 2 + 0.15; sg.add(body);
+		const body = new THREE.Mesh(new RoundedBoxGeometry(SLAB_W, SLAB_H, 0.1, 3, 0.07), slabMat()); body.position.y = SLAB_H / 2 + 0.15; body.userData.depthMat = SHARP_DEPTH; sg.add(body);
 		const edge = nd(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(SLAB_W + 0.05, SLAB_H + 0.05)), edgeMat(TIER_C[A.tier], 1.6))); edge.position.set(0, SLAB_H / 2 + 0.15, 0.06); sg.add(edge);
 		const icon = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.62), new THREE.MeshBasicMaterial({ color: col(TIER_C[A.tier], 1.9), transparent: true, opacity: 0, depthWrite: false, toneMapped: false }));
-		icon.position.set(0, SLAB_H / 2 + 0.3, 0.07); sg.add(icon);
+		icon.position.set(0, SLAB_H / 2 + 0.3, 0.07); icon.userData.depthMat = SHARP_DEPTH; sg.add(icon);
 		const halo = glowSprite(TIER_C[A.tier], 0.9, 2.4); halo.position.set(0, SLAB_H / 2 + 0.3, 0.2); sg.add(halo);
 		const top = new THREE.Object3D(); top.position.set(0, SLAB_H + 0.32, 0); sg.add(top);
 		A.slab = { sg, body, edge, icon, halo, top, stop: s, scale: sc, A };
@@ -653,6 +656,34 @@ function title(k, words, t0, t1) {
 	const el = $(`<div class="ttl"><div class="k"><i></i>${k}</div><h1>${words.map((w) => `<span class="w"><span class="${w[1] || ''}">${w[0]}</span></span>`).join(' ')}</h1></div>`);
 	document.getElementById('ttl').appendChild(el); const T = { el, ws: [...el.querySelectorAll('.w > span')], t0, t1 }; TITLES.push(T); return T;
 }
+// SC-245: the roll-call. Every agent on screen before the tour: a card each, risen in the order they work
+const JOB = { data: 'Reads every stock export', watcher: 'Checks every batch, daily', vision: 'Reads the label photo', valuer: 'Prices every exit',
+	router: 'Splits the batch', lister: 'Lists it on a marketplace', outreach: 'Offers it to the kiranas', negot: 'Bargains for the price',
+	paper: 'Draws every paper', impact: 'Counts the good it does' };
+const RC_W = 164, RC_H = 214, RC_GAP = 14, RC_Y = 520;
+const rfx = document.getElementById('rfx'), NS = 'http://www.w3.org/2000/svg';
+const svgEl = (tag, at) => { const e = document.createElementNS(NS, tag); Object.entries(at).forEach(([k, v]) => e.setAttribute(k, v)); rfx.appendChild(e); return e; };
+const ROLL = (() => {
+	const ids = ALL_SLABS.map((sl) => Object.keys(AGENTS).find((k) => AGENTS[k].slab === sl));
+	const x0 = (W - (ids.length * RC_W + (ids.length - 1) * RC_GAP)) / 2;
+	const yTrack = RC_Y + RC_H + 26;
+	const glow = svgEl('line', { x1: x0, y1: yTrack, x2: x0, y2: yTrack, stroke: '#34d380', 'stroke-width': 10, 'stroke-linecap': 'round', opacity: 0, style: 'filter: blur(6px)' });
+	const track = svgEl('line', { x1: x0, y1: yTrack, x2: x0, y2: yTrack, stroke: '#7ee8b0', 'stroke-width': 3, 'stroke-linecap': 'round', opacity: 0 });
+	const head = svgEl('circle', { cx: x0, cy: yTrack, r: 6, fill: '#e9fff3', opacity: 0, style: 'filter: drop-shadow(0 0 8px #34d380)' });
+	const cards = ids.map((id, i) => {
+		const A = AGENTS[id], tier = A.tier;
+		const tierIcon = tier === 'rules' ? IC('list-checks') : IC('sparkles');
+		const el = $(`<div class="rc ${tier}"><div class="n">${String(i + 1).padStart(2, '0')}</div><div class="ic">${IC(A.icon)}</div><b>${A.name.replace(' agent', '')}</b><div class="job">${JOB[id]}</div><div class="tier ${tier}">${tierIcon}${A.model === 'plain rules' ? 'Plain rules' : A.model}</div><div class="sh"></div></div>`);
+		document.getElementById('roll').appendChild(el);
+		const x = x0 + i * (RC_W + RC_GAP);
+		const hex = '#' + new THREE.Color(TIER_C[tier]).getHexString();
+		const beamGlow = tier === 'rules' ? null : svgEl('path', { fill: 'none', stroke: hex, 'stroke-width': 7, opacity: 0, style: 'filter: blur(5px)' });
+		const beam = tier === 'rules' ? null : svgEl('path', { fill: 'none', stroke: hex, 'stroke-width': 2.2, 'stroke-linecap': 'round', opacity: 0 });
+		const pip = svgEl('circle', { cx: x + RC_W / 2, cy: yTrack, r: 5, fill: '#0b1510', stroke: '#7ee8b0', 'stroke-width': 2, opacity: 0 });
+		return { id, A, el, x, i, tier, beam, beamGlow, pip, tierEl: el.querySelector('.tier'), sh: el.querySelector('.sh'), hex };
+	});
+	return { cards, x0, x1: x0 + ids.length * RC_W + (ids.length - 1) * RC_GAP, yTrack, glow, track, head };
+})();
 const IDX = STOPS.map((s) => { const el = $(`<div class="ix">${IC(s.icon)}${s.name}</div>`); document.getElementById('idx').appendChild(el); return { s, el }; });
 // the mark, drawn crisp over the 3D one as the camera arrives above it (design3/system/kit.jsx Mark, still)
 const MARK_SVG = (() => {
@@ -722,8 +753,16 @@ window.setCues = (cues) => {
 	ev(0.15, 'swell', 0.5); ev(TL.road0, 'draw', 0.5); ev(TL.rise, 'rise', 0.5);
 	// "Ten agents": the stations light in turn; "Gemini": the orb; the beams to the nine; "Watcher": its own chip, plain rules
 	TL.roll = wt('n13', 'Ten'); TL.orb = wt('n13', 'Gemini') - 0.2; TL.beams = TL.orb + 0.7; TL.watch = wt('n13', 'Watcher') - 0.1; TL.watch1 = L('n13')[1] + 0.6;
-	ALL_SLABS.forEach((sl, i) => ev(TL.roll + i * 0.11, 'tick', 0.3 + 0.4 * (i / ALL_SLABS.length), 0.6));
-	ev(TL.orb, 'orb', 0.5); ev(TL.beams, 'beams', 0.5); ev(TL.watch, 'chip', 0.4);
+	// (SC-245) the roll-call: the cards rise on "Ten agents", one a tick; Gemini's beams to the nine on "Gemini"; the Watcher
+	// forward on "Watcher"; then each card flies down into its station as the line ends, the station flaring as it lands
+	TL.rc0 = TL.roll - 0.12; TL.gem = wt('n13', 'Gemini') + 0.05;
+	TL.dep0 = L('n13')[1] - 0.15; TL.depStep = 0.05; TL.depDur = 0.62;
+	TL.depEnd = TL.dep0 + TL.depStep * (ALL_SLABS.length - 1) + TL.depDur;
+	TL.beams = TL.depEnd - 0.1;     // the 3D beams take over from the cards' beams once the agents are at their posts
+	ROLL.cards.forEach((c, i) => { ev(TL.rc0 + i * 0.11 + 0.1, 'tick', 0.12 + 0.76 * (c.x + RC_W / 2) / W, 0.7); c.A.slab.landAt = TL.dep0 + i * TL.depStep + TL.depDur; });
+	ev(TL.orb, 'orb', 0.5); ev(TL.gem + 0.1, 'beams', 0.5); ev(TL.watch, 'chip', 0.4);
+	ev(TL.dep0 + 0.1, 'whoosh', 0.5, 0.9);
+	ROLL.cards.forEach((c, i) => ev(c.A.slab.landAt - 0.02, 'spark', 0.3 + 0.4 * (i / ROLL.cards.length), 0.7));
 	// each stop: the rider arrives as its line begins, holds while it is said and the card fills, and leaves for the next
 	STOPS.forEach((s, i) => {
 		const ln = L(LINE_OF[s.id]); s.say = ln;
@@ -734,7 +773,7 @@ window.setCues = (cues) => {
 	// the camera: wide over the S for the opening, the orb, a held shot at each stop with a chase between, the rails,
 	// then the rise to the mark
 	SHOTS.push({ t0: 0, t1: L('n13')[0] - 0.2, pos: V(-8, 33, 41), tgt: V(0.5, -1, 0.5), fov: 38, focus: 50, drift: 0.07 });
-	SHOTS.push({ t0: L('n13')[0] + 1.0, t1: L('n14')[0] - 2.0, pos: V(5, 17, 21), tgt: V(0.6, 3.4, -1.2), fov: 40, focus: 24 });
+	SHOTS.push({ t0: L('n13')[0] + 1.0, t1: Math.max(L('n14')[0] - 2.0, TL.depEnd + 0.05), pos: V(5, 17, 21), tgt: V(0.6, 3.4, -1.2), fov: 40, focus: 24 });
 	STOPS.forEach((s) => SHOTS.push({ t0: s.t0, t1: s.t1, stop: s, ...stopShot(s) }));
 	// at Execute, as the packs leave for their exits, the camera rises and follows them out to the town
 	const exShot = SHOTS.find((x) => x.stop === STOP.execute), townTgt = TOWN.clone().add(V(-3.2, 0.3, 1.6));
@@ -847,7 +886,7 @@ const vis = (m, mat, o) => { mat.opacity = o; m.visible = o > 0.004; };
 function update(t) {
 	const s0 = camAt(t);
 	// the lens: focus on what the shot frames; a wide shot keeps it all sharp
-	dof.mat.uniforms.focus.value = s0.focus; dof.mat.uniforms.scale.value = s0.focus > 60 ? 0 : clamp(1.25 - s0.focus / 40, 0.3, 1.0);
+	dof.mat.uniforms.focus.value = s0.focus; dof.mat.uniforms.scale.value = s0.focus > 60 ? 0 : clamp(1.0 - s0.focus / 40, 0.15, 0.7);
 	const out = sm((t - TL.rise2) / 1.4);              // the end: the parts fade as the camera rises
 	floorMat.uniforms.k.value = 0.62 * (1 - 0.55 * out);
 	deckMat.uniforms.a.value = lerp(0.35, 1, sm(t / 1.5)) * (1 - out);
@@ -870,7 +909,7 @@ function update(t) {
 	const grow = eio((t - TL.rise2 - 0.4) / 2.4); dot.g.scale.setScalar(lerp(1, 4.6, grow)); pin.g.scale.setScalar(lerp(1, 4.5, grow));
 	const pp = (((t - TL.road1) % 2.4) + 2.4) % 2.4 / 2.4; pin.ping.scale.setScalar(1 + pp * 1.8); vis(pin.ping, pin.ping.material, t > TL.road1 ? 0.7 * (1 - pp) * (1 - out) : 0);
 	// the stations rise with the road, light in turn on "Ten agents", and the one at work glows
-	ALL_SLABS.forEach((sl, i) => { sl.roll = t > TL.roll + i * 0.11 ? Math.exp(-(t - TL.roll - i * 0.11) * 2.2) : 0; });
+	ALL_SLABS.forEach((sl) => { sl.roll = sl.landAt && t > sl.landAt ? Math.exp(-(t - sl.landAt) * 2.2) : 0; });
 	STOPS.forEach((s, i) => {
 		const rise = sm((t - TL.rise - i * 0.12) / 0.9) * (1 - out);
 		const on = fade(t, s.t0 - 0.1, s.t1 + 0.6, 0.45, 0.6) * (1 - out);
@@ -904,12 +943,16 @@ function update(t) {
 	const ok = sm((t - TL.orb) / 1.0) * (1 - out);
 	gem.shellMat.uniforms.a.value = ok; gem.shellMat.uniforms.t.value = t; gem.star.material.opacity = 0.9 * ok; gem.halo.material.opacity = 0.45 * ok; gem.halo2.material.opacity = 0.22 * ok;
 	gem.light.intensity = 18 * ok; gem.g.rotation.y = t * 0.12; gem.g.position.y = GEM.y + Math.sin(t * 0.9) * 0.12;
+	// (SC-245: the move from the roll-call to the first stop flies through the orb, which filled the frame violet: it
+	// fades as the lens nears it, as the gate's glows do)
+	const nearO = sm((camera.position.distanceTo(gem.g.position) - 6.0) / 6.0);
+	gem.shellMat.uniforms.a.value *= nearO; gem.star.material.opacity *= nearO; gem.halo.material.opacity *= nearO; gem.halo2.material.opacity *= nearO; gem.light.intensity *= nearO;
 	let burst = 0;
 	Object.entries(BEAMS).forEach(([id, b], i) => {
 		const A = AGENTS[id]; const s = A.slab.stop;
 		const draw = eo((t - TL.beams - i * 0.16) / 0.7);
 		const work = fade(t, s.t0, s.t1 + 0.3, 0.3, 0.4);
-		b.m.uniforms.prog.value = draw; b.m.uniforms.alpha.value = (0.22 + 0.78 * work) * ok * (A.dim ? 0.35 : 1);
+		b.m.uniforms.prog.value = draw; b.m.uniforms.alpha.value = (0.22 + 0.78 * work) * ok * (A.dim ? 0.35 : 1) * nearO;
 		b.m.uniforms.pulse.value = work > 0.1 ? ((t * 0.9) % 1) : -1;
 		burst = Math.max(burst, work);
 	});
@@ -982,7 +1025,7 @@ function placeChip(c, t, out) {
 	const t0 = A.dim ? TL.dimTag - 0.15 : s.t0 + 0.25;
 	const t1 = c.id === 'outreach' ? TL.exTown + 0.3 : s.t1 + 0.35;
 	const work = fade(t, t0, t1, 0.3, 0.35);
-	const watch = c.id === 'watcher' ? fade(t, TL.watch, TL.watch1, 0.25, 0.35) : 0;
+	const watch = 0;   // (SC-245: the Watcher's plain rules are told on its card in the roll-call)
 	const a = Math.max(work, watch) * (1 - out);
 	c.box = null; c.want = null;
 	if (a <= 0.001 || !A.slab.top) return;
@@ -997,7 +1040,7 @@ function placeChip(c, t, out) {
 // the chips that show at once are laid side by side, never on top of each other, each on a stem to its own agent
 function layChips() {
 	const live = Object.values(CHIPS).filter((c) => c.want);
-	live.forEach((c) => { c.want.x = clamp(c.want.x, 48, W - 48 - c.want.w); c.want.y = clamp(c.want.y, 140, H - 150 - c.want.h); });
+	live.forEach((c) => { c.want.x = clamp(c.want.x, 48, W - 48 - c.want.w); c.want.y = clamp(c.want.y, 190, H - 170 - c.want.h); });
 	live.sort((a, b) => a.want.x - b.want.x);
 	for (let pass = 0; pass < 4; pass++) for (let i = 1; i < live.length; i++) {
 		const a = live[i - 1].want, b = live[i].want;
@@ -1023,12 +1066,12 @@ function placeCard(id, t, out) {
 	// beside its chip, on the side with room and clear of the other chips; chosen once as it appears, then kept
 	if (!c.pick) {
 		const others = Object.values(CHIPS).filter((o) => o !== main && o.box).map((o) => o.box);
-		const cands = [{ x: b.x + b.w + 26, y: b.y, side: 1 }, { x: b.x - w - 26, y: b.y, side: -1 }, { x: b.x + b.w / 2 - w / 2, y: b.y + b.h + 90, side: 0 }, { x: W - 70 - w, y: 170, side: 1 }];
+		const cands = [{ x: b.x + b.w + 26, y: b.y, side: 1 }, { x: b.x - w - 26, y: b.y, side: -1 }, { x: b.x + b.w / 2 - w / 2, y: b.y + b.h + 90, side: 0 }, { x: W - 70 - w, y: 200, side: 1 }];
 		c.pick = cands.find((q) => q.x >= 40 && q.x + w <= W - 40 && !others.some((o) => overlaps({ x: q.x, y: q.y, w, h }, o))) || cands[0];
 	}
 	const q = c.pick;
 	const x = clamp(q.side === 1 ? Math.max(q.x, b.x + b.w + 26) : q.side === -1 ? Math.min(q.x, b.x - w - 26) : b.x + b.w / 2 - w / 2, 40, W - 40 - w);
-	const y = clamp(q.side === 0 ? b.y + b.h + 90 : b.y, 140, H - 150 - h);
+	const y = clamp(q.side === 0 ? b.y + b.h + 90 : b.y, 190, H - 170 - h);
 	const e = spring(t - s.say[0] - 0.15, 0.72, 13);
 	c.el.style.transform = `translate(${(x + q.side * -18 * (1 - e)).toFixed(1)}px, ${y.toFixed(1)}px)`; c.el.style.opacity = (a * kc).toFixed(3);
 	c.rows.forEach((r, i) => { if (!r.querySelector('#yesbtn')) r.style.opacity = clamp((t - s.say[0] - 0.45 - i * 0.34) / 0.25).toFixed(3); });
@@ -1053,6 +1096,7 @@ function overlay(t) {
 		const w = r.el.offsetWidth, e = spring(t - r.t0, 0.7, 13);
 		r.el.style.transform = `translate(${clamp(p.x - w / 2, 40, W - 40 - w).toFixed(1)}px, ${(p.y - 54 - 12 * (1 - e)).toFixed(1)}px)`; r.el.style.opacity = (a * kc).toFixed(3);
 	});
+	roll(t);
 	let shade = 0;
 	TITLES.forEach((T) => { const a = fade(t, T.t0, T.t1, 0.3, 0.35); T.el.style.opacity = a.toFixed(3); shade = Math.max(shade, a); T.ws.forEach((w, i) => { const e = spring(t - T.t0 - 0.07 * i, 0.74, 14); w.style.transform = `translateY(${(110 * (1 - e)).toFixed(1)}%)`; }); });
 	document.getElementById('shade').style.opacity = shade.toFixed(3);
@@ -1070,6 +1114,56 @@ function overlay(t) {
 		MARK_SVG.style.transform = `translate(${(cx - sz / 2).toFixed(1)}px, ${(cy - sz / 2).toFixed(1)}px)`;
 	}
 	MARK_SVG.style.opacity = ma.toFixed(3);
+}
+
+// ------------------------------------------------------------------ the roll-call (SC-245)
+function roll(t) {
+	const R_ = ROLL, show = fade(t, TL.rc0 - 0.1, TL.depEnd, 0.4, 0.3);
+	document.getElementById('rshade').style.opacity = (0.95 * fade(t, TL.rc0 - 0.2, TL.dep0 + 0.5, 0.5, 0.5)).toFixed(3);
+	// the route under the cards draws left to right as they rise, its head running ahead; it goes as they leave
+	const tr = eio((t - TL.rc0) / (0.11 * R_.cards.length + 0.35)), gone = 1 - sm((t - TL.dep0) / 0.35);
+	const xh = lerp(R_.x0, R_.x1, tr);
+	[R_.glow, R_.track].forEach((l, k) => { l.setAttribute('x2', xh.toFixed(1)); l.setAttribute('opacity', ((k ? 0.95 : 0.55) * show * gone * (tr > 0 ? 1 : 0)).toFixed(3)); });
+	R_.head.setAttribute('cx', xh.toFixed(1)); R_.head.setAttribute('opacity', (show * gone * (tr > 0 && tr < 1 ? 1 : 0)).toFixed(3));
+	const orb = shot(gem.g.position);
+	const wk = fade(t, TL.watch, TL.dep0 + 0.1, 0.3, 0.3);
+	R_.cards.forEach((c) => {
+		const ti = TL.rc0 + c.i * 0.11, e = spring(t - ti, 0.66, 12), a0 = clamp((t - ti) / 0.22);
+		const cx = c.x + RC_W / 2, cy = RC_Y + RC_H / 2;
+		// rise: from below, tipped back, a little small, onto the line
+		let x = c.x, y = RC_Y + 150 * (1 - e), sc = lerp(0.82, 1, e), rot = 32 * (1 - e), op = a0;
+		const isW = c.id === 'watcher';
+		if (isW) { const we = spring(t - TL.watch, 0.6, 12) * (t > TL.watch ? 1 : 0) * (1 - sm((t - TL.dep0 + 0.1) / 0.3)); y -= 18 * we; sc *= 1 + 0.06 * we; }
+		else op *= 1 - 0.45 * wk;
+		// leave: down into its station, small, gone as it lands
+		const td = TL.dep0 + c.i * TL.depStep, k = eio((t - td) / TL.depDur);
+		let tx = 0, ty = 0;
+		if (k > 0) {
+			const P = shot(c.A.slab.top.getWorldPosition(V(0, 0, 0)));
+			tx = (P.x - cx) * k; ty = (P.y - cy) * k - Math.sin(Math.PI * k) * 60;
+			sc *= lerp(1, 0.12, k); op *= 1 - sm((k - 0.55) / 0.45); rot = 0;
+		}
+		c.el.style.transform = `translate(${(x + tx).toFixed(1)}px, ${(y + ty).toFixed(1)}px) perspective(900px) rotateX(${rot.toFixed(2)}deg) scale(${sc.toFixed(4)})`;
+		c.el.style.opacity = (op * show).toFixed(3);
+		// a light runs across the card as it lands
+		const sx = (t - ti - 0.28) / 0.55; c.sh.style.transform = `translateX(${lerp(-70, RC_W + 20, clamp(sx)).toFixed(1)}px) skewX(-18deg)`; c.sh.style.opacity = sx > 0 && sx < 1 ? 1 : 0;
+		// its model: a beam from Gemini lands on the nine that think with it, and their model's pill comes up; the
+		// Watcher's on "Watcher"
+		const tp = isW ? TL.watch : TL.gem + 0.08 * c.i + 0.32;
+		const pe = spring(t - tp, 0.62, 13) * (t > tp ? 1 : 0);
+		c.tierEl.style.opacity = clamp((t - tp) / 0.15).toFixed(3); c.tierEl.style.transform = `scale(${lerp(0.6, 1, pe).toFixed(3)})`;
+		const lit = isW ? 0.85 * wk : Math.exp(-Math.max(0, t - tp) * 2.5) * (t > tp ? 1 : 0);
+		c.el.style.borderColor = lit > 0.01 ? (isW ? `rgba(52, 211, 128, ${(0.38 + 0.55 * lit).toFixed(3)})` : c.hex) : '';
+		c.el.style.boxShadow = lit > 0.01 ? `0 26px 64px rgba(0,0,0,.62), 0 0 ${(34 * lit).toFixed(1)}px ${isW ? 'rgba(52,211,128,.7)' : c.hex}` : '';
+		c.pip.setAttribute('opacity', (show * gone * clamp((t - ti - 0.15) / 0.2)).toFixed(3));
+		if (c.beam) {
+			const tb = TL.gem + 0.08 * c.i, be = eo((t - tb) / 0.38), ba = fade(t, tb, TL.dep0 + 0.05, 0.05, 0.3) * show * (1 - 0.5 * wk);
+			const ex = c.x + RC_W / 2, ey = RC_Y + 4, mx = lerp(orb.x, ex, 0.5), my = Math.min(orb.y, ey) - 40;
+			const d = `M ${orb.x.toFixed(1)} ${orb.y.toFixed(1)} Q ${mx.toFixed(1)} ${my.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}`;
+			[c.beam, c.beamGlow].forEach((b, j) => { b.setAttribute('d', d); const L_ = b.getTotalLength(); b.setAttribute('stroke-dasharray', `${L_.toFixed(1)} ${L_.toFixed(1)}`);
+				b.setAttribute('stroke-dashoffset', (L_ * (1 - be)).toFixed(1)); b.setAttribute('opacity', ((j ? 0.45 : 0.9) * ba * (be > 0 ? 1 : 0)).toFixed(3)); });
+		}
+	});
 }
 
 // ------------------------------------------------------------------ the town's footage: each plate's frame for scene time t

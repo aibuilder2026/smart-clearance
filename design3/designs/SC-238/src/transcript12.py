@@ -17,7 +17,7 @@ YT = HERE.parent / "youtube"
 SITE = HERE.parents[2] / "site" / "assets" / "media" / "demo-film.json"
 SRT = HERE.parent / "media" / "smart-clearance-sales-film-v3.srt"
 FILM = json.loads((HERE / "film" / "src" / "film.json").read_text())
-TOTAL = 470.4                                   # the master's own length (11,760 frames at 25 fps)
+TOTAL = 471.0                                   # the master's own length (11,775 frames at 25 fps; SC-245)
 
 # each chapter: its title and the scene it opens on (a scene under 10 s rides with the one before it)
 CHAPTERS = [
