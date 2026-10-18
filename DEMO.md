@@ -198,8 +198,21 @@ journey**. The story starts again at day 0, 08:00, and Munchly's configuration a
 **G2. Priya confirms Setup.** *Your window.* Open **Setup**. The distributors' stock export is already mapped, 8 of 8
 fields. Scroll down and press **Confirm and start watching**.
 
+> [!IMPORTANT]
+> **The demo only starts once Priya clicks Setup and confirms it.** Until the brand confirms its Setup (the stock
+> export as mapped, and its rules), the Watcher checks nothing and no batch is flagged. A Reset journey puts Setup back
+> to unconfirmed, so do this after every reset.
+
 **G3. Rakesh gives his permission.** *Private window, as Rakesh Traders.* On **Today**, the card reads "Let
 Smart-Clearance act for Rakesh Traders". Press **Allow**. Lakshmi Agencies has already allowed it in the story.
+
+> [!IMPORTANT]
+> **Rakesh Traders must give its consent before the agents work on its behalf.** This shows that every distributor
+> agrees, once, before Smart-Clearance acts in its name: listing its stock, offering schemes to its kiranas, drafting
+> its invoices and booking its dispatch slots. Until a distributor allows it, the Watcher flags none of its batches, so
+> without Rakesh's **Allow** the Masala Chips never enter journey 2. Lakshmi Agencies gave its consent in the story, so
+> the Mango Drink needs no step here. Give it before the Watcher runs (G4); if the check has already run, press **Run
+> now** again after the consent.
 
 <img src="docs/demo/ready-4-setup.webp" width="460" alt="Setup: the stock export dms_export_2026-10-01.csv, every field mapped"> <img src="docs/demo/ready-5-permission.webp" width="260" alt="Rakesh's Today: Let Smart-Clearance act for Rakesh Traders, with Allow and Not now">
 
