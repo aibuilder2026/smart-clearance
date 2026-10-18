@@ -1,9 +1,32 @@
+<div align="center">
+
+<img src="design3/system/img/icon.svg" width="96" height="96" alt="The Smart-Clearance mark">
+
+# Smart-Clearance
+
+### Agentic near-expiry stock routing for Indian FMCG brands.
+
+**Ten AI agents find every short-dated batch a home before it is written off. One person says yes.**
+
+<a href="https://github.com/aibuilder2026/smart-clearance/actions/workflows/ci.yml?query=branch%3Amain"><img alt="CI/CD on main" src="https://img.shields.io/github/actions/workflow/status/aibuilder2026/smart-clearance/ci.yml?branch=main&label=CI%2FCD&logo=githubactions&logoColor=white"></a> <a href="https://smartclearance.web.app"><img alt="The landing page, live" src="https://img.shields.io/website?url=https%3A%2F%2Fsmartclearance.web.app&label=smartclearance.web.app&up_message=live&down_message=down&logo=firebase&logoColor=white"></a> <a href="#smart-clearance"><img alt="Google AI Hackathon: 2026 · Retail & Commerce" src="https://img.shields.io/badge/Google%20AI%20Hackathon-2026%20%C2%B7%20Retail%20%26%20Commerce-4285F4?logo=google&logoColor=white"></a>
+
+<a href="ARCHITECTURE.md"><img alt="Gemini: Agent Platform" src="https://img.shields.io/badge/Gemini-Agent%20Platform-8E75B2?logo=googlegemini&logoColor=white"></a> <a href="ARCHITECTURE.md"><img alt="Google ADK: 2.11" src="https://img.shields.io/badge/Google%20ADK-2.11-4285F4?logo=google&logoColor=white"></a> <a href="ARCHITECTURE.md"><img alt="Cloud Run: asia-south1" src="https://img.shields.io/badge/Cloud%20Run-asia--south1-4285F4?logo=googlecloud&logoColor=white"></a> <a href="ARCHITECTURE.md"><img alt="Firebase: Hosting + Auth" src="https://img.shields.io/badge/Firebase-Hosting%20%2B%20Auth-DD2C00?logo=firebase&logoColor=white"></a> <a href="frontend/README.md"><img alt="SvelteKit: 3" src="https://img.shields.io/badge/SvelteKit-3-FF3E00?logo=svelte&logoColor=white"></a> <a href="backend-api/README.md"><img alt="FastAPI: 0.142" src="https://img.shields.io/badge/FastAPI-0.142-009688?logo=fastapi&logoColor=white"></a> <a href="backend-api/README.md"><img alt="PostgreSQL: 18" src="https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white"></a> <a href="agents/README.md"><img alt="Python: 3.14" src="https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white"></a> <a href="frontend/README.md"><img alt="TypeScript: 6" src="https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white"></a> <a href="infra/README.md"><img alt="Terraform: infra" src="https://img.shields.io/badge/Terraform-infra-844FBA?logo=terraform&logoColor=white"></a>
+
+<sub>CI/CD on main, step by step (each opens the latest run on GitHub Actions)</sub><br>
+<a href="https://github.com/aibuilder2026/smart-clearance/actions/workflows/ci.yml?query=branch%3Amain"><img alt="gate: frontend" src="https://img.shields.io/badge/gate-frontend-167a52?logo=svelte&logoColor=white"></a> <a href="https://github.com/aibuilder2026/smart-clearance/actions/workflows/ci.yml?query=branch%3Amain"><img alt="gate: backend" src="https://img.shields.io/badge/gate-backend-167a52?logo=fastapi&logoColor=white"></a> <a href="https://github.com/aibuilder2026/smart-clearance/actions/workflows/ci.yml?query=branch%3Amain"><img alt="gate: agents" src="https://img.shields.io/badge/gate-agents-167a52?logo=python&logoColor=white"></a> <a href="https://github.com/aibuilder2026/smart-clearance/actions/workflows/ci.yml?query=branch%3Amain"><img alt="gate: infra" src="https://img.shields.io/badge/gate-infra-167a52?logo=terraform&logoColor=white"></a> <a href="https://github.com/aibuilder2026/smart-clearance/actions/workflows/ci.yml?query=branch%3Amain"><img alt="scan: secrets" src="https://img.shields.io/badge/scan-secrets-167a52?logo=github&logoColor=white"></a> <a href="https://github.com/aibuilder2026/smart-clearance/actions/workflows/ci.yml?query=branch%3Amain"><img alt="build: 4 apps" src="https://img.shields.io/badge/build-4%20apps-167a52?logo=vite&logoColor=white"></a> <a href="https://github.com/aibuilder2026/smart-clearance/actions/workflows/ci.yml?query=branch%3Amain"><img alt="deploy: Cloud Run" src="https://img.shields.io/badge/deploy-Cloud%20Run-0d5a3e?logo=googlecloud&logoColor=white"></a> <a href="https://github.com/aibuilder2026/smart-clearance/actions/workflows/ci.yml?query=branch%3Amain"><img alt="deploy: Firebase Hosting" src="https://img.shields.io/badge/deploy-Firebase%20Hosting-0d5a3e?logo=firebase&logoColor=white"></a>
+
+**[Landing page](https://smartclearance.web.app) · [Guided demo](https://smartclearance-demo.web.app) · [Product film, 8 min](https://youtu.be/q5yKvs-b5l4) · [Working demo, 4 min](https://youtu.be/Ts0_HgkA0UQ)**
+
+[Try it: DEMO.md](DEMO.md) · [Architecture](ARCHITECTURE.md) · [Technical design (PDF)](docs/smart-clearance-tdd.pdf) · [Testing](TESTING.md) · [Product](PRODUCT.md) · [Pitch deck (PDF)](docs/smart-clearance-pitch-deck.pdf)
+
+</div>
+
+---
+
 > [!IMPORTANT]
 > **!!! IMPORTANT !!!** How to run the journey demos, step by step, and the sample data they use are in
 > **[DEMO.md](DEMO.md)**. The files themselves are in [`demoDataSet/`](demoDataSet/). The sign-in credentials are
 > shared separately, with the submission: every account in the demo uses the same password.
-
-# Smart-Clearance
 
 An agentic near-expiry stock router for Indian FMCG brands, built for the Google AI Hackathon 2026 (Retail &
 Commerce track). Agents watch a manufacturer's stock across its distributors, price every exit for a batch that will
